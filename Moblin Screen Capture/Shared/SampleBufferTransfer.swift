@@ -124,6 +124,14 @@ class SampleBufferSender {
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
+        if type == .video {
+            try? sendVideo(sampleBuffer, type)
+        } else {
+            try? sendAudio(sampleBuffer, type)
+        }
+    }
+
+    private func sendVideo(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) throws {
         guard let formatDescription = sampleBuffer.formatDescription,
               let imageBuffer = sampleBuffer.imageBuffer
         else {
@@ -134,28 +142,67 @@ class SampleBufferSender {
                             bufferSize: bufferSize,
                             width: formatDescription.dimensions.width,
                             height: formatDescription.dimensions.height)
-        let encoder = PropertyListEncoder()
-        guard let data = try? encoder.encode(header) else {
+        guard (try? sendHeader(header)) != nil else {
             return
         }
-        send(data: Data([
-            UInt8(data.count >> 24),
-            UInt8(data.count >> 16),
-            UInt8(data.count >> 8),
-            UInt8(data.count),
-        ]))
-        send(data: data)
-        // CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
-        // defer {
-        //     CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly)
-        // }
-        // let pointer = CVPixelBufferGetBaseAddress(imageBuffer)
-        // Darwin.write(fd, pointer, bufferSize)
+        CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
+        defer {
+            CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly)
+        }
+        guard let pointer = CVPixelBufferGetBaseAddress(imageBuffer) else {
+            return
+        }
+        try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(pointer), count: bufferSize))
     }
 
-    private func send(data: Data) {
-        _ = data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-            Darwin.write(fd, pointer.baseAddress, pointer.count)
+    private func sendAudio(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) throws {
+        guard let dataBuffer = sampleBuffer.dataBuffer else {
+            return
+        }
+        guard let data = try? dataBuffer.dataBytes() else {
+            return
+        }
+        let header = Header(
+            bufferType: type.rawValue,
+            bufferSize: data.count,
+            width: 0,
+            height: 0
+        )
+        guard (try? sendHeader(header)) != nil else {
+            return
+        }
+        try send(data: data)
+    }
+
+    private func sendHeader(_ header: Header) throws {
+        let encoder = PropertyListEncoder()
+        let data = try encoder.encode(header)
+        try send(data: Data([
+            UInt8((data.count >> 24) & 0xFF),
+            UInt8((data.count >> 16) & 0xFF),
+            UInt8((data.count >> 8) & 0xFF),
+            UInt8((data.count >> 0) & 0xFF),
+        ]))
+        try send(data: data)
+    }
+
+    private func send(data: Data) throws {
+        try data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+            try send(pointer: pointer)
+        }
+    }
+
+    private func send(pointer: UnsafeRawBufferPointer) throws {
+        guard let basePointer = pointer.baseAddress else {
+            return
+        }
+        var offset = 0
+        while offset < pointer.count {
+            let res = Darwin.write(fd, basePointer.advanced(by: offset), pointer.count - offset)
+            if res == -1 {
+                throw "Send failed"
+            }
+            offset += res
         }
     }
 }
@@ -163,7 +210,7 @@ class SampleBufferSender {
 protocol SampleBufferReceiverDelegate: AnyObject {
     func senderConnected()
     func senderDisconnected()
-    func handleSampleBuffer(sampleBuffer: CMSampleBuffer?)
+    func handleSampleBuffer(sampleBuffer: CMSampleBuffer?, type: RPSampleBufferType)
 }
 
 // periphery:ignore
@@ -219,17 +266,33 @@ class SampleBufferReceiver {
                 break
             }
             // print("sample", header)
-            // print("buffer", read(senderFd: senderFd, count: header.bufferSize))
-            delegate?.handleSampleBuffer(sampleBuffer: nil)
+            guard let data = read(senderFd: senderFd, count: header.bufferSize) else {
+                return
+            }
+            guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
+                return
+            }
+            delegate?.handleSampleBuffer(sampleBuffer: nil, type: type)
         }
     }
 
     private func read(senderFd: Int32, count: Int) -> Data? {
         var data = Data(count: count)
-        let readCount = data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-            Darwin.read(senderFd, pointer.baseAddress, pointer.count)
+        var offset = 0
+        let ok = data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+            guard let baseAddress = pointer.baseAddress else {
+                return false
+            }
+            while offset < count {
+                let readCount = Darwin.read(senderFd, baseAddress.advanced(by: offset), count - offset)
+                if readCount == -1 {
+                    return false
+                }
+                offset += readCount
+            }
+            return true
         }
-        if readCount != data.count {
+        if !ok {
             return nil
         }
         return data

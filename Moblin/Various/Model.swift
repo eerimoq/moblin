@@ -8,6 +8,7 @@ import NaturalLanguage
 import Network
 import NetworkExtension
 import PhotosUI
+import ReplayKit
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
@@ -5690,5 +5691,7 @@ extension Model: SampleBufferReceiverDelegate {
         }
     }
 
-    func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?) {}
+    func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?, type _: RPSampleBufferType) {
+        // logger.info("Sample buffer: \(type.rawValue)")
+    }
 }
