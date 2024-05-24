@@ -126,6 +126,13 @@ class SampleBufferSender {
     }
 
     func send(sampleBuffer _: CMSampleBuffer?) -> Bool {
+        // guard let imageBuffer = sampleBuffer?.imageBuffer else {
+        //     return false
+        // }
+        // CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
+        // defer { CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly) }
+        // let pointer = CVPixelBufferGetBaseAddress(imageBuffer)
+        // let size = CVPixelBufferGetDataSize(imageBuffer)
         let data = Data([5, 6, 7])
         return data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
             Darwin.write(fd, pointer.baseAddress, pointer.count) != -1
