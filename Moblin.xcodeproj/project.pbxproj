@@ -417,7 +417,7 @@
 		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		0312E4322C00F24E00C6F878 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
 		0312E4342C00F24E00C6F878 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0312E4472C00FA5900C6F878 /* Moblin Capture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Moblin Capture.entitlements"; sourceTree = "<group>"; };
+		0312E4472C00FA5900C6F878 /* Moblin Screen Capture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Moblin Screen Capture.entitlements"; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
@@ -859,15 +859,15 @@
 			path = Platforms;
 			sourceTree = "<group>";
 		};
-		0312E4312C00F24E00C6F878 /* Moblin Capture */ = {
+		0312E4312C00F24E00C6F878 /* Moblin Screen Capture */ = {
 			isa = PBXGroup;
 			children = (
-				0312E4472C00FA5900C6F878 /* Moblin Capture.entitlements */,
+				0312E4472C00FA5900C6F878 /* Moblin Screen Capture.entitlements */,
 				0312E4462C00F80D00C6F878 /* Shared */,
 				0312E4322C00F24E00C6F878 /* SampleHandler.swift */,
 				0312E4342C00F24E00C6F878 /* Info.plist */,
 			);
-			path = "Moblin Capture";
+			path = "Moblin Screen Capture";
 			sourceTree = "<group>";
 		};
 		0312E4442C00F7F500C6F878 /* Shared */ = {
@@ -1426,7 +1426,7 @@
 				035E9E352A9A02D6009D4F5A /* Moblin */,
 				03ECDF472B8E4E5F00BD920E /* Moblin Watch */,
 				0376F6FC2B9511030056B3D2 /* Moblin Widget */,
-				0312E4312C00F24E00C6F878 /* Moblin Capture */,
+				0312E4312C00F24E00C6F878 /* Moblin Screen Capture */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
@@ -2703,16 +2703,20 @@
 		0312E4392C00F24E00C6F878 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Moblin Capture/Moblin Capture.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Capture/Moblin Screen Capture.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Moblin Capture/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Capture";
+				INFOPLIST_FILE = "Moblin Screen Capture/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2737,16 +2741,20 @@
 		0312E43A2C00F24E00C6F878 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Moblin Capture/Moblin Capture.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Capture/Moblin Screen Capture.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Moblin Capture/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Capture";
+				INFOPLIST_FILE = "Moblin Screen Capture/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

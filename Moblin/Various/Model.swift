@@ -5678,7 +5678,5 @@ extension Model {
 }
 
 extension Model: SampleBufferReceiverDelegate {
-    func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?) {
-        logger.debug("sample-buffer: Got buffer")
-    }
+    func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?) {}
 }
