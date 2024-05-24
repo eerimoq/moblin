@@ -5678,5 +5678,17 @@ extension Model {
 }
 
 extension Model: SampleBufferReceiverDelegate {
+    func senderConnected() {
+        DispatchQueue.main.async {
+            self.makeToast(title: "Screen capture started", subTitle: "DOES NOT YET WORK!!!")
+        }
+    }
+
+    func senderDisconnected() {
+        DispatchQueue.main.async {
+            self.makeToast(title: "Screen capture stopped", subTitle: "DOES NOT YET WORK!!!")
+        }
+    }
+
     func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?) {}
 }

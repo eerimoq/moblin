@@ -1,4 +1,5 @@
 import AVFoundation
+import ReplayKit
 
 // | 4b header size | <m>b header | <n>b buffer |
 
@@ -6,8 +7,8 @@ import AVFoundation
 private struct Header: Codable {
     var bufferType: Int
     var bufferSize: Int
-    var width: Int
-    var height: Int
+    var width: Int32
+    var height: Int32
 }
 
 private func createContainerDir(appGroup: String) throws -> URL {
@@ -115,26 +116,44 @@ class SampleBufferSender {
             let path = createSocketPath(containerDir: containerDir)
             let addr = try createAddr(path: path)
             try connect(fd: fd, addr: addr)
-            print("sample-buffer-sender: Connected")
-        } catch {
-            print("sample-buffer-sender: \(error)")
-        }
+        } catch {}
     }
 
     func stop() {
-        print("sample-buffer-sender: Should stop")
         Darwin.close(fd)
     }
 
-    func send(sampleBuffer _: CMSampleBuffer?) {
-        // guard let imageBuffer = sampleBuffer?.imageBuffer else {
-        //     return false
-        // }
+    func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
+        guard let formatDescription = sampleBuffer.formatDescription,
+              let imageBuffer = sampleBuffer.imageBuffer
+        else {
+            return
+        }
+        let bufferSize = CVPixelBufferGetDataSize(imageBuffer)
+        let header = Header(bufferType: type.rawValue,
+                            bufferSize: bufferSize,
+                            width: formatDescription.dimensions.width,
+                            height: formatDescription.dimensions.height)
+        let encoder = PropertyListEncoder()
+        guard let data = try? encoder.encode(header) else {
+            return
+        }
+        send(data: Data([
+            UInt8(data.count >> 24),
+            UInt8(data.count >> 16),
+            UInt8(data.count >> 8),
+            UInt8(data.count),
+        ]))
+        send(data: data)
         // CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
-        // defer { CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly) }
+        // defer {
+        //     CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly)
+        // }
         // let pointer = CVPixelBufferGetBaseAddress(imageBuffer)
-        // let size = CVPixelBufferGetDataSize(imageBuffer)
-        let data = Data([5])
+        // Darwin.write(fd, pointer, bufferSize)
+    }
+
+    private func send(data: Data) {
         _ = data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
             Darwin.write(fd, pointer.baseAddress, pointer.count)
         }
@@ -142,6 +161,8 @@ class SampleBufferSender {
 }
 
 protocol SampleBufferReceiverDelegate: AnyObject {
+    func senderConnected()
+    func senderDisconnected()
     func handleSampleBuffer(sampleBuffer: CMSampleBuffer?)
 }
 
@@ -165,43 +186,52 @@ class SampleBufferReceiver {
             try bind(fd: listenerFd, addr: addr)
             try listen(fd: listenerFd)
         } catch {
-            print("sample-buffer-receiver: \(error)")
             return
         }
         DispatchQueue.global(qos: .userInteractive).async {
-            do {
-                try self.acceptLoop()
-            } catch {
-                print("sample-buffer-receiver: Loop stopped with error \(error)")
-            }
+            try? self.acceptLoop()
         }
-        print("sample-buffer-receiver: Started")
     }
 
-    func stop() {
-        print("sample-buffer-receiver: Should stop")
-    }
+    func stop() {}
 
     private func acceptLoop() throws {
         while true {
             let senderFd = try accept(fd: listenerFd)
             try setIgnoreSigPipe(fd: senderFd)
-            print("sample-buffer-receiver: Sender connected")
+            delegate?.senderConnected()
             readLoop(senderFd: senderFd)
-            print("sample-buffer-receiver: Sender disconnected")
+            delegate?.senderDisconnected()
         }
     }
 
     private func readLoop(senderFd: Int32) {
         while true {
-            var data = Data(count: 1)
-            let readCount = data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-                Darwin.read(senderFd, pointer.baseAddress, pointer.count)
-            }
-            if readCount != data.count {
+            guard let data = read(senderFd: senderFd, count: 4) else {
                 break
             }
+            let headerSize = (Int(data[0]) << 24) | (Int(data[1]) << 16) | (Int(data[2]) << 8) | Int(data[3])
+            guard let data = read(senderFd: senderFd, count: headerSize) else {
+                break
+            }
+            let decoder = PropertyListDecoder()
+            guard let header = try? decoder.decode(Header.self, from: data) else {
+                break
+            }
+            // print("sample", header)
+            // print("buffer", read(senderFd: senderFd, count: header.bufferSize))
             delegate?.handleSampleBuffer(sampleBuffer: nil)
         }
+    }
+
+    private func read(senderFd: Int32, count: Int) -> Data? {
+        var data = Data(count: count)
+        let readCount = data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+            Darwin.read(senderFd, pointer.baseAddress, pointer.count)
+        }
+        if readCount != data.count {
+            return nil
+        }
+        return data
     }
 }
