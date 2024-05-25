@@ -3473,8 +3473,7 @@ final class Model: NSObject, ObservableObject {
         updateCameraPreviewRotation()
     }
 
-    private func updateCameraPreviewRotation() {
-    }
+    private func updateCameraPreviewRotation() {}
 
     func setGlobalToneMapping(on: Bool) {
         guard let cameraDevice else {

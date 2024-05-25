@@ -180,7 +180,6 @@ final class VideoUnit: NSObject {
     private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
-    private var lastCameraSwitchDate = Date()
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
