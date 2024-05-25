@@ -122,7 +122,6 @@ final class AudioUnit: NSObject {
         guard selectedReplaceAudioId == id else {
             return
         }
-        logger.info("RTMP Audio TimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
         prepareSampleBuffer(
             sampleBuffer: sampleBuffer,
@@ -176,7 +175,6 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        logger.info("Int. Audio TimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         guard selectedReplaceAudioId == nil else {
             return
         }
