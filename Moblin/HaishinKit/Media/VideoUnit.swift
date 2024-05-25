@@ -856,13 +856,7 @@ final class VideoUnit: NSObject {
         logger.info("Video session interruption ended")
     }
 
-    var isVideoMirrored = false {
-        didSet {
-            for connection in output?.connections.filter({ $0.isVideoMirroringSupported }) ?? [] {
-                connection.isVideoMirrored = isVideoMirrored
-            }
-        }
-    }
+    var isVideoMirrored = false
 
     var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode = .off {
         didSet {
