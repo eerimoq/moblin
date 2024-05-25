@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.287.0", date: "2024-05-25", changes: [
+        "• Fewer dropped frames when camera starts moving a lot after being static.",
+        "  • Fixes the case when target bitrate is set higher than internet bandwidth.",
+    ]),
     Version(version: "0.286.0", date: "2024-05-25", changes: [
         "• Turn off chat text to speech when in background and not live.",
         "• New filter framework.",

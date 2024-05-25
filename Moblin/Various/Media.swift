@@ -206,7 +206,8 @@ final class Media: NSObject {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
-            packetsInFlight: Double(stats.pktFlightSize)
+            packetsInFlight: Double(stats.pktFlightSize),
+            transportBitrate: streamSpeed()
         ))
         guard overlay else {
             return nil
@@ -244,7 +245,8 @@ final class Media: NSObject {
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
-            packetsInFlight: Double(stats.packetsInFlight)
+            packetsInFlight: Double(stats.packetsInFlight),
+            transportBitrate: streamSpeed()
         ))
         guard overlay else {
             return nil
@@ -276,7 +278,11 @@ final class Media: NSObject {
         for stat in stats {
             rtt = min(rtt, Double(stat.rtt))
         }
-        adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 10))
+        adaptiveBitrate?.update(stats: StreamStats(
+            rttMs: rtt,
+            packetsInFlight: 10,
+            transportBitrate: nil
+        ))
         ristStream.updateConnectionsWeights()
         guard overlay else {
             return nil

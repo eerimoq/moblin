@@ -7,6 +7,7 @@ protocol AdaptiveBitrateDelegate: AnyObject {
 struct StreamStats {
     let rttMs: Double
     let packetsInFlight: Double
+    let transportBitrate: Int64?
 }
 
 struct AdaptiveBitrateSettings {
@@ -249,7 +250,7 @@ class AdaptiveBitrate {
         }
     }
 
-    private func calculateCurrentBitrate() {
+    private func calculateCurrentBitrate(_ stats: StreamStats) {
         var pifDiffThing = Int64(fastPif) - Int64(smoothPif)
         // lazy decrease
         if pifDiffThing > settings.packetsInFlight {
@@ -289,6 +290,12 @@ class AdaptiveBitrate {
         if Int32(fastPif) - Int32(smoothPif) > settings.packetsInFlight * 2 {
             currentBitrate = settings.minimumBitrate
         }
+        if let transportBitrate = stats.transportBitrate {
+            let maximumBitrate = (3 * transportBitrate) / 2
+            if currentBitrate > maximumBitrate {
+                currentBitrate = maximumBitrate
+            }
+        }
     }
 
     // NB:To be called every 200ms when live
@@ -321,7 +328,7 @@ class AdaptiveBitrate {
             rttSpikeAllowed: settings.rttDiffHighAllowedSpike,
             minimumDecrease: settings.rttDiffHighMinDecrease
         )
-        calculateCurrentBitrate()
+        calculateCurrentBitrate(stats)
         if previousBitrate != currentBitrate {
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(currentBitrate))
             previousBitrate = currentBitrate
