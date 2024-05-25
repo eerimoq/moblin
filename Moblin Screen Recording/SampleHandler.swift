@@ -24,8 +24,6 @@ class SampleHandler: RPBroadcastSampleHandler {
             sampleBufferSender.send(sampleBuffer, sampleBufferType)
         case RPSampleBufferType.audioApp:
             sampleBufferSender.send(sampleBuffer, sampleBufferType)
-        case RPSampleBufferType.audioMic:
-            break
         default:
             break
         }
