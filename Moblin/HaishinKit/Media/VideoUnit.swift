@@ -382,9 +382,9 @@ final class VideoUnit: NSObject {
     }
 
     // Use Core Image for Apple Log.
-    private func useMetalPetal(_ sampleBuffer: CMSampleBuffer) -> Bool {
+    private func useCoreImage(_ sampleBuffer: CMSampleBuffer) -> Bool {
         guard let formatDescription = sampleBuffer.formatDescription else {
-            return false
+            return true
         }
         let formatDescriptionExtension = CMFormatDescriptionGetExtensions(formatDescription)
         if #available(iOS 17.2, *),
@@ -392,9 +392,9 @@ final class VideoUnit: NSObject {
            formatDescriptionExtension[kCVImageBufferLogTransferFunctionKey] as? String ==
            kCVImageBufferLogTransferFunction_AppleLog as String
         {
-            return false
+            return true
         }
-        return true
+        return false
     }
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
@@ -403,8 +403,8 @@ final class VideoUnit: NSObject {
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        if useMetalPetal(sampleBuffer) {
-            return applyEffectsMetalPetal(
+        if useCoreImage(sampleBuffer) {
+            return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,
@@ -412,7 +412,7 @@ final class VideoUnit: NSObject {
                 isFirstAfterAttach
             )
         } else {
-            return applyEffectsCoreImage(
+            return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,
