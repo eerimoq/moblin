@@ -123,7 +123,7 @@ struct ChatSettingsView: View {
                         model.database.chat.textToSpeechEnabled = value
                         model.store()
                         if !value {
-                            model.chatTextToSpeech.reset()
+                            model.chatTextToSpeech.reset(running: true)
                         }
                     })) {
                         Text("Text to speech")

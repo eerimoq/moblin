@@ -1162,6 +1162,7 @@ final class Model: NSObject, ObservableObject {
         if !isLive {
             stopRtmpServer()
             teardownAudioSession()
+            chatTextToSpeech.reset(running: false)
         }
     }
 
@@ -1171,7 +1172,7 @@ final class Model: NSObject, ObservableObject {
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
             reloadRtmpServer()
-            chatTextToSpeech.reset()
+            chatTextToSpeech.reset(running: true)
         }
         if isRecording {
             resumeRecording()
@@ -2486,7 +2487,7 @@ final class Model: NSObject, ObservableObject {
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
         numberOfChatPostsPerMinute = 0
-        chatTextToSpeech.reset()
+        chatTextToSpeech.reset(running: true)
     }
 
     private func reloadTwitchChat() {

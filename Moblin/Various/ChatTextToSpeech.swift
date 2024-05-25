@@ -36,6 +36,7 @@ class ChatTextToSpeech: NSObject {
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
     private var filterEnabled: Bool = true
+    private var running = true
 
     private func isFilteredOut(message: String) -> Bool {
         if !filterEnabled {
@@ -112,6 +113,9 @@ class ChatTextToSpeech: NSObject {
 
     func say(user: String, message: String) {
         textToSpeechDispatchQueue.async {
+            guard self.running else {
+                return
+            }
             self.messageQueue.append(.init(user: user, message: message))
             self.trySayNextMessage()
         }
@@ -153,8 +157,9 @@ class ChatTextToSpeech: NSObject {
         }
     }
 
-    func reset() {
+    func reset(running: Bool) {
         textToSpeechDispatchQueue.async {
+            self.running = running
             self.synthesizer.stopSpeaking(at: .word)
             self.latestUserThatSaidSomething = nil
             self.messageQueue.removeAll()
