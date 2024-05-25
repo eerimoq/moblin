@@ -5681,13 +5681,19 @@ extension Model {
 extension Model: SampleBufferReceiverDelegate {
     func senderConnected() {
         DispatchQueue.main.async {
-            self.makeToast(title: "Screen capture started", subTitle: "DOES NOT YET WORK!!!")
+            self.makeToast(
+                title: String(localized: "Screen recording started"),
+                subTitle: "DOES NOT YET WORK!!!"
+            )
         }
     }
 
     func senderDisconnected() {
         DispatchQueue.main.async {
-            self.makeToast(title: "Screen capture stopped", subTitle: "DOES NOT YET WORK!!!")
+            self.makeToast(
+                title: String(localized: "Screen recording stopped"),
+                subTitle: "DOES NOT YET WORK!!!"
+            )
         }
     }
 

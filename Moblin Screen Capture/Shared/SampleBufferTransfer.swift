@@ -176,14 +176,10 @@ class SampleBufferSender {
     }
 
     private func sendHeader(_ header: Header) throws {
-        let encoder = PropertyListEncoder()
-        let data = try encoder.encode(header)
-        try send(data: Data([
-            UInt8((data.count >> 24) & 0xFF),
-            UInt8((data.count >> 16) & 0xFF),
-            UInt8((data.count >> 8) & 0xFF),
-            UInt8((data.count >> 0) & 0xFF),
-        ]))
+        let data = try PropertyListEncoder().encode(header)
+        var size = Data(count: 4)
+        size.setUInt32Be(value: UInt32(data.count))
+        try send(data: size)
         try send(data: data)
     }
 
@@ -255,20 +251,32 @@ class SampleBufferReceiver {
 
     private func readLoop(senderFd: Int32) throws {
         while true {
-            let headerSizeData = try read(senderFd: senderFd, count: 4)
-            let headerSize = (Int(headerSizeData[0]) << 24) |
-                (Int(headerSizeData[1]) << 16) |
-                (Int(headerSizeData[2]) << 8) |
-                (Int(headerSizeData[3]) << 0)
-            let headerData = try read(senderFd: senderFd, count: headerSize)
-            let decoder = PropertyListDecoder()
-            let header = try decoder.decode(Header.self, from: headerData)
+            let header = try readHeader(senderFd: senderFd)
             let data = try read(senderFd: senderFd, count: header.bufferSize)
             guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
                 break
             }
+            switch type {
+            case .video:
+                handleVideo(header, data)
+            case .audioApp:
+                handleAudio(header, data)
+            default:
+                break
+            }
             delegate?.handleSampleBuffer(sampleBuffer: nil, type: type)
         }
+    }
+
+    private func handleVideo(_: Header, _: Data) {}
+
+    private func handleAudio(_: Header, _: Data) {}
+
+    private func readHeader(senderFd: Int32) throws -> Header {
+        let sizeData = try read(senderFd: senderFd, count: 4)
+        let size = Int(sizeData.getUInt32Be())
+        let data = try read(senderFd: senderFd, count: size)
+        return try PropertyListDecoder().decode(Header.self, from: data)
     }
 
     private func read(senderFd: Int32, count: Int) throws -> Data {

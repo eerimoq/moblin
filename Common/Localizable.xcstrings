@@ -57159,6 +57159,12 @@
         }
       }
     },
+    "Screen recording started" : {
+
+    },
+    "Screen recording stopped" : {
+
+    },
     "Scroll" : {
       "localizations" : {
         "de" : {
