@@ -3,11 +3,12 @@ import ReplayKit
 
 // | 4b header size | <m>b header | <n>b buffer |
 
-// periphery:ignore
 private struct Header: Codable {
     var bufferType: Int
     var bufferSize: Int
+    // periphery:ignore
     var width: Int32
+    // periphery:ignore
     var height: Int32
 }
 
@@ -213,7 +214,6 @@ protocol SampleBufferReceiverDelegate: AnyObject {
     func handleSampleBuffer(sampleBuffer: CMSampleBuffer?, type: RPSampleBufferType)
 }
 
-// periphery:ignore
 class SampleBufferReceiver {
     private var listenerFd: Int32
     weak var delegate: (any SampleBufferReceiverDelegate)?
@@ -240,6 +240,7 @@ class SampleBufferReceiver {
         }
     }
 
+    // periphery:ignore
     func stop() {}
 
     private func acceptLoop() throws {
@@ -247,53 +248,43 @@ class SampleBufferReceiver {
             let senderFd = try accept(fd: listenerFd)
             try setIgnoreSigPipe(fd: senderFd)
             delegate?.senderConnected()
-            readLoop(senderFd: senderFd)
+            try? readLoop(senderFd: senderFd)
             delegate?.senderDisconnected()
         }
     }
 
-    private func readLoop(senderFd: Int32) {
+    private func readLoop(senderFd: Int32) throws {
         while true {
-            guard let data = read(senderFd: senderFd, count: 4) else {
-                break
-            }
-            let headerSize = (Int(data[0]) << 24) | (Int(data[1]) << 16) | (Int(data[2]) << 8) | Int(data[3])
-            guard let data = read(senderFd: senderFd, count: headerSize) else {
-                break
-            }
+            let headerSizeData = try read(senderFd: senderFd, count: 4)
+            let headerSize = (Int(headerSizeData[0]) << 24) |
+                (Int(headerSizeData[1]) << 16) |
+                (Int(headerSizeData[2]) << 8) |
+                (Int(headerSizeData[3]) << 0)
+            let headerData = try read(senderFd: senderFd, count: headerSize)
             let decoder = PropertyListDecoder()
-            guard let header = try? decoder.decode(Header.self, from: data) else {
-                break
-            }
-            // print("sample", header)
-            guard let data = read(senderFd: senderFd, count: header.bufferSize) else {
-                return
-            }
+            let header = try decoder.decode(Header.self, from: headerData)
+            let data = try read(senderFd: senderFd, count: header.bufferSize)
             guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
-                return
+                break
             }
             delegate?.handleSampleBuffer(sampleBuffer: nil, type: type)
         }
     }
 
-    private func read(senderFd: Int32, count: Int) -> Data? {
+    private func read(senderFd: Int32, count: Int) throws -> Data {
         var data = Data(count: count)
         var offset = 0
-        let ok = data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+        try data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             guard let baseAddress = pointer.baseAddress else {
-                return false
+                throw "No base address"
             }
             while offset < count {
                 let readCount = Darwin.read(senderFd, baseAddress.advanced(by: offset), count - offset)
-                if readCount == -1 {
-                    return false
+                if readCount <= 0 {
+                    throw "Closed"
                 }
                 offset += readCount
             }
-            return true
-        }
-        if !ok {
-            return nil
         }
         return data
     }
