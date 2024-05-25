@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.286.0", date: "2024-05-25", changes: [
+        "• Turn off chat text to speech when in background and not live.",
+        "• New filter framework.",
+        "  • Use it when not Apple Log color space.",
+        "  • Removed the filter framework toggle.",
+    ]),
     Version(version: "0.285.0", date: "2024-05-25", changes: [
         "• Use screen recording as camera. Does not yet work.",
         "• Front camera torch by making the screen partly white. 💡 NoFuture",
