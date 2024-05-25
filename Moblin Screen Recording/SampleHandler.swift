@@ -15,15 +15,12 @@ class SampleHandler: RPBroadcastSampleHandler {
         sampleBufferSender.stop()
     }
 
-    override func processSampleBuffer(
-        _ sampleBuffer: CMSampleBuffer,
-        with sampleBufferType: RPSampleBufferType
-    ) {
-        switch sampleBufferType {
-        case RPSampleBufferType.video:
-            sampleBufferSender.send(sampleBuffer, sampleBufferType)
-        case RPSampleBufferType.audioApp:
-            sampleBufferSender.send(sampleBuffer, sampleBufferType)
+    override func processSampleBuffer(_ sampleBuffer: CMSampleBuffer, with type: RPSampleBufferType) {
+        switch type {
+        case .video:
+            sampleBufferSender.send(sampleBuffer, type)
+        case .audioApp:
+            sampleBufferSender.send(sampleBuffer, type)
         default:
             break
         }
