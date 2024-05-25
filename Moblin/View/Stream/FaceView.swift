@@ -146,11 +146,13 @@ private struct FaceViewBeautyButtons: View {
             } label: {
                 FaceButtonView(title: String(localized: "Shape"), on: model.showFaceBeautyShape)
             }
-            Button {
-                model.showFaceBeautyShape = false
-                model.showFaceBeautySmooth.toggle()
-            } label: {
-                FaceButtonView(title: String(localized: "Smooth"), on: model.showFaceBeautySmooth)
+            if model.database.color!.space != .appleLog {
+                Button {
+                    model.showFaceBeautyShape = false
+                    model.showFaceBeautySmooth.toggle()
+                } label: {
+                    FaceButtonView(title: String(localized: "Smooth"), on: model.showFaceBeautySmooth)
+                }
             }
             Button {
                 model.database.debug!.beautyFilterSettings!.showBeauty!.toggle()
@@ -184,7 +186,7 @@ struct FaceView: View {
                 if model.showFaceBeauty {
                     if model.showFaceBeautyShape {
                         FaceViewBeautyShape()
-                    } else if model.showFaceBeautySmooth {
+                    } else if model.showFaceBeautySmooth && model.database.color!.space != .appleLog {
                         FaceViewBeautySmooth()
                     }
                     FaceViewBeautyButtons(beauty: $beauty)

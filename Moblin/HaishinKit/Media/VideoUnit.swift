@@ -381,29 +381,13 @@ final class VideoUnit: NSObject {
         return outputImageBuffer
     }
 
-    // Use Core Image for Apple Log.
-    private func useCoreImage(_ sampleBuffer: CMSampleBuffer) -> Bool {
-        guard let formatDescription = sampleBuffer.formatDescription else {
-            return true
-        }
-        let formatDescriptionExtension = CMFormatDescriptionGetExtensions(formatDescription)
-        if #available(iOS 17.2, *),
-           let formatDescriptionExtension = formatDescriptionExtension as Dictionary?,
-           formatDescriptionExtension[kCVImageBufferLogTransferFunctionKey] as? String ==
-           kCVImageBufferLogTransferFunction_AppleLog as String
-        {
-            return true
-        }
-        return false
-    }
-
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
                               _ faceDetections: [VNFaceObservation]?,
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        if useCoreImage(sampleBuffer) {
+        if #available(iOS 17.2, *), colorSpace == .appleLog {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
