@@ -306,7 +306,8 @@ final class Model: NSObject, ObservableObject {
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
-    private var isTorchOn = false
+    @Published var isTorchOn = false
+    @Published var isFrontCameraSelected = false
     private var isMuteOn = false
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
@@ -3010,11 +3011,13 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
+        isFrontCameraSelected = false
         switch scene.cameraPosition! {
         case .back:
             attachCamera(position: .back)
         case .front:
             attachCamera(position: .front)
+            isFrontCameraSelected = true
         case .rtmp:
             attachRtmpCamera(cameraId: scene.rtmpCameraId!)
         case .external:

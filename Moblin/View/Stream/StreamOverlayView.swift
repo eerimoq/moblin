@@ -1,5 +1,8 @@
 import SwiftUI
 
+private let startRadiusFraction = 0.45
+private let endRadiusFraction = 0.5
+
 struct ChatInfo: View {
     var message: String
     var icon: String?
@@ -86,6 +89,54 @@ private struct ChatOverlayView: View {
     }
 }
 
+private struct FrontTorchView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        if model.stream.portrait! {
+            VStack(spacing: 0) {
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Rectangle()
+                    .fill(
+                        EllipticalGradient(
+                            gradient: .init(colors: [.clear, .white]),
+                            startRadiusFraction: startRadiusFraction,
+                            endRadiusFraction: endRadiusFraction
+                        )
+                    )
+                    .aspectRatio(1, contentMode: .fill)
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+        } else {
+            HStack(spacing: 0) {
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Rectangle()
+                    .fill(
+                        EllipticalGradient(
+                            gradient: .init(colors: [.clear, .white]),
+                            startRadiusFraction: startRadiusFraction,
+                            endRadiusFraction: endRadiusFraction
+                        )
+                    )
+                    .aspectRatio(1, contentMode: .fill)
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+        }
+    }
+}
+
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
 
@@ -99,24 +150,29 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
-            ChatOverlayView()
-            HStack {
-                LeftOverlayView()
-                    .padding([.leading], leadingPadding())
-                Spacer()
+            if model.isTorchOn && model.isFrontCameraSelected {
+                FrontTorchView()
             }
-            .allowsHitTesting(false)
-            HStack {
-                Spacer()
-                RightOverlayView()
+            ZStack {
+                ChatOverlayView()
+                HStack {
+                    LeftOverlayView()
+                        .padding([.leading], leadingPadding())
+                    Spacer()
+                }
+                .allowsHitTesting(false)
+                HStack {
+                    Spacer()
+                    RightOverlayView()
+                }
+                HStack {
+                    StreamOverlayDebugView()
+                        .padding([.leading], leadingPadding())
+                    Spacer()
+                }
+                .allowsHitTesting(false)
             }
-            HStack {
-                StreamOverlayDebugView()
-                    .padding([.leading], leadingPadding())
-                Spacer()
-            }
-            .allowsHitTesting(false)
+            .padding([.trailing, .top])
         }
-        .padding([.trailing, .top])
     }
 }
