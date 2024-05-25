@@ -430,7 +430,6 @@ final class Model: NSObject, ObservableObject {
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
-    var secondCameraDevice: AVCaptureDevice?
     @Published var debugLines: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
@@ -3453,7 +3452,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func detachCamera() {
-        media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off, videoMirrored: false)
+        media.attachCamera(device: nil, videoStabilizationMode: .off, videoMirrored: false)
     }
 
     func attachCamera() {
@@ -3461,7 +3460,6 @@ final class Model: NSObject, ObservableObject {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
-            secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream()
         ) {
@@ -3472,24 +3470,10 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateCameraPreview() {
-        // cameraPreviewView.session = nil
-        // cameraPreviewView.session = media.getNetStream().mixer.videoSession
         updateCameraPreviewRotation()
     }
 
     private func updateCameraPreviewRotation() {
-        // if stream.portrait! {
-        //     cameraPreviewView.previewLayer.connection?.videoOrientation = .portrait
-        // } else {
-        //     switch UIDevice.current.orientation {
-        //     case .landscapeLeft:
-        //         cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeRight
-        //     case .landscapeRight:
-        //         cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeLeft
-        //     default:
-        //         break
-        //     }
-        // }
     }
 
     func setGlobalToneMapping(on: Bool) {
@@ -3550,10 +3534,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func attachCamera(
-        position: AVCaptureDevice.Position,
-        secondPosition: AVCaptureDevice.Position? = nil
-    ) {
+    private func attachCamera(position: AVCaptureDevice.Position) {
         guard hasCameraChanged(
             oldCameraDevice: cameraDevice,
             oldPosition: cameraPosition,
@@ -3571,11 +3552,6 @@ final class Model: NSObject, ObservableObject {
                 1.0,
                 1.0
             )
-        if let secondPosition {
-            secondCameraDevice = preferredCamera(position: secondPosition)
-        } else {
-            secondCameraDevice = nil
-        }
         cameraPosition = position
         switch position {
         case .back:
@@ -3597,7 +3573,6 @@ final class Model: NSObject, ObservableObject {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
-            secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream(),
             onSuccess: {
@@ -3620,7 +3595,6 @@ final class Model: NSObject, ObservableObject {
     private func attachRtmpCamera(cameraId: UUID) {
         cameraDevice = nil
         cameraPosition = nil
-        secondCameraDevice = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
