@@ -10,21 +10,21 @@ style:
 	swiftformat $(FORMAT_ARGS) Moblin
 	swiftformat $(FORMAT_ARGS) "Moblin Watch"
 	swiftformat $(FORMAT_ARGS) "Moblin Widget"
-	swiftformat $(FORMAT_ARGS) "Moblin Screen Capture"
+	swiftformat $(FORMAT_ARGS) "Moblin Screen Recording"
 
 style-check:
 	swiftformat $(FORMAT_ARGS) --lint Common
 	swiftformat $(FORMAT_ARGS) --lint Moblin
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Watch"
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Widget"
-	swiftformat $(FORMAT_ARGS) --lint "Moblin Screen Capture"
+	swiftformat $(FORMAT_ARGS) --lint "Moblin Screen Recording"
 
 lint:
 	swiftlint lint $(LINT_ARGS) Common
 	swiftlint lint $(LINT_ARGS) Moblin
 	swiftlint lint $(LINT_ARGS) "Moblin Watch"
 	swiftlint lint $(LINT_ARGS) "Moblin Widget"
-	swiftlint lint $(LINT_ARGS) "Moblin Screen Capture"
+	swiftlint lint $(LINT_ARGS) "Moblin Screen Recording"
 
 periphery:
 	periphery scan

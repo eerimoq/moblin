@@ -513,4 +513,4 @@ func sleep(milliSeconds: Int) async throws {
     try await Task.sleep(nanoseconds: UInt64(milliSeconds) * 1_000_000)
 }
 
-let moblinAppGroup = "group.com.eerimoq.Mobs"
+let moblinAppGroup = "group.com.eerimoq.Moblin"
