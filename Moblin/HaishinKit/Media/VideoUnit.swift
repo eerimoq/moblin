@@ -147,11 +147,6 @@ final class VideoUnit: NSObject {
             guard videoOrientation != oldValue else {
                 return
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if self.torch, let device = self.device {
-                    self.setTorchMode(device, .on)
-                }
-            }
             for connection in output?.connections.filter({ $0.isVideoOrientationSupported }) ?? [] {
                 setOrientation(device: device, connection: connection, orientation: videoOrientation)
             }
@@ -160,7 +155,7 @@ final class VideoUnit: NSObject {
 
     var torch = false {
         didSet {
-            guard torch != oldValue, let device = device else {
+            guard let device else {
                 return
             }
             setTorchMode(device, torch ? .on : .off)
@@ -185,6 +180,7 @@ final class VideoUnit: NSObject {
     private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
+    private var lastCameraSwitchDate = Date()
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -193,10 +189,19 @@ final class VideoUnit: NSObject {
             metalPetalContext = nil
         }
         super.init()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleSessionRuntimeError),
+                                               name: .AVCaptureSessionRuntimeError,
+                                               object: session)
     }
 
     deinit {
         stopGapFillerTimer()
+    }
+
+    @objc
+    private func handleSessionRuntimeError(_ notification: NSNotification) {
+        logger.error("Video session error: \(notification)")
     }
 
     func startRunning() {
@@ -275,11 +280,6 @@ final class VideoUnit: NSObject {
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                if self.torch, let device = self.device {
-                    self.setTorchMode(device, .on)
-                }
-            }
         }
         try attachDevice(device, session)
         if device != nil {

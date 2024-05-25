@@ -408,6 +408,8 @@ final class Model: NSObject, ObservableObject {
 
     let chatTextToSpeech = ChatTextToSpeech()
 
+    private var lastAttachCompletedDate: Date?
+
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
@@ -1463,6 +1465,12 @@ final class Model: NSObject, ObservableObject {
             }
             self.updateChat()
             self.trySendNextChatPostToWatch()
+            if let lastAttachCompletedDate = self.lastAttachCompletedDate,
+               Date().timeIntervalSince(lastAttachCompletedDate) > 0.5
+            {
+                self.updateTorch()
+                self.lastAttachCompletedDate = nil
+            }
         })
     }
 
@@ -3449,6 +3457,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func attachCamera() {
+        lastAttachCompletedDate = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
@@ -3458,6 +3467,7 @@ final class Model: NSObject, ObservableObject {
         ) {
             self.streamPreviewView.isMirrored = isMirrored
             self.updateCameraPreview()
+            self.lastAttachCompletedDate = Date()
         }
     }
 
@@ -3583,6 +3593,7 @@ final class Model: NSObject, ObservableObject {
         default:
             break
         }
+        lastAttachCompletedDate = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
@@ -3590,9 +3601,6 @@ final class Model: NSObject, ObservableObject {
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream(),
             onSuccess: {
-                if let device = self.cameraDevice {
-                    logger.debug("FPS: \(device.fps)")
-                }
                 self.streamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
@@ -3602,6 +3610,7 @@ final class Model: NSObject, ObservableObject {
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                 }
                 self.updateCameraPreview()
+                self.lastAttachCompletedDate = Date()
             }
         )
         zoomXPinch = zoomX
