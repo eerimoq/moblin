@@ -1202,7 +1202,7 @@ final class Model: NSObject, ObservableObject {
                 frameRate: stream.fps ?? 30
             )
             if self.database.debug!.enableRtmpAudio! {
-                self.media.addRtmpAudio(cameraId: stream.id)
+                self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
             }
         }
     }

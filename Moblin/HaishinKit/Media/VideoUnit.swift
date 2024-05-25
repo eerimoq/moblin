@@ -93,16 +93,14 @@ private class ReplaceVideo {
                 timescale: CMTimeScale(frameRate)
             )
         )
-
         guard !sampleBufferQueue.isEmpty else {
-            logger.info("Queue is empty. Skipping frame.")
+            logger.info("Video Queue is empty. Skipping frame.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
-            guard let sampleBuffer = makeSampleBuffer(
-                sampleBuffer: sampleBuffer,
-                timeStamp: videoPresentationTimeStamp
-            ) else {
+            guard let sampleBuffer = sampleBuffer
+                .replacePresentationTimeStamp(timeStamp: videoPresentationTimeStamp)
+            else {
                 return
             }
             delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
@@ -114,22 +112,6 @@ private class ReplaceVideo {
         outputTimer?.cancel()
         outputTimer = nil
         isInitialBufferingComplete = false
-    }
-
-    private func makeSampleBuffer(sampleBuffer: CMSampleBuffer,
-                                  timeStamp: CMTime) -> CMSampleBuffer?
-    {
-        var isKeyFrame = sampleBuffer.isKeyFrame
-        guard let sampleBuffer = CMSampleBuffer.create(sampleBuffer.imageBuffer!,
-                                                       sampleBuffer.formatDescription!,
-                                                       sampleBuffer.duration,
-                                                       timeStamp,
-                                                       sampleBuffer.decodeTimeStamp)
-        else {
-            return nil
-        }
-        sampleBuffer.isKeyFrame = isKeyFrame
-        return sampleBuffer
     }
 }
 
