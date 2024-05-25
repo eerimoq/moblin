@@ -862,8 +862,8 @@
 		0312E4312C00F24E00C6F878 /* Moblin Screen Recording */ = {
 			isa = PBXGroup;
 			children = (
-				0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */,
 				0312E4462C00F80D00C6F878 /* Shared */,
+				0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */,
 				0312E4322C00F24E00C6F878 /* SampleHandler.swift */,
 				0312E4342C00F24E00C6F878 /* Info.plist */,
 			);
