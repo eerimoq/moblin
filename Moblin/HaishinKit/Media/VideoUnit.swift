@@ -8,7 +8,6 @@ var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
 private let detectionsQueue = DispatchQueue(
@@ -382,14 +381,30 @@ final class VideoUnit: NSObject {
         return outputImageBuffer
     }
 
+    // Use Core Image for Apple Log.
+    private func useMetalPetal(_ sampleBuffer: CMSampleBuffer) -> Bool {
+        guard let formatDescription = sampleBuffer.formatDescription else {
+            return false
+        }
+        let formatDescriptionExtension = CMFormatDescriptionGetExtensions(formatDescription)
+        if #available(iOS 17.2, *),
+           let formatDescriptionExtension = formatDescriptionExtension as Dictionary?,
+           formatDescriptionExtension[kCVImageBufferLogTransferFunctionKey] as? String ==
+           kCVImageBufferLogTransferFunction_AppleLog as String
+        {
+            return false
+        }
+        return true
+    }
+
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
                               _ faceDetections: [VNFaceObservation]?,
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        if !ioVideoUnitMetalPetal {
-            return applyEffectsCoreImage(
+        if useMetalPetal(sampleBuffer) {
+            return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,
@@ -397,7 +412,7 @@ final class VideoUnit: NSObject {
                 isFirstAfterAttach
             )
         } else {
-            return applyEffectsMetalPetal(
+            return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,

@@ -1105,7 +1105,6 @@ class SettingsDebug: Codable {
     var beautyFilterSettings: SettingsDebugBeautyFilter? = .init()
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
-    var metalPetalFilters: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2374,10 +2373,6 @@ final class Settings {
         }
         if realDatabase.debug!.blurSceneSwitch == nil {
             realDatabase.debug!.blurSceneSwitch = true
-            store()
-        }
-        if realDatabase.debug!.metalPetalFilters == nil {
-            realDatabase.debug!.metalPetalFilters = false
             store()
         }
         if realDatabase.debug!.beautyFilterSettings!.smoothAmount == nil {

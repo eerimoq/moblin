@@ -42470,6 +42470,7 @@
       }
     },
     "MetalPetal filters" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

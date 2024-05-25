@@ -97,13 +97,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.setGlobalToneMapping(on: value)
                 }))
-                Toggle("MetalPetal filters", isOn: Binding(get: {
-                    model.database.debug!.metalPetalFilters!
-                }, set: { value in
-                    model.database.debug!.metalPetalFilters = value
-                    model.setMetalPetalFilters()
-                    model.store()
-                }))
             } header: {
                 Text("Experimental")
             }
