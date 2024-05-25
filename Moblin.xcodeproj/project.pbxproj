@@ -22,7 +22,7 @@
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
 		0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0312E42F2C00F24E00C6F878 /* ReplayKit.framework */; };
 		0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312E4322C00F24E00C6F878 /* SampleHandler.swift */; };
-		0312E4372C00F24E00C6F878 /* Moblin Capture.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0312E43D2C00F62400C6F878 /* SampleBufferTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */; };
 		0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
@@ -371,7 +371,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				0312E4372C00F24E00C6F878 /* Moblin Capture.appex in Embed Foundation Extensions */,
+				0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -413,11 +413,11 @@
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
-		0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Capture.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Screen Recording.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		0312E4322C00F24E00C6F878 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
 		0312E4342C00F24E00C6F878 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0312E4472C00FA5900C6F878 /* Moblin Screen Capture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Moblin Screen Capture.entitlements"; sourceTree = "<group>"; };
+		0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Moblin Screen Recording.entitlements"; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
@@ -859,15 +859,15 @@
 			path = Platforms;
 			sourceTree = "<group>";
 		};
-		0312E4312C00F24E00C6F878 /* Moblin Screen Capture */ = {
+		0312E4312C00F24E00C6F878 /* Moblin Screen Recording */ = {
 			isa = PBXGroup;
 			children = (
-				0312E4472C00FA5900C6F878 /* Moblin Screen Capture.entitlements */,
+				0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */,
 				0312E4462C00F80D00C6F878 /* Shared */,
 				0312E4322C00F24E00C6F878 /* SampleHandler.swift */,
 				0312E4342C00F24E00C6F878 /* Info.plist */,
 			);
-			path = "Moblin Screen Capture";
+			path = "Moblin Screen Recording";
 			sourceTree = "<group>";
 		};
 		0312E4442C00F7F500C6F878 /* Shared */ = {
@@ -1426,7 +1426,7 @@
 				035E9E352A9A02D6009D4F5A /* Moblin */,
 				03ECDF472B8E4E5F00BD920E /* Moblin Watch */,
 				0376F6FC2B9511030056B3D2 /* Moblin Widget */,
-				0312E4312C00F24E00C6F878 /* Moblin Screen Capture */,
+				0312E4312C00F24E00C6F878 /* Moblin Screen Recording */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
@@ -1438,7 +1438,7 @@
 				035E9E332A9A02D6009D4F5A /* Moblin.app */,
 				03ECDF462B8E4E5E00BD920E /* Moblin.app */,
 				0376F6F72B9511030056B3D2 /* MoblinWidget.appex */,
-				0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */,
+				0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2117,9 +2117,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0312E42D2C00F24E00C6F878 /* Moblin Capture */ = {
+		0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Capture" */;
+			buildConfigurationList = 0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Screen Recording" */;
 			buildPhases = (
 				0312E42A2C00F24E00C6F878 /* Sources */,
 				0312E42B2C00F24E00C6F878 /* Frameworks */,
@@ -2129,9 +2129,9 @@
 			);
 			dependencies = (
 			);
-			name = "Moblin Capture";
+			name = "Moblin Screen Recording";
 			productName = "Moblin Capture";
-			productReference = 0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */;
+			productReference = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		035E9E322A9A02D6009D4F5A /* Moblin */ = {
@@ -2284,7 +2284,7 @@
 				035E9E322A9A02D6009D4F5A /* Moblin */,
 				03ECDF452B8E4E5E00BD920E /* MoblinWatch */,
 				0376F6F62B9511030056B3D2 /* MoblinWidget */,
-				0312E42D2C00F24E00C6F878 /* Moblin Capture */,
+				0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */,
 			);
 		};
 /* End PBXProject section */
@@ -2664,7 +2664,7 @@
 /* Begin PBXTargetDependency section */
 		0312E4362C00F24E00C6F878 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0312E42D2C00F24E00C6F878 /* Moblin Capture */;
+			target = 0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */;
 			targetProxy = 0312E4352C00F24E00C6F878 /* PBXContainerItemProxy */;
 		};
 		032815D72AC855B1001F8A85 /* PBXTargetDependency */ = {
@@ -2703,14 +2703,14 @@
 		0312E4392C00F24E00C6F878 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Capture/Moblin Screen Capture.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Moblin Screen Capture/Info.plist";
+				INFOPLIST_FILE = "Moblin Screen Recording/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -2741,14 +2741,14 @@
 		0312E43A2C00F24E00C6F878 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Capture/Moblin Screen Capture.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Moblin Screen Capture/Info.plist";
+				INFOPLIST_FILE = "Moblin Screen Recording/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -3160,7 +3160,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Capture" */ = {
+		0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Screen Recording" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0312E4392C00F24E00C6F878 /* Debug */,
