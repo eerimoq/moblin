@@ -44,20 +44,18 @@ protocol ReplaceVideoSampleBufferDelegate: AnyObject {
 private class ReplaceVideo {
     private var cameraId: UUID
     private var latency: Double
-    private var frameRate: Double = 30.0
+    private var frameRate: Double
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var outputTimer: DispatchSourceTimer?
-    private var initialBufferingTime: TimeInterval = 2.0
     private var isInitialBufferingComplete = false
     private var videoPresentationTimeStamp: CMTime = .zero
     weak var delegate: ReplaceVideoSampleBufferDelegate?
 
-    init(cameraId: UUID, latency: Double) {
+    init(cameraId: UUID, latency: Double, frameRate: Double) {
         self.cameraId = cameraId
         self.latency = latency
+        self.frameRate = frameRate
     }
-
-    // Add code for latency at a later time
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
@@ -67,7 +65,7 @@ private class ReplaceVideo {
     }
 
     private func startInitialBufferingTimer() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + initialBufferingTime) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
             self.isInitialBufferingComplete = true
             self.startOutput()
         }
@@ -87,15 +85,17 @@ private class ReplaceVideo {
         if videoPresentationTimeStamp == CMTime.zero {
             videoPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
+
+        videoPresentationTimeStamp = CMTimeAdd(
+            videoPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(1),
+                timescale: CMTimeScale(frameRate)
+            )
+        )
+
         guard !sampleBufferQueue.isEmpty else {
             logger.info("Queue is empty. Skipping frame.")
-            videoPresentationTimeStamp = CMTimeAdd(
-                videoPresentationTimeStamp,
-                CMTime(
-                    value: CMTimeValue(1),
-                    timescale: CMTimeScale(frameRate)
-                )
-            )
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
@@ -108,13 +108,6 @@ private class ReplaceVideo {
             delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
             sampleBufferQueue.removeFirst()
         }
-        videoPresentationTimeStamp = CMTimeAdd(
-            videoPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(1),
-                timescale: CMTimeScale(frameRate)
-            )
-        )
     }
 
     func stopOutput() {
@@ -681,14 +674,14 @@ final class VideoUnit: NSObject {
         replaceVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceVideo(cameraId: UUID, latency: Double) {
+    func addReplaceVideo(cameraId: UUID, latency: Double, frameRate: Double) {
         lockQueue.async {
-            self.addReplaceVideoInner(cameraId: cameraId, latency: latency)
+            self.addReplaceVideoInner(cameraId: cameraId, latency: latency, frameRate: frameRate)
         }
     }
 
-    private func addReplaceVideoInner(cameraId: UUID, latency: Double) {
-        let replaceVideo = ReplaceVideo(cameraId: cameraId, latency: latency)
+    private func addReplaceVideoInner(cameraId: UUID, latency: Double, frameRate: Double) {
+        let replaceVideo = ReplaceVideo(cameraId: cameraId, latency: latency, frameRate: frameRate)
         replaceVideo.delegate = self
         replaceVideos[cameraId] = replaceVideo
     }
