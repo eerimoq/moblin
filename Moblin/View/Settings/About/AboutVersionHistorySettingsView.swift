@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.285.0", date: "2024-05-25", changes: [
+        "• Use screen recording as camera. Does not yet work.",
+        "• Front camera torch by making the screen partly white. 💡 NoFuture",
+        "  • Increase screen brightness for stronger light.",
+        "• Make torch less likely to make video hang.",
+        "• Faster camera switch when \"Mirror front camera on stream\" is enabled.",
+    ]),
     Version(version: "0.284.0", date: "2024-05-23", changes: [
         "• Keep stream running when in background mode.",
         "  • Audio works, but video is a freeze frame as video is not available in background.",
