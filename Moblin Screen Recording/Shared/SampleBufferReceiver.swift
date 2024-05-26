@@ -60,9 +60,6 @@ class SampleBufferReceiver {
         }
     }
 
-    // periphery:ignore
-    func stop() {}
-
     private func acceptLoop() throws {
         while true {
             let senderFd = try accept(fd: listenerFd)

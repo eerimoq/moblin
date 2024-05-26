@@ -5,9 +5,7 @@ import AVFoundation
 struct SampleBufferHeader: Codable {
     var bufferType: Int
     var bufferSize: Int
-    // periphery:ignore
     var width: Int32
-    // periphery:ignore
     var height: Int32
 }
 

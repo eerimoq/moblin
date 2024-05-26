@@ -13,7 +13,6 @@ private func connect(fd: Int32, addr: sockaddr_un) throws {
     }
 }
 
-// periphery:ignore
 class SampleBufferSender {
     private var fd: Int32
 
