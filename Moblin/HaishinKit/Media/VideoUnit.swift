@@ -93,6 +93,7 @@ private class ReplaceVideo {
                 timescale: CMTimeScale(frameRate)
             )
         )
+        // logger.info("Video sampleBufferQueue Count: \(sampleBufferQueue.count)")
         guard !sampleBufferQueue.isEmpty else {
             logger.info("Video Queue is empty. Skipping frame.")
             return
@@ -675,6 +676,8 @@ final class VideoUnit: NSObject {
     }
 
     private func removeReplaceVideoInner(cameraId: UUID) {
+        let replaceVideo = replaceVideos[cameraId]
+        replaceVideo?.stopOutput()
         replaceVideos.removeValue(forKey: cameraId)
     }
 

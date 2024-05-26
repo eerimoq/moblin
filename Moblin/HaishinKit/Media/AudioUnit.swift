@@ -83,8 +83,9 @@ private class ReplaceAudio {
                 timescale: CMTimeScale(sampleRate)
             )
         )
+        // logger.info("Audio sampleBufferQueue Count: \(sampleBufferQueue.count)")
         guard !sampleBufferQueue.isEmpty else {
-            logger.info("Audio ueue is empty. Skipping frame.")
+            logger.info("Audio Queue is empty. Skipping frame.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
@@ -96,6 +97,12 @@ private class ReplaceAudio {
             delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
             sampleBufferQueue.removeFirst()
         }
+    }
+
+    func stopOutput() {
+        outputTimer?.cancel()
+        outputTimer = nil
+        isInitialBufferingComplete = false
     }
 }
 
@@ -220,6 +227,8 @@ final class AudioUnit: NSObject {
     }
 
     func removeReplaceAudioInner(cameraId: UUID) {
+        let replaceAudio = replaceAudios[cameraId]
+        replaceAudio?.stopOutput()
         replaceAudios.removeValue(forKey: cameraId)
     }
 
