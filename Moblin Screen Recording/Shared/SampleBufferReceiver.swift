@@ -35,6 +35,7 @@ protocol SampleBufferReceiverDelegate: AnyObject {
 
 class SampleBufferReceiver {
     private var listenerFd: Int32
+    private var videoFormatDescription: CMFormatDescription?
     weak var delegate: (any SampleBufferReceiverDelegate)?
 
     init() {
@@ -73,6 +74,7 @@ class SampleBufferReceiver {
     }
 
     private func readLoop(senderFd: Int32) throws {
+        videoFormatDescription = nil
         while true {
             let header = try readHeader(senderFd: senderFd)
             let data = try read(senderFd: senderFd, count: header.bufferSize)
@@ -95,7 +97,21 @@ class SampleBufferReceiver {
         }
     }
 
-    private func handleVideo(_: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
+    private func handleVideo(_ header: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
+        if videoFormatDescription == nil {
+            let extensions: [NSString: AnyObject] = [
+                kCVPixelBufferWidthKey: NSNumber(value: header.width),
+                kCVPixelBufferHeightKey: NSNumber(value: header.height),
+            ]
+            CMFormatDescriptionCreate(
+                allocator: kCFAllocatorDefault,
+                mediaType: kCMMediaType_Video,
+                mediaSubType: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                extensions: extensions as CFDictionary?,
+                formatDescriptionOut: &videoFormatDescription
+            )
+            logger.info("sample-buffer-receiver: \(videoFormatDescription)")
+        }
         return nil
     }
 
