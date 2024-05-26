@@ -94,9 +94,20 @@ class SampleBufferReceiver {
         }
     }
 
-    private func handleVideo(_ header: SampleBufferHeader, _: Data) throws -> CMSampleBuffer? {
+    private func handleVideo(_ header: SampleBufferHeader, _ data: Data) throws -> CMSampleBuffer? {
         let pixelBufferPool = try getVideoBufferPool(header)
         let pixelBuffer = try createPixelBuffer(pool: pixelBufferPool)
+        CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
+        guard let pointer = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+            throw "Failed to get base address"
+        }
+        data.withUnsafeBytes { (dataPointer: UnsafeRawBufferPointer) in
+            pointer.copyMemory(
+                from: dataPointer.baseAddress!,
+                byteCount: CVPixelBufferGetDataSize(pixelBuffer)
+            )
+        }
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: pixelBuffer)
         else {
             throw "Failed to create format description"
