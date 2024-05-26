@@ -134,20 +134,24 @@ class SampleBufferReceiver {
 
     private func read(senderFd: Int32, count: Int) throws -> Data {
         var data = Data(count: count)
-        var offset = 0
         try data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-            guard let baseAddress = pointer.baseAddress else {
-                throw "No base address"
-            }
-            while offset < count {
-                let readCount = Darwin.read(senderFd, baseAddress.advanced(by: offset), count - offset)
-                if readCount <= 0 {
-                    throw "Closed"
-                }
-                offset += readCount
-            }
+            try readPointer(senderFd: senderFd, pointer: pointer, count: count)
         }
         return data
+    }
+
+    private func readPointer(senderFd: Int32, pointer: UnsafeMutableRawBufferPointer, count: Int) throws {
+        guard let baseAddress = pointer.baseAddress else {
+            throw "No base address"
+        }
+        var offset = 0
+        while offset < count {
+            let readCount = Darwin.read(senderFd, baseAddress.advanced(by: offset), count - offset)
+            if readCount <= 0 {
+                throw "Closed"
+            }
+            offset += readCount
+        }
     }
 
     private func getVideoBufferPool(_ header: SampleBufferHeader) throws -> CVPixelBufferPool {
