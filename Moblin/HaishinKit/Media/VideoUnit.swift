@@ -8,6 +8,7 @@ var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
 private let detectionsQueue = DispatchQueue(
@@ -387,7 +388,7 @@ final class VideoUnit: NSObject {
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        if #available(iOS 17.2, *), colorSpace == .appleLog {
+        if #available(iOS 17.2, *), colorSpace == .appleLog || !ioVideoUnitMetalPetal {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
