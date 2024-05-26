@@ -55,13 +55,14 @@ struct VideoCodecSettings {
     }
 
     func apply(_ codec: VideoCodec) {
+        logger.debug("video: Setting encoder bitrate to \(bitRate)")
         let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
         if let status = codec.session?.setOption(option), status != noErr {
-            logger.info("Failed to set option \(status) \(option)")
+            logger.info("video: Failed to set option \(status) \(option)")
         }
         let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
         if let status = codec.session?.setOption(optionLimit), status != noErr {
-            logger.info("Failed to set option \(status) \(optionLimit)")
+            logger.info("video: Failed to set option \(status) \(optionLimit)")
         }
     }
 

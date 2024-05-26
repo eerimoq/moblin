@@ -18,7 +18,6 @@ protocol VTSessionConvertible {
 
 extension VTSessionConvertible where Self: VTSession {
     func setOption(_ option: VTSessionOption) -> OSStatus {
-        logger.debug("setting option: \(option.key.value) \(option.value)")
         return VTSessionSetProperty(self, key: option.key.value, value: option.value)
     }
 
