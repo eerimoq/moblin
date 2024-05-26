@@ -5681,7 +5681,12 @@ extension Model: SampleBufferReceiverDelegate {
         }
     }
 
-    func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?, type _: RPSampleBufferType) {
-        // logger.info("Sample buffer: \(type.rawValue)")
+    func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
+        switch type {
+        case .video:
+            logger.info("Video sample buffer: \(sampleBuffer)")
+        default:
+            break
+        }
     }
 }

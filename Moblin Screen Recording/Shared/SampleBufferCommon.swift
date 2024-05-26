@@ -2,13 +2,29 @@ import AVFoundation
 
 // | 4b header size | <m>b header | <n>b buffer |
 
+struct SampleBufferHeaderTime: Codable {
+    var value: CMTimeValue
+    var timescale: CMTimeScale
+
+    // periphery:ignore
+    init(cmTime: CMTime) {
+        value = cmTime.value
+        timescale = cmTime.timescale
+    }
+
+    func toCMTime() -> CMTime {
+        return .init(value: value, timescale: timescale)
+    }
+}
+
 struct SampleBufferHeader: Codable {
     var bufferType: Int
     var bufferSize: Int
     var mediaSubType: FourCharCode
-    var codecType: String
     var width: Int32
     var height: Int32
+    var presentationTimeStamp: SampleBufferHeaderTime
+    // periphery:ignore
     var debug: String
 }
 

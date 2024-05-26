@@ -50,13 +50,15 @@ class SampleBufferSender {
             return
         }
         let bufferSize = CVPixelBufferGetDataSize(imageBuffer)
-        let header = SampleBufferHeader(bufferType: type.rawValue,
-                                        bufferSize: bufferSize,
-                                        mediaSubType: formatDescription.mediaSubType.rawValue,
-                                        codecType: "420f",
-                                        width: formatDescription.dimensions.width,
-                                        height: formatDescription.dimensions.height,
-                                        debug: "\(formatDescription)")
+        let header = SampleBufferHeader(
+            bufferType: type.rawValue,
+            bufferSize: bufferSize,
+            mediaSubType: formatDescription.mediaSubType.rawValue,
+            width: formatDescription.dimensions.width,
+            height: formatDescription.dimensions.height,
+            presentationTimeStamp: .init(cmTime: sampleBuffer.presentationTimeStamp),
+            debug: "\(formatDescription)"
+        )
         guard (try? sendHeader(header)) != nil else {
             return
         }
@@ -81,9 +83,9 @@ class SampleBufferSender {
             bufferType: type.rawValue,
             bufferSize: data.count,
             mediaSubType: 0,
-            codecType: "",
             width: 0,
             height: 0,
+            presentationTimeStamp: .init(cmTime: sampleBuffer.presentationTimeStamp),
             debug: ""
         )
         guard (try? sendHeader(header)) != nil else {

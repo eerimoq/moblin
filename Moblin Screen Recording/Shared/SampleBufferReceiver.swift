@@ -30,13 +30,13 @@ private func accept(fd: Int32) throws -> Int32 {
 protocol SampleBufferReceiverDelegate: AnyObject {
     func senderConnected()
     func senderDisconnected()
-    func handleSampleBuffer(sampleBuffer: CMSampleBuffer?, type: RPSampleBufferType)
+    func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer)
 }
 
 class SampleBufferReceiver {
     private var listenerFd: Int32
-    private var videoFormatDescription: CMFormatDescription?
     weak var delegate: (any SampleBufferReceiverDelegate)?
+    private var videoBufferPool: CVPixelBufferPool?
 
     init() {
         listenerFd = -1
@@ -71,7 +71,7 @@ class SampleBufferReceiver {
     }
 
     private func readLoop(senderFd: Int32) throws {
-        videoFormatDescription = nil
+        videoBufferPool = nil
         while true {
             let header = try readHeader(senderFd: senderFd)
             let data = try read(senderFd: senderFd, count: header.bufferSize)
@@ -90,30 +90,24 @@ class SampleBufferReceiver {
             guard let sampleBuffer else {
                 continue
             }
-            delegate?.handleSampleBuffer(sampleBuffer: sampleBuffer, type: type)
+            delegate?.handleSampleBuffer(type: type, sampleBuffer: sampleBuffer)
         }
     }
 
     private func handleVideo(_ header: SampleBufferHeader, _: Data) throws -> CMSampleBuffer? {
-        if videoFormatDescription == nil {
-            let extensions: [NSString: AnyObject] = [
-                kCVPixelBufferWidthKey: NSNumber(value: header.width),
-                kCVPixelBufferHeightKey: NSNumber(value: header.height),
-            ]
-            CMFormatDescriptionCreate(
-                allocator: kCFAllocatorDefault,
-                mediaType: kCMMediaType_Video,
-                mediaSubType: header.mediaSubType,
-                extensions: extensions as CFDictionary?,
-                formatDescriptionOut: &videoFormatDescription
-            )
-            logger.info("sample-buffer-receiver: \(videoFormatDescription)")
-            logger.info("sample-buffer-receiver: debug: \(header.debug)")
+        let pixelBufferPool = try getVideoBufferPool(header)
+        let pixelBuffer = try createPixelBuffer(pool: pixelBufferPool)
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: pixelBuffer)
+        else {
+            throw "Failed to create format description"
         }
-        guard let videoFormatDescription else {
-            throw "No video format description"
-        }
-        return nil
+        return CMSampleBuffer.create(
+            pixelBuffer,
+            formatDescription,
+            .invalid,
+            header.presentationTimeStamp.toCMTime(),
+            .invalid
+        )
     }
 
     private func handleAudio(_: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
@@ -144,4 +138,37 @@ class SampleBufferReceiver {
         }
         return data
     }
+
+    private func getVideoBufferPool(_ header: SampleBufferHeader) throws -> CVPixelBufferPool {
+        if let videoBufferPool {
+            return videoBufferPool
+        }
+        let pixelBufferAttributes: [NSString: AnyObject] = [
+            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: header.mediaSubType),
+            kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
+            kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
+            kCVPixelBufferWidthKey: NSNumber(value: header.width),
+            kCVPixelBufferHeightKey: NSNumber(value: header.height),
+        ]
+        CVPixelBufferPoolCreate(
+            nil,
+            nil,
+            pixelBufferAttributes as NSDictionary?,
+            &videoBufferPool
+        )
+        guard let videoBufferPool else {
+            throw "Failed to create pool"
+        }
+        return videoBufferPool
+    }
+}
+
+private func createPixelBuffer(pool: CVPixelBufferPool) throws -> CVPixelBuffer {
+    var outputImageBuffer: CVPixelBuffer?
+    guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) ==
+        kCVReturnSuccess, let outputImageBuffer
+    else {
+        throw "Failed to create pixel buffer"
+    }
+    return outputImageBuffer
 }
