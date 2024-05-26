@@ -81,7 +81,7 @@ class SampleBufferReceiver {
             let sampleBuffer: CMSampleBuffer?
             switch type {
             case .video:
-                sampleBuffer = handleVideo(header, data)
+                sampleBuffer = try handleVideo(header, data)
             case .audioApp:
                 sampleBuffer = handleAudio(header, data)
             default:
@@ -94,7 +94,7 @@ class SampleBufferReceiver {
         }
     }
 
-    private func handleVideo(_ header: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
+    private func handleVideo(_ header: SampleBufferHeader, _: Data) throws -> CMSampleBuffer? {
         if videoFormatDescription == nil {
             let extensions: [NSString: AnyObject] = [
                 kCVPixelBufferWidthKey: NSNumber(value: header.width),
@@ -103,11 +103,15 @@ class SampleBufferReceiver {
             CMFormatDescriptionCreate(
                 allocator: kCFAllocatorDefault,
                 mediaType: kCMMediaType_Video,
-                mediaSubType: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                mediaSubType: header.mediaSubType,
                 extensions: extensions as CFDictionary?,
                 formatDescriptionOut: &videoFormatDescription
             )
             logger.info("sample-buffer-receiver: \(videoFormatDescription)")
+            logger.info("sample-buffer-receiver: debug: \(header.debug)")
+        }
+        guard let videoFormatDescription else {
+            throw "No video format description"
         }
         return nil
     }

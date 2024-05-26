@@ -5,8 +5,11 @@ import AVFoundation
 struct SampleBufferHeader: Codable {
     var bufferType: Int
     var bufferSize: Int
+    var mediaSubType: FourCharCode
+    var codecType: String
     var width: Int32
     var height: Int32
+    var debug: String
 }
 
 func createContainerDir(appGroup: String) throws -> URL {
