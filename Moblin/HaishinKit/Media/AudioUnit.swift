@@ -42,6 +42,7 @@ private class ReplaceAudio {
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
         if isInitialBufferingComplete == false {
+            logger.info("Starting ReplaceAudio buffering.")
             startInitialBufferingTimer(sampleBuffer: sampleBuffer)
         }
     }

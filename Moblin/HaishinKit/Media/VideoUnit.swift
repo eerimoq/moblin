@@ -60,6 +60,7 @@ private class ReplaceVideo {
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
         if isInitialBufferingComplete == false {
+            logger.info("Starting ReplaceVideo buffering.")
             startInitialBufferingTimer()
         }
     }
