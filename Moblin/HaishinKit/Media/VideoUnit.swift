@@ -188,8 +188,7 @@ final class VideoUnit: NSObject {
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
     private var latestSampleBufferDate: Date?
-    private var gapFillerTimer: DispatchSourceTimer?
-    private var blackImageTimer: DispatchSourceTimer?
+    private var frameTimer: DispatchSourceTimer?
     private var firstFrameDate: Date?
     private var isFirstAfterAttach = false
     private var latestSampleBufferAppendTime = CMTime.zero
@@ -211,8 +210,7 @@ final class VideoUnit: NSObject {
     }
 
     deinit {
-        stopGapFillerTimer()
-        stopBlackImageTimer()
+        stopFrameTimer()
     }
 
     func startRunning() {
@@ -230,19 +228,20 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func startGapFillerTimer() {
-        gapFillerTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+    private func startFrameTimer() {
         let frameInterval = 1 / frameRate
-        gapFillerTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
-        gapFillerTimer!.setEventHandler { [weak self] in
+        frameTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+        frameTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
+        frameTimer!.setEventHandler { [weak self] in
             self?.handleGapFillerTimer()
+            self?.handleBlackImageTimer()
         }
-        gapFillerTimer!.activate()
+        frameTimer!.activate()
     }
 
-    private func stopGapFillerTimer() {
-        gapFillerTimer?.cancel()
-        gapFillerTimer = nil
+    private func stopFrameTimer() {
+        frameTimer?.cancel()
+        frameTimer = nil
     }
 
     private func handleGapFillerTimer() {
@@ -274,21 +273,6 @@ final class VideoUnit: NSObject {
             return
         }
         _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: ioVideoBlurSceneSwitch)
-    }
-
-    private func startBlackImageTimer() {
-        blackImageTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        let frameInterval = 1 / frameRate
-        blackImageTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
-        blackImageTimer!.setEventHandler { [weak self] in
-            self?.handleBlackImageTimer()
-        }
-        blackImageTimer!.activate()
-    }
-
-    private func stopBlackImageTimer() {
-        blackImageTimer?.cancel()
-        blackImageTimer = nil
     }
 
     private func handleBlackImageTimer() {
@@ -346,8 +330,7 @@ final class VideoUnit: NSObject {
             }
         } else {
             lockQueue.async {
-                self.stopGapFillerTimer()
-                self.stopBlackImageTimer()
+                self.stopFrameTimer()
             }
         }
         self.device = device
@@ -369,8 +352,7 @@ final class VideoUnit: NSObject {
     private func prepareFirstFrame() {
         firstFrameDate = nil
         isFirstAfterAttach = true
-        startGapFillerTimer()
-        startBlackImageTimer()
+        startFrameTimer()
     }
 
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
@@ -1089,8 +1071,7 @@ final class VideoUnit: NSObject {
         if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, applyBlur: false) {
             isFirstAfterAttach = false
         }
-        stopGapFillerTimer()
-        stopBlackImageTimer()
+        stopFrameTimer()
     }
 }
 
