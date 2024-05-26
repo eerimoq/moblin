@@ -79,21 +79,29 @@ class SampleBufferReceiver {
             guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
                 break
             }
+            let sampleBuffer: CMSampleBuffer?
             switch type {
             case .video:
-                handleVideo(header, data)
+                sampleBuffer = handleVideo(header, data)
             case .audioApp:
-                handleAudio(header, data)
+                sampleBuffer = handleAudio(header, data)
             default:
-                break
+                continue
             }
-            delegate?.handleSampleBuffer(sampleBuffer: nil, type: type)
+            guard let sampleBuffer else {
+                continue
+            }
+            delegate?.handleSampleBuffer(sampleBuffer: sampleBuffer, type: type)
         }
     }
 
-    private func handleVideo(_: SampleBufferHeader, _: Data) {}
+    private func handleVideo(_: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
+        return nil
+    }
 
-    private func handleAudio(_: SampleBufferHeader, _: Data) {}
+    private func handleAudio(_: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
+        return nil
+    }
 
     private func readHeader(senderFd: Int32) throws -> SampleBufferHeader {
         let sizeData = try read(senderFd: senderFd, count: 4)
