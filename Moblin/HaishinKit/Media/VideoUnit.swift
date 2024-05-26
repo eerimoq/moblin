@@ -66,8 +66,8 @@ private class ReplaceVideo {
     }
 
     private func startInitialBufferingTimer() {
+        isInitialBufferingComplete = true
         DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
-            self.isInitialBufferingComplete = true
             self.startOutput()
         }
     }

@@ -48,8 +48,8 @@ private class ReplaceAudio {
     }
 
     private func startInitialBufferingTimer(sampleBuffer: CMSampleBuffer) {
+        isInitialBufferingComplete = true
         DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
-            self.isInitialBufferingComplete = true
             self.startOutput(sampleBuffer: sampleBuffer)
         }
     }
