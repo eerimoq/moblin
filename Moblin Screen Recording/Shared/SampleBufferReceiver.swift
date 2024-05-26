@@ -74,16 +74,15 @@ class SampleBufferReceiver {
         videoBufferPool = nil
         while true {
             let header = try readHeader(senderFd: senderFd)
-            let data = try read(senderFd: senderFd, count: header.bufferSize)
             guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
                 break
             }
             let sampleBuffer: CMSampleBuffer?
             switch type {
             case .video:
-                sampleBuffer = try handleVideo(header, data)
+                sampleBuffer = try handleVideo(senderFd, header)
             case .audioApp:
-                sampleBuffer = handleAudio(header, data)
+                sampleBuffer = try handleAudio(senderFd, header)
             default:
                 continue
             }
@@ -94,20 +93,19 @@ class SampleBufferReceiver {
         }
     }
 
-    private func handleVideo(_ header: SampleBufferHeader, _ data: Data) throws -> CMSampleBuffer? {
+    private func handleVideo(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer? {
         let pixelBufferPool = try getVideoBufferPool(header)
         let pixelBuffer = try createPixelBuffer(pool: pixelBufferPool)
         CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
         guard let pointer = CVPixelBufferGetBaseAddress(pixelBuffer) else {
             throw "Failed to get base address"
         }
-        data.withUnsafeBytes { (dataPointer: UnsafeRawBufferPointer) in
-            pointer.copyMemory(
-                from: dataPointer.baseAddress!,
-                byteCount: CVPixelBufferGetDataSize(pixelBuffer)
-            )
-        }
+        let size = CVPixelBufferGetDataSize(pixelBuffer)
+        try readPointer(senderFd: senderFd, pointer: pointer, count: size)
         CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
+        if header.bufferSize > size {
+            _ = try read(senderFd: senderFd, count: header.bufferSize - size)
+        }
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: pixelBuffer)
         else {
             throw "Failed to create format description"
@@ -121,7 +119,8 @@ class SampleBufferReceiver {
         )
     }
 
-    private func handleAudio(_: SampleBufferHeader, _: Data) -> CMSampleBuffer? {
+    private func handleAudio(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer? {
+        _ = try read(senderFd: senderFd, count: header.bufferSize)
         return nil
     }
 
@@ -135,18 +134,15 @@ class SampleBufferReceiver {
     private func read(senderFd: Int32, count: Int) throws -> Data {
         var data = Data(count: count)
         try data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-            try readPointer(senderFd: senderFd, pointer: pointer, count: count)
+            try readPointer(senderFd: senderFd, pointer: pointer.baseAddress!, count: count)
         }
         return data
     }
 
-    private func readPointer(senderFd: Int32, pointer: UnsafeMutableRawBufferPointer, count: Int) throws {
-        guard let baseAddress = pointer.baseAddress else {
-            throw "No base address"
-        }
+    private func readPointer(senderFd: Int32, pointer: UnsafeMutableRawPointer, count: Int) throws {
         var offset = 0
         while offset < count {
-            let readCount = Darwin.read(senderFd, baseAddress.advanced(by: offset), count - offset)
+            let readCount = Darwin.read(senderFd, pointer.advanced(by: offset), count - offset)
             if readCount <= 0 {
                 throw "Closed"
             }
