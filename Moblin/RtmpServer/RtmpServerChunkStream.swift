@@ -458,17 +458,18 @@ class RtmpServerChunkStream {
         if videoPresentationTimeStamp == CMTime.zero {
             videoPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
+        let duration = CMTime(value: CMTimeValue(1), timescale: CMTimeScale(client.fps))
+        videoPresentationTimeStamp = CMTimeAdd(videoPresentationTimeStamp, duration)
+        var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
+        compositionTime <<= 8
+        compositionTime /= 256
         var timing = CMSampleTimingInfo(
-            duration: .invalid,
-            presentationTimeStamp: videoPresentationTimeStamp,
-            decodeTimeStamp: .invalid
-        )
-        videoPresentationTimeStamp = CMTimeAdd(
-            videoPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(1),
-                timescale: CMTimeScale(client.fps)
-            )
+            duration: duration,
+            presentationTimeStamp: compositionTime == 0 ? videoPresentationTimeStamp : CMTimeAdd(
+                videoPresentationTimeStamp,
+                .init(value: CMTimeValue(compositionTime), timescale: 1000)
+            ),
+            decodeTimeStamp: compositionTime == 0 ? .invalid : videoPresentationTimeStamp
         )
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
@@ -507,6 +508,11 @@ class RtmpServerChunkStream {
         if audioPresentationTimeStamp == CMTime.zero {
             audioPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
+        let duration = CMTime(
+            value: CMTimeValue(audioBuffer.frameLength),
+            timescale: CMTimeScale(audioBuffer.format.sampleRate)
+        )
+        audioPresentationTimeStamp = CMTimeAdd(audioPresentationTimeStamp, duration)
         /* logger.info("""
          rtmp-server: client: Created audio sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
@@ -515,13 +521,6 @@ class RtmpServerChunkStream {
          DTS: \(timing.decodeTimeStamp.seconds)
          """) */
         let sampleBuffer = audioBuffer.makeSampleBuffer(presentationTimeStamp: audioPresentationTimeStamp)
-        audioPresentationTimeStamp = CMTimeAdd(
-            audioPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(audioBuffer.frameLength),
-                timescale: CMTimeScale(audioBuffer.format.sampleRate)
-            )
-        )
         return sampleBuffer
     }
 }
