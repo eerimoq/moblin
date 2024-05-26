@@ -641,11 +641,13 @@ final class Model: NSObject, ObservableObject {
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
+        logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
         toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
         showingToast = true
+        logger.debug("toast: Warning: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
         }
@@ -659,6 +661,7 @@ final class Model: NSObject, ObservableObject {
             style: .style(titleColor: .red, titleFont: font)
         )
         showingToast = true
+        logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
         }
