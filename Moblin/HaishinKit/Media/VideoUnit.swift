@@ -61,6 +61,7 @@ private class ReplaceVideo {
         sampleBufferQueue.sort { sampleBuffer1, sampleBuffer2 in
             sampleBuffer1.presentationTimeStamp < sampleBuffer2.presentationTimeStamp
         }
+        logger.info("sampleBufferQueue Count: \(sampleBufferQueue.count)")
         if isInitialBufferingComplete == false {
             logger.info("Starting ReplaceVideo buffering.")
             startInitialBufferingTimer()
@@ -88,6 +89,10 @@ private class ReplaceVideo {
         // logger.info("Video sampleBufferQueue Count: \(sampleBufferQueue.count)")
         guard !sampleBufferQueue.isEmpty else {
             logger.info("Video Queue is empty. Skipping frame.")
+            return
+        }
+        if sampleBufferQueue.count < Int(frameRate) {
+            logger.info("Queue size low: \(sampleBufferQueue.count). Waiting for more frames.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
