@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.288.0", date: "2024-05-26", changes: [
+        "• New filter framework.",
+        "  • Settings → Debug → MetalPetal filters to enable/disable.",
+    ]),
     Version(version: "0.287.0", date: "2024-05-25", changes: [
         "• Fewer dropped frames when camera starts moving a lot after being static.",
         "  • Started in iOS 17.5.",
