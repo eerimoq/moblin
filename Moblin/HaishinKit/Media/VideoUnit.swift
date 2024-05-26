@@ -48,7 +48,6 @@ private class ReplaceVideo {
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var outputTimer: DispatchSourceTimer?
     private var isInitialBufferingComplete = false
-    private var videoPresentationTimeStamp: CMTime = .zero
     weak var delegate: ReplaceVideoSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double, frameRate: Double) {
@@ -59,6 +58,9 @@ private class ReplaceVideo {
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
+        sampleBufferQueue.sort { sampleBuffer1, sampleBuffer2 in
+            sampleBuffer1.presentationTimeStamp < sampleBuffer2.presentationTimeStamp
+        }
         if isInitialBufferingComplete == false {
             logger.info("Starting ReplaceVideo buffering.")
             startInitialBufferingTimer()
@@ -83,25 +85,18 @@ private class ReplaceVideo {
     }
 
     private func outputSampleBuffer() {
-        if videoPresentationTimeStamp == CMTime.zero {
-            videoPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        }
-
-        videoPresentationTimeStamp = CMTimeAdd(
-            videoPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(1),
-                timescale: CMTimeScale(frameRate)
-            )
-        )
         // logger.info("Video sampleBufferQueue Count: \(sampleBufferQueue.count)")
         guard !sampleBufferQueue.isEmpty else {
             logger.info("Video Queue is empty. Skipping frame.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
+            let presentationTimeStamp = CMTimeAdd(
+                CMClockGetTime(CMClockGetHostTimeClock()),
+                CMTimeMake(value: 4, timescale: 1)
+            )
             guard let sampleBuffer = sampleBuffer
-                .replacePresentationTimeStamp(timeStamp: videoPresentationTimeStamp)
+                .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             else {
                 return
             }

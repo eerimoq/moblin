@@ -452,24 +452,34 @@ class RtmpServerChunkStream {
         }
     }
 
-    private var videoPresentationTimeStamp: CMTime = .zero
-
-    private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
-        if videoPresentationTimeStamp == CMTime.zero {
-            videoPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        }
-        let duration = CMTime(value: CMTimeValue(1), timescale: CMTimeScale(client.fps))
-        videoPresentationTimeStamp = CMTimeAdd(videoPresentationTimeStamp, duration)
+    private func makeVideoSampleBuffer(client _: RtmpServerClient) -> CMSampleBuffer? {
+        var presentationTimeStamp: CMTime
+        var decodeTimeStamp: CMTime
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
+        if isMessageType0 {
+            if videoTimestampZero == -1 {
+                videoTimestampZero = Double(messageTimestamp)
+            }
+            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+        } else {
+            videoTimestamp += Double(messageTimestamp)
+        }
+        if compositionTime != 0 {
+            let videoTimestamp = CMTime(value: CMTimeValue(videoTimestamp), timescale: 1000)
+            let compositionTime = CMTime(value: CMTimeValue(compositionTime), timescale: 1000)
+            presentationTimeStamp = videoTimestamp + compositionTime
+            decodeTimeStamp = videoTimestamp
+        } else {
+            let videoTimestamp = CMTime(value: CMTimeValue(videoTimestamp), timescale: 1000)
+            presentationTimeStamp = videoTimestamp
+            decodeTimeStamp = .invalid
+        }
         var timing = CMSampleTimingInfo(
-            duration: duration,
-            presentationTimeStamp: compositionTime == 0 ? videoPresentationTimeStamp : CMTimeAdd(
-                videoPresentationTimeStamp,
-                .init(value: CMTimeValue(compositionTime), timescale: 1000)
-            ),
-            decodeTimeStamp: compositionTime == 0 ? .invalid : videoPresentationTimeStamp
+            duration: .invalid,
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
         )
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
@@ -502,17 +512,16 @@ class RtmpServerChunkStream {
         return sampleBuffer
     }
 
-    private var audioPresentationTimeStamp: CMTime = .zero
-
     private func makeAudioSampleBuffer(audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
-        if audioPresentationTimeStamp == CMTime.zero {
-            audioPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        if isMessageType0 {
+            if audioTimestampZero == -1 {
+                audioTimestampZero = Double(messageTimestamp)
+            }
+            audioTimestamp = Double(messageTimestamp) - audioTimestampZero
+        } else {
+            audioTimestamp += Double(messageTimestamp)
         }
-        let duration = CMTime(
-            value: CMTimeValue(audioBuffer.frameLength),
-            timescale: CMTimeScale(audioBuffer.format.sampleRate)
-        )
-        audioPresentationTimeStamp = CMTimeAdd(audioPresentationTimeStamp, duration)
+        let presentationTimeStamp = CMTime(value: CMTimeValue(audioTimestamp), timescale: 1000)
         /* logger.info("""
          rtmp-server: client: Created audio sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
@@ -520,7 +529,7 @@ class RtmpServerChunkStream {
          PTS: \(timing.presentationTimeStamp.seconds), \
          DTS: \(timing.decodeTimeStamp.seconds)
          """) */
-        let sampleBuffer = audioBuffer.makeSampleBuffer(presentationTimeStamp: audioPresentationTimeStamp)
+        let sampleBuffer = audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
         return sampleBuffer
     }
 }
