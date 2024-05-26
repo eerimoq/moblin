@@ -111,14 +111,14 @@ extension CMSampleBuffer {
         return sampleBuffer
     }
 
-    func replacePresentationTimeStamp(timeStamp: CMTime) -> CMSampleBuffer? {
+    func replacePresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         if let formatDescription = formatDescription {
             let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
             switch mediaType {
             case kCMMediaType_Audio:
-                return replaceAudioPresentationTimeStamp(timeStamp: timeStamp)
+                return replaceAudioPresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             case kCMMediaType_Video:
-                return replaceVideoPresentationTimeStamp(timeStamp: timeStamp)
+                return replaceVideoPresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             default:
                 return nil
             }
@@ -127,11 +127,15 @@ extension CMSampleBuffer {
         }
     }
 
-    private func replaceAudioPresentationTimeStamp(timeStamp: CMTime) -> CMSampleBuffer? {
+    private func replaceAudioPresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+        let originalPTS = CMSampleBufferGetPresentationTimeStamp(self)
+        let timeOffset = CMTimeSubtract(presentationTimeStamp, originalPTS)
+        let newPTS = CMTimeAdd(originalPTS, timeOffset)
+
         var newSampleBuffer: CMSampleBuffer?
         var timingInfo = CMSampleTimingInfo(
             duration: duration,
-            presentationTimeStamp: timeStamp,
+            presentationTimeStamp: newPTS,
             decodeTimeStamp: decodeTimeStamp
         )
 
@@ -145,16 +149,37 @@ extension CMSampleBuffer {
         return newSampleBuffer
     }
 
-    private func replaceVideoPresentationTimeStamp(timeStamp: CMTime) -> CMSampleBuffer? {
-        guard let sampleBuffer = CMSampleBuffer.create(imageBuffer!,
-                                                       formatDescription!,
-                                                       duration,
-                                                       timeStamp,
-                                                       decodeTimeStamp)
-        else {
+    private func replaceVideoPresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+        let originalPTS = CMSampleBufferGetPresentationTimeStamp(self)
+        let originalDTS = CMSampleBufferGetDecodeTimeStamp(self)
+        let timeOffset = CMTimeSubtract(presentationTimeStamp, originalPTS)
+        let newPTS = CMTimeAdd(originalPTS, timeOffset)
+        var newDTS = originalDTS
+
+        if originalDTS != CMTime.invalid {
+            newDTS = CMTimeAdd(originalDTS, timeOffset)
+        }
+
+        var timingInfo = CMSampleTimingInfo(
+            duration: CMSampleBufferGetDuration(self),
+            presentationTimeStamp: newPTS,
+            decodeTimeStamp: newDTS
+        )
+
+        var newSampleBuffer: CMSampleBuffer?
+
+        CMSampleBufferCreateCopyWithNewTiming(
+            allocator: kCFAllocatorDefault,
+            sampleBuffer: self,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timingInfo,
+            sampleBufferOut: &newSampleBuffer
+        )
+
+        guard let newSampleBuffer else {
             return nil
         }
-        sampleBuffer.isKeyFrame = isKeyFrame
-        return sampleBuffer
+        newSampleBuffer.isKeyFrame = isKeyFrame
+        return newSampleBuffer
     }
 }

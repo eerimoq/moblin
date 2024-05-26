@@ -29,9 +29,6 @@ private class ReplaceAudio {
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var outputTimer: DispatchSourceTimer?
     private var isInitialBufferingComplete = false
-    private var audioPresentationTimeStamp: CMTime = .zero
-    private var frameLength: Double = 0
-    private var sampleRate: Double = 0
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double) {
@@ -61,8 +58,8 @@ private class ReplaceAudio {
         else {
             return
         }
-        frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
-        sampleRate = streamBasicDescription.mSampleRate
+        let frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
+        let sampleRate = streamBasicDescription.mSampleRate
         let frameInterval = frameLength / sampleRate
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer!.schedule(deadline: .now(), repeating: frameInterval)
@@ -73,25 +70,18 @@ private class ReplaceAudio {
     }
 
     private func outputSampleBuffer() {
-        if audioPresentationTimeStamp == CMTime.zero {
-            audioPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        }
-
-        audioPresentationTimeStamp = CMTimeAdd(
-            audioPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(frameLength),
-                timescale: CMTimeScale(sampleRate)
-            )
-        )
         // logger.info("Audio sampleBufferQueue Count: \(sampleBufferQueue.count)")
         guard !sampleBufferQueue.isEmpty else {
             logger.info("Audio Queue is empty. Skipping frame.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
+            let presentationTimeStamp = CMTimeAdd(
+                CMClockGetTime(CMClockGetHostTimeClock()),
+                CMTimeMake(value: 4, timescale: 1)
+            )
             guard let sampleBuffer = sampleBuffer
-                .replacePresentationTimeStamp(timeStamp: audioPresentationTimeStamp)
+                .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             else {
                 return
             }
