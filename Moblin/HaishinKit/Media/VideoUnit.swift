@@ -53,7 +53,7 @@ private class ReplaceVideo {
 
     init(cameraId: UUID, latency: Double, frameRate: Double) {
         self.cameraId = cameraId
-        self.latency = latency
+        self.latency = latency + 2 // minimum buffer time to calculate the fps
         self.frameRate = frameRate
     }
 
