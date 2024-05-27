@@ -32,6 +32,7 @@ private func setOrientation(
 private struct FaceDetectionsCompletion {
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
+    let rotateDegrees: Int
     let isFirstAfterAttach: Bool
     let applyBlur: Bool
     var faceDetections: [VNFaceObservation]?
@@ -258,7 +259,12 @@ final class VideoUnit: NSObject {
         else {
             return
         }
-        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: ioVideoBlurSceneSwitch)
+        _ = appendSampleBuffer(
+            sampleBuffer,
+            rotateDegrees: 0,
+            isFirstAfterAttach: false,
+            applyBlur: ioVideoBlurSceneSwitch
+        )
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
@@ -384,6 +390,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
+                              _ rotateDegrees: Int,
                               _ faceDetections: [VNFaceObservation]?,
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
@@ -392,6 +399,7 @@ final class VideoUnit: NSObject {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
+                rotateDegrees,
                 faceDetections,
                 applyBlur,
                 isFirstAfterAttach
@@ -400,6 +408,7 @@ final class VideoUnit: NSObject {
             return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
+                rotateDegrees,
                 faceDetections,
                 applyBlur,
                 isFirstAfterAttach
@@ -409,6 +418,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
+                                       _: Int,
                                        _ faceDetections: [VNFaceObservation]?,
                                        _ applyBlur: Bool,
                                        _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
@@ -456,6 +466,34 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
+    private func rotateImageMetalPetal(_ image: MTIImage?, _ rotateDegrees: Int) -> MTIImage? {
+        if rotateDegrees == 90 {
+            return image?.oriented(.left)
+        } else {
+            return image
+        }
+    }
+
+    // periphery:ignore
+    private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
+        guard let image else {
+            return image
+        }
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(
+            color: .black,
+            sRGB: false,
+            size: .init(width: CGFloat(preset.width!), height: CGFloat(preset.height!))
+        )
+        filter.layers = [
+            .init(
+                content: image,
+                position: .init(x: CGFloat(preset.width! / 2), y: CGFloat(preset.height! / 2))
+            ),
+        ]
+        return filter.outputImage
+    }
+
     private func blurImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image else {
             return nil
@@ -468,6 +506,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
+                                        _ rotateDegrees: Int,
                                         _ faceDetections: [VNFaceObservation]?,
                                         _ applyBlur: Bool,
                                         _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
@@ -475,6 +514,14 @@ final class VideoUnit: NSObject {
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         let originalImage = image
         var failedEffect: String?
+        if rotateDegrees != 0 {
+            image = rotateImageMetalPetal(image, rotateDegrees)
+        }
+        // if let image2 = image,
+        //    Int32(image2.size.width) != preset.width! || Int32(image2.size.height) != preset.height!
+        // {
+        //    image = scaleImageMetalPetal(image)
+        // }
         for effect in effects {
             let effectOutputImage = effect.executeMetalPetal(image, faceDetections, isFirstAfterAttach)
             if effectOutputImage != nil {
@@ -662,7 +709,9 @@ final class VideoUnit: NSObject {
         return sampleBuffer
     }
 
-    private func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, isFirstAfterAttach: Bool,
+    private func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer,
+                                    rotateDegrees: Int,
+                                    isFirstAfterAttach: Bool,
                                     applyBlur: Bool) -> Bool
     {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
@@ -684,6 +733,7 @@ final class VideoUnit: NSObject {
         var completion = FaceDetectionsCompletion(
             sequenceNumber: nextFaceDetectionsSequenceNumber,
             sampleBuffer: sampleBuffer,
+            rotateDegrees: rotateDegrees,
             isFirstAfterAttach: isFirstAfterAttach,
             applyBlur: applyBlur
         )
@@ -730,6 +780,7 @@ final class VideoUnit: NSObject {
             }
             appendSampleBufferWithFaceDetections(
                 completion.sampleBuffer,
+                completion.rotateDegrees,
                 completion.isFirstAfterAttach,
                 completion.applyBlur,
                 completion.faceDetections
@@ -740,6 +791,7 @@ final class VideoUnit: NSObject {
 
     private func appendSampleBufferWithFaceDetections(
         _ sampleBuffer: CMSampleBuffer,
+        _ rotateDegrees: Int,
         _ isFirstAfterAttach: Bool,
         _ applyBlur: Bool,
         _ faceDetections: [VNFaceObservation]?
@@ -753,10 +805,11 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInner()
         }
-        if !effects.isEmpty || applyBlur {
+        if !effects.isEmpty || applyBlur || rotateDegrees != 0 {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,
+                rotateDegrees,
                 faceDetections,
                 applyBlur,
                 isFirstAfterAttach
@@ -1009,6 +1062,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        var rotateDegrees = 0
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
         }
@@ -1031,7 +1085,12 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         else {
             return
         }
-        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, applyBlur: false) {
+        if appendSampleBuffer(
+            sampleBuffer,
+            rotateDegrees: rotateDegrees,
+            isFirstAfterAttach: isFirstAfterAttach,
+            applyBlur: false
+        ) {
             isFirstAfterAttach = false
         }
         stopGapFillerTimer()
