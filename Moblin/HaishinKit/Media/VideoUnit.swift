@@ -1076,7 +1076,7 @@ final class VideoUnit: NSObject {
     }
 }
 
-extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate, ReplaceVideoSampleBufferDelegate {
+extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
@@ -1087,7 +1087,9 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate, ReplaceVideoS
         }
         prepareSampleBuffer(sampleBuffer: sampleBuffer)
     }
+}
 
+extension VideoUnit: ReplaceVideoSampleBufferDelegate {
     func didOutputReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         if cameraId == selectedReplaceVideoCameraId {
             prepareSampleBuffer(sampleBuffer: sampleBuffer)

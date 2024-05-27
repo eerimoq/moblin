@@ -241,7 +241,7 @@ final class AudioUnit: NSObject {
     }
 }
 
-extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate, ReplaceAudioSampleBufferDelegate {
+extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
@@ -264,7 +264,9 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate, ReplaceAudioS
             numberOfAudioChannels: connection.audioChannels.count
         )
     }
+}
 
+extension AudioUnit: ReplaceAudioSampleBufferDelegate {
     func didOutputReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         if cameraId == selectedReplaceAudioId {
             let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?

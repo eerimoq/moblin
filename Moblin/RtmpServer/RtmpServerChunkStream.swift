@@ -466,16 +466,10 @@ class RtmpServerChunkStream {
         } else {
             videoTimestamp += Double(messageTimestamp)
         }
-        if compositionTime != 0 {
-            let videoTimestamp = CMTime(value: CMTimeValue(videoTimestamp), timescale: 1000)
-            let compositionTime = CMTime(value: CMTimeValue(compositionTime), timescale: 1000)
-            presentationTimeStamp = videoTimestamp + compositionTime
-            decodeTimeStamp = videoTimestamp
-        } else {
-            let videoTimestamp = CMTime(value: CMTimeValue(videoTimestamp), timescale: 1000)
-            presentationTimeStamp = videoTimestamp
-            decodeTimeStamp = .invalid
-        }
+        let videoTimeStamp = CMTime(value: CMTimeValue(videoTimestamp), timescale: 1000)
+        let compositionTimeStamp = CMTime(value: CMTimeValue(compositionTime), timescale: 1000)
+        presentationTimeStamp = videoTimeStamp + compositionTimeStamp
+        decodeTimeStamp = videoTimeStamp
         var timing = CMSampleTimingInfo(
             duration: .invalid,
             presentationTimeStamp: presentationTimeStamp,
@@ -529,8 +523,7 @@ class RtmpServerChunkStream {
          PTS: \(timing.presentationTimeStamp.seconds), \
          DTS: \(timing.decodeTimeStamp.seconds)
          """) */
-        let sampleBuffer = audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
-        return sampleBuffer
+        return audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
     }
 }
 
