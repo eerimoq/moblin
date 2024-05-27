@@ -47,7 +47,8 @@ private class ReplaceVideo {
     private var frameRate: Double
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var outputTimer: DispatchSourceTimer?
-    private var isInitialBufferingComplete = false
+    private var isInitialBufferingTimerStarted = false
+    private var isInitialBufferingCompleted = false
     weak var delegate: ReplaceVideoSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double, frameRate: Double) {
@@ -62,15 +63,17 @@ private class ReplaceVideo {
             sampleBuffer1.presentationTimeStamp < sampleBuffer2.presentationTimeStamp
         }
         logger.info("sampleBufferQueue Count: \(sampleBufferQueue.count)")
-        if isInitialBufferingComplete == false {
+        if !isInitialBufferingCompleted, !isInitialBufferingTimerStarted {
             logger.info("Starting ReplaceVideo buffering.")
             startInitialBufferingTimer()
         }
     }
 
     private func startInitialBufferingTimer() {
-        isInitialBufferingComplete = true
+        logger.info("InitialBufferingTimer started")
+        isInitialBufferingTimerStarted = true
         DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
+            self.isInitialBufferingCompleted = true
             self.startOutput()
         }
     }
