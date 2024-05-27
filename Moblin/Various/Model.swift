@@ -5670,26 +5670,46 @@ extension Model {
 extension Model: SampleBufferReceiverDelegate {
     func senderConnected() {
         DispatchQueue.main.async {
-            self.makeToast(
-                title: String(localized: "Screen recording started"),
-                subTitle: "DOES NOT YET WORK!!!"
-            )
+            self.handleSampleBufferSenderConnected()
         }
     }
 
     func senderDisconnected() {
         DispatchQueue.main.async {
-            self.makeToast(
-                title: String(localized: "Screen recording stopped"),
-                subTitle: "DOES NOT YET WORK!!!"
-            )
+            self.handleSampleBufferSenderDisconnected()
         }
     }
 
     func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
+        handleSampleBufferSenderBuffer(type, sampleBuffer)
+    }
+}
+
+// private let sampleBufferCameraId = UUID()
+
+extension Model {
+    private func handleSampleBufferSenderConnected() {
+        makeToast(
+            title: String(localized: "Screen recording started"),
+            subTitle: "DOES NOT YET WORK!!!"
+        )
+        // media.addRtmpCamera(cameraId: sampleBufferCameraId, latency: 0.5)
+        // attachRtmpCamera(cameraId: sampleBufferCameraId)
+    }
+
+    private func handleSampleBufferSenderDisconnected() {
+        makeToast(
+            title: String(localized: "Screen recording stopped"),
+            subTitle: "DOES NOT YET WORK!!!"
+        )
+        // media.removeRtmpCamera(cameraId: sampleBufferCameraId)
+    }
+
+    private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
         switch type {
         case .video:
             logger.info("Video sample buffer: \(sampleBuffer)")
+        // media.addRtmpSampleBuffer(cameraId: sampleBufferCameraId, sampleBuffer: sampleBuffer)
         default:
             break
         }

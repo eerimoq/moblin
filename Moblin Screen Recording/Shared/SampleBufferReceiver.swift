@@ -73,7 +73,7 @@ class SampleBufferReceiver {
     private func readLoop(senderFd: Int32) throws {
         videoBufferPool = nil
         while true {
-            let header = try readHeader(senderFd: senderFd)
+            let header = try readHeader(senderFd)
             guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
                 break
             }
@@ -93,53 +93,59 @@ class SampleBufferReceiver {
         }
     }
 
-    private func handleVideo(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer? {
+    private func handleVideo(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer {
         let pixelBufferPool = try getVideoBufferPool(header)
         let pixelBuffer = try createPixelBuffer(pool: pixelBufferPool)
         CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
-        guard let pointer = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+        defer {
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
+        }
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
             throw "Failed to get base address"
         }
         let size = CVPixelBufferGetDataSize(pixelBuffer)
-        try readPointer(senderFd: senderFd, pointer: pointer, count: size)
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
+        try readPointer(senderFd, baseAddress, size)
+        // To do: Figure out why not all frame data fits in the buffer.
         if header.bufferSize > size {
-            _ = try read(senderFd: senderFd, count: header.bufferSize - size)
+            _ = try read(senderFd, header.bufferSize - size)
         }
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: pixelBuffer)
         else {
             throw "Failed to create format description"
         }
-        return CMSampleBuffer.create(
+        guard let sampleBuffer = CMSampleBuffer.create(
             pixelBuffer,
             formatDescription,
             .invalid,
             header.presentationTimeStamp.toCMTime(),
             .invalid
-        )
+        ) else {
+            throw "Failed to create sample buffer"
+        }
+        return sampleBuffer
     }
 
     private func handleAudio(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer? {
-        _ = try read(senderFd: senderFd, count: header.bufferSize)
+        _ = try read(senderFd, header.bufferSize)
         return nil
     }
 
-    private func readHeader(senderFd: Int32) throws -> SampleBufferHeader {
-        let sizeData = try read(senderFd: senderFd, count: 4)
+    private func readHeader(_ senderFd: Int32) throws -> SampleBufferHeader {
+        let sizeData = try read(senderFd, 4)
         let size = Int(sizeData.getUInt32Be())
-        let data = try read(senderFd: senderFd, count: size)
+        let data = try read(senderFd, size)
         return try PropertyListDecoder().decode(SampleBufferHeader.self, from: data)
     }
 
-    private func read(senderFd: Int32, count: Int) throws -> Data {
+    private func read(_ senderFd: Int32, _ count: Int) throws -> Data {
         var data = Data(count: count)
         try data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-            try readPointer(senderFd: senderFd, pointer: pointer.baseAddress!, count: count)
+            try readPointer(senderFd, pointer.baseAddress!, count)
         }
         return data
     }
 
-    private func readPointer(senderFd: Int32, pointer: UnsafeMutableRawPointer, count: Int) throws {
+    private func readPointer(_ senderFd: Int32, _ pointer: UnsafeMutableRawPointer, _ count: Int) throws {
         var offset = 0
         while offset < count {
             let readCount = Darwin.read(senderFd, pointer.advanced(by: offset), count - offset)
