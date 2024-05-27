@@ -70,7 +70,6 @@ private class ReplaceVideo {
     }
 
     private func startInitialBufferingTimer() {
-        logger.info("InitialBufferingTimer started")
         isInitialBufferingTimerStarted = true
         DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
             self.isInitialBufferingCompleted = true
@@ -116,7 +115,7 @@ private class ReplaceVideo {
     func stopOutput() {
         outputTimer?.cancel()
         outputTimer = nil
-        isInitialBufferingComplete = false
+        isInitialBufferingCompleted = false
     }
 }
 
