@@ -291,7 +291,7 @@ class AdaptiveBitrate {
             currentBitrate = settings.minimumBitrate
         }
         if let transportBitrate = stats.transportBitrate {
-            let maximumBitrate = (3 * transportBitrate) / 2
+            let maximumBitrate = max((3 * transportBitrate) / 2, settings.minimumBitrate)
             if currentBitrate > maximumBitrate {
                 currentBitrate = maximumBitrate
             }
