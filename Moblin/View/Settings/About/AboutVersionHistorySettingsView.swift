@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.289.0", date: "2024-05-27", changes: [
+        "• Never allow encoder bitrate to be zero.",
+    ]),
     Version(version: "0.288.0", date: "2024-05-26", changes: [
         "• New filter framework.",
         "  • Settings → Debug → MetalPetal filters to enable/disable.",
