@@ -29859,6 +29859,9 @@
         }
       }
     },
+    "Failed to start OBS recording" : {
+
+    },
     "Failed to start OBS stream" : {
       "localizations" : {
         "de" : {
@@ -29988,6 +29991,9 @@
           }
         }
       }
+    },
+    "Failed to stop OBS recording" : {
+
     },
     "Failed to stop OBS stream" : {
       "localizations" : {
@@ -61975,6 +61981,9 @@
         }
       }
     },
+    "Start recording" : {
+
+    },
     "Start streaming" : {
       "localizations" : {
         "de" : {
@@ -62494,6 +62503,9 @@
           }
         }
       }
+    },
+    "Stop recording" : {
+
     },
     "Stop streaming" : {
       "localizations" : {
@@ -71594,6 +71606,9 @@
           }
         }
       }
+    },
+    "Unknown recording state." : {
+
     },
     "Unknown streaming state." : {
       "localizations" : {

@@ -343,6 +343,7 @@ final class Model: NSObject, ObservableObject {
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
+    @Published var obsRecordingState: ObsOutputState = .stopped
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
     private var obsSourceFetchScreenshot = false
@@ -2708,6 +2709,24 @@ final class Model: NSObject, ObservableObject {
         })
     }
 
+    func obsStartRecording() {
+        obsWebSocket?.startRecord(onSuccess: {}, onError: { message in
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
+                                    subTitle: message)
+            }
+        })
+    }
+
+    func obsStopRecording() {
+        obsWebSocket?.stopRecord(onSuccess: {}, onError: { message in
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
+                                    subTitle: message)
+            }
+        })
+    }
+
     func obsFixStream() {
         obsFixOngoing = true
         obsWebSocket?.getSceneItemId(
@@ -2890,9 +2909,16 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleObsRecordStatusChanged(active: Bool) {
+    private func handleObsRecordStatusChanged(active: Bool, state: ObsOutputState? = nil) {
         DispatchQueue.main.async {
             self.obsRecording = active
+            if let state {
+                self.obsRecordingState = state
+            } else if active {
+                self.obsRecordingState = .started
+            } else {
+                self.obsRecordingState = .stopped
+            }
         }
     }
 

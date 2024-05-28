@@ -242,6 +242,7 @@ struct StreamStateChangedEvent: Decodable {
 
 struct RecordStateChangedEvent: Decodable {
     let outputActive: Bool
+    let outputState: String
 }
 
 struct InputVolumeMeter: Decodable {
@@ -375,7 +376,7 @@ class ObsWebSocket {
     private var onConnected: () -> Void
     var onSceneChanged: ((String) -> Void)?
     var onStreamStatusChanged: ((Bool, ObsOutputState?) -> Void)?
-    var onRecordStatusChanged: ((Bool) -> Void)?
+    var onRecordStatusChanged: ((Bool, ObsOutputState?) -> Void)?
     var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
 
@@ -506,6 +507,22 @@ class ObsWebSocket {
 
     func stopStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .stopStream, data: nil, onSuccess: { _ in
+            onSuccess()
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
+    func startRecord(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequest(type: .startRecord, data: nil, onSuccess: { _ in
+            onSuccess()
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
+    func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
             onSuccess()
         }, onError: { message in
             onError(message)
@@ -806,8 +823,12 @@ class ObsWebSocket {
             return
         }
         do {
-            let decoded = try JSONDecoder().decode(RecordStateChangedEvent.self, from: data)
-            onRecordStatusChanged?(decoded.outputActive)
+            let event = try JSONDecoder().decode(RecordStateChangedEvent.self, from: data)
+            if let state = ObsOutputState(rawValue: event.outputState) {
+                onRecordStatusChanged?(event.outputActive, state)
+            } else {
+                onRecordStatusChanged?(event.outputActive, .stopped)
+            }
         } catch {}
     }
 

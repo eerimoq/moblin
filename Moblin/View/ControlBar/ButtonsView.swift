@@ -225,6 +225,84 @@ private struct ObsStartStopStreamingView: View {
     }
 }
 
+private struct ObsStartStopRecordingView: View {
+    @EnvironmentObject var model: Model
+    @State private var isPresentingStartRecordingConfirm: Bool = false
+    @State private var isPresentingStopRecordingConfirm: Bool = false
+
+    var body: some View {
+        if model.obsRecordingState == .stopped {
+            Section {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        isPresentingStartRecordingConfirm = true
+                    }, label: {
+                        Text("Start recording")
+                    })
+                    .confirmationDialog("", isPresented: $isPresentingStartRecordingConfirm) {
+                        Button("Start") {
+                            model.obsStartRecording()
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            .listRowBackground(RoundedRectangle(cornerRadius: 10)
+                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                .overlay(RoundedRectangle(cornerRadius: 10)
+                    .stroke(.blue, lineWidth: 2)))
+        } else if model.obsRecordingState == .starting {
+            Section {
+                HStack {
+                    Spacer()
+                    Text("Starting...")
+                    Spacer()
+                }
+            }
+            .foregroundColor(.white)
+            .listRowBackground(Color.gray)
+        } else if model.obsRecordingState == .started {
+            Section {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        isPresentingStopRecordingConfirm = true
+                    }, label: {
+                        Text("Stop recording")
+                    })
+                    .confirmationDialog("", isPresented: $isPresentingStopRecordingConfirm) {
+                        Button("Stop") {
+                            model.obsStopRecording()
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            .foregroundColor(.white)
+            .listRowBackground(Color.blue)
+        } else if model.obsRecordingState == .stopping {
+            Section {
+                HStack {
+                    Spacer()
+                    Text("Stopping...")
+                    Spacer()
+                }
+            }
+            .foregroundColor(.white)
+            .listRowBackground(Color.gray)
+        } else {
+            Section {
+                HStack {
+                    Spacer()
+                    Text("Unknown recording state.")
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
 struct ObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -245,6 +323,7 @@ struct ObsView: View {
                 }
             } else {
                 ObsStartStopStreamingView()
+                ObsStartStopRecordingView()
                 Section {
                     Picker("", selection: $model.obsCurrentScenePicker) {
                         ForEach(model.obsScenes, id: \.self) { scene in
