@@ -147,11 +147,87 @@ struct StreamSwitcherView: View {
     }
 }
 
+private struct ObsStartStopStreamingView: View {
+    @EnvironmentObject var model: Model
+    @State private var isPresentingStartStreamingConfirm: Bool = false
+    @State private var isPresentingStopStreamingConfirm: Bool = false
+
+    var body: some View {
+        if model.obsStreamingState == .stopped {
+            Section {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        isPresentingStartStreamingConfirm = true
+                    }, label: {
+                        Text("Start streaming")
+                    })
+                    .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
+                        Button("Start") {
+                            model.obsStartStream()
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            .listRowBackground(RoundedRectangle(cornerRadius: 10)
+                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                .overlay(RoundedRectangle(cornerRadius: 10)
+                    .stroke(.blue, lineWidth: 2)))
+        } else if model.obsStreamingState == .starting {
+            Section {
+                HStack {
+                    Spacer()
+                    Text("Starting...")
+                    Spacer()
+                }
+            }
+            .foregroundColor(.white)
+            .listRowBackground(Color.gray)
+        } else if model.obsStreamingState == .started {
+            Section {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        isPresentingStopStreamingConfirm = true
+                    }, label: {
+                        Text("Stop streaming")
+                    })
+                    .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
+                        Button("Stop") {
+                            model.obsStopStream()
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            .foregroundColor(.white)
+            .listRowBackground(Color.blue)
+        } else if model.obsStreamingState == .stopping {
+            Section {
+                HStack {
+                    Spacer()
+                    Text("Stopping...")
+                    Spacer()
+                }
+            }
+            .foregroundColor(.white)
+            .listRowBackground(Color.gray)
+        } else {
+            Section {
+                HStack {
+                    Spacer()
+                    Text("Unknown streaming state.")
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
 struct ObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
-    @State private var isPresentingStartStreamingConfirm: Bool = false
-    @State private var isPresentingStopStreamingConfirm: Bool = false
 
     private func submitAudioDelay(value: String) -> String {
         let offsetDouble = Double(value) ?? 0
@@ -168,75 +244,7 @@ struct ObsView: View {
                     Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
             } else {
-                if model.obsStreamingState == .stopped {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                isPresentingStartStreamingConfirm = true
-                            }, label: {
-                                Text("Start streaming")
-                            })
-                            .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
-                                Button("Start") {
-                                    model.obsStartStream()
-                                }
-                            }
-                            Spacer()
-                        }
-                    }
-                    .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                        .overlay(RoundedRectangle(cornerRadius: 10)
-                            .stroke(.blue, lineWidth: 2)))
-                } else if model.obsStreamingState == .starting {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Text("Starting...")
-                            Spacer()
-                        }
-                    }
-                    .foregroundColor(.white)
-                    .listRowBackground(Color.gray)
-                } else if model.obsStreamingState == .started {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                isPresentingStopStreamingConfirm = true
-                            }, label: {
-                                Text("Stop streaming")
-                            })
-                            .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
-                                Button("Stop") {
-                                    model.obsStopStream()
-                                }
-                            }
-                            Spacer()
-                        }
-                    }
-                    .foregroundColor(.white)
-                    .listRowBackground(Color.blue)
-                } else if model.obsStreamingState == .stopping {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Text("Stopping...")
-                            Spacer()
-                        }
-                    }
-                    .foregroundColor(.white)
-                    .listRowBackground(Color.gray)
-                } else {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Text("Unknown streaming state.")
-                            Spacer()
-                        }
-                    }
-                }
+                ObsStartStopStreamingView()
                 Section {
                     Picker("", selection: $model.obsCurrentScenePicker) {
                         ForEach(model.obsScenes, id: \.self) { scene in
