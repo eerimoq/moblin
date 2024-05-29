@@ -279,6 +279,15 @@ class AdaptiveBitrate {
         if currentMaximumBitrate < 250_000 {
             currentMaximumBitrate = 250_000
         }
+        // To not push too high bitrate after static scene. The encoder may output way
+        // lower bitrate than configured.
+        if let transportBitrate = stats.transportBitrate {
+            var maximumBitrate = max(transportBitrate + 1_000_000, (17 * transportBitrate) / 10)
+            maximumBitrate = max(maximumBitrate, settings.minimumBitrate)
+            if currentMaximumBitrate > maximumBitrate {
+                currentMaximumBitrate = maximumBitrate
+            }
+        }
         var tempBitrate = Int64(currentMaximumBitrate)
         tempBitrate *= Int64(pifDiffThing)
         tempBitrate /= Int64(settings.packetsInFlight)
@@ -289,15 +298,6 @@ class AdaptiveBitrate {
         // pif running away do a quick lower of bitrate temporarily
         if Int32(fastPif) - Int32(smoothPif) > settings.packetsInFlight * 2 {
             currentBitrate = settings.minimumBitrate
-        }
-        // To not push too high bitrate after static scene. The encoder may output way
-        // lower bitrate that configured.
-        if let transportBitrate = stats.transportBitrate {
-            var maximumBitrate = max(transportBitrate + 1_000_000, (17 * transportBitrate) / 10)
-            maximumBitrate = max(maximumBitrate, settings.minimumBitrate)
-            if currentBitrate > maximumBitrate {
-                currentBitrate = maximumBitrate
-            }
         }
     }
 
