@@ -40,10 +40,10 @@ let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
 class AdaptiveBitrate {
     private var avgRtt: Double = 0.0
     private var fastRtt: Double = 0.0
-    private var currentBitrate: Int64 = 250_000
-    private var previousBitrate: Int64 = 250_000
-    private var targetBitrate: Int64 = 250_000
-    private var currentMaximumBitrate: Int64 = 250_000
+    private var currentBitrate: Int64 = 500_000
+    private var previousBitrate: Int64 = 500_000
+    private var targetBitrate: Int64 = 500_000
+    private var currentMaximumBitrate: Int64 = 500_000
     private var smoothPif: Double = 0
     private var fastPif: Double = 0
     private weak var delegate: (any AdaptiveBitrateDelegate)!
@@ -290,8 +290,11 @@ class AdaptiveBitrate {
         if Int32(fastPif) - Int32(smoothPif) > settings.packetsInFlight * 2 {
             currentBitrate = settings.minimumBitrate
         }
+        // To not push too high bitrate after static scene. The encoder may output way
+        // lower bitrate that configured.
         if let transportBitrate = stats.transportBitrate {
-            let maximumBitrate = max((3 * transportBitrate) / 2, settings.minimumBitrate)
+            var maximumBitrate = max(transportBitrate + 1_000_000, (17 * transportBitrate) / 10)
+            maximumBitrate = max(maximumBitrate, settings.minimumBitrate)
             if currentBitrate > maximumBitrate {
                 currentBitrate = maximumBitrate
             }
