@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.290.0", date: "2024-05-29", changes: [
+        "• Start/stop recording button in OBS remote control.",
+        "• Allow adaptive bitrate to increase bitrate slightly faster, especially when low.",
+        "  • Limit to encoder output bitrate + 1 Mpbs, or encoder output bitrate * 1.7, whichever is bigger. Limit was encoder output bitrate * 1.5.",
+        "• Start adaptive bitrate algorithm at 500 Kbps instead of 250 Kbps.",
+        "• Minimum bitrate setting for the custom adaptive bitrate algorithm. 💡 Tony Mah",
+    ]),
     Version(version: "0.289.0", date: "2024-05-27", changes: [
         "• Never allow encoder bitrate to be zero.",
     ]),
