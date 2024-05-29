@@ -43125,6 +43125,9 @@
         }
       }
     },
+    "Minimum bitrate" : {
+
+    },
     "Minimum bitrate decrease speed" : {
       "localizations" : {
         "de" : {
@@ -67576,6 +67579,9 @@
           }
         }
       }
+    },
+    "The minimum encoder bitrate." : {
+
     },
     "The name of the Source in OBS that receives the stream from Moblin." : {
       "localizations" : {

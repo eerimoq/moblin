@@ -157,6 +157,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
+    var minimumBitrate: Float? = 50
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -165,6 +166,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
         new.rttDiffHighDecreaseFactor = rttDiffHighDecreaseFactor
         new.rttDiffHighAllowedSpike = rttDiffHighAllowedSpike
         new.rttDiffHighMinimumDecrease = rttDiffHighMinimumDecrease
+        new.minimumBitrate = minimumBitrate
         return new
     }
 }
@@ -2407,6 +2409,12 @@ final class Settings {
         }
         if realDatabase.debug!.metalPetalFilters == nil {
             realDatabase.debug!.metalPetalFilters = false
+            store()
+        }
+        for stream in realDatabase.streams
+            where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
+        {
+            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
             store()
         }
     }

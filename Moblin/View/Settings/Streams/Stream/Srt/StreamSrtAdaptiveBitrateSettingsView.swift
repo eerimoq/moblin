@@ -51,6 +51,16 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         return "\(formatBytesPerSecond(speed: Int64(value)))/sec"
     }
 
+    private func submitMinimumBitrate(value: Float) {
+        adaptiveBitrate.customSettings.minimumBitrate = value / 1000
+        model.store()
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+    }
+
+    private func formatMinimumBitrate(value: Float) -> String {
+        return formatBytesPerSecond(speed: Int64(value))
+    }
+
     private func submitPacketsInFlight(value: Float) {
         adaptiveBitrate.customSettings.packetsInFlight = Int32(value)
         model.store()
@@ -183,6 +193,19 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     Text("Allowed RTT spike")
                 } footer: {
                     Text("The maximum allowed RTT spike before decreasing the bitrate")
+                }
+                Section {
+                    SliderView(value: 1000 * adaptiveBitrate.customSettings.minimumBitrate!,
+                               minimum: 50000,
+                               maximum: 2_000_000,
+                               step: 10000,
+                               onSubmit: submitMinimumBitrate,
+                               width: 80,
+                               format: formatMinimumBitrate)
+                } header: {
+                    Text("Minimum bitrate")
+                } footer: {
+                    Text("The minimum encoder bitrate.")
                 }
             }
         }
