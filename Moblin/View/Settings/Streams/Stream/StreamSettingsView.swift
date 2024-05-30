@@ -18,6 +18,8 @@ struct StreamSettingsView: View {
                 )) {
                     TextItemView(name: String(localized: "Name"), value: stream.name)
                 }
+            }
+            Section {
                 NavigationLink(destination: StreamUrlSettingsView(
                     stream: stream,
                     value: stream.url
@@ -37,6 +39,43 @@ struct StreamSettingsView: View {
                 NavigationLink(destination: StreamRecordingSettingsView(stream: stream)) {
                     Text("Recording")
                 }
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    Toggle(isOn: Binding(get: {
+                        stream.portrait!
+                    }, set: { value in
+                        stream.portrait = value
+                        model.store()
+                        model.updateOrientationLock()
+                    })) {
+                        Text("Portrait")
+                    }
+                }
+                if stream.getProtocol() == .srt {
+                    NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
+                        Text("SRT(LA)")
+                    }
+                }
+                if stream.getProtocol() == .rtmp {
+                    NavigationLink(destination: StreamRtmpSettingsView(stream: stream)) {
+                        Text("RTMP")
+                    }
+                }
+                if stream.getProtocol() == .rist {
+                    NavigationLink(destination: StreamRistSettingsView(stream: stream)) {
+                        Text("RIST")
+                    }
+                }
+            } header: {
+                Text("Media")
+            } footer: {
+                Text("""
+                The streamed (and recorded) video is always in landscape, even if the portrait toggle \
+                is enabled. Rotate it in to portrait in OBS. To be improved in the future.
+                """)
+                Text("")
+                Text("Widgets will be wrongly rotated when the portrait toggle is enabled.")
+            }
+            Section {
                 NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
                     Toggle("Twitch", isOn: Binding(get: {
                         stream.twitchEnabled!
@@ -95,6 +134,10 @@ struct StreamSettingsView: View {
                 NavigationLink(destination: StreamChatSettingsView(stream: stream)) {
                     Text("Chat")
                 }
+            } header: {
+                Text("Chat and viewers")
+            }
+            Section {
                 NavigationLink(destination: StreamObsSettingsView(stream: stream)) {
                     Toggle("OBS remote control", isOn: Binding(get: {
                         stream.obsWebSocketEnabled!
@@ -117,39 +160,6 @@ struct StreamSettingsView: View {
                         }
                     }))
                 }
-                if UIDevice.current.userInterfaceIdiom == .phone {
-                    Toggle(isOn: Binding(get: {
-                        stream.portrait!
-                    }, set: { value in
-                        stream.portrait = value
-                        model.store()
-                        model.updateOrientationLock()
-                    })) {
-                        Text("Portrait")
-                    }
-                }
-                if stream.getProtocol() == .srt {
-                    NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
-                        Text("SRT(LA)")
-                    }
-                }
-                if stream.getProtocol() == .rtmp {
-                    NavigationLink(destination: StreamRtmpSettingsView(stream: stream)) {
-                        Text("RTMP")
-                    }
-                }
-                if stream.getProtocol() == .rist {
-                    NavigationLink(destination: StreamRistSettingsView(stream: stream)) {
-                        Text("RIST")
-                    }
-                }
-            } footer: {
-                Text("""
-                The streamed (and recorded) video is always in landscape, even if the portrait toggle \
-                is enabled. Rotate it in to portrait in OBS. To be improved in the future.
-                """)
-                Text("")
-                Text("Widgets will be wrongly rotated when the portrait toggle is enabled.")
             }
         }
         .navigationTitle("Stream")

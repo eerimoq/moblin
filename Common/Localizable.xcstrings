@@ -17119,6 +17119,9 @@
         }
       }
     },
+    "Chat and viewers" : {
+
+    },
     "Chat is empty." : {
       "localizations" : {
         "de" : {
@@ -42217,6 +42220,9 @@
           }
         }
       }
+    },
+    "Media" : {
+
     },
     "Message" : {
       "localizations" : {
