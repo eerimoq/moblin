@@ -21,13 +21,12 @@ class RealtimeIrl {
         updateCount += 1
         var request = URLRequest(url: URL(string: "https://rtirl.com/api/push?key=\(pushKey)")!)
         request.httpMethod = "POST"
-        request.httpBody = """
+        request.httpBody = Data("""
         {
           \"latitude\":\(location.coordinate.latitude),
           \"longitude\":\(location.coordinate.longitude)
         }
-        """
-        .data(using: String.Encoding.utf8)
+        """.utf8)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         URLSession.shared.dataTask(with: request) { _, _, _ in
         }

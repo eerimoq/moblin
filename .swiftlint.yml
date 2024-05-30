@@ -11,3 +11,4 @@ disabled_rules:
   - function_body_length
   - force_cast
   - closure_parameter_position
+  - non_optional_string_data_conversion

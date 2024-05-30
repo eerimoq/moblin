@@ -181,9 +181,7 @@ class OpenStreamingPlatformChat {
 
     private func handleMessage(message: String) async throws {
         logger.debug("open-streaming-platform: Got string \(message)")
-        guard let data = "<container>\(message)</container>".data(using: .utf8) else {
-            return
-        }
+        let data = Data("<container>\(message)</container>".utf8)
         do {
             let message = try XMLDecoder().decode(MessageContainer.self, from: data)
             try await handleMessageMessage(message: message.message)
