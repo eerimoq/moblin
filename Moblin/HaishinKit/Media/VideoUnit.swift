@@ -57,9 +57,15 @@ private class ReplaceVideo {
         case buffering
         case outputting
     }
+
     private var maxQueueSize: Int {
-        return Int(latency * frameRate * 2)
+        return Int(latency * frameRate + 2)
     }
+
+    private var minQueueSize: Int {
+        return Int(latency * frameRate - 2)
+    }
+
     weak var delegate: ReplaceVideoSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double, buggedPublisher: Bool, manualFps: Bool, frameRate: Double) {
@@ -74,7 +80,7 @@ private class ReplaceVideo {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        var currentTime = CACurrentMediaTime()
+        let currentTime = CACurrentMediaTime()
         if startTime == nil {
             startTime = currentTime
         }
@@ -82,17 +88,12 @@ private class ReplaceVideo {
         sampleBufferQueue.sort { sampleBuffer1, sampleBuffer2 in
             sampleBuffer1.presentationTimeStamp < sampleBuffer2.presentationTimeStamp
         }
-        if state == .outputting, sampleBufferQueue.count > maxQueueSize {
-            logger.info("Too many ReplaceVideos buffered. Dropping oldest ReplaceVideo.")
-            sampleBufferQueue.removeFirst()
-        }
         logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
             if currentTime - startTime! >= initializationDuration {
                 initialize()
-                sampleBufferQueue.removeAll()
                 startTime = nil
                 state = .buffering
             }
@@ -103,8 +104,8 @@ private class ReplaceVideo {
                 startOutput()
             }
         case .outputting:
-            // logger.info("Starting ReplaceVideo outputting.")
-            break
+            // logger.info("ReplaceVideo outputting.")
+            balanceQueue()
         }
     }
 
@@ -129,6 +130,7 @@ private class ReplaceVideo {
         if buggedPublisher == true {
             frameRate = frameRate.nearestCommonFrameRate()
         }
+        sampleBufferQueue.removeAll()
     }
 
     private func startOutput() {
@@ -143,15 +145,7 @@ private class ReplaceVideo {
     }
 
     private func output() {
-        if sampleBufferQueue.count < Int(frameRate) {
-            logger.info("ReplaceVideo Queue size low. Waiting for more frames.")
-            return
-        }
         if let sampleBuffer = sampleBufferQueue.first {
-//            let presentationTimeStamp = CMTimeAdd(
-//                CMClockGetTime(CMClockGetHostTimeClock()),
-//                CMTimeMake(value: 4, timescale: 1)
-//            )
             let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
             guard let sampleBuffer = sampleBuffer
                 .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
@@ -160,7 +154,20 @@ private class ReplaceVideo {
             }
             delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
             sampleBufferQueue.removeFirst()
+        } else {
+            logger.info("ReplaceVideo Queue size low. Waiting for more frames.")
         }
+    }
+
+    private func balanceQueue() {
+        if sampleBufferQueue.count > maxQueueSize {
+            logger.info("ReplaceVideo Queue size high. Drop oldest sampleBuffer.")
+            sampleBufferQueue.removeFirst()
+        }
+//        if sampleBufferQueue.count < minQueueSize {
+//            logger.info("ReplaceVideo Queue size low. Duplicate oldest sampleBuffer.")
+//            sampleBufferQueue.insert(sampleBufferQueue.first!, at: 0)
+//        }
     }
 
     func stopOutput() {
