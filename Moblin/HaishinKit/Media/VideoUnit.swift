@@ -772,12 +772,9 @@ final class VideoUnit: NSObject {
 
     private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
         completedFaceDetections[completion.sequenceNumber] = completion
-        while true {
-            guard let completion = completedFaceDetections
-                .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
-            else {
-                break
-            }
+        while let completion = completedFaceDetections
+            .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
+        {
             appendSampleBufferWithFaceDetections(
                 completion.sampleBuffer,
                 completion.rotateDegrees,
