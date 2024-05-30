@@ -614,8 +614,12 @@ final class Media: NSObject {
         netStream.attachAudio(device, replaceAudioId: cameraId)
     }
 
-    func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
+    func addRtmpSampleBuffer(
+        cameraId: UUID,
+        sampleBuffer: CMSampleBuffer,
+        onSuccess: @escaping (Double) -> Void
+    ) {
+        netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer, onSuccess: onSuccess)
     }
 
     func addRtmpAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {

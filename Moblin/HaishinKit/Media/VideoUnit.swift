@@ -76,7 +76,7 @@ private class ReplaceVideo {
         self.frameRate = frameRate
     }
 
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, onSuccess: @escaping (Double) -> Void) {
         let currentTime = CACurrentMediaTime()
         if startTime == nil {
             startTime = currentTime
@@ -99,6 +99,7 @@ private class ReplaceVideo {
             if currentTime - startTime! >= latency {
                 state = .outputting
                 startOutput()
+                onSuccess(frameRate)
             }
         case .outputting:
             // logger.info("ReplaceVideo outputting.")
@@ -690,17 +691,25 @@ final class VideoUnit: NSObject {
         lowFpsImageLatest = 0.0
     }
 
-    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func addReplaceVideoSampleBuffer(
+        id: UUID,
+        _ sampleBuffer: CMSampleBuffer,
+        onSuccess: @escaping (Double) -> Void
+    ) {
         lockQueue.async {
-            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer)
+            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer, onSuccess: onSuccess)
         }
     }
 
-    private func addReplaceVideoSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+    private func addReplaceVideoSampleBufferInner(
+        id: UUID,
+        _ sampleBuffer: CMSampleBuffer,
+        onSuccess: @escaping (Double) -> Void
+    ) {
         guard let replaceVideo = replaceVideos[id] else {
             return
         }
-        replaceVideo.appendSampleBuffer(sampleBuffer)
+        replaceVideo.appendSampleBuffer(sampleBuffer, onSuccess: onSuccess)
     }
 
     func addReplaceVideo(

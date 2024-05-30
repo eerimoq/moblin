@@ -115,8 +115,12 @@ open class NetStream: NSObject {
         }
     }
 
-    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
+    func addReplaceVideoSampleBuffer(
+        id: UUID,
+        _ sampleBuffer: CMSampleBuffer,
+        onSuccess: @escaping (Double) -> Void
+    ) {
+        mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer, onSuccess: onSuccess)
     }
 
     func addAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
