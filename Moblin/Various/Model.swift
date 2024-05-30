@@ -1199,6 +1199,8 @@ final class Model: NSObject, ObservableObject {
             self.media.addRtmpCamera(
                 cameraId: stream.id,
                 latency: Double(stream.latency! / 1000),
+                buggedPublisher: stream.buggedPublisher!,
+                manualFps: stream.manualFps!,
                 frameRate: stream.fps!
             )
             if self.database.debug!.enableRtmpAudio! {
@@ -3138,6 +3140,7 @@ final class Model: NSObject, ObservableObject {
     func stopAllRtmpStreams() {
         for stream in database.rtmpServer!.streams {
             media.removeRtmpCamera(cameraId: stream.id)
+            media.removeRtmpAudio(cameraId: stream.id)
         }
     }
 

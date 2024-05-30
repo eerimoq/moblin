@@ -26,60 +26,79 @@ protocol ReplaceAudioSampleBufferDelegate: AnyObject {
 private class ReplaceAudio {
     private var cameraId: UUID
     private var latency: Double
+    private var frameRate: Double = 0.0
     private var sampleBufferQueue: [CMSampleBuffer] = []
+    private var startTime: Double?
+    private var state: State = .initializing
+    private var initializationDuration: Double = 1
     private var outputTimer: DispatchSourceTimer?
-    private var isInitialBufferingComplete = false
     weak var delegate: ReplaceAudioSampleBufferDelegate?
+    private enum State {
+        case initializing
+        case buffering
+        case outputting
+    }
 
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
-        self.latency = latency
+        self.latency = 1 + latency
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        let currentTime = CACurrentMediaTime()
+        if startTime == nil {
+            startTime = currentTime
+        }
         sampleBufferQueue.append(sampleBuffer)
-        if isInitialBufferingComplete == false {
-            logger.info("Starting ReplaceAudio buffering.")
-            startInitialBufferingTimer(sampleBuffer: sampleBuffer)
+        switch state {
+        case .initializing:
+            // logger.info("ReplaceVideo initializing.")
+            initialize(sampleBuffer: sampleBuffer)
+            sampleBufferQueue.removeAll()
+            startTime = nil
+            state = .buffering
+        case .buffering:
+            // logger.info("ReplaceAudio buffering.")
+            if currentTime - startTime! >= latency {
+                state = .outputting
+                startOutput()
+            }
+        case .outputting:
+            // logger.info("Starting ReplaceAudio outputting.")
+            break
         }
     }
 
-    private func startInitialBufferingTimer(sampleBuffer: CMSampleBuffer) {
-        isInitialBufferingComplete = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
-            self.startOutput(sampleBuffer: sampleBuffer)
-        }
-    }
-
-    func startOutput(sampleBuffer: CMSampleBuffer) {
-        guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer),
-              let streamBasicDescription =
-              CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)?.pointee
-        else {
-            return
-        }
+    private func initialize(sampleBuffer: CMSampleBuffer) {
         let frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
-        let sampleRate = streamBasicDescription.mSampleRate
-        let frameInterval = frameLength / sampleRate
+        let sampleRate = CMSampleBufferGetFormatDescription(sampleBuffer)?.streamBasicDescription?.pointee
+            .mSampleRate
+        frameRate = sampleRate! / frameLength
+    }
+
+    private func startOutput() {
+        logger.info("ReplaceAudio latency: \(latency)")
+        logger.info("ReplaceAudio frameRate: \(frameRate)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        outputTimer!.schedule(deadline: .now(), repeating: frameInterval)
+        outputTimer!.schedule(deadline: .now(), repeating: 1 / frameRate)
         outputTimer!.setEventHandler { [weak self] in
-            self?.outputSampleBuffer()
+            self?.output()
         }
         outputTimer!.activate()
     }
 
-    private func outputSampleBuffer() {
-        // logger.info("Audio sampleBufferQueue Count: \(sampleBufferQueue.count)")
-        guard !sampleBufferQueue.isEmpty else {
-            logger.info("Audio Queue is empty. Skipping frame.")
+    private func output() {
+        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+        if sampleBufferQueue.count < Int(frameRate) {
+            logger.info("ReplaceAudio Queue size low. Waiting for more frames.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
-            let presentationTimeStamp = CMTimeAdd(
-                CMClockGetTime(CMClockGetHostTimeClock()),
-                CMTimeMake(value: 4, timescale: 1)
-            )
+//            let presentationTimeStamp = CMTimeAdd(
+//                CMClockGetTime(CMClockGetHostTimeClock()),
+//                CMTimeMake(value: 4, timescale: 1)
+//            )
+            let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
             guard let sampleBuffer = sampleBuffer
                 .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             else {
@@ -93,7 +112,9 @@ private class ReplaceAudio {
     func stopOutput() {
         outputTimer?.cancel()
         outputTimer = nil
-        isInitialBufferingComplete = false
+        sampleBufferQueue.removeAll()
+        startTime = nil
+        state = .initializing
     }
 }
 

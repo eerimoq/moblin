@@ -44,64 +44,108 @@ protocol ReplaceVideoSampleBufferDelegate: AnyObject {
 private class ReplaceVideo {
     private var cameraId: UUID
     private var latency: Double
+    private var buggedPublisher: Bool
+    private var manualFps: Bool
     private var frameRate: Double
     private var sampleBufferQueue: [CMSampleBuffer] = []
+    private var startTime: Double?
+    private var state: State = .initializing
+    private var initializationDuration: Double = 1
     private var outputTimer: DispatchSourceTimer?
-    private var isInitialBufferingTimerStarted = false
-    private var isInitialBufferingCompleted = false
     weak var delegate: ReplaceVideoSampleBufferDelegate?
+    private enum State {
+        case initializing
+        case buffering
+        case outputting
+    }
 
-    init(cameraId: UUID, latency: Double, frameRate: Double) {
+    init(cameraId: UUID, latency: Double, buggedPublisher: Bool, manualFps: Bool, frameRate: Double) {
         self.cameraId = cameraId
-        self.latency = latency + 2 // minimum buffer time to calculate the fps
+        self.latency = 1 + latency
+        self.buggedPublisher = buggedPublisher
+        self.manualFps = manualFps
         self.frameRate = frameRate
+        if manualFps == true {
+            state = .buffering
+        }
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        var currentTime = CACurrentMediaTime()
+        if startTime == nil {
+            startTime = currentTime
+        }
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { sampleBuffer1, sampleBuffer2 in
             sampleBuffer1.presentationTimeStamp < sampleBuffer2.presentationTimeStamp
         }
-        logger.info("sampleBufferQueue Count: \(sampleBufferQueue.count)")
-        if !isInitialBufferingCompleted, !isInitialBufferingTimerStarted {
-            logger.info("Starting ReplaceVideo buffering.")
-            startInitialBufferingTimer()
+        switch state {
+        case .initializing:
+            // logger.info("ReplaceVideo initializing.")
+            if currentTime - startTime! >= initializationDuration {
+                initialize()
+                sampleBufferQueue.removeAll()
+                startTime = nil
+                state = .buffering
+            }
+        case .buffering:
+            // logger.info("ReplaceVideo buffering.")
+            if currentTime - startTime! >= latency {
+                state = .outputting
+                startOutput()
+            }
+        case .outputting:
+            // logger.info("Starting ReplaceVideo outputting.")
+            break
         }
     }
 
-    private func startInitialBufferingTimer() {
-        isInitialBufferingTimerStarted = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + latency) {
-            self.isInitialBufferingCompleted = true
-            self.startOutput()
+    var counter: Int = 0
+    var firstPresentationTimeStamp: Double?
+
+    private func initialize() {
+        for sampleBuffer in sampleBufferQueue {
+            let currentPresentationTime = sampleBuffer.presentationTimeStamp.seconds
+            if firstPresentationTimeStamp == nil {
+                firstPresentationTimeStamp = currentPresentationTime
+            }
+            if let startTime = firstPresentationTimeStamp {
+                if currentPresentationTime < startTime + initializationDuration {
+                    counter += 1
+                } else {
+                    break
+                }
+            }
+        }
+        frameRate = Double(counter) / initializationDuration
+        if buggedPublisher == true {
+            frameRate = frameRate.nearestCommonFrameRate()
         }
     }
 
-    func startOutput() {
-        let frameInterval = 1 / frameRate
+    private func startOutput() {
+        logger.info("ReplaceVideo latency: \(latency)")
+        logger.info("ReplaceVideo frameRate: \(frameRate)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        outputTimer!.schedule(deadline: .now(), repeating: frameInterval)
+        outputTimer!.schedule(deadline: .now(), repeating: 1 / frameRate)
         outputTimer!.setEventHandler { [weak self] in
-            self?.outputSampleBuffer()
+            self?.output()
         }
         outputTimer!.activate()
     }
 
-    private func outputSampleBuffer() {
-        // logger.info("Video sampleBufferQueue Count: \(sampleBufferQueue.count)")
-        guard !sampleBufferQueue.isEmpty else {
-            logger.info("Video Queue is empty. Skipping frame.")
-            return
-        }
+    private func output() {
+        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         if sampleBufferQueue.count < Int(frameRate) {
-            logger.info("Queue size low: \(sampleBufferQueue.count). Waiting for more frames.")
+            logger.info("ReplaceVideo Queue size low. Waiting for more frames.")
             return
         }
         if let sampleBuffer = sampleBufferQueue.first {
-            let presentationTimeStamp = CMTimeAdd(
-                CMClockGetTime(CMClockGetHostTimeClock()),
-                CMTimeMake(value: 4, timescale: 1)
-            )
+//            let presentationTimeStamp = CMTimeAdd(
+//                CMClockGetTime(CMClockGetHostTimeClock()),
+//                CMTimeMake(value: 4, timescale: 1)
+//            )
+            let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
             guard let sampleBuffer = sampleBuffer
                 .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             else {
@@ -115,7 +159,11 @@ private class ReplaceVideo {
     func stopOutput() {
         outputTimer?.cancel()
         outputTimer = nil
-        isInitialBufferingCompleted = false
+        sampleBufferQueue.removeAll()
+        startTime = nil
+        counter = 0
+        firstPresentationTimeStamp = nil
+        state = .initializing
     }
 }
 
@@ -642,14 +690,38 @@ final class VideoUnit: NSObject {
         replaceVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceVideo(cameraId: UUID, latency: Double, frameRate: Double) {
+    func addReplaceVideo(
+        cameraId: UUID,
+        latency: Double,
+        buggedPublisher: Bool,
+        manualFps: Bool,
+        frameRate: Double
+    ) {
         lockQueue.async {
-            self.addReplaceVideoInner(cameraId: cameraId, latency: latency, frameRate: frameRate)
+            self.addReplaceVideoInner(
+                cameraId: cameraId,
+                latency: latency,
+                buggedPublisher: buggedPublisher,
+                manualFps: manualFps,
+                frameRate: frameRate
+            )
         }
     }
 
-    private func addReplaceVideoInner(cameraId: UUID, latency: Double, frameRate: Double) {
-        let replaceVideo = ReplaceVideo(cameraId: cameraId, latency: latency, frameRate: frameRate)
+    private func addReplaceVideoInner(
+        cameraId: UUID,
+        latency: Double,
+        buggedPublisher: Bool,
+        manualFps: Bool,
+        frameRate: Double
+    ) {
+        let replaceVideo = ReplaceVideo(
+            cameraId: cameraId,
+            latency: latency,
+            buggedPublisher: buggedPublisher,
+            manualFps: manualFps,
+            frameRate: frameRate
+        )
         replaceVideo.delegate = self
         replaceVideos[cameraId] = replaceVideo
     }
