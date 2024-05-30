@@ -32,12 +32,15 @@ private class ReplaceAudio {
     private var state: State = .initializing
     private var initializationDuration: Double = 1
     private var outputTimer: DispatchSourceTimer?
-    weak var delegate: ReplaceAudioSampleBufferDelegate?
     private enum State {
         case initializing
         case buffering
         case outputting
     }
+    private var maxQueueSize: Int {
+        return Int(latency * frameRate * 2)
+    }
+    weak var delegate: ReplaceAudioSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
@@ -50,13 +53,20 @@ private class ReplaceAudio {
             startTime = currentTime
         }
         sampleBufferQueue.append(sampleBuffer)
+        if state == .outputting, sampleBufferQueue.count > maxQueueSize {
+            logger.info("Too many ReplaceAudios buffered. Dropping oldest ReplaceAudio.")
+            sampleBufferQueue.removeFirst()
+        }
+        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
-            initialize(sampleBuffer: sampleBuffer)
-            sampleBufferQueue.removeAll()
-            startTime = nil
-            state = .buffering
+            if currentTime - startTime! >= initializationDuration {
+                initialize(sampleBuffer: sampleBuffer)
+                sampleBufferQueue.removeAll()
+                startTime = nil
+                state = .buffering
+            }
         case .buffering:
             // logger.info("ReplaceAudio buffering.")
             if currentTime - startTime! >= latency {
@@ -88,7 +98,6 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
         if sampleBufferQueue.count < Int(frameRate) {
             logger.info("ReplaceAudio Queue size low. Waiting for more frames.")
             return
