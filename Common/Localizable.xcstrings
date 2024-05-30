@@ -831,8 +831,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La \"cámara frontal espejo en transmisión\" solo se admite cuando se transmite en formato horizontal, no vertical."
+            "state" : "translated",
+            "value" : "\"Cámara frontal en espejo en la transmisión\" solo se admite cuando se transmite en formato horizontal, no vertical."
           }
         },
         "fi" : {
@@ -5819,7 +5819,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Se recomiendan 128 Kpbs o más. Establezca en 0 para automático."
           }
         },
@@ -14665,8 +14665,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cambio de escena borrosa"
+            "state" : "translated",
+            "value" : "Efecto borroso en el cambio de escena"
           }
         },
         "fi" : {
@@ -15055,8 +15055,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vinculación"
+            "state" : "translated",
+            "value" : "Bonding"
           }
         },
         "fi" : {
@@ -25585,7 +25585,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Habilitar audio RTMP"
           }
         },
@@ -30791,8 +30791,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "encontrar una cara"
+            "state" : "translated",
+            "value" : "Encontrar una cara"
           }
         },
         "fi" : {
@@ -40411,8 +40411,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL RIST mal formada"
+            "state" : "translated",
+            "value" : "Dirección RIST errónea"
           }
         },
         "fi" : {
@@ -42491,7 +42491,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtros de pétalos de metal"
           }
         },
@@ -43011,7 +43011,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Orientación del micrófono %@"
           }
         },
@@ -43274,8 +43274,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cámara frontal espejo en transmisión"
+            "state" : "translated",
+            "value" : "Cámara frontal en espejo en la transmisión"
           }
         },
         "fi" : {
@@ -50944,7 +50944,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "POSICIÓN"
           }
         },
@@ -52114,7 +52114,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RADIO"
           }
         },
@@ -52764,7 +52764,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Grabación iniciada"
           }
         },
@@ -52894,7 +52894,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Grabación detenida"
           }
         },
@@ -55104,7 +55104,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RIST"
           }
         },
@@ -55234,8 +55234,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falta el número de puerto RIST"
+            "state" : "translated",
+            "value" : "Falta el número del puerto RIST"
           }
         },
         "fi" : {
@@ -55364,7 +55364,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rist://120.35.234.2:2030"
           }
         },
@@ -58490,7 +58490,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Forma"
           }
         },
@@ -59530,8 +59530,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Liso"
+            "state" : "translated",
+            "value" : "Suavidad"
           }
         },
         "fi" : {
@@ -64346,8 +64346,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FORTALEZA"
+            "state" : "translated",
+            "value" : "FUERZA"
           }
         },
         "fi" : {
@@ -69289,7 +69289,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Demasiadas grabaciones. Eliminando la grabación más antigua."
           }
         },
