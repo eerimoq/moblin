@@ -37,9 +37,15 @@ private class ReplaceAudio {
         case buffering
         case outputting
     }
+
     private var maxQueueSize: Int {
-        return Int(latency * frameRate * 2)
+        return Int(latency * frameRate + 1)
     }
+
+    private var minQueueSize: Int {
+        return Int(latency * frameRate - 1)
+    }
+
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double) {
@@ -53,19 +59,16 @@ private class ReplaceAudio {
             startTime = currentTime
         }
         sampleBufferQueue.append(sampleBuffer)
-        if state == .outputting, sampleBufferQueue.count > maxQueueSize {
-            logger.info("Too many ReplaceAudios buffered. Dropping oldest ReplaceAudio.")
-            sampleBufferQueue.removeFirst()
-        }
-        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
             if currentTime - startTime! >= initializationDuration {
                 initialize(sampleBuffer: sampleBuffer)
-                sampleBufferQueue.removeAll()
                 startTime = nil
                 state = .buffering
+                return
             }
         case .buffering:
             // logger.info("ReplaceAudio buffering.")
@@ -74,8 +77,8 @@ private class ReplaceAudio {
                 startOutput()
             }
         case .outputting:
-            // logger.info("Starting ReplaceAudio outputting.")
-            break
+            // logger.info("ReplaceAudio outputting.")
+            balanceQueue()
         }
     }
 
@@ -84,6 +87,7 @@ private class ReplaceAudio {
         let sampleRate = CMSampleBufferGetFormatDescription(sampleBuffer)?.streamBasicDescription?.pointee
             .mSampleRate
         frameRate = sampleRate! / frameLength
+        sampleBufferQueue.removeAll()
     }
 
     private func startOutput() {
@@ -98,24 +102,29 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        if sampleBufferQueue.count < Int(frameRate) {
-            logger.info("ReplaceAudio Queue size low. Waiting for more frames.")
+        guard let sampleBuffer = sampleBufferQueue.first else {
+            logger.info("ReplaceAudio Queue size low. Waiting for more sampleBuffers.")
             return
         }
-        if let sampleBuffer = sampleBufferQueue.first {
-//            let presentationTimeStamp = CMTimeAdd(
-//                CMClockGetTime(CMClockGetHostTimeClock()),
-//                CMTimeMake(value: 4, timescale: 1)
-//            )
-            let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-            guard let sampleBuffer = sampleBuffer
-                .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
-            else {
-                return
-            }
-            delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
+        else {
+            return
+        }
+        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        sampleBufferQueue.removeFirst()
+    }
+
+    private func balanceQueue() {
+        if sampleBufferQueue.count > maxQueueSize {
+            logger.info("ReplaceAudio Queue size high. Drop oldest sampleBuffer.")
             sampleBufferQueue.removeFirst()
         }
+        // if sampleBufferQueue.count < minQueueSize {
+        //     logger.info("ReplaceVideo Queue size low. Duplicate oldest sampleBuffer.")
+        //     sampleBufferQueue.insert(sampleBufferQueue.first!, at: 0)
+        // }
     }
 
     func stopOutput() {

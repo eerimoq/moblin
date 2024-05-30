@@ -83,21 +83,20 @@ private class ReplaceVideo {
         }
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
-        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
-
-        guard let startTime = startTime else { return }
+        // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
 
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
-            if currentTime - startTime >= initializationDuration {
+            if currentTime - startTime! >= initializationDuration {
                 initialize()
-                self.startTime = nil
+                startTime = nil
                 state = .buffering
+                return
             }
         case .buffering:
             // logger.info("ReplaceVideo buffering.")
-            if currentTime - startTime >= latency {
+            if currentTime - startTime! >= latency {
                 state = .outputting
                 startOutput()
             }
@@ -146,16 +145,17 @@ private class ReplaceVideo {
 
     private func output() {
         guard let sampleBuffer = sampleBufferQueue.first else {
-            logger.info("ReplaceVideo Queue size low. Waiting for more frames.")
+            logger.info("ReplaceVideo Queue size low. Waiting for more sampleBuffers.")
             return
         }
         let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        if let sampleBuffer = sampleBuffer
+        guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
-        {
-            delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-            sampleBufferQueue.removeFirst()
+        else {
+            return
         }
+        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        sampleBufferQueue.removeFirst()
     }
 
     private func balanceQueue() {
