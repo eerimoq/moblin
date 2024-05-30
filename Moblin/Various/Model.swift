@@ -2729,40 +2729,18 @@ final class Model: NSObject, ObservableObject {
 
     func obsFixStream() {
         obsFixOngoing = true
-        obsWebSocket?.getSceneItemId(
-            sceneName: obsCurrentScene,
-            sourceName: stream.obsSourceName!,
-            onSuccess: { itemId in
-                self.obsWebSocket?.setSceneItemEnabled(
-                    sceneName: self.obsCurrentScene,
-                    sceneItemId: itemId,
-                    enabled: false,
-                    onSuccess: {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.obsWebSocket?.setSceneItemEnabled(
-                                sceneName: self.obsCurrentScene,
-                                sceneItemId: itemId,
-                                enabled: true,
-                                onSuccess: {
-                                    DispatchQueue.main.async {
-                                        self.obsFixOngoing = false
-                                    }
-                                },
-                                onError: self.obsFixStreamError
-                            )
-                        }
-                    },
-                    onError: self.obsFixStreamError
-                )
-            },
-            onError: obsFixStreamError
-        )
-    }
-
-    func obsFixStreamError(_: String) {
-        DispatchQueue.main.async {
-            self.obsFixOngoing = false
-        }
+        obsWebSocket?.setInputSettings(inputName: stream.obsSourceName!,
+                                       onSuccess: {
+                                           self.obsFixOngoing = false
+                                       }, onError: { message in
+                                           self.obsFixOngoing = false
+                                           DispatchQueue.main.async {
+                                               self.makeErrorToast(
+                                                   title: String(localized: "Failed to fix OBS input"),
+                                                   subTitle: message
+                                               )
+                                           }
+                                       })
     }
 
     func startObsAudioVolume() {
