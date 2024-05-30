@@ -1062,7 +1062,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
-        var rotateDegrees = 0
+        let rotateDegrees = 0
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
         }
