@@ -132,7 +132,7 @@ struct ChatPost: Identifiable, Equatable {
     var userColor: String?
     var segments: [ChatPostSegment]
     var timestamp: String
-    var timestampDate: Date
+    var timestampTime: ContinuousClock.Instant
     var isAction: Bool
     var isAnnouncement: Bool
     var isFirstMessage: Bool
@@ -409,7 +409,7 @@ final class Model: NSObject, ObservableObject {
 
     let chatTextToSpeech = ChatTextToSpeech()
 
-    private var lastAttachCompletedDate: Date?
+    private var lastAttachCompletedTime: ContinuousClock.Instant?
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -1427,18 +1427,19 @@ final class Model: NSObject, ObservableObject {
     private func setupPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
-            self.updateUptime(now: .now)
+            let monotonicNow = ContinuousClock.now
+            self.updateUptime(now: monotonicNow)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
-            self.updateSpeed(now: .now)
+            self.updateSpeed(now: monotonicNow)
             self.updateRtmpSpeed()
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
             self.updateBondingStatistics()
-            self.removeOldChatMessages(now: now)
+            self.removeOldChatMessages(now: monotonicNow)
             self.updateLocation()
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
@@ -1469,11 +1470,11 @@ final class Model: NSObject, ObservableObject {
             }
             self.updateChat()
             self.trySendNextChatPostToWatch()
-            if let lastAttachCompletedDate = self.lastAttachCompletedDate,
-               Date().timeIntervalSince(lastAttachCompletedDate) > 0.5
+            if let lastAttachCompletedTime = self.lastAttachCompletedTime,
+               .now - lastAttachCompletedTime > .seconds(0.5)
             {
                 self.updateTorch()
-                self.lastAttachCompletedDate = nil
+                self.lastAttachCompletedTime = nil
             }
         })
     }
@@ -1707,7 +1708,7 @@ final class Model: NSObject, ObservableObject {
             userColor: nil,
             segments: [],
             timestamp: "",
-            timestampDate: Date(),
+            timestampTime: .now,
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,
@@ -1715,7 +1716,7 @@ final class Model: NSObject, ObservableObject {
         )
     }
 
-    private func removeOldChatMessages(now: Date) {
+    private func removeOldChatMessages(now: ContinuousClock.Instant) {
         if chatPaused {
             return
         }
@@ -1723,7 +1724,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         while let post = chatPosts.last {
-            if now > post.timestampDate + Double(database.chat.maximumAge!) {
+            if now > post.timestampTime + .seconds(database.chat.maximumAge!) {
                 chatPosts.removeLast()
             } else {
                 break
@@ -2927,7 +2928,7 @@ final class Model: NSObject, ObservableObject {
                           userColor: post.userColor,
                           segments: post.segments,
                           timestamp: post.timestamp,
-                          timestampDate: post.timestampDate,
+                          timestampTime: post.timestampTime,
                           isAction: post.isAction,
                           isAnnouncement: post.isAnnouncement,
                           isFirstMessage: post.isFirstMessage,
@@ -2939,7 +2940,7 @@ final class Model: NSObject, ObservableObject {
         userColor: String?,
         segments: [ChatPostSegment],
         timestamp: String,
-        timestampDate: Date,
+        timestampTime: ContinuousClock.Instant,
         isAction: Bool,
         isAnnouncement: Bool,
         isFirstMessage: Bool,
@@ -2954,7 +2955,7 @@ final class Model: NSObject, ObservableObject {
             userColor: userColor,
             segments: segments,
             timestamp: timestamp,
-            timestampDate: timestampDate,
+            timestampTime: timestampTime,
             isAction: isAction,
             isAnnouncement: isAnnouncement,
             isFirstMessage: isFirstMessage,
@@ -3464,7 +3465,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func attachCamera() {
-        lastAttachCompletedDate = nil
+        lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
@@ -3473,7 +3474,7 @@ final class Model: NSObject, ObservableObject {
         ) {
             self.streamPreviewView.isMirrored = isMirrored
             self.updateCameraPreview()
-            self.lastAttachCompletedDate = Date()
+            self.lastAttachCompletedTime = .now
         }
     }
 
@@ -3576,7 +3577,7 @@ final class Model: NSObject, ObservableObject {
         default:
             break
         }
-        lastAttachCompletedDate = nil
+        lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
@@ -3592,7 +3593,7 @@ final class Model: NSObject, ObservableObject {
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                 }
                 self.updateCameraPreview()
-                self.lastAttachCompletedDate = Date()
+                self.lastAttachCompletedTime = .now
             }
         )
         zoomXPinch = zoomX

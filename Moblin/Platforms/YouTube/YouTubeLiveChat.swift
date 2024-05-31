@@ -238,7 +238,7 @@ final class YouTubeLiveChat: NSObject {
                                     userColor: nil,
                                     segments: nonMutSegments,
                                     timestamp: model.digitalClock,
-                                    timestampDate: Date(),
+                                    timestampTime: .now,
                                     isAction: false,
                                     isAnnouncement: false,
                                     isFirstMessage: false,

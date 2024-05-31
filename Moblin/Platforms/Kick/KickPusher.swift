@@ -201,7 +201,7 @@ final class KickPusher: NSObject {
             userColor: message.sender.identity.color,
             segments: segments,
             timestamp: model.digitalClock,
-            timestampDate: Date(),
+            timestampTime: .now,
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,

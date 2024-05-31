@@ -65,7 +65,7 @@ final class TwitchChatMoblin {
                                     userColor: message.senderColor,
                                     segments: segments,
                                     timestamp: model.digitalClock,
-                                    timestampDate: Date(),
+                                    timestampTime: .now,
                                     isAction: isAction,
                                     isAnnouncement: message.announcement,
                                     isFirstMessage: message.firstMessage,
