@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 import WatchConnectivity
 
-private let previewTimeout = 5.0
+private let previewTimeout = Duration.seconds(5)
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
@@ -34,16 +34,16 @@ struct LogEntry: Identifiable {
 class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
-    private var latestSpeedAndTotalDate = Date()
+    private var latestSpeedAndTotalTime = ContinuousClock.now
     @Published var recordingLength = noValue
-    private var latestRecordingLengthDate = Date()
+    private var latestRecordingLengthTime = ContinuousClock.now
     @Published var audioLevel: Float = defaultAudioLevel
-    private var latestAudioLevel = Date()
+    private var latestAudioLevelTime = ContinuousClock.now
     @Published var preview: UIImage?
     @Published var showPreviewDisconnected = true
-    private var latestPreviewDate = Date()
+    private var latestPreviewTime = ContinuousClock.now
     var settings = WatchSettings()
-    private var latestChatMessageDate = Date()
+    private var latestChatMessageTime = ContinuousClock.now
     private var numberOfNormalPostsInChat = 0
     private var nextExpectedWatchChatPostId = 1
     private var nextNonNormalChatLineId = -1
@@ -54,7 +54,7 @@ class Model: NSObject, ObservableObject {
     @Published var isRecording = false
     @Published var isMuted = false
     @Published var thermalState = ProcessInfo.ThermalState.nominal
-    private var latestThermalState = Date()
+    private var latestThermalStateTime = ContinuousClock.now
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -85,20 +85,20 @@ class Model: NSObject, ObservableObject {
     }
 
     private func updatePreview() {
-        let deadline = Date() - previewTimeout
-        if latestPreviewDate < deadline, !showPreviewDisconnected {
+        let deadline = ContinuousClock.now - previewTimeout
+        if latestPreviewTime < deadline, !showPreviewDisconnected {
             showPreviewDisconnected = true
         }
-        if latestSpeedAndTotalDate < deadline, speedAndTotal != noValue {
+        if latestSpeedAndTotalTime < deadline, speedAndTotal != noValue {
             speedAndTotal = noValue
         }
-        if latestRecordingLengthDate < deadline, recordingLength != noValue {
+        if latestRecordingLengthTime < deadline, recordingLength != noValue {
             recordingLength = noValue
         }
-        if latestAudioLevel < deadline, audioLevel != defaultAudioLevel {
+        if latestAudioLevelTime < deadline, audioLevel != defaultAudioLevel {
             audioLevel = defaultAudioLevel
         }
-        if latestThermalState < deadline, thermalState != ProcessInfo.ThermalState.nominal {
+        if latestThermalStateTime < deadline, thermalState != ProcessInfo.ThermalState.nominal {
             thermalState = ProcessInfo.ThermalState.nominal
         }
     }
@@ -144,7 +144,7 @@ class Model: NSObject, ObservableObject {
             nextExpectedWatchChatPostId = message.id
             chatPosts.removeAll()
             numberOfNormalPostsInChat = 0
-            latestChatMessageDate = Date()
+            latestChatMessageTime = .now
             appendInfoMessage(message: message, segments: [
                 .init(text: "Reconnected."),
             ])
@@ -158,14 +158,14 @@ class Model: NSObject, ObservableObject {
             ])
         }
         nextExpectedWatchChatPostId = message.id + 1
-        let now = Date()
-        if latestChatMessageDate + 30 < now {
+        let now = ContinuousClock.now
+        if latestChatMessageTime + .seconds(30) < now {
             appendRedLineMessage(message: message)
             if settings.chat.notificationOnMessage! {
                 WKInterfaceDevice.current().play(.notification)
             }
         }
-        latestChatMessageDate = now
+        latestChatMessageTime = now
         chatPosts.prepend(ChatPost(id: message.id,
                                    kind: .normal,
                                    user: message.user,
@@ -189,7 +189,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.speedAndTotal = speedAndTotal
-        latestSpeedAndTotalDate = Date()
+        latestSpeedAndTotalTime = .now
     }
 
     private func handleRecordingLength(_ data: Any) throws {
@@ -198,7 +198,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.recordingLength = recordingLength
-        latestRecordingLengthDate = Date()
+        latestRecordingLengthTime = .now
     }
 
     private func handleAudioLevel(_ data: Any) throws {
@@ -207,7 +207,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.audioLevel = audioLevel
-        latestAudioLevel = Date()
+        latestAudioLevelTime = .now
     }
 
     private func handleIsLive(_ data: Any) throws {
@@ -254,7 +254,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         self.thermalState = thermalState
-        latestThermalState = Date()
+        latestThermalStateTime = .now
     }
 
     private func handlePreview(_ data: Any) throws {
@@ -264,7 +264,7 @@ class Model: NSObject, ObservableObject {
         }
         preview = UIImage(data: image)
         showPreviewDisconnected = false
-        latestPreviewDate = Date()
+        latestPreviewTime = .now
     }
 
     func setIsLive(value: Bool) {

@@ -24,7 +24,7 @@ final class BrowserEffect: VideoEffect {
     var fps: Float
     private var scaleToFitVideo: Bool
     private var snapshotTimer: Timer?
-    var startLoadingTime = Date()
+    var startLoadingTime = ContinuousClock.now
     private var scale = UIScreen().scale
     private var defaultEnabled = true
     private var crops: [WidgetCrop] = []
@@ -124,7 +124,7 @@ final class BrowserEffect: VideoEffect {
                 )
             ) }
             if !isLoaded {
-                startLoadingTime = Date()
+                startLoadingTime = .now
                 webView.load(URLRequest(url: url))
                 isLoaded = true
             }
