@@ -440,7 +440,7 @@ final class Model: NSObject, ObservableObject {
     var externalCameras: [Camera] = []
 
     var recordingsStorage = RecordingsStorage()
-    private var latestLowBitrateDate = Date()
+    private var latestLowBitrateTime = ContinuousClock.now
 
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
@@ -1432,7 +1432,7 @@ final class Model: NSObject, ObservableObject {
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
-            self.updateSpeed(now: now)
+            self.updateSpeed(now: .now)
             self.updateRtmpSpeed()
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
@@ -2119,7 +2119,7 @@ final class Model: NSObject, ObservableObject {
 
     private func startNetStream(reconnect _: Bool = false) {
         streamState = .connecting
-        latestLowBitrateDate = Date()
+        latestLowBitrateTime = .now
         switch stream.getProtocol() {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
@@ -2149,7 +2149,7 @@ final class Model: NSObject, ObservableObject {
                                   adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
         }
-        updateSpeed(now: Date())
+        updateSpeed(now: .now)
     }
 
     private func stopNetStream(reconnect: Bool = false) {
@@ -2159,7 +2159,7 @@ final class Model: NSObject, ObservableObject {
         media.ristStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
-        updateSpeed(now: Date())
+        updateSpeed(now: .now)
         updateAudioLevel()
         bondingStatistics = noValue
         if !reconnect {
@@ -3367,20 +3367,20 @@ final class Model: NSObject, ObservableObject {
         chatSpeedTicks += 1
     }
 
-    private func checkLowBitrate(speed: Int64, now: Date) {
+    private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {
         guard database.lowBitrateWarning! else {
             return
         }
         guard streamState == .connected else {
             return
         }
-        if speed < 500_000 && now > latestLowBitrateDate + 15 {
+        if speed < 500_000 && now > latestLowBitrateTime + .seconds(15) {
             makeWarningToast(title: lowBitrateMessage, vibrate: true)
-            latestLowBitrateDate = now
+            latestLowBitrateTime = now
         }
     }
 
-    private func updateSpeed(now: Date) {
+    private func updateSpeed(now: ContinuousClock.Instant) {
         if isLive {
             let speed = media.streamSpeed()
             checkLowBitrate(speed: speed, now: now)

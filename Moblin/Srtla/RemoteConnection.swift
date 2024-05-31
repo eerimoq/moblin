@@ -40,8 +40,8 @@ class RemoteConnection {
 
     private var connectTimer: DispatchSourceTimer?
     private var keepaliveTimer: DispatchSourceTimer?
-    private var latestReceivedDate = Date()
-    private var latestSentDate = Date()
+    private var latestReceivedTime = ContinuousClock.now
+    private var latestSentTime = ContinuousClock.now
     private var packetsInFlight: Set<UInt32> = []
     private var windowSize: Int = 0
     private var numberOfNullPacketsSent: UInt64 = 0
@@ -200,8 +200,8 @@ class RemoteConnection {
                 self.reconnect(reason: "Connection timeout")
             }
             connectTimer!.activate()
-            latestReceivedDate = Date()
-            latestSentDate = Date()
+            latestReceivedTime = .now
+            latestSentTime = .now
             packetsInFlight.removeAll()
             totalDataSentByteCount = 0
             windowSize = windowDefault * windowMultiply
@@ -264,7 +264,7 @@ class RemoteConnection {
     }
 
     private func sendPacketInternal(packet: Data) {
-        latestSentDate = Date()
+        latestSentTime = .now
         connection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 
@@ -403,11 +403,11 @@ class RemoteConnection {
         keepaliveTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
         keepaliveTimer!.schedule(deadline: .now() + 1, repeating: 1)
         keepaliveTimer!.setEventHandler {
-            let now = Date()
-            if self.latestSentDate < now - 0.5 {
+            let now = ContinuousClock.now
+            if self.latestSentTime < now - .seconds(0.5) {
                 self.sendSrtlaKeepalive()
             }
-            if self.latestReceivedDate < now - 5 {
+            if self.latestReceivedTime < now - .seconds(5) {
                 self.reconnect(reason: "No packet received in 5 seconds")
             }
         }
@@ -482,7 +482,7 @@ class RemoteConnection {
             logger.error("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
             return
         }
-        latestReceivedDate = Date()
+        latestReceivedTime = .now
         if isDataPacket(packet: packet) {
             handleDataPacket(packet: packet)
         } else {
