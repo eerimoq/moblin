@@ -5544,7 +5544,134 @@
       }
     },
     "7TV" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7ТV"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "7TV"
+          }
+        }
+      }
     },
     "7TV emotes" : {
       "localizations" : {
@@ -15823,7 +15950,134 @@
       }
     },
     "BTTV" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BTTV"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BTTV"
+          }
+        }
+      }
     },
     "BTTV emotes" : {
       "localizations" : {
@@ -25446,7 +25700,134 @@
       }
     },
     "Emotes" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Συγκινήσεις"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emoticones"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hymiöt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Émoticônes"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इमोट्स"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "emosi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emote"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "エモート"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "감정 표현"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emocje"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Эмоции"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emojis"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "İfadeler"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Емоції"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thể hiện cảm xúc"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "表情"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "表情"
+          }
+        }
+      }
     },
     "Empty clipboard" : {
       "localizations" : {
@@ -31039,7 +31420,134 @@
       }
     },
     "FFZ" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FFZ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FFZ"
+          }
+        }
+      }
     },
     "FFZ emotes" : {
       "localizations" : {
