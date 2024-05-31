@@ -514,3 +514,9 @@ func sleep(milliSeconds: Int) async throws {
 }
 
 let moblinAppGroup = "group.com.eerimoq.Moblin"
+
+extension Duration {
+    var milliseconds: Int64 {
+        return components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000
+    }
+}
