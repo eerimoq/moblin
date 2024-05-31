@@ -252,7 +252,7 @@ final class Model: NSObject, ObservableObject {
     private var streaming = false
     @Published var currentMic = noMic
     private var micChange = noMic
-    private var streamStartDate: Date?
+    private var streamStartTime: ContinuousClock.Instant?
     @Published var isLive = false
     @Published var isRecording = false
     private var currentRecording: Recording?
@@ -1427,7 +1427,7 @@ final class Model: NSObject, ObservableObject {
     private func setupPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
-            self.updateUptime(now: now)
+            self.updateUptime(now: .now)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
@@ -2157,8 +2157,8 @@ final class Model: NSObject, ObservableObject {
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
-        streamStartDate = nil
-        updateUptime(now: Date())
+        streamStartTime = nil
+        updateUptime(now: .now)
         updateSpeed(now: .now)
         updateAudioLevel()
         bondingStatistics = noValue
@@ -3296,10 +3296,10 @@ final class Model: NSObject, ObservableObject {
         sceneUpdatedOn(scene: scene)
     }
 
-    private func updateUptime(now: Date) {
-        if streamStartDate != nil && isStreamConnected() {
-            let elapsed = now.timeIntervalSince(streamStartDate!)
-            uptime = uptimeFormatter.string(from: elapsed)!
+    private func updateUptime(now: ContinuousClock.Instant) {
+        if let streamStartTime, isStreamConnected() {
+            let elapsed = now - streamStartTime
+            uptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
         } else if uptime != noValue {
             uptime = noValue
         }
@@ -3793,9 +3793,9 @@ final class Model: NSObject, ObservableObject {
 
     private func onConnected() {
         makeYouAreLiveToast()
-        streamStartDate = Date()
+        streamStartTime = .now
         streamState = .connected
-        updateUptime(now: Date())
+        updateUptime(now: .now)
     }
 
     private func onDisconnected(reason: String) {
