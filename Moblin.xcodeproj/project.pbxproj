@@ -281,7 +281,7 @@
 		03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */; };
 		03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D962B92DD670022EAE7 /* PreviewView.swift */; };
 		03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D992B92DDA80022EAE7 /* ChatView.swift */; };
-		03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */; };
+		03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */; };
 		03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
 		03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
 		03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11612AE4BDA200C38FC4 /* Seventv.swift */; };
@@ -715,7 +715,7 @@
 		03B89D962B92DD670022EAE7 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		03B89D992B92DDA80022EAE7 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		03BBAE952B2E5FD20033D425 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamChatSettingsView.swift; sourceTree = "<group>"; };
+		03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamEmotesSettingsView.swift; sourceTree = "<group>"; };
 		03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bttv.swift; sourceTree = "<group>"; };
 		03BC115F2AE4BD9200C38FC4 /* Ffz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ffz.swift; sourceTree = "<group>"; };
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
@@ -1923,7 +1923,7 @@
 		03BBAE972B2EB4CE0033D425 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */,
+				03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -2500,7 +2500,7 @@
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
 				03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */,
 				0359F8D32BD3DA61005BFDA8 /* VideoUnit.swift in Sources */,
-				03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */,
+				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,

@@ -131,8 +131,8 @@ struct StreamSettingsView: View {
                         }
                     }))
                 }
-                NavigationLink(destination: StreamChatSettingsView(stream: stream)) {
-                    Text("Chat")
+                NavigationLink(destination: StreamEmotesSettingsView(stream: stream)) {
+                    Text("Emotes")
                 }
             } header: {
                 Text("Chat and viewers")

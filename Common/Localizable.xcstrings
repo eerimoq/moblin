@@ -5543,6 +5543,9 @@
         }
       }
     },
+    "7TV" : {
+
+    },
     "7TV emotes" : {
       "localizations" : {
         "de" : {
@@ -15819,6 +15822,9 @@
         }
       }
     },
+    "BTTV" : {
+
+    },
     "BTTV emotes" : {
       "localizations" : {
         "de" : {
@@ -25439,6 +25445,9 @@
         }
       }
     },
+    "Emotes" : {
+
+    },
     "Empty clipboard" : {
       "localizations" : {
         "de" : {
@@ -31028,6 +31037,9 @@
           }
         }
       }
+    },
+    "FFZ" : {
+
     },
     "FFZ emotes" : {
       "localizations" : {
