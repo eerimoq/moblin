@@ -1471,7 +1471,7 @@ final class Model: NSObject, ObservableObject {
             self.updateChat()
             self.trySendNextChatPostToWatch()
             if let lastAttachCompletedTime = self.lastAttachCompletedTime,
-               .now - lastAttachCompletedTime > .seconds(0.5)
+               lastAttachCompletedTime.duration(to: .now) > .seconds(0.5)
             {
                 self.updateTorch()
                 self.lastAttachCompletedTime = nil

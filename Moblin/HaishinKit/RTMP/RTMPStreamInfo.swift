@@ -72,7 +72,7 @@ class RTMPStreamInfo {
                 }
             }
             if let ackedSendTiming {
-                stats.rttMs = Double((.now - ackedSendTiming.timestamp).milliseconds)
+                stats.rttMs = Double(ackedSendTiming.timestamp.duration(to: .now).milliseconds)
                 stats.packetsInFlight = packetsInFlight()
             }
         }

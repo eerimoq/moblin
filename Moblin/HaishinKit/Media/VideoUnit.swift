@@ -793,7 +793,7 @@ final class VideoUnit: NSObject {
         _ applyBlur: Bool,
         _ faceDetections: [VNFaceObservation]?
     ) {
-        let startDate = Date()
+        let startTime = ContinuousClock.now
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
@@ -833,7 +833,7 @@ final class VideoUnit: NSObject {
                 self.createLowFpsImage(imageBuffer: modImageBuffer)
             }
         }
-        filterHistogram.add(value: Int(-startDate.timeIntervalSinceNow * 1000))
+        filterHistogram.add(value: Int(startTime.duration(to: .now).milliseconds))
     }
 
     private func createLowFpsImage(imageBuffer: CVImageBuffer) {
