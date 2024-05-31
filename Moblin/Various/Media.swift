@@ -47,6 +47,7 @@ final class Media: NSObject {
     var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
+    private var irlToolkitFetcher: IrlToolkitFetcher?
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -79,7 +80,7 @@ final class Media: NSObject {
             srtStream = nil
             ristStream = nil
             netStream = rtmpStream
-        case .srt:
+        case .srt, .irltk:
             srtStream = SRTStream(srtConnection)
             rtmpStream = nil
             ristStream = nil
@@ -155,6 +156,31 @@ final class Media: NSObject {
         connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
         srtUrl = url
+        srtInitStream(
+            isSrtla: isSrtla,
+            targetBitrate: targetBitrate,
+            adaptiveBitrate: adaptiveBitrateEnabled,
+            latency: latency,
+            overheadBandwidth: overheadBandwidth,
+            maximumBandwidthFollowInput: maximumBandwidthFollowInput,
+            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            networkInterfaceNames: networkInterfaceNames,
+            connectionPriorities: connectionPriorities
+        )
+        srtla!.start(uri: url, timeout: reconnectTime + 1)
+    }
+
+    private func srtInitStream(
+        isSrtla: Bool,
+        targetBitrate: UInt32,
+        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        latency: Int32,
+        overheadBandwidth: Int32,
+        maximumBandwidthFollowInput: Bool,
+        mpegtsPacketsPerPacket: Int,
+        networkInterfaceNames: [SettingsNetworkInterfaceName],
+        connectionPriorities: SettingsStreamSrtConnectionPriorities
+    ) {
         self.latency = latency
         self.overheadBandwidth = overheadBandwidth
         self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
@@ -176,7 +202,6 @@ final class Media: NSObject {
         } else {
             adaptiveBitrate = nil
         }
-        srtla!.start(uri: url, timeout: reconnectTime + 1)
     }
 
     func srtStopStream() {
@@ -468,6 +493,41 @@ final class Media: NSObject {
 
     func ristStopStream() {
         ristStream?.stop()
+    }
+
+    func irlToolkitStartStream(
+        url: String,
+        reconnectTime: Double,
+        targetBitrate: UInt32,
+        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        latency: Int32,
+        overheadBandwidth: Int32,
+        maximumBandwidthFollowInput: Bool,
+        mpegtsPacketsPerPacket: Int,
+        networkInterfaceNames: [SettingsNetworkInterfaceName],
+        connectionPriorities: SettingsStreamSrtConnectionPriorities
+    ) {
+        srtInitStream(
+            isSrtla: true,
+            targetBitrate: targetBitrate,
+            adaptiveBitrate: adaptiveBitrateEnabled,
+            latency: latency,
+            overheadBandwidth: overheadBandwidth,
+            maximumBandwidthFollowInput: maximumBandwidthFollowInput,
+            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            networkInterfaceNames: networkInterfaceNames,
+            connectionPriorities: connectionPriorities
+        )
+        irlToolkitFetcher?.stop()
+        irlToolkitFetcher = IrlToolkitFetcher(url: url, reconnectTime: reconnectTime)
+        irlToolkitFetcher?.delegate = self
+        irlToolkitFetcher?.start()
+    }
+
+    func irlToolkitStopStream() {
+        irlToolkitFetcher?.stop()
+        irlToolkitFetcher = nil
+        srtStopStream()
     }
 
     func setTorch(on: Bool) {
@@ -794,5 +854,16 @@ extension Media: SrtlaDelegate {
 extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
+    }
+}
+
+extension Media: IrlToolkitFetcherDelegate {
+    func irlToolkitFetcherSuccess(url: String, reconnectTime: Double) {
+        srtUrl = url
+        srtla?.start(uri: url, timeout: reconnectTime)
+    }
+
+    func irlToolkitFetcherError(message: String) {
+        onSrtDisconnected(message)
     }
 }

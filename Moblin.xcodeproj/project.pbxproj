@@ -73,6 +73,7 @@
 		033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = 033235402BFBAFD800B897A5 /* MetalPetal.metal */; };
 		0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */; };
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
+		033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
@@ -302,6 +303,7 @@
 		03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
 		03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */; };
+		03CDEAA22C0AB8DD006121D0 /* IrlToolkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
 		03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */; };
@@ -464,6 +466,7 @@
 		033235402BFBAFD800B897A5 /* MetalPetal.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalPetal.metal; sourceTree = "<group>"; };
 		0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerSettingsView.swift; sourceTree = "<group>"; };
 		0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerStreamSettingsView.swift; sourceTree = "<group>"; };
+		033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupIrlToolkitSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = "MoblinWatch-InfoPlist.xcstrings"; sourceTree = "<group>"; };
 		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -734,6 +737,7 @@
 		03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferReceiver.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
+		03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlToolkit.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D3C0472B4493AE006BAEAC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingSettingsView.swift; sourceTree = "<group>"; };
@@ -1457,9 +1461,9 @@
 				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
 				03BDE2202B24364700DF193A /* OBS */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
-				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
 				039ADE452B55C20800FE0F59 /* RemoteControl */,
 				034D26FD2B3A034A0097C619 /* RtmpServer */,
+				03CDEAA02C0AB8BB006121D0 /* Services */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03BE504E2B3EC107004720AF /* Various */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
@@ -1994,6 +1998,15 @@
 			path = MirrorFrontCamera;
 			sourceTree = "<group>";
 		};
+		03CDEAA02C0AB8BB006121D0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
+				03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		03D3C04F2B452D14006BAEAC /* Recording */ = {
 			isa = PBXGroup;
 			children = (
@@ -2021,6 +2034,7 @@
 				03DBD1022B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift */,
 				03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */,
 				03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */,
+				033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */,
 				03DBD0FE2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift */,
 			);
 			path = NetworkSetup;
@@ -2394,6 +2408,7 @@
 				03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
 				0359F8C92BD3DA61005BFDA8 /* FLVSoundRate.swift in Sources */,
+				03CDEAA22C0AB8DD006121D0 /* IrlToolkit.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0359F8E12BD3DA61005BFDA8 /* MpegTsPacket.swift in Sources */,
 				03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */,
@@ -2469,6 +2484,7 @@
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
+				033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
 				03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */,

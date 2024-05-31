@@ -13479,6 +13479,9 @@
         }
       }
     },
+    "Best possible stability. Uses bonding. Free third-party service provided as a courtesy by IRLToolkit. Not to be used if you pay for IRLToolkit." : {
+
+    },
     "Best possible stability. Uses bonding. Paid third-party service." : {
       "localizations" : {
         "de" : {
@@ -33499,6 +33502,9 @@
         }
       }
     },
+    "Free IRLToolkit bonding" : {
+
+    },
     "front" : {
       "localizations" : {
         "de" : {
@@ -41428,6 +41434,9 @@
           }
         }
       }
+    },
+    "Malformed IRLToolkit URL" : {
+
     },
     "Malformed RIST URL" : {
       "localizations" : {

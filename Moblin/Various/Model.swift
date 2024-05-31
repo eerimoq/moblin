@@ -182,6 +182,7 @@ enum WizardNetworkSetup {
     case none
     case obs
     case belaboxCloudObs
+    case irlToolkit
     case direct
     case myServers
 }
@@ -2143,6 +2144,21 @@ final class Model: NSObject, ObservableObject {
                 connectionPriorities: stream.srt.connectionPriorities!
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+        case .irltk:
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
+            media.irlToolkitStartStream(
+                url: stream.url,
+                reconnectTime: 5,
+                targetBitrate: stream.bitrate,
+                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
+                latency: stream.srt.latency,
+                overheadBandwidth: database.debug!.srtOverheadBandwidth!,
+                maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
+                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
+                networkInterfaceNames: database.networkInterfaceNames!,
+                connectionPriorities: stream.srt.connectionPriorities!
+            )
+            updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .rist:
             media.ristStartStream(url: stream.url,
                                   bonding: stream.rist!.bonding,
@@ -2158,6 +2174,7 @@ final class Model: NSObject, ObservableObject {
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
+        media.irlToolkitStopStream()
         streamStartTime = nil
         updateUptime(now: .now)
         updateSpeed(now: .now)
@@ -4862,6 +4879,11 @@ extension Model {
                 url = "srt://\(wizardObsAddress):\(wizardObsPort)"
             case .belaboxCloudObs:
                 url = wizardBelaboxUrl
+            case .irlToolkit:
+                let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                if let directUrl = URL(string: "\(ingestUrl)/\(wizardDirectStreamKey)") {
+                    url = "irltk://foo.irltk.org/bonding?url=\(directUrl)"
+                }
             case .direct:
                 let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
                 url = "\(ingestUrl)/\(wizardDirectStreamKey)"
@@ -4928,6 +4950,8 @@ extension Model {
             stream.codec = .h265hevc
         case .belaboxCloudObs:
             stream.codec = .h265hevc
+        case .irlToolkit:
+            stream.codec = .h265hevc
         case .direct:
             stream.codec = .h264avc
         case .myServers:
@@ -4974,6 +4998,8 @@ extension Model {
                 wizardName = stream.name
                 wizardBelaboxUrl = stream.url
             }
+        case .irlToolkit:
+            break
         case .direct:
             break
         case .myServers:
