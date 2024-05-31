@@ -740,7 +740,7 @@ final class VideoUnit: NSObject {
         nextFaceDetectionsSequenceNumber += 1
         if anyEffectNeedsFaceDetections() {
             detectionsQueue.async {
-                let startDate = Date()
+                let startTime = ContinuousClock.now
                 let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
                 let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
                     lockQueue.async {
@@ -759,7 +759,7 @@ final class VideoUnit: NSObject {
                         self.faceDetectionsComplete(completion)
                     }
                 }
-                let elapsed = Int(-startDate.timeIntervalSinceNow * 1000)
+                let elapsed = Int(startTime.duration(to: .now).milliseconds)
                 lockQueue.async {
                     self.detectionsHistogram.add(value: elapsed)
                 }
