@@ -37,7 +37,7 @@ class RtmpServerClient {
     private var chunkStream: RtmpServerChunkStream!
     var streamKey: String = ""
     weak var server: RtmpServer?
-    var latestReceiveDate = Date()
+    var latestReceiveTime = ContinuousClock.now
     var connectionState: RtmpServerClientConnectionState {
         didSet {
             logger.info("rtmp-server: client: State change \(oldValue) -> \(connectionState)")
@@ -294,7 +294,7 @@ class RtmpServerClient {
             if let data {
                 // logger.info("rtmp-server: client: Got data \(data)")
                 self.server?.totalBytesReceived += UInt64(data.count)
-                self.latestReceiveDate = Date()
+                self.latestReceiveTime = .now
                 self.handleData(data: data)
             }
             if let error {
