@@ -11,14 +11,14 @@ private struct IrlToolkitResponse: Codable {
 
 class IrlToolkitFetcher {
     private let url: String
-    private let reconnectTime: Double
+    private let timeout: Double
     private var running = false
     private var task: URLSessionDataTask?
     var delegate: (any IrlToolkitFetcherDelegate)?
 
-    init(url: String, reconnectTime: Double) {
+    init(url: String, timeout: Double) {
         self.url = url
-        self.reconnectTime = reconnectTime
+        self.timeout = timeout
     }
 
     func start() {
@@ -38,7 +38,7 @@ class IrlToolkitFetcher {
             logger.info("irltoolkit: Bad bonding service URL")
             return
         }
-        var request = URLRequest(url: url, timeoutInterval: reconnectTime)
+        var request = URLRequest(url: url, timeoutInterval: timeout)
         request.httpMethod = "POST"
         request.httpBody = Data("{\"url\": \(targetUrl)}".utf8)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -62,12 +62,12 @@ class IrlToolkitFetcher {
                 do {
                     let response = try JSONDecoder().decode(IrlToolkitResponse.self, from: data)
                     if let message = isValidUrl(url: response.url, allowedSchemes: ["srtla"]) {
-                        self.reportError(message: "Invalid SRT URL in response \(response.url)")
+                        self.reportError(message: "Invalid SRT URL in response \(message)")
                         return
                     }
                     self.delegate?.irlToolkitFetcherSuccess(
                         url: response.url,
-                        reconnectTime: self.reconnectTime
+                        reconnectTime: self.timeout
                     )
                 } catch {
                     self.reportError(message: "Failed to decode response")

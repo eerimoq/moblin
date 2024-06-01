@@ -519,7 +519,7 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         irlToolkitFetcher?.stop()
-        irlToolkitFetcher = IrlToolkitFetcher(url: url, reconnectTime: reconnectTime)
+        irlToolkitFetcher = IrlToolkitFetcher(url: url, timeout: reconnectTime)
         irlToolkitFetcher?.delegate = self
         irlToolkitFetcher?.start()
     }
