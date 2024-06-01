@@ -12,6 +12,9 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+      - name: Create empty config
+        run: |
+          touch Config.xcconfig
       - name: Source code styling
         run: |
           make style-check
