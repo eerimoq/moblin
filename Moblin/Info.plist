@@ -40,5 +40,7 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<key>IRLTOOLKIT_URL</key>
+	<string>$(IRLTOOLKIT_URL)</string>
 </dict>
 </plist>

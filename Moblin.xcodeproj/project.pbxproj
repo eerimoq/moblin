@@ -632,6 +632,7 @@
 		0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0364B6202BD36806002F828D /* StreamButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButton.swift; sourceTree = "<group>"; };
 		0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarPortraitView.swift; sourceTree = "<group>"; };
+		036A342C2C0B38C300AE45B5 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
@@ -1439,6 +1440,7 @@
 				0312E4312C00F24E00C6F878 /* Moblin Screen Recording */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
+				036A342C2C0B38C300AE45B5 /* Config.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2801,6 +2803,7 @@
 		};
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 036A342C2C0B38C300AE45B5 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -2868,6 +2871,7 @@
 		};
 		035E9E402A9A02D7009D4F5A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 036A342C2C0B38C300AE45B5 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

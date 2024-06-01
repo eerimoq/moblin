@@ -34,7 +34,11 @@ class IrlToolkitFetcher {
             logger.info("irltoolkit: URL query parameter missing in \(url)")
             return
         }
-        guard let url = URL(string: "https://mys-lang.org/bar") else {
+        guard let irlToolkitUrl = Bundle.main.infoDictionary?["IRLTOOLKIT_URL"] as? String else {
+            logger.info("irltoolkit: IRLToolkit URL missing")
+            return
+        }
+        guard let url = URL(string: irlToolkitUrl) else {
             logger.info("irltoolkit: Bad bonding service URL")
             return
         }
