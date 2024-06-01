@@ -4882,7 +4882,7 @@ extension Model {
             case .irlToolkit:
                 let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
                 if let directUrl = URL(string: "\(ingestUrl)/\(wizardDirectStreamKey)") {
-                    url = "irltk://foo.irltk.org/bonding?url=\(directUrl)"
+                    url = "irltk:///?url=\(directUrl)"
                 }
             case .direct:
                 let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
