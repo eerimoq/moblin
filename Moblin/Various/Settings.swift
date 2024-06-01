@@ -2416,14 +2416,18 @@ final class Settings {
         }
         if realDatabase.debug!.metalPetalFilters == nil {
             realDatabase.debug!.metalPetalFilters = false
-        for stream in realDatabase.rtmpServer!.streams where stream.buggedPublisher == nil {
-            stream.buggedPublisher = false
             store()
         }
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.buggedPublisher == nil {
+            stream.buggedPublisher = false
+            store()
+        }
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
             stream.manualFps = false
             store()

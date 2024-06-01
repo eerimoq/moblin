@@ -180,7 +180,7 @@ private class ReplaceVideo {
         firstPresentationTimeStamp = nil
         state = .initializing
     }
-    
+
     func nearestCommonFrameRate(value: Double) -> Double {
         let commonFrameRates = [25.0, 30.0, 50.0, 60.0]
         return commonFrameRates.min(by: { abs($0 - value) < abs($1 - value) })!
@@ -376,7 +376,12 @@ final class VideoUnit: NSObject {
         else {
             return
         }
-        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: ioVideoBlurSceneSwitch)
+        _ = appendSampleBuffer(
+            sampleBuffer,
+            rotateDegrees: 0,
+            isFirstAfterAttach: false,
+            applyBlur: ioVideoBlurSceneSwitch
+        )
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
@@ -1198,21 +1203,8 @@ final class VideoUnit: NSObject {
         }
     }
 
-extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from _: AVCaptureConnection
-    ) {
+    func prepareSampleBuffer(sampleBuffer: CMSampleBuffer) {
         let rotateDegrees = 0
-        for replaceVideo in replaceVideos.values {
-            replaceVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
-        }
-        var sampleBuffer = sampleBuffer
-        if let selectedReplaceVideoCameraId {
-            sampleBuffer = replaceVideos[selectedReplaceVideoCameraId]?
-                .getSampleBuffer(sampleBuffer) ?? makeBlackSampleBuffer(realSampleBuffer: sampleBuffer)
-        }
         let now = Date()
         if firstFrameDate == nil {
             firstFrameDate = now
