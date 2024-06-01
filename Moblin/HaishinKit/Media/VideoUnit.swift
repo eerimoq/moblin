@@ -127,7 +127,7 @@ private class ReplaceVideo {
             }
             frameRate = Double(counter) / initializationDuration
             if buggedPublisher == true {
-                frameRate = frameRate.nearestCommonFrameRate()
+                frameRate = nearestCommonFrameRate(value: frameRate)
             }
         }
         sampleBufferQueue.removeAll()
@@ -178,6 +178,11 @@ private class ReplaceVideo {
         counter = 0
         firstPresentationTimeStamp = nil
         state = .initializing
+    }
+    
+    func nearestCommonFrameRate(value: Double) -> Double {
+        let commonFrameRates = [25.0, 30.0, 50.0, 60.0]
+        return commonFrameRates.min(by: { abs($0 - value) < abs($1 - value) })!
     }
 }
 
