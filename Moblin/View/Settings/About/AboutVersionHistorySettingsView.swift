@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.292.0", date: "2024-06-01", changes: [
+        "• Use monotonic clock instead of system clock when calculating various timings.",
+        "  • To make the app work better when leap seconds and such.",
+        "• Various smaller settings UI improvements.",
+    ]),
     Version(version: "0.291.0", date: "2024-05-30", changes: [
         "• Spanish translation updated. ✍️ adriportela95",
         "• Simplify \"fix OBS\" implementation. 💡 tt2468",
