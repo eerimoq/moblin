@@ -1118,6 +1118,8 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = 2000
+    var buggedPublisher: Bool? = false
+    var manualFps: Bool? = false
     var fps: Double? = 0
 
     func camera() -> String {
@@ -1129,6 +1131,8 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.buggedPublisher = buggedPublisher
+        new.manualFps = manualFps
         new.fps = fps
         return new
     }
@@ -2412,12 +2416,16 @@ final class Settings {
         }
         if realDatabase.debug!.metalPetalFilters == nil {
             realDatabase.debug!.metalPetalFilters = false
+        for stream in realDatabase.rtmpServer!.streams where stream.buggedPublisher == nil {
+            stream.buggedPublisher = false
             store()
         }
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
+        for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
+            stream.manualFps = false
             store()
         }
     }

@@ -21,9 +21,6 @@ struct RtmpServerSettingsView: View {
                 """)
             }
             Section {
-                Text("⚠️ Audio is not yet implemented.")
-            }
-            Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     model.database.rtmpServer!.enabled
                 }, set: { value in

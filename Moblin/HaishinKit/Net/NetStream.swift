@@ -115,20 +115,36 @@ open class NetStream: NSObject {
         }
     }
 
-    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
+    func addReplaceVideoSampleBuffer(
+        id: UUID,
+        _ sampleBuffer: CMSampleBuffer,
+        onSuccess: @escaping (Double) -> Void
+    ) {
+        mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer, onSuccess: onSuccess)
     }
 
-    func addAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
-        mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
+    func addAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.audio.addReplaceAudioSampleBuffer(id: id, sampleBuffer)
     }
 
-    func addReplaceVideo(cameraId: UUID, latency: Double) {
-        mixer.video.addReplaceVideo(cameraId: cameraId, latency: latency)
+    func addReplaceVideo(
+        cameraId: UUID,
+        latency: Double,
+        buggedPublisher: Bool,
+        manualFps: Bool,
+        frameRate: Double
+    ) {
+        mixer.video.addReplaceVideo(
+            cameraId: cameraId,
+            latency: latency,
+            buggedPublisher: buggedPublisher,
+            manualFps: manualFps,
+            frameRate: frameRate
+        )
     }
 
-    func addReplaceAudio(cameraId: UUID) {
-        mixer.audio.addReplaceAudio(cameraId: cameraId)
+    func addReplaceAudio(cameraId: UUID, latency: Double) {
+        mixer.audio.addReplaceAudio(cameraId: cameraId, latency: latency)
     }
 
     func removeReplaceVideo(cameraId: UUID) {
