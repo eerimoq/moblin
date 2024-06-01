@@ -39,7 +39,7 @@ private class ReplaceAudio {
     }
 
     private var maxQueueSize: Int {
-        return Int(latency * frameRate + 1)
+        return Int((latency + 5) * frameRate)
     }
 
     private var minQueueSize: Int {
