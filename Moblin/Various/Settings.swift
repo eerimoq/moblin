@@ -1428,8 +1428,13 @@ class DeepLinkCreatorStream: Codable, Identifiable {
     var obs: DeepLinkCreatorStreamObs = .init()
 }
 
+class DeepLinkCreatorWebBrowser: Codable {
+    var home: String = ""
+}
+
 class DeepLinkCreator: Codable {
     var streams: [DeepLinkCreatorStream] = []
+    var webBrowser: DeepLinkCreatorWebBrowser? = .init()
 }
 
 class Database: Codable {
@@ -2453,6 +2458,10 @@ final class Settings {
         }
         if realDatabase.deepLinkCreator == nil {
             realDatabase.deepLinkCreator = .init()
+            store()
+        }
+        if realDatabase.deepLinkCreator!.webBrowser == nil {
+            realDatabase.deepLinkCreator!.webBrowser = .init()
             store()
         }
     }

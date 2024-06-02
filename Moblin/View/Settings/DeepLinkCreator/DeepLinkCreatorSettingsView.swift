@@ -51,6 +51,10 @@ struct DeepLinkCreatorSettingsView: View {
                 settings.streams!.append(createDeepLinkStream(stream: stream))
             }
         }
+        if !deepLinkCreator.webBrowser!.home.isEmpty {
+            settings.webBrowser = .init()
+            settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
+        }
         do {
             let jsonBlob = try settings.toString()
             if var encodedJsonBlob = jsonBlob
@@ -73,31 +77,15 @@ struct DeepLinkCreatorSettingsView: View {
         GeometryReader { metrics in
             Form {
                 Section {
-                    List {
-                        ForEach(deepLinkCreator.streams) { stream in
-                            NavigationLink(destination: DeepLinkCreatorStreamSettingsView(stream: stream)) {
-                                Text(stream.name)
-                            }
-                        }
-                        .onMove(perform: { froms, to in
-                            deepLinkCreator.streams.move(fromOffsets: froms, toOffset: to)
-                            model.store()
-                            updateDeepLink()
-                        })
-                        .onDelete(perform: { offsets in
-                            deepLinkCreator.streams.remove(atOffsets: offsets)
-                            model.store()
-                            updateDeepLink()
-                        })
+                    NavigationLink(destination: DeepLinkCreatorStreamsSettingsView()) {
+                        Text("Streams")
                     }
-                    CreateButtonView(action: {
-                        deepLinkCreator.streams.append(DeepLinkCreatorStream())
-                        model.store()
-                        model.objectWillChange.send()
-                        updateDeepLink()
-                    })
-                } header: {
-                    Text("Streams")
+                    NavigationLink(
+                        destination: DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator
+                            .webBrowser!)
+                    ) {
+                        Text("Web browser")
+                    }
                 }
                 if deepLink != "moblin://?{}" {
                     Section {

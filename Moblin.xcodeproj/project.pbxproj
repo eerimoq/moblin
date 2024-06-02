@@ -227,6 +227,8 @@
 		038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 038F42F32B685ACF00E68752 /* LUTs.bundle */; };
 		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
 		03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */; };
+		03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */; };
+		03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A01ACD2B9F738200D20AE3 /* CacheImage.swift */; };
@@ -673,6 +675,8 @@
 		038F42F32B685ACF00E68752 /* LUTs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LUTs.bundle; sourceTree = "<group>"; };
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
 		03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamSettingsView.swift; sourceTree = "<group>"; };
+		03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorWebBrowserSettingsView.swift; sourceTree = "<group>"; };
+		03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamsSettingsView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		03A01ACA2B9F66D200D20AE3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1093,6 +1097,8 @@
 			children = (
 				032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */,
 				03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */,
+				03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */,
+				03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */,
 			);
 			path = DeepLinkCreator;
 			sourceTree = "<group>";
@@ -2479,6 +2485,7 @@
 				03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
+				03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
 				03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */,
 				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
@@ -2624,6 +2631,7 @@
 				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0359F8D72BD3DA61005BFDA8 /* MpegTsAudioConfig.swift in Sources */,
 				0359F8B42BD3DA61005BFDA8 /* AVAudioPCMBuffer+Extension.swift in Sources */,
+				03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				0358DDD62BE695B70080133B /* DebugVideoSettingsView.swift in Sources */,
