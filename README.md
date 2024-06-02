@@ -197,7 +197,7 @@ where the URL decoded pretty printed JSON blob is
 An example with only two quick buttons enabled is
 
 ```
-moblin://?{"quickButtons":{"twoColumns":false,"showName":true,"enableScroll":true,"disableAllButtons":true,"buttons":[{"type":"Mute","enabled":true},{"type":"Draw","enabled":true}]}}
+moblin://?{"quickButtons":{"twoColumns":false,"showName":true,"enableScroll":true,"buttons":[{"type":"Mute","enabled":true},{"type":"Draw","enabled":true}]}}
 ```
 
 where the URL decoded pretty printed JSON blob is
@@ -208,7 +208,6 @@ where the URL decoded pretty printed JSON blob is
     "twoColumns": false,
     "showName": true,
     "enableScroll": true,
-    "disableAllButtons": true,
     "buttons": [
       {
         "type": "Mute",

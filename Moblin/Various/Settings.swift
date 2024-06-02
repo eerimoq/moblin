@@ -1428,16 +1428,16 @@ class DeepLinkCreatorStream: Codable, Identifiable {
     var obs: DeepLinkCreatorStreamObs = .init()
 }
 
-class DeepLinkCreatorQuickButton: Codable {
-    var type: SettingsButtonType
-    var enabled: Bool = true
+class DeepLinkCreatorQuickButton: Codable, Identifiable {
+    var id: UUID = .init()
+    var type: SettingsButtonType = .unknown
+    var enabled: Bool = false
 }
 
 class DeepLinkCreatorQuickButtons: Codable {
     var twoColumns: Bool = true
     var showName: Bool = false
     var enableScroll: Bool = true
-    var disableAllButtons: Bool = false
     var buttons: [DeepLinkCreatorQuickButton] = []
 }
 
@@ -1447,7 +1447,9 @@ class DeepLinkCreatorWebBrowser: Codable {
 
 class DeepLinkCreator: Codable {
     var streams: [DeepLinkCreatorStream] = []
+    var quickButtonsEnabled: Bool? = false
     var quickButtons: DeepLinkCreatorQuickButtons? = .init()
+    var webBrowserEnabled: Bool? = false
     var webBrowser: DeepLinkCreatorWebBrowser? = .init()
 }
 
@@ -1505,6 +1507,7 @@ class Database: Codable {
         for button in database.globalButtons! {
             button.isOn = false
         }
+        addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
         return database
     }
@@ -1806,6 +1809,29 @@ private func addMissingGlobalButtons(database: Database) {
     }
 }
 
+private func addMissingDeepLinkQuickButtons(database: Database) {
+    if database.deepLinkCreator == nil {
+        database.deepLinkCreator = .init()
+    }
+    if database.deepLinkCreator!.quickButtons == nil {
+        database.deepLinkCreator!.quickButtons = .init()
+    }
+    let quickButtons = database.deepLinkCreator!.quickButtons!
+    for globalButton in database.globalButtons! where globalButton.type != .lut {
+        let button = DeepLinkCreatorQuickButton()
+        let buttonExists = quickButtons.buttons.contains(where: { button in
+            globalButton.type == button.type
+        })
+        if !buttonExists {
+            button.type = globalButton.type
+            quickButtons.buttons.append(button)
+        }
+    }
+    quickButtons.buttons = quickButtons.buttons.filter { button in
+        button.type != .unknown
+    }
+}
+
 private func addMissingBundledLutButton(database: Database, lut: SettingsColorLut) {
     if lut.buttonId == nil {
         let button = SettingsButton(name: lut.name)
@@ -1871,6 +1897,7 @@ private func createDefault() -> Database {
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)
+    addMissingDeepLinkQuickButtons(database: database)
     addScenesToGameController(database: database)
     addMissingBundledLuts(database: database)
     return database
@@ -2480,6 +2507,14 @@ final class Settings {
         }
         if realDatabase.deepLinkCreator!.quickButtons == nil {
             realDatabase.deepLinkCreator!.quickButtons = .init()
+            store()
+        }
+        if realDatabase.deepLinkCreator!.quickButtonsEnabled == nil {
+            realDatabase.deepLinkCreator!.quickButtonsEnabled = false
+            store()
+        }
+        if realDatabase.deepLinkCreator!.webBrowserEnabled == nil {
+            realDatabase.deepLinkCreator!.webBrowserEnabled = false
             store()
         }
     }

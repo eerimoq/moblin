@@ -42,14 +42,16 @@ class MoblinSettingsUrlStream: Codable {
 class MoblinSettingsButton: Codable {
     var type: SettingsButtonType
     var enabled: Bool?
+
+    init(type: SettingsButtonType) {
+        self.type = type
+    }
 }
 
 class MoblinQuickButtons: Codable {
     var twoColumns: Bool?
     var showName: Bool?
     var enableScroll: Bool?
-    // Use "buttons" to enable buttons after disabling all.
-    var disableAllButtons: Bool?
     var buttons: [MoblinSettingsButton]?
 }
 

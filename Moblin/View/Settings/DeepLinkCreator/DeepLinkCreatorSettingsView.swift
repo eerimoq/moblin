@@ -55,6 +55,9 @@ struct DeepLinkCreatorSettingsView: View {
     }
 
     private func updateDeepLinkQuickButtons(settings: MoblinSettingsUrl) {
+        guard deepLinkCreator.quickButtonsEnabled! else {
+            return
+        }
         if !deepLinkCreator.quickButtons!.enableScroll {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.enableScroll = false
@@ -67,13 +70,19 @@ struct DeepLinkCreatorSettingsView: View {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.showName = true
         }
-        if deepLinkCreator.quickButtons!.disableAllButtons {
+        for button in deepLinkCreator.quickButtons!.buttons where button.enabled {
             settings.quickButtons = settings.quickButtons ?? .init()
-            settings.quickButtons!.disableAllButtons = true
+            settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()
+            let newButton = MoblinSettingsButton(type: button.type)
+            newButton.enabled = true
+            settings.quickButtons!.buttons!.append(newButton)
         }
     }
 
     private func updateDeepLinkWebBrowser(settings: MoblinSettingsUrl) {
+        guard deepLinkCreator.webBrowserEnabled! else {
+            return
+        }
         if !deepLinkCreator.webBrowser!.home.isEmpty {
             settings.webBrowser = .init()
             settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
@@ -111,13 +120,29 @@ struct DeepLinkCreatorSettingsView: View {
                         Text("Streams")
                     }
                     NavigationLink(destination: DeepLinkCreatorQuickButtonsSettingsView()) {
-                        Text("Quick buttons")
+                        Toggle(isOn: Binding(get: {
+                            deepLinkCreator.quickButtonsEnabled!
+                        }, set: {
+                            deepLinkCreator.quickButtonsEnabled = $0
+                            model.store()
+                            updateDeepLink()
+                        })) {
+                            Text("Quick buttons")
+                        }
                     }
                     NavigationLink(
                         destination: DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator
                             .webBrowser!)
                     ) {
-                        Text("Web browser")
+                        Toggle(isOn: Binding(get: {
+                            deepLinkCreator.webBrowserEnabled!
+                        }, set: {
+                            deepLinkCreator.webBrowserEnabled = $0
+                            model.store()
+                            updateDeepLink()
+                        })) {
+                            Text("Web browser")
+                        }
                     }
                 }
                 if deepLink != defaultDeepLink {

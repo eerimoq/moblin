@@ -32,41 +32,34 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
                 Text("Appearence")
             }
             Section {
-                Toggle("Disable all buttons", isOn: Binding(get: {
-                    quickButtons.disableAllButtons
-                }, set: { value in
-                    quickButtons.disableAllButtons = value
-                    model.store()
-                }))
+                List {
+                    ForEach(quickButtons.buttons) { button in
+                        Toggle(isOn: Binding(get: {
+                            button.enabled
+                        }, set: { value in
+                            button.enabled = value
+                            model.store()
+                        })) {
+                            HStack {
+                                DraggableItemPrefixView()
+                                if let globalButton = model.getGlobalButton(type: button.type) {
+                                    IconAndTextView(
+                                        image: globalButton.systemImageNameOff,
+                                        text: globalButton.name,
+                                        longDivider: true
+                                    )
+                                } else {
+                                    Text("Unknown")
+                                }
+                                Spacer()
+                            }
+                        }
+                    }
+                    .onMove(perform: { froms, to in
+                        quickButtons.buttons.move(fromOffsets: froms, toOffset: to)
+                    })
+                }
             }
-            // Section {
-            //    List {
-            //        ForEach(model.database.globalButtons!) { button in
-            //            Toggle(isOn: Binding(get: {
-            //                button.enabled!
-            //            }, set: { value in
-            //                button.enabled = value
-            //                model.store()
-            //                model.updateButtonStates()
-            //            })) {
-            //                HStack {
-            //                    DraggableItemPrefixView()
-            //                    IconAndTextView(
-            //                        image: button.systemImageNameOff,
-            //                        text: button.name,
-            //                        longDivider: true
-            //                    )
-            //                    Spacer()
-            //                }
-            //            }
-            //            .onMove(perform: { froms, to in
-            //                model.database.globalButtons!.move(fromOffsets: froms, toOffset: to)
-            //                model.updateButtonStates()
-            //                model.sceneUpdated()
-            //            })
-            //        }
-            //    }
-            // }
         }
         .navigationTitle("Quick buttons")
         .toolbar {
