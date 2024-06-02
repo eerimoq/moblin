@@ -78,7 +78,7 @@ private class ReplaceVideo {
         self.buggedPublisher = buggedPublisher
         self.manualFps = manualFps
         inputFrameRate = frameRate
-        outputFrameRate = 60
+        outputFrameRate = 25
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, onSuccess: @escaping (Double) -> Void) {
@@ -167,16 +167,14 @@ private class ReplaceVideo {
     }
 
     var numDuplicates: Double = 0
+    var numDrops: Double = 0
 
     private func getNextSampleBuffer() -> CMSampleBuffer? {
         if sampleBufferQueue.isEmpty {
             return nil
         }
-
-        let ratio = outputFrameRate / inputFrameRate
-
         if inputFrameRate < outputFrameRate {
-            // Duplicate frames
+            let ratio = outputFrameRate / inputFrameRate
             if numDuplicates == 0 {
                 numDuplicates = ratio - 1
             }
@@ -186,19 +184,19 @@ private class ReplaceVideo {
             } else {
                 numDuplicates += ratio - 1
             }
+        } else if inputFrameRate > outputFrameRate {
+            let ratio = inputFrameRate / outputFrameRate
+            if numDrops == 0 {
+                numDrops = ratio - 1
+            }
+            if numDrops >= 1 {
+                numDrops -= 1
+                _ = sampleBufferQueue.removeFirst()
+                return getNextSampleBuffer()
+            } else {
+                numDrops += ratio - 1
+            }
         }
-//        else {
-//            // Drop frames
-//            let numToDrop = Int(inputFrameRate / outputFrameRate)
-//            if numToDrop > 1 {
-//                for _ in 0..<(numToDrop - 1) {
-//                    if sampleBufferQueue.isEmpty {
-//                        return nil
-//                    }
-//                    sampleBufferQueue.removeFirst()
-//                }
-//            }
-//        }
         return sampleBufferQueue.removeFirst()
     }
 
