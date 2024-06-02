@@ -180,7 +180,7 @@ private class ReplaceVideo {
             if numDuplicates == 0 {
                 numDuplicates = ratio - 1
             }
-            if numDuplicates > 1 {
+            if numDuplicates >= 1 {
                 numDuplicates = numDuplicates - 1
                 return sampleBufferQueue.first
             } else {
