@@ -1212,8 +1212,12 @@ final class Model: NSObject, ObservableObject {
                 continue
             }
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
+                let isCurrentMic = (currentMic.id == stream.id.uuidString + " 0")
                 handleRtmpServerPublishStop(streamKey: stream.streamKey)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
+                if isCurrentMic {
+                    setMic(id: stream.id.uuidString + " 0") {}
+                }
             }
         }
     }
