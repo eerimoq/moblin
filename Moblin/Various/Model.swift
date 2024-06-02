@@ -1211,12 +1211,15 @@ final class Model: NSObject, ObservableObject {
             guard let stream = getRtmpStream(camera: rtmpCamera) else {
                 continue
             }
+
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
-                let isCurrentMic = (currentMic.id == stream.id.uuidString + " 0")
+                let micId = "\(stream.id.uuidString) 0"
+                let isLastMic = (currentMic.id == micId)
+
                 handleRtmpServerPublishStop(streamKey: stream.streamKey)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
-                if isCurrentMic {
-                    setMic(id: stream.id.uuidString + " 0") {}
+                if currentMic.id != micId, isLastMic {
+                    setMic(id: micId) {}
                 }
             }
         }
@@ -1236,6 +1239,9 @@ final class Model: NSObject, ObservableObject {
                 outputFrameRate: Double(self.stream.fps)
             )
             self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
+            if stream.autoSelectRtmpMic! {
+                self.setMic(id: stream.id.uuidString + " 0") {}
+            }
         }
     }
 
