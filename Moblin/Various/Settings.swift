@@ -4,6 +4,8 @@ import SwiftUI
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+let defaultSrtLatency: Int32 = 2000
+let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
@@ -187,7 +189,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
 }
 
 class SettingsStreamSrt: Codable {
-    var latency: Int32 = 2000
+    var latency: Int32 = defaultSrtLatency
     var maximumBandwidthFollowInput: Bool? = true
     var overheadBandwidth: Int32? = 25
     var adaptiveBitrateEnabled: Bool? = true
@@ -1117,7 +1119,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
-    var latency: Int32? = 2000
+    var latency: Int32? = defaultRtmpLatency
     var fps: Double? = 0
 
     func camera() -> String {
@@ -1407,7 +1409,7 @@ class DeepLinkCreatorStreamVideo: Codable {
 }
 
 class DeepLinkCreatorStreamSrt: Codable {
-    var latency: Int32 = 2000
+    var latency: Int32 = defaultSrtLatency
     var adaptiveBitrateEnabled: Bool = true
 }
 
@@ -2063,7 +2065,7 @@ final class Settings {
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.latency == nil {
-            stream.latency = 2000
+            stream.latency = defaultSrtLatency
             store()
         }
         if realDatabase.vibrate == nil {

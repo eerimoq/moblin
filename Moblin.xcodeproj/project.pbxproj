@@ -226,6 +226,7 @@
 		038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038F42EC2B6849D400E68752 /* LutEffect.swift */; };
 		038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 038F42F32B685ACF00E68752 /* LUTs.bundle */; };
 		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
+		03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A01ACD2B9F738200D20AE3 /* CacheImage.swift */; };
@@ -671,6 +672,7 @@
 		038F42EC2B6849D400E68752 /* LutEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LutEffect.swift; sourceTree = "<group>"; };
 		038F42F32B685ACF00E68752 /* LUTs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LUTs.bundle; sourceTree = "<group>"; };
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
+		03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamSettingsView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		03A01ACA2B9F66D200D20AE3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1090,6 +1092,7 @@
 			isa = PBXGroup;
 			children = (
 				032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */,
+				03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */,
 			);
 			path = DeepLinkCreator;
 			sourceTree = "<group>";
@@ -2407,6 +2410,7 @@
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
+				03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
 				0364B6232BD3683F002F828D /* ControlBarPortraitView.swift in Sources */,
 				034844F22B579DF30089B874 /* RemoteControl.swift in Sources */,
