@@ -42,6 +42,7 @@ class MoblinQuickButtons: Codable {
 }
 
 class MoblinSettingsUrl: Codable {
+    // The last enabled stream will be selected (if any).
     var streams: [MoblinSettingsUrlStream]?
     var quickButtons: MoblinQuickButtons?
     var webBrowser: MoblinSettingsWebBrowser?
