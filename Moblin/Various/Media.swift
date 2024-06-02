@@ -696,14 +696,16 @@ final class Media: NSObject {
         latency: Double,
         buggedPublisher: Bool,
         manualFps: Bool,
-        frameRate: Double
+        inputFrameRate: Double,
+        outputFrameRate: Double
     ) {
         netStream.addReplaceVideo(
             cameraId: cameraId,
             latency: latency,
             buggedPublisher: buggedPublisher,
             manualFps: manualFps,
-            frameRate: frameRate
+            inputFrameRate: inputFrameRate,
+            outputFrameRate: outputFrameRate
         )
     }
 

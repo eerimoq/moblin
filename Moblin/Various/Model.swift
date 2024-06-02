@@ -1216,7 +1216,8 @@ final class Model: NSObject, ObservableObject {
                 latency: Double(stream.latency! / 1000),
                 buggedPublisher: stream.buggedPublisher!,
                 manualFps: stream.manualFps!,
-                frameRate: stream.fps!
+                inputFrameRate: stream.fps!,
+                outputFrameRate: Double(self.stream.fps)
             )
             self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
         }
