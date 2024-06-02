@@ -275,25 +275,27 @@ struct DeepLinkCreatorSettingsView: View {
                 } header: {
                     Text("Streams")
                 }
-                Section {
-                    HStack {
-                        Spacer()
-                        Button("Copy to clipboard") {
-                            UIPasteboard.general.string = deepLink
-                            model.makeToast(title: "Deep link copied to clipboard")
+                if deepLink != "moblin://?{}" {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Button("Copy to clipboard") {
+                                UIPasteboard.general.string = deepLink
+                                model.makeToast(title: "Deep link copied to clipboard")
+                            }
+                            Spacer()
                         }
-                        Spacer()
                     }
-                }
-                Section {
-                    HStack {
-                        Spacer()
-                        Image(uiImage: generateQRCode(from: deepLink))
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                            .frame(maxHeight: metrics.size.height)
-                        Spacer()
+                    Section {
+                        HStack {
+                            Spacer()
+                            Image(uiImage: generateQRCode(from: deepLink))
+                                .resizable()
+                                .interpolation(.none)
+                                .scaledToFit()
+                                .frame(maxHeight: metrics.size.height)
+                            Spacer()
+                        }
                     }
                 }
             }

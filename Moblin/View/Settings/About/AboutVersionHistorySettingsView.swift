@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.294.0", date: "2024-06-02", changes: [
+        "• Never show low battery warning on Mac.",
+        "• Deep link generator started. 💡 Jon",
+        "  • Only supports streams.",
+    ]),
     Version(version: "0.293.0", date: "2024-06-02", changes: [
         "• Add more parameters to `moblin://` deep link. 💡 Jon",
         "  • SRT latency and if adaptive bitrate is enabled.",
