@@ -146,9 +146,10 @@ struct RtmpServerStreamSettingsView: View {
                     .disabled(model.rtmpServerEnabled())
                 }
             } footer: {
-                Text(
-                    "Enable this setting to allow Moblin to estimate the FPS in the absence of accurate timestamps from the publisher. Alternatively, the FPS can be specified manually."
-                )
+                Text("""
+                Enable this setting to allow Moblin to estimate the FPS in the absence of accurate \
+                timestamps from the publisher. Alternatively, the FPS can be specified manually.
+                """)
             }
             Section {
                 Toggle("Auto set RTMP-Audio mic", isOn: Binding(get: {
