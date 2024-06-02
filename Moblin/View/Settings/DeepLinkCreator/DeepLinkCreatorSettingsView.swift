@@ -56,6 +56,7 @@ struct DeepLinkCreatorSettingsView: View {
         settings.quickButtons!.enableScroll = deepLinkCreator.quickButtons!.enableScroll
         settings.quickButtons!.twoColumns = deepLinkCreator.quickButtons!.twoColumns
         settings.quickButtons!.showName = deepLinkCreator.quickButtons!.showName
+        settings.quickButtons!.disableAllButtons = true
         for button in deepLinkCreator.quickButtons!.buttons where button.enabled {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()

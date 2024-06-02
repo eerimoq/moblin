@@ -1387,8 +1387,10 @@ final class Model: NSObject, ObservableObject {
             if let enableScroll = quickButtons.enableScroll {
                 database.quickButtons!.enableScroll = enableScroll
             }
-            for globalButton in database.globalButtons! {
-                globalButton.enabled = false
+            if quickButtons.disableAllButtons == true {
+                for globalButton in database.globalButtons! {
+                    globalButton.enabled = false
+                }
             }
             for button in quickButtons.buttons ?? [] {
                 for globalButton in database.globalButtons! {

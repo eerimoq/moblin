@@ -52,6 +52,8 @@ class MoblinQuickButtons: Codable {
     var twoColumns: Bool?
     var showName: Bool?
     var enableScroll: Bool?
+    // Use "buttons" to enable buttons after disabling all.
+    var disableAllButtons: Bool?
     var buttons: [MoblinSettingsButton]?
 }
 
