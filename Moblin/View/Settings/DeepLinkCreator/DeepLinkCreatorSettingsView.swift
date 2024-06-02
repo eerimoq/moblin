@@ -45,14 +45,16 @@ struct DeepLinkCreatorSettingsView: View {
         return newStream
     }
 
-    private func updateDeepLink() {
-        let settings = MoblinSettingsUrl()
+    private func updateDeepLinkStreams(settings: MoblinSettingsUrl) {
         if !deepLinkCreator.streams.isEmpty {
             settings.streams = []
             for stream in deepLinkCreator.streams {
                 settings.streams!.append(createDeepLinkStream(stream: stream))
             }
         }
+    }
+
+    private func updateDeepLinkQuickButtons(settings: MoblinSettingsUrl) {
         if !deepLinkCreator.quickButtons!.enableScroll {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.enableScroll = false
@@ -65,10 +67,24 @@ struct DeepLinkCreatorSettingsView: View {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.showName = true
         }
+        if deepLinkCreator.quickButtons!.disableAllButtons {
+            settings.quickButtons = settings.quickButtons ?? .init()
+            settings.quickButtons!.disableAllButtons = true
+        }
+    }
+
+    private func updateDeepLinkWebBrowser(settings: MoblinSettingsUrl) {
         if !deepLinkCreator.webBrowser!.home.isEmpty {
             settings.webBrowser = .init()
             settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
         }
+    }
+
+    private func updateDeepLink() {
+        let settings = MoblinSettingsUrl()
+        updateDeepLinkStreams(settings: settings)
+        updateDeepLinkQuickButtons(settings: settings)
+        updateDeepLinkWebBrowser(settings: settings)
         do {
             let jsonBlob = try settings.toString()
             if var encodedJsonBlob = jsonBlob

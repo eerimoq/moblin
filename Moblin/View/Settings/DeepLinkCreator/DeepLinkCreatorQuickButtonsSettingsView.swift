@@ -31,6 +31,14 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
             } header: {
                 Text("Appearence")
             }
+            Section {
+                Toggle("Disable all buttons", isOn: Binding(get: {
+                    quickButtons.disableAllButtons
+                }, set: { value in
+                    quickButtons.disableAllButtons = value
+                    model.store()
+                }))
+            }
             // Section {
             //    List {
             //        ForEach(model.database.globalButtons!) { button in

@@ -23631,6 +23631,9 @@
         }
       }
     },
+    "Disable all buttons" : {
+
+    },
     "Disable the RTMP server to change its settings." : {
       "localizations" : {
         "de" : {
