@@ -1351,12 +1351,24 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
+        var newEnabledStream: SettingsStream?
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
             newStream.url = stream.url
+            if stream.enabled == true {
+                newEnabledStream = newStream
+            }
             if let video = stream.video {
                 if let codec = video.codec {
                     newStream.codec = codec
+                }
+            }
+            if let srt = stream.srt {
+                if let latency = srt.latency {
+                    newStream.srt.latency = latency
+                }
+                if let adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled {
+                    newStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
                 }
             }
             if let obs = stream.obs {
@@ -1391,9 +1403,20 @@ final class Model: NSObject, ObservableObject {
                 }
             }
         }
+        if let webBrowser = settings.webBrowser {
+            if let home = webBrowser.home {
+                database.webBrowser!.home = home
+            }
+        }
         store()
         makeToast(title: "URL import successful")
         updateButtonStates()
+        if let newEnabledStream, !isLive, !isRecording {
+            setCurrentStream(stream: newEnabledStream)
+            reloadStream()
+            sceneUpdated()
+            resetSelectedScene(changeScene: false)
+        }
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {

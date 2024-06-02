@@ -4,9 +4,6 @@ struct WebBrowserSettingsView: View {
     @EnvironmentObject var model: Model
 
     private func submitHome(value: String) {
-        guard isValidUrl(url: value, allowedSchemes: ["http", "https"]) != nil else {
-            return
-        }
         model.database.webBrowser!.home = value
         model.store()
     }
