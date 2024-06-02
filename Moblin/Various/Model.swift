@@ -1244,7 +1244,9 @@ final class Model: NSObject, ObservableObject {
         }
         media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer, onSuccess: { frameRate in
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera()
-            self.makeToast(title: "\(camera ?? "Unknown") connected (\(frameRate) FPS)")
+            DispatchQueue.main.async {
+                self.makeToast(title: "\(camera ?? "Unknown") connected (\(frameRate) FPS)")
+            }
         })
     }
 
