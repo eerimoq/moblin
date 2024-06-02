@@ -1428,12 +1428,26 @@ class DeepLinkCreatorStream: Codable, Identifiable {
     var obs: DeepLinkCreatorStreamObs = .init()
 }
 
+class DeepLinkCreatorQuickButton: Codable {
+    var type: SettingsButtonType
+    var enabled: Bool = true
+}
+
+class DeepLinkCreatorQuickButtons: Codable {
+    var twoColumns: Bool = true
+    var showName: Bool = false
+    var enableScroll: Bool = true
+    var disableAllButtons: Bool = false
+    var buttons: [DeepLinkCreatorQuickButton] = []
+}
+
 class DeepLinkCreatorWebBrowser: Codable {
     var home: String = ""
 }
 
 class DeepLinkCreator: Codable {
     var streams: [DeepLinkCreatorStream] = []
+    var quickButtons: DeepLinkCreatorQuickButtons? = .init()
     var webBrowser: DeepLinkCreatorWebBrowser? = .init()
 }
 
@@ -2462,6 +2476,10 @@ final class Settings {
         }
         if realDatabase.deepLinkCreator!.webBrowser == nil {
             realDatabase.deepLinkCreator!.webBrowser = .init()
+            store()
+        }
+        if realDatabase.deepLinkCreator!.quickButtons == nil {
+            realDatabase.deepLinkCreator!.quickButtons = .init()
             store()
         }
     }

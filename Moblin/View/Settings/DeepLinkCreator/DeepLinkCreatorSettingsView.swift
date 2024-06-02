@@ -51,6 +51,18 @@ struct DeepLinkCreatorSettingsView: View {
                 settings.streams!.append(createDeepLinkStream(stream: stream))
             }
         }
+        if !deepLinkCreator.quickButtons!.enableScroll {
+            settings.quickButtons = settings.quickButtons ?? .init()
+            settings.quickButtons!.enableScroll = false
+        }
+        if !deepLinkCreator.quickButtons!.twoColumns {
+            settings.quickButtons = settings.quickButtons ?? .init()
+            settings.quickButtons!.twoColumns = false
+        }
+        if deepLinkCreator.quickButtons!.showName {
+            settings.quickButtons = settings.quickButtons ?? .init()
+            settings.quickButtons!.showName = true
+        }
         if !deepLinkCreator.webBrowser!.home.isEmpty {
             settings.webBrowser = .init()
             settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
@@ -80,6 +92,9 @@ struct DeepLinkCreatorSettingsView: View {
                     NavigationLink(destination: DeepLinkCreatorStreamsSettingsView()) {
                         Text("Streams")
                     }
+                    NavigationLink(destination: DeepLinkCreatorQuickButtonsSettingsView()) {
+                        Text("Quick buttons")
+                    }
                     NavigationLink(
                         destination: DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator
                             .webBrowser!)
@@ -108,6 +123,13 @@ struct DeepLinkCreatorSettingsView: View {
                                 .frame(maxHeight: metrics.size.height)
                             Spacer()
                         }
+                    }
+                } else {
+                    Section {
+                        Text("""
+                        A QR code and copy to clipboard button will show up here when the \
+                        settings above have been modified (and are not all default values).
+                        """)
                     }
                 }
             }

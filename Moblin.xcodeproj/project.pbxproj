@@ -229,6 +229,7 @@
 		03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */; };
 		03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */; };
 		03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */; };
+		03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A01ACD2B9F738200D20AE3 /* CacheImage.swift */; };
@@ -677,6 +678,7 @@
 		03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamSettingsView.swift; sourceTree = "<group>"; };
 		03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorWebBrowserSettingsView.swift; sourceTree = "<group>"; };
 		03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamsSettingsView.swift; sourceTree = "<group>"; };
+		03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		03A01ACA2B9F66D200D20AE3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1095,6 +1097,7 @@
 		032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */ = {
 			isa = PBXGroup;
 			children = (
+				03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */,
 				032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */,
 				03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */,
 				03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */,
@@ -2638,6 +2641,7 @@
 				038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */,
+				03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */,
 				0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
 				03279CE72B4CD245006CEA5A /* Location.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,

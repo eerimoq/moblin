@@ -7363,6 +7363,9 @@
         }
       }
     },
+    "A QR code and copy to clipboard button will show up here when the settings above have been modified (and are not all default values)." : {
+
+    },
     "a scene" : {
       "localizations" : {
         "de" : {
