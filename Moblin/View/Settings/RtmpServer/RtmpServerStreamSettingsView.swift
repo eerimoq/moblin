@@ -109,6 +109,10 @@ struct RtmpServerStreamSettingsView: View {
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(model.rtmpServerEnabled())
+            } footer: {
+                Text("The stream name is shown in the list of cameras in scene settings.")
+            }
+            Section {
                 Toggle("Bugged Publisher", isOn: Binding(get: {
                     stream.buggedPublisher!
                 }, set: { value in
@@ -141,8 +145,6 @@ struct RtmpServerStreamSettingsView: View {
                     )
                     .disabled(model.rtmpServerEnabled())
                 }
-            } footer: {
-                Text("The stream name is shown in the list of cameras in scene settings.")
             }
             Section {
                 if model.rtmpServerEnabled() {
