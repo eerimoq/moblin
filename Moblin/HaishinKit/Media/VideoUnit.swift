@@ -227,6 +227,7 @@ private class ReplaceVideo {
         counter = 0
         firstPresentationTimeStamp = nil
         state = .initializing
+        logger.info("ReplaceVideo output has been stopped.")
     }
 
     func nearestCommonFrameRate(value: Double) -> Double {

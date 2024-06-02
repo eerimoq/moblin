@@ -133,6 +133,7 @@ private class ReplaceAudio {
         sampleBufferQueue.removeAll()
         startTime = nil
         state = .initializing
+        logger.info("ReplaceAudio output has been stopped.")
     }
 }
 

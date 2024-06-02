@@ -1206,6 +1206,18 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func reloadRtmpStreams() {
+        for rtmpCamera in rtmpCameras() {
+            guard let stream = getRtmpStream(camera: rtmpCamera) else {
+                continue
+            }
+            if isRtmpStreamConnected(streamKey: stream.streamKey) {
+                handleRtmpServerPublishStop(streamKey: stream.streamKey)
+                handleRtmpServerPublishStart(streamKey: stream.streamKey)
+            }
+        }
+    }
+
     func handleRtmpServerPublishStart(streamKey: String) {
         DispatchQueue.main.async {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
@@ -2232,6 +2244,7 @@ final class Model: NSObject, ObservableObject {
         reloadConnections()
         resetChat()
         reloadLocation()
+        reloadRtmpStreams()
     }
 
     func reloadChats() {
