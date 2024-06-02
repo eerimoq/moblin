@@ -1355,7 +1355,7 @@ final class Model: NSObject, ObservableObject {
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
             newStream.url = stream.url
-            if stream.enabled == true {
+            if stream.selected == true {
                 newEnabledStream = newStream
             }
             if let video = stream.video {

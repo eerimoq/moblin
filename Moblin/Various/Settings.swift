@@ -1402,6 +1402,34 @@ class WebBrowserSettings: Codable {
     var home: String = "https://google.com"
 }
 
+class DeepLinkCreatorStreamVideo: Codable {
+    var codec: SettingsStreamCodec = .h265hevc
+}
+
+class DeepLinkCreatorStreamSrt: Codable {
+    var latency: Int32 = 2000
+    var adaptiveBitrateEnabled: Bool = true
+}
+
+class DeepLinkCreatorStreamObs: Codable {
+    var webSocketUrl: String = ""
+    var webSocketPassword: String = ""
+}
+
+class DeepLinkCreatorStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My stream"
+    var url: String = defaultStreamUrl
+    var selected: Bool = false
+    var video: DeepLinkCreatorStreamVideo = .init()
+    var srt: DeepLinkCreatorStreamSrt = .init()
+    var obs: DeepLinkCreatorStreamObs = .init()
+}
+
+class DeepLinkCreator: Codable {
+    var streams: [DeepLinkCreatorStream] = []
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1436,6 +1464,7 @@ class Database: Codable {
     var watch: WatchSettings? = .init()
     var audio: AudioSettings? = .init()
     var webBrowser: WebBrowserSettings? = .init()
+    var deepLinkCreator: DeepLinkCreator? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2418,6 +2447,10 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
+            store()
+        }
+        if realDatabase.deepLinkCreator == nil {
+            realDatabase.deepLinkCreator = .init()
             store()
         }
     }

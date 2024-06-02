@@ -16,15 +16,27 @@ class MoblinSettingsUrlStreamVideo: Codable {
 class MoblinSettingsUrlStreamObs: Codable {
     var webSocketUrl: String
     var webSocketPassword: String
+
+    init(webSocketUrl: String, webSocketPassword: String) {
+        self.webSocketUrl = webSocketUrl
+        self.webSocketPassword = webSocketPassword
+    }
 }
 
 class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
+    // periphery:ignore
     var enabled: Bool?
+    var selected: Bool?
     var video: MoblinSettingsUrlStreamVideo?
     var srt: MoblinSettingsSrt?
     var obs: MoblinSettingsUrlStreamObs?
+
+    init(name: String, url: String) {
+        self.name = name
+        self.url = url
+    }
 }
 
 class MoblinSettingsButton: Codable {
@@ -46,6 +58,10 @@ class MoblinSettingsUrl: Codable {
     var streams: [MoblinSettingsUrlStream]?
     var quickButtons: MoblinQuickButtons?
     var webBrowser: MoblinSettingsWebBrowser?
+
+    func toString() throws -> String {
+        return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
+    }
 
     static func fromString(query: String) throws -> MoblinSettingsUrl {
         let query = try JSONDecoder().decode(

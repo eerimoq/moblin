@@ -21412,6 +21412,9 @@
         }
       }
     },
+    "Copy to clipboard" : {
+
+    },
     "Cosmetics" : {
       "localizations" : {
         "de" : {
@@ -22711,6 +22714,9 @@
           }
         }
       }
+    },
+    "Deep link creator" : {
+
     },
     "Delete" : {
       "localizations" : {
@@ -59117,6 +59123,9 @@
           }
         }
       }
+    },
+    "Selected" : {
+
     },
     "Send your location to https://rtirl.com, to let your viewers know where you are." : {
       "localizations" : {

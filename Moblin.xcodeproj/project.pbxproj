@@ -64,6 +64,7 @@
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */; };
 		032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */; };
 		032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFB2B0B1183007BE85E /* ValueEditView.swift */; };
 		032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */; };
@@ -456,6 +457,7 @@
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
+		032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		032FDBFB2B0B1183007BE85E /* ValueEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueEditView.swift; sourceTree = "<group>"; };
@@ -1082,6 +1084,14 @@
 				032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */,
 			);
 			path = ImportExport;
+			sourceTree = "<group>";
+		};
+		032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */ = {
+			isa = PBXGroup;
+			children = (
+				032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */,
+			);
+			path = DeepLinkCreator;
 			sourceTree = "<group>";
 		};
 		0330F2AE2AFAD24F001262C3 /* YouTube */ = {
@@ -1815,7 +1825,6 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				03AA89932BC4344F0007BFE8 /* WebBrowser */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				037CE22B2BC17EA3004E9B18 /* Audio */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
@@ -1823,6 +1832,7 @@
 				030399112AE2D0E900D27530 /* Chat */,
 				03831D562AD9A188008D26CC /* Cosmetics */,
 				0379BB992AAD80AF00B718B6 /* Debug */,
+				032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */,
 				03B16A2B2B35D71500E5AB07 /* Display */,
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
@@ -1836,6 +1846,7 @@
 				03487F222B334AB4003D9ED9 /* StreamingHistory */,
 				0379BB982AAD804F00B718B6 /* Streams */,
 				031C15B22B93324200BA967D /* Watch */,
+				03AA89932BC4344F0007BFE8 /* WebBrowser */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -2374,6 +2385,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */,
 				0359F8F52BD3DA61005BFDA8 /* RTMPStreamInfo.swift in Sources */,
 				0359F8C12BD3DA61005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,
 				0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */,
