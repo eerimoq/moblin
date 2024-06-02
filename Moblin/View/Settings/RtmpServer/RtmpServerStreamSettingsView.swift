@@ -145,6 +145,10 @@ struct RtmpServerStreamSettingsView: View {
                     )
                     .disabled(model.rtmpServerEnabled())
                 }
+            } footer: {
+                Text(
+                    "Enable this setting to allow Moblin to estimate the FPS in the absence of accurate timestamps from the publisher. Alternatively, the FPS can be specified manually."
+                )
             }
             Section {
                 if model.rtmpServerEnabled() {
