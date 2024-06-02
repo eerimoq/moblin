@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let defaultDeepLink = "moblin://?{}"
+
 private func generateQRCode(from string: String) -> UIImage {
     let data = string.data(using: String.Encoding.ascii)
     let filter = CIFilter.qrCodeGenerator()
@@ -13,7 +15,7 @@ private func generateQRCode(from string: String) -> UIImage {
 
 struct DeepLinkCreatorSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var deepLink = "moblin://?{}"
+    @State var deepLink = defaultDeepLink
 
     private var deepLinkCreator: DeepLinkCreator {
         return model.database.deepLinkCreator!
@@ -102,7 +104,7 @@ struct DeepLinkCreatorSettingsView: View {
                         Text("Web browser")
                     }
                 }
-                if deepLink != "moblin://?{}" {
+                if deepLink != defaultDeepLink {
                     Section {
                         HStack {
                             Spacer()
