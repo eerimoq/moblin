@@ -3368,7 +3368,7 @@ final class Model: NSObject, ObservableObject {
     private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
-        if batteryLevel < 0.05 && !isBatteryCharging() {
+        if batteryLevel < 0.05 && !isBatteryCharging() && !ProcessInfo().isiOSAppOnMac {
             makeWarningToast(title: lowBatteryMessage, vibrate: true)
         }
     }
