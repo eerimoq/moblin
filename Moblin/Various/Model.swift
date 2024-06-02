@@ -1364,8 +1364,12 @@ final class Model: NSObject, ObservableObject {
                 }
             }
             if let srt = stream.srt {
-                newStream.srt.latency = srt.latency ?? defaultSrtLatency
-                newStream.srt.adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled ?? true
+                if let latency = srt.latency {
+                    newStream.srt.latency = latency
+                }
+                if let adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled {
+                    newStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
+                }
             }
             if let obs = stream.obs {
                 newStream.obsWebSocketUrl = obs.webSocketUrl
@@ -1374,9 +1378,15 @@ final class Model: NSObject, ObservableObject {
             database.streams.append(newStream)
         }
         if let quickButtons = settings.quickButtons {
-            database.quickButtons!.twoColumns = quickButtons.twoColumns ?? true
-            database.quickButtons!.showName = quickButtons.showName ?? false
-            database.quickButtons!.enableScroll = quickButtons.enableScroll ?? true
+            if let twoColumns = quickButtons.twoColumns {
+                database.quickButtons!.twoColumns = twoColumns
+            }
+            if let showName = quickButtons.showName {
+                database.quickButtons!.showName = showName
+            }
+            if let enableScroll = quickButtons.enableScroll {
+                database.quickButtons!.enableScroll = enableScroll
+            }
             for globalButton in database.globalButtons! {
                 globalButton.enabled = false
             }
@@ -1392,7 +1402,9 @@ final class Model: NSObject, ObservableObject {
             }
         }
         if let webBrowser = settings.webBrowser {
-            database.webBrowser!.home = webBrowser.home ?? ""
+            if let home = webBrowser.home {
+                database.webBrowser!.home = home
+            }
         }
         store()
         makeToast(title: "URL import successful")

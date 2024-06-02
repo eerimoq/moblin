@@ -28,29 +28,23 @@ struct DeepLinkCreatorSettingsView: View {
         }
         newStream.video = .init()
         newStream.video!.codec = stream.video.codec
-        if stream.srt.latency != defaultSrtLatency {
-            newStream.srt = newStream.srt ?? .init()
-            newStream.srt!.latency = stream.srt.latency
-        }
-        if !stream.srt.adaptiveBitrateEnabled {
-            newStream.srt = newStream.srt ?? .init()
-            newStream.srt!.adaptiveBitrateEnabled = false
-        }
-        if !stream.obs.webSocketUrl.isEmpty && !stream.obs.webSocketPassword.isEmpty {
-            newStream.obs = .init(
-                webSocketUrl: stream.obs.webSocketUrl,
-                webSocketPassword: stream.obs.webSocketPassword
-            )
-        }
+        newStream.srt = .init()
+        newStream.srt!.latency = stream.srt.latency
+        newStream.srt!.adaptiveBitrateEnabled = false
+        newStream.obs = .init(
+            webSocketUrl: stream.obs.webSocketUrl,
+            webSocketPassword: stream.obs.webSocketPassword
+        )
         return newStream
     }
 
     private func updateDeepLinkStreams(settings: MoblinSettingsUrl) {
-        if !deepLinkCreator.streams.isEmpty {
-            settings.streams = []
-            for stream in deepLinkCreator.streams {
-                settings.streams!.append(createDeepLinkStream(stream: stream))
-            }
+        guard !deepLinkCreator.streams.isEmpty else {
+            return
+        }
+        settings.streams = []
+        for stream in deepLinkCreator.streams {
+            settings.streams!.append(createDeepLinkStream(stream: stream))
         }
     }
 
@@ -58,18 +52,10 @@ struct DeepLinkCreatorSettingsView: View {
         guard deepLinkCreator.quickButtonsEnabled! else {
             return
         }
-        if !deepLinkCreator.quickButtons!.enableScroll {
-            settings.quickButtons = settings.quickButtons ?? .init()
-            settings.quickButtons!.enableScroll = false
-        }
-        if !deepLinkCreator.quickButtons!.twoColumns {
-            settings.quickButtons = settings.quickButtons ?? .init()
-            settings.quickButtons!.twoColumns = false
-        }
-        if deepLinkCreator.quickButtons!.showName {
-            settings.quickButtons = settings.quickButtons ?? .init()
-            settings.quickButtons!.showName = true
-        }
+        settings.quickButtons = .init()
+        settings.quickButtons!.enableScroll = deepLinkCreator.quickButtons!.enableScroll
+        settings.quickButtons!.twoColumns = deepLinkCreator.quickButtons!.twoColumns
+        settings.quickButtons!.showName = deepLinkCreator.quickButtons!.showName
         for button in deepLinkCreator.quickButtons!.buttons where button.enabled {
             settings.quickButtons = settings.quickButtons ?? .init()
             settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()
@@ -83,10 +69,8 @@ struct DeepLinkCreatorSettingsView: View {
         guard deepLinkCreator.webBrowserEnabled! else {
             return
         }
-        if !deepLinkCreator.webBrowser!.home.isEmpty {
-            settings.webBrowser = .init()
-            settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
-        }
+        settings.webBrowser = .init()
+        settings.webBrowser!.home = deepLinkCreator.webBrowser!.home
     }
 
     private func updateDeepLink() {
