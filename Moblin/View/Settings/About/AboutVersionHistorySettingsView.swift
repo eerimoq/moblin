@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.293.0", date: "2024-06-02", changes: [
+        "• Add more parameters to `moblin://` deep link. 💡 Jon",
+        "  • SRT latency and if adaptive bitrate is enabled.",
+        "  • Web browser home.",
+        "  • Enable/select created stream.",
+        "• Fix Kick 7TV, FFZ and BTTV emotes (I think).",
+    ]),
     Version(version: "0.292.0", date: "2024-06-01", changes: [
         "• Use monotonic clock instead of system clock when calculating various timings.",
         "  • To make the app work better when leap seconds and such.",
