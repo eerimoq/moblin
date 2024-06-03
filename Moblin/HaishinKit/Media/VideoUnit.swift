@@ -226,7 +226,7 @@ private class ReplaceVideo {
         startTime = nil
         counter = 0
         firstPresentationTimeStamp = nil
-        state = .initializing
+        state = .buffering
         logger.info("ReplaceVideo output has been stopped.")
     }
 
@@ -1100,6 +1100,9 @@ final class VideoUnit: NSObject {
     private func sessionWasInterrupted(_: Notification) {
         logger.info("Video session interruption started")
         lockQueue.async {
+            for replaceVideo in self.replaceVideos.values {
+                replaceVideo.stopOutput()
+            }
             self.prepareFirstFrame()
         }
     }
