@@ -24,6 +24,7 @@ struct StreamsSettingsView: View {
                                     model.reloadStream()
                                     model.sceneUpdated()
                                     model.resetSelectedScene(changeScene: false)
+                                    model.updateOrientation()
                                 }))
                                 .disabled(stream.enabled || model.isLive || model.isRecording)
                             }

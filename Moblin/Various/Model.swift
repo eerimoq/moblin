@@ -1315,7 +1315,7 @@ final class Model: NSObject, ObservableObject {
         appStoreUpdateListenerTask?.cancel()
     }
 
-    private func updateOrientation() {
+    func updateOrientation() {
         if stream.portrait! {
             streamPreviewView.videoOrientation = .landscapeRight
         } else {
