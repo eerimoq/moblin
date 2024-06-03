@@ -128,14 +128,10 @@ extension CMSampleBuffer {
     }
 
     private func replaceAudioPresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        let originalPTS = CMSampleBufferGetPresentationTimeStamp(self)
-        let timeOffset = CMTimeSubtract(presentationTimeStamp, originalPTS)
-        let newPTS = CMTimeAdd(originalPTS, timeOffset)
-
         var newSampleBuffer: CMSampleBuffer?
         var timingInfo = CMSampleTimingInfo(
             duration: duration,
-            presentationTimeStamp: newPTS,
+            presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: decodeTimeStamp
         )
 

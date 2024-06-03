@@ -59,7 +59,7 @@ private class ReplaceAudio {
             startTime = currentTime
         }
         sampleBufferQueue.append(sampleBuffer)
-        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
 
         switch state {
         case .initializing:
@@ -101,12 +101,19 @@ private class ReplaceAudio {
         outputTimer!.activate()
     }
 
+    var startPresentationTimeStamp: CMTime = .zero
+
     private func output() {
+        if startPresentationTimeStamp == CMTime.zero {
+            startPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        }
         guard let sampleBuffer = sampleBufferQueue.first else {
             logger.info("ReplaceAudio Queue size low. Waiting for more sampleBuffers.")
             return
         }
-        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+
+        var presentationTimeStamp = CMTimeAdd(startPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
+
         guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
@@ -133,6 +140,7 @@ private class ReplaceAudio {
         sampleBufferQueue.removeAll()
         startTime = nil
         state = .initializing
+        startPresentationTimeStamp = .zero
         logger.info("ReplaceAudio output has been stopped.")
     }
 }

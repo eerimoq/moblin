@@ -96,8 +96,8 @@ private class ReplaceVideo {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         inputCounter += 1
-        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
-        logger.info("Total input frames: \(inputCounter)")
+        // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
+        // logger.info("Total input frames: \(inputCounter)")
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
@@ -171,7 +171,7 @@ private class ReplaceVideo {
         }
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
         outputCounter += 1
-        logger.info("Total output frames: \(outputCounter)")
+        // logger.info("Total output frames: \(outputCounter)")
     }
 
     var numDuplicates: Double = 0
