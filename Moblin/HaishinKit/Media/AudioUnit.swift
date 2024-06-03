@@ -59,6 +59,7 @@ private class ReplaceAudio {
             startTime = currentTime
         }
         sampleBufferQueue.append(sampleBuffer)
+        sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
 
         switch state {
