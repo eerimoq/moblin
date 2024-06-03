@@ -111,14 +111,19 @@ extension CMSampleBuffer {
         return sampleBuffer
     }
 
-    func replacePresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+    func replacePresentationTimeStamp(presentationTimeStamp: CMTime,
+                                      decodeTimeStamp: CMTime = .invalid) -> CMSampleBuffer?
+    {
         if let formatDescription = formatDescription {
             let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
             switch mediaType {
             case kCMMediaType_Audio:
                 return replaceAudioPresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
             case kCMMediaType_Video:
-                return replaceVideoPresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
+                return replaceVideoPresentationTimeStamp(
+                    presentationTimeStamp: presentationTimeStamp,
+                    decodeTimeStamp: decodeTimeStamp
+                )
             default:
                 return nil
             }
@@ -145,21 +150,13 @@ extension CMSampleBuffer {
         return newSampleBuffer
     }
 
-    private func replaceVideoPresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        let originalPTS = CMSampleBufferGetPresentationTimeStamp(self)
-        let originalDTS = CMSampleBufferGetDecodeTimeStamp(self)
-        let timeOffset = CMTimeSubtract(presentationTimeStamp, originalPTS)
-        let newPTS = CMTimeAdd(originalPTS, timeOffset)
-        var newDTS = originalDTS
-
-        if originalDTS != CMTime.invalid {
-            newDTS = CMTimeAdd(originalDTS, timeOffset)
-        }
-
+    private func replaceVideoPresentationTimeStamp(presentationTimeStamp: CMTime,
+                                                   decodeTimeStamp: CMTime) -> CMSampleBuffer?
+    {
         var timingInfo = CMSampleTimingInfo(
             duration: CMSampleBufferGetDuration(self),
-            presentationTimeStamp: newPTS,
-            decodeTimeStamp: newDTS
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
         )
 
         var newSampleBuffer: CMSampleBuffer?

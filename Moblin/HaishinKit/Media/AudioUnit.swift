@@ -59,7 +59,7 @@ private class ReplaceAudio {
             startTime = currentTime
         }
         sampleBufferQueue.append(sampleBuffer)
-        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
 
         switch state {
         case .initializing:

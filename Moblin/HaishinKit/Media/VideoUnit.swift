@@ -96,7 +96,7 @@ private class ReplaceVideo {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         inputCounter += 1
-        // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
+        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         // logger.info("Total input frames: \(inputCounter)")
         switch state {
         case .initializing:
@@ -158,14 +158,24 @@ private class ReplaceVideo {
         outputTimer?.activate()
     }
 
+    var startPresentationTimeStamp: CMTime = .zero
+
     private func output() {
+        if startPresentationTimeStamp == CMTime.zero {
+            startPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        }
         guard let sampleBuffer = getNextSampleBuffer() else {
             logger.info("ReplaceVideo Queue size low. Waiting for more sampleBuffers.")
             return
         }
-        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        var presentationTimeStamp = CMTimeAdd(startPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
+        var decodeTimeStamp = CMTimeAdd(startPresentationTimeStamp, sampleBuffer.decodeTimeStamp)
+
         guard let sampleBuffer = sampleBuffer
-            .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
+            .replacePresentationTimeStamp(
+                presentationTimeStamp: presentationTimeStamp,
+                decodeTimeStamp: decodeTimeStamp
+            )
         else {
             return
         }
@@ -227,6 +237,7 @@ private class ReplaceVideo {
         counter = 0
         firstPresentationTimeStamp = nil
         state = .buffering
+        startPresentationTimeStamp = .zero
         logger.info("ReplaceVideo output has been stopped.")
     }
 
