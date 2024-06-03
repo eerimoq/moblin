@@ -17,9 +17,10 @@ struct ImportSettingsView: View {
                     model.updateIconImageFromDatabase()
                     model.reloadStream()
                     model.resetSelectedScene()
+                    model.updateButtonStates()
                 }
             }
-            .disabled(model.isLive)
+            .disabled(model.isLive || model.isRecording)
             Spacer()
         }
     }

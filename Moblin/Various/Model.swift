@@ -1429,7 +1429,6 @@ final class Model: NSObject, ObservableObject {
         store()
         makeToast(title: "URL import successful")
         updateButtonStates()
-        scrollQuickButtonsToBottom()
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {

@@ -15,6 +15,7 @@ struct ResetSettingsView: View {
                     model.settings.reset()
                     model.reloadStream()
                     model.resetSelectedScene()
+                    model.updateButtonStates()
                 }
             }
             Spacer()
