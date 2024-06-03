@@ -1350,13 +1350,13 @@ final class Model: NSObject, ObservableObject {
         iconImage = database.iconImage
     }
 
-    private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
-        var newEnabledStream: SettingsStream?
+    private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl) {
+        var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
             newStream.url = stream.url
             if stream.selected == true {
-                newEnabledStream = newStream
+                newSelectedStream = newStream
             }
             if let video = stream.video {
                 if let codec = video.codec {
@@ -1377,6 +1377,15 @@ final class Model: NSObject, ObservableObject {
             }
             database.streams.append(newStream)
         }
+        if let newSelectedStream, !isLive, !isRecording {
+            setCurrentStream(stream: newSelectedStream)
+            reloadStream()
+            sceneUpdated(store: false)
+            resetSelectedScene(changeScene: false)
+        }
+    }
+
+    private func handleSettingsUrlsDefaultQuickButtons(settings: MoblinSettingsUrl) {
         if let quickButtons = settings.quickButtons {
             if let twoColumns = quickButtons.twoColumns {
                 database.quickButtons!.twoColumns = twoColumns
@@ -1403,20 +1412,24 @@ final class Model: NSObject, ObservableObject {
                 }
             }
         }
+    }
+
+    private func handleSettingsUrlsDefaultWebBrowser(settings: MoblinSettingsUrl) {
         if let webBrowser = settings.webBrowser {
             if let home = webBrowser.home {
                 database.webBrowser!.home = home
             }
         }
+    }
+
+    private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
+        handleSettingsUrlsDefaultStreams(settings: settings)
+        handleSettingsUrlsDefaultQuickButtons(settings: settings)
+        handleSettingsUrlsDefaultWebBrowser(settings: settings)
         store()
         makeToast(title: "URL import successful")
         updateButtonStates()
-        if let newEnabledStream, !isLive, !isRecording {
-            setCurrentStream(stream: newEnabledStream)
-            reloadStream()
-            sceneUpdated()
-            resetSelectedScene(changeScene: false)
-        }
+        scrollQuickButtonsToBottom()
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {

@@ -64,7 +64,9 @@ class MoblinSettingsUrl: Codable {
     var webBrowser: MoblinSettingsWebBrowser?
 
     func toString() throws -> String {
-        return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        return try String(decoding: encoder.encode(self), as: UTF8.self)
     }
 
     static func fromString(query: String) throws -> MoblinSettingsUrl {
