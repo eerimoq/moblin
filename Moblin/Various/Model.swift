@@ -1239,6 +1239,9 @@ final class Model: NSObject, ObservableObject {
                 outputFrameRate: Double(self.stream.fps)
             )
             self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
+            if stream.autoSelectRtmpScene! {
+                self.setScene(rtmpCameraId: stream.id) {}
+            }
             if stream.autoSelectRtmpMic! {
                 self.setMic(id: stream.id.uuidString + " 0") {}
             }
@@ -3328,6 +3331,15 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private func selectScene(rtmpCameraId: UUID) {
+        if let index = enabledScenes.firstIndex(where: { scene in
+            scene.rtmpCameraId == rtmpCameraId
+        }) {
+            sceneIndex = index
+            setSceneId(id: enabledScenes[index].id)
+        }
+    }
+
     func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
         if store {
             self.store()
@@ -4257,6 +4269,13 @@ extension Model: RemoteControlStreamerDelegate {
     func setScene(id: UUID, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.selectScene(id: id)
+            onComplete()
+        }
+    }
+
+    func setScene(rtmpCameraId: UUID, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            self.selectScene(rtmpCameraId: rtmpCameraId)
             onComplete()
         }
     }

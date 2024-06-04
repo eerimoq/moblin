@@ -1121,6 +1121,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var buggedPublisher: Bool? = false
     var manualFps: Bool? = false
     var fps: Double? = 0
+    var autoSelectRtmpScene: Bool? = false
     var autoSelectRtmpMic: Bool? = false
 
     func camera() -> String {
@@ -1135,6 +1136,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.buggedPublisher = buggedPublisher
         new.manualFps = manualFps
         new.fps = fps
+        new.autoSelectRtmpScene = autoSelectRtmpScene
         new.autoSelectRtmpMic = autoSelectRtmpMic
         return new
     }
@@ -2432,6 +2434,10 @@ final class Settings {
         }
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
             stream.manualFps = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.autoSelectRtmpScene == nil {
+            stream.autoSelectRtmpScene = false
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.autoSelectRtmpMic == nil {
