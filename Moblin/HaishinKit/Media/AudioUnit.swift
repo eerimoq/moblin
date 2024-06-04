@@ -26,6 +26,8 @@ protocol ReplaceAudioSampleBufferDelegate: AnyObject {
 private class ReplaceAudio {
     private var cameraId: UUID
     private var latency: Double
+    private var sampleRate: Double = 0.0
+    private var frameLength: Double = 0.0
     private var frameRate: Double = 0.0
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var startTime: Double?
@@ -84,10 +86,10 @@ private class ReplaceAudio {
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
-        let frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
-        let sampleRate = CMSampleBufferGetFormatDescription(sampleBuffer)?.streamBasicDescription?.pointee
-            .mSampleRate
-        frameRate = sampleRate! / frameLength
+        frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
+        sampleRate = (CMSampleBufferGetFormatDescription(sampleBuffer)?.streamBasicDescription?.pointee
+            .mSampleRate)!
+        frameRate = sampleRate / frameLength
         sampleBufferQueue.removeAll()
     }
 
@@ -102,19 +104,23 @@ private class ReplaceAudio {
         outputTimer!.activate()
     }
 
-    var startPresentationTimeStamp: CMTime = .zero
+    var presentationTimeStamp: CMTime = .zero
 
     private func output() {
-        if startPresentationTimeStamp == CMTime.zero {
-            startPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        if presentationTimeStamp == CMTime.zero {
+            presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
+        presentationTimeStamp = CMTimeAdd(
+            presentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(frameLength),
+                timescale: CMTimeScale(sampleRate)
+            )
+        )
         guard let sampleBuffer = sampleBufferQueue.first else {
             logger.info("ReplaceAudio Queue size low. Waiting for more sampleBuffers.")
             return
         }
-
-        var presentationTimeStamp = CMTimeAdd(startPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
-
         guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
@@ -141,7 +147,7 @@ private class ReplaceAudio {
         sampleBufferQueue.removeAll()
         startTime = nil
         state = .initializing
-        startPresentationTimeStamp = .zero
+        presentationTimeStamp = .zero
         logger.info("ReplaceAudio output has been stopped.")
     }
 }
