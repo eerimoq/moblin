@@ -193,21 +193,30 @@ private class ReplaceVideo {
         }
         if inputFrameRate < outputFrameRate {
             let ratio = outputFrameRate / inputFrameRate
-            if numDuplicates == 0 {
-                numDuplicates = ratio - 1
-            }
-            if numDuplicates >= 1 {
-                numDuplicates -= 1
-                return sampleBufferQueue.first
+            if ratio == 2 {
+                if numDuplicates == 0 {
+                    numDuplicates = ratio - 1
+                } else if numDuplicates == 1 {
+                    numDuplicates -= 1
+                    return sampleBufferQueue.first
+                }
             } else {
-                numDuplicates += ratio - 1
+                if numDuplicates == 0 {
+                    numDuplicates = ratio - 1
+                }
+                if numDuplicates > 1 {
+                    numDuplicates -= 1
+                    return sampleBufferQueue.first
+                } else {
+                    numDuplicates += ratio - 1
+                }
             }
         } else if inputFrameRate > outputFrameRate {
             let ratio = inputFrameRate / outputFrameRate
             if numDrops == 0 {
                 numDrops = ratio - 1
             }
-            if numDrops >= 1 {
+            if numDrops > 1 {
                 numDrops -= 1
                 _ = sampleBufferQueue.removeFirst()
                 return getNextSampleBuffer()
@@ -236,6 +245,8 @@ private class ReplaceVideo {
         startTime = nil
         counter = 0
         firstPresentationTimeStamp = nil
+        numDuplicates = 0
+        numDrops = 0
         state = .buffering
         startPresentationTimeStamp = .zero
         logger.info("ReplaceVideo output has been stopped.")
