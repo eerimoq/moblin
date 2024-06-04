@@ -240,6 +240,7 @@
 		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
 		03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA62C0ECBA800A59208 /* Srtla.swift */; };
 		03A22DAA2C0ECD9400A59208 /* SrtlaServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */; };
+		03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */; };
 		03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */; };
 		03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
@@ -692,6 +693,7 @@
 		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
 		03A22DA62C0ECBA800A59208 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 		03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClient.swift; sourceTree = "<group>"; };
+		03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClientConnection.swift; sourceTree = "<group>"; };
 		03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRistSettingsView.swift; sourceTree = "<group>"; };
 		03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingAudioSettingsView.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
@@ -1806,6 +1808,7 @@
 			children = (
 				03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */,
 				03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */,
+				03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */,
 			);
 			path = Server;
 			sourceTree = "<group>";
@@ -2646,6 +2649,7 @@
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
+				03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */,
 				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
 				0352DDF32BFFCAA60079AC7B /* SampleBufferCommon.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
