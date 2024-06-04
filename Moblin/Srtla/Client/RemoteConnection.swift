@@ -1,17 +1,6 @@
 import Foundation
 import Network
 
-enum SrtlaPacketType: UInt16 {
-    case keepalive = 0x1000
-    case ack = 0x1100
-    case reg1 = 0x1200
-    case reg2 = 0x1201
-    case reg3 = 0x1202
-    case regErr = 0x1210
-    case regNgp = 0x1211
-    case regNak = 0x1212
-}
-
 private enum State {
     case idle
     case socketConnecting
@@ -287,7 +276,7 @@ class RemoteConnection {
         logger.info("srtla: \(typeString): Sending reg 1 (create group)")
         groupId = Data.random(length: 256)
         var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
+        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | srtlaPacketTypeBit)
         packet[2...] = groupId
         sendPacket(packet: packet)
     }
@@ -295,7 +284,7 @@ class RemoteConnection {
     private func sendSrtlaReg2() {
         logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
         var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
+        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtlaPacketTypeBit)
         packet[2...] = groupId
         sendPacket(packet: packet)
         state = .waitForRegisterResponse
@@ -303,7 +292,7 @@ class RemoteConnection {
 
     private func sendSrtlaKeepalive() {
         var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | 0x8000)
+        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtlaPacketTypeBit)
         sendPacket(packet: packet)
     }
 

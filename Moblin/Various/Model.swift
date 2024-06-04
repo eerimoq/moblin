@@ -446,6 +446,8 @@ final class Model: NSObject, ObservableObject {
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
 
+    private var srtlaServer: SrtlaServer?
+
     private var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
 
@@ -857,6 +859,7 @@ final class Model: NSObject, ObservableObject {
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
+        reloadSrtlaServer()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1203,6 +1206,19 @@ final class Model: NSObject, ObservableObject {
                                     onFrame: handleRtmpServerFrame,
                                     onAudioBuffer: handleRtmpServerAudioBuffer)
             rtmpServer!.start()
+        }
+    }
+
+    private func stopSrtlaServer() {
+        srtlaServer?.stop()
+        srtlaServer = nil
+    }
+
+    func reloadSrtlaServer() {
+        stopSrtlaServer()
+        if database.debug!.srtlaServer! {
+            srtlaServer = SrtlaServer(settings: .init())
+            srtlaServer!.start()
         }
     }
 

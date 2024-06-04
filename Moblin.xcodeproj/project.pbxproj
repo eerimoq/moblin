@@ -238,6 +238,8 @@
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
 		03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
 		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
+		03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA62C0ECBA800A59208 /* Srtla.swift */; };
+		03A22DAA2C0ECD9400A59208 /* SrtlaServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */; };
 		03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */; };
 		03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
@@ -263,6 +265,7 @@
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
+		03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */; };
 		03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */; };
 		03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */; };
 		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
@@ -279,7 +282,7 @@
 		03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
-		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
+		03B374132AA277570028DDD5 /* SrtlaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* SrtlaClient.swift */; };
 		03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
 		03B77ADB2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
 		03B7DAB22BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */; };
@@ -687,6 +690,8 @@
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
 		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
+		03A22DA62C0ECBA800A59208 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
+		03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClient.swift; sourceTree = "<group>"; };
 		03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRistSettingsView.swift; sourceTree = "<group>"; };
 		03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingAudioSettingsView.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
@@ -707,6 +712,7 @@
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
+		03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServer.swift; sourceTree = "<group>"; };
 		03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserSettingsView.swift; sourceTree = "<group>"; };
 		03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationSettingsView.swift; sourceTree = "<group>"; };
 		03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButtonsSettingsView.swift; sourceTree = "<group>"; };
@@ -722,7 +728,7 @@
 		03B374032AA036D10028DDD5 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
-		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
+		03B374122AA277570028DDD5 /* SrtlaClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaClient.swift; sourceTree = "<group>"; };
 		03B77AD92B9446210053F106 /* WatchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettings.swift; sourceTree = "<group>"; };
 		03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStreamingPlatformChat.swift; sourceTree = "<group>"; };
 		03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOpenStreamingPlatformSettingsView.swift; sourceTree = "<group>"; };
@@ -911,10 +917,9 @@
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
 			isa = PBXGroup;
 			children = (
-				03F5A8DE2AD5DACB00F354D2 /* Srt.swift */,
-				03B374122AA277570028DDD5 /* Srtla.swift */,
-				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
-				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
+				03A22DA52C0ECB1200A59208 /* Common */,
+				03A22DA32C0ECAFC00A59208 /* Client */,
+				03A9D1312C0E659300F0B917 /* Server */,
 			);
 			path = Srtla;
 			sourceTree = "<group>";
@@ -1746,6 +1751,25 @@
 			path = Zoom;
 			sourceTree = "<group>";
 		};
+		03A22DA32C0ECAFC00A59208 /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				03B374122AA277570028DDD5 /* SrtlaClient.swift */,
+				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
+				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
+		03A22DA52C0ECB1200A59208 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				03F5A8DE2AD5DACB00F354D2 /* Srt.swift */,
+				03A22DA62C0ECBA800A59208 /* Srtla.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		03A29A242BECA9F300DAA1B1 /* Rist */ = {
 			isa = PBXGroup;
 			children = (
@@ -1775,6 +1799,15 @@
 				03A983562A9A05D7008FF0DB /* MainView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		03A9D1312C0E659300F0B917 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */,
+				03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */,
+			);
+			path = Server;
 			sourceTree = "<group>";
 		};
 		03AA89932BC4344F0007BFE8 /* WebBrowser */ = {
@@ -2432,6 +2465,7 @@
 				03A707C02B8F0FAE003BB7BE /* Utils.swift in Sources */,
 				032756A32BD81921002DC17F /* Bool+Extension.swift in Sources */,
 				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
+				03A22DAA2C0ECD9400A59208 /* SrtlaServerClient.swift in Sources */,
 				03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
 				0359F8C92BD3DA61005BFDA8 /* FLVSoundRate.swift in Sources */,
@@ -2455,6 +2489,7 @@
 				03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */,
 				0359F8ED2BD3DA61005BFDA8 /* RTMPHandshake.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
+				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
@@ -2552,6 +2587,7 @@
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
 				03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
+				03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */,
 				0359F8E42BD3DA61005BFDA8 /* MpegTsWriter.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
@@ -2636,7 +2672,7 @@
 				0359F8B42BD3DA61005BFDA8 /* AVAudioPCMBuffer+Extension.swift in Sources */,
 				03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
-				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
+				03B374132AA277570028DDD5 /* SrtlaClient.swift in Sources */,
 				0358DDD62BE695B70080133B /* DebugVideoSettingsView.swift in Sources */,
 				038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,

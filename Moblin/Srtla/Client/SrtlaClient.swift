@@ -21,7 +21,7 @@ class SrtlaNetworkInterfaces {
 
 let srtlaDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla")
 
-class Srtla {
+class SrtlaClient {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?

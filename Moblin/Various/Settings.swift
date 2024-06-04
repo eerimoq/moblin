@@ -1113,6 +1113,7 @@ class SettingsDebug: Codable {
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
+    var srtlaServer: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2515,6 +2516,10 @@ final class Settings {
         }
         if realDatabase.deepLinkCreator!.webBrowserEnabled == nil {
             realDatabase.deepLinkCreator!.webBrowserEnabled = false
+            store()
+        }
+        if realDatabase.debug!.srtlaServer == nil {
+            realDatabase.debug!.srtlaServer = false
             store()
         }
     }
