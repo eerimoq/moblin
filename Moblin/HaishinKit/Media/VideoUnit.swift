@@ -169,7 +169,7 @@ private class ReplaceVideo {
             presentationTimeStamp,
             CMTime(
                 value: CMTimeValue(1),
-                timescale: CMTimeScale(inputFrameRate)
+                timescale: CMTimeScale(outputFrameRate)
             )
         )
         var sampleBuffer: CMSampleBuffer
