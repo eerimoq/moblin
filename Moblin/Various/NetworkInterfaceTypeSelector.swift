@@ -28,9 +28,9 @@ class NetworkInterfaceTypeSelector {
         networkPathMonitor.start(queue: queue)
     }
 
-    func getNextType() -> NWInterface.InterfaceType {
+    func getNextType() -> NWInterface.InterfaceType? {
         guard let interfaceType = interfaceTypes.popFirst() else {
-            return .cellular
+            return nil
         }
         interfaceTypes.append(interfaceType)
         return interfaceType

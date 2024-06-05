@@ -1,7 +1,6 @@
 import CryptoKit
 import Foundation
 import Network
-import NWWebSocket
 
 let obsMinimumAudioDelay = -950
 let obsMaximumAudioDelay = 20000
@@ -375,8 +374,7 @@ struct ObsRecordStatus {
 class ObsWebSocket {
     private let url: URL
     private let password: String
-    private var connected: Bool = false
-    private var webSocket: NWWebSocket
+    private var webSocket: WebSocketClient
     private var nextId: Int = 0
     private var requests: [String: Request] = [:]
     private var onConnected: () -> Void
@@ -385,16 +383,12 @@ class ObsWebSocket {
     var onRecordStatusChanged: ((Bool, ObsOutputState?) -> Void)?
     var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
-    private var reconnectTimer: DispatchSourceTimer?
-    private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
-    private var pingTimer: DispatchSourceTimer?
-    private var pongReceived: Bool = true
 
     init(url: URL, password: String, onConnected: @escaping () -> Void) {
         self.url = url
         self.password = password
         self.onConnected = onConnected
-        webSocket = NWWebSocket(url: url, requiredInterfaceType: .cellular)
+        webSocket = .init(url: url)
     }
 
     func start() {
@@ -409,61 +403,17 @@ class ObsWebSocket {
 
     private func startInternal() {
         stopInternal()
-        let networkInterfaceType = networkInterfaceTypeSelector.getNextType()
-        webSocket = NWWebSocket(url: url, requiredInterfaceType: networkInterfaceType)
-        logger.info("obs-websocket: Connecting using network interface type \(networkInterfaceType)")
+        webSocket = .init(url: url)
         webSocket.delegate = self
-        webSocket.connect()
-        startReconnectTimer()
+        webSocket.start()
     }
 
     func stopInternal() {
-        connected = false
-        webSocket.disconnect(closeCode: .protocolCode(.goingAway))
-        stopReconnectTimer()
-        stopPingTimer()
-    }
-
-    private func startReconnectTimer() {
-        reconnectTimer = DispatchSource.makeTimerSource(queue: .main)
-        reconnectTimer!.schedule(deadline: .now() + 5)
-        reconnectTimer!.setEventHandler { [weak self] in
-            self?.startInternal()
-        }
-        reconnectTimer!.activate()
-    }
-
-    private func stopReconnectTimer() {
-        reconnectTimer?.cancel()
-        reconnectTimer = nil
-    }
-
-    private func startPingTimer() {
-        pongReceived = true
-        pingTimer = DispatchSource.makeTimerSource(queue: .main)
-        pingTimer!.schedule(deadline: .now(), repeating: 5)
-        pingTimer!.setEventHandler { [weak self] in
-            guard let self else {
-                return
-            }
-            if self.pongReceived {
-                self.pongReceived = false
-                self.webSocket.ping()
-            } else {
-                logger.debug("obs-websocket: Pong timeout")
-                self.startInternal()
-            }
-        }
-        pingTimer!.activate()
-    }
-
-    private func stopPingTimer() {
-        pingTimer?.cancel()
-        pingTimer = nil
+        webSocket.stop()
     }
 
     func isConnected() -> Bool {
-        return connected
+        return webSocket.isConnected()
     }
 
     func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping (String) -> Void) {
@@ -694,7 +644,7 @@ class ObsWebSocket {
         onSuccess: @escaping (Data?) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        guard connected else {
+        guard isConnected() else {
             onError("Not connected to server")
             return
         }
@@ -757,7 +707,6 @@ class ObsWebSocket {
     private func handleIdentified(data: Data) throws {
         let identified = try JSONDecoder().decode(Identified.self, from: data)
         logger.debug("obs-websocket: \(identified)")
-        connected = true
         onConnected()
     }
 
@@ -878,44 +827,14 @@ class ObsWebSocket {
     }
 }
 
-extension ObsWebSocket: WebSocketConnectionDelegate {
-    func webSocketDidConnect(connection _: WebSocketConnection) {
-        logger.debug("obs-websocket: Connected")
-        stopReconnectTimer()
-        startPingTimer()
-    }
+extension ObsWebSocket: WebSocketClientDelegate {
+    func webSocketClientConnected() {}
 
-    func webSocketDidDisconnect(connection _: WebSocketConnection,
-                                closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
-    {
-        logger.debug("obs-websocket: Disconnected")
-        connected = false
+    func webSocketClientDisconnected() {
         connectionErrorMessage = String(localized: "Disconnected")
-        startReconnectTimer()
     }
 
-    func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
-        logger.debug("obs-websocket: isViable \(isViable)")
-    }
-
-    func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {
-        logger.debug("obs-websocket: Better path")
-    }
-
-    func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
-        logger.debug("obs-websocket: Error \(error)")
-        connected = false
-        connectionErrorMessage = String(localized: "Disconnected")
-        startReconnectTimer()
-    }
-
-    func webSocketDidReceivePong(connection _: WebSocketConnection) {
-        pongReceived = true
-    }
-
-    func webSocketDidReceiveMessage(connection _: WebSocketConnection, string: String) {
+    func webSocketClientReceiveMessage(string: String) {
         try? handleMessage(message: string)
     }
-
-    func webSocketDidReceiveMessage(connection _: WebSocketConnection, data _: Data) {}
 }

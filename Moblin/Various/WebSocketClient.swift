@@ -3,6 +3,9 @@ import NWWebSocket
 import SwiftUI
 import TwitchChat
 
+private let shortestDelayMs = 500
+private let longestDelayMs = 10000
+
 protocol WebSocketClientDelegate: AnyObject {
     func webSocketClientConnected()
     func webSocketClientDisconnected()
@@ -18,6 +21,7 @@ final class WebSocketClient {
     var delegate: (any WebSocketClientDelegate)?
     private let url: URL
     private var connected = false
+    private var connectDelayMs = shortestDelayMs
 
     init(url: URL) {
         self.url = url
@@ -42,21 +46,33 @@ final class WebSocketClient {
 
     private func startInternal() {
         stopInternal()
-        webSocket = NWWebSocket(url: url, requiredInterfaceType: networkInterfaceTypeSelector.getNextType())
-        webSocket.delegate = self
-        webSocket.connect()
-        startConnectTimer()
+        if let interfaceType = networkInterfaceTypeSelector.getNextType() {
+            webSocket = NWWebSocket(url: url, requiredInterfaceType: interfaceType)
+            logger.info("websocket: Connecting to \(url) with \(interfaceType)")
+            webSocket.delegate = self
+            webSocket.connect()
+            startPingTimer()
+        } else {
+            connectDelayMs = shortestDelayMs
+            startConnectTimer()
+        }
     }
 
     func stopInternal() {
-        webSocket.disconnect(closeCode: .protocolCode(.goingAway))
+        connected = false
+        webSocket.disconnect()
         stopConnectTimer()
         stopPingTimer()
     }
 
     private func startConnectTimer() {
+        connected = false
         connectTimer = DispatchSource.makeTimerSource(queue: .main)
-        connectTimer!.schedule(deadline: .now() + 5)
+        connectTimer!.schedule(deadline: .now().advanced(by: .milliseconds(connectDelayMs)))
+        connectDelayMs *= 2
+        if connectDelayMs > longestDelayMs {
+            connectDelayMs = longestDelayMs
+        }
         connectTimer!.setEventHandler { [weak self] in
             self?.startInternal()
         }
@@ -80,7 +96,7 @@ final class WebSocketClient {
                 self.pongReceived = false
                 self.webSocket.ping()
             } else {
-                self.startConnectTimer()
+                self.startInternal()
                 self.delegate?.webSocketClientDisconnected()
             }
         }
@@ -95,8 +111,9 @@ final class WebSocketClient {
 
 extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidConnect(connection _: WebSocketConnection) {
+        logger.info("websocket: connected")
+        connectDelayMs = shortestDelayMs
         stopConnectTimer()
-        startPingTimer()
         connected = true
         delegate?.webSocketClientConnected()
     }
@@ -104,20 +121,27 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidDisconnect(connection _: WebSocketConnection,
                                 closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
     {
-        stopPingTimer()
+        logger.info("websocket: disconnected")
+        stopInternal()
         startConnectTimer()
-        connected = false
         delegate?.webSocketClientDisconnected()
     }
 
-    func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable _: Bool) {}
+    func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
+        guard !isViable else {
+            return
+        }
+        stopInternal()
+        startConnectTimer()
+        delegate?.webSocketClientDisconnected()
+    }
 
     func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {}
 
     func webSocketDidReceiveError(connection _: WebSocketConnection, error _: NWError) {
-        stopPingTimer()
+        logger.info("websocket: error")
+        stopInternal()
         startConnectTimer()
-        connected = false
         delegate?.webSocketClientDisconnected()
     }
 

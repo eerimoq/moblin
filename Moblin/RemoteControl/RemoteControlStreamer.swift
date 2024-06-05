@@ -55,7 +55,7 @@ class RemoteControlStreamer {
 
     private func startInternal() {
         stopInternal()
-        let networkInterfaceType = networkInterfaceTypeSelector.getNextType()
+        let networkInterfaceType = networkInterfaceTypeSelector.getNextType() ?? .cellular
         webSocket = NWWebSocket(url: clientUrl, requiredInterfaceType: networkInterfaceType)
         logger
             .info("remote-control-streamer: Connecting using network interface type \(networkInterfaceType)")
