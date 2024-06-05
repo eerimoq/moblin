@@ -44,12 +44,12 @@ class RemoteControlStreamer {
     }
 
     func start() {
-        logger.debug("obs-websocket: start")
+        logger.debug("remote-control-streamer: start")
         startInternal()
     }
 
     func stop() {
-        logger.debug("obs-websocket: stop")
+        logger.debug("remote-control-streamer: stop")
         stopInternal()
     }
 
