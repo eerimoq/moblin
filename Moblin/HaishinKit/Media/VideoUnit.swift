@@ -211,37 +211,47 @@ private class ReplaceVideo {
             return nil
         }
         if inputFrameRate < outputFrameRate {
-            let ratio = outputFrameRate / inputFrameRate
-            if ratio == 2 {
-                if numDuplicates == 0 {
-                    numDuplicates = ratio - 1
-                } else if numDuplicates == 1 {
-                    numDuplicates -= 1
-                    return sampleBufferQueue.first
-                }
-            } else {
-                if numDuplicates == 0 {
-                    numDuplicates = ratio - 1
-                }
-                if numDuplicates > 1 {
-                    numDuplicates -= 1
-                    return sampleBufferQueue.first
-                } else {
-                    numDuplicates += ratio - 1
-                }
-            }
+            return handleDuplicates()
         } else if inputFrameRate > outputFrameRate {
-            let ratio = inputFrameRate / outputFrameRate
-            if numDrops == 0 {
-                numDrops = ratio - 1
+            return handleDrops()
+        }
+        return sampleBufferQueue.removeFirst()
+    }
+
+    private func handleDuplicates() -> CMSampleBuffer? {
+        let ratio = outputFrameRate / inputFrameRate
+        if ratio == 2 {
+            if numDuplicates == 0 {
+                numDuplicates = ratio - 1
+            } else if numDuplicates == 1 {
+                numDuplicates -= 1
+                return sampleBufferQueue.first
             }
-            if numDrops > 1 {
-                numDrops -= 1
-                _ = sampleBufferQueue.removeFirst()
-                return getNextSampleBuffer()
+        } else {
+            if numDuplicates == 0 {
+                numDuplicates = ratio - 1
+            }
+            if numDuplicates > 1 {
+                numDuplicates -= 1
+                return sampleBufferQueue.first
             } else {
-                numDrops += ratio - 1
+                numDuplicates += ratio - 1
             }
+        }
+        return sampleBufferQueue.removeFirst()
+    }
+
+    private func handleDrops() -> CMSampleBuffer? {
+        let ratio = inputFrameRate / outputFrameRate
+        if numDrops == 0 {
+            numDrops = ratio - 1
+        }
+        if numDrops > 1 {
+            numDrops -= 1
+            _ = sampleBufferQueue.removeFirst()
+            return getNextSampleBuffer()
+        } else {
+            numDrops += ratio - 1
         }
         return sampleBufferQueue.removeFirst()
     }
