@@ -222,6 +222,7 @@
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
 		03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
+		0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384C0372C10E14900B82216 /* WebSocketClient.swift */; };
 		038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */; };
 		038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */; };
 		038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */; };
@@ -676,6 +677,7 @@
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
+		0384C0372C10E14900B82216 /* WebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketClient.swift; sourceTree = "<group>"; };
 		038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
 		038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysNetworkInterfaceNamesSettingsView.swift; sourceTree = "<group>"; };
@@ -2052,6 +2054,7 @@
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
+				0384C0372C10E14900B82216 /* WebSocketClient.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -2506,6 +2509,7 @@
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */,
+				0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */,
 				03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */,
 				031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */,
 				03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */,

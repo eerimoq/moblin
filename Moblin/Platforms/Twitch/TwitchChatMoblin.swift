@@ -1,5 +1,4 @@
 import Network
-import NWWebSocket
 import SwiftUI
 import TwitchChat
 
@@ -17,40 +16,20 @@ private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
 
 final class TwitchChatMoblin {
     private var model: Model
-    private var connected: Bool = false
-    private var webSocket: NWWebSocket
+    private var webSocket: WebSocketClient
     private var emotes: Emotes
-    private var reconnectTimer: DispatchSourceTimer?
-    private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
-    private var pingTimer: DispatchSourceTimer?
-    private var pongReceived: Bool = true
     private var channelName: String
-    private var channelId: String
-    private var settings: SettingsStreamChat
 
     init(model: Model) {
         self.model = model
         channelName = ""
-        channelId = ""
-        settings = SettingsStreamChat()
         emotes = Emotes()
-        webSocket = NWWebSocket(url: URL(string: "wss://a.c")!, requiredInterfaceType: .cellular)
+        webSocket = .init(url: URL(string: "wss://a.c")!)
     }
 
     func start(channelName: String, channelId: String, settings: SettingsStreamChat) {
         self.channelName = channelName
-        self.channelId = channelId
-        self.settings = settings
         logger.debug("twitch: chat: Start")
-        startInternal()
-    }
-
-    func stop() {
-        logger.debug("twitch: chat: Stop")
-        stopInternal()
-    }
-
-    private func startInternal() {
         stopInternal()
         emotes.start(
             platform: .twitch,
@@ -59,62 +38,19 @@ final class TwitchChatMoblin {
             onOk: handleOk,
             settings: settings
         )
-        let networkInterfaceType = networkInterfaceTypeSelector.getNextType()
-        webSocket = NWWebSocket(
-            url: URL(string: "wss://irc-ws.chat.twitch.tv")!,
-            requiredInterfaceType: networkInterfaceType
-        )
-        logger
-            .info("twitch: chat: Connecting using network interface type \(networkInterfaceType)")
+        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
         webSocket.delegate = self
-        webSocket.connect()
-        startReconnectTimer()
+        webSocket.start()
+    }
+
+    func stop() {
+        logger.debug("twitch: chat: Stop")
+        stopInternal()
     }
 
     func stopInternal() {
         emotes.stop()
-        connected = false
-        webSocket.disconnect(closeCode: .protocolCode(.goingAway))
-        stopReconnectTimer()
-        stopPingTimer()
-    }
-
-    private func startReconnectTimer() {
-        reconnectTimer = DispatchSource.makeTimerSource(queue: .main)
-        reconnectTimer!.schedule(deadline: .now() + 5)
-        reconnectTimer!.setEventHandler { [weak self] in
-            self?.startInternal()
-        }
-        reconnectTimer!.activate()
-    }
-
-    private func stopReconnectTimer() {
-        reconnectTimer?.cancel()
-        reconnectTimer = nil
-    }
-
-    private func startPingTimer() {
-        pongReceived = true
-        pingTimer = DispatchSource.makeTimerSource(queue: .main)
-        pingTimer!.schedule(deadline: .now(), repeating: 5)
-        pingTimer!.setEventHandler { [weak self] in
-            guard let self else {
-                return
-            }
-            if self.pongReceived {
-                self.pongReceived = false
-                self.webSocket.ping()
-            } else {
-                logger.debug("twitch: chat: Pong timeout")
-                self.startInternal()
-            }
-        }
-        pingTimer!.activate()
-    }
-
-    private func stopPingTimer() {
-        pingTimer?.cancel()
-        pingTimer = nil
+        webSocket.stop()
     }
 
     private func handleMessage(message: String) throws {
@@ -148,7 +84,7 @@ final class TwitchChatMoblin {
     }
 
     func isConnected() -> Bool {
-        return connected
+        return webSocket.isConnected()
     }
 
     func hasEmotes() -> Bool {
@@ -246,12 +182,9 @@ extension ChatMessage {
     }
 }
 
-extension TwitchChatMoblin: WebSocketConnectionDelegate {
-    func webSocketDidConnect(connection _: WebSocketConnection) {
+extension TwitchChatMoblin: WebSocketClientDelegate {
+    func webSocketClientConnected() {
         logger.debug("twitch: chat: Connected")
-        connected = true
-        stopReconnectTimer()
-        startPingTimer()
         webSocket.send(string: "CAP REQ :twitch.tv/membership")
         webSocket.send(string: "CAP REQ :twitch.tv/tags")
         webSocket.send(string: "CAP REQ :twitch.tv/commands")
@@ -260,37 +193,13 @@ extension TwitchChatMoblin: WebSocketConnectionDelegate {
         webSocket.send(string: "JOIN #\(channelName)")
     }
 
-    func webSocketDidDisconnect(connection _: WebSocketConnection,
-                                closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
-    {
+    func webSocketClientDisconnected() {
         logger.debug("twitch: chat: Disconnected")
-        connected = false
-        startReconnectTimer()
     }
 
-    func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
-        logger.debug("twitch: chat: isViable \(isViable)")
-    }
-
-    func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {
-        logger.debug("twitch: chat: Better path")
-    }
-
-    func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
-        logger.debug("twitch: chat: Error \(error.localizedDescription)")
-        connected = false
-        startReconnectTimer()
-    }
-
-    func webSocketDidReceivePong(connection _: WebSocketConnection) {
-        pongReceived = true
-    }
-
-    func webSocketDidReceiveMessage(connection _: WebSocketConnection, string: String) {
+    func webSocketClientReceiveMessage(string: String) {
         for line in string.split(whereSeparator: { $0.isNewline }) {
             try? handleMessage(message: String(line))
         }
     }
-
-    func webSocketDidReceiveMessage(connection _: WebSocketConnection, data _: Data) {}
 }
