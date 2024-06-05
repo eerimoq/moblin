@@ -1144,9 +1144,6 @@ final class VideoUnit: NSObject {
     private func sessionWasInterrupted(_: Notification) {
         logger.info("Video session interruption started")
         lockQueue.async {
-            for replaceVideo in self.replaceVideos.values {
-                replaceVideo.stopOutput()
-            }
             self.prepareFirstFrame()
         }
     }

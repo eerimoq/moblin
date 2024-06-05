@@ -98,6 +98,8 @@ class VideoCodec {
         }
     }
 
+    private var lastSampleBuffer: CMSampleBuffer?
+
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         guard isRunning.value else {
             return
@@ -114,6 +116,10 @@ class VideoCodec {
         ] status, _, imageBuffer, presentationTimeStamp, duration in
             guard let imageBuffer, status == noErr else {
                 logger.info("video: Failed to decode frame status \(status)")
+                guard let lastSampleBuffer else {
+                    return
+                }
+                delegate?.videoCodecOutputSampleBuffer(self, lastSampleBuffer)
                 return
             }
             guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -127,6 +133,7 @@ class VideoCodec {
             else {
                 return
             }
+            lastSampleBuffer = sampleBuffer
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
