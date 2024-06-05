@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.296.0", date: "2024-06-05", changes: [
+        "• Fix upside down image when switching stream with phone USB connector to the left. 🐛 Marlow",
+        "• Make \"OBS remote control\" and \"Remote control\" connection handling more robust. 🐛 djandrea. and others",
+        "  • If for example WiFi fails, try cellular.",
+    ]),
     Version(version: "0.295.0", date: "2024-06-03", changes: [
         "• Web browser home in deep link creator.",
         "• Quick buttons in deep link creator.",
