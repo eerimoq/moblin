@@ -159,7 +159,6 @@ private class ReplaceVideo {
     }
 
     var presentationTimeStamp: CMTime = .zero
-    var lastSampleBuffer: CMSampleBuffer?
 
     private func output() {
         if presentationTimeStamp == CMTime.zero {
@@ -172,11 +171,10 @@ private class ReplaceVideo {
                 timescale: CMTimeScale(outputFrameRate)
             )
         )
-        guard let sampleBuffer = getNextSampleBuffer() ?? lastSampleBuffer else {
+        guard let sampleBuffer = getNextSampleBuffer() else {
             logger.info("ReplaceVideo Queue size low. Waiting for more sampleBuffers.")
             return
         }
-        lastSampleBuffer = sampleBuffer
         var decodeTimeOffset = CMTimeSubtract(
             sampleBuffer.presentationTimeStamp,
             sampleBuffer.decodeTimeStamp
