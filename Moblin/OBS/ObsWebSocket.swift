@@ -386,8 +386,8 @@ class ObsWebSocket {
     var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
     private var reconnectTimer: DispatchSourceTimer?
+    private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
     private var pingTimer: DispatchSourceTimer?
-    private var interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet, .other]
     private var pongReceived: Bool = true
 
     init(url: URL, password: String, onConnected: @escaping () -> Void) {
@@ -409,7 +409,9 @@ class ObsWebSocket {
 
     private func startInternal() {
         stopInternal()
-        webSocket = NWWebSocket(url: url, requiredInterfaceType: getNextInterfaceType())
+        let networkInterfaceType = networkInterfaceTypeSelector.getNextType()
+        webSocket = NWWebSocket(url: url, requiredInterfaceType: networkInterfaceType)
+        logger.info("obs-websocket: Connecting using network interface type \(networkInterfaceType)")
         webSocket.delegate = self
         webSocket.connect()
         startReconnectTimer()
@@ -420,12 +422,6 @@ class ObsWebSocket {
         webSocket.disconnect(closeCode: .protocolCode(.goingAway))
         stopReconnectTimer()
         stopPingTimer()
-    }
-
-    private func getNextInterfaceType() -> NWInterface.InterfaceType {
-        let interfaceType = interfaceTypes.remove(at: 0)
-        interfaceTypes.append(interfaceType)
-        return interfaceType
     }
 
     private func startReconnectTimer() {
