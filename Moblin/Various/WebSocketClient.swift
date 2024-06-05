@@ -111,7 +111,6 @@ final class WebSocketClient {
 
 extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidConnect(connection _: WebSocketConnection) {
-        logger.info("websocket: connected")
         connectDelayMs = shortestDelayMs
         stopConnectTimer()
         connected = true
@@ -121,7 +120,6 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidDisconnect(connection _: WebSocketConnection,
                                 closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
     {
-        logger.info("websocket: disconnected")
         stopInternal()
         startConnectTimer()
         delegate?.webSocketClientDisconnected()
@@ -139,7 +137,6 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {}
 
     func webSocketDidReceiveError(connection _: WebSocketConnection, error _: NWError) {
-        logger.info("websocket: error")
         stopInternal()
         startConnectTimer()
         delegate?.webSocketClientDisconnected()
