@@ -890,6 +890,7 @@ extension ObsWebSocket: WebSocketConnectionDelegate {
     {
         logger.debug("obs-websocket: Disconnected")
         connected = false
+        connectionErrorMessage = String(localized: "Disconnected")
         startReconnectTimer()
     }
 
@@ -904,6 +905,7 @@ extension ObsWebSocket: WebSocketConnectionDelegate {
     func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
         logger.debug("obs-websocket: Error \(error)")
         connected = false
+        connectionErrorMessage = String(localized: "Disconnected")
         startReconnectTimer()
     }
 

@@ -263,6 +263,7 @@ extension RemoteControlStreamer: WebSocketConnectionDelegate {
             delegate?.disconnected()
         }
         connected = false
+        connectionErrorMessage = String(localized: "Disconnected")
         startReconnectTimer()
     }
 
@@ -280,6 +281,7 @@ extension RemoteControlStreamer: WebSocketConnectionDelegate {
             delegate?.disconnected()
         }
         connected = false
+        connectionErrorMessage = String(localized: "Disconnected")
         startReconnectTimer()
     }
 
