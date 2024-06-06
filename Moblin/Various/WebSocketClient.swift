@@ -112,6 +112,7 @@ final class WebSocketClient {
 
 extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidConnect(connection _: WebSocketConnection) {
+        logger.debug("websocket: Connected")
         connectDelayMs = shortestDelayMs
         stopConnectTimer()
         connected = true
@@ -121,12 +122,14 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     func webSocketDidDisconnect(connection _: WebSocketConnection,
                                 closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
     {
+        logger.debug("websocket: Disconnected")
         stopInternal()
         startConnectTimer()
         delegate?.webSocketClientDisconnected()
     }
 
     func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
+        logger.debug("websocket: Viability changed to \(isViable)")
         guard !isViable else {
             return
         }
@@ -135,9 +138,12 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         delegate?.webSocketClientDisconnected()
     }
 
-    func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {}
+    func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {
+        logger.debug("websocket: Better path migration")
+    }
 
-    func webSocketDidReceiveError(connection _: WebSocketConnection, error _: NWError) {
+    func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
+        logger.debug("websocket: Error \(error.localizedDescription)")
         stopInternal()
         startConnectTimer()
         delegate?.webSocketClientDisconnected()
