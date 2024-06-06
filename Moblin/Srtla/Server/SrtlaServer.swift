@@ -23,7 +23,7 @@ class SrtlaServer {
             // srt_listen_callback() // check stream id
             // let clientSocket = srt_accept(self.srtSocket, nil, nil)
             // logger.info("srtla-server-client: Accepted client socket \(clientSocket). Should read packets from it.")
-            self.setupListener()
+            self.setupSrtlaListener()
         }
     }
 
@@ -36,13 +36,14 @@ class SrtlaServer {
         }
     }
 
-    private func setupListener() {
+    private func setupSrtlaListener() {
         logger.info("srtla-server: Setup listener")
+        guard let srtlaPort = NWEndpoint.Port(rawValue: settings.srtlaPort) else {
+            logger.error("srtla-server: Bad listener port \(settings.srtlaPort)")
+            return
+        }
         let parameters = NWParameters(dtls: .none, udp: .init())
-        parameters.requiredLocalEndpoint = .hostPort(
-            host: .ipv4(.any),
-            port: NWEndpoint.Port(rawValue: settings.srtlaPort) ?? 5000
-        )
+        parameters.requiredLocalEndpoint = .hostPort(host: .ipv4(.any), port: srtlaPort)
         parameters.allowLocalEndpointReuse = true
         do {
             listener = try NWListener(using: parameters)
