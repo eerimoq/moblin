@@ -65,7 +65,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
                     Text(
                         """
                         Often bad stability if network connection is unstable. No server side \
-                        disconnection protection possible (no NOALBS).
+                        disconnection protection possible.
                         """
                     )
                 }
