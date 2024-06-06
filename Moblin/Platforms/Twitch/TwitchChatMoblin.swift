@@ -24,7 +24,7 @@ final class TwitchChatMoblin {
         self.model = model
         channelName = ""
         emotes = Emotes()
-        webSocket = .init(url: URL(string: "wss://a.c")!)
+        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
     }
 
     func start(channelName: String, channelId: String, settings: SettingsStreamChat) {

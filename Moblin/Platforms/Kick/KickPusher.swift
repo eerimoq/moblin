@@ -56,11 +56,10 @@ final class KickPusher: NSObject {
     private var model: Model
     private var channelName: String
     private var channelId: String
-    private var task: Task<Void, Error>?
-    private var connected: Bool = false
-    private var webSocket: URLSessionWebSocketTask
+    private var webSocket: WebSocketClient
     private var emotes: Emotes
     private let settings: SettingsStreamChat
+    private var gotInfo = false
 
     init(model: Model, channelId: String, channelName: String, settings: SettingsStreamChat) {
         self.model = model
@@ -68,55 +67,69 @@ final class KickPusher: NSObject {
         self.channelName = channelName
         self.settings = settings.clone()
         emotes = Emotes()
-        webSocket = URLSession(configuration: .default).webSocketTask(with: url)
+        webSocket = .init(url: url)
     }
 
     func start() {
-        stop()
-        logger.debug("kick: start")
-        task = Task.init {
-            while true {
-                do {
-                    if !channelName.isEmpty {
-                        let info = try await getKickChannelInfo(channelName: channelName)
-                        channelId = String(info.chatroom.id)
-                        emotes.stop()
-                        emotes.start(
-                            platform: .kick,
-                            channelId: channelId,
-                            onError: handleError,
-                            onOk: handleOk,
-                            settings: settings
-                        )
+        logger.debug("kick: Start")
+        stopInternal()
+        if channelName.isEmpty {
+            connect()
+        } else {
+            getInfoAndConnect()
+        }
+    }
+
+    private func getInfoAndConnect() {
+        logger.debug("kick: Get info and connect")
+        getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !self.gotInfo else {
+                    return
+                }
+                guard let channelInfo else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        self.getInfoAndConnect()
                     }
-                    try await setupConnection(chatroomId: channelId)
-                    connected = true
-                    try await receiveMessages()
-                } catch {
-                    logger.debug("kick: error: \(error)")
+                    return
                 }
-                if Task.isCancelled {
-                    logger.debug("kick: Cancelled")
-                    connected = false
-                    emotes.stop()
-                    break
-                }
-                logger.debug("kick: Disconnected")
-                connected = false
-                try await sleep(seconds: 5)
-                logger.debug("kick: Reconnecting")
+                self.gotInfo = true
+                self.channelId = String(channelInfo.chatroom.id)
+                self.connect()
             }
         }
     }
 
+    private func connect() {
+        emotes.stop()
+        emotes.start(
+            platform: .kick,
+            channelId: channelId,
+            onError: handleError,
+            onOk: handleOk,
+            settings: settings
+        )
+        webSocket = .init(url: url)
+        webSocket.delegate = self
+        webSocket.start()
+    }
+
     func stop() {
-        logger.debug("kick: stop")
-        task?.cancel()
-        task = nil
+        logger.debug("kick: Stop")
+        stopInternal()
+    }
+
+    func stopInternal() {
+        emotes.stop()
+        webSocket.stop()
+        gotInfo = false
     }
 
     func isConnected() -> Bool {
-        return connected
+        return webSocket.isConnected()
     }
 
     func hasEmotes() -> Bool {
@@ -135,42 +148,7 @@ final class KickPusher: NSObject {
         }
     }
 
-    private func setupConnection(chatroomId _: String) async throws {
-        webSocket = URLSession.shared.webSocketTask(with: url)
-        webSocket.resume()
-        try await sendMessage(
-            message: """
-            {\"event\":\"pusher:subscribe\",
-             \"data\":{\"auth\":\"\",\"channel\":\"chatrooms.\(channelId).v2\"}}
-            """
-        )
-    }
-
-    private func receiveMessages() async throws {
-        while true {
-            let message = try await webSocket.receive()
-            if Task.isCancelled {
-                break
-            }
-            switch message {
-            case let .string(text):
-                handleStringMessage(message: text)
-            case let .data(data):
-                logger
-                    .error("""
-                    kick: pusher: \(channelId): Received binary \
-                    message: \(data)
-                    """)
-            @unknown default:
-                logger
-                    .warning(
-                        "kick: pusher: \(channelId): Unknown message type"
-                    )
-            }
-        }
-    }
-
-    private func handleStringMessage(message: String) {
+    private func handleMessage(message: String) {
         do {
             let (type, data) = try decodeEvent(message: message)
             if type == "App\\Events\\ChatMessageEvent" {
@@ -210,9 +188,9 @@ final class KickPusher: NSObject {
         )
     }
 
-    private func sendMessage(message: String) async throws {
+    private func sendMessage(message: String) {
         logger.debug("kick: pusher: \(channelId): Sending \(message)")
-        try await webSocket.send(URLSessionWebSocketTask.Message.string(message))
+        webSocket.send(string: message)
     }
 
     private func createKickSegments(message: String) -> [ChatPostSegment] {
@@ -230,5 +208,25 @@ final class KickPusher: NSObject {
             segments += makeChatPostTextSegments(text: String(message[startIndex...]))
         }
         return segments
+    }
+}
+
+extension KickPusher: WebSocketClientDelegate {
+    func webSocketClientConnected() {
+        logger.debug("kick: Connected")
+        sendMessage(
+            message: """
+            {\"event\":\"pusher:subscribe\",
+             \"data\":{\"auth\":\"\",\"channel\":\"chatrooms.\(channelId).v2\"}}
+            """
+        )
+    }
+
+    func webSocketClientDisconnected() {
+        logger.debug("kick: Disconnected")
+    }
+
+    func webSocketClientReceiveMessage(string: String) {
+        handleMessage(message: string)
     }
 }
