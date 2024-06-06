@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.297.0", date: "2024-06-06", changes: [
+        "• Debug toggle to make bitrate closer to configured bitrate.",
+        "  • Settings → Debug → Higher data rate limit.",
+        "• Configurable minimum bitrate in Fast IRL adaptive bitrate algorithm.",
+        "  • Will probably be fewer dropped frames if set to 500 Kbps or above.",
+        "  • A higher value means greater risk of dropped packets and interrupted stream.",
+    ]),
     Version(version: "0.296.0", date: "2024-06-05", changes: [
         "• Fix upside down image when switching stream with phone USB connector to the left. 🐛 Marlow",
         "• Make \"OBS remote control\", \"Remote control\", \"Twitch chat\" and \"Kick chat\" connection handling more robust. 🐛 djandrea. and others",
