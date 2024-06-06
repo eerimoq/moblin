@@ -95,7 +95,8 @@ private class ReplaceAudio {
 
     private func startOutput() {
         logger.info("ReplaceAudio latency: \(latency)")
-        logger.info("ReplaceAudio frameRate: \(frameRate)")
+        logger.info("ReplaceAudio frameLength: \(frameLength)")
+        logger.info("ReplaceAudio sampleRate: \(sampleRate)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer!.schedule(deadline: .now(), repeating: 1 / frameRate)
         outputTimer!.setEventHandler { [weak self] in
@@ -126,6 +127,7 @@ private class ReplaceAudio {
         else {
             return
         }
+        logger.info("ReplaceAudio PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
         sampleBufferQueue.removeFirst()
     }

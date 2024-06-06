@@ -96,7 +96,7 @@ private class ReplaceVideo {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         inputCounter += 1
-        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
+        // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         // logger.info("Total input frames: \(inputCounter)")
         switch state {
         case .initializing:
@@ -158,23 +158,13 @@ private class ReplaceVideo {
         outputTimer?.activate()
     }
 
-    var presentationTimeStamp: CMTime = .zero
-
     private func output() {
-        if presentationTimeStamp == CMTime.zero {
-            presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        }
-        presentationTimeStamp = CMTimeAdd(
-            presentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(1),
-                timescale: CMTimeScale(outputFrameRate)
-            )
-        )
         guard let sampleBuffer = getNextSampleBuffer() else {
             logger.info("ReplaceVideo Queue size low. Waiting for more sampleBuffers.")
             return
         }
+
+        var presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         var decodeTimeOffset = CMTimeSubtract(
             sampleBuffer.presentationTimeStamp,
             sampleBuffer.decodeTimeStamp
@@ -189,6 +179,7 @@ private class ReplaceVideo {
         else {
             return
         }
+        logger.info("ReplaceVideo PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
         outputCounter += 1
         // logger.info("Total output frames: \(outputCounter)")
@@ -268,7 +259,6 @@ private class ReplaceVideo {
         numDuplicates = 0
         numDrops = 0
         state = .buffering
-        presentationTimeStamp = .zero
         logger.info("ReplaceVideo output has been stopped.")
     }
 
