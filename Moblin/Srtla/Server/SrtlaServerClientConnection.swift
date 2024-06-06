@@ -1,10 +1,15 @@
 import Foundation
 import Network
 
+protocol SrtlaServerClientConnectionDelegate: AnyObject {
+    func handleSrtPacket(packet: Data)
+}
+
 class SrtlaServerClientConnection {
-    private var connection: NWConnection
+    var connection: NWConnection
     private var latestReceivedTime = ContinuousClock.now
     private var latestSentTime = ContinuousClock.now
+    var delegate: (any SrtlaServerClientConnectionDelegate)?
 
     init(connection: NWConnection) {
         self.connection = connection
@@ -14,7 +19,6 @@ class SrtlaServerClientConnection {
     private func receivePacket() {
         connection.receiveMessage { data, _, _, error in
             if let data, !data.isEmpty {
-                logger.info("srtla-server-client: Got packet \(data)")
                 self.handlePacket(packet: data)
             }
             if let error {
@@ -58,8 +62,8 @@ class SrtlaServerClientConnection {
         }
     }
 
-    private func handleSrtControlPacket(type: SrtPacketType, packet _: Data) {
-        logger.info("srtla-server-client: Got SRT control message \(type)")
+    private func handleSrtControlPacket(type _: SrtPacketType, packet: Data) {
+        delegate?.handleSrtPacket(packet: packet)
     }
 
     private func handleSrtlaKeepalive() {
@@ -69,8 +73,8 @@ class SrtlaServerClientConnection {
         sendPacket(packet: packet)
     }
 
-    private func handleDataPacket(packet _: Data) {
-        logger.info("srtla-server-client: Got data packet")
+    private func handleDataPacket(packet: Data) {
+        delegate?.handleSrtPacket(packet: packet)
     }
 
     private func sendPacket(packet: Data) {

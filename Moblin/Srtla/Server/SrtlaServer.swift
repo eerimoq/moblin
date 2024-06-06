@@ -1,16 +1,19 @@
 import Foundation
+import libsrt
 import Network
 
 private let srtlaServerDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 
 class SettingsSrtlaServer {
-    var port: UInt16 = 5000
+    var srtPort: UInt16 = 4000
+    var srtlaPort: UInt16 = 5000
 }
 
 class SrtlaServer {
     private var listener: NWListener!
     private var clients: [Data: SrtlaServerClient] = [:]
     var settings: SettingsSrtlaServer
+    private var srtSocket: SRTSOCKET = -1
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
@@ -18,6 +21,13 @@ class SrtlaServer {
 
     func start() {
         srtlaServerDispatchQueue.async {
+            // srt_startup()
+            // self.srtSocket = srt_create_socket()
+            // srt_bind()?
+            // srt_listen(self.srtSocket, 5)
+            // srt_listen_callback() // check stream id
+            // let clientSocket = srt_accept(self.srtSocket, nil, nil)
+            // logger.info("srtla-server-client: Accepted client socket \(clientSocket). Should read packets from it.")
             self.setupListener()
         }
     }
@@ -26,14 +36,17 @@ class SrtlaServer {
         srtlaServerDispatchQueue.async {
             self.listener?.cancel()
             self.listener = nil
+            // srt_close(self.srtSocket)
+            // srt_cleanup()
         }
     }
 
     private func setupListener() {
+        logger.info("srtla-server: Setup listener")
         let parameters = NWParameters(dtls: .none, udp: .init())
         parameters.requiredLocalEndpoint = .hostPort(
             host: .ipv4(.any),
-            port: NWEndpoint.Port(rawValue: settings.port) ?? 5000
+            port: NWEndpoint.Port(rawValue: settings.srtlaPort) ?? 5000
         )
         parameters.allowLocalEndpointReuse = true
         do {
@@ -58,7 +71,7 @@ class SrtlaServer {
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
-        logger.info("srtla-server: Client connected \(connection.debugDescription)")
+        logger.info("srtla-server: Client \(connection.endpoint) connected")
         connection.start(queue: srtlaDispatchQueue)
         receivePacket(connection: connection)
     }
