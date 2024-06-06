@@ -1122,7 +1122,11 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
+    var buggedPublisher: Bool? = false
+    var manualFps: Bool? = false
     var fps: Double? = 0
+    var autoSelectRtmpScene: Bool? = false
+    var autoSelectRtmpMic: Bool? = false
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -1133,7 +1137,11 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.buggedPublisher = buggedPublisher
+        new.manualFps = manualFps
         new.fps = fps
+        new.autoSelectRtmpScene = autoSelectRtmpScene
+        new.autoSelectRtmpMic = autoSelectRtmpMic
         return new
     }
 }
@@ -2563,6 +2571,22 @@ final class Settings {
         }
         if realDatabase.debug!.higherDataRateLimit == nil {
             realDatabase.debug!.higherDataRateLimit = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.buggedPublisher == nil {
+            stream.buggedPublisher = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
+            stream.manualFps = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.autoSelectRtmpScene == nil {
+            stream.autoSelectRtmpScene = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.autoSelectRtmpMic == nil {
+            stream.autoSelectRtmpMic = false
             store()
         }
     }
