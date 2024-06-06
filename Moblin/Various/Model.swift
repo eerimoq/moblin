@@ -914,7 +914,7 @@ final class Model: NSObject, ObservableObject {
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
     }
-    
+
     func setHigherDataRateLimit() {
         videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
     }

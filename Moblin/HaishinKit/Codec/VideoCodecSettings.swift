@@ -3,6 +3,16 @@ import VideoToolbox
 
 var videoCodecHigherDataRateLimit = false
 
+func createDataRateLimits(bitRate: UInt32) -> CFArray {
+    var bitRate = Double(bitRate)
+    if videoCodecHigherDataRateLimit {
+        bitRate *= 1.2
+    }
+    let byteLimit = (bitRate / 8) as CFNumber
+    let secLimit = Double(1.0) as CFNumber
+    return [byteLimit, secLimit] as CFArray
+}
+
 struct VideoCodecSettings {
     enum Format: Codable {
         case h264
@@ -49,29 +59,7 @@ struct VideoCodecSettings {
             profileLevel == other.profileLevel)
     }
 
-    private func createDataRateLimits(bitRate: UInt32) -> CFArray {
-        var bitRate = Double(bitRate)
-        if videoCodecHigherDataRateLimit {
-            bitRate *= 1.2
-        }
-        let byteLimit = (bitRate / 8) as CFNumber
-        let secLimit = Double(1.0) as CFNumber
-        return [byteLimit, secLimit] as CFArray
-    }
-
-    func apply(_ codec: VideoCodec) {
-        logger.debug("video: Setting encoder bitrate to \(bitRate)")
-        let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
-        if let status = codec.session?.setOption(option), status != noErr {
-            logger.info("video: Failed to set option \(status) \(option)")
-        }
-        let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
-        if let status = codec.session?.setOption(optionLimit), status != noErr {
-            logger.info("video: Failed to set option \(status) \(optionLimit)")
-        }
-    }
-
-    func options(_ codec: VideoCodec) -> [VTSessionOption] {
+    func options(_: VideoCodec) -> [VTSessionOption] {
         let isBaseline = profileLevel.contains("Baseline")
         var options: [VTSessionOption] = [
             .init(key: .realTime, value: kCFBooleanTrue),
@@ -79,7 +67,7 @@ struct VideoCodecSettings {
             .init(key: .averageBitRate, value: bitRate as CFNumber),
             .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate)),
             // It seemes that VT supports the range 0 to 30?
-            .init(key: .expectedFrameRate, value: codec.expectedFrameRate as CFNumber),
+            .init(key: .expectedFrameRate, value: VideoUnit.defaultFrameRate as CFNumber),
             .init(key: .maxKeyFrameIntervalDuration, value: maxKeyFrameIntervalDuration as CFNumber),
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
