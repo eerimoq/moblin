@@ -25,7 +25,7 @@ final class WebSocketClient {
 
     init(url: URL) {
         self.url = url
-        webSocket = NWWebSocket(url: URL(string: "wss://a.c")!, requiredInterfaceType: .cellular)
+        webSocket = NWWebSocket(url: url, requiredInterfaceType: .cellular)
     }
 
     func start() {
@@ -48,7 +48,7 @@ final class WebSocketClient {
         stopInternal()
         if let interfaceType = networkInterfaceTypeSelector.getNextType() {
             webSocket = NWWebSocket(url: url, requiredInterfaceType: interfaceType)
-            logger.info("websocket: Connecting to \(url) with \(interfaceType)")
+            logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
             webSocket.connect()
             startPingTimer()
@@ -58,9 +58,10 @@ final class WebSocketClient {
         }
     }
 
-    func stopInternal() {
+    private func stopInternal() {
         connected = false
         webSocket.disconnect()
+        webSocket = .init(url: url, requiredInterfaceType: .cellular)
         stopConnectTimer()
         stopPingTimer()
     }
