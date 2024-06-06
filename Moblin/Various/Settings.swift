@@ -146,10 +146,12 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
+    var minimumBitrate: Float? = 50
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
         let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
         new.packetsInFlight = packetsInFlight
+        new.minimumBitrate = minimumBitrate
         return new
     }
 }
@@ -2563,6 +2565,12 @@ final class Settings {
         }
         if realDatabase.debug!.higherDataRateLimit == nil {
             realDatabase.debug!.higherDataRateLimit = false
+            store()
+        }
+        for stream in realDatabase.streams
+            where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
+        {
+            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 50
             store()
         }
     }

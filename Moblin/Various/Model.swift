@@ -500,6 +500,8 @@ final class Model: NSObject, ObservableObject {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
             settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight)
+            settings
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate! * 1000)
             media.setAdaptiveBitrateAlgorithm(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
