@@ -111,6 +111,13 @@ struct DebugSettingsView: View {
                     model.store()
                     model.reloadSrtlaServer()
                 }))
+                Toggle("Higher data rate limit", isOn: Binding(get: {
+                    model.database.debug!.higherDataRateLimit!
+                }, set: { value in
+                    model.database.debug!.higherDataRateLimit = value
+                    model.store()
+                    model.setHigherDataRateLimit()
+                }))
             } header: {
                 Text("Experimental")
             }

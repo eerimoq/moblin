@@ -798,6 +798,7 @@ final class Model: NSObject, ObservableObject {
         media.onFindVideoFormatError = handleFindVideoFormatError
         setPixelFormat()
         setMetalPetalFilters()
+        setHigherDataRateLimit()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -912,6 +913,10 @@ final class Model: NSObject, ObservableObject {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
+    }
+    
+    func setHigherDataRateLimit() {
+        videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
     }
 
     private func setupSampleBufferReceiver() {

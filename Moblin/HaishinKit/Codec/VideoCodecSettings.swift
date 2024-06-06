@@ -1,6 +1,8 @@
 import Foundation
 import VideoToolbox
 
+var videoCodecHigherDataRateLimit = false
+
 struct VideoCodecSettings {
     enum Format: Codable {
         case h264
@@ -48,8 +50,11 @@ struct VideoCodecSettings {
     }
 
     private func createDataRateLimits(bitRate: UInt32) -> CFArray {
-        // Multiply with 1.5 to reach target bitrate.
-        let byteLimit = (Double(bitRate) / 8) as CFNumber
+        var bitRate = Double(bitRate)
+        if videoCodecHigherDataRateLimit {
+            bitRate *= 1.2
+        }
+        let byteLimit = (bitRate / 8) as CFNumber
         let secLimit = Double(1.0) as CFNumber
         return [byteLimit, secLimit] as CFArray
     }

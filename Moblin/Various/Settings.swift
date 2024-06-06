@@ -1114,6 +1114,7 @@ class SettingsDebug: Codable {
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
     var srtlaServer: Bool? = false
+    var higherDataRateLimit: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2558,6 +2559,10 @@ final class Settings {
         }
         if realDatabase.srtlaServer == nil {
             realDatabase.srtlaServer = .init()
+            store()
+        }
+        if realDatabase.debug!.higherDataRateLimit == nil {
+            realDatabase.debug!.higherDataRateLimit = false
             store()
         }
     }
