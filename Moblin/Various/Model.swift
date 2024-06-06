@@ -1240,7 +1240,7 @@ final class Model: NSObject, ObservableObject {
     func isSrtlaStreamConnected(streamId _: String) -> Bool {
         return false
     }
-        
+
     func reloadRtmpStreams() {
         for rtmpCamera in rtmpCameras() {
             guard let stream = getRtmpStream(camera: rtmpCamera) else {
