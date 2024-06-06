@@ -10,7 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.296.0", date: "2024-06-05", changes: [
         "• Fix upside down image when switching stream with phone USB connector to the left. 🐛 Marlow",
-        "• Make \"OBS remote control\" and \"Remote control\" connection handling more robust. 🐛 djandrea. and others",
+        "• Make \"OBS remote control\", \"Remote control\", \"Twitch chat\" and \"Kick chat\" connection handling more robust. 🐛 djandrea. and others",
         "  • If for example WiFi fails, try cellular.",
     ]),
     Version(version: "0.295.0", date: "2024-06-03", changes: [
