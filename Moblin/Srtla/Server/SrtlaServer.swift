@@ -4,11 +4,6 @@ import Network
 
 private let srtlaServerDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 
-class SettingsSrtlaServer {
-    var srtPort: UInt16 = 4000
-    var srtlaPort: UInt16 = 5000
-}
-
 class SrtlaServer {
     private var listener: NWListener!
     private var clients: [Data: SrtlaServerClient] = [:]

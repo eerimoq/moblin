@@ -133,6 +133,11 @@ struct SettingsView: View {
                 NavigationLink(destination: RtmpServerSettingsView()) {
                     IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
                 }
+                if model.database.debug!.srtlaServer! {
+                    NavigationLink(destination: SrtlaServerSettingsView()) {
+                        IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
+                    }
+                }
                 NavigationLink(destination: GameControllersSettingsView()) {
                     IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
                 }

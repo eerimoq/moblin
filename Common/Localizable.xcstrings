@@ -4243,6 +4243,9 @@
         }
       }
     },
+    "⚠️ Does not yet work." : {
+
+    },
     "⚠️ Failed to load settings ⚠️" : {
       "localizations" : {
         "de" : {
@@ -5802,6 +5805,9 @@
           }
         }
       }
+    },
+    "100 or more milliseconds." : {
+
     },
     "128 Kpbs or higher is recommended." : {
       "localizations" : {
@@ -23761,6 +23767,9 @@
         }
       }
     },
+    "Disable the SRT(LA) server to change its settings." : {
+
+    },
     "Disabled connections will not be used." : {
       "localizations" : {
         "de" : {
@@ -25711,6 +25720,9 @@
         }
       }
     },
+    "Each stream can receive video from one SRT(LA) publisher." : {
+
+    },
     "Emotes" : {
       "localizations" : {
         "de" : {
@@ -26360,6 +26372,9 @@
           }
         }
       }
+    },
+    "Enable the SRT(LA) server to see URLs." : {
+
     },
     "Enable to allow an assistant to monitor and control this device from a different device." : {
       "localizations" : {
@@ -27400,6 +27415,9 @@
           }
         }
       }
+    },
+    "Enter one of the URLs into the SRT(LA) publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
+
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
@@ -62640,6 +62658,9 @@
         }
       }
     },
+    "SRT port" : {
+
+    },
     "srt://107.32.12.132:5000" : {
       "localizations" : {
         "de" : {
@@ -63029,6 +63050,12 @@
           }
         }
       }
+    },
+    "SRT(LA) server" : {
+
+    },
+    "SRTLA port" : {
+
     },
     "SRTLA server" : {
       "localizations" : {
@@ -64979,6 +65006,9 @@
           }
         }
       }
+    },
+    "Stream id missing" : {
+
     },
     "Stream key" : {
       "localizations" : {
@@ -70309,6 +70339,12 @@
           }
         }
       }
+    },
+    "The UDP port the SRT(LA) server listens for SRT publishers on." : {
+
+    },
+    "The UDP port the SRT(LA) server listens for SRTLA publishers on." : {
+
     },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
       "localizations" : {

@@ -318,6 +318,8 @@
 		03CDEAA22C0AB8DD006121D0 /* IrlToolkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
+		03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */; };
+		03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */; };
 		03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */; };
 		03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */; };
 		03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */; };
@@ -763,6 +765,8 @@
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlToolkit.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
+		03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerSettingsView.swift; sourceTree = "<group>"; };
+		03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03D3C0472B4493AE006BAEAC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingSettingsView.swift; sourceTree = "<group>"; };
 		03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
@@ -1897,6 +1901,7 @@
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0332EF5B2B3CAED000BC3C16 /* RtmpServer */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
+				03D2B0DE2C11BD7D0051BFB5 /* SrtlaServer */,
 				03487F222B334AB4003D9ED9 /* StreamingHistory */,
 				0379BB982AAD804F00B718B6 /* Streams */,
 				031C15B22B93324200BA967D /* Watch */,
@@ -2074,6 +2079,15 @@
 				03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		03D2B0DE2C11BD7D0051BFB5 /* SrtlaServer */ = {
+			isa = PBXGroup;
+			children = (
+				03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */,
+				03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */,
+			);
+			path = SrtlaServer;
 			sourceTree = "<group>";
 		};
 		03D3C04F2B452D14006BAEAC /* Recording */ = {
@@ -2702,6 +2716,7 @@
 				0359F8CF2BD3DA61005BFDA8 /* FLVVideoPacketType.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
 				0359F8EC2BD3DA61005BFDA8 /* RTMPConnection.swift in Sources */,
+				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,
 				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
@@ -2709,6 +2724,7 @@
 				03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */,
 				0359F8D12BD3DA61005BFDA8 /* Mixer.swift in Sources */,
 				037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */,
+				03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */,

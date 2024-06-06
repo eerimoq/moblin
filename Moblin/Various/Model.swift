@@ -1216,10 +1216,24 @@ final class Model: NSObject, ObservableObject {
 
     func reloadSrtlaServer() {
         stopSrtlaServer()
-        if database.debug!.srtlaServer! {
+        if database.debug!.srtlaServer! && database.srtlaServer!.enabled {
             srtlaServer = SrtlaServer(settings: .init())
             srtlaServer!.start()
         }
+    }
+
+    func srtlaServerEnabled() -> Bool {
+        return srtlaServer != nil
+    }
+
+    func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
+        return database.srtlaServer!.streams.first { stream in
+            stream.streamId == streamId
+        }
+    }
+
+    func isSrtlaStreamConnected(streamId _: String) -> Bool {
+        return false
     }
 
     func handleRtmpServerPublishStart(streamKey: String) {

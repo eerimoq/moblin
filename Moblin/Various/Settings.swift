@@ -1153,6 +1153,39 @@ class SettingsRtmpServer: Codable {
     }
 }
 
+class SettingsSrtlaServerStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My stream"
+    var latency: Int32? = defaultSrtLatency
+    var streamId: String = ""
+
+    func clone() -> SettingsSrtlaServerStream {
+        let new = SettingsSrtlaServerStream()
+        new.name = name
+        new.streamId = streamId
+        new.latency = latency
+        return new
+    }
+}
+
+class SettingsSrtlaServer: Codable {
+    var enabled: Bool = false
+    var srtPort: UInt16 = 4000
+    var srtlaPort: UInt16 = 5000
+    var streams: [SettingsSrtlaServerStream] = []
+
+    func clone() -> SettingsSrtlaServer {
+        let new = SettingsSrtlaServer()
+        new.enabled = enabled
+        new.srtPort = srtPort
+        new.srtlaPort = srtlaPort
+        for stream in streams {
+            new.streams.append(stream.clone())
+        }
+        return new
+    }
+}
+
 class SettingsQuickButtons: Codable {
     var twoColumns: Bool = true
     var showName: Bool = false
@@ -1489,6 +1522,7 @@ class Database: Codable {
     var audio: AudioSettings? = .init()
     var webBrowser: WebBrowserSettings? = .init()
     var deepLinkCreator: DeepLinkCreator? = .init()
+    var srtlaServer: SettingsSrtlaServer? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2520,6 +2554,10 @@ final class Settings {
         }
         if realDatabase.debug!.srtlaServer == nil {
             realDatabase.debug!.srtlaServer = false
+            store()
+        }
+        if realDatabase.srtlaServer == nil {
+            realDatabase.srtlaServer = .init()
             store()
         }
     }
