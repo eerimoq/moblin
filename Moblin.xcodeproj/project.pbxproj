@@ -246,6 +246,7 @@
 		03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */; };
 		03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */; };
 		03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */; };
+		03A3504D2C12E15A0015FAC8 /* SrtServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3504C2C12E15A0015FAC8 /* SrtServer.swift */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
 		03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */; };
 		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
@@ -703,6 +704,7 @@
 		03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClientConnection.swift; sourceTree = "<group>"; };
 		03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRistSettingsView.swift; sourceTree = "<group>"; };
 		03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingAudioSettingsView.swift; sourceTree = "<group>"; };
+		03A3504C2C12E15A0015FAC8 /* SrtServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtServer.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
 		03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamEffect.swift; sourceTree = "<group>"; };
 		03A707B72B8ED466003BB7BE /* WatchProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProtocol.swift; sourceTree = "<group>"; };
@@ -1819,6 +1821,7 @@
 				03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */,
 				03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */,
 				03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */,
+				03A3504C2C12E15A0015FAC8 /* SrtServer.swift */,
 			);
 			path = Server;
 			sourceTree = "<group>";
@@ -2611,6 +2614,7 @@
 				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
+				03A3504D2C12E15A0015FAC8 /* SrtServer.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,

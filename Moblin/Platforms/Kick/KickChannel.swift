@@ -33,7 +33,7 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
         onComplete(nil)
         return
     }
-    var request = URLRequest(url: url)
+    let request = URLRequest(url: url)
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard error == nil, let data, response?.http?.isSuccessful == true else {
             onComplete(nil)

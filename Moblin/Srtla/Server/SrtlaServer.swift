@@ -3,82 +3,34 @@ import libsrt
 import Network
 
 private let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
-private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server")
 
 class SrtlaServer {
     private var listener: NWListener!
     private var clients: [Data: SrtlaServerClient] = [:]
     var settings: SettingsSrtlaServer
     private var srtListenerSocket: SRTSOCKET = SRT_INVALID_SOCK
+    private var srtServer: SrtServer
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
+        self.srtServer = SrtServer(settings: settings)
     }
 
     func start() {
         srtlaServerQueue.async {
-            self.startSrtListener()
-            self.startSrtlaListener()
+            self.srtServer.start()
+            self.startListener()
         }
     }
 
     func stop() {
         srtlaServerQueue.async {
-            self.stopSrtlaListener()
-            self.stopSrtListener()
+            self.stopListener()
+            self.srtServer.stop()
         }
     }
 
-    private func startSrtListener() {
-        srt_startup()
-        srtServerQueue.async {
-            self.srtListenerMain()
-        }
-    }
-    
-    private func stopSrtListener() {
-        srt_close(srtListenerSocket)
-        srtListenerSocket = SRT_INVALID_SOCK
-        srt_cleanup()
-    }
-    
-    private func srtListenerMain() {
-        srtListenerSocket = srt_create_socket()
-        print("xxx", srtListenerSocket)
-        var addr = sockaddr_in()
-        addr.sin_len = UInt8(MemoryLayout.size(ofValue: addr))
-        addr.sin_family = sa_family_t(AF_INET)
-        addr.sin_addr.s_addr = inet_addr("0.0.0.0")
-        addr.sin_port = in_port_t(bigEndian: settings.srtPort)
-        let addrSize = MemoryLayout.size(ofValue: addr)
-        var res = withUnsafePointer(to: &addr) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-                srt_bind(srtListenerSocket, $0, Int32(addrSize))
-            }
-        }
-        guard res != SRT_ERROR else {
-            logger.info("srtla-server: SRT bind failed.")
-            return
-        }
-        res = srt_listen(srtListenerSocket, 5)
-        guard res != SRT_ERROR else {
-            logger.info("srtla-server: SRT listen failed.")
-            return
-        }
-        // srt_listen_callback() // check stream id
-        while true {
-            logger.info("srtla-server: Waiting for clients to connect.")
-            let clientSocket = srt_accept(srtListenerSocket, nil, nil)
-            guard clientSocket != SRT_ERROR else {
-                logger.info("srtla-server: Accept failed.")
-                break
-            }
-            logger.info("srtla-server: Accepted client socket \(clientSocket). Should read packets from it.")
-            srt_close(clientSocket)
-        }
-    }
-    
-    private func startSrtlaListener() {
+    private func startListener() {
         logger.info("srtla-server: Setup listener")
         guard let srtlaPort = NWEndpoint.Port(rawValue: settings.srtlaPort) else {
             logger.error("srtla-server: Bad listener port \(settings.srtlaPort)")
@@ -97,10 +49,10 @@ class SrtlaServer {
         listener.newConnectionHandler = handleNewListenerConnection(connection:)
         listener.start(queue: srtlaServerQueue)
     }
-    
-   private  func stopSrtlaListener() {
-            listener?.cancel()
-            listener = nil
+
+    private func stopListener() {
+        listener?.cancel()
+        listener = nil
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {
