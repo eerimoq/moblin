@@ -1,8 +1,6 @@
 import Foundation
 import libsrt
 
-private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server")
-
 class SrtServer {
     var settings: SettingsSrtlaServer
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
@@ -14,8 +12,12 @@ class SrtServer {
 
     func start() {
         srt_startup()
-        srtServerQueue.async {
-            self.main()
+        DispatchQueue(label: "com.eerimoq.srtla-srt-server").async {
+            do {
+                try self.main()
+            } catch {
+                logger.info("srtla-server: \(error)")
+            }
         }
     }
 
@@ -25,12 +27,27 @@ class SrtServer {
         srt_cleanup()
     }
 
-    private func main() {
+    private func main() throws {
+        try open()
+        try bind()
+        try listen()
+        while true {
+            logger.info("srtla-server: Waiting for client to connect.")
+            let clientSocket = try accept()
+            logger.info("srtla-server: Accepted client with stream id \(acceptedStreamId).")
+            recvLoop(clientSocket: clientSocket)
+            logger.info("srtla-server: Closed client.")
+        }
+    }
+
+    private func open() throws {
         listenerSocket = srt_create_socket()
         guard listenerSocket != SRT_ERROR else {
-            logger.info("srtla-server: Failed to create SRT socket.")
-            return
+            throw "Failed to create SRT socket."
         }
+    }
+
+    private func bind() throws {
         var addr = sockaddr_in()
         addr.sin_len = UInt8(MemoryLayout.size(ofValue: addr))
         addr.sin_family = sa_family_t(AF_INET)
@@ -43,51 +60,53 @@ class SrtServer {
             }
         }
         guard res != SRT_ERROR else {
-            logger.info("srtla-server: SRT bind failed.")
-            return
+            throw "SRT bind failed."
         }
-        res = srt_listen(listenerSocket, 5)
+    }
+
+    private func listen() throws {
+        var res = srt_listen(listenerSocket, 5)
         guard res != SRT_ERROR else {
-            logger.info("srtla-server: SRT listen failed.")
-            return
+            throw "SRT listen failed."
         }
         let server = Unmanaged.passRetained(self).toOpaque()
         res = srt_listen_callback(listenerSocket,
-                            { server, _, _, _, streamIdIn in
-                                guard let server, let streamIdIn else {
-                                    return SRT_ERROR
-                                }
-                                let srtServer: SrtServer = Unmanaged.fromOpaque(server)
-                                    .takeUnretainedValue()
-                                srtServer.acceptedStreamId = String(cString: streamIdIn)
-                                return 0
-                            },
-                            server)
+                                  { server, _, _, _, streamIdIn in
+                                      guard let server, let streamIdIn else {
+                                          return SRT_ERROR
+                                      }
+                                      let srtServer: SrtServer = Unmanaged.fromOpaque(server)
+                                          .takeUnretainedValue()
+                                      srtServer.acceptedStreamId = String(cString: streamIdIn)
+                                      return 0
+                                  },
+                                  server)
         guard res != SRT_ERROR else {
-            logger.info("srtla-server: SRT listen callback failed.")
-            return
+            throw "SRT listen callback failed."
         }
+    }
+
+    private func accept() throws -> Int32 {
+        let clientSocket = srt_accept(listenerSocket, nil, nil)
+        guard clientSocket != SRT_ERROR else {
+            throw "Accept failed."
+        }
+        return clientSocket
+    }
+
+    private func recvLoop(clientSocket: Int32) {
+        let packetSize = 2048
+        var packet = Data(count: packetSize)
         while true {
-            logger.info("srtla-server: Waiting for client to connect.")
-            let clientSocket = srt_accept(listenerSocket, nil, nil)
-            guard clientSocket != SRT_ERROR else {
-                logger.info("srtla-server: Accept failed.")
+            let count = packet.withUnsafeMutableBytes { pointer in
+                srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
+            }
+            guard count != SRT_ERROR else {
                 break
             }
-            logger.info("srtla-server: Accepted client with stream id \(acceptedStreamId).")
-            let packetSize = 2048
-            var packet = Data(count: packetSize)
-            while true {
-                let count = withUnsafeMutableBytes(of: &packet) { pointer in
-                    srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
-                }
-                guard count != SRT_ERROR else {
-                    break
-                }
-                logger.info("srtla-server: Got \(count) bytes.")
-            }
-            srt_close(clientSocket)
-            logger.info("srtla-server: Closed client.")
+            logger.info("srtla-server: Got \(count) bytes.")
         }
+        srt_close(clientSocket)
+        logger.info("srtla-server: Closed client.")
     }
 }

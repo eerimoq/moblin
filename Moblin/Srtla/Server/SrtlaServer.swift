@@ -8,12 +8,11 @@ class SrtlaServer {
     private var listener: NWListener!
     private var clients: [Data: SrtlaServerClient] = [:]
     var settings: SettingsSrtlaServer
-    private var srtListenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     private var srtServer: SrtServer
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
-        self.srtServer = SrtServer(settings: settings)
+        srtServer = SrtServer(settings: settings)
     }
 
     func start() {
