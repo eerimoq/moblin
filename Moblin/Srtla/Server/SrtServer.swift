@@ -16,7 +16,7 @@ class SrtServer {
             do {
                 try self.main()
             } catch {
-                logger.info("srtla-server: \(error)")
+                logger.info("srt-server: \(error)")
             }
         }
     }
@@ -32,18 +32,18 @@ class SrtServer {
         try bind()
         try listen()
         while true {
-            logger.info("srtla-server: Waiting for client to connect.")
+            logger.info("srt-server: Waiting for client to connect.")
             let clientSocket = try accept()
-            logger.info("srtla-server: Accepted client with stream id \(acceptedStreamId).")
+            logger.info("srt-server: Accepted client with stream id \(acceptedStreamId).")
             recvLoop(clientSocket: clientSocket)
-            logger.info("srtla-server: Closed client.")
+            logger.info("srt-server: Closed client.")
         }
     }
 
     private func open() throws {
         listenerSocket = srt_create_socket()
         guard listenerSocket != SRT_ERROR else {
-            throw "Failed to create SRT socket."
+            throw "Failed to create socket."
         }
     }
 
@@ -60,14 +60,14 @@ class SrtServer {
             }
         }
         guard res != SRT_ERROR else {
-            throw "SRT bind failed."
+            throw "Bind failed."
         }
     }
 
     private func listen() throws {
         var res = srt_listen(listenerSocket, 5)
         guard res != SRT_ERROR else {
-            throw "SRT listen failed."
+            throw "Listen failed."
         }
         let server = Unmanaged.passRetained(self).toOpaque()
         res = srt_listen_callback(listenerSocket,
@@ -82,7 +82,7 @@ class SrtServer {
                                   },
                                   server)
         guard res != SRT_ERROR else {
-            throw "SRT listen callback failed."
+            throw "Listen callback failed."
         }
     }
 
@@ -104,9 +104,9 @@ class SrtServer {
             guard count != SRT_ERROR else {
                 break
             }
-            logger.info("srtla-server: Got \(count) bytes.")
+            logger.info("srt-server: Got \(count) bytes.")
         }
         srt_close(clientSocket)
-        logger.info("srtla-server: Closed client.")
+        logger.info("srt-server: Closed client.")
     }
 }
