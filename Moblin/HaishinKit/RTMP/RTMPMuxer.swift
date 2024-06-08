@@ -84,7 +84,7 @@ extension RTMPMuxer: VideoCodecDelegate {
             return
         }
         var buffer: Data
-        let frameType = sampleBuffer.isKeyFrame ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue
+        let frameType = sampleBuffer.isSync ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue
         switch codec.settings.format {
         case .h264:
             buffer = Data([

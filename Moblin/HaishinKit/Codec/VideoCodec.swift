@@ -125,7 +125,7 @@ class VideoCodec {
             session = makeVideoDecompressionSession(self)
             needsSync = true
         }
-        if sampleBuffer.isKeyFrame {
+        if sampleBuffer.isSync {
             needsSync = false
         }
         let err = session?.decodeFrame(sampleBuffer) { [

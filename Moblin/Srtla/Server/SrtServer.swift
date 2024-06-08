@@ -151,16 +151,28 @@ class SrtServer {
     private func handleProgramMedia(packet: MpegTsPacket) throws {
         if packet.payloadUnitStartIndicator {
             if let sampleBuffer = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true) {
-                print("srt sample buffer ready", sampleBuffer)
+                handleSampleBuffer(packet.id, sampleBuffer)
             }
             packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet
                 .payload)
         } else {
             packetizedElementaryStreams[packet.id]?.append(data: packet.payload)
             if let sampleBuffer = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false) {
-                print("srt sample buffer ready 2", sampleBuffer)
+                handleSampleBuffer(packet.id, sampleBuffer)
             }
         }
+    }
+
+    private func handleSampleBuffer(_: UInt16, _ sampleBuffer: CMSampleBuffer) {
+        logger.info("""
+        srt-server: Sample buffer type \(sampleBuffer.formatDescription?.mediaSubType) \
+        sync \(sampleBuffer.isSync) length \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
+        PTS \(sampleBuffer.presentationTimeStamp.seconds)
+        """)
+    }
+
+    private func handleFormatDescription(_: UInt16, _ formatDescription: CMFormatDescription) {
+        logger.info("srt-server: Format description for \(formatDescription.mediaSubType)")
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> CMSampleBuffer? {
@@ -176,13 +188,10 @@ class SrtServer {
         defer {
             packetizedElementaryStreams[packetId] = nil
         }
-        let formatDescription = makeFormatDescription(
-            data: data,
-            packetizedElementaryStream: &packetizedElementaryStream
-        )
+        let formatDescription = makeFormatDescription(data, &packetizedElementaryStream)
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
-            logger.info("srt-server: Format description for \(formatDescription.mediaSubType)")
+            handleFormatDescription(packetId, formatDescription)
         }
         var isSync = false
         switch data.streamType {
@@ -196,8 +205,7 @@ class SrtServer {
             isSync = units.contains { $0.type == .idr }
         case .h265:
             let units = nalUnitReader.read(&packetizedElementaryStream.data, type: HevcNalUnit.self)
-            // Correct? Inverted?
-            isSync = !units.contains { $0.type == .sps }
+            isSync = units.contains { $0.type == .sps }
         case .adtsAac:
             isSync = true
         default:
@@ -208,14 +216,14 @@ class SrtServer {
             previousPresentationTimeStamps[packetId] ?? .invalid,
             formatDescriptions[packetId]
         )
-        sampleBuffer?.isKeyFrame = isSync
+        sampleBuffer?.isSync = isSync
         previousPresentationTimeStamps[packetId] = sampleBuffer?.presentationTimeStamp
         return sampleBuffer
     }
 
     private func makeFormatDescription(
-        data: ElementaryStreamSpecificData,
-        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+        _ data: ElementaryStreamSpecificData,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
     ) -> CMFormatDescription? {
         switch data.streamType {
         case .adtsAac:

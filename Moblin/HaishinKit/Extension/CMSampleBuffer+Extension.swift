@@ -29,7 +29,7 @@ extension CMSampleBuffer {
         return sampleBuffer
     }
 
-    var isKeyFrame: Bool {
+    var isSync: Bool {
         get {
             !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
         }
