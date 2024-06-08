@@ -253,8 +253,9 @@ class AdaptiveBitrate {
                 currentMaximumBitrate = maximumBitrate
             }
         }
-        if currentMaximumBitrate < 250_000 {
-            currentMaximumBitrate = 250_000
+        let minimumBitrate = max(250_000, settings.minimumBitrate)
+        if currentMaximumBitrate < minimumBitrate {
+            currentMaximumBitrate = minimumBitrate
         }
         var tempBitrate = Int64(currentMaximumBitrate)
         tempBitrate *= Int64(pifDiffThing)
