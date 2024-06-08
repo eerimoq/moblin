@@ -1,3 +1,4 @@
+import Collections
 import Foundation
 
 protocol AdaptiveBitrateDelegate: AnyObject {
@@ -37,6 +38,16 @@ let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
     minimumBitrate: 50000
 )
 
+private struct ActionTaken {
+    let timestamp: ContinuousClock.Instant
+    let message: String
+
+    init(message: String) {
+        timestamp = .now
+        self.message = message
+    }
+}
+
 class AdaptiveBitrate {
     private var avgRtt: Double = 0.0
     private var fastRtt: Double = 0.0
@@ -47,12 +58,14 @@ class AdaptiveBitrate {
     private var smoothPif: Double = 0
     private var fastPif: Double = 0
     private weak var delegate: (any AdaptiveBitrateDelegate)!
-    private var adaptiveActionsTaken: [String] = []
+    private var actionsTaken: Deque<ActionTaken> = []
     private var settings = adaptiveBitrateFastSettings
+    private let dateFormatter = DateFormatter()
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
         self.delegate = delegate
+        dateFormatter.dateFormat = "HH:mm:ss.SSS"
     }
 
     func setTargetBitrate(bitrate: UInt32) {
@@ -143,12 +156,10 @@ class AdaptiveBitrate {
 
     private func logAdaptiveAcion(actionTaken: String) {
         logger.debug("adaptive-bitrate: \(actionTaken)")
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss.SSS"
         let dateString = dateFormatter.string(from: Date())
-        adaptiveActionsTaken.append(dateString + " " + actionTaken)
-        while adaptiveActionsTaken.count > 6 {
-            adaptiveActionsTaken.remove(at: 0)
+        actionsTaken.append(ActionTaken(message: dateString + " " + actionTaken))
+        while actionsTaken.count > 6 {
+            actionsTaken.removeFirst()
         }
     }
 
@@ -176,8 +187,8 @@ class AdaptiveBitrate {
         return currentMaximumBitrate / 1000
     }
 
-    var getAdaptiveActions: [String] {
-        return adaptiveActionsTaken
+    func getActionsTaken() -> [String] {
+        return actionsTaken.map { $0.message }
     }
 
     var getFastPif: Int64 {
@@ -258,6 +269,17 @@ class AdaptiveBitrate {
         }
     }
 
+    private func removeOldActionsTaken() {
+        let now = ContinuousClock.now
+        while let actionTaken = actionsTaken.first {
+            if actionTaken.timestamp.duration(to: now) > .seconds(15) {
+                actionsTaken.removeFirst()
+            } else {
+                break
+            }
+        }
+    }
+
     // NB:To be called every 200ms when live
     // Tested to 15000 sane bitrate, 2000ms latency, rtt generally under 100
     // Assuming rtt is generally < 100 under normal conditions means avg PIF < 100 up
@@ -288,5 +310,6 @@ class AdaptiveBitrate {
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(currentBitrate))
             previousBitrate = currentBitrate
         }
+        removeOldActionsTaken()
     }
 }

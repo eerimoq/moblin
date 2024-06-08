@@ -253,7 +253,7 @@ final class Media: NSObject {
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ], adaptiveBitrate.getAdaptiveActions)
+            ], adaptiveBitrate.getActionsTaken())
         } else {
             return ([
                 "pktRetransTotal: \(stats.pktRetransTotal)",
@@ -288,7 +288,7 @@ final class Media: NSObject {
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ], adaptiveBitrate.getAdaptiveActions)
+            ], adaptiveBitrate.getActionsTaken())
         } else {
             return ([
                 "rttMs: \(stats.rttMs)",
@@ -323,7 +323,7 @@ final class Media: NSObject {
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ], adaptiveBitrate.getAdaptiveActions)
+            ], adaptiveBitrate.getActionsTaken())
         } else {
             return ([
                 "rttMs: \(rtt)",
