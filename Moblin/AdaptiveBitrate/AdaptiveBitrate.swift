@@ -131,25 +131,14 @@ class AdaptiveBitrate {
         guard smoothPif > pifMax else {
             return
         }
-        let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
-        let differece = currentMaximumBitrate - newMaxBitrate
-        if differece < minimumDecrease {
-            currentMaximumBitrate -= minimumDecrease
-            logAdaptiveAcion(
-                actionTaken: """
-                PIF: decreasing bitrate by \(minimumDecrease / 1000)k, \
-                smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
-                """
-            )
-        } else {
-            currentMaximumBitrate = Int64(Double(currentMaximumBitrate) * factor)
-            logAdaptiveAcion(
-                actionTaken: """
-                PIF: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, \
-                smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
-                """
-            )
-        }
+        let factorDecrease = Int64(Double(currentMaximumBitrate) * (1 - factor))
+        let decrease = max(factorDecrease, minimumDecrease)
+        currentMaximumBitrate -= decrease
+        logAdaptiveAcion(
+            actionTaken: """
+            PIF: Decreasing bitrate by \(decrease / 1000)k, smooth \(Int(smoothPif)) > max \(Int(pifMax))
+            """
+        )
     }
 
     private func logAdaptiveAcion(actionTaken: String) {
@@ -167,19 +156,12 @@ class AdaptiveBitrate {
         guard avgRtt > rttMax else {
             return
         }
-        let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
-        let differece = currentMaximumBitrate - newMaxBitrate
-        if differece < minimumDecrease {
-            currentMaximumBitrate -= minimumDecrease
-            logAdaptiveAcion(
-                actionTaken: "RTT: dec bitrate by \(minimumDecrease), avgrtt: \(avgRtt) > rttmax: \(rttMax)"
-            )
-        } else {
-            currentMaximumBitrate = newMaxBitrate
-            logAdaptiveAcion(
-                actionTaken: "RTT: dec bitrate to \(factor) %, avgrtt: \(avgRtt) > rttmax: \(rttMax)"
-            )
-        }
+        let factorDecrease = Int64(Double(currentMaximumBitrate) * (1 - factor))
+        let decrease = max(factorDecrease, minimumDecrease)
+        currentMaximumBitrate -= decrease
+        logAdaptiveAcion(
+            actionTaken: "RTT: Decrease bitrate by \(decrease), avg \(avgRtt) > max \(rttMax)"
+        )
     }
 
     func getCurrentBitrate() -> UInt32 {
@@ -212,28 +194,18 @@ class AdaptiveBitrate {
         rttSpikeAllowed: Double,
         minimumDecrease: Int64
     ) {
-        if stats.rttMs > avgRtt + rttSpikeAllowed {
-            let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
-            let differece = currentMaximumBitrate - newMaxBitrate
-            if differece < minimumDecrease {
-                currentMaximumBitrate -= minimumDecrease
-                logAdaptiveAcion(
-                    actionTaken: """
-                    RTT: decreasing bitrate by \(minimumDecrease / 1000)k, msrtt \
-                    \(Int(stats.rttMs)) > avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
-                    """
-                )
-            } else {
-                currentMaximumBitrate = newMaxBitrate
-                logAdaptiveAcion(
-                    actionTaken: """
-                    RTT: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, msrtt \(Int(stats
-                            .rttMs)) > \
-                    avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
-                    """
-                )
-            }
+        guard stats.rttMs > avgRtt + rttSpikeAllowed else {
+            return
         }
+        let factorDecrease = Int64(Double(currentMaximumBitrate) * (1 - factor))
+        let decrease = max(factorDecrease, minimumDecrease)
+        currentMaximumBitrate -= decrease
+        logAdaptiveAcion(
+            actionTaken: """
+            RTT: Decreasing bitrate by \(decrease / 1000)k, \
+            \(Int(stats.rttMs)) > avg + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
+            """
+        )
     }
 
     private func calculateCurrentBitrate(_ stats: StreamStats) {
