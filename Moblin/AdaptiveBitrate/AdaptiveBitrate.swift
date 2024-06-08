@@ -64,6 +64,18 @@ class AdaptiveBitrate {
         self.settings = settings
     }
 
+    private func calcPifs(_ stats: StreamStats) {
+        if stats.packetsInFlight > smoothPif {
+            smoothPif *= 0.98
+            smoothPif += stats.packetsInFlight * 0.02
+        } else {
+            smoothPif *= 0.9
+            smoothPif += stats.packetsInFlight * 0.1
+        }
+        fastPif *= 0.67
+        fastPif += stats.packetsInFlight * 0.33
+    }
+
     private func calcRtts(_ stats: StreamStats) {
         if avgRtt < 1 {
             avgRtt = stats.rttMs
@@ -96,14 +108,14 @@ class AdaptiveBitrate {
         allowedRttJitter: Double,
         allowedPifJitter: Double
     ) {
-        var pifDiffThing = Int64(stats.packetsInFlight - smoothPif)
-        if pifDiffThing < 0 {
-            pifDiffThing = 0
+        var pifSpikeDiff = Int64(stats.packetsInFlight - smoothPif)
+        if pifSpikeDiff < 0 {
+            pifSpikeDiff = 0
         }
-        if pifDiffThing > settings.packetsInFlight {
-            pifDiffThing = settings.packetsInFlight
+        if pifSpikeDiff > settings.packetsInFlight {
+            pifSpikeDiff = settings.packetsInFlight
         }
-        pifDiffThing = settings.packetsInFlight - pifDiffThing
+        let pifDiffThing = settings.packetsInFlight - pifSpikeDiff
         if smoothPif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
             if stats.packetsInFlight - smoothPif < allowedPifJitter {
                 currentMaximumBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings
@@ -113,18 +125,6 @@ class AdaptiveBitrate {
                 }
             }
         }
-    }
-
-    private func calcPifs(_ stats: StreamStats) {
-        if stats.packetsInFlight > smoothPif {
-            smoothPif *= 0.98
-            smoothPif += stats.packetsInFlight * 0.02
-        } else {
-            smoothPif *= 0.9
-            smoothPif += stats.packetsInFlight * 0.1
-        }
-        fastPif *= 0.67
-        fastPif += stats.packetsInFlight * 0.33
     }
 
     private func decreaseMaxRateIfPifIsHigh(factor: Double, pifMax: Double, minimumDecrease: Int64) {
@@ -209,31 +209,31 @@ class AdaptiveBitrate {
     }
 
     private func calculateCurrentBitrate(_ stats: StreamStats) {
-        var pifDiffThing = Int64(fastPif) - Int64(smoothPif)
+        var pifSpikeDiff = Int64(fastPif) - Int64(smoothPif)
         // lazy decrease
-        if pifDiffThing > settings.packetsInFlight {
+        if pifSpikeDiff > settings.packetsInFlight {
             logAdaptiveAcion(
-                actionTaken: "Lazy dec pifdiff \(pifDiffThing) > limit \(settings.packetsInFlight)"
+                actionTaken: "PIF: Lazy decrease diff \(pifSpikeDiff) > \(settings.packetsInFlight)"
             )
             currentMaximumBitrate = Int64(Double(currentMaximumBitrate) * 0.95)
         }
-        if pifDiffThing <= (settings.packetsInFlight / 5) {
-            pifDiffThing = 0
+        if pifSpikeDiff <= (settings.packetsInFlight / 5) {
+            pifSpikeDiff = 0
         }
-        if pifDiffThing < 0 {
-            pifDiffThing = 0
+        if pifSpikeDiff < 0 {
+            pifSpikeDiff = 0
         }
-        if pifDiffThing > settings.packetsInFlight {
-            pifDiffThing = settings.packetsInFlight
+        if pifSpikeDiff > settings.packetsInFlight {
+            pifSpikeDiff = settings.packetsInFlight
         }
         // harder decrease
-        if pifDiffThing == settings.packetsInFlight {
+        if pifSpikeDiff == settings.packetsInFlight {
             currentMaximumBitrate -= 500_000
             logAdaptiveAcion(
-                actionTaken: "-500 dec pifdiff \(pifDiffThing) = limit \(settings.packetsInFlight)"
+                actionTaken: "PIF: -500 dec diff \(pifSpikeDiff) == \(settings.packetsInFlight)"
             )
         }
-        pifDiffThing = settings.packetsInFlight - pifDiffThing
+        let pifDiffThing = settings.packetsInFlight - pifSpikeDiff
         // To not push too high bitrate after static scene. The encoder may output way
         // lower bitrate than configured.
         if let transportBitrate = stats.transportBitrate {
