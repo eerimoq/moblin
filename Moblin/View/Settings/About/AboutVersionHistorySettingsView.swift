@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.298.0", date: "2024-06-08", changes: [
+        "• Make stream setup wizard even better. :bulb: banj",
+        "• Adaptive bitrate tweaks. Goal is fewer dropped frames and higher image quality on average.",
+        "  • Minimum bitrate 500 Kbps by default.",
+        "  • Adapt faster to current RTT.",
+        "• Make debug toggle to make bitrate closer to configured bitrate on by default.",
+    ]),
     Version(version: "0.297.0", date: "2024-06-06", changes: [
         "• Debug toggle to make bitrate closer to configured bitrate.",
         "  • Settings → Debug → Higher data rate limit.",

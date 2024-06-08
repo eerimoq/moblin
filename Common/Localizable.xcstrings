@@ -5807,9 +5807,6 @@
         }
       }
     },
-    "50 Kbps by default." : {
-
-    },
     "100 or more milliseconds." : {
 
     },
@@ -6332,6 +6329,9 @@
           }
         }
       }
+    },
+    "500 Kbps by default." : {
+
     },
     "7654" : {
       "localizations" : {
