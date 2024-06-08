@@ -163,16 +163,16 @@ class SrtServer {
         }
     }
 
-    private func handleSampleBuffer(_: UInt16, _ sampleBuffer: CMSampleBuffer) {
+    private func handleSampleBuffer(_ packetId: UInt16, _ sampleBuffer: CMSampleBuffer) {
         logger.info("""
-        srt-server: Sample buffer type \(sampleBuffer.formatDescription?.mediaSubType) \
+        srt-server: \(packetId): Sample buffer type \(sampleBuffer.formatDescription?.mediaSubType) \
         sync \(sampleBuffer.isSync) length \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
         PTS \(sampleBuffer.presentationTimeStamp.seconds)
         """)
     }
 
-    private func handleFormatDescription(_: UInt16, _ formatDescription: CMFormatDescription) {
-        logger.info("srt-server: Format description for \(formatDescription.mediaSubType)")
+    private func handleFormatDescription(_ packetId: UInt16, _ formatDescription: CMFormatDescription) {
+        logger.info("srt-server: \(packetId): Format description for \(formatDescription.mediaSubType)")
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> CMSampleBuffer? {
