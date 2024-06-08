@@ -89,8 +89,6 @@ class AdaptiveBitrate {
         if avgRtt > 450 {
             avgRtt = 450
         }
-        avgRtt = avgRtt * 100.rounded() / 100
-        fastRtt = fastRtt * 100.rounded() / 100
     }
 
     private func increaseTempMaxBitrate(
@@ -118,46 +116,42 @@ class AdaptiveBitrate {
         }
     }
 
-    private func calcSmoothedPif(_ stats: StreamStats) {
+    private func calcPifs(_ stats: StreamStats) {
         // increase slowly
         if stats.packetsInFlight > smoothPif {
             smoothPif *= 0.98
             smoothPif += stats.packetsInFlight * 0.02
         } else {
             // decrease fast because we really want to be closer to the ideal pif
-            smoothPif *= 0.90
+            smoothPif *= 0.9
             smoothPif += stats.packetsInFlight * 0.1
         }
-
         fastPif *= 0.67
         fastPif += stats.packetsInFlight * 0.33
     }
 
-    private func decreaseMaxRateIfPifIsHigh(
-        factor: Double,
-        pifMax: Double,
-        minimumDecrease: Int64
-    ) {
-        if smoothPif > pifMax {
-            let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
-            let differece = currentMaximumBitrate - newMaxBitrate
-            if differece < minimumDecrease {
-                currentMaximumBitrate -= minimumDecrease
-                logAdaptiveAcion(
-                    actionTaken: """
-                    PIF: decreasing bitrate by \(minimumDecrease / 1000)k, \
-                    smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
-                    """
-                )
-            } else {
-                currentMaximumBitrate = Int64(Double(currentMaximumBitrate) * factor)
-                logAdaptiveAcion(
-                    actionTaken: """
-                    PIF: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, \
-                    smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
-                    """
-                )
-            }
+    private func decreaseMaxRateIfPifIsHigh(factor: Double, pifMax: Double, minimumDecrease: Int64) {
+        guard smoothPif > pifMax else {
+            return
+        }
+        let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
+        let differece = currentMaximumBitrate - newMaxBitrate
+        if differece < minimumDecrease {
+            currentMaximumBitrate -= minimumDecrease
+            logAdaptiveAcion(
+                actionTaken: """
+                PIF: decreasing bitrate by \(minimumDecrease / 1000)k, \
+                smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
+                """
+            )
+        } else {
+            currentMaximumBitrate = Int64(Double(currentMaximumBitrate) * factor)
+            logAdaptiveAcion(
+                actionTaken: """
+                PIF: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, \
+                smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
+                """
+            )
         }
     }
 
@@ -172,27 +166,22 @@ class AdaptiveBitrate {
         }
     }
 
-    private func decreaseMaxRateIfRttIsHigh(
-        factor: Double,
-        rttMax: Double,
-        minimumDecrease: Int64
-    ) {
-        if avgRtt > rttMax {
-            let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
-            let differece = currentMaximumBitrate - newMaxBitrate
-
-            if differece < minimumDecrease {
-                currentMaximumBitrate -= minimumDecrease
-                logAdaptiveAcion(
-                    actionTaken: "RTT: dec bitrate by \(minimumDecrease), avgrtt: \(avgRtt) > rttmax: \(rttMax)"
-                )
-
-            } else {
-                currentMaximumBitrate = newMaxBitrate
-                logAdaptiveAcion(
-                    actionTaken: "RTT: dec bitrate to \(factor) %, avgrtt: \(avgRtt) > rttmax: \(rttMax)"
-                )
-            }
+    private func decreaseMaxRateIfRttIsHigh(factor: Double, rttMax: Double, minimumDecrease: Int64) {
+        guard avgRtt > rttMax else {
+            return
+        }
+        let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
+        let differece = currentMaximumBitrate - newMaxBitrate
+        if differece < minimumDecrease {
+            currentMaximumBitrate -= minimumDecrease
+            logAdaptiveAcion(
+                actionTaken: "RTT: dec bitrate by \(minimumDecrease), avgrtt: \(avgRtt) > rttmax: \(rttMax)"
+            )
+        } else {
+            currentMaximumBitrate = newMaxBitrate
+            logAdaptiveAcion(
+                actionTaken: "RTT: dec bitrate to \(factor) %, avgrtt: \(avgRtt) > rttmax: \(rttMax)"
+            )
         }
     }
 
@@ -313,7 +302,7 @@ class AdaptiveBitrate {
     // a higher overall bitrate and stops us from dropping the bitrate very low and
     // then taking forever to go back up
     func update(stats: StreamStats) {
-        calcSmoothedPif(stats)
+        calcPifs(stats)
         calcRtts(stats)
         increaseTempMaxBitrate(
             stats: stats,
