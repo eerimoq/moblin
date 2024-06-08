@@ -91,13 +91,12 @@ class AdaptiveBitrate {
         }
     }
 
-    private func increaseTempMaxBitrate(
+    private func increaseCurrentMaxBitrate(
         stats: StreamStats,
-        pif: Double,
         allowedRttJitter: Double,
-        allowedPifJitter: Int64
+        allowedPifJitter: Double
     ) {
-        var pifDiffThing = Int64(stats.packetsInFlight - pif)
+        var pifDiffThing = Int64(stats.packetsInFlight - smoothPif)
         if pifDiffThing < 0 {
             pifDiffThing = 0
         }
@@ -105,8 +104,8 @@ class AdaptiveBitrate {
             pifDiffThing = settings.packetsInFlight
         }
         pifDiffThing = settings.packetsInFlight - pifDiffThing
-        if pif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
-            if Int64(stats.packetsInFlight - pif) < allowedPifJitter {
+        if smoothPif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
+            if stats.packetsInFlight - smoothPif < allowedPifJitter {
                 currentMaximumBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings
                     .packetsInFlight
                 if currentMaximumBitrate > targetBitrate {
@@ -117,12 +116,10 @@ class AdaptiveBitrate {
     }
 
     private func calcPifs(_ stats: StreamStats) {
-        // increase slowly
         if stats.packetsInFlight > smoothPif {
             smoothPif *= 0.98
             smoothPif += stats.packetsInFlight * 0.02
         } else {
-            // decrease fast because we really want to be closer to the ideal pif
             smoothPif *= 0.9
             smoothPif += stats.packetsInFlight * 0.1
         }
@@ -284,7 +281,7 @@ class AdaptiveBitrate {
             currentBitrate = settings.minimumBitrate
         }
         // pif running away do a quick lower of bitrate temporarily
-        if Int32(fastPif) - Int32(smoothPif) > settings.packetsInFlight * 2 {
+        if Int32(fastPif - smoothPif) > settings.packetsInFlight * 2 {
             currentBitrate = settings.minimumBitrate
         }
     }
@@ -304,12 +301,7 @@ class AdaptiveBitrate {
     func update(stats: StreamStats) {
         calcPifs(stats)
         calcRtts(stats)
-        increaseTempMaxBitrate(
-            stats: stats,
-            pif: smoothPif,
-            allowedRttJitter: 15,
-            allowedPifJitter: 10
-        )
+        increaseCurrentMaxBitrate(stats: stats, allowedRttJitter: 15, allowedPifJitter: 10)
         // slow decreases if needed
         decreaseMaxRateIfPifIsHigh(factor: 0.9, pifMax: 100, minimumDecrease: 250_000)
         decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250, minimumDecrease: 250_000)
