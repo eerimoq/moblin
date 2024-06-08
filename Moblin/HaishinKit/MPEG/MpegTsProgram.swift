@@ -5,21 +5,42 @@ import Foundation
  */
 class MpegTsProgram {
     private static let reservedBits: UInt8 = 0x03
-    private let pointerField: UInt8 = 0
-    private let pointerFillerBytes = Data()
+    private var pointerField: UInt8 = 0
+    private var pointerFillerBytes = Data()
     var tableId: UInt8 = 0
-    private let privateBit = false
-    private let tableIdExtension: UInt16 = 1
-    private let versionNumber: UInt8 = 0
-    private let currentNextIndicator = true
-    private let sectionNumber: UInt8 = 0
-    private let lastSectionNumber: UInt8 = 0
+    private var privateBit = false
+    private var tableIdExtension: UInt16 = 1
+    private var versionNumber: UInt8 = 0
+    private var currentNextIndicator = true
+    private var sectionNumber: UInt8 = 0
+    private var lastSectionNumber: UInt8 = 0
 
     init() {}
+
+    init(data: Data) throws {
+        let reader = ByteArray(data: data)
+        pointerField = try reader.readUInt8()
+        pointerFillerBytes = try reader.readBytes(Int(pointerField))
+        tableId = try reader.readUInt8()
+        let bytes: Data = try reader.readBytes(2)
+        // let sectionSyntaxIndicator = (bytes[0] & 0x80) == 0x80
+        privateBit = (bytes[0] & 0x40) == 0x40
+        let sectionLength = UInt16(bytes[0] & 0x03) << 8 | UInt16(bytes[1])
+        tableIdExtension = try reader.readUInt16()
+        versionNumber = try reader.readUInt8()
+        currentNextIndicator = (versionNumber & 0x01) == 0x01
+        versionNumber = (versionNumber & 0b0011_1110) >> 1
+        sectionNumber = try reader.readUInt8()
+        lastSectionNumber = try reader.readUInt8()
+        try setTableData(data: reader.readBytes(Int(sectionLength - 9)))
+        // let crc32 = try reader.readUInt32()
+    }
 
     func encodeTableData() -> Data {
         return Data()
     }
+
+    func setTableData(data _: Data) throws {}
 
     func packet(_ packetId: UInt16) -> MpegTsPacket {
         var packet = MpegTsPacket(id: packetId)
@@ -57,10 +78,19 @@ final class MpegTsProgramAssociation: MpegTsProgram {
 
     override func encodeTableData() -> Data {
         let encoded = ByteArray()
-        for (number, programMapPID) in programs {
-            encoded.writeUInt16(number).writeUInt16(programMapPID | 0xE000)
+        for (programNumber, programId) in programs {
+            encoded.writeUInt16(programNumber).writeUInt16(programId | 0xE000)
         }
         return encoded.data
+    }
+
+    override func setTableData(data: Data) throws {
+        let reader = ByteArray(data: data)
+        while reader.bytesAvailable > 0 {
+            let programNumber = try reader.readUInt16()
+            let programId = try reader.readUInt16() & 0x1FFF
+            programs[programNumber] = programId
+        }
     }
 }
 
@@ -72,6 +102,10 @@ final class MpegTsProgramMapping: MpegTsProgram {
     override init() {
         super.init()
         tableId = 2
+    }
+
+    override init(data: Data) throws {
+        try super.init(data: data)
     }
 
     override func encodeTableData() -> Data {
@@ -90,5 +124,19 @@ final class MpegTsProgramMapping: MpegTsProgram {
             .writeUInt16(programInfoLength | 0xF000)
             .writeBytes(encoded)
             .data
+    }
+
+    override func setTableData(data: Data) throws {
+        let reader = ByteArray(data: data)
+        programClockReferencePacketId = try reader.readUInt16() & 0x1FFF
+        programInfoLength = try reader.readUInt16() & 0x03FF
+        reader.position += Int(programInfoLength)
+        var position = 0
+        while reader.bytesAvailable > 0 {
+            position = reader.position
+            let data = try ElementaryStreamSpecificData(data: reader.readBytes(reader.bytesAvailable))
+            reader.position = position + ElementaryStreamSpecificData.fixedHeaderSize + Int(data.esInfoLength)
+            elementaryStreamSpecificDatas.append(data)
+        }
     }
 }

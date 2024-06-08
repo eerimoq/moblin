@@ -8,6 +8,15 @@ class MpegTsAdaptationField {
 
     init() {}
 
+    init(reader: ByteArray, length _: UInt8) throws {
+        let byte = try reader.readUInt8()
+        randomAccessIndicator = (byte & 0x40) == 0x40
+        let hasProgramClockReference = (byte & 0x10) == 0x10
+        if hasProgramClockReference {
+            programClockReference = try reader.readBytes(6)
+        }
+    }
+
     func calcLength() -> UInt8 {
         var length = MpegTsAdaptationField.fixedSectionSize
         if let programClockReference {

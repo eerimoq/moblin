@@ -93,7 +93,7 @@ class MpegTsWriter {
         let packets = split(packetId, PES: PES, timestamp: timestamp)
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
-        let count = packets.count * 188
+        let count = packets.count * MpegTsPacket.size
         var data = Data(
             bytesNoCopy: UnsafeMutableRawPointer.allocate(byteCount: count, alignment: 8),
             count: count,

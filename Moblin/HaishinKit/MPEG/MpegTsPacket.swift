@@ -6,6 +6,7 @@ import AVFoundation
 struct MpegTsPacket {
     static let size = 188
     static let fixedHeaderSize = 4
+    static let syncByte: UInt8 = 0x47
     var payloadUnitStartIndicator = false
     var id: UInt16 = 0
     var continuityCounter: UInt8 = 0
@@ -19,6 +20,28 @@ struct MpegTsPacket {
 
     init(id: UInt16) {
         self.id = id
+    }
+
+    init(reader: ByteArray) throws {
+        let startPosition = reader.position
+        guard try reader.readUInt8() == MpegTsPacket.syncByte else {
+            throw "Invalid sync byte"
+        }
+        var byte = try reader.readUInt8()
+        payloadUnitStartIndicator = (byte & 0x40) == 0x40
+        id = UInt16(byte & 0x1F) << 8
+        try id |= UInt16(reader.readUInt8())
+        byte = try reader.readUInt8()
+        continuityCounter = (byte & 0xF)
+        let hasAdoptionField = (byte & 0x20) == 0x20
+        if hasAdoptionField {
+            let length = try reader.readUInt8()
+            adaptationField = try MpegTsAdaptationField(reader: reader, length: length + 1)
+        }
+        let hasPayload = (byte & 0x10) == 0x10
+        if hasPayload {
+            payload = try reader.readBytes(MpegTsPacket.size - (reader.position - startPosition))
+        }
     }
 
     mutating func setPayload(_ data: Data) -> Int {
@@ -37,7 +60,7 @@ struct MpegTsPacket {
     }
 
     func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {
-        pointer.storeBytes(of: 0x47, toByteOffset: 0, as: UInt8.self)
+        pointer.storeBytes(of: MpegTsPacket.syncByte, toByteOffset: 0, as: UInt8.self)
         pointer.storeBytes(
             of: (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(id >> 8),
             toByteOffset: 1,

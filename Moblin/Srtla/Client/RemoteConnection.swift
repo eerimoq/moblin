@@ -49,7 +49,7 @@ class RemoteConnection {
     private var totalDataSentByteCount: UInt64 = 0
 
     private var nullPacket: Data = {
-        var packet = Data(count: 188)
+        var packet = Data(count: MpegTsPacket.size)
         packet
             .setUInt32Be(value: (UInt32(0x47) << 24) | (UInt32(0x1FFF) << 8) |
                 (UInt32(0x1) << 4))
@@ -232,7 +232,7 @@ class RemoteConnection {
 
     private func sendPacket(packet: Data) {
         if isDataPacket(packet: packet) {
-            var numberOfMpegTsPackets = (packet.count - 16) / 188
+            var numberOfMpegTsPackets = (packet.count - 16) / MpegTsPacket.size
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
             if numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                 var paddedPacket = packet

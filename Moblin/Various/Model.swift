@@ -2205,7 +2205,7 @@ final class Model: NSObject, ObservableObject {
                                   adaptiveBitrate: stream.rtmp!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
@@ -2221,7 +2221,7 @@ final class Model: NSObject, ObservableObject {
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .irltk:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
             media.irlToolkitStartStream(
                 url: stream.url,
                 reconnectTime: 5,

@@ -23,6 +23,10 @@ private struct OptionalHeader {
     var optionalFields = Data()
     var stuffingBytes = Data()
 
+    init() {}
+
+    init(data _: Data) {}
+
     mutating func setTimestamp(
         _ timestamp: CMTime,
         _ presentationTimeStamp: CMTime,
@@ -71,12 +75,13 @@ private struct OptionalHeader {
 }
 
 struct MpegTsPacketizedElementaryStream {
+    static let untilPacketLengthSize: Int = 6
     static let startCode = Data([0x00, 0x00, 0x01])
     private var startCode = MpegTsPacketizedElementaryStream.startCode
     private var streamID: UInt8 = 0
     private var packetLength: UInt16 = 0
     private var optionalHeader = OptionalHeader()
-    private var data = Data()
+    var data = Data()
 
     init?(
         bytes: UnsafePointer<UInt8>,
@@ -161,6 +166,28 @@ struct MpegTsPacketizedElementaryStream {
             packetLength = UInt16(length)
         }
         self.streamID = streamID
+    }
+
+    init(data: Data) throws {
+        let reader = ByteArray(data: data)
+        startCode = try reader.readBytes(3)
+        streamID = try reader.readUInt8()
+        packetLength = try reader.readUInt16()
+        optionalHeader = try OptionalHeader(data: reader.readBytes(reader.bytesAvailable))
+        reader.position = MpegTsPacketizedElementaryStream
+            .untilPacketLengthSize + 3 + Int(optionalHeader.pesHeaderLength)
+        self.data = try reader.readBytes(reader.bytesAvailable)
+    }
+
+    mutating func append(data: Data) {
+        self.data.append(data)
+    }
+
+    func isComplete() -> Bool {
+        if packetLength > 0 {
+            return data.count == packetLength - 8
+        }
+        return false
     }
 
     private func encode() -> Data {
