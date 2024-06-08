@@ -108,8 +108,8 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 Section {
                     SliderView(value: Float(adaptiveBitrate.fastIrlSettings!.packetsInFlight),
                                minimum: 200,
-                               maximum: 1000,
-                               step: 5,
+                               maximum: 700,
+                               step: 10,
                                onSubmit: submitFastIrlPacketsInFlight,
                                width: 70,
                                format: formatPacketsInFlight)
@@ -137,7 +137,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("The minimum encoder bitrate.")
-                        Text("50 Kbps by default.")
+                        Text("500 Kbps by default.")
                     }
                 }
             }
