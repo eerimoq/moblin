@@ -128,7 +128,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings!.minimumBitrate!,
                                minimum: 50000,
                                maximum: 2_000_000,
-                               step: 10000,
+                               step: 50000,
                                onSubmit: submitFastMinimumBitrate,
                                width: 80,
                                format: formatMinimumBitrate)
@@ -220,7 +220,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     SliderView(value: 1000 * adaptiveBitrate.customSettings.minimumBitrate!,
                                minimum: 50000,
                                maximum: 2_000_000,
-                               step: 10000,
+                               step: 50000,
                                onSubmit: submitMinimumBitrate,
                                width: 80,
                                format: formatMinimumBitrate)

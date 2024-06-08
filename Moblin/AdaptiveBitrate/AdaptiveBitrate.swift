@@ -66,8 +66,8 @@ class AdaptiveBitrate {
 
     private func calcPifs(_ stats: StreamStats) {
         if stats.packetsInFlight > smoothPif {
-            smoothPif *= 0.98
-            smoothPif += stats.packetsInFlight * 0.02
+            smoothPif *= 0.97
+            smoothPif += stats.packetsInFlight * 0.03
         } else {
             smoothPif *= 0.9
             smoothPif += stats.packetsInFlight * 0.1
@@ -84,9 +84,9 @@ class AdaptiveBitrate {
             avgRtt *= 0.60
             avgRtt += stats.rttMs * 0.40
         } else {
-            avgRtt *= 0.99
+            avgRtt *= 0.96
             if stats.rttMs < 450 {
-                avgRtt += stats.rttMs * 0.01
+                avgRtt += stats.rttMs * 0.04
             } else {
                 avgRtt += 450 * 0.001
             }

@@ -146,7 +146,7 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
-    var minimumBitrate: Float? = 50
+    var minimumBitrate: Float? = 500
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
         let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
@@ -162,7 +162,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
-    var minimumBitrate: Float? = 50
+    var minimumBitrate: Float? = 500
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -1116,7 +1116,7 @@ class SettingsDebug: Codable {
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
     var srtlaServer: Bool? = false
-    var higherDataRateLimit: Bool? = false
+    var higherDataRateLimit: Bool? = true
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2532,7 +2532,7 @@ final class Settings {
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
+            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 500
             store()
         }
         if realDatabase.deepLinkCreator == nil {
@@ -2564,13 +2564,13 @@ final class Settings {
             store()
         }
         if realDatabase.debug!.higherDataRateLimit == nil {
-            realDatabase.debug!.higherDataRateLimit = false
+            realDatabase.debug!.higherDataRateLimit = true
             store()
         }
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 50
+            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 500
             store()
         }
     }
