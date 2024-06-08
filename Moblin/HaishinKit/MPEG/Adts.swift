@@ -4,7 +4,6 @@ import Foundation
 struct AdtsHeader: Equatable {
     static let size: Int = 7
     static let sync: UInt8 = 0xFF
-
     var sync = Self.sync
     var protectionAbsent = false
     var profile: UInt8 = 0

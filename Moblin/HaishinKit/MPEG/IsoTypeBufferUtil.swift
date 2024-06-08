@@ -1,6 +1,6 @@
 import Foundation
 
-struct IsoTypeBufferUtil {
+enum IsoTypeBufferUtil {
     static func toNALFileFormat(_ data: inout Data) {
         var lastIndexOf = data.count - 1
         for i in (2 ..< data.count).reversed() {
