@@ -453,27 +453,25 @@ class RtmpServerChunkStream {
     }
 
     private func makeVideoSampleBuffer(client _: RtmpServerClient) -> CMSampleBuffer? {
-        var presentationTimeStamp: CMTime
-        var decodeTimeStamp: CMTime
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
+        var duration = Int64(messageTimestamp)
         compositionTime <<= 8
         compositionTime /= 256
         if isMessageType0 {
             if videoTimestampZero == -1 {
                 videoTimestampZero = Double(messageTimestamp)
             }
+            duration -= Int64(videoTimestamp)
             videoTimestamp = Double(messageTimestamp) - videoTimestampZero
         } else {
             videoTimestamp += Double(messageTimestamp)
         }
-        let videoTimeStamp = CMTime(value: CMTimeValue(videoTimestamp), timescale: 1000)
-        let compositionTimeStamp = CMTime(value: CMTimeValue(compositionTime), timescale: 1000)
-        presentationTimeStamp = videoTimeStamp + compositionTimeStamp
-        decodeTimeStamp = videoTimeStamp
+        var presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
+        var decodeTimeStamp = Int64(videoTimestamp)
         var timing = CMSampleTimingInfo(
-            duration: .invalid,
-            presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: decodeTimeStamp
+            duration: CMTimeMake(value: duration, timescale: 1000),
+            presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
+            decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
         )
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
@@ -515,7 +513,7 @@ class RtmpServerChunkStream {
         } else {
             audioTimestamp += Double(messageTimestamp)
         }
-        let presentationTimeStamp = CMTime(value: CMTimeValue(audioTimestamp), timescale: 1000)
+        let presentationTimeStamp = CMTimeMake(value: Int64(audioTimestamp), timescale: 1000)
         /* logger.info("""
          rtmp-server: client: Created audio sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \

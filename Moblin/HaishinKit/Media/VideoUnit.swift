@@ -66,10 +66,6 @@ private class ReplaceVideo {
         return Int((latency + 5) * inputFrameRate)
     }
 
-    private var minQueueSize: Int {
-        return Int(latency * inputFrameRate - 1)
-    }
-
     weak var delegate: ReplaceVideoSampleBufferDelegate?
 
     init(
@@ -163,14 +159,12 @@ private class ReplaceVideo {
             logger.info("ReplaceVideo Queue size low. Waiting for more sampleBuffers.")
             return
         }
-
-        var presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        var decodeTimeOffset = CMTimeSubtract(
-            sampleBuffer.presentationTimeStamp,
-            sampleBuffer.decodeTimeStamp
+        let timeOffset = CMTimeSubtract(
+            CMClockGetTime(CMClockGetHostTimeClock()),
+            sampleBuffer.presentationTimeStamp
         )
-        var decodeTimeStamp = CMTimeSubtract(presentationTimeStamp, decodeTimeOffset)
-
+        let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
+        let decodeTimeStamp = CMTimeAdd(sampleBuffer.decodeTimeStamp, timeOffset)
         guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(
                 presentationTimeStamp: presentationTimeStamp,
@@ -243,10 +237,6 @@ private class ReplaceVideo {
             logger.info("ReplaceVideo Queue size high. Drop oldest sampleBuffer.")
             sampleBufferQueue.removeFirst()
         }
-        // if sampleBufferQueue.count < minQueueSize {
-        //     logger.info("ReplaceVideo Queue size low. Duplicate oldest sampleBuffer.")
-        //     sampleBufferQueue.insert(sampleBufferQueue.first!, at: 0)
-        // }
     }
 
     func stopOutput() {

@@ -44,10 +44,6 @@ private class ReplaceAudio {
         return Int((latency + 5) * frameRate)
     }
 
-    private var minQueueSize: Int {
-        return Int(latency * frameRate - 1)
-    }
-
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
     init(cameraId: UUID, latency: Double) {
@@ -105,23 +101,16 @@ private class ReplaceAudio {
         outputTimer!.activate()
     }
 
-    var presentationTimeStamp: CMTime = .zero
-
     private func output() {
-        if presentationTimeStamp == CMTime.zero {
-            presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        }
-        presentationTimeStamp = CMTimeAdd(
-            presentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(frameLength),
-                timescale: CMTimeScale(sampleRate)
-            )
-        )
         guard let sampleBuffer = sampleBufferQueue.first else {
             logger.info("ReplaceAudio Queue size low. Waiting for more sampleBuffers.")
             return
         }
+        let timeOffset = CMTimeSubtract(
+            CMClockGetTime(CMClockGetHostTimeClock()),
+            sampleBuffer.presentationTimeStamp
+        )
+        let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
@@ -137,10 +126,6 @@ private class ReplaceAudio {
             logger.info("ReplaceAudio Queue size high. Drop oldest sampleBuffer.")
             sampleBufferQueue.removeFirst()
         }
-        // if sampleBufferQueue.count < minQueueSize {
-        //     logger.info("ReplaceVideo Queue size low. Duplicate oldest sampleBuffer.")
-        //     sampleBufferQueue.insert(sampleBufferQueue.first!, at: 0)
-        // }
     }
 
     func stopOutput() {
@@ -149,7 +134,6 @@ private class ReplaceAudio {
         sampleBufferQueue.removeAll()
         startTime = nil
         state = .initializing
-        presentationTimeStamp = .zero
         logger.info("ReplaceAudio output has been stopped.")
     }
 }
