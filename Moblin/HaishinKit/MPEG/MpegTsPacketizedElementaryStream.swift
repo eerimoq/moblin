@@ -72,6 +72,24 @@ private struct OptionalHeader {
             .writeBytes(stuffingBytes)
             .data
     }
+
+    func makeSampleTimingInfo(_ previousPresentationTimeStamp: CMTime) -> CMSampleTimingInfo? {
+        var presentationTimeStamp: CMTime = .invalid
+        var decodeTimeStamp: CMTime = .invalid
+        if ptsDtsIndicator & 0x02 == 0x02 {
+            let pts = TSTimestamp.decode(optionalFields, offset: 0)
+            presentationTimeStamp = .init(value: pts, timescale: CMTimeScale(TSTimestamp.resolution))
+        }
+        if ptsDtsIndicator & 0x01 == 0x01 {
+            let dts = TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize)
+            decodeTimeStamp = .init(value: dts, timescale: CMTimeScale(TSTimestamp.resolution))
+        }
+        return CMSampleTimingInfo(
+            duration: presentationTimeStamp - previousPresentationTimeStamp,
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
+        )
+    }
 }
 
 struct MpegTsPacketizedElementaryStream {
@@ -244,5 +262,49 @@ struct MpegTsPacketizedElementaryStream {
             packets.append(packet)
         }
         return packets
+    }
+
+    mutating func makeSampleBuffer(
+        _ streamType: ElementaryStreamType,
+        _ previousPresentationTimeStamp: CMTime,
+        _ formatDescription: CMFormatDescription?
+    ) -> CMSampleBuffer? {
+        var blockBuffer: CMBlockBuffer?
+        var sampleSizes: [Int] = []
+        switch streamType {
+        case .h264, .h265:
+            IsoTypeBufferUtil.toNALFileFormat(&data)
+            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
+            sampleSizes.append(blockBuffer?.dataLength ?? 0)
+        case .adtsAac:
+            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
+            let reader = ADTSReader()
+            reader.read(data)
+            var iterator = reader.makeIterator()
+            while let next = iterator.next() {
+                sampleSizes.append(next)
+            }
+        default:
+            break
+        }
+        var sampleBuffer: CMSampleBuffer?
+        var timing = optionalHeader.makeSampleTimingInfo(previousPresentationTimeStamp) ?? .invalid
+        guard let blockBuffer, CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: sampleSizes.count,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: sampleSizes.count,
+            sampleSizeArray: &sampleSizes,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr else {
+            return nil
+        }
+        return sampleBuffer
     }
 }

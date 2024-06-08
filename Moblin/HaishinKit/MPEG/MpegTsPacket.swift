@@ -96,6 +96,14 @@ enum TSTimestamp {
         encoded[4] = UInt8(truncatingIfNeeded: b << 1) | 0x01
         return encoded
     }
+
+    static func decode(_ data: Data, offset: Int = 0) -> Int64 {
+        var result: Int64 = 0
+        result |= Int64(data[offset + 0] & 0x0E) << 29
+        result |= Int64(data[offset + 1]) << 22 | Int64(data[offset + 2] & 0xFE) << 14
+        result |= Int64(data[offset + 3]) << 7 | Int64(data[offset + 3] & 0xFE) << 1
+        return result
+    }
 }
 
 enum TSProgramClockReference {

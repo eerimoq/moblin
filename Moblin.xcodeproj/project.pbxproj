@@ -234,6 +234,7 @@
 		03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
+		039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */; };
 		03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A01ACD2B9F738200D20AE3 /* CacheImage.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
@@ -695,6 +696,7 @@
 		03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
+		039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsoTypeBufferUtil.swift; sourceTree = "<group>"; };
 		03A01ACA2B9F66D200D20AE3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03A01ACD2B9F738200D20AE3 /* CacheImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheImage.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
@@ -1333,6 +1335,7 @@
 				0359F8412BD3DA5F005BFDA8 /* Crc32.swift */,
 				0359F8422BD3DA5F005BFDA8 /* ElementaryStreamSpecificData.swift */,
 				03A9300D2C1442E500BB9679 /* HevcNalUnit.swift */,
+				039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */,
 				0359F83D2BD3DA5F005BFDA8 /* MpegTsAudioConfig.swift */,
 				0359F8452BD3DA5F005BFDA8 /* MpegTsPacketizedElementaryStream.swift */,
 				0359F8462BD3DA5F005BFDA8 /* MpegTsAdaptationField.swift */,
@@ -2553,6 +2556,7 @@
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				0359F8B12BD3DA61005BFDA8 /* VTSessionConvertible.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
+				039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */,
 				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */,

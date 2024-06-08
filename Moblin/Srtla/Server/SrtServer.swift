@@ -13,6 +13,7 @@ class SrtServer {
     private var packetizedElementaryStreams: [UInt16: MpegTsPacketizedElementaryStream] = [:]
     private var formatDescriptions: [UInt16: CMFormatDescription] = [:]
     private var nalUnitReader = NALUnitReader()
+    private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
@@ -202,15 +203,13 @@ class SrtServer {
         default:
             break
         }
-        print("srt-server: Is sync: \(isSync)")
-        let sampleBuffer: CMSampleBuffer? = nil
-        // let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
-        //     data.streamType,
-        //     previousPresentationTimeStamp: previousPresentationTimeStamps[id] ?? .invalid,
-        //     formatDescription: formatDescriptions[id]
-        // )
-        // sampleBuffer?.isNotSync = isNotSync
-        // previousPresentationTimeStamps[id] = sampleBuffer?.presentationTimeStamp
+        let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+            data.streamType,
+            previousPresentationTimeStamps[packetId] ?? .invalid,
+            formatDescriptions[packetId]
+        )
+        sampleBuffer?.isKeyFrame = isSync
+        previousPresentationTimeStamps[packetId] = sampleBuffer?.presentationTimeStamp
         return sampleBuffer
     }
 
