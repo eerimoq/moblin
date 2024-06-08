@@ -1655,8 +1655,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateAdaptiveBitrate() {
-        if let lines = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
-            debugLines = lines
+        if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
+            debugLines = lines + actions
             debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))

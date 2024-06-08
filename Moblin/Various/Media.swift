@@ -216,7 +216,7 @@ final class Media: NSObject {
         srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
-    func updateAdaptiveBitrate(overlay: Bool) -> [String]? {
+    func updateAdaptiveBitrate(overlay: Bool) -> ([String], [String])? {
         if srtStream != nil {
             return updateAdaptiveBitrateSrt(overlay: overlay)
         } else if let rtmpStream {
@@ -227,7 +227,7 @@ final class Media: NSObject {
         return nil
     }
 
-    private func updateAdaptiveBitrateSrt(overlay: Bool) -> [String]? {
+    private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
@@ -238,7 +238,7 @@ final class Media: NSObject {
             return nil
         }
         if let adaptiveBitrate {
-            return [
+            return ([
                 """
                 R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
                 D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
@@ -253,20 +253,20 @@ final class Media: NSObject {
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ] + adaptiveBitrate.getAdaptiveActions
+            ], adaptiveBitrate.getAdaptiveActions)
         } else {
-            return [
+            return ([
                 "pktRetransTotal: \(stats.pktRetransTotal)",
                 "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
                 "pktSndDropTotal: \(stats.pktSndDropTotal)",
                 "msRTT: \(stats.msRTT)",
                 "pktFlightSize: \(stats.pktFlightSize)",
                 "pktSndBuf: \(stats.pktSndBuf)",
-            ]
+            ], [])
         }
     }
 
-    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> [String]? {
+    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> ([String], [String])? {
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
@@ -277,7 +277,7 @@ final class Media: NSObject {
             return nil
         }
         if let adaptiveBitrate {
-            return [
+            return ([
                 "rttMs: \(stats.rttMs)",
                 """
                 packetsInFlight: \(stats.packetsInFlight)   \
@@ -288,16 +288,16 @@ final class Media: NSObject {
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ] + adaptiveBitrate.getAdaptiveActions
+            ], adaptiveBitrate.getAdaptiveActions)
         } else {
-            return [
+            return ([
                 "rttMs: \(stats.rttMs)",
                 "packetsInFlight: \(stats.packetsInFlight)",
-            ]
+            ], [])
         }
     }
 
-    private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> [String]? {
+    private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> ([String], [String])? {
         let stats = ristStream.getStats()
         var rtt = 1000.0
         for stat in stats {
@@ -313,7 +313,7 @@ final class Media: NSObject {
             return nil
         }
         if let adaptiveBitrate {
-            return [
+            return ([
                 "rttMs: \(rtt)",
                 """
                 \(adaptiveBitrate.getFastPif)   \
@@ -323,11 +323,11 @@ final class Media: NSObject {
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ] + adaptiveBitrate.getAdaptiveActions
+            ], adaptiveBitrate.getAdaptiveActions)
         } else {
-            return [
+            return ([
                 "rttMs: \(rtt)",
-            ]
+            ], [])
         }
     }
 
