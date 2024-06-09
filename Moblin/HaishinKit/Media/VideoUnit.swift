@@ -120,26 +120,28 @@ private class ReplaceVideo {
     var firstPresentationTimeStamp: Double?
 
     private func initialize() {
-        if manualFps != true {
-            for sampleBuffer in sampleBufferQueue {
-                let currentPresentationTime = sampleBuffer.presentationTimeStamp.seconds
-                if firstPresentationTimeStamp == nil {
-                    firstPresentationTimeStamp = currentPresentationTime
-                }
-                if let startTime = firstPresentationTimeStamp,
-                   currentPresentationTime < startTime + initializationDuration
-                {
-                    counter += 1
-                } else {
-                    break
-                }
-            }
-            inputFrameRate = Double(counter) / initializationDuration
-            if buggedPublisher == true {
-                inputFrameRate = nearestCommonFrameRate(value: inputFrameRate)
-            }
-        }
-        sampleBufferQueue.removeAll()
+        // forced FPS for now
+        inputFrameRate = 30
+//        if manualFps != true {
+//            for sampleBuffer in sampleBufferQueue {
+//                let currentPresentationTime = sampleBuffer.presentationTimeStamp.seconds
+//                if firstPresentationTimeStamp == nil {
+//                    firstPresentationTimeStamp = currentPresentationTime
+//                }
+//                if let startTime = firstPresentationTimeStamp,
+//                   currentPresentationTime < startTime + initializationDuration
+//                {
+//                    counter += 1
+//                } else {
+//                    break
+//                }
+//            }
+//            inputFrameRate = Double(counter) / initializationDuration
+//            if buggedPublisher == true {
+//                inputFrameRate = nearestCommonFrameRate(value: inputFrameRate)
+//            }
+//        }
+//        sampleBufferQueue.removeAll()
     }
 
     private func startOutput() {
