@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.299.0", date: "2024-06-09", changes: [
+        "• 25% instead of 5% default overhead bandwidth for SRT(LA).",
+        "  • Hard to say which is better.",
+        "• \"Background streaming\" toggle. 💡 tokon2000",
+        "  • Background streaming is off by default.",
+        "  • Added for privacy reasons.",
+        "  • Live streams will automatically end when entering background when this toggle is off.",
+        "  • Toggle in Settings → Streams → My stream at the bottom.",
+    ]),
     Version(version: "0.298.0", date: "2024-06-08", changes: [
         "• Make stream setup wizard even better. :bulb: banj",
         "• Adaptive bitrate tweaks. Goal is fewer dropped frames and higher image quality on average.",
