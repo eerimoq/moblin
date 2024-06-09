@@ -43,7 +43,12 @@ class SrtServer {
         while true {
             logger.info("srt-server: Waiting for client to connect.")
             let clientSocket = try accept()
-            logger.info("srt-server: Accepted client with stream id \(acceptedStreamId).")
+            guard let stream = settings.streams.first(where: { $0.streamId == acceptedStreamId }) else {
+                srt_close(clientSocket)
+                logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
+                continue
+            }
+            logger.info("srt-server: Accepted client \(stream.name).")
             recvLoop(clientSocket: clientSocket)
             logger.info("srt-server: Closed client.")
         }

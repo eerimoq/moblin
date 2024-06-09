@@ -1229,7 +1229,7 @@ final class Model: NSObject, ObservableObject {
     func reloadSrtlaServer() {
         stopSrtlaServer()
         if database.debug!.srtlaServer! && database.srtlaServer!.enabled {
-            srtlaServer = SrtlaServer(settings: .init())
+            srtlaServer = SrtlaServer(settings: database.srtlaServer!)
             srtlaServer!.start()
         }
     }
