@@ -227,6 +227,8 @@ class RtmpServerChunkStream {
                 stream.streamKey == streamKey
             }) {
                 client.fps = stream.fps!
+                client.buggedPublisher = stream.buggedPublisher!
+                client.manualFps = stream.manualFps!
                 return true
             } else {
                 return false
@@ -453,10 +455,13 @@ class RtmpServerChunkStream {
     }
 
     private func makeVideoSampleBuffer(client _: RtmpServerClient) -> CMSampleBuffer? {
-        var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         var duration = Int64(messageTimestamp)
+        var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
+        
+        
+        
         if isMessageType0 {
             if videoTimestampZero == -1 {
                 videoTimestampZero = Double(messageTimestamp)
