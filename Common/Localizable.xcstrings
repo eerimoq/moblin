@@ -12452,6 +12452,9 @@
         }
       }
     },
+    "Background streaming" : {
+
+    },
     "Bar" : {
       "localizations" : {
         "de" : {
@@ -38868,6 +38871,9 @@
           }
         }
       }
+    },
+    "Keep live streams running when the app is in background mode." : {
+
     },
     "Key frame interval" : {
       "localizations" : {

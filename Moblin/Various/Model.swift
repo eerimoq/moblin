@@ -1174,7 +1174,8 @@ final class Model: NSObject, ObservableObject {
         if isRecording {
             suspendRecording()
         }
-        if !isLive {
+        if !shouldStreamInBackground() {
+            stopStream()
             stopRtmpServer()
             teardownAudioSession()
             chatTextToSpeech.reset(running: false)
@@ -1182,7 +1183,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleWillEnterForegroundNotification() {
-        if !isLive {
+        if !shouldStreamInBackground() {
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
@@ -1192,6 +1193,10 @@ final class Model: NSObject, ObservableObject {
         if isRecording {
             resumeRecording()
         }
+    }
+
+    private func shouldStreamInBackground() -> Bool {
+        return isLive && stream.backgroundStreaming!
     }
 
     @objc func handleBatteryStateDidChangeNotification() {

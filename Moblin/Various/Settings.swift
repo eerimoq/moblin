@@ -365,6 +365,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var realtimeIrlEnabled: Bool? = false
     var realtimeIrlPushKey: String? = ""
     var portrait: Bool? = false
+    var backgroundStreaming: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -2571,6 +2572,10 @@ final class Settings {
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
             stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 500
+            store()
+        }
+        for stream in realDatabase.streams where stream.backgroundStreaming == nil {
+            stream.backgroundStreaming = false
             store()
         }
     }
