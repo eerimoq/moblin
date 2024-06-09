@@ -33,10 +33,10 @@ struct MpegTsPacket {
         try id |= UInt16(reader.readUInt8())
         byte = try reader.readUInt8()
         continuityCounter = (byte & 0xF)
-        let hasAdoptionField = (byte & 0x20) == 0x20
-        if hasAdoptionField {
+        let hasAdaptationField = (byte & 0x20) == 0x20
+        if hasAdaptationField {
             let length = try reader.readUInt8()
-            adaptationField = try MpegTsAdaptationField(reader: reader, length: length + 1)
+            adaptationField = try MpegTsAdaptationField(reader: reader, length: length)
         }
         let hasPayload = (byte & 0x10) == 0x10
         if hasPayload {

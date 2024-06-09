@@ -8,12 +8,17 @@ class MpegTsAdaptationField {
 
     init() {}
 
-    init(reader: ByteArray, length _: UInt8) throws {
+    init(reader: ByteArray, length: UInt8) throws {
+        let startPosition = reader.position
         let byte = try reader.readUInt8()
         randomAccessIndicator = (byte & 0x40) == 0x40
         let hasProgramClockReference = (byte & 0x10) == 0x10
         if hasProgramClockReference {
             programClockReference = try reader.readBytes(6)
+        }
+        let stuffingCount = (startPosition + Int(length)) - reader.position
+        if stuffingCount > 0 {
+            _ = try reader.readBytes(stuffingCount)
         }
     }
 

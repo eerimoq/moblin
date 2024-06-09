@@ -6,6 +6,7 @@ import CoreMedia
  */
 
 private struct OptionalHeader {
+    static let fixedSectionSize: Int = 3
     var markerBits: UInt8 = 2
     var scramblingControl: UInt8 = 0
     var priority = false
@@ -25,7 +26,25 @@ private struct OptionalHeader {
 
     init() {}
 
-    init(data _: Data) {}
+    init(data: Data) throws {
+        let reader = ByteArray(data: data)
+        let bytes = try reader.readBytes(OptionalHeader.fixedSectionSize)
+        markerBits = (bytes[0] & 0b1100_0000) >> 6
+        scramblingControl = bytes[0] & 0b0011_0000 >> 4
+        priority = (bytes[0] & 0b0000_1000) == 0b0000_1000
+        dataAlignmentIndicator = (bytes[0] & 0b0000_0100) == 0b0000_0100
+        copyright = (bytes[0] & 0b0000_0010) == 0b0000_0010
+        originalOrCopy = (bytes[0] & 0b0000_0001) == 0b0000_0001
+        ptsDtsIndicator = (bytes[1] & 0b1100_0000) >> 6
+        esCRFlag = (bytes[1] & 0b0010_0000) == 0b0010_0000
+        esRateFlag = (bytes[1] & 0b0001_0000) == 0b0001_0000
+        dsmTrickModeFlag = (bytes[1] & 0b0000_1000) == 0b0000_1000
+        additionalCopyInfoFlag = (bytes[1] & 0b0000_0100) == 0b0000_0100
+        crcFlag = (bytes[1] & 0b0000_0010) == 0b0000_0010
+        extentionFlag = (bytes[1] & 0b0000_0001) == 0b0000_0001
+        pesHeaderLength = bytes[2]
+        optionalFields = try reader.readBytes(Int(pesHeaderLength))
+    }
 
     mutating func setTimestamp(
         _ timestamp: CMTime,

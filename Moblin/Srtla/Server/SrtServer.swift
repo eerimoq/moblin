@@ -121,12 +121,12 @@ class SrtServer {
                         try handleProgramAssociationTable(packet: packet)
                     } else if let programNumber = programs[packet.id] {
                         try handleProgramMappingTable(programNumber: programNumber, packet: packet)
-                    } else {
+                    } else if packet.id != 0x1FFF {
                         try handleProgramMedia(packet: packet)
                     }
                 }
             } catch {
-                logger.info("srt-server: Got corrupt packet \(error).")
+                logger.info("srt-server: Got corrupt packet \(error) \(count).")
             }
         }
         srt_close(clientSocket)

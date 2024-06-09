@@ -51,7 +51,7 @@ class RemoteConnection {
     private var nullPacket: Data = {
         var packet = Data(count: MpegTsPacket.size)
         packet
-            .setUInt32Be(value: (UInt32(0x47) << 24) | (UInt32(0x1FFF) << 8) |
+            .setUInt32Be(value: (UInt32(MpegTsPacket.syncByte) << 24) | (UInt32(0x1FFF) << 8) |
                 (UInt32(0x1) << 4))
         return packet
     }()
