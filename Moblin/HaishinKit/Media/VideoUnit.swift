@@ -49,8 +49,6 @@ private class ReplaceVideo {
     private var manualFps: Bool
     private var inputFrameRate: Double
     private var outputFrameRate: Double
-    private var inputCounter: Int = 0
-    private var outputCounter: Int = 0
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var startTime: Double?
     private var state: State = .initializing
@@ -60,10 +58,6 @@ private class ReplaceVideo {
         case initializing
         case buffering
         case outputting
-    }
-
-    private var maxQueueSize: Int {
-        return Int((latency + 5) * inputFrameRate)
     }
 
     weak var delegate: ReplaceVideoSampleBufferDelegate?
@@ -91,9 +85,7 @@ private class ReplaceVideo {
         }
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
-        inputCounter += 1
-        // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
-        // logger.info("Total input frames: \(inputCounter)")
+        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
@@ -112,37 +104,11 @@ private class ReplaceVideo {
             }
         case .outputting:
             // logger.info("ReplaceVideo outputting.")
-            balanceQueue()
+            break
         }
     }
 
-    var counter: Int = 0
-    var firstPresentationTimeStamp: Double?
-
-    private func initialize() {
-        // forced FPS for now
-        inputFrameRate = 30
-//        if manualFps != true {
-//            for sampleBuffer in sampleBufferQueue {
-//                let currentPresentationTime = sampleBuffer.presentationTimeStamp.seconds
-//                if firstPresentationTimeStamp == nil {
-//                    firstPresentationTimeStamp = currentPresentationTime
-//                }
-//                if let startTime = firstPresentationTimeStamp,
-//                   currentPresentationTime < startTime + initializationDuration
-//                {
-//                    counter += 1
-//                } else {
-//                    break
-//                }
-//            }
-//            inputFrameRate = Double(counter) / initializationDuration
-//            if buggedPublisher == true {
-//                inputFrameRate = nearestCommonFrameRate(value: inputFrameRate)
-//            }
-//        }
-//        sampleBufferQueue.removeAll()
-    }
+    private func initialize() {}
 
     private func startOutput() {
         logger.info("ReplaceVideo latency: \(latency)")
@@ -151,18 +117,20 @@ private class ReplaceVideo {
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer?.schedule(deadline: .now(), repeating: 1 / outputFrameRate)
         outputTimer?.setEventHandler { [weak self] in
-            self?.output()
+            self!.output()
         }
         outputTimer?.activate()
     }
 
     private func output() {
-        guard let sampleBuffer = getNextSampleBuffer() else {
-            logger.info("ReplaceVideo Queue size low. Waiting for more sampleBuffers.")
+        let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
+        updateSampleBuffer(systemTime.seconds)
+        guard let sampleBuffer = currentSampleBuffer else {
+            logger.info("No ReplaceVideo sampleBuffer available.")
             return
         }
         let timeOffset = CMTimeSubtract(
-            CMClockGetTime(CMClockGetHostTimeClock()),
+            systemTime,
             sampleBuffer.presentationTimeStamp
         )
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
@@ -177,68 +145,37 @@ private class ReplaceVideo {
         }
         logger.info("ReplaceVideo PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-        outputCounter += 1
-        // logger.info("Total output frames: \(outputCounter)")
     }
 
-    var numDuplicates: Double = 0
-    var numDrops: Double = 0
+    var firstPresentationTimeStamp: Double = .nan
+    var currentSampleBuffer: CMSampleBuffer?
 
-    private func getNextSampleBuffer() -> CMSampleBuffer? {
-        if sampleBufferQueue.isEmpty {
-            return nil
-        }
-        if inputFrameRate < outputFrameRate {
-            return handleDuplicates()
-        } else if inputFrameRate > outputFrameRate {
-            return handleDrops()
-        }
-        return sampleBufferQueue.removeFirst()
-    }
-
-    private func handleDuplicates() -> CMSampleBuffer? {
-        let ratio = outputFrameRate / inputFrameRate
-        if ratio == 2 {
-            if numDuplicates == 0 {
-                numDuplicates = ratio - 1
-            } else if numDuplicates == 1 {
-                numDuplicates -= 1
-                return sampleBufferQueue.first
+    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
+        var sampleBuffer = currentSampleBuffer
+        while !sampleBufferQueue.isEmpty {
+            let replaceSampleBuffer = sampleBufferQueue.first!
+            // Get first frame quickly
+            if currentSampleBuffer == nil {
+                sampleBuffer = replaceSampleBuffer
             }
-        } else {
-            if numDuplicates == 0 {
-                numDuplicates = ratio - 1
+            // Just for sanity. Should depend on FPS and latency.
+            if sampleBufferQueue.count > 200 {
+                logger.info("Over 200 frames buffered. Dropping oldest frame.")
+                sampleBuffer = replaceSampleBuffer
+                sampleBufferQueue.remove(at: 0)
+                continue
             }
-            if numDuplicates > 1 {
-                numDuplicates -= 1
-                return sampleBufferQueue.first
-            } else {
-                numDuplicates += ratio - 1
+            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
+            if firstPresentationTimeStamp.isNaN {
+                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
             }
+            if firstPresentationTimeStamp + presentationTimeStamp + latency > realPresentationTimeStamp {
+                break
+            }
+            sampleBuffer = replaceSampleBuffer
+            sampleBufferQueue.remove(at: 0)
         }
-        return sampleBufferQueue.removeFirst()
-    }
-
-    private func handleDrops() -> CMSampleBuffer? {
-        let ratio = inputFrameRate / outputFrameRate
-        if numDrops == 0 {
-            numDrops = ratio - 1
-        }
-        if numDrops > 1 {
-            numDrops -= 1
-            _ = sampleBufferQueue.removeFirst()
-            return getNextSampleBuffer()
-        } else {
-            numDrops += ratio - 1
-        }
-        return sampleBufferQueue.removeFirst()
-    }
-
-    private func balanceQueue() {
-        if sampleBufferQueue.count > maxQueueSize {
-            logger.info("ReplaceVideo Queue size high. Drop oldest sampleBuffer.")
-            sampleBufferQueue.removeFirst()
-        }
+        currentSampleBuffer = sampleBuffer
     }
 
     func stopOutput() {
@@ -246,17 +183,10 @@ private class ReplaceVideo {
         outputTimer = nil
         sampleBufferQueue.removeAll()
         startTime = nil
-        counter = 0
-        firstPresentationTimeStamp = nil
-        numDuplicates = 0
-        numDrops = 0
+        firstPresentationTimeStamp = .nan
+        currentSampleBuffer = nil
         state = .buffering
         logger.info("ReplaceVideo output has been stopped.")
-    }
-
-    func nearestCommonFrameRate(value: Double) -> Double {
-        let commonFrameRates = [25.0, 30.0, 50.0, 60.0]
-        return commonFrameRates.min(by: { abs($0 - value) < abs($1 - value) })!
     }
 }
 

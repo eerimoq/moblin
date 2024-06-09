@@ -455,30 +455,30 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
+    private func makeVideoSampleBuffer(client _: RtmpServerClient) -> CMSampleBuffer? {
         var presentationTimeStamp: Int64
         var decodeTimeStamp: Int64
         var duration: Int64
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        if client.buggedPublisher {
-            // for now static fps
-            numberOfFrames += 1
-            duration = Int64(1000 / 30)
-            videoTimestamp = Double(1000 * Double(numberOfFrames) / 30)
-        } else {
-            duration = Int64(messageTimestamp)
-            if isMessageType0 {
-                if videoTimestampZero == -1 {
-                    videoTimestampZero = Double(messageTimestamp)
-                }
-                duration -= Int64(videoTimestamp)
-                videoTimestamp = Double(messageTimestamp) - videoTimestampZero
-            } else {
-                videoTimestamp += Double(messageTimestamp)
+//        if client.buggedPublisher {
+//            // for now static fps
+//            numberOfFrames += 1
+//            duration = Int64(1000 / 30)
+//            videoTimestamp = Double(1000 * Double(numberOfFrames) / 30)
+//        } else {
+        duration = Int64(messageTimestamp)
+        if isMessageType0 {
+            if videoTimestampZero == -1 {
+                videoTimestampZero = Double(messageTimestamp)
             }
+            duration -= Int64(videoTimestamp)
+            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+        } else {
+            videoTimestamp += Double(messageTimestamp)
         }
+//        }
         presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
         decodeTimeStamp = Int64(videoTimestamp)
 
