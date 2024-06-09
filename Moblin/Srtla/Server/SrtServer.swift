@@ -158,38 +158,39 @@ class SrtServer {
 
     private func handleProgramMedia(packet: MpegTsPacket) throws {
         if packet.payloadUnitStartIndicator {
-            if let sampleBuffer = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true) {
-                handleSampleBuffer(packet.id, sampleBuffer)
+            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true) {
+                handleSampleBuffer(streamType, sampleBuffer)
             }
             packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet
                 .payload)
         } else {
             packetizedElementaryStreams[packet.id]?.append(data: packet.payload)
-            if let sampleBuffer = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false) {
-                handleSampleBuffer(packet.id, sampleBuffer)
+            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false) {
+                handleSampleBuffer(streamType, sampleBuffer)
             }
         }
     }
 
-    private func handleSampleBuffer(_ packetId: UInt16, _ sampleBuffer: CMSampleBuffer) {
-        logger.info("""
-        srt-server: \(packetId): Sample buffer type \(sampleBuffer.formatDescription?.mediaSubType) \
-        sync \(sampleBuffer.isSync) length \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
-        PTS \(sampleBuffer.presentationTimeStamp.seconds)
-        """)
-        guard packetId == 257 else {
-            return
+    private func handleSampleBuffer(_ streamType: ElementaryStreamType, _ sampleBuffer: CMSampleBuffer) {
+        switch streamType {
+        case .adtsAac:
+            handleAudioSampleBuffer(sampleBuffer)
+        default:
+            handleVideoSampleBuffer(sampleBuffer)
         }
+    }
+
+    private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
-            return
-        }
-        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
             return
         }
         guard let dataBuffer = sampleBuffer.dataBuffer else {
             return
         }
         guard let (dataPointer, length) = dataBuffer.getDataPointer() else {
+            return
+        }
+        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
             return
         }
         audioBuffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
@@ -208,11 +209,19 @@ class SrtServer {
         if let error {
             logger.info("srt-server: Error \(error)")
         } else {
-            logger
-                .info(
-                    "srt-server: Decoded audio \(outputBuffer) for PTS \(sampleBuffer.presentationTimeStamp.seconds)"
-                )
+            logger.info("""
+            srt-server: Decoded audio \(outputBuffer) for PTS \
+            \(sampleBuffer.presentationTimeStamp.seconds)
+            """)
         }
+    }
+
+    private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        logger.info("""
+        srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
+        \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
+        PTS \(sampleBuffer.presentationTimeStamp.seconds)
+        """)
     }
 
     private func handleFormatDescription(_ packetId: UInt16, _ formatDescription: CMFormatDescription) {
@@ -251,7 +260,9 @@ class SrtServer {
         }
     }
 
-    private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> CMSampleBuffer? {
+    private func tryMakeSampleBuffer(packetId: UInt16,
+                                     forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)?
+    {
         guard let data = elementaryStreamSpecificData[packetId] else {
             return nil
         }
@@ -287,14 +298,16 @@ class SrtServer {
         default:
             break
         }
-        let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
             previousPresentationTimeStamps[packetId] ?? .invalid,
             formatDescriptions[packetId]
-        )
-        sampleBuffer?.isSync = isSync
-        previousPresentationTimeStamps[packetId] = sampleBuffer?.presentationTimeStamp
-        return sampleBuffer
+        ) else {
+            return nil
+        }
+        sampleBuffer.isSync = isSync
+        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        return (sampleBuffer, data.streamType)
     }
 
     private func makeFormatDescription(
