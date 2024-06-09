@@ -50,9 +50,9 @@ private class ReplaceVideo {
     private var inputFrameRate: Double
     private var outputFrameRate: Double
     private var sampleBufferQueue: [CMSampleBuffer] = []
-    private var startTime: Double?
     private var state: State = .initializing
-    private var initializationDuration: Double = 1
+    private var firstPresentationTimeStamp: Double = .nan
+    private var currentSampleBuffer: CMSampleBuffer?
     private var outputTimer: DispatchSourceTimer?
     private enum State {
         case initializing
@@ -78,37 +78,24 @@ private class ReplaceVideo {
         self.outputFrameRate = outputFrameRate
     }
 
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, onSuccess: @escaping (Double) -> Void) {
-        let currentTime = CACurrentMediaTime()
-        if startTime == nil {
-            startTime = currentTime
-        }
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, onSuccess _: @escaping (Double) -> Void) {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
-            if currentTime - startTime! >= initializationDuration {
-                initialize()
-                startTime = nil
-                state = .buffering
-                return
-            }
+            state = .buffering
+            return
         case .buffering:
             // logger.info("ReplaceVideo buffering.")
-            if currentTime - startTime! >= latency {
-                state = .outputting
-                startOutput()
-                onSuccess(inputFrameRate)
-            }
+            state = .outputting
+            startOutput()
         case .outputting:
             // logger.info("ReplaceVideo outputting.")
             break
         }
     }
-
-    private func initialize() {}
 
     private func startOutput() {
         logger.info("ReplaceVideo latency: \(latency)")
@@ -147,9 +134,6 @@ private class ReplaceVideo {
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    var firstPresentationTimeStamp: Double = .nan
-    var currentSampleBuffer: CMSampleBuffer?
-
     func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
         var sampleBuffer = currentSampleBuffer
         while !sampleBufferQueue.isEmpty {
@@ -182,7 +166,6 @@ private class ReplaceVideo {
         outputTimer?.cancel()
         outputTimer = nil
         sampleBufferQueue.removeAll()
-        startTime = nil
         firstPresentationTimeStamp = .nan
         currentSampleBuffer = nil
         state = .buffering

@@ -28,20 +28,13 @@ private class ReplaceAudio {
     private var latency: Double
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
-    private var frameRate: Double = 0.0
     private var sampleBufferQueue: [CMSampleBuffer] = []
-    private var startTime: Double?
     private var state: State = .initializing
-    private var initializationDuration: Double = 1
     private var outputTimer: DispatchSourceTimer?
     private enum State {
         case initializing
         case buffering
         case outputting
-    }
-
-    private var maxQueueSize: Int {
-        return Int((latency + 5) * frameRate)
     }
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
@@ -52,32 +45,22 @@ private class ReplaceAudio {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        let currentTime = CACurrentMediaTime()
-        if startTime == nil {
-            startTime = currentTime
-        }
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
-        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
-
+        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
-            // logger.info("ReplaceVideo initializing.")
-            if currentTime - startTime! >= initializationDuration {
-                initialize(sampleBuffer: sampleBuffer)
-                startTime = nil
-                state = .buffering
-                return
-            }
+            // logger.info("ReplaceAudio initializing.")
+            initialize(sampleBuffer: sampleBuffer)
+            state = .buffering
+            return
         case .buffering:
             // logger.info("ReplaceAudio buffering.")
-            if currentTime - startTime! >= latency {
-                state = .outputting
-                startOutput()
-            }
+            state = .outputting
+            startOutput()
         case .outputting:
             // logger.info("ReplaceAudio outputting.")
-            balanceQueue()
+            break
         }
     }
 
@@ -85,16 +68,13 @@ private class ReplaceAudio {
         frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
         sampleRate = (CMSampleBufferGetFormatDescription(sampleBuffer)?.streamBasicDescription?.pointee
             .mSampleRate)!
-        frameRate = sampleRate / frameLength
-        sampleBufferQueue.removeAll()
     }
 
     private func startOutput() {
         logger.info("ReplaceAudio latency: \(latency)")
         logger.info("ReplaceAudio frameLength: \(frameLength)")
-        logger.info("ReplaceAudio sampleRate: \(sampleRate)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        outputTimer!.schedule(deadline: .now(), repeating: 1 / frameRate)
+        outputTimer!.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
         outputTimer!.setEventHandler { [weak self] in
             self?.output()
         }
@@ -121,18 +101,10 @@ private class ReplaceAudio {
         sampleBufferQueue.removeFirst()
     }
 
-    private func balanceQueue() {
-        if sampleBufferQueue.count > maxQueueSize {
-            logger.info("ReplaceAudio Queue size high. Drop oldest sampleBuffer.")
-            sampleBufferQueue.removeFirst()
-        }
-    }
-
     func stopOutput() {
         outputTimer?.cancel()
         outputTimer = nil
         sampleBufferQueue.removeAll()
-        startTime = nil
         state = .initializing
         logger.info("ReplaceAudio output has been stopped.")
     }
