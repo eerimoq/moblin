@@ -19,6 +19,7 @@ class RtmpServerChunkStream {
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoCodec?
     private var numberOfFrames: UInt64 = 0
+    private var numberOfSamples: UInt64 = 0
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
@@ -344,7 +345,7 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func processMessageAudioTypeRaw(client _: RtmpServerClient, codec: FLVAudioCodec) {
+    private func processMessageAudioTypeRaw(client: RtmpServerClient, codec: FLVAudioCodec) {
         guard let audioBuffer else {
             return
         }
@@ -376,9 +377,9 @@ class RtmpServerChunkStream {
         if let error {
             logger.info("rtmp-server: client: Error \(error)")
         } else {
-            let sampleBuffer = makeAudioSampleBuffer(audioBuffer: outputBuffer)
+            let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer)
             if sampleBuffer != nil {
-                client?.handleAudioBuffer(sampleBuffer: sampleBuffer!)
+                client.handleAudioBuffer(sampleBuffer: sampleBuffer!)
             }
         }
     }
@@ -517,14 +518,22 @@ class RtmpServerChunkStream {
         return sampleBuffer
     }
 
-    private func makeAudioSampleBuffer(audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
-        if isMessageType0 {
-            if audioTimestampZero == -1 {
-                audioTimestampZero = Double(messageTimestamp)
-            }
-            audioTimestamp = Double(messageTimestamp) - audioTimestampZero
+    private func makeAudioSampleBuffer(client: RtmpServerClient,
+                                       audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
+    {
+        if client.buggedPublisher {
+            numberOfSamples += 1
+            audioTimestamp = Double(1000 * numberOfSamples) * audioBuffer.format
+                .sampleRate / Double(audioBuffer.frameLength)
         } else {
-            audioTimestamp += Double(messageTimestamp)
+            if isMessageType0 {
+                if audioTimestampZero == -1 {
+                    audioTimestampZero = Double(messageTimestamp)
+                }
+                audioTimestamp = Double(messageTimestamp) - audioTimestampZero
+            } else {
+                audioTimestamp += Double(messageTimestamp)
+            }
         }
         let presentationTimeStamp = CMTimeMake(value: Int64(audioTimestamp), timescale: 1000)
         /* logger.info("""
