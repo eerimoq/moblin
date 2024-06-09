@@ -2,7 +2,7 @@ import Foundation
 import libsrt
 import Network
 
-private let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
+let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 
 class SrtlaServer {
     private var listener: NWListener!
@@ -126,7 +126,7 @@ class SrtlaServer {
             return
         }
         let groupId = packet[2 ..< 2 + 128] + Data.random(length: 128)
-        clients[groupId] = .init()
+        clients[groupId] = .init(srtPort: settings.srtPort)
         sendSrtlaReg2(connection: connection, groupId: groupId)
     }
 

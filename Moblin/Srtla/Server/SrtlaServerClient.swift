@@ -2,10 +2,41 @@ import Foundation
 import Network
 
 class SrtlaServerClient {
+    private var localSrtServerConnection: NWConnection?
     private var connections: [SrtlaServerClientConnection] = []
 
-    init() {
-        logger.info("srtla-server-client: Created. Should connect to SRT server.")
+    init(srtPort: UInt16) {
+        logger.info("srtla-server-client: Creating local SRT server connection.")
+        createSrtConnection(srtPort: srtPort)
+    }
+
+    private func createSrtConnection(srtPort: UInt16) {
+        let params = NWParameters(dtls: .none)
+        localSrtServerConnection = NWConnection(
+            host: .ipv4(.loopback),
+            port: .init(integerLiteral: srtPort),
+            using: params
+        )
+        localSrtServerConnection!.stateUpdateHandler = handleStateUpdate(to:)
+        localSrtServerConnection!.start(queue: srtlaServerQueue)
+        receivePacket()
+    }
+
+    private func handleStateUpdate(to state: NWConnection.State) {
+        logger.info("srtla-server-client: State change to \(state)")
+    }
+
+    private func receivePacket() {
+        localSrtServerConnection?.receiveMessage { packet, _, _, error in
+            if let packet, !packet.isEmpty {
+                logger.info("srtla-server-client: Got \(packet) from SRT server.")
+            }
+            if let error {
+                logger.warning("srtla-server-client: Receive \(error)")
+                return
+            }
+            self.receivePacket()
+        }
     }
 
     func addConnection(connection: NWConnection) {
@@ -22,6 +53,7 @@ class SrtlaServerClient {
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
     func handleSrtPacket(packet: Data) {
-        logger.info("srtla-server-client: Got SRT packet \(packet)")
+        logger.info("srtla-server-client: Got \(packet) from SRTLA. Forwarding it to SRT server.")
+        localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 }
