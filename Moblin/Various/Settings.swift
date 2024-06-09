@@ -193,7 +193,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
 class SettingsStreamSrt: Codable {
     var latency: Int32 = defaultSrtLatency
     var maximumBandwidthFollowInput: Bool? = true
-    var overheadBandwidth: Int32? = 5
+    var overheadBandwidth: Int32? = 25
     var adaptiveBitrateEnabled: Bool? = true
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate? = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities? = .init()
@@ -1100,7 +1100,7 @@ class SettingsDebugBeautyFilter: Codable {
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
-    var srtOverheadBandwidth: Int32? = 5
+    var srtOverheadBandwidth: Int32? = 25
     var letItSnow: Bool? = false
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
@@ -2029,7 +2029,7 @@ final class Settings {
             store()
         }
         if realDatabase.debug!.srtOverheadBandwidth == nil {
-            realDatabase.debug!.srtOverheadBandwidth = 5
+            realDatabase.debug!.srtOverheadBandwidth = 25
             store()
         }
         for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {

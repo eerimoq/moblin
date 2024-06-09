@@ -91,6 +91,8 @@
 		034CE2EC2B4D2E7200E2C1BD /* StreamRealtimeIrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034CE2EB2B4D2E7200E2C1BD /* StreamRealtimeIrlSettingsView.swift */; };
 		034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D26FE2B3A03620097C619 /* RtmpServer.swift */; };
 		034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
+		034FA1B82C151DFF00695825 /* AdaptiveBitrateSrtFight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034FA1B72C151DFF00695825 /* AdaptiveBitrateSrtFight.swift */; };
+		034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034FA1BA2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift */; };
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
@@ -502,6 +504,8 @@
 		034CE2EB2B4D2E7200E2C1BD /* StreamRealtimeIrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRealtimeIrlSettingsView.swift; sourceTree = "<group>"; };
 		034D26FE2B3A03620097C619 /* RtmpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServer.swift; sourceTree = "<group>"; };
 		034D2EC12B351715003C6D14 /* RecordingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsStorage.swift; sourceTree = "<group>"; };
+		034FA1B72C151DFF00695825 /* AdaptiveBitrateSrtFight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrateSrtFight.swift; sourceTree = "<group>"; };
+		034FA1BA2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrateRistExperiment.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
@@ -2219,6 +2223,8 @@
 			isa = PBXGroup;
 			children = (
 				03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */,
+				034FA1B72C151DFF00695825 /* AdaptiveBitrateSrtFight.swift */,
+				034FA1BA2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift */,
 			);
 			path = AdaptiveBitrate;
 			sourceTree = "<group>";
@@ -2594,6 +2600,7 @@
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
+				034FA1B82C151DFF00695825 /* AdaptiveBitrateSrtFight.swift in Sources */,
 				033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
@@ -2733,6 +2740,7 @@
 				0359F9012BD3DA61005BFDA8 /* Atomic.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				0359F8CF2BD3DA61005BFDA8 /* FLVVideoPacketType.swift in Sources */,
+				034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
 				0359F8EC2BD3DA61005BFDA8 /* RTMPConnection.swift in Sources */,
 				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,

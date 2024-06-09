@@ -65,7 +65,7 @@ final class Media: NSObject {
         srtlaClient?.setConnectionPriorities(connectionPriorities: connectionPriorities)
     }
 
-    func setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings) {
+    func setAdaptiveBitrateSettings(settings: AdaptiveBitrateSettings) {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
@@ -195,7 +195,7 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrate(
+            adaptiveBitrate = AdaptiveBitrateSrtFight(
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -246,8 +246,8 @@ final class Media: NSObject {
                 "msRTT: \(stats.msRTT)",
                 """
                 pktFlightSize: \(stats.pktFlightSize)   \
-                \(adaptiveBitrate.getFastPif)   \
-                \(adaptiveBitrate.getSmoothPif)
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
                 """,
                 """
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
@@ -281,8 +281,8 @@ final class Media: NSObject {
                 "rttMs: \(stats.rttMs)",
                 """
                 packetsInFlight: \(stats.packetsInFlight)   \
-                \(adaptiveBitrate.getFastPif)   \
-                \(adaptiveBitrate.getSmoothPif)
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
                 """,
                 """
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
@@ -316,8 +316,8 @@ final class Media: NSObject {
             return ([
                 "rttMs: \(rtt)",
                 """
-                \(adaptiveBitrate.getFastPif)   \
-                \(adaptiveBitrate.getSmoothPif)
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
                 """,
                 """
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
@@ -432,7 +432,7 @@ final class Media: NSObject {
             observer: self
         )
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrate(
+            adaptiveBitrate = AdaptiveBitrateSrtFight(
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -481,7 +481,7 @@ final class Media: NSObject {
         adaptiveBitrate adaptiveBitrateEnabled: Bool
     ) {
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrate(
+            adaptiveBitrate = AdaptiveBitrateRistExperiment(
                 targetBitrate: targetBitrate,
                 delegate: self
             )

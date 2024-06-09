@@ -502,12 +502,12 @@ final class Model: NSObject, ObservableObject {
             settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight)
             settings
                 .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate! * 1000)
-            media.setAdaptiveBitrateAlgorithm(settings: settings)
+            media.setAdaptiveBitrateSettings(settings: settings)
         case .slowIrl:
-            media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
+            media.setAdaptiveBitrateSettings(settings: adaptiveBitrateSlowSettings)
         case .customIrl:
             let customSettings = stream.srt.adaptiveBitrate!.customSettings
-            media.setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings(
+            media.setAdaptiveBitrateSettings(settings: AdaptiveBitrateSettings(
                 packetsInFlight: Int64(customSettings.packetsInFlight),
                 rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
@@ -521,12 +521,12 @@ final class Model: NSObject, ObservableObject {
     func updateAdaptiveBitrateRtmpIfEnabled() {
         var settings = adaptiveBitrateFastSettings
         settings.rttDiffHighAllowedSpike = 500
-        media.setAdaptiveBitrateAlgorithm(settings: settings)
+        media.setAdaptiveBitrateSettings(settings: settings)
     }
 
     func updateAdaptiveBitrateRistIfEnabled() {
-        let settings = adaptiveBitrateFastSettings
-        media.setAdaptiveBitrateAlgorithm(settings: settings)
+        let settings = adaptiveBitrateRistFastSettings
+        media.setAdaptiveBitrateSettings(settings: settings)
     }
 
     @MainActor
