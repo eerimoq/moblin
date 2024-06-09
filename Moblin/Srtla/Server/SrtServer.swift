@@ -14,6 +14,9 @@ class SrtServer {
     private var formatDescriptions: [UInt16: CMFormatDescription] = [:]
     private var nalUnitReader = NALUnitReader()
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
+    private var audioBuffer: AVAudioCompressedBuffer?
+    private var audioDecoder: AVAudioConverter?
+    private var pcmAudioFormat: AVAudioFormat?
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
@@ -174,10 +177,78 @@ class SrtServer {
         sync \(sampleBuffer.isSync) length \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
         PTS \(sampleBuffer.presentationTimeStamp.seconds)
         """)
+        guard packetId == 257 else {
+            return
+        }
+        guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
+            return
+        }
+        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
+            return
+        }
+        guard let dataBuffer = sampleBuffer.dataBuffer else {
+            return
+        }
+        guard let (dataPointer, length) = dataBuffer.getDataPointer() else {
+            return
+        }
+        audioBuffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
+            mStartOffset: 0,
+            mVariableFramesInPacket: 0,
+            mDataByteSize: UInt32(length)
+        )
+        audioBuffer.packetCount = 1
+        audioBuffer.byteLength = UInt32(length)
+        audioBuffer.data.copyMemory(from: dataPointer, byteCount: length)
+        var error: NSError?
+        audioDecoder.convert(to: outputBuffer, error: &error) { _, inputStatus in
+            inputStatus.pointee = .haveData
+            return self.audioBuffer
+        }
+        if let error {
+            logger.info("srt-server: Error \(error)")
+        } else {
+            logger
+                .info(
+                    "srt-server: Decoded audio \(outputBuffer) for PTS \(sampleBuffer.presentationTimeStamp.seconds)"
+                )
+        }
     }
 
     private func handleFormatDescription(_ packetId: UInt16, _ formatDescription: CMFormatDescription) {
-        logger.info("srt-server: \(packetId): Format description for \(formatDescription.mediaSubType)")
+        logger.info("srt-server: \(packetId): Format description \(formatDescription)")
+        guard packetId == 257 else {
+            return
+        }
+        guard let streamBasicDescription = formatDescription.streamBasicDescription else {
+            return
+        }
+        if let audioFormat = AVAudioFormat(streamDescription: streamBasicDescription) {
+            audioBuffer = AVAudioCompressedBuffer(
+                format: audioFormat,
+                packetCapacity: 1,
+                maximumPacketSize: 1024 * Int(audioFormat.channelCount)
+            )
+            pcmAudioFormat = AVAudioFormat(
+                commonFormat: .pcmFormatInt16,
+                sampleRate: audioFormat.sampleRate,
+                channels: audioFormat.channelCount,
+                interleaved: audioFormat.isInterleaved
+            )
+            guard let pcmAudioFormat else {
+                logger.info("srt-server: Failed to create PCM audio format")
+                return
+            }
+            logger.info("srt-server: in: \(audioFormat), out: \(pcmAudioFormat)")
+            audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
+            if audioDecoder == nil {
+                logger.info("srt-server: Failed to create audio decdoer")
+            }
+        } else {
+            logger.info("srt-server: Failed to create audio format")
+            audioBuffer = nil
+            audioDecoder = nil
+        }
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> CMSampleBuffer? {

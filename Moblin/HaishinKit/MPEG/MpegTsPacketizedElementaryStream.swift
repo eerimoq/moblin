@@ -296,7 +296,7 @@ struct MpegTsPacketizedElementaryStream {
             blockBuffer = data.makeBlockBuffer(advancedBy: 0)
             sampleSizes.append(blockBuffer?.dataLength ?? 0)
         case .adtsAac:
-            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
+            blockBuffer = data.makeBlockBuffer(advancedBy: 7)
             let reader = ADTSReader()
             reader.read(data)
             var iterator = reader.makeIterator()
