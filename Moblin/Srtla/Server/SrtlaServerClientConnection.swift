@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 protocol SrtlaServerClientConnectionDelegate: AnyObject {
-    func handleSrtPacket(packet: Data)
+    func handleSrtClientPacket(packet: Data)
 }
 
 class SrtlaServerClientConnection {
@@ -63,21 +63,20 @@ class SrtlaServerClientConnection {
     }
 
     private func handleSrtControlPacket(type _: SrtPacketType, packet: Data) {
-        delegate?.handleSrtPacket(packet: packet)
+        delegate?.handleSrtClientPacket(packet: packet)
     }
 
     private func handleSrtlaKeepalive() {
-        logger.info("srtla-server-client: Got keep alive message")
         var packet = Data(count: 2)
         packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtlaPacketTypeBit)
         sendPacket(packet: packet)
     }
 
     private func handleDataPacket(packet: Data) {
-        delegate?.handleSrtPacket(packet: packet)
+        delegate?.handleSrtClientPacket(packet: packet)
     }
 
-    private func sendPacket(packet: Data) {
+    func sendPacket(packet: Data) {
         latestSentTime = .now
         connection.send(content: packet, completion: .contentProcessed { _ in })
     }

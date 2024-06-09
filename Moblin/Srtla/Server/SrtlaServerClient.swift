@@ -29,7 +29,7 @@ class SrtlaServerClient {
     private func receivePacket() {
         localSrtServerConnection?.receiveMessage { packet, _, _, error in
             if let packet, !packet.isEmpty {
-                logger.info("srtla-server-client: Got \(packet) from SRT server.")
+                self.handleSrtServerPacket(packet: packet)
             }
             if let error {
                 logger.warning("srtla-server-client: Receive \(error)")
@@ -49,11 +49,14 @@ class SrtlaServerClient {
         connections.append(connection)
         logger.info("srtla-server-client: Using \(connections.count) connection(s)")
     }
+
+    private func handleSrtServerPacket(packet: Data) {
+        connections.first?.sendPacket(packet: packet)
+    }
 }
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
-    func handleSrtPacket(packet: Data) {
-        logger.info("srtla-server-client: Got \(packet) from SRTLA. Forwarding it to SRT server.")
+    func handleSrtClientPacket(packet: Data) {
         localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 }
