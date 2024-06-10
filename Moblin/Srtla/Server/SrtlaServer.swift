@@ -1,18 +1,26 @@
+import AVFoundation
 import Foundation
 import libsrt
 import Network
 
 let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 
+protocol SrtlaServerDelegate: AnyObject {
+    func onVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) -> Void
+    func onAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer) -> Void
+}
+
 class SrtlaServer {
     private var listener: NWListener!
     private var clients: [Data: SrtlaServerClient] = [:]
     var settings: SettingsSrtlaServer
     private var srtServer: SrtServer
+    weak var delegate: (any SrtlaServerDelegate)?
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
-        srtServer = SrtServer(settings: settings)
+        srtServer = SrtServer()
+        srtServer.srtlaServer = self
     }
 
     func start() {

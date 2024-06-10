@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 protocol SrtlaServerClientConnectionDelegate: AnyObject {
-    func handleSrtClientPacket(packet: Data)
+    func handleSrtClientPacket(_ connection: SrtlaServerClientConnection, packet: Data)
 }
 
 class SrtlaServerClientConnection {
@@ -63,7 +63,7 @@ class SrtlaServerClientConnection {
     }
 
     private func handleSrtControlPacket(type _: SrtPacketType, packet: Data) {
-        delegate?.handleSrtClientPacket(packet: packet)
+        delegate?.handleSrtClientPacket(self, packet: packet)
     }
 
     private func handleSrtlaKeepalive() {
@@ -73,7 +73,7 @@ class SrtlaServerClientConnection {
     }
 
     private func handleDataPacket(packet: Data) {
-        delegate?.handleSrtClientPacket(packet: packet)
+        delegate?.handleSrtClientPacket(self, packet: packet)
     }
 
     func sendPacket(packet: Data) {

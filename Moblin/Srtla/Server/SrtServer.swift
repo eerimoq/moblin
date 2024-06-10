@@ -2,8 +2,10 @@ import AVFoundation
 import Foundation
 import libsrt
 
+private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server")
+
 class SrtServer {
-    var settings: SettingsSrtlaServer
+    weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     private var acceptedStreamId = ""
     private var programAssociationTable = MpegTsProgramAssociation()
@@ -15,16 +17,16 @@ class SrtServer {
     private var nalUnitReader = NALUnitReader()
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var audioBuffer: AVAudioCompressedBuffer?
+    private var latestAudioBuffer: AVAudioPCMBuffer?
+    private var latestAudioBufferPresentationTimeStamp = 0.0
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
-
-    init(settings: SettingsSrtlaServer) {
-        self.settings = settings
-    }
+    private var running = false
 
     func start() {
         srt_startup()
-        DispatchQueue(label: "com.eerimoq.srtla-srt-server").async {
+        running = true
+        srtServerQueue.async {
             do {
                 try self.main()
             } catch {
@@ -36,6 +38,7 @@ class SrtServer {
     func stop() {
         srt_close(listenerSocket)
         listenerSocket = SRT_INVALID_SOCK
+        running = false
         srt_cleanup()
     }
 
@@ -46,7 +49,9 @@ class SrtServer {
         while true {
             logger.info("srt-server: Waiting for client to connect.")
             let clientSocket = try accept()
-            guard let stream = settings.streams.first(where: { $0.streamId == acceptedStreamId }) else {
+            guard let stream = srtlaServer?.settings.streams
+                .first(where: { $0.streamId == acceptedStreamId })
+            else {
                 srt_close(clientSocket)
                 logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
                 continue
@@ -69,7 +74,7 @@ class SrtServer {
         addr.sin_len = UInt8(MemoryLayout.size(ofValue: addr))
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_addr.s_addr = inet_addr("0.0.0.0")
-        addr.sin_port = in_port_t(bigEndian: settings.srtPort)
+        addr.sin_port = in_port_t(bigEndian: srtlaServer?.settings.srtPort ?? 4000)
         let addrSize = MemoryLayout.size(ofValue: addr)
         let res = withUnsafePointer(to: &addr) {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
@@ -114,7 +119,7 @@ class SrtServer {
     private func recvLoop(clientSocket: Int32) {
         let packetSize = 2048
         var packet = Data(count: packetSize)
-        while true {
+        while running {
             let count = packet.withUnsafeMutableBytes { pointer in
                 srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
             }
@@ -125,7 +130,7 @@ class SrtServer {
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
                     let packet = try MpegTsPacket(reader: reader)
-                    if packet.id == 0 {
+                    if packet.id == MpegTsPacket.programAssociationTableId {
                         try handleProgramAssociationTable(packet: packet)
                     } else if let programNumber = programs[packet.id] {
                         try handleProgramMappingTable(programNumber: programNumber, packet: packet)
@@ -209,10 +214,27 @@ class SrtServer {
         if let error {
             logger.info("srt-server: Error \(error)")
         } else {
-            logger.info("""
-            srt-server: Decoded audio \(outputBuffer) for PTS \
-            \(sampleBuffer.presentationTimeStamp.seconds)
-            """)
+            let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+            if let latestAudioBuffer {
+                let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
+                // Assume 1024 samples/buffer at 48 kHz for now
+                var gapBuffers = Int(((ptsDelta / 0.021333) - 1).rounded())
+                logger.info("""
+                srt-server: Decoded audio \(outputBuffer) for PTS \
+                \(presentationTimeStamp) delta \(ptsDelta) gap \(gapBuffers)
+                """)
+                while gapBuffers > 0 {
+                    logger.info("srt-server: Audio gap filler buffer")
+                    srtlaServer?.delegate?.onAudioBuffer(
+                        streamId: acceptedStreamId,
+                        buffer: latestAudioBuffer
+                    )
+                    gapBuffers -= 1
+                }
+            }
+            latestAudioBuffer = outputBuffer
+            latestAudioBufferPresentationTimeStamp = presentationTimeStamp
+            srtlaServer?.delegate?.onAudioBuffer(streamId: acceptedStreamId, buffer: outputBuffer)
         }
     }
 
@@ -224,41 +246,51 @@ class SrtServer {
         """)
     }
 
-    private func handleFormatDescription(_ packetId: UInt16, _ formatDescription: CMFormatDescription) {
-        logger.info("srt-server: \(packetId): Format description \(formatDescription)")
-        guard packetId == 257 else {
-            return
+    private func handleFormatDescription(
+        _ streamType: ElementaryStreamType,
+        _ formatDescription: CMFormatDescription
+    ) {
+        switch streamType {
+        case .adtsAac:
+            handleAudioFormatDescription(formatDescription)
+        default:
+            handleVideoFormatDescription(formatDescription)
         }
+    }
+
+    private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {
         guard let streamBasicDescription = formatDescription.streamBasicDescription else {
             return
         }
-        if let audioFormat = AVAudioFormat(streamDescription: streamBasicDescription) {
-            audioBuffer = AVAudioCompressedBuffer(
-                format: audioFormat,
-                packetCapacity: 1,
-                maximumPacketSize: 1024 * Int(audioFormat.channelCount)
-            )
-            pcmAudioFormat = AVAudioFormat(
-                commonFormat: .pcmFormatInt16,
-                sampleRate: audioFormat.sampleRate,
-                channels: audioFormat.channelCount,
-                interleaved: audioFormat.isInterleaved
-            )
-            guard let pcmAudioFormat else {
-                logger.info("srt-server: Failed to create PCM audio format")
-                return
-            }
-            logger.info("srt-server: in: \(audioFormat), out: \(pcmAudioFormat)")
-            audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
-            if audioDecoder == nil {
-                logger.info("srt-server: Failed to create audio decdoer")
-            }
-        } else {
+        guard let audioFormat = AVAudioFormat(streamDescription: streamBasicDescription) else {
             logger.info("srt-server: Failed to create audio format")
             audioBuffer = nil
             audioDecoder = nil
+            return
+        }
+        audioBuffer = AVAudioCompressedBuffer(
+            format: audioFormat,
+            packetCapacity: 1,
+            maximumPacketSize: 1024 * Int(audioFormat.channelCount)
+        )
+        pcmAudioFormat = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: audioFormat.sampleRate,
+            channels: audioFormat.channelCount,
+            interleaved: audioFormat.isInterleaved
+        )
+        guard let pcmAudioFormat else {
+            logger.info("srt-server: Failed to create PCM audio format")
+            return
+        }
+        logger.info("srt-server: in: \(audioFormat), out: \(pcmAudioFormat)")
+        audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
+        if audioDecoder == nil {
+            logger.info("srt-server: Failed to create audio decdoer")
         }
     }
+
+    private func handleVideoFormatDescription(_: CMFormatDescription) {}
 
     private func tryMakeSampleBuffer(packetId: UInt16,
                                      forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)?
@@ -278,7 +310,7 @@ class SrtServer {
         let formatDescription = makeFormatDescription(data, &packetizedElementaryStream)
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
-            handleFormatDescription(packetId, formatDescription)
+            handleFormatDescription(data.streamType, formatDescription)
         }
         var isSync = false
         switch data.streamType {

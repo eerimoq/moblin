@@ -4,6 +4,7 @@ import Network
 class SrtlaServerClient {
     private var localSrtServerConnection: NWConnection?
     private var connections: [SrtlaServerClientConnection] = []
+    private var latestConnection: SrtlaServerClientConnection?
 
     init(srtPort: UInt16) {
         logger.info("srtla-server-client: Creating local SRT server connection.")
@@ -51,12 +52,21 @@ class SrtlaServerClient {
     }
 
     private func handleSrtServerPacket(packet: Data) {
-        connections.first?.sendPacket(packet: packet)
+        if !isDataPacket(packet: packet),
+           SrtPacketType(rawValue: getControlPacketType(packet: packet)) == .ack
+        {
+            for connection in connections {
+                connection.sendPacket(packet: packet)
+            }
+        } else {
+            latestConnection?.sendPacket(packet: packet)
+        }
     }
 }
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
-    func handleSrtClientPacket(packet: Data) {
+    func handleSrtClientPacket(_ connection: SrtlaServerClientConnection, packet: Data) {
+        latestConnection = connection
         localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 }
