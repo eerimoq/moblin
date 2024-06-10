@@ -147,7 +147,6 @@ class RemoteConnection {
         guard state == .registered else {
             return -1
         }
-
         if type == nil {
             return 1
         } else if priority == 0 {
@@ -220,7 +219,7 @@ class RemoteConnection {
     private func receivePacket() {
         connection?.receiveMessage { packet, _, _, error in
             if let packet, !packet.isEmpty {
-                self.handlePacket(packet: packet)
+                self.handlePacketFromClient(packet: packet)
             }
             if let error {
                 logger.warning("srtla: \(self.typeString): Receive \(error)")
@@ -276,7 +275,7 @@ class RemoteConnection {
         logger.info("srtla: \(typeString): Sending reg 1 (create group)")
         groupId = Data.random(length: 256)
         var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | srtControlPacketTypeBit)
         packet[2...] = groupId
         sendPacket(packet: packet)
     }
@@ -284,7 +283,7 @@ class RemoteConnection {
     private func sendSrtlaReg2() {
         logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
         var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtControlPacketTypeBit)
         packet[2...] = groupId
         sendPacket(packet: packet)
         state = .waitForRegisterResponse
@@ -292,7 +291,7 @@ class RemoteConnection {
 
     private func sendSrtlaKeepalive() {
         var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtControlPacketTypeBit)
         sendPacket(packet: packet)
     }
 
@@ -466,7 +465,7 @@ class RemoteConnection {
         packetHandler?(packet)
     }
 
-    private func handlePacket(packet: Data) {
+    private func handlePacketFromClient(packet: Data) {
         guard packet.count >= 2 else {
             logger.error("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
             return
@@ -491,10 +490,10 @@ class RemoteConnection {
         numberOfNullPacketsSent = 0
         numberOfNonNullPacketsSent = 0
         if type == nil {
-            logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
+            logger.info("srtla: \(typeString): Overhead: \(overhead) %")
         } else {
             logger
-                .debug(
+                .info(
                     """
                     srtla: \(typeString): Score: \(score()), In flight: \
                     \(packetsInFlight.count), Window size: \(windowSize), \

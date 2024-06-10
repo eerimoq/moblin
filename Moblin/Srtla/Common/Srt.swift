@@ -1,5 +1,7 @@
 import Foundation
 
+let srtControlPacketTypeBit: UInt16 = 0x8000
+
 enum SrtPacketType: UInt16 {
     case handshake = 0x0000
     case keepAlive = 0x0001

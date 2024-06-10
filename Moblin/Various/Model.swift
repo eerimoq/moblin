@@ -1524,10 +1524,10 @@ final class Model: NSObject, ObservableObject {
             self.updateBrowserWidgetStatus()
             self.logStatus()
             self.updateFailedVideoEffects()
+            self.media.logStatistics()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
-            self.media.logStatistics()
             self.updateObsStatus()
             self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()

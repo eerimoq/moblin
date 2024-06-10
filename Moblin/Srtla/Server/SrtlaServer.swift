@@ -6,8 +6,8 @@ import Network
 let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 
 protocol SrtlaServerDelegate: AnyObject {
-    func onVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) -> Void
-    func onAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer) -> Void
+    func onVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
+    func onAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer)
 }
 
 class SrtlaServer {
@@ -157,7 +157,7 @@ class SrtlaServer {
     private func sendSrtlaReg2(connection: NWConnection, groupId: Data) {
         logger.info("srtla-server: Sending reg 2 (group created)")
         var packet = Data(count: 258)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtControlPacketTypeBit)
         packet[2...] = groupId
         sendPacket(connection: connection, packet: packet)
     }
@@ -165,7 +165,7 @@ class SrtlaServer {
     private func sendSrtlaReg3(connection: NWConnection) {
         logger.info("srtla-server: Sending reg 3 (connection registered)")
         var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.reg3.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.reg3.rawValue | srtControlPacketTypeBit)
         sendPacket(connection: connection, packet: packet)
     }
 
