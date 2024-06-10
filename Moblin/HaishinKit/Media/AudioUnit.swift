@@ -72,6 +72,7 @@ private class ReplaceAudio {
 
     private func startOutput() {
         logger.info("ReplaceAudio latency: \(latency)")
+        logger.info("ReplaceAudio sampleRate: \(sampleRate)")
         logger.info("ReplaceAudio frameLength: \(frameLength)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer!.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))

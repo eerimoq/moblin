@@ -464,9 +464,9 @@ class RtmpServerChunkStream {
         compositionTime /= 256
         if client.buggedPublisher {
             // for now static fps
-            numberOfFrames += 1
             duration = Int64(1000 / 30)
-            videoTimestamp = Double(1000 * Double(numberOfFrames) / 30)
+            videoTimestamp = Double(numberOfFrames) / 30 * 1000
+            numberOfFrames += 1
         } else {
             duration = Int64(messageTimestamp)
             if isMessageType0 {
@@ -481,7 +481,6 @@ class RtmpServerChunkStream {
         }
         presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
         decodeTimeStamp = Int64(videoTimestamp)
-
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
@@ -522,9 +521,10 @@ class RtmpServerChunkStream {
                                        audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
     {
         if client.buggedPublisher {
+            audioTimestamp = Double(numberOfSamples) /
+                (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
+
             numberOfSamples += 1
-            audioTimestamp = Double(1000 * numberOfSamples) * audioBuffer.format
-                .sampleRate / Double(audioBuffer.frameLength)
         } else {
             if isMessageType0 {
                 if audioTimestampZero == -1 {
