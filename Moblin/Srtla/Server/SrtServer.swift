@@ -56,6 +56,10 @@ class SrtServer {
                 logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
                 continue
             }
+            let option = SRTSocketOption(rawValue: "lossmaxttl")!
+            if !option.setOption(clientSocket, value: "200") {
+                logger.error("srt-server: Failed to set lossmaxttl option.")
+            }
             logger.info("srt-server: Accepted client \(stream.name).")
             recvLoop(clientSocket: clientSocket)
             logger.info("srt-server: Closed client.")
