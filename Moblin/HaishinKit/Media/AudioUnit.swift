@@ -29,14 +29,10 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBufferQueue: [CMSampleBuffer] = []
-    private var state: State = .initializing
     private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
-    private enum State {
-        case initializing
-        case buffering
-        case outputting
-    }
+    private var isInitialized: Bool = false
+    private var isOutputting: Bool = false
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
@@ -49,26 +45,21 @@ private class ReplaceAudio {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
-        switch state {
-        case .initializing:
-            // logger.info("ReplaceAudio initializing.")
+        if !isInitialized {
+            isInitialized = true
             initialize(sampleBuffer: sampleBuffer)
-            state = .buffering
-            return
-        case .buffering:
-            // logger.info("ReplaceAudio buffering.")
-            state = .outputting
+        }
+        if !isOutputting {
+            isOutputting = true
             startOutput()
-        case .outputting:
-            // logger.info("ReplaceAudio outputting.")
-            break
         }
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
         frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
-        sampleRate = (CMSampleBufferGetFormatDescription(sampleBuffer)?.streamBasicDescription?.pointee
-            .mSampleRate)!
+        if let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) {
+            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 0.0
+        }
     }
 
     private func startOutput() {
@@ -76,11 +67,11 @@ private class ReplaceAudio {
         logger.info("ReplaceAudio sampleRate: \(sampleRate)")
         logger.info("ReplaceAudio frameLength: \(frameLength)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        outputTimer!.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
-        outputTimer!.setEventHandler { [weak self] in
+        outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
+        outputTimer?.setEventHandler { [weak self] in
             self?.output()
         }
-        outputTimer!.activate()
+        outputTimer?.activate()
     }
 
     private func output() {
@@ -89,25 +80,31 @@ private class ReplaceAudio {
             logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
             return
         }
-        let timeOffset = CMTimeSubtract(
-            systemTime,
-            sampleBuffer.presentationTimeStamp
-        )
+        let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
-        guard let sampleBuffer = sampleBuffer
+        guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
             return
         }
         // logger.info("ReplaceAudio PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
-        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: updatedSampleBuffer)
+    }
+
+    func stopOutput() {
+        isInitialized = false
+        isOutputting = false
+        outputTimer?.cancel()
+        outputTimer = nil
+        sampleBufferQueue.removeAll()
+        firstPresentationTimeStamp = .nan
+        logger.info("ReplaceAudio output has been stopped.")
     }
 
     func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         while !sampleBufferQueue.isEmpty {
             let replaceSampleBuffer = sampleBufferQueue.first!
-            // Just for sanity. Should depend on FPS and latency.
             if sampleBufferQueue.count > 300 {
                 logger.info("Over 300 frames buffered. Dropping oldest frame.")
                 sampleBuffer = replaceSampleBuffer
@@ -127,15 +124,6 @@ private class ReplaceAudio {
             sampleBufferQueue.remove(at: 0)
         }
         return sampleBuffer
-    }
-
-    func stopOutput() {
-        outputTimer?.cancel()
-        outputTimer = nil
-        sampleBufferQueue.removeAll()
-        state = .initializing
-        firstPresentationTimeStamp = .nan
-        logger.info("ReplaceAudio output has been stopped.")
     }
 }
 
