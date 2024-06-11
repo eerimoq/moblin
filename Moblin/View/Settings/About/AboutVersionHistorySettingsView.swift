@@ -8,7 +8,7 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.302.0", date: "2024-06-12", changes: [
+    Version(version: "0.302.0", date: "2024-06-11", changes: [
         "• Toggle to debug crash when live and entering foreground mode.",
         "  • Settings → Debug → Use audio for timestamps",
     ]),
