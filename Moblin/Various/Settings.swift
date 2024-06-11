@@ -1118,6 +1118,7 @@ class SettingsDebug: Codable {
     var metalPetalFilters: Bool? = false
     var srtlaServer: Bool? = false
     var higherDataRateLimit: Bool? = true
+    var useAudioForTimestamps: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2576,6 +2577,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.backgroundStreaming == nil {
             stream.backgroundStreaming = false
+            store()
+        }
+        if realDatabase.debug!.useAudioForTimestamps == nil {
+            realDatabase.debug!.useAudioForTimestamps = false
             store()
         }
     }
