@@ -71,7 +71,7 @@ private class ReplaceVideo {
         outputFrameRate: Double
     ) {
         self.cameraId = cameraId
-        self.latency = 1 + latency
+        self.latency = 2//1 + latency
         self.buggedPublisher = buggedPublisher
         self.manualFps = manualFps
         self.inputFrameRate = inputFrameRate
@@ -81,7 +81,7 @@ private class ReplaceVideo {
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, onSuccess _: @escaping (Double) -> Void) {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
-        logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
+        // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
             // logger.info("ReplaceVideo initializing.")
@@ -130,7 +130,7 @@ private class ReplaceVideo {
         else {
             return
         }
-        logger.info("ReplaceVideo PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
+        // logger.info("ReplaceVideo PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 

@@ -30,6 +30,7 @@ private class ReplaceAudio {
     private var frameLength: Double = 0.0
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var state: State = .initializing
+    private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private enum State {
         case initializing
@@ -41,13 +42,13 @@ private class ReplaceAudio {
 
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
-        self.latency = 1 + latency
+        self.latency = 2//1 + latency
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
-        logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
         switch state {
         case .initializing:
             // logger.info("ReplaceAudio initializing.")
@@ -83,12 +84,13 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        guard let sampleBuffer = sampleBufferQueue.first else {
-            logger.info("ReplaceAudio Queue size low. Waiting for more sampleBuffers.")
+        let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
+        guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
+            logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
             return
         }
         let timeOffset = CMTimeSubtract(
-            CMClockGetTime(CMClockGetHostTimeClock()),
+            systemTime,
             sampleBuffer.presentationTimeStamp
         )
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
@@ -97,9 +99,32 @@ private class ReplaceAudio {
         else {
             return
         }
-        logger.info("ReplaceAudio PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
+        // logger.info("ReplaceAudio PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-        sampleBufferQueue.removeFirst()
+    }
+
+    func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
+        var sampleBuffer:CMSampleBuffer? = nil
+        while !sampleBufferQueue.isEmpty {
+            let replaceSampleBuffer = sampleBufferQueue.first!
+            // Just for sanity. Should depend on FPS and latency.
+            if sampleBufferQueue.count > 300 {
+                logger.info("Over 300 frames buffered. Dropping oldest frame.")
+                sampleBuffer = replaceSampleBuffer
+                sampleBufferQueue.remove(at: 0)
+                continue
+            }
+            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
+            if firstPresentationTimeStamp.isNaN {
+                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
+            }
+            if firstPresentationTimeStamp + presentationTimeStamp + latency + 0.04 > realPresentationTimeStamp {
+                break
+            }
+            sampleBuffer = replaceSampleBuffer
+            sampleBufferQueue.remove(at: 0)
+        }
+        return sampleBuffer
     }
 
     func stopOutput() {
