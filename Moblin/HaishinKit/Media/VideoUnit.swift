@@ -71,7 +71,7 @@ private class ReplaceVideo {
         outputFrameRate: Double
     ) {
         self.cameraId = cameraId
-        self.latency = 2//1 + latency
+        self.latency = latency
         self.buggedPublisher = buggedPublisher
         self.manualFps = manualFps
         self.inputFrameRate = inputFrameRate

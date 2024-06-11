@@ -42,7 +42,7 @@ private class ReplaceAudio {
 
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
-        self.latency = 2//1 + latency
+        self.latency = latency
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
