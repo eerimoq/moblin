@@ -166,9 +166,9 @@ private class ReplaceVideo {
         outputTimer?.cancel()
         outputTimer = nil
         sampleBufferQueue.removeAll()
-        firstPresentationTimeStamp = .nan
         currentSampleBuffer = nil
         state = .buffering
+        firstPresentationTimeStamp = .nan
         logger.info("ReplaceVideo output has been stopped.")
     }
 }

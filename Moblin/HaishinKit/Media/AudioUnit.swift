@@ -104,7 +104,7 @@ private class ReplaceAudio {
     }
 
     func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
-        var sampleBuffer:CMSampleBuffer? = nil
+        var sampleBuffer: CMSampleBuffer?
         while !sampleBufferQueue.isEmpty {
             let replaceSampleBuffer = sampleBufferQueue.first!
             // Just for sanity. Should depend on FPS and latency.
@@ -118,7 +118,9 @@ private class ReplaceAudio {
             if firstPresentationTimeStamp.isNaN {
                 firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
             }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency + 0.04 > realPresentationTimeStamp {
+            if firstPresentationTimeStamp + presentationTimeStamp + latency + 0.04 >
+                realPresentationTimeStamp
+            {
                 break
             }
             sampleBuffer = replaceSampleBuffer
@@ -132,6 +134,7 @@ private class ReplaceAudio {
         outputTimer = nil
         sampleBufferQueue.removeAll()
         state = .initializing
+        firstPresentationTimeStamp = .nan
         logger.info("ReplaceAudio output has been stopped.")
     }
 }
