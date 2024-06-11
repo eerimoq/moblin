@@ -78,6 +78,7 @@ private class ReplaceVideo {
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
         if !isOutputting {
+            isOutputting = true
             startOutput()
         }
     }
