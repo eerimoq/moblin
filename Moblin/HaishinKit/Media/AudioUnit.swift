@@ -19,25 +19,110 @@ func makeChannelMap(
     return result.map { NSNumber(value: $0) }
 }
 
-private class ReplaceAudio {
-    var nextPresentationTimeStamp: CMTime = .zero
+protocol ReplaceAudioSampleBufferDelegate: AnyObject {
+    func didOutputReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
+}
 
-    func createSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
-        if nextPresentationTimeStamp == CMTime.zero {
-            nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+private class ReplaceAudio {
+    private var cameraId: UUID
+    private var latency: Double
+    private var sampleRate: Double = 0.0
+    private var frameLength: Double = 0.0
+    private var sampleBufferQueue: [CMSampleBuffer] = []
+    private var firstPresentationTimeStamp: Double = .nan
+    private var outputTimer: DispatchSourceTimer?
+    private var isInitialized: Bool = false
+    private var isOutputting: Bool = false
+
+    weak var delegate: ReplaceAudioSampleBufferDelegate?
+
+    init(cameraId: UUID, latency: Double) {
+        self.cameraId = cameraId
+        self.latency = latency
+    }
+
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        sampleBufferQueue.append(sampleBuffer)
+        sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
+        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
+        if !isInitialized {
+            isInitialized = true
+            initialize(sampleBuffer: sampleBuffer)
         }
-        guard let sampleBuffer = audioPCMBuffer
-            .makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp)
+        if !isOutputting {
+            isOutputting = true
+            startOutput()
+        }
+    }
+
+    private func initialize(sampleBuffer: CMSampleBuffer) {
+        frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
+        if let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) {
+            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 0.0
+        }
+    }
+
+    private func startOutput() {
+        logger.info("ReplaceAudio latency: \(latency)")
+        logger.info("ReplaceAudio sampleRate: \(sampleRate)")
+        logger.info("ReplaceAudio frameLength: \(frameLength)")
+        outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+        outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
+        outputTimer?.setEventHandler { [weak self] in
+            self?.output()
+        }
+        outputTimer?.activate()
+    }
+
+    private func output() {
+        let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
+        guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
+            logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
+            return
+        }
+        let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
+        let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
+        guard let updatedSampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
-            return nil
+            return
         }
-        nextPresentationTimeStamp = CMTimeAdd(
-            nextPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(Double(audioPCMBuffer.frameLength)),
-                timescale: CMTimeScale(audioPCMBuffer.format.sampleRate)
-            )
-        )
+        // logger.info("ReplaceAudio PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
+        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: updatedSampleBuffer)
+    }
+
+    func stopOutput() {
+        isInitialized = false
+        isOutputting = false
+        outputTimer?.cancel()
+        outputTimer = nil
+        sampleBufferQueue.removeAll()
+        firstPresentationTimeStamp = .nan
+        logger.info("ReplaceAudio output has been stopped.")
+    }
+
+    func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
+        var sampleBuffer: CMSampleBuffer?
+        while !sampleBufferQueue.isEmpty {
+            let replaceSampleBuffer = sampleBufferQueue.first!
+            if sampleBufferQueue.count > 300 {
+                logger.info("Over 300 frames buffered. Dropping oldest frame.")
+                sampleBuffer = replaceSampleBuffer
+                sampleBufferQueue.remove(at: 0)
+                continue
+            }
+            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
+            if firstPresentationTimeStamp.isNaN {
+                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
+            }
+            if firstPresentationTimeStamp + presentationTimeStamp + latency + 0.04 >
+                realPresentationTimeStamp
+            {
+                break
+            }
+            sampleBuffer = replaceSampleBuffer
+            sampleBufferQueue.remove(at: 0)
+        }
         return sampleBuffer
     }
 }
@@ -131,36 +216,28 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+    func addReplaceAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
         lockQueue.async {
-            self.addReplaceAudioPCMBufferInner(id: id, audioBuffer)
+            self.addReplaceAudioSampleBufferInner(id: id, sampleBuffer)
         }
     }
 
-    func addReplaceAudioPCMBufferInner(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+    func addReplaceAudioSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
         guard let replaceAudio = replaceAudios[id] else {
             return
         }
-        let sampleBuffer = replaceAudio.createSampleBuffer(audioPCMBuffer: audioBuffer)
-        guard let sampleBuffer, selectedReplaceAudioId != nil else {
-            return
-        }
-        let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
-        prepareSampleBuffer(
-            sampleBuffer: sampleBuffer,
-            audioLevel: .infinity,
-            numberOfAudioChannels: numberOfAudioChannels
-        )
+        replaceAudio.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceAudio(cameraId: UUID) {
+    func addReplaceAudio(cameraId: UUID, latency: Double) {
         lockQueue.async {
-            self.addReplaceAudioInner(cameraId: cameraId)
+            self.addReplaceAudioInner(cameraId: cameraId, latency: latency)
         }
     }
 
-    func addReplaceAudioInner(cameraId: UUID) {
-        let replaceAudio = ReplaceAudio()
+    func addReplaceAudioInner(cameraId: UUID, latency: Double) {
+        let replaceAudio = ReplaceAudio(cameraId: cameraId, latency: latency)
+        replaceAudio.delegate = self
         replaceAudios[cameraId] = replaceAudio
     }
 
@@ -171,6 +248,8 @@ final class AudioUnit: NSObject {
     }
 
     func removeReplaceAudioInner(cameraId: UUID) {
+        let replaceAudio = replaceAudios[cameraId]
+        replaceAudio?.stopOutput()
         replaceAudios.removeValue(forKey: cameraId)
     }
 
@@ -214,6 +293,20 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             audioLevel: audioLevel,
             numberOfAudioChannels: connection.audioChannels.count
         )
+    }
+}
+
+extension AudioUnit: ReplaceAudioSampleBufferDelegate {
+    func didOutputReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        if cameraId == selectedReplaceAudioId {
+            let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?
+                .numberOfChannels ?? 0
+            prepareSampleBuffer(
+                sampleBuffer: sampleBuffer,
+                audioLevel: .infinity,
+                numberOfAudioChannels: numberOfAudioChannels
+            )
+        }
     }
 }
 
