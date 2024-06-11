@@ -95,22 +95,6 @@ extension CMSampleBuffer {
         return CMSampleBufferGetSampleSize(self, at: at)
     }
 
-    private func makeSampleBuffer(sampleBuffer: CMSampleBuffer,
-                                  timeStamp: CMTime) -> CMSampleBuffer?
-    {
-        var isKeyFrame = sampleBuffer.isKeyFrame
-        guard let sampleBuffer = CMSampleBuffer.create(sampleBuffer.imageBuffer!,
-                                                       sampleBuffer.formatDescription!,
-                                                       sampleBuffer.duration,
-                                                       timeStamp,
-                                                       sampleBuffer.decodeTimeStamp)
-        else {
-            return nil
-        }
-        sampleBuffer.isKeyFrame = isKeyFrame
-        return sampleBuffer
-    }
-
     func replacePresentationTimeStamp(presentationTimeStamp: CMTime,
                                       decodeTimeStamp: CMTime = .invalid) -> CMSampleBuffer?
     {
@@ -172,7 +156,7 @@ extension CMSampleBuffer {
         guard let newSampleBuffer else {
             return nil
         }
-        newSampleBuffer.isKeyFrame = isKeyFrame
+        newSampleBuffer.isSync = isSync
         return newSampleBuffer
     }
 }
