@@ -50,15 +50,10 @@ private class ReplaceVideo {
     private var inputFrameRate: Double
     private var outputFrameRate: Double
     private var sampleBufferQueue: [CMSampleBuffer] = []
-    private var state: State = .initializing
     private var firstPresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
     private var outputTimer: DispatchSourceTimer?
-    private enum State {
-        case initializing
-        case buffering
-        case outputting
-    }
+    private var isOutputting: Bool = false
 
     weak var delegate: ReplaceVideoSampleBufferDelegate?
 
@@ -82,18 +77,8 @@ private class ReplaceVideo {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
-        switch state {
-        case .initializing:
-            // logger.info("ReplaceVideo initializing.")
-            state = .buffering
-            return
-        case .buffering:
-            // logger.info("ReplaceVideo buffering.")
-            state = .outputting
+        if !isOutputting {
             startOutput()
-        case .outputting:
-            // logger.info("ReplaceVideo outputting.")
-            break
         }
     }
 
@@ -104,7 +89,7 @@ private class ReplaceVideo {
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer?.schedule(deadline: .now(), repeating: 1 / outputFrameRate)
         outputTimer?.setEventHandler { [weak self] in
-            self!.output()
+            self?.output()
         }
         outputTimer?.activate()
     }
@@ -116,33 +101,36 @@ private class ReplaceVideo {
             logger.info("No ReplaceVideo sampleBuffer available.")
             return
         }
-        let timeOffset = CMTimeSubtract(
-            systemTime,
-            sampleBuffer.presentationTimeStamp
-        )
+        let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         let decodeTimeStamp = CMTimeAdd(sampleBuffer.decodeTimeStamp, timeOffset)
-        guard let sampleBuffer = sampleBuffer
-            .replacePresentationTimeStamp(
-                presentationTimeStamp: presentationTimeStamp,
-                decodeTimeStamp: decodeTimeStamp
-            )
-        else {
+        guard let updatedSampleBuffer = sampleBuffer.replacePresentationTimeStamp(
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
+        ) else {
             return
         }
         // logger.info("ReplaceVideo PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
-        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: updatedSampleBuffer)
+    }
+
+    func stopOutput() {
+        isOutputting = false
+        outputTimer?.cancel()
+        outputTimer = nil
+        sampleBufferQueue.removeAll()
+        currentSampleBuffer = nil
+        firstPresentationTimeStamp = .nan
+        logger.info("ReplaceVideo output has been stopped.")
     }
 
     func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
         var sampleBuffer = currentSampleBuffer
         while !sampleBufferQueue.isEmpty {
             let replaceSampleBuffer = sampleBufferQueue.first!
-            // Get first frame quickly
             if currentSampleBuffer == nil {
                 sampleBuffer = replaceSampleBuffer
             }
-            // Just for sanity. Should depend on FPS and latency.
             if sampleBufferQueue.count > 200 {
                 logger.info("Over 200 frames buffered. Dropping oldest frame.")
                 sampleBuffer = replaceSampleBuffer
@@ -160,16 +148,6 @@ private class ReplaceVideo {
             sampleBufferQueue.remove(at: 0)
         }
         currentSampleBuffer = sampleBuffer
-    }
-
-    func stopOutput() {
-        outputTimer?.cancel()
-        outputTimer = nil
-        sampleBufferQueue.removeAll()
-        currentSampleBuffer = nil
-        state = .buffering
-        firstPresentationTimeStamp = .nan
-        logger.info("ReplaceVideo output has been stopped.")
     }
 }
 
