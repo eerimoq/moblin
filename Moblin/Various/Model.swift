@@ -1262,15 +1262,14 @@ final class Model: NSObject, ObservableObject {
 
     func handleRtmpServerPublishStart(streamKey: String) {
         DispatchQueue.main.async {
+            let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) connected")
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
             self.media.addRtmpCamera(
                 cameraId: stream.id,
                 latency: Double(stream.latency! / 1000),
-                buggedPublisher: stream.buggedPublisher!,
-                manualFps: stream.manualFps!,
-                inputFrameRate: stream.fps!,
                 outputFrameRate: Double(self.stream.fps)
             )
             self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
@@ -1302,12 +1301,7 @@ final class Model: NSObject, ObservableObject {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer, onSuccess: { frameRate in
-            let camera = self.getRtmpStream(streamKey: streamKey)?.camera()
-            DispatchQueue.main.async {
-                self.makeToast(title: "\(camera ?? "Unknown") connected (\(frameRate) FPS)")
-            }
-        })
+        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func handleRtmpServerAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer) {

@@ -681,10 +681,9 @@ final class Media: NSObject {
 
     func addRtmpSampleBuffer(
         cameraId: UUID,
-        sampleBuffer: CMSampleBuffer,
-        onSuccess: @escaping (Double) -> Void
+        sampleBuffer: CMSampleBuffer
     ) {
-        netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer, onSuccess: onSuccess)
+        netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
     func addRtmpAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
@@ -694,17 +693,11 @@ final class Media: NSObject {
     func addRtmpCamera(
         cameraId: UUID,
         latency: Double,
-        buggedPublisher: Bool,
-        manualFps: Bool,
-        inputFrameRate: Double,
         outputFrameRate: Double
     ) {
         netStream.addReplaceVideo(
             cameraId: cameraId,
             latency: latency,
-            buggedPublisher: buggedPublisher,
-            manualFps: manualFps,
-            inputFrameRate: inputFrameRate,
             outputFrameRate: outputFrameRate
         )
     }

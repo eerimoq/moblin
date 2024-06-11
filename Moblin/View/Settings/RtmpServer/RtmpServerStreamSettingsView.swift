@@ -113,30 +113,16 @@ struct RtmpServerStreamSettingsView: View {
                 Text("The stream name is shown in the list of cameras in scene settings.")
             }
             Section {
-                Toggle("Bugged Publisher", isOn: Binding(get: {
-                    stream.buggedPublisher!
+                Toggle("Manual FPS", isOn: Binding(get: {
+                    stream.manualFps!
                 }, set: { value in
-                    stream.buggedPublisher = value
-                    if !value {
-                        stream.manualFps = false
-                    }
+                    stream.manualFps = value
                     model.store()
                     model.reloadRtmpServer()
                     model.objectWillChange.send()
                 }))
                 .disabled(model.rtmpServerEnabled())
-                if stream.buggedPublisher == true {
-                    Toggle("Manual FPS", isOn: Binding(get: {
-                        stream.manualFps!
-                    }, set: { value in
-                        stream.manualFps = value
-                        model.store()
-                        model.reloadRtmpServer()
-                        model.objectWillChange.send()
-                    }))
-                    .disabled(model.rtmpServerEnabled())
-                }
-                if stream.buggedPublisher == true, stream.manualFps == true {
+                if stream.manualFps == true {
                     TextEditNavigationView(
                         title: String(localized: "FPS"),
                         value: String(stream.fps!),
@@ -147,8 +133,8 @@ struct RtmpServerStreamSettingsView: View {
                 }
             } footer: {
                 Text("""
-                Enable this setting to allow Moblin to estimate the FPS in the absence of accurate \
-                timestamps from the publisher. Alternatively, the FPS can be specified manually.
+                Activate this setting to manually define the FPS when accurate timestamps \
+                from the publisher, such as DJI devices, are not available.
                 """)
             }
             Section {

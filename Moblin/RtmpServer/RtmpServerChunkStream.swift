@@ -227,9 +227,8 @@ class RtmpServerChunkStream {
             if let stream = client.server?.settings.streams.first(where: { stream in
                 stream.streamKey == streamKey
             }) {
-                client.fps = stream.fps!
-                client.buggedPublisher = stream.buggedPublisher!
                 client.manualFps = stream.manualFps!
+                client.fps = stream.fps!
                 return true
             } else {
                 return false
@@ -462,10 +461,9 @@ class RtmpServerChunkStream {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        if client.buggedPublisher {
-            // for now static fps
-            duration = Int64(1000 / 30)
-            videoTimestamp = Double(numberOfFrames) / 30 * 1000
+        if client.manualFps {
+            duration = Int64(1000 / client.fps)
+            videoTimestamp = Double(numberOfFrames) / client.fps * 1000
             numberOfFrames += 1
         } else {
             duration = Int64(messageTimestamp)
@@ -520,7 +518,7 @@ class RtmpServerChunkStream {
     private func makeAudioSampleBuffer(client: RtmpServerClient,
                                        audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
     {
-        if client.buggedPublisher {
+        if client.manualFps {
             audioTimestamp = Double(numberOfSamples) /
                 (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
 

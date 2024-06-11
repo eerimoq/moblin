@@ -1122,7 +1122,6 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
-    var buggedPublisher: Bool? = false
     var manualFps: Bool? = false
     var fps: Double? = 0
     var autoSelectRtmpScene: Bool? = false
@@ -1137,7 +1136,6 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
-        new.buggedPublisher = buggedPublisher
         new.manualFps = manualFps
         new.fps = fps
         new.autoSelectRtmpScene = autoSelectRtmpScene
@@ -2573,10 +2571,10 @@ final class Settings {
             realDatabase.debug!.higherDataRateLimit = false
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where stream.buggedPublisher == nil {
-            stream.buggedPublisher = false
-            store()
-        }
+//        for stream in realDatabase.rtmpServer!.streams where stream.buggedPublisher == nil {
+//            stream.buggedPublisher = false
+//            store()
+//        }
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
             stream.manualFps = false
             store()

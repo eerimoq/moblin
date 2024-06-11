@@ -45,9 +45,6 @@ protocol ReplaceVideoSampleBufferDelegate: AnyObject {
 private class ReplaceVideo {
     private var cameraId: UUID
     private var latency: Double
-    private var buggedPublisher: Bool
-    private var manualFps: Bool
-    private var inputFrameRate: Double
     private var outputFrameRate: Double
     private var sampleBufferQueue: [CMSampleBuffer] = []
     private var firstPresentationTimeStamp: Double = .nan
@@ -60,20 +57,14 @@ private class ReplaceVideo {
     init(
         cameraId: UUID,
         latency: Double,
-        buggedPublisher: Bool,
-        manualFps: Bool,
-        inputFrameRate: Double,
         outputFrameRate: Double
     ) {
         self.cameraId = cameraId
         self.latency = latency
-        self.buggedPublisher = buggedPublisher
-        self.manualFps = manualFps
-        self.inputFrameRate = inputFrameRate
         self.outputFrameRate = outputFrameRate
     }
 
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, onSuccess _: @escaping (Double) -> Void) {
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         // logger.info("ReplaceVideo Queue Count: \(sampleBufferQueue.count)")
@@ -85,7 +76,6 @@ private class ReplaceVideo {
 
     private func startOutput() {
         logger.info("ReplaceVideo latency: \(latency)")
-        logger.info("ReplaceVideo Input FPS: \(inputFrameRate)")
         logger.info("ReplaceVideo Output FPS: \(outputFrameRate)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer?.schedule(deadline: .now(), repeating: 1 / outputFrameRate)
@@ -714,40 +704,32 @@ final class VideoUnit: NSObject {
 
     func addReplaceVideoSampleBuffer(
         id: UUID,
-        _ sampleBuffer: CMSampleBuffer,
-        onSuccess: @escaping (Double) -> Void
+        _ sampleBuffer: CMSampleBuffer
     ) {
         lockQueue.async {
-            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer, onSuccess: onSuccess)
+            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer)
         }
     }
 
     private func addReplaceVideoSampleBufferInner(
         id: UUID,
-        _ sampleBuffer: CMSampleBuffer,
-        onSuccess: @escaping (Double) -> Void
+        _ sampleBuffer: CMSampleBuffer
     ) {
         guard let replaceVideo = replaceVideos[id] else {
             return
         }
-        replaceVideo.appendSampleBuffer(sampleBuffer, onSuccess: onSuccess)
+        replaceVideo.appendSampleBuffer(sampleBuffer)
     }
 
     func addReplaceVideo(
         cameraId: UUID,
         latency: Double,
-        buggedPublisher: Bool,
-        manualFps: Bool,
-        inputFrameRate: Double,
         outputFrameRate: Double
     ) {
         lockQueue.async {
             self.addReplaceVideoInner(
                 cameraId: cameraId,
                 latency: latency,
-                buggedPublisher: buggedPublisher,
-                manualFps: manualFps,
-                inputFrameRate: inputFrameRate,
                 outputFrameRate: outputFrameRate
             )
         }
@@ -756,17 +738,11 @@ final class VideoUnit: NSObject {
     private func addReplaceVideoInner(
         cameraId: UUID,
         latency: Double,
-        buggedPublisher: Bool,
-        manualFps: Bool,
-        inputFrameRate: Double,
         outputFrameRate: Double
     ) {
         let replaceVideo = ReplaceVideo(
             cameraId: cameraId,
             latency: latency,
-            buggedPublisher: buggedPublisher,
-            manualFps: manualFps,
-            inputFrameRate: inputFrameRate,
             outputFrameRate: outputFrameRate
         )
         replaceVideo.delegate = self
