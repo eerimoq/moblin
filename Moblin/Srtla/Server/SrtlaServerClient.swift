@@ -1,14 +1,23 @@
 import Foundation
 import Network
 
+private let connectionRemoveTimeout = 10.0
+private let clientRemoveTimeout = 10.0
+
 class SrtlaServerClient {
     private var localSrtServerConnection: NWConnection?
     private var connections: [SrtlaServerClientConnection] = []
     private var latestConnection: SrtlaServerClientConnection?
+    let createdAt: ContinuousClock.Instant = .now
 
     init(srtPort: UInt16) {
         logger.info("srtla-server-client: Creating local SRT server connection.")
         createSrtConnection(srtPort: srtPort)
+    }
+
+    func stop() {
+        localSrtServerConnection?.cancel()
+        localSrtServerConnection = nil
     }
 
     private func createSrtConnection(srtPort: UInt16) {
@@ -48,7 +57,7 @@ class SrtlaServerClient {
         let connection = SrtlaServerClientConnection(connection: connection)
         connection.delegate = self
         connections.append(connection)
-        logger.info("srtla-server-client: Using \(connections.count) connection(s)")
+        logger.info("srtla-server-client: Added connection. Using \(connections.count) connection(s)")
     }
 
     private func handlePacketFromSrtServer(packet: Data) {
@@ -61,6 +70,23 @@ class SrtlaServerClient {
         } else {
             latestConnection?.sendPacket(packet: packet)
         }
+    }
+
+    func handlePeriodicTimer() -> Bool {
+        let now = ContinuousClock.now
+        var index = 0
+        while index < connections.count {
+            let connection = connections[index]
+            if connection.latestReceivedTime.duration(to: now) > .seconds(connectionRemoveTimeout) {
+                connection.connection.cancel()
+                connections.remove(at: index)
+                logger
+                    .info("srtla-server-client: Removed connection. Using \(connections.count) connection(s)")
+            } else {
+                index += 1
+            }
+        }
+        return connections.isEmpty && createdAt.duration(to: now) > .seconds(clientRemoveTimeout)
     }
 }
 

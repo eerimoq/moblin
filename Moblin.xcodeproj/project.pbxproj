@@ -179,6 +179,7 @@
 		0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0359F8A82BD3DA61005BFDA8 /* libsrt.xcframework */; };
 		0359F90F2BD3E038005BFDA8 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359F90E2BD3E038005BFDA8 /* LICENSE.md */; };
 		0359F9122BD3E049005BFDA8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359F9112BD3E049005BFDA8 /* README.md */; };
+		035BC8B22C17ABC5008FF4D2 /* SrtServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035BC8B12C17ABC5008FF4D2 /* SrtServerClient.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
 		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
@@ -640,6 +641,7 @@
 		0359F8A82BD3DA61005BFDA8 /* libsrt.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libsrt.xcframework; sourceTree = "<group>"; };
 		0359F90E2BD3E038005BFDA8 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		0359F9112BD3E049005BFDA8 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		035BC8B12C17ABC5008FF4D2 /* SrtServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtServerClient.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -1838,6 +1840,7 @@
 				03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */,
 				03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */,
 				03A3504C2C12E15A0015FAC8 /* SrtServer.swift */,
+				035BC8B12C17ABC5008FF4D2 /* SrtServerClient.swift */,
 			);
 			path = Server;
 			sourceTree = "<group>";
@@ -2597,6 +2600,7 @@
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				0359F8AF2BD3DA61005BFDA8 /* VideoCodecSettings.swift in Sources */,
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
+				035BC8B22C17ABC5008FF4D2 /* SrtServerClient.swift in Sources */,
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,

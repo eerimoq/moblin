@@ -4,6 +4,7 @@ import libsrt
 import Network
 
 let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
+private let periodicTimerTimeout = 3.0
 
 protocol SrtlaServerDelegate: AnyObject {
     func onVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
@@ -16,6 +17,7 @@ class SrtlaServer {
     var settings: SettingsSrtlaServer
     private var srtServer: SrtServer
     weak var delegate: (any SrtlaServerDelegate)?
+    private var periodicTimer: DispatchSourceTimer?
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
@@ -27,6 +29,7 @@ class SrtlaServer {
         srtlaServerQueue.async {
             self.srtServer.start()
             self.startListener()
+            self.startPeriodicTimer()
         }
     }
 
@@ -34,6 +37,33 @@ class SrtlaServer {
         srtlaServerQueue.async {
             self.stopListener()
             self.srtServer.stop()
+            self.stopPeriodicTimer()
+        }
+    }
+
+    private func startPeriodicTimer() {
+        periodicTimer = DispatchSource.makeTimerSource(queue: srtlaServerQueue)
+        periodicTimer!.schedule(deadline: .now() + periodicTimerTimeout, repeating: periodicTimerTimeout)
+        periodicTimer!.setEventHandler { [weak self] in
+            self?.handlePeriodicTimer()
+        }
+        periodicTimer!.activate()
+    }
+
+    private func stopPeriodicTimer() {
+        periodicTimer?.cancel()
+        periodicTimer = nil
+    }
+
+    private func handlePeriodicTimer() {
+        var groupIdsToRemove: [Data] = []
+        for (groupId, client) in clients where client.handlePeriodicTimer() {
+            client.stop()
+            groupIdsToRemove.append(groupId)
+            logger.info("srtla-server: Removed client")
+        }
+        for groupId in groupIdsToRemove {
+            clients.removeValue(forKey: groupId)
         }
     }
 

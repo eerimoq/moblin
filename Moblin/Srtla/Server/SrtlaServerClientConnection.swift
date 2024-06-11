@@ -31,7 +31,7 @@ struct AckPacket {
 
 class SrtlaServerClientConnection {
     var connection: NWConnection
-    private var latestReceivedTime = ContinuousClock.now
+    var latestReceivedTime = ContinuousClock.now
     private var latestSentTime = ContinuousClock.now
     var delegate: (any SrtlaServerClientConnectionDelegate)?
     private var ackPacket = AckPacket()
