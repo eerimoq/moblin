@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.300.0", date: "2024-06-11", changes: [
+        "• Do not navigate to \"Remote control\" when tapping \"Background streaming\". 🐛 Onur",
+    ]),
     Version(version: "0.299.0", date: "2024-06-09", changes: [
         "• 25% instead of 5% default overhead bandwidth for SRT(LA).",
         "  • Hard to say which is better.",
@@ -18,7 +21,7 @@ private let versions = [
         "  • Toggle in Settings → Streams → My stream at the bottom.",
     ]),
     Version(version: "0.298.0", date: "2024-06-08", changes: [
-        "• Make stream setup wizard even better. :bulb: banj",
+        "• Make stream setup wizard even better. 💡 banj",
         "• Adaptive bitrate tweaks. Goal is fewer dropped frames and higher image quality on average.",
         "  • Minimum bitrate 500 Kbps by default.",
         "  • Adapt faster to current RTT.",
