@@ -7,8 +7,8 @@ let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 private let periodicTimerTimeout = 3.0
 
 protocol SrtlaServerDelegate: AnyObject {
-    func onVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
-    func onAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer)
+    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
+    func srtlaServerOnAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer)
 }
 
 class SrtlaServer {

@@ -120,37 +120,36 @@ class SrtServerClient {
         }
         if let error {
             logger.info("srt-server: Error \(error)")
-        } else {
-            let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-            if let latestAudioBuffer {
-                let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
-                // Assume 1024 samples/buffer at 48 kHz for now
-                var gapBuffers = Int(((ptsDelta / 0.021333) - 1).rounded())
-                logger.info("""
-                srt-server: Decoded audio \(outputBuffer) for PTS \
-                \(presentationTimeStamp) delta \(ptsDelta) gap \(gapBuffers)
-                """)
-                while gapBuffers > 0 {
-                    logger.info("srt-server: Audio gap filler buffer")
-                    server?.srtlaServer?.delegate?.onAudioBuffer(
-                        streamId: streamId,
-                        buffer: latestAudioBuffer
-                    )
-                    gapBuffers -= 1
-                }
-            }
-            latestAudioBuffer = outputBuffer
-            latestAudioBufferPresentationTimeStamp = presentationTimeStamp
-            server?.srtlaServer?.delegate?.onAudioBuffer(streamId: streamId, buffer: outputBuffer)
+            return
         }
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        if let latestAudioBuffer {
+            let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
+            // Assume 1024 samples/buffer at 48 kHz for now
+            var gapBuffers = Int(((ptsDelta / 0.021333) - 1).rounded())
+            logger.info("""
+            srt-server: Decoded audio \(outputBuffer) for PTS \
+            \(presentationTimeStamp) delta \(ptsDelta) gap \(gapBuffers)
+            """)
+            while gapBuffers > 0 {
+                logger.info("srt-server: Audio gap filler buffer")
+                server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
+                    streamId: streamId,
+                    buffer: latestAudioBuffer
+                )
+                gapBuffers -= 1
+            }
+        }
+        latestAudioBuffer = outputBuffer
+        latestAudioBufferPresentationTimeStamp = presentationTimeStamp
+        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(streamId: streamId, buffer: outputBuffer)
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        logger.info("""
-        srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
-        \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
-        PTS \(sampleBuffer.presentationTimeStamp.seconds)
-        """)
+        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
+            streamId: streamId,
+            sampleBuffer: sampleBuffer
+        )
     }
 
     private func handleFormatDescription(

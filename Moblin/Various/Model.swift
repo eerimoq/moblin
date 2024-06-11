@@ -1239,6 +1239,7 @@ final class Model: NSObject, ObservableObject {
         stopSrtlaServer()
         if database.debug!.srtlaServer! && database.srtlaServer!.enabled {
             srtlaServer = SrtlaServer(settings: database.srtlaServer!)
+            srtlaServer!.delegate = self
             srtlaServer!.start()
         }
     }
@@ -5834,5 +5835,17 @@ extension Model {
         default:
             break
         }
+    }
+}
+
+extension Model: SrtlaServerDelegate {
+    func srtlaServerOnAudioBuffer(streamId _: String, buffer _: AVAudioPCMBuffer) {}
+
+    func srtlaServerOnVideoBuffer(streamId _: String, sampleBuffer _: CMSampleBuffer) {
+        // logger.info("""
+        // srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
+        // \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
+        // PTS \(sampleBuffer.presentationTimeStamp.seconds)
+        // """)
     }
 }
