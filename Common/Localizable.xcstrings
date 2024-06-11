@@ -3068,6 +3068,7 @@
       }
     },
     "%@ source snapshot" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -19608,7 +19609,11 @@
         }
       }
     },
+    "Configure source name in Settings → Streams → %@ → OBS remote control for Fix button and more." : {
+
+    },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -21950,6 +21955,9 @@
           }
         }
       }
+    },
+    "Current scene snapshot" : {
+
     },
     "Custom" : {
       "localizations" : {
@@ -35360,6 +35368,7 @@
       }
     },
     "Go live to see snapshot." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

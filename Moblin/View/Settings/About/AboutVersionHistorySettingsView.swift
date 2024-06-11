@@ -959,7 +959,7 @@ private let versions = [
         "• Game controller settings localized.",
         "• Replace OBS start/stop stream and OBS scene quick buttons with a OBS quick button.",
         "  • The new quick button opens a panel where you can start/stop stream, change scene, see source snapshot and source audio levels.",
-        "  • Configure OBS scene name in Settings → My stream → OBS remote control for snapshot and audio levels.",
+        "  • Configure OBS source name in Settings → My stream → OBS remote control for snapshot and audio levels.",
     ]),
     Version(version: "0.146.0", date: "2024-01-11", changes: [
         "• Only send location to RealtimeIRL when live.",

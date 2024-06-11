@@ -2925,10 +2925,10 @@ final class Model: NSObject, ObservableObject {
         guard !obsSourceScreenshotIsFetching else {
             return
         }
-        guard !stream.obsSourceName!.isEmpty else {
+        guard !obsCurrentScenePicker.isEmpty else {
             return
         }
-        obsWebSocket?.getSourceScreenshot(name: stream.obsSourceName!, onSuccess: { data in
+        obsWebSocket?.getSourceScreenshot(name: obsCurrentScenePicker, onSuccess: { data in
             let screenshot = UIImage(data: data)?.cgImage
             DispatchQueue.main.async {
                 self.obsScreenshot = screenshot
