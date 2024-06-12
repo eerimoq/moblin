@@ -17,30 +17,14 @@
 			</array>
 		</dict>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Moblin live streams video from the camera.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Moblin live streams audio from the microphone.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Moblin shows selected images as overlays.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Moblin shows selected images as overlays.</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Moblin uses localhost as input and output to SRT library.</string>
+	<key>IRLTOOLKIT_URL</key>
+	<string>$(IRLTOOLKIT_URL)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Moblin can display your location and/or speed on screen and stream.</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
-	<key>IRLTOOLKIT_URL</key>
-	<string>$(IRLTOOLKIT_URL)</string>
 </dict>
 </plist>

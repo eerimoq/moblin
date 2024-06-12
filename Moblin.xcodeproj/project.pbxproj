@@ -11,7 +11,6 @@
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* ChatSettingsView.swift */; };
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
-		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
 		03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
 		03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C0E2B487D950009DAB6 /* PixellateEffect.swift */; };
@@ -431,7 +430,6 @@
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* ChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
-		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
 		03085C0E2B487D950009DAB6 /* PixellateEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixellateEffect.swift; sourceTree = "<group>"; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
@@ -836,7 +834,6 @@
 			files = (
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
-				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
@@ -1481,7 +1478,6 @@
 		035D372A2AB103E600045B92 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				030786992AEC23FB0061FDE2 /* StoreKit.framework */,
 				0376F6F82B9511030056B3D2 /* WidgetKit.framework */,
 				0376F6FA2B9511030056B3D2 /* SwiftUI.framework */,
 				0312E42F2C00F24E00C6F878 /* ReplayKit.framework */,
@@ -2860,7 +2856,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2879,7 +2875,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.erazor.Mobs.Moblin-Capture";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -2898,7 +2894,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2917,7 +2913,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.erazor.Mobs.Moblin-Capture";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -3071,7 +3067,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
@@ -3098,7 +3094,7 @@
 				);
 				MARKETING_VERSION = 0.301.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = com.erazor.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3122,7 +3118,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
@@ -3149,7 +3145,7 @@
 				);
 				MARKETING_VERSION = 0.301.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = com.erazor.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3168,7 +3164,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -3187,7 +3183,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.erazor.Mobs.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -3206,7 +3202,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -3225,7 +3221,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.erazor.Mobs.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -3245,7 +3241,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -3255,7 +3251,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.erazor.Mobs;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3263,7 +3259,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
+				PRODUCT_BUNDLE_IDENTIFIER = com.erazor.Mobs.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -3284,7 +3280,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 47Z6786J75;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -3294,7 +3290,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.erazor.Mobs;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3302,7 +3298,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
+				PRODUCT_BUNDLE_IDENTIFIER = com.erazor.Mobs.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

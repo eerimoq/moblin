@@ -77,7 +77,7 @@ private class ReplaceAudio {
     private func output() {
         let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
         guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
-            logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
+            logger.info("No ReplaceAudio sampleBuffer available.")
             return
         }
         let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
@@ -113,9 +113,9 @@ private class ReplaceAudio {
             }
             let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
             if firstPresentationTimeStamp.isNaN {
-                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
+                firstPresentationTimeStamp = realPresentationTimeStamp
             }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency + 0.04 >
+            if firstPresentationTimeStamp + presentationTimeStamp + latency  >
                 realPresentationTimeStamp
             {
                 break
