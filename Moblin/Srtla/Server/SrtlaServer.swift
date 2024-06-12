@@ -20,7 +20,7 @@ class SrtlaServer {
     private var periodicTimer: DispatchSourceTimer?
 
     init(settings: SettingsSrtlaServer) {
-        self.settings = settings
+        self.settings = settings.clone()
         srtServer = SrtServer()
         srtServer.srtlaServer = self
     }
@@ -35,9 +35,9 @@ class SrtlaServer {
 
     func stop() {
         srtlaServerQueue.async {
+            self.stopPeriodicTimer()
             self.stopListener()
             self.srtServer.stop()
-            self.stopPeriodicTimer()
         }
     }
 
@@ -125,8 +125,8 @@ class SrtlaServer {
     }
 
     private func handlePacket(connection: NWConnection, packet: Data) -> Bool {
-        guard packet.count >= 2 else {
-            logger.error("srtla-server: Packet too short (\(packet.count) bytes.")
+        guard packet.count >= srtControlTypeSize else {
+            logger.error("srtla-server: Packet too short (\(packet.count).")
             return false
         }
         if !isDataPacket(packet: packet) {
@@ -163,8 +163,11 @@ class SrtlaServer {
             logger.warning("srtla-server: Wrong reg 1 packet length \(packet.count)")
             return
         }
-        let groupId = packet[2 ..< 2 + 128] + Data.random(length: 128)
-        clients[groupId] = .init(srtPort: settings.srtPort)
+        let groupId = packet[srtControlTypeSize ..< srtControlTypeSize + 128] + Data.random(length: 128)
+        guard clients[groupId] == nil else {
+            return
+        }
+        clients[groupId] = SrtlaServerClient(srtPort: settings.srtPort)
         sendSrtlaReg2(connection: connection, groupId: groupId)
     }
 
@@ -174,7 +177,7 @@ class SrtlaServer {
             logger.warning("srtla-server: Wrong reg 2 packet length \(packet.count)")
             return false
         }
-        let groupId = packet[2...]
+        let groupId = packet[srtControlTypeSize...]
         guard let client = clients[groupId] else {
             logger.warning("srtla-server: Unknown group id in reg 2 packet")
             return false
@@ -186,16 +189,14 @@ class SrtlaServer {
 
     private func sendSrtlaReg2(connection: NWConnection, groupId: Data) {
         logger.info("srtla-server: Sending reg 2 (group created)")
-        var packet = Data(count: 258)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtControlPacketTypeBit)
-        packet[2...] = groupId
+        var packet = createSrtlaPacket(type: .reg2, length: 258)
+        packet[srtControlTypeSize...] = groupId
         sendPacket(connection: connection, packet: packet)
     }
 
     private func sendSrtlaReg3(connection: NWConnection) {
         logger.info("srtla-server: Sending reg 3 (connection registered)")
-        var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.reg3.rawValue | srtControlPacketTypeBit)
+        let packet = createSrtlaPacket(type: .reg3, length: srtControlTypeSize)
         sendPacket(connection: connection, packet: packet)
     }
 

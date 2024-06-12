@@ -274,24 +274,21 @@ class RemoteConnection {
     func sendSrtlaReg1() {
         logger.info("srtla: \(typeString): Sending reg 1 (create group)")
         groupId = Data.random(length: 256)
-        var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | srtControlPacketTypeBit)
-        packet[2...] = groupId
+        var packet = createSrtlaPacket(type: .reg1, length: srtControlTypeSize + groupId.count)
+        packet[srtControlTypeSize...] = groupId
         sendPacket(packet: packet)
     }
 
     private func sendSrtlaReg2() {
         logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
-        var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtControlPacketTypeBit)
-        packet[2...] = groupId
+        var packet = createSrtlaPacket(type: .reg2, length: srtControlTypeSize + groupId.count)
+        packet[srtControlTypeSize...] = groupId
         sendPacket(packet: packet)
         state = .waitForRegisterResponse
     }
 
     private func sendSrtlaKeepalive() {
-        var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtControlPacketTypeBit)
+        let packet = createSrtlaPacket(type: .keepalive, length: srtControlTypeSize)
         sendPacket(packet: packet)
     }
 
@@ -371,12 +368,13 @@ class RemoteConnection {
         guard groupId.count == 256 else {
             return
         }
-        guard packet[2 ..< groupId.count / 2 + 2] == groupId[0 ..< groupId.count / 2]
+        guard packet[srtControlTypeSize ..< groupId.count / 2 + srtControlTypeSize] ==
+            groupId[0 ..< groupId.count / 2]
         else {
             logger.warning("srtla: \(typeString): Wrong group id in reg 2")
             return
         }
-        onReg2?(packet[2...])
+        onReg2?(packet[srtControlTypeSize...])
     }
 
     private func handleSrtlaReg3() {
@@ -466,7 +464,7 @@ class RemoteConnection {
     }
 
     private func handlePacketFromClient(packet: Data) {
-        guard packet.count >= 2 else {
+        guard packet.count >= srtControlTypeSize else {
             logger.error("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
             return
         }
