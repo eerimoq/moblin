@@ -1,5 +1,14 @@
 import Foundation
 
+class MoblinSettingsWebBrowser: Codable {
+    var home: String?
+}
+
+class MoblinSettingsSrt: Codable {
+    var latency: Int32?
+    var adaptiveBitrateEnabled: Bool?
+}
+
 class MoblinSettingsUrlStreamVideo: Codable {
     var codec: SettingsStreamCodec?
 }
@@ -7,18 +16,36 @@ class MoblinSettingsUrlStreamVideo: Codable {
 class MoblinSettingsUrlStreamObs: Codable {
     var webSocketUrl: String
     var webSocketPassword: String
+
+    init(webSocketUrl: String, webSocketPassword: String) {
+        self.webSocketUrl = webSocketUrl
+        self.webSocketPassword = webSocketPassword
+    }
 }
 
 class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
+    // periphery:ignore
+    var enabled: Bool?
+    var selected: Bool?
     var video: MoblinSettingsUrlStreamVideo?
+    var srt: MoblinSettingsSrt?
     var obs: MoblinSettingsUrlStreamObs?
+
+    init(name: String, url: String) {
+        self.name = name
+        self.url = url
+    }
 }
 
 class MoblinSettingsButton: Codable {
     var type: SettingsButtonType
     var enabled: Bool?
+
+    init(type: SettingsButtonType) {
+        self.type = type
+    }
 }
 
 class MoblinQuickButtons: Codable {
@@ -31,8 +58,16 @@ class MoblinQuickButtons: Codable {
 }
 
 class MoblinSettingsUrl: Codable {
+    // The last enabled stream will be selected (if any).
     var streams: [MoblinSettingsUrlStream]?
     var quickButtons: MoblinQuickButtons?
+    var webBrowser: MoblinSettingsWebBrowser?
+
+    func toString() throws -> String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        return try String(decoding: encoder.encode(self), as: UTF8.self)
+    }
 
     static func fromString(query: String) throws -> MoblinSettingsUrl {
         let query = try JSONDecoder().decode(
@@ -42,6 +77,13 @@ class MoblinSettingsUrl: Codable {
         for stream in query.streams ?? [] {
             if let message = isValidUrl(url: cleanUrl(url: stream.url)) {
                 throw message
+            }
+            if let srt = stream.srt {
+                if let latency = srt.latency {
+                    if latency < 0 {
+                        throw "Negative SRT latency"
+                    }
+                }
             }
             if let obs = stream.obs {
                 if let message = isValidWebSocketUrl(url: cleanUrl(url: obs.webSocketUrl)) {

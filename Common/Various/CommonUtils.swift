@@ -1,3 +1,4 @@
+import AVFoundation
 import AVKit
 import MapKit
 import Network
@@ -77,6 +78,13 @@ func isValidRistUrl(url: String) -> String? {
     return nil
 }
 
+private func isValidIrlToolkitUrl(url: String) -> String? {
+    guard URL(string: url) != nil else {
+        return String(localized: "Malformed IRLToolkit URL")
+    }
+    return nil
+}
+
 func cleanUrl(url value: String) -> String {
     let stripped = value.replacingOccurrences(of: " ", with: "")
     guard var components = URLComponents(string: stripped) else {
@@ -92,8 +100,10 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
     }
-    if url.host() == nil {
-        return String(localized: "Host missing")
+    if url.scheme != "irltk" {
+        if url.host() == nil {
+            return String(localized: "Host missing")
+        }
     }
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")
@@ -122,6 +132,10 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
         }
     case "rist":
         if let message = isValidRistUrl(url: value) {
+            return message
+        }
+    case "irltk":
+        if let message = isValidIrlToolkitUrl(url: value) {
             return message
         }
     case nil:
@@ -375,6 +389,86 @@ extension Data {
     func hexString() -> String {
         return map { String(format: "%02hhx", $0) }.joined()
     }
+
+    func getUInt32Be(offset: Int = 0) -> UInt32 {
+        return withUnsafeBytes { data in
+            data.load(fromByteOffset: offset, as: UInt32.self)
+        }.bigEndian
+    }
+
+    func getUInt16Be(offset: Int = 0) -> UInt16 {
+        return withUnsafeBytes { data in
+            data.load(fromByteOffset: offset, as: UInt16.self)
+        }.bigEndian
+    }
+
+    func getThreeBytesBe(offset: Int = 0) -> UInt32 {
+        return UInt32(self[offset]) << 16 | UInt32(self[offset + 1]) << 8 | UInt32(self[offset + 2])
+    }
+
+    func getFourBytesBe(offset: Int = 0) -> UInt32 {
+        return UInt32(self[offset]) << 24 | UInt32(self[offset + 1]) << 16 | UInt32(self[offset + 2]) <<
+            8 |
+            UInt32(self[offset + 3])
+    }
+
+    func getFourBytesLe(offset: Int = 0) -> UInt32 {
+        return UInt32(self[offset + 3]) << 24 | UInt32(self[offset + 2]) << 16 |
+            UInt32(self[offset + 1]) <<
+            8 |
+            UInt32(self[offset + 0])
+    }
+
+    mutating func setUInt16Be(value: UInt16, offset: Int = 0) {
+        withUnsafeMutableBytes { data in data.storeBytes(
+            of: value.bigEndian,
+            toByteOffset: offset,
+            as: UInt16.self
+        ) }
+    }
+
+    mutating func setUInt32Be(value: UInt32, offset: Int = 0) {
+        withUnsafeMutableBytes { data in data.storeBytes(
+            of: value.bigEndian,
+            toByteOffset: offset,
+            as: UInt32.self
+        ) }
+    }
+
+    func makeBlockBuffer(advancedBy: Int = 0) -> CMBlockBuffer? {
+        var blockBuffer: CMBlockBuffer?
+        let length = count - advancedBy
+        return withUnsafeBytes { (buffer: UnsafeRawBufferPointer) -> CMBlockBuffer? in
+            guard let baseAddress = buffer.baseAddress else {
+                return nil
+            }
+            guard CMBlockBufferCreateWithMemoryBlock(
+                allocator: kCFAllocatorDefault,
+                memoryBlock: nil,
+                blockLength: length,
+                blockAllocator: nil,
+                customBlockSource: nil,
+                offsetToData: 0,
+                dataLength: length,
+                flags: 0,
+                blockBufferOut: &blockBuffer
+            ) == noErr else {
+                return nil
+            }
+            guard let blockBuffer else {
+                return nil
+            }
+            guard CMBlockBufferReplaceDataBytes(
+                with: baseAddress.advanced(by: advancedBy),
+                blockBuffer: blockBuffer,
+                offsetIntoDestination: 0,
+                dataLength: length
+            ) == noErr else {
+                return nil
+            }
+            return blockBuffer
+        }
+    }
 }
 
 private let cameraPositionRtmp = "(RTMP)"
@@ -407,34 +501,6 @@ func formatAudioLevelChannels(channels: Int) -> String {
 
 let noValue = ""
 
-extension WatchProtocolColor {
-    static func fromHex(value: String) -> WatchProtocolColor? {
-        if let colorNumber = Int(value.suffix(6), radix: 16) {
-            return WatchProtocolColor(
-                red: (colorNumber >> 16) & 0xFF,
-                green: (colorNumber >> 8) & 0xFF,
-                blue: colorNumber & 0xFF
-            )
-        } else {
-            return nil
-        }
-    }
-
-    // periphery:ignore
-    private func colorScale(_ color: Int) -> Double {
-        return Double(color) / 255
-    }
-
-    // periphery:ignore
-    func color() -> Color {
-        return Color(
-            red: colorScale(red),
-            green: colorScale(green),
-            blue: colorScale(blue)
-        )
-    }
-}
-
 func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
     switch interfaceType {
     case .other:
@@ -458,4 +524,12 @@ func sleep(seconds: Int) async throws {
 
 func sleep(milliSeconds: Int) async throws {
     try await Task.sleep(nanoseconds: UInt64(milliSeconds) * 1_000_000)
+}
+
+let moblinAppGroup = "group.com.eerimoq.Moblin"
+
+extension Duration {
+    var milliseconds: Int64 {
+        return components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000
+    }
 }

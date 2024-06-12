@@ -266,8 +266,8 @@ final class FaceEffect: VideoEffect {
                                      y: imageExtent
                                          .height - (faceBoundingBox.maxY - (faceBoundingBox.height / 2)))
             let faceMask = MTIImage.radialGradient(size: .init(
-                width: faceBoundingBox.width * 1.5,
-                height: faceBoundingBox.height * 1.5
+                width: faceBoundingBox.width * 2,
+                height: faceBoundingBox.height * 2
             ))
             faceMasks.append(.init(content: faceMask, position: faceCenter))
         }

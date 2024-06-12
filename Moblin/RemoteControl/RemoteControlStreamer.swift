@@ -1,4 +1,6 @@
 import Foundation
+import Network
+import NWWebSocket
 
 protocol RemoteControlStreamerDelegate: AnyObject {
     func connected()
@@ -26,50 +28,85 @@ class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
     private weak var delegate: (any RemoteControlStreamerDelegate)?
-    private var webSocket: URLSessionWebSocketTask
-    private var task: Task<Void, Error>?
+    private var webSocket: NWWebSocket
     private var connected = false
     var connectionErrorMessage: String = ""
+    private var reconnectTimer: DispatchSourceTimer?
+    private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
+    private var pingTimer: DispatchSourceTimer?
+    private var pongReceived: Bool = true
 
     init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
         self.password = password
         self.delegate = delegate
-        webSocket = URLSession(configuration: .default).webSocketTask(with: clientUrl)
+        webSocket = NWWebSocket(url: clientUrl, requiredInterfaceType: .cellular)
     }
 
     func start() {
-        stop()
-        logger.info("remote-control-streamer: start")
-        task = Task.init {
-            while true {
-                setupConnection()
-                do {
-                    try await receiveMessages()
-                } catch {
-                    logger.debug("remote-control-streamer: error: \(error.localizedDescription)")
-                    connectionErrorMessage = error.localizedDescription
-                }
-                if Task.isCancelled {
-                    logger.debug("remote-control-streamer: Cancelled")
-                    break
-                }
-                if connected {
-                    delegate?.disconnected()
-                    connected = false
-                }
-                logger.debug("remote-control-streamer: Disconnected")
-                try await sleep(seconds: 5)
-                logger.debug("remote-control-streamer: Reconnecting")
-            }
-        }
+        logger.debug("obs-websocket: start")
+        startInternal()
     }
 
     func stop() {
-        logger.info("remote-control-streamer: stop")
-        task?.cancel()
-        task = nil
+        logger.debug("obs-websocket: stop")
+        stopInternal()
+    }
+
+    private func startInternal() {
+        stopInternal()
+        let networkInterfaceType = networkInterfaceTypeSelector.getNextType()
+        webSocket = NWWebSocket(url: clientUrl, requiredInterfaceType: networkInterfaceType)
+        logger
+            .info("remote-control-streamer: Connecting using network interface type \(networkInterfaceType)")
+        webSocket.delegate = self
+        webSocket.connect()
+        startReconnectTimer()
+    }
+
+    func stopInternal() {
         connected = false
+        webSocket.disconnect(closeCode: .protocolCode(.goingAway))
+        stopReconnectTimer()
+        stopPingTimer()
+    }
+
+    private func startReconnectTimer() {
+        reconnectTimer = DispatchSource.makeTimerSource(queue: .main)
+        reconnectTimer!.schedule(deadline: .now() + 5)
+        reconnectTimer!.setEventHandler { [weak self] in
+            self?.startInternal()
+        }
+        reconnectTimer!.activate()
+    }
+
+    private func stopReconnectTimer() {
+        reconnectTimer?.cancel()
+        reconnectTimer = nil
+    }
+
+    private func startPingTimer() {
+        pongReceived = true
+        pingTimer = DispatchSource.makeTimerSource(queue: .main)
+        pingTimer!.schedule(deadline: .now(), repeating: 5)
+        pingTimer!.setEventHandler { [weak self] in
+            guard let self else {
+                return
+            }
+            if self.pongReceived {
+                self.pongReceived = false
+                self.webSocket.ping()
+            } else {
+                logger.debug("remote-control-streamer: Pong timeout")
+                self.startInternal()
+            }
+        }
+        pingTimer!.activate()
+    }
+
+    private func stopPingTimer() {
+        pingTimer?.cancel()
+        pingTimer = nil
     }
 
     func isConnected() -> Bool {
@@ -90,11 +127,6 @@ class RemoteControlStreamer {
         send(message: .event(data: .log(entry: entry)))
     }
 
-    private func setupConnection() {
-        webSocket = URLSession.shared.webSocketTask(with: clientUrl)
-        webSocket.resume()
-    }
-
     func sendPreview(preview: Data) {
         send(message: .preview(preview: preview))
     }
@@ -103,42 +135,28 @@ class RemoteControlStreamer {
         do {
             let message = try message.toJson()
             // logger.debug("remote-control-streamer: Sending message \(message)")
-            webSocket.send(.string(message)) { _ in }
+            webSocket.send(string: message)
         } catch {
             logger.info("remote-control-streamer: Encode failed")
         }
     }
 
-    private func receiveMessages() async throws {
-        while true {
-            let message = try await webSocket.receive()
-            if Task.isCancelled {
-                break
-            }
-            switch message {
-            case let .data(message):
-                logger.debug("remote-control-streamer: Got data \(message)")
-            case let .string(message):
-                // logger.debug("remote-control-streamer: Got message \(message)")
-                do {
-                    switch try RemoteControlMessageToStreamer.fromJson(data: message) {
-                    case let .hello(apiVersion: apiVersion, authentication: authentication):
-                        handleHello(apiVersion: apiVersion, authentication: authentication)
-                    case let .identified(result: result):
-                        if !handleIdentified(result: result) {
-                            logger.debug("remote-control-streamer: Failed to identify")
-                            return
-                        }
-                    case let .request(id: id, data: data):
-                        handleRequest(id: id, data: data)
-                    }
-                } catch {
-                    logger.info("remote-control-streamer: Decode failed")
-                    connectionErrorMessage = error.localizedDescription
+    private func handleMessage(message: String) throws {
+        do {
+            switch try RemoteControlMessageToStreamer.fromJson(data: message) {
+            case let .hello(apiVersion: apiVersion, authentication: authentication):
+                handleHello(apiVersion: apiVersion, authentication: authentication)
+            case let .identified(result: result):
+                if !handleIdentified(result: result) {
+                    logger.debug("remote-control-streamer: Failed to identify")
+                    return
                 }
-            default:
-                logger.debug("remote-control-streamer: ???")
+            case let .request(id: id, data: data):
+                handleRequest(id: id, data: data)
             }
+        } catch {
+            logger.info("remote-control-streamer: Decode failed")
+            connectionErrorMessage = error.localizedDescription
         }
     }
 
@@ -228,4 +246,50 @@ class RemoteControlStreamer {
             }
         }
     }
+}
+
+extension RemoteControlStreamer: WebSocketConnectionDelegate {
+    func webSocketDidConnect(connection _: WebSocketConnection) {
+        logger.debug("remote-control-streamer: Connected")
+        stopReconnectTimer()
+        startPingTimer()
+    }
+
+    func webSocketDidDisconnect(connection _: WebSocketConnection,
+                                closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
+    {
+        logger.debug("remote-control-streamer: Disconnected")
+        if connected {
+            delegate?.disconnected()
+        }
+        connected = false
+        startReconnectTimer()
+    }
+
+    func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
+        logger.debug("remote-control-streamer: isViable \(isViable)")
+    }
+
+    func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {
+        logger.debug("remote-control-streamer: Better path")
+    }
+
+    func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
+        logger.info("remote-control-streamer: Error \(error.localizedDescription)")
+        if connected {
+            delegate?.disconnected()
+        }
+        connected = false
+        startReconnectTimer()
+    }
+
+    func webSocketDidReceivePong(connection _: WebSocketConnection) {
+        pongReceived = true
+    }
+
+    func webSocketDidReceiveMessage(connection _: WebSocketConnection, string: String) {
+        try? handleMessage(message: string)
+    }
+
+    func webSocketDidReceiveMessage(connection _: WebSocketConnection, data _: Data) {}
 }

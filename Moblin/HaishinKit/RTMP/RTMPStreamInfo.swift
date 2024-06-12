@@ -1,7 +1,7 @@
 import Foundation
 
 private struct SendTiming {
-    var timestamp: Date
+    var timestamp: ContinuousClock.Instant
     var sequence: Int64
 }
 
@@ -45,7 +45,7 @@ class RTMPStreamInfo {
             latestWrittenSequence = sequence
             // Just for safety
             if sendTimings.count < 500 {
-                sendTimings.append(SendTiming(timestamp: Date(), sequence: sequence))
+                sendTimings.append(SendTiming(timestamp: .now, sequence: sequence))
             }
             stats.packetsInFlight = packetsInFlight()
         }
@@ -72,7 +72,7 @@ class RTMPStreamInfo {
                 }
             }
             if let ackedSendTiming {
-                stats.rttMs = Date().timeIntervalSince(ackedSendTiming.timestamp) * 1000
+                stats.rttMs = Double(ackedSendTiming.timestamp.duration(to: .now).milliseconds)
                 stats.packetsInFlight = packetsInFlight()
             }
         }

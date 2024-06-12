@@ -4,6 +4,8 @@ import SwiftUI
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+let defaultSrtLatency: Int32 = 2000
+let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
@@ -66,6 +68,7 @@ enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
     case rist = "RIST"
+    case irltk = "IRLToolkit"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -157,6 +160,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
+    var minimumBitrate: Float? = 50
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -165,6 +169,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
         new.rttDiffHighDecreaseFactor = rttDiffHighDecreaseFactor
         new.rttDiffHighAllowedSpike = rttDiffHighAllowedSpike
         new.rttDiffHighMinimumDecrease = rttDiffHighMinimumDecrease
+        new.minimumBitrate = minimumBitrate
         return new
     }
 }
@@ -184,7 +189,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
 }
 
 class SettingsStreamSrt: Codable {
-    var latency: Int32 = 2000
+    var latency: Int32 = defaultSrtLatency
     var maximumBandwidthFollowInput: Bool? = true
     var overheadBandwidth: Int32? = 25
     var adaptiveBitrateEnabled: Bool? = true
@@ -422,6 +427,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
             return .srt
         case "rist":
             return .rist
+        case "irltk":
+            return .irltk
         default:
             return .rtmp
         }
@@ -1106,13 +1113,14 @@ class SettingsDebug: Codable {
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
+    var srtlaServer: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
-    var latency: Int32? = 2000
+    var latency: Int32? = defaultRtmpLatency
     var fps: Double? = 0
 
     func camera() -> String {
@@ -1397,6 +1405,55 @@ class WebBrowserSettings: Codable {
     var home: String = "https://google.com"
 }
 
+class DeepLinkCreatorStreamVideo: Codable {
+    var codec: SettingsStreamCodec = .h265hevc
+}
+
+class DeepLinkCreatorStreamSrt: Codable {
+    var latency: Int32 = defaultSrtLatency
+    var adaptiveBitrateEnabled: Bool = true
+}
+
+class DeepLinkCreatorStreamObs: Codable {
+    var webSocketUrl: String = ""
+    var webSocketPassword: String = ""
+}
+
+class DeepLinkCreatorStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My stream"
+    var url: String = defaultStreamUrl
+    var selected: Bool = false
+    var video: DeepLinkCreatorStreamVideo = .init()
+    var srt: DeepLinkCreatorStreamSrt = .init()
+    var obs: DeepLinkCreatorStreamObs = .init()
+}
+
+class DeepLinkCreatorQuickButton: Codable, Identifiable {
+    var id: UUID = .init()
+    var type: SettingsButtonType = .unknown
+    var enabled: Bool = false
+}
+
+class DeepLinkCreatorQuickButtons: Codable {
+    var twoColumns: Bool = true
+    var showName: Bool = false
+    var enableScroll: Bool = true
+    var buttons: [DeepLinkCreatorQuickButton] = []
+}
+
+class DeepLinkCreatorWebBrowser: Codable {
+    var home: String = ""
+}
+
+class DeepLinkCreator: Codable {
+    var streams: [DeepLinkCreatorStream] = []
+    var quickButtonsEnabled: Bool? = false
+    var quickButtons: DeepLinkCreatorQuickButtons? = .init()
+    var webBrowserEnabled: Bool? = false
+    var webBrowser: DeepLinkCreatorWebBrowser? = .init()
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1431,6 +1488,7 @@ class Database: Codable {
     var watch: WatchSettings? = .init()
     var audio: AudioSettings? = .init()
     var webBrowser: WebBrowserSettings? = .init()
+    var deepLinkCreator: DeepLinkCreator? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1450,6 +1508,7 @@ class Database: Codable {
         for button in database.globalButtons! {
             button.isOn = false
         }
+        addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
         return database
     }
@@ -1751,6 +1810,29 @@ private func addMissingGlobalButtons(database: Database) {
     }
 }
 
+private func addMissingDeepLinkQuickButtons(database: Database) {
+    if database.deepLinkCreator == nil {
+        database.deepLinkCreator = .init()
+    }
+    if database.deepLinkCreator!.quickButtons == nil {
+        database.deepLinkCreator!.quickButtons = .init()
+    }
+    let quickButtons = database.deepLinkCreator!.quickButtons!
+    for globalButton in database.globalButtons! where globalButton.type != .lut {
+        let button = DeepLinkCreatorQuickButton()
+        let buttonExists = quickButtons.buttons.contains(where: { button in
+            globalButton.type == button.type
+        })
+        if !buttonExists {
+            button.type = globalButton.type
+            quickButtons.buttons.append(button)
+        }
+    }
+    quickButtons.buttons = quickButtons.buttons.filter { button in
+        button.type != .unknown
+    }
+}
+
 private func addMissingBundledLutButton(database: Database, lut: SettingsColorLut) {
     if lut.buttonId == nil {
         let button = SettingsButton(name: lut.name)
@@ -1816,6 +1898,7 @@ private func createDefault() -> Database {
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)
+    addMissingDeepLinkQuickButtons(database: database)
     addScenesToGameController(database: database)
     addMissingBundledLuts(database: database)
     return database
@@ -2029,7 +2112,7 @@ final class Settings {
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.latency == nil {
-            stream.latency = 2000
+            stream.latency = defaultSrtLatency
             store()
         }
         if realDatabase.vibrate == nil {
@@ -2376,10 +2459,6 @@ final class Settings {
             realDatabase.debug!.blurSceneSwitch = true
             store()
         }
-        if realDatabase.debug!.metalPetalFilters == nil {
-            realDatabase.debug!.metalPetalFilters = false
-            store()
-        }
         if realDatabase.debug!.beautyFilterSettings!.smoothAmount == nil {
             realDatabase.debug!.beautyFilterSettings!.smoothAmount = 0.65
             store()
@@ -2407,6 +2486,40 @@ final class Settings {
         }
         if realDatabase.mirrorFrontCameraOnStream == nil {
             realDatabase.mirrorFrontCameraOnStream = true
+            store()
+        }
+        if realDatabase.debug!.metalPetalFilters == nil {
+            realDatabase.debug!.metalPetalFilters = false
+            store()
+        }
+        for stream in realDatabase.streams
+            where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
+        {
+            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
+            store()
+        }
+        if realDatabase.deepLinkCreator == nil {
+            realDatabase.deepLinkCreator = .init()
+            store()
+        }
+        if realDatabase.deepLinkCreator!.webBrowser == nil {
+            realDatabase.deepLinkCreator!.webBrowser = .init()
+            store()
+        }
+        if realDatabase.deepLinkCreator!.quickButtons == nil {
+            realDatabase.deepLinkCreator!.quickButtons = .init()
+            store()
+        }
+        if realDatabase.deepLinkCreator!.quickButtonsEnabled == nil {
+            realDatabase.deepLinkCreator!.quickButtonsEnabled = false
+            store()
+        }
+        if realDatabase.deepLinkCreator!.webBrowserEnabled == nil {
+            realDatabase.deepLinkCreator!.webBrowserEnabled = false
+            store()
+        }
+        if realDatabase.debug!.srtlaServer == nil {
+            realDatabase.debug!.srtlaServer = false
             store()
         }
     }

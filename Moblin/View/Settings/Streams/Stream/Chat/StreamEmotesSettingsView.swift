@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct StreamChatSettingsView: View {
+struct StreamEmotesSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 
     var body: some View {
         Form {
             Section {
-                Toggle("BTTV emotes", isOn: Binding(get: {
+                Toggle("BTTV", isOn: Binding(get: {
                     stream.chat!.bttvEmotes
                 }, set: { value in
                     stream.chat!.bttvEmotes = value
@@ -16,7 +16,7 @@ struct StreamChatSettingsView: View {
                         model.bttvEmotesEnabledUpdated()
                     }
                 }))
-                Toggle("FFZ emotes", isOn: Binding(get: {
+                Toggle("FFZ", isOn: Binding(get: {
                     stream.chat!.ffzEmotes
                 }, set: { value in
                     stream.chat!.ffzEmotes = value
@@ -25,7 +25,7 @@ struct StreamChatSettingsView: View {
                         model.ffzEmotesEnabledUpdated()
                     }
                 }))
-                Toggle("7TV emotes", isOn: Binding(get: {
+                Toggle("7TV", isOn: Binding(get: {
                     stream.chat!.seventvEmotes
                 }, set: { value in
                     stream.chat!.seventvEmotes = value
@@ -36,7 +36,7 @@ struct StreamChatSettingsView: View {
                 }))
             }
         }
-        .navigationTitle("Chat")
+        .navigationTitle("Emotes")
         .toolbar {
             SettingsToolbar()
         }

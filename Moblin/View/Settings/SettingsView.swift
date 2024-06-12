@@ -187,6 +187,9 @@ struct SettingsView: View {
                 NavigationLink(destination: ImportExportSettingsView()) {
                     IconAndTextView(image: "gearshape", text: String(localized: "Import and export settings"))
                 }
+                NavigationLink(destination: DeepLinkCreatorSettingsView()) {
+                    IconAndTextView(image: "link.badge.plus", text: String(localized: "Deep link creator"))
+                }
             }
             Section {
                 ResetSettingsView()

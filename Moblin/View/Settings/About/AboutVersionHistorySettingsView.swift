@@ -8,7 +8,74 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.296.0", date: "2024-06-05", changes: [
+        "• Fix upside down image when switching stream with phone USB connector to the left. 🐛 Marlow",
+        "• Make \"OBS remote control\" and \"Remote control\" connection handling more robust. 🐛 djandrea. and others",
+        "  • If for example WiFi fails, try cellular.",
+    ]),
+    Version(version: "0.295.0", date: "2024-06-03", changes: [
+        "• Web browser home in deep link creator.",
+        "• Quick buttons in deep link creator.",
+    ]),
+    Version(version: "0.294.0", date: "2024-06-02", changes: [
+        "• Never show low battery warning on Mac.",
+        "• Deep link generator started. 💡 Jon",
+        "  • Only supports streams.",
+    ]),
+    Version(version: "0.293.0", date: "2024-06-02", changes: [
+        "• Add more parameters to `moblin://` deep link. 💡 Jon",
+        "  • SRT latency and if adaptive bitrate is enabled.",
+        "  • Web browser home.",
+        "  • Enable/select created stream.",
+        "• Fix Kick 7TV, FFZ and BTTV emotes (I think).",
+    ]),
+    Version(version: "0.292.0", date: "2024-06-01", changes: [
+        "• Use monotonic clock instead of system clock when calculating various timings.",
+        "  • To make the app work better when leap seconds and such.",
+        "• Various smaller settings UI improvements.",
+    ]),
+    Version(version: "0.291.0", date: "2024-05-30", changes: [
+        "• Spanish translation updated. ✍️ adriportela95",
+        "• Simplify \"fix OBS\" implementation. 💡 tt2468",
+        "• Make stream settings easier to understand by grouping them. 💡 MikeV and nn2p",
+        "• Machine translations.",
+    ]),
+    Version(version: "0.290.0", date: "2024-05-29", changes: [
+        "• Start/stop recording button in OBS remote control.",
+        "• Allow adaptive bitrate to increase bitrate slightly faster, especially when low.",
+        "  • Limit to encoder output bitrate + 1 Mpbs, or encoder output bitrate * 1.7, whichever is bigger. Limit was encoder output bitrate * 1.5.",
+        "• Start adaptive bitrate algorithm at 500 Kbps instead of 250 Kbps.",
+        "• Minimum bitrate setting for the custom adaptive bitrate algorithm. 💡 Tony Mah",
+    ]),
+    Version(version: "0.289.0", date: "2024-05-27", changes: [
+        "• Never allow encoder bitrate to be zero.",
+    ]),
+    Version(version: "0.288.0", date: "2024-05-26", changes: [
+        "• New filter framework.",
+        "  • Settings → Debug → MetalPetal filters to enable/disable.",
+    ]),
+    Version(version: "0.287.0", date: "2024-05-25", changes: [
+        "• Fewer dropped frames when camera starts moving a lot after being static.",
+        "  • Started in iOS 17.5.",
+        "  • Fixes the case when target bitrate is set higher than internet bandwidth.",
+    ]),
+    Version(version: "0.286.0", date: "2024-05-25", changes: [
+        "• Turn off chat text to speech when in background and not live.",
+        "• New filter framework.",
+        "  • Use it when not Apple Log color space.",
+        "  • Removed the filter framework toggle.",
+    ]),
+    Version(version: "0.285.0", date: "2024-05-25", changes: [
+        "• Use screen recording as camera. Does not yet work.",
+        "• Front camera torch by making the screen partly white. 💡 NoFuture",
+        "  • Increase screen brightness for stronger light.",
+        "• Make torch less likely to make video hang.",
+        "• Faster camera switch when \"Mirror front camera on stream\" is enabled.",
+    ]),
     Version(version: "0.284.0", date: "2024-05-23", changes: [
+        "• Keep stream running when in background mode.",
+        "  • Audio works, but video is a freeze frame as video is not available in background.",
+        "• Chat text to speech should also work when in background mode.",
     ]),
     Version(version: "0.283.0", date: "2024-05-22", changes: [
         "• Show unsupported video format toast. 💡 JohannesLiv",

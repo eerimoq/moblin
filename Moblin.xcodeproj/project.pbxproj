@@ -20,6 +20,11 @@
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
+		0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0312E42F2C00F24E00C6F878 /* ReplayKit.framework */; };
+		0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312E4322C00F24E00C6F878 /* SampleHandler.swift */; };
+		0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0312E43D2C00F62400C6F878 /* SampleBufferCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */; };
+		0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
 		0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
@@ -59,6 +64,7 @@
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */; };
 		032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */; };
 		032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFB2B0B1183007BE85E /* ValueEditView.swift */; };
 		032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */; };
@@ -68,6 +74,9 @@
 		033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = 033235402BFBAFD800B897A5 /* MetalPetal.metal */; };
 		0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */; };
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
+		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
+		033BEACA2C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */; };
+		033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
@@ -85,6 +94,7 @@
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
+		0352DDF32BFFCAA60079AC7B /* SampleBufferCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */; };
 		03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* FaceEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
 		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
@@ -218,6 +228,10 @@
 		038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038F42EC2B6849D400E68752 /* LutEffect.swift */; };
 		038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 038F42F32B685ACF00E68752 /* LUTs.bundle */; };
 		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
+		03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */; };
+		03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */; };
+		03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */; };
+		03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A01ACD2B9F738200D20AE3 /* CacheImage.swift */; };
@@ -226,6 +240,9 @@
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
 		03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
 		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
+		03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA62C0ECBA800A59208 /* Srtla.swift */; };
+		03A22DAA2C0ECD9400A59208 /* SrtlaServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */; };
+		03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */; };
 		03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */; };
 		03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
@@ -251,6 +268,7 @@
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
+		03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */; };
 		03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */; };
 		03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */; };
 		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
@@ -267,7 +285,7 @@
 		03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
-		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
+		03B374132AA277570028DDD5 /* SrtlaClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* SrtlaClient.swift */; };
 		03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
 		03B77ADB2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
 		03B7DAB22BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */; };
@@ -275,7 +293,7 @@
 		03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */; };
 		03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D962B92DD670022EAE7 /* PreviewView.swift */; };
 		03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D992B92DDA80022EAE7 /* ChatView.swift */; };
-		03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */; };
+		03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */; };
 		03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
 		03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
 		03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11612AE4BDA200C38FC4 /* Seventv.swift */; };
@@ -292,8 +310,11 @@
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
+		03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656102C02E13000E017B2 /* SampleBufferSender.swift */; };
+		03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
 		03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */; };
+		03CDEAA22C0AB8DD006121D0 /* IrlToolkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
 		03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */; };
@@ -335,6 +356,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0312E4352C00F24E00C6F878 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0312E42D2C00F24E00C6F878;
+			remoteInfo = "Moblin Capture";
+		};
 		0376F7022B9511040056B3D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
@@ -352,6 +380,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		0312E4382C00F24E00C6F878 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0376F7082B9511040056B3D2 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -389,6 +428,11 @@
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
+		0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Screen Recording.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
+		0312E4322C00F24E00C6F878 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
+		0312E4342C00F24E00C6F878 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Moblin Screen Recording.entitlements"; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
@@ -423,6 +467,7 @@
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
+		032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		032FDBFB2B0B1183007BE85E /* ValueEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueEditView.swift; sourceTree = "<group>"; };
@@ -433,6 +478,8 @@
 		033235402BFBAFD800B897A5 /* MetalPetal.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalPetal.metal; sourceTree = "<group>"; };
 		0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerSettingsView.swift; sourceTree = "<group>"; };
 		0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerStreamSettingsView.swift; sourceTree = "<group>"; };
+		033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceTypeSelector.swift; sourceTree = "<group>"; };
+		033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupIrlToolkitSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = "MoblinWatch-InfoPlist.xcstrings"; sourceTree = "<group>"; };
 		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -450,6 +497,7 @@
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
+		0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferCommon.swift; sourceTree = "<group>"; };
 		03559E7D2BDCEB14002D0886 /* FaceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
 		035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDisplaySettingsView.swift; sourceTree = "<group>"; };
@@ -597,6 +645,7 @@
 		0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0364B6202BD36806002F828D /* StreamButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButton.swift; sourceTree = "<group>"; };
 		0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarPortraitView.swift; sourceTree = "<group>"; };
+		036A342C2C0B38C300AE45B5 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
@@ -633,6 +682,10 @@
 		038F42EC2B6849D400E68752 /* LutEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LutEffect.swift; sourceTree = "<group>"; };
 		038F42F32B685ACF00E68752 /* LUTs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LUTs.bundle; sourceTree = "<group>"; };
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
+		03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamSettingsView.swift; sourceTree = "<group>"; };
+		03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorWebBrowserSettingsView.swift; sourceTree = "<group>"; };
+		03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamsSettingsView.swift; sourceTree = "<group>"; };
+		03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		03A01ACA2B9F66D200D20AE3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -641,6 +694,9 @@
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
 		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
+		03A22DA62C0ECBA800A59208 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
+		03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClient.swift; sourceTree = "<group>"; };
+		03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClientConnection.swift; sourceTree = "<group>"; };
 		03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRistSettingsView.swift; sourceTree = "<group>"; };
 		03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingAudioSettingsView.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
@@ -661,6 +717,7 @@
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
+		03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServer.swift; sourceTree = "<group>"; };
 		03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserSettingsView.swift; sourceTree = "<group>"; };
 		03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationSettingsView.swift; sourceTree = "<group>"; };
 		03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButtonsSettingsView.swift; sourceTree = "<group>"; };
@@ -676,14 +733,14 @@
 		03B374032AA036D10028DDD5 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
-		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
+		03B374122AA277570028DDD5 /* SrtlaClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaClient.swift; sourceTree = "<group>"; };
 		03B77AD92B9446210053F106 /* WatchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettings.swift; sourceTree = "<group>"; };
 		03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStreamingPlatformChat.swift; sourceTree = "<group>"; };
 		03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOpenStreamingPlatformSettingsView.swift; sourceTree = "<group>"; };
 		03B89D962B92DD670022EAE7 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		03B89D992B92DDA80022EAE7 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		03BBAE952B2E5FD20033D425 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamChatSettingsView.swift; sourceTree = "<group>"; };
+		03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamEmotesSettingsView.swift; sourceTree = "<group>"; };
 		03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bttv.swift; sourceTree = "<group>"; };
 		03BC115F2AE4BD9200C38FC4 /* Ffz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ffz.swift; sourceTree = "<group>"; };
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
@@ -698,8 +755,11 @@
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
+		03C656102C02E13000E017B2 /* SampleBufferSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferSender.swift; sourceTree = "<group>"; };
+		03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferReceiver.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
+		03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlToolkit.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D3C0472B4493AE006BAEAC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingSettingsView.swift; sourceTree = "<group>"; };
@@ -740,11 +800,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0312E42B2C00F24E00C6F878 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E302A9A02D6009D4F5A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
+				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
 				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
@@ -821,13 +890,42 @@
 			path = Platforms;
 			sourceTree = "<group>";
 		};
+		0312E4312C00F24E00C6F878 /* Moblin Screen Recording */ = {
+			isa = PBXGroup;
+			children = (
+				0312E4462C00F80D00C6F878 /* Shared */,
+				0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */,
+				0312E4322C00F24E00C6F878 /* SampleHandler.swift */,
+				0312E4342C00F24E00C6F878 /* Info.plist */,
+			);
+			path = "Moblin Screen Recording";
+			sourceTree = "<group>";
+		};
+		0312E4442C00F7F500C6F878 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
+				03B77AD92B9446210053F106 /* WatchSettings.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		0312E4462C00F80D00C6F878 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */,
+				03C656102C02E13000E017B2 /* SampleBufferSender.swift */,
+				03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
 			isa = PBXGroup;
 			children = (
-				03F5A8DE2AD5DACB00F354D2 /* Srt.swift */,
-				03B374122AA277570028DDD5 /* Srtla.swift */,
-				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
-				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
+				03A22DA52C0ECB1200A59208 /* Common */,
+				03A22DA32C0ECAFC00A59208 /* Client */,
+				03A9D1312C0E659300F0B917 /* Server */,
 			);
 			path = Srtla;
 			sourceTree = "<group>";
@@ -1005,6 +1103,18 @@
 				032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */,
 			);
 			path = ImportExport;
+			sourceTree = "<group>";
+		};
+		032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */ = {
+			isa = PBXGroup;
+			children = (
+				03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */,
+				032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */,
+				03941A1B2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift */,
+				03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */,
+				03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */,
+			);
+			path = DeepLinkCreator;
 			sourceTree = "<group>";
 		};
 		0330F2AE2AFAD24F001262C3 /* YouTube */ = {
@@ -1348,6 +1458,7 @@
 				030786992AEC23FB0061FDE2 /* StoreKit.framework */,
 				0376F6F82B9511030056B3D2 /* WidgetKit.framework */,
 				0376F6FA2B9511030056B3D2 /* SwiftUI.framework */,
+				0312E42F2C00F24E00C6F878 /* ReplayKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1359,8 +1470,10 @@
 				035E9E352A9A02D6009D4F5A /* Moblin */,
 				03ECDF472B8E4E5F00BD920E /* Moblin Watch */,
 				0376F6FC2B9511030056B3D2 /* Moblin Widget */,
+				0312E4312C00F24E00C6F878 /* Moblin Screen Recording */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
+				036A342C2C0B38C300AE45B5 /* Config.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1370,6 +1483,7 @@
 				035E9E332A9A02D6009D4F5A /* Moblin.app */,
 				03ECDF462B8E4E5E00BD920E /* Moblin.app */,
 				0376F6F72B9511030056B3D2 /* MoblinWidget.appex */,
+				0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1382,9 +1496,9 @@
 				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
 				03BDE2202B24364700DF193A /* OBS */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
-				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
 				039ADE452B55C20800FE0F59 /* RemoteControl */,
 				034D26FD2B3A034A0097C619 /* RtmpServer */,
+				03CDEAA02C0AB8BB006121D0 /* Services */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03BE504E2B3EC107004720AF /* Various */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
@@ -1643,6 +1757,25 @@
 			path = Zoom;
 			sourceTree = "<group>";
 		};
+		03A22DA32C0ECAFC00A59208 /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				03B374122AA277570028DDD5 /* SrtlaClient.swift */,
+				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
+				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
+		03A22DA52C0ECB1200A59208 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				03F5A8DE2AD5DACB00F354D2 /* Srt.swift */,
+				03A22DA62C0ECBA800A59208 /* Srtla.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		03A29A242BECA9F300DAA1B1 /* Rist */ = {
 			isa = PBXGroup;
 			children = (
@@ -1672,6 +1805,16 @@
 				03A983562A9A05D7008FF0DB /* MainView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		03A9D1312C0E659300F0B917 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */,
+				03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */,
+				03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */,
+			);
+			path = Server;
 			sourceTree = "<group>";
 		};
 		03AA89932BC4344F0007BFE8 /* WebBrowser */ = {
@@ -1734,7 +1877,6 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				03AA89932BC4344F0007BFE8 /* WebBrowser */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				037CE22B2BC17EA3004E9B18 /* Audio */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
@@ -1742,6 +1884,7 @@
 				030399112AE2D0E900D27530 /* Chat */,
 				03831D562AD9A188008D26CC /* Cosmetics */,
 				0379BB992AAD80AF00B718B6 /* Debug */,
+				032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */,
 				03B16A2B2B35D71500E5AB07 /* Display */,
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
@@ -1755,6 +1898,7 @@
 				03487F222B334AB4003D9ED9 /* StreamingHistory */,
 				0379BB982AAD804F00B718B6 /* Streams */,
 				031C15B22B93324200BA967D /* Watch */,
+				03AA89932BC4344F0007BFE8 /* WebBrowser */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -1809,8 +1953,6 @@
 			isa = PBXGroup;
 			children = (
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
-				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
-				03B77AD92B9446210053F106 /* WatchSettings.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -1850,7 +1992,7 @@
 		03BBAE972B2EB4CE0033D425 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */,
+				03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -1905,6 +2047,7 @@
 				03A08B7F2AC368860018BA95 /* Media.swift */,
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
+				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
@@ -1919,6 +2062,15 @@
 				03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */,
 			);
 			path = MirrorFrontCamera;
+			sourceTree = "<group>";
+		};
+		03CDEAA02C0AB8BB006121D0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
+				03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		03D3C04F2B452D14006BAEAC /* Recording */ = {
@@ -1948,6 +2100,7 @@
 				03DBD1022B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift */,
 				03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */,
 				03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */,
+				033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */,
 				03DBD0FE2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift */,
 			);
 			path = NetworkSetup;
@@ -1973,11 +2126,12 @@
 		03ECDF472B8E4E5F00BD920E /* Moblin Watch */ = {
 			isa = PBXGroup;
 			children = (
-				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
+				0312E4442C00F7F500C6F878 /* Shared */,
 				03ECDF632B8E797200BD920E /* View */,
 				03ECDF652B8E798000BD920E /* Various */,
 				03ECDF4E2B8E4E6000BD920E /* Preview Content */,
 				03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */,
+				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
 				03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */,
 			);
 			path = "Moblin Watch";
@@ -2049,6 +2203,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Screen Recording" */;
+			buildPhases = (
+				0312E42A2C00F24E00C6F878 /* Sources */,
+				0312E42B2C00F24E00C6F878 /* Frameworks */,
+				0312E42C2C00F24E00C6F878 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Moblin Screen Recording";
+			productName = "Moblin Capture";
+			productReference = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		035E9E322A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Moblin" */;
@@ -2057,12 +2228,14 @@
 				035E9E302A9A02D6009D4F5A /* Frameworks */,
 				035E9E312A9A02D6009D4F5A /* Resources */,
 				03ECDF572B8E4E6000BD920E /* Embed Watch Content */,
+				0312E4382C00F24E00C6F878 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				032815D72AC855B1001F8A85 /* PBXTargetDependency */,
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
+				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
 			);
 			name = Moblin;
 			packageProductDependencies = (
@@ -2077,6 +2250,7 @@
 				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
 				03AE56132BEA74D500FE8427 /* Rist */,
 				03D151AE2BFA73C100D29D8E /* MetalPetal */,
+				033BEAC32C0FCC0B005F4E06 /* NWWebSocket */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2129,9 +2303,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1520;
+				LastSwiftUpdateCheck = 1540;
 				LastUpgradeCheck = 1510;
 				TargetAttributes = {
+					0312E42D2C00F24E00C6F878 = {
+						CreatedOnToolsVersion = 15.4;
+					};
 					035E9E322A9A02D6009D4F5A = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
@@ -2186,6 +2363,7 @@
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
 				03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */,
 				03D151AD2BFA73C100D29D8E /* XCRemoteSwiftPackageReference "MetalPetal" */,
+				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -2194,11 +2372,19 @@
 				035E9E322A9A02D6009D4F5A /* Moblin */,
 				03ECDF452B8E4E5E00BD920E /* MoblinWatch */,
 				0376F6F62B9511030056B3D2 /* MoblinWidget */,
+				0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0312E42C2C00F24E00C6F878 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E312A9A02D6009D4F5A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2239,10 +2425,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0312E42A2C00F24E00C6F878 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */,
+				0312E43D2C00F62400C6F878 /* SampleBufferCommon.swift in Sources */,
+				0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */,
+				0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E2F2A9A02D6009D4F5A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */,
 				0359F8F52BD3DA61005BFDA8 /* RTMPStreamInfo.swift in Sources */,
 				0359F8C12BD3DA61005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,
 				0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */,
@@ -2264,6 +2462,7 @@
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
+				03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
 				0364B6232BD3683F002F828D /* ControlBarPortraitView.swift in Sources */,
 				034844F22B579DF30089B874 /* RemoteControl.swift in Sources */,
@@ -2276,9 +2475,11 @@
 				03A707C02B8F0FAE003BB7BE /* Utils.swift in Sources */,
 				032756A32BD81921002DC17F /* Bool+Extension.swift in Sources */,
 				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
+				03A22DAA2C0ECD9400A59208 /* SrtlaServerClient.swift in Sources */,
 				03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
 				0359F8C92BD3DA61005BFDA8 /* FLVSoundRate.swift in Sources */,
+				03CDEAA22C0AB8DD006121D0 /* IrlToolkit.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0359F8E12BD3DA61005BFDA8 /* MpegTsPacket.swift in Sources */,
 				03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */,
@@ -2287,6 +2488,7 @@
 				030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */,
 				03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */,
 				0359F8BB2BD3DA61005BFDA8 /* CMBlockBuffer+Extension.swift in Sources */,
+				033BEACA2C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift in Sources */,
 				0359F8FD2BD3DA61005BFDA8 /* SRTSocketOption.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */,
@@ -2298,6 +2500,7 @@
 				03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */,
 				0359F8ED2BD3DA61005BFDA8 /* RTMPHandshake.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
+				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
@@ -2331,6 +2534,7 @@
 				03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
+				03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
 				03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */,
 				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
@@ -2354,6 +2558,7 @@
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
+				033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
 				03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */,
@@ -2369,6 +2574,7 @@
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* AMF0Serializer.swift in Sources */,
+				03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				0359F8FC2BD3DA61005BFDA8 /* SRTSocket.swift in Sources */,
@@ -2384,7 +2590,7 @@
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
 				03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */,
 				0359F8D32BD3DA61005BFDA8 /* VideoUnit.swift in Sources */,
-				03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */,
+				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
@@ -2392,6 +2598,7 @@
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
 				03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
+				03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */,
 				0359F8E42BD3DA61005BFDA8 /* MpegTsWriter.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
@@ -2450,7 +2657,9 @@
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
+				03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */,
 				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
+				0352DDF32BFFCAA60079AC7B /* SampleBufferCommon.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				0359F8B82BD3DA61005BFDA8 /* AVCaptureSession.Preset+Extension.swift in Sources */,
 				0359F8B02BD3DA61005BFDA8 /* VideoSize.swift in Sources */,
@@ -2473,12 +2682,14 @@
 				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0359F8D72BD3DA61005BFDA8 /* MpegTsAudioConfig.swift in Sources */,
 				0359F8B42BD3DA61005BFDA8 /* AVAudioPCMBuffer+Extension.swift in Sources */,
+				03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
-				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
+				03B374132AA277570028DDD5 /* SrtlaClient.swift in Sources */,
 				0358DDD62BE695B70080133B /* DebugVideoSettingsView.swift in Sources */,
 				038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */,
+				03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */,
 				0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
 				03279CE72B4CD245006CEA5A /* Location.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
@@ -2553,6 +2764,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0312E4362C00F24E00C6F878 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */;
+			targetProxy = 0312E4352C00F24E00C6F878 /* PBXContainerItemProxy */;
+		};
 		032815D72AC855B1001F8A85 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 032815D62AC855B1001F8A85 /* PrepareLicenseList */;
@@ -2586,8 +2802,84 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		0312E4392C00F24E00C6F878 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L82N7LD4N5;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Screen Recording/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0312E43A2C00F24E00C6F878 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L82N7LD4N5;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Screen Recording/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 036A342C2C0B38C300AE45B5 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -2655,6 +2947,7 @@
 		};
 		035E9E402A9A02D7009D4F5A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 036A342C2C0B38C300AE45B5 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -2751,7 +3044,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.284.0;
+				MARKETING_VERSION = 0.296.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2802,7 +3095,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.284.0;
+				MARKETING_VERSION = 0.296.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2971,6 +3264,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Screen Recording" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0312E4392C00F24E00C6F878 /* Debug */,
+				0312E43A2C00F24E00C6F878 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Moblin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3032,6 +3334,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.3.2;
+			};
+		};
+		033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/NWWebSocket";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
@@ -3120,6 +3430,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 032815D32AC855A5001F8A85 /* XCRemoteSwiftPackageReference "LicenseList" */;
 			productName = "plugin:PrepareLicenseList";
+		};
+		033BEAC32C0FCC0B005F4E06 /* NWWebSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
+			productName = NWWebSocket;
 		};
 		03A08B7B2AC295620018BA95 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;

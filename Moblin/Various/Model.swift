@@ -8,6 +8,7 @@ import NaturalLanguage
 import Network
 import NetworkExtension
 import PhotosUI
+import ReplayKit
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
@@ -131,7 +132,7 @@ struct ChatPost: Identifiable, Equatable {
     var userColor: String?
     var segments: [ChatPostSegment]
     var timestamp: String
-    var timestampDate: Date
+    var timestampTime: ContinuousClock.Instant
     var isAction: Bool
     var isAnnouncement: Bool
     var isFirstMessage: Bool
@@ -181,6 +182,7 @@ enum WizardNetworkSetup {
     case none
     case obs
     case belaboxCloudObs
+    case irlToolkit
     case direct
     case myServers
 }
@@ -251,7 +253,7 @@ final class Model: NSObject, ObservableObject {
     private var streaming = false
     @Published var currentMic = noMic
     private var micChange = noMic
-    private var streamStartDate: Date?
+    private var streamStartTime: ContinuousClock.Instant?
     @Published var isLive = false
     @Published var isRecording = false
     private var currentRecording: Recording?
@@ -305,7 +307,8 @@ final class Model: NSObject, ObservableObject {
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
-    private var isTorchOn = false
+    @Published var isTorchOn = false
+    @Published var isFrontCameraSelected = false
     private var isMuteOn = false
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
@@ -341,6 +344,7 @@ final class Model: NSObject, ObservableObject {
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
+    @Published var obsRecordingState: ObsOutputState = .stopped
     @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
     private var obsSourceFetchScreenshot = false
@@ -406,6 +410,8 @@ final class Model: NSObject, ObservableObject {
 
     let chatTextToSpeech = ChatTextToSpeech()
 
+    private var lastAttachCompletedTime: ContinuousClock.Instant?
+
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
@@ -426,7 +432,6 @@ final class Model: NSObject, ObservableObject {
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
-    var secondCameraDevice: AVCaptureDevice?
     @Published var debugLines: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
@@ -436,10 +441,12 @@ final class Model: NSObject, ObservableObject {
     var externalCameras: [Camera] = []
 
     var recordingsStorage = RecordingsStorage()
-    private var latestLowBitrateDate = Date()
+    private var latestLowBitrateTime = ContinuousClock.now
 
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
+
+    private var srtlaServer: SrtlaServer?
 
     private var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
@@ -448,6 +455,8 @@ final class Model: NSObject, ObservableObject {
     @Published var showLoadSettingsFailed = false
 
     @Published var remoteControlStatus = noValue
+
+    private let sampleBufferReceiver = SampleBufferReceiver()
 
     override init() {
         super.init()
@@ -502,7 +511,7 @@ final class Model: NSObject, ObservableObject {
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
                 rttDiffHighMinDecrease: Int64(customSettings.rttDiffHighMinimumDecrease * 1000),
                 pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000),
-                minimumBitrate: 50000
+                minimumBitrate: Int64(customSettings.minimumBitrate! * 1000)
             ))
         }
     }
@@ -636,11 +645,13 @@ final class Model: NSObject, ObservableObject {
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
+        logger.debug("toast: Info: \(title): \(subTitle ?? "-")")
     }
 
     func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
         toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
         showingToast = true
+        logger.debug("toast: Warning: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
         }
@@ -654,6 +665,7 @@ final class Model: NSObject, ObservableObject {
             style: .style(titleColor: .red, titleFont: font)
         )
         showingToast = true
+        logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
         if vibrate {
             UIDevice.vibrate()
         }
@@ -847,6 +859,7 @@ final class Model: NSObject, ObservableObject {
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
+        reloadSrtlaServer()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -894,6 +907,16 @@ final class Model: NSObject, ObservableObject {
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
+        setupSampleBufferReceiver()
+    }
+
+    func setMetalPetalFilters() {
+        ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
+    }
+
+    private func setupSampleBufferReceiver() {
+        sampleBufferReceiver.delegate = self
+        sampleBufferReceiver.start(appGroup: moblinAppGroup)
     }
 
     func updateFaceFilterSettings() {
@@ -918,10 +941,6 @@ final class Model: NSObject, ObservableObject {
             logger.info("Setting pixel format \(format)")
             pixelFormatType = type
         }
-    }
-
-    func setMetalPetalFilters() {
-        ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1151,6 +1170,7 @@ final class Model: NSObject, ObservableObject {
         if !isLive {
             stopRtmpServer()
             teardownAudioSession()
+            chatTextToSpeech.reset(running: false)
         }
     }
 
@@ -1160,7 +1180,7 @@ final class Model: NSObject, ObservableObject {
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
             reloadRtmpServer()
-            chatTextToSpeech.reset()
+            chatTextToSpeech.reset(running: true)
         }
         if isRecording {
             resumeRecording()
@@ -1186,6 +1206,19 @@ final class Model: NSObject, ObservableObject {
                                     onFrame: handleRtmpServerFrame,
                                     onAudioBuffer: handleRtmpServerAudioBuffer)
             rtmpServer!.start()
+        }
+    }
+
+    private func stopSrtlaServer() {
+        srtlaServer?.stop()
+        srtlaServer = nil
+    }
+
+    func reloadSrtlaServer() {
+        stopSrtlaServer()
+        if database.debug!.srtlaServer! {
+            srtlaServer = SrtlaServer(settings: .init())
+            srtlaServer!.start()
         }
     }
 
@@ -1298,7 +1331,7 @@ final class Model: NSObject, ObservableObject {
         appStoreUpdateListenerTask?.cancel()
     }
 
-    private func updateOrientation() {
+    func updateOrientation() {
         if stream.portrait! {
             streamPreviewView.videoOrientation = .landscapeRight
         } else {
@@ -1333,13 +1366,25 @@ final class Model: NSObject, ObservableObject {
         iconImage = database.iconImage
     }
 
-    private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
+    private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl) {
+        var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
             newStream.url = stream.url
+            if stream.selected == true {
+                newSelectedStream = newStream
+            }
             if let video = stream.video {
                 if let codec = video.codec {
                     newStream.codec = codec
+                }
+            }
+            if let srt = stream.srt {
+                if let latency = srt.latency {
+                    newStream.srt.latency = latency
+                }
+                if let adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled {
+                    newStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
                 }
             }
             if let obs = stream.obs {
@@ -1348,6 +1393,15 @@ final class Model: NSObject, ObservableObject {
             }
             database.streams.append(newStream)
         }
+        if let newSelectedStream, !isLive, !isRecording {
+            setCurrentStream(stream: newSelectedStream)
+            reloadStream()
+            sceneUpdated(store: false)
+            resetSelectedScene(changeScene: false)
+        }
+    }
+
+    private func handleSettingsUrlsDefaultQuickButtons(settings: MoblinSettingsUrl) {
         if let quickButtons = settings.quickButtons {
             if let twoColumns = quickButtons.twoColumns {
                 database.quickButtons!.twoColumns = twoColumns
@@ -1374,6 +1428,20 @@ final class Model: NSObject, ObservableObject {
                 }
             }
         }
+    }
+
+    private func handleSettingsUrlsDefaultWebBrowser(settings: MoblinSettingsUrl) {
+        if let webBrowser = settings.webBrowser {
+            if let home = webBrowser.home {
+                database.webBrowser!.home = home
+            }
+        }
+    }
+
+    private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
+        handleSettingsUrlsDefaultStreams(settings: settings)
+        handleSettingsUrlsDefaultQuickButtons(settings: settings)
+        handleSettingsUrlsDefaultWebBrowser(settings: settings)
         store()
         makeToast(title: "URL import successful")
         updateButtonStates()
@@ -1411,18 +1479,19 @@ final class Model: NSObject, ObservableObject {
     private func setupPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
-            self.updateUptime(now: now)
+            let monotonicNow = ContinuousClock.now
+            self.updateUptime(now: monotonicNow)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
-            self.updateSpeed(now: now)
+            self.updateSpeed(now: monotonicNow)
             self.updateRtmpSpeed()
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
             self.updateBondingStatistics()
-            self.removeOldChatMessages(now: now)
+            self.removeOldChatMessages(now: monotonicNow)
             self.updateLocation()
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
@@ -1453,6 +1522,12 @@ final class Model: NSObject, ObservableObject {
             }
             self.updateChat()
             self.trySendNextChatPostToWatch()
+            if let lastAttachCompletedTime = self.lastAttachCompletedTime,
+               lastAttachCompletedTime.duration(to: .now) > .seconds(0.5)
+            {
+                self.updateTorch()
+                self.lastAttachCompletedTime = nil
+            }
         })
     }
 
@@ -1685,7 +1760,7 @@ final class Model: NSObject, ObservableObject {
             userColor: nil,
             segments: [],
             timestamp: "",
-            timestampDate: Date(),
+            timestampTime: .now,
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,
@@ -1693,7 +1768,7 @@ final class Model: NSObject, ObservableObject {
         )
     }
 
-    private func removeOldChatMessages(now: Date) {
+    private func removeOldChatMessages(now: ContinuousClock.Instant) {
         if chatPaused {
             return
         }
@@ -1701,7 +1776,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         while let post = chatPosts.last {
-            if now > post.timestampDate + Double(database.chat.maximumAge!) {
+            if now > post.timestampTime + .seconds(database.chat.maximumAge!) {
                 chatPosts.removeLast()
             } else {
                 break
@@ -1994,6 +2069,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func getGlobalButton(type: SettingsButtonType) -> SettingsButton? {
+        return database.globalButtons!.first(where: { $0.type == type })
+    }
+
     private func toggleGlobalButton(type: SettingsButtonType) {
         for button in database.globalButtons! where button.type == type {
             button.isOn.toggle()
@@ -2097,7 +2176,7 @@ final class Model: NSObject, ObservableObject {
 
     private func startNetStream(reconnect _: Bool = false) {
         streamState = .connecting
-        latestLowBitrateDate = Date()
+        latestLowBitrateTime = .now
         switch stream.getProtocol() {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
@@ -2120,6 +2199,21 @@ final class Model: NSObject, ObservableObject {
                 connectionPriorities: stream.srt.connectionPriorities!
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+        case .irltk:
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
+            media.irlToolkitStartStream(
+                url: stream.url,
+                reconnectTime: 5,
+                targetBitrate: stream.bitrate,
+                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
+                latency: stream.srt.latency,
+                overheadBandwidth: database.debug!.srtOverheadBandwidth!,
+                maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
+                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
+                networkInterfaceNames: database.networkInterfaceNames!,
+                connectionPriorities: stream.srt.connectionPriorities!
+            )
+            updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .rist:
             media.ristStartStream(url: stream.url,
                                   bonding: stream.rist!.bonding,
@@ -2127,7 +2221,7 @@ final class Model: NSObject, ObservableObject {
                                   adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
         }
-        updateSpeed(now: Date())
+        updateSpeed(now: .now)
     }
 
     private func stopNetStream(reconnect: Bool = false) {
@@ -2135,9 +2229,10 @@ final class Model: NSObject, ObservableObject {
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
-        streamStartDate = nil
-        updateUptime(now: Date())
-        updateSpeed(now: Date())
+        media.irlToolkitStopStream()
+        streamStartTime = nil
+        updateUptime(now: .now)
+        updateSpeed(now: .now)
         updateAudioLevel()
         bondingStatistics = noValue
         if !reconnect {
@@ -2469,7 +2564,7 @@ final class Model: NSObject, ObservableObject {
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
         numberOfChatPostsPerMinute = 0
-        chatTextToSpeech.reset()
+        chatTextToSpeech.reset(running: true)
     }
 
     private func reloadTwitchChat() {
@@ -2687,42 +2782,38 @@ final class Model: NSObject, ObservableObject {
         })
     }
 
-    func obsFixStream() {
-        obsFixOngoing = true
-        obsWebSocket?.getSceneItemId(
-            sceneName: obsCurrentScene,
-            sourceName: stream.obsSourceName!,
-            onSuccess: { itemId in
-                self.obsWebSocket?.setSceneItemEnabled(
-                    sceneName: self.obsCurrentScene,
-                    sceneItemId: itemId,
-                    enabled: false,
-                    onSuccess: {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.obsWebSocket?.setSceneItemEnabled(
-                                sceneName: self.obsCurrentScene,
-                                sceneItemId: itemId,
-                                enabled: true,
-                                onSuccess: {
-                                    DispatchQueue.main.async {
-                                        self.obsFixOngoing = false
-                                    }
-                                },
-                                onError: self.obsFixStreamError
-                            )
-                        }
-                    },
-                    onError: self.obsFixStreamError
-                )
-            },
-            onError: obsFixStreamError
-        )
+    func obsStartRecording() {
+        obsWebSocket?.startRecord(onSuccess: {}, onError: { message in
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
+                                    subTitle: message)
+            }
+        })
     }
 
-    func obsFixStreamError(_: String) {
-        DispatchQueue.main.async {
-            self.obsFixOngoing = false
-        }
+    func obsStopRecording() {
+        obsWebSocket?.stopRecord(onSuccess: {}, onError: { message in
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
+                                    subTitle: message)
+            }
+        })
+    }
+
+    func obsFixStream() {
+        obsFixOngoing = true
+        obsWebSocket?.setInputSettings(inputName: stream.obsSourceName!,
+                                       onSuccess: {
+                                           self.obsFixOngoing = false
+                                       }, onError: { message in
+                                           self.obsFixOngoing = false
+                                           DispatchQueue.main.async {
+                                               self.makeErrorToast(
+                                                   title: String(localized: "Failed to fix OBS input"),
+                                                   subTitle: message
+                                               )
+                                           }
+                                       })
     }
 
     func startObsAudioVolume() {
@@ -2747,7 +2838,7 @@ final class Model: NSObject, ObservableObject {
             let progress = browser.browserEffect.progress
             if browser.browserEffect.isLoaded {
                 messages.append("\(browser.browserEffect.host): \(progress)%")
-                if progress != 100 || browser.browserEffect.startLoadingTime + 5 > Date() {
+                if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now {
                     browserWidgetsStatusChanged = true
                 }
             }
@@ -2869,9 +2960,16 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleObsRecordStatusChanged(active: Bool) {
+    private func handleObsRecordStatusChanged(active: Bool, state: ObsOutputState? = nil) {
         DispatchQueue.main.async {
             self.obsRecording = active
+            if let state {
+                self.obsRecordingState = state
+            } else if active {
+                self.obsRecordingState = .started
+            } else {
+                self.obsRecordingState = .stopped
+            }
         }
     }
 
@@ -2902,7 +3000,7 @@ final class Model: NSObject, ObservableObject {
                           userColor: post.userColor,
                           segments: post.segments,
                           timestamp: post.timestamp,
-                          timestampDate: post.timestampDate,
+                          timestampTime: post.timestampTime,
                           isAction: post.isAction,
                           isAnnouncement: post.isAnnouncement,
                           isFirstMessage: post.isFirstMessage,
@@ -2914,7 +3012,7 @@ final class Model: NSObject, ObservableObject {
         userColor: String?,
         segments: [ChatPostSegment],
         timestamp: String,
-        timestampDate: Date,
+        timestampTime: ContinuousClock.Instant,
         isAction: Bool,
         isAnnouncement: Bool,
         isFirstMessage: Bool,
@@ -2929,7 +3027,7 @@ final class Model: NSObject, ObservableObject {
             userColor: userColor,
             segments: segments,
             timestamp: timestamp,
-            timestampDate: timestampDate,
+            timestampTime: timestampTime,
             isAction: isAction,
             isAnnouncement: isAnnouncement,
             isFirstMessage: isFirstMessage,
@@ -3001,11 +3099,13 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
+        isFrontCameraSelected = false
         switch scene.cameraPosition! {
         case .back:
             attachCamera(position: .back)
         case .front:
             attachCamera(position: .front)
+            isFrontCameraSelected = true
         case .rtmp:
             attachRtmpCamera(cameraId: scene.rtmpCameraId!)
         case .external:
@@ -3269,10 +3369,10 @@ final class Model: NSObject, ObservableObject {
         sceneUpdatedOn(scene: scene)
     }
 
-    private func updateUptime(now: Date) {
-        if streamStartDate != nil && isStreamConnected() {
-            let elapsed = now.timeIntervalSince(streamStartDate!)
-            uptime = uptimeFormatter.string(from: elapsed)!
+    private func updateUptime(now: ContinuousClock.Instant) {
+        if let streamStartTime, isStreamConnected() {
+            let elapsed = now - streamStartTime
+            uptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
         } else if uptime != noValue {
             uptime = noValue
         }
@@ -3300,7 +3400,7 @@ final class Model: NSObject, ObservableObject {
     private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
-        if batteryLevel < 0.05 && !isBatteryCharging() {
+        if batteryLevel < 0.05 && !isBatteryCharging() && !ProcessInfo().isiOSAppOnMac {
             makeWarningToast(title: lowBatteryMessage, vibrate: true)
         }
     }
@@ -3340,20 +3440,20 @@ final class Model: NSObject, ObservableObject {
         chatSpeedTicks += 1
     }
 
-    private func checkLowBitrate(speed: Int64, now: Date) {
+    private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {
         guard database.lowBitrateWarning! else {
             return
         }
         guard streamState == .connected else {
             return
         }
-        if speed < 500_000 && now > latestLowBitrateDate + 15 {
+        if speed < 500_000 && now > latestLowBitrateTime + .seconds(15) {
             makeWarningToast(title: lowBitrateMessage, vibrate: true)
-            latestLowBitrateDate = now
+            latestLowBitrateTime = now
         }
     }
 
-    private func updateSpeed(now: Date) {
+    private func updateSpeed(now: ContinuousClock.Instant) {
         if isLive {
             let speed = media.streamSpeed()
             checkLowBitrate(speed: speed, now: now)
@@ -3433,42 +3533,28 @@ final class Model: NSObject, ObservableObject {
     }
 
     func detachCamera() {
-        media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off, videoMirrored: false)
+        media.attachCamera(device: nil, videoStabilizationMode: .off, videoMirrored: false)
     }
 
     func attachCamera() {
+        lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
-            secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream()
         ) {
             self.streamPreviewView.isMirrored = isMirrored
             self.updateCameraPreview()
+            self.lastAttachCompletedTime = .now
         }
     }
 
     private func updateCameraPreview() {
-        // cameraPreviewView.session = nil
-        // cameraPreviewView.session = media.getNetStream().mixer.videoSession
         updateCameraPreviewRotation()
     }
 
-    private func updateCameraPreviewRotation() {
-        // if stream.portrait! {
-        //     cameraPreviewView.previewLayer.connection?.videoOrientation = .portrait
-        // } else {
-        //     switch UIDevice.current.orientation {
-        //     case .landscapeLeft:
-        //         cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeRight
-        //     case .landscapeRight:
-        //         cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeLeft
-        //     default:
-        //         break
-        //     }
-        // }
-    }
+    private func updateCameraPreviewRotation() {}
 
     func setGlobalToneMapping(on: Bool) {
         guard let cameraDevice else {
@@ -3528,10 +3614,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func attachCamera(
-        position: AVCaptureDevice.Position,
-        secondPosition: AVCaptureDevice.Position? = nil
-    ) {
+    private func attachCamera(position: AVCaptureDevice.Position) {
         guard hasCameraChanged(
             oldCameraDevice: cameraDevice,
             oldPosition: cameraPosition,
@@ -3549,11 +3632,6 @@ final class Model: NSObject, ObservableObject {
                 1.0,
                 1.0
             )
-        if let secondPosition {
-            secondCameraDevice = preferredCamera(position: secondPosition)
-        } else {
-            secondCameraDevice = nil
-        }
         cameraPosition = position
         switch position {
         case .back:
@@ -3571,16 +3649,13 @@ final class Model: NSObject, ObservableObject {
         default:
             break
         }
+        lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
-            secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream(),
             onSuccess: {
-                if let device = self.cameraDevice {
-                    logger.debug("FPS: \(device.fps)")
-                }
                 self.streamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
@@ -3590,6 +3665,7 @@ final class Model: NSObject, ObservableObject {
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                 }
                 self.updateCameraPreview()
+                self.lastAttachCompletedTime = .now
             }
         )
         zoomXPinch = zoomX
@@ -3599,7 +3675,6 @@ final class Model: NSObject, ObservableObject {
     private func attachRtmpCamera(cameraId: UUID) {
         cameraDevice = nil
         cameraPosition = nil
-        secondCameraDevice = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
@@ -3791,9 +3866,9 @@ final class Model: NSObject, ObservableObject {
 
     private func onConnected() {
         makeYouAreLiveToast()
-        streamStartDate = Date()
+        streamStartTime = .now
         streamState = .connected
-        updateUptime(now: Date())
+        updateUptime(now: .now)
     }
 
     private func onDisconnected(reason: String) {
@@ -4859,6 +4934,11 @@ extension Model {
                 url = "srt://\(wizardObsAddress):\(wizardObsPort)"
             case .belaboxCloudObs:
                 url = wizardBelaboxUrl
+            case .irlToolkit:
+                let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                if let directUrl = URL(string: "\(ingestUrl)/\(wizardDirectStreamKey)") {
+                    url = "irltk:///?url=\(directUrl)"
+                }
             case .direct:
                 let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
                 url = "\(ingestUrl)/\(wizardDirectStreamKey)"
@@ -4925,6 +5005,8 @@ extension Model {
             stream.codec = .h265hevc
         case .belaboxCloudObs:
             stream.codec = .h265hevc
+        case .irlToolkit:
+            stream.codec = .h265hevc
         case .direct:
             stream.codec = .h264avc
         case .myServers:
@@ -4971,6 +5053,8 @@ extension Model {
                 wizardName = stream.name
                 wizardBelaboxUrl = stream.url
             }
+        case .irlToolkit:
+            break
         case .direct:
             break
         case .myServers:
@@ -5666,5 +5750,54 @@ extension Model {
 
     func stopObservingWhiteBalance() {
         whiteBalanceObservation = nil
+    }
+}
+
+extension Model: SampleBufferReceiverDelegate {
+    func senderConnected() {
+        DispatchQueue.main.async {
+            self.handleSampleBufferSenderConnected()
+        }
+    }
+
+    func senderDisconnected() {
+        DispatchQueue.main.async {
+            self.handleSampleBufferSenderDisconnected()
+        }
+    }
+
+    func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
+        handleSampleBufferSenderBuffer(type, sampleBuffer)
+    }
+}
+
+// private let sampleBufferCameraId = UUID()
+
+extension Model {
+    private func handleSampleBufferSenderConnected() {
+        makeToast(
+            title: String(localized: "Screen recording started"),
+            subTitle: "DOES NOT YET WORK!!!"
+        )
+        // media.addRtmpCamera(cameraId: sampleBufferCameraId, latency: 0.5)
+        // attachRtmpCamera(cameraId: sampleBufferCameraId)
+    }
+
+    private func handleSampleBufferSenderDisconnected() {
+        makeToast(
+            title: String(localized: "Screen recording stopped"),
+            subTitle: "DOES NOT YET WORK!!!"
+        )
+        // media.removeRtmpCamera(cameraId: sampleBufferCameraId)
+    }
+
+    private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
+        switch type {
+        case .video:
+            logger.info("Video sample buffer: \(sampleBuffer)")
+        // media.addRtmpSampleBuffer(cameraId: sampleBufferCameraId, sampleBuffer: sampleBuffer)
+        default:
+            break
+        }
     }
 }

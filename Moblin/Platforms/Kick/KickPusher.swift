@@ -73,13 +73,6 @@ final class KickPusher: NSObject {
 
     func start() {
         stop()
-        emotes.start(
-            platform: .kick,
-            channelId: channelId,
-            onError: handleError,
-            onOk: handleOk,
-            settings: settings
-        )
         logger.debug("kick: start")
         task = Task.init {
             while true {
@@ -87,6 +80,14 @@ final class KickPusher: NSObject {
                     if !channelName.isEmpty {
                         let info = try await getKickChannelInfo(channelName: channelName)
                         channelId = String(info.chatroom.id)
+                        emotes.stop()
+                        emotes.start(
+                            platform: .kick,
+                            channelId: channelId,
+                            onError: handleError,
+                            onOk: handleOk,
+                            settings: settings
+                        )
                     }
                     try await setupConnection(chatroomId: channelId)
                     connected = true
@@ -97,6 +98,7 @@ final class KickPusher: NSObject {
                 if Task.isCancelled {
                     logger.debug("kick: Cancelled")
                     connected = false
+                    emotes.stop()
                     break
                 }
                 logger.debug("kick: Disconnected")
@@ -109,7 +111,6 @@ final class KickPusher: NSObject {
 
     func stop() {
         logger.debug("kick: stop")
-        emotes.stop()
         task?.cancel()
         task = nil
     }
@@ -201,7 +202,7 @@ final class KickPusher: NSObject {
             userColor: message.sender.identity.color,
             segments: segments,
             timestamp: model.digitalClock,
-            timestampDate: Date(),
+            timestampTime: .now,
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,

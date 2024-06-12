@@ -15,7 +15,7 @@ final class TextEffect: VideoEffect {
     private var overlayMetalPetal: MTIImage?
     private var image: UIImage?
     private let settingName: String
-    private var nextUpdateTime = Date()
+    private var nextUpdateTime = ContinuousClock.now
 
     init(format _: String, fontSize: CGFloat, settingName: String) {
         self.fontSize = fontSize
@@ -38,10 +38,10 @@ final class TextEffect: VideoEffect {
     }
 
     private func updateOverlay(size: CGSize) {
-        guard Date() > nextUpdateTime else {
+        guard nextUpdateTime < .now else {
             return
         }
-        nextUpdateTime += 1
+        nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
             let text = Text(self.formatted())
                 .background(.black)

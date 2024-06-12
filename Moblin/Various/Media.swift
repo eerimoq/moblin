@@ -21,7 +21,7 @@ final class Media: NSObject {
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
     private var ristStream: RistStream?
-    private var srtla: Srtla?
+    private var srtlaClient: SrtlaClient?
     private var netStream: NetStream!
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
@@ -47,13 +47,14 @@ final class Media: NSObject {
     var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
+    private var irlToolkitFetcher: IrlToolkitFetcher?
 
     func logStatistics() {
-        srtla?.logStatistics()
+        srtlaClient?.logStatistics()
     }
 
     func srtlaConnectionStatistics() -> String? {
-        return srtla?.connectionStatistics()
+        return srtlaClient?.connectionStatistics()
     }
 
     func ristBondingStatistics() -> String? {
@@ -61,7 +62,7 @@ final class Media: NSObject {
     }
 
     func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
-        srtla?.setConnectionPriorities(connectionPriorities: connectionPriorities)
+        srtlaClient?.setConnectionPriorities(connectionPriorities: connectionPriorities)
     }
 
     func setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings) {
@@ -79,7 +80,7 @@ final class Media: NSObject {
             srtStream = nil
             ristStream = nil
             netStream = rtmpStream
-        case .srt:
+        case .srt, .irltk:
             srtStream = SRTStream(srtConnection)
             rtmpStream = nil
             ristStream = nil
@@ -155,13 +156,38 @@ final class Media: NSObject {
         connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
         srtUrl = url
+        srtInitStream(
+            isSrtla: isSrtla,
+            targetBitrate: targetBitrate,
+            adaptiveBitrate: adaptiveBitrateEnabled,
+            latency: latency,
+            overheadBandwidth: overheadBandwidth,
+            maximumBandwidthFollowInput: maximumBandwidthFollowInput,
+            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            networkInterfaceNames: networkInterfaceNames,
+            connectionPriorities: connectionPriorities
+        )
+        srtlaClient!.start(uri: url, timeout: reconnectTime + 1)
+    }
+
+    private func srtInitStream(
+        isSrtla: Bool,
+        targetBitrate: UInt32,
+        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        latency: Int32,
+        overheadBandwidth: Int32,
+        maximumBandwidthFollowInput: Bool,
+        mpegtsPacketsPerPacket: Int,
+        networkInterfaceNames: [SettingsNetworkInterfaceName],
+        connectionPriorities: SettingsStreamSrtConnectionPriorities
+    ) {
         self.latency = latency
         self.overheadBandwidth = overheadBandwidth
         self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
-        srtla?.stop()
-        srtla = Srtla(
+        srtlaClient?.stop()
+        srtlaClient = SrtlaClient(
             delegate: self,
             passThrough: !isSrtla,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
@@ -176,19 +202,18 @@ final class Media: NSObject {
         } else {
             adaptiveBitrate = nil
         }
-        srtla!.start(uri: url, timeout: reconnectTime + 1)
     }
 
     func srtStopStream() {
         srtConnection.close()
-        srtla?.stop()
-        srtla = nil
+        srtlaClient?.stop()
+        srtlaClient = nil
         srtConnectedObservation = nil
         adaptiveBitrate = nil
     }
 
     func setNetworkInterfaceNames(networkInterfaceNames: [SettingsNetworkInterfaceName]) {
-        srtla?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
+        srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
     func updateAdaptiveBitrate(overlay: Bool) -> [String]? {
@@ -206,7 +231,8 @@ final class Media: NSObject {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
-            packetsInFlight: Double(stats.pktFlightSize)
+            packetsInFlight: Double(stats.pktFlightSize),
+            transportBitrate: streamSpeed()
         ))
         guard overlay else {
             return nil
@@ -244,7 +270,8 @@ final class Media: NSObject {
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
-            packetsInFlight: Double(stats.packetsInFlight)
+            packetsInFlight: Double(stats.packetsInFlight),
+            transportBitrate: streamSpeed()
         ))
         guard overlay else {
             return nil
@@ -276,7 +303,11 @@ final class Media: NSObject {
         for stat in stats {
             rtt = min(rtt, Double(stat.rtt))
         }
-        adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 10))
+        adaptiveBitrate?.update(stats: StreamStats(
+            rttMs: rtt,
+            packetsInFlight: 10,
+            transportBitrate: nil
+        ))
         ristStream.updateConnectionsWeights()
         guard overlay else {
             return nil
@@ -301,7 +332,7 @@ final class Media: NSObject {
     }
 
     func updateSrtSpeed() {
-        srtTotalByteCount = srtla?.getTotalByteCount() ?? 0
+        srtTotalByteCount = srtlaClient?.getTotalByteCount() ?? 0
         let byteCount = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
         srtSpeed = Int64(Double(srtSpeed) * 0.7 + Double(byteCount) * 0.3)
         srtPreviousTotalByteCount = srtTotalByteCount
@@ -464,6 +495,41 @@ final class Media: NSObject {
         ristStream?.stop()
     }
 
+    func irlToolkitStartStream(
+        url: String,
+        reconnectTime: Double,
+        targetBitrate: UInt32,
+        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        latency: Int32,
+        overheadBandwidth: Int32,
+        maximumBandwidthFollowInput: Bool,
+        mpegtsPacketsPerPacket: Int,
+        networkInterfaceNames: [SettingsNetworkInterfaceName],
+        connectionPriorities: SettingsStreamSrtConnectionPriorities
+    ) {
+        srtInitStream(
+            isSrtla: true,
+            targetBitrate: targetBitrate,
+            adaptiveBitrate: adaptiveBitrateEnabled,
+            latency: latency,
+            overheadBandwidth: overheadBandwidth,
+            maximumBandwidthFollowInput: maximumBandwidthFollowInput,
+            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            networkInterfaceNames: networkInterfaceNames,
+            connectionPriorities: connectionPriorities
+        )
+        irlToolkitFetcher?.stop()
+        irlToolkitFetcher = IrlToolkitFetcher(url: url, timeout: reconnectTime)
+        irlToolkitFetcher?.delegate = self
+        irlToolkitFetcher?.start()
+    }
+
+    func irlToolkitStopStream() {
+        irlToolkitFetcher?.stop()
+        irlToolkitFetcher = nil
+        srtStopStream()
+    }
+
     func setTorch(on: Bool) {
         netStream.setTorch(value: on)
     }
@@ -592,7 +658,6 @@ final class Media: NSObject {
 
     func attachCamera(
         device: AVCaptureDevice?,
-        secondDevice _: AVCaptureDevice?,
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         videoMirrored: Bool,
         onSuccess: (() -> Void)? = nil
@@ -758,7 +823,7 @@ extension Media: SrtlaDelegate {
                         overheadBandwidth: self.overheadBandwidth,
                         maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
                     )) { data in
-                        if let srtla = self.srtla {
+                        if let srtla = self.srtlaClient {
                             srtlaDispatchQueue.async {
                                 srtla.handleLocalPacket(packet: data)
                             }
@@ -789,5 +854,16 @@ extension Media: SrtlaDelegate {
 extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
+    }
+}
+
+extension Media: IrlToolkitFetcherDelegate {
+    func irlToolkitFetcherSuccess(url: String, reconnectTime: Double) {
+        srtUrl = url
+        srtlaClient?.start(uri: url, timeout: reconnectTime)
+    }
+
+    func irlToolkitFetcherError(message: String) {
+        onSrtDisconnected(message)
     }
 }

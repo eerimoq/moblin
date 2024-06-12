@@ -82,7 +82,10 @@ class VideoCodec {
             duration: duration
         ) { [unowned self] status, _, sampleBuffer in
             guard let sampleBuffer, status == noErr else {
-                logger.info("Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)")
+                logger
+                    .info(
+                        "video: Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)"
+                    )
                 numberOfFailedEncodings += 1
                 return
             }
@@ -90,7 +93,7 @@ class VideoCodec {
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
-            logger.debug("Video encode failed. Resetting session.")
+            logger.debug("video: Encode failed. Resetting session.")
             invalidateSession = true
         }
     }
@@ -110,7 +113,7 @@ class VideoCodec {
             unowned self
         ] status, _, imageBuffer, presentationTimeStamp, duration in
             guard let imageBuffer, status == noErr else {
-                logger.info("Failed to decode frame status \(status)")
+                logger.info("video: Failed to decode frame status \(status)")
                 return
             }
             guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -127,7 +130,7 @@ class VideoCodec {
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
-            logger.debug("Video decode failed. Resetting session.")
+            logger.debug("video: Decode failed. Resetting session.")
             invalidateSession = true
         }
     }
@@ -153,7 +156,7 @@ class VideoCodec {
 func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
     var session: VTCompressionSession?
     for attribute in videoCodec.attributes ?? [:] {
-        logger.debug("video codec attribute: \(attribute.key) \(attribute.value)")
+        logger.debug("video: Codec attribute: \(attribute.key) \(attribute.value)")
     }
     var status = VTCompressionSessionCreate(
         allocator: kCFAllocatorDefault,
@@ -168,17 +171,17 @@ func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConv
         compressionSessionOut: &session
     )
     guard status == noErr, let session else {
-        logger.info("Failed to create status \(status)")
+        logger.info("video: Failed to create status \(status)")
         return nil
     }
     status = session.setOptions(videoCodec.settings.options(videoCodec))
     guard status == noErr else {
-        logger.info("Failed to prepare status \(status)")
+        logger.info("video: Failed to prepare status \(status)")
         return nil
     }
     status = session.prepareToEncodeFrames()
     guard status == noErr else {
-        logger.info("Failed to prepare status \(status)")
+        logger.info("video: Failed to prepare status \(status)")
         return nil
     }
     return session
@@ -186,7 +189,7 @@ func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConv
 
 func makeVideoDecompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
     guard let formatDescription = videoCodec.formatDescription else {
-        logger.info("Failed to create status \(kVTParameterErr)")
+        logger.info("video: Failed to create status \(kVTParameterErr)")
         return nil
     }
     var attributes = videoCodec.attributes
@@ -202,7 +205,7 @@ func makeVideoDecompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionCo
         decompressionSessionOut: &session
     )
     guard status == noErr else {
-        logger.info("Failed to create status \(status)")
+        logger.info("video: Failed to create status \(status)")
         return nil
     }
     return session

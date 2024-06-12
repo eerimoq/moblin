@@ -1,17 +1,6 @@
 import Foundation
 import Network
 
-enum SrtlaPacketType: UInt16 {
-    case keepalive = 0x1000
-    case ack = 0x1100
-    case reg1 = 0x1200
-    case reg2 = 0x1201
-    case reg3 = 0x1202
-    case regErr = 0x1210
-    case regNgp = 0x1211
-    case regNak = 0x1212
-}
-
 private enum State {
     case idle
     case socketConnecting
@@ -40,8 +29,8 @@ class RemoteConnection {
 
     private var connectTimer: DispatchSourceTimer?
     private var keepaliveTimer: DispatchSourceTimer?
-    private var latestReceivedDate = Date()
-    private var latestSentDate = Date()
+    private var latestReceivedTime = ContinuousClock.now
+    private var latestSentTime = ContinuousClock.now
     private var packetsInFlight: Set<UInt32> = []
     private var windowSize: Int = 0
     private var numberOfNullPacketsSent: UInt64 = 0
@@ -200,8 +189,8 @@ class RemoteConnection {
                 self.reconnect(reason: "Connection timeout")
             }
             connectTimer!.activate()
-            latestReceivedDate = Date()
-            latestSentDate = Date()
+            latestReceivedTime = .now
+            latestSentTime = .now
             packetsInFlight.removeAll()
             totalDataSentByteCount = 0
             windowSize = windowDefault * windowMultiply
@@ -264,7 +253,7 @@ class RemoteConnection {
     }
 
     private func sendPacketInternal(packet: Data) {
-        latestSentDate = Date()
+        latestSentTime = .now
         connection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 
@@ -287,7 +276,7 @@ class RemoteConnection {
         logger.info("srtla: \(typeString): Sending reg 1 (create group)")
         groupId = Data.random(length: 256)
         var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
+        packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | srtlaPacketTypeBit)
         packet[2...] = groupId
         sendPacket(packet: packet)
     }
@@ -295,7 +284,7 @@ class RemoteConnection {
     private func sendSrtlaReg2() {
         logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
         var packet = Data(count: 2 + groupId.count)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
+        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtlaPacketTypeBit)
         packet[2...] = groupId
         sendPacket(packet: packet)
         state = .waitForRegisterResponse
@@ -303,7 +292,7 @@ class RemoteConnection {
 
     private func sendSrtlaKeepalive() {
         var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | 0x8000)
+        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtlaPacketTypeBit)
         sendPacket(packet: packet)
     }
 
@@ -403,11 +392,11 @@ class RemoteConnection {
         keepaliveTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
         keepaliveTimer!.schedule(deadline: .now() + 1, repeating: 1)
         keepaliveTimer!.setEventHandler {
-            let now = Date()
-            if self.latestSentDate < now - 0.5 {
+            let now = ContinuousClock.now
+            if self.latestSentTime < now - .seconds(0.5) {
                 self.sendSrtlaKeepalive()
             }
-            if self.latestReceivedDate < now - 5 {
+            if self.latestReceivedTime < now - .seconds(5) {
                 self.reconnect(reason: "No packet received in 5 seconds")
             }
         }
@@ -482,7 +471,7 @@ class RemoteConnection {
             logger.error("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
             return
         }
-        latestReceivedDate = Date()
+        latestReceivedTime = .now
         if isDataPacket(packet: packet) {
             handleDataPacket(packet: packet)
         } else {

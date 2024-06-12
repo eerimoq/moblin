@@ -1,93 +1,123 @@
 import SwiftUI
 
+private struct PlatformView: View {
+    @EnvironmentObject private var model: Model
+
+    var body: some View {
+        if model.wizardPlatform == .twitch {
+            Section {
+                TextValueView(
+                    name: String(localized: "Channel name"),
+                    value: model.wizardTwitchChannelName
+                )
+                TextValueView(name: String(localized: "Channel id"), value: model.wizardTwitchChannelId)
+            } header: {
+                Text("Twitch")
+            }
+        } else if model.wizardPlatform == .kick {
+            Section {
+                TextValueView(name: String(localized: "Channel name"), value: model.wizardKickChannelName)
+            } header: {
+                Text("Kick")
+            }
+        } else if model.wizardPlatform == .youTube {
+            Section {
+                TextValueView(name: String(localized: "Video id"), value: model.wizardYouTubeVideoId)
+            } header: {
+                Text("YouTube")
+            }
+        } else if model.wizardPlatform == .afreecaTv {
+            Section {
+                TextValueView(
+                    name: String(localized: "Channel name"),
+                    value: model.wizardAfreecaTvChannelName
+                )
+                TextValueView(name: String(localized: "Video id"), value: model.wizardAfreecsTvCStreamId)
+            } header: {
+                Text("AfreecaTV")
+            }
+        }
+    }
+}
+
+private struct NetworkSetupDirectView: View {
+    @EnvironmentObject private var model: Model
+
+    var body: some View {
+        if model.wizardPlatform == .twitch {
+            TextValueView(
+                name: String(localized: "Nearby ingest endpoint"),
+                value: model.wizardDirectIngest
+            )
+            TextValueView(
+                name: String(localized: "Stream key"),
+                value: model.wizardDirectStreamKey
+            )
+        } else if model.wizardPlatform == .kick {
+            TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
+            TextValueView(
+                name: String(localized: "Stream key"),
+                value: model.wizardDirectStreamKey
+            )
+        } else if model.wizardPlatform == .youTube {
+            TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
+            TextValueView(
+                name: String(localized: "Stream key"),
+                value: model.wizardDirectStreamKey
+            )
+        } else if model.wizardPlatform == .afreecaTv {
+            TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
+            TextValueView(
+                name: String(localized: "Stream key"),
+                value: model.wizardDirectStreamKey
+            )
+        }
+    }
+}
+
+private struct NetworkSetupView: View {
+    @EnvironmentObject private var model: Model
+
+    var body: some View {
+        if model.wizardNetworkSetup == .obs {
+            Section {
+                TextValueView(
+                    name: String(localized: "IP address or domain name"),
+                    value: model.wizardObsAddress
+                )
+                TextValueView(name: String(localized: "Port"), value: model.wizardObsPort)
+            } header: {
+                Text("OBS")
+            }
+        } else if model.wizardNetworkSetup == .belaboxCloudObs {
+            Section {
+                TextValueView(name: String(localized: "Ingest URL"), value: model.wizardBelaboxUrl)
+            } header: {
+                Text("BELABOX cloud")
+            }
+        } else if model.wizardNetworkSetup == .direct {
+            Section {
+                NetworkSetupDirectView()
+            } header: {
+                Text("Direct")
+            }
+        } else if model.wizardNetworkSetup == .irlToolkit {
+            Section {
+                NetworkSetupDirectView()
+            } header: {
+                Text("Free IRLToolkit bonding")
+            }
+        }
+    }
+}
+
 struct StreamWizardSummarySettingsView: View {
     @EnvironmentObject private var model: Model
 
     var body: some View {
         Form {
-            if model.wizardPlatform == .twitch {
-                Section {
-                    TextValueView(
-                        name: String(localized: "Channel name"),
-                        value: model.wizardTwitchChannelName
-                    )
-                    TextValueView(name: String(localized: "Channel id"), value: model.wizardTwitchChannelId)
-                } header: {
-                    Text("Twitch")
-                }
-            } else if model.wizardPlatform == .kick {
-                Section {
-                    TextValueView(name: String(localized: "Channel name"), value: model.wizardKickChannelName)
-                } header: {
-                    Text("Kick")
-                }
-            } else if model.wizardPlatform == .youTube {
-                Section {
-                    TextValueView(name: String(localized: "Video id"), value: model.wizardYouTubeVideoId)
-                } header: {
-                    Text("YouTube")
-                }
-            } else if model.wizardPlatform == .afreecaTv {
-                Section {
-                    TextValueView(
-                        name: String(localized: "Channel name"),
-                        value: model.wizardAfreecaTvChannelName
-                    )
-                    TextValueView(name: String(localized: "Video id"), value: model.wizardAfreecsTvCStreamId)
-                } header: {
-                    Text("AfreecaTV")
-                }
-            }
-            if model.wizardNetworkSetup == .obs {
-                Section {
-                    TextValueView(
-                        name: String(localized: "IP address or domain name"),
-                        value: model.wizardObsAddress
-                    )
-                    TextValueView(name: String(localized: "Port"), value: model.wizardObsPort)
-                } header: {
-                    Text("OBS")
-                }
-            } else if model.wizardNetworkSetup == .belaboxCloudObs {
-                Section {
-                    TextValueView(name: String(localized: "Ingest URL"), value: model.wizardBelaboxUrl)
-                } header: {
-                    Text("BELABOX cloud")
-                }
-            } else if model.wizardNetworkSetup == .direct {
-                Section {
-                    if model.wizardPlatform == .twitch {
-                        TextValueView(
-                            name: String(localized: "Nearby ingest endpoint"),
-                            value: model.wizardDirectIngest
-                        )
-                        TextValueView(
-                            name: String(localized: "Stream key"),
-                            value: model.wizardDirectStreamKey
-                        )
-                    } else if model.wizardPlatform == .kick {
-                        TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
-                        TextValueView(
-                            name: String(localized: "Stream key"),
-                            value: model.wizardDirectStreamKey
-                        )
-                    } else if model.wizardPlatform == .youTube {
-                        TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
-                        TextValueView(
-                            name: String(localized: "Stream key"),
-                            value: model.wizardDirectStreamKey
-                        )
-                    } else if model.wizardPlatform == .afreecaTv {
-                        TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
-                        TextValueView(
-                            name: String(localized: "Stream key"),
-                            value: model.wizardDirectStreamKey
-                        )
-                    }
-                } header: {
-                    Text("Direct")
-                }
-            }
+            PlatformView()
+            NetworkSetupView()
             if model.wizardPlatform == .custom || model.wizardNetworkSetup == .myServers {
                 if model.wizardCustomProtocol == .srt {
                     Section {

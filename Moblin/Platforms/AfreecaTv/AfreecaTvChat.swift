@@ -246,7 +246,7 @@ final class AfreecaTvChat: NSObject {
                 userColor: nil,
                 segments: segments,
                 timestamp: model.digitalClock,
-                timestampDate: Date(),
+                timestampTime: .now,
                 isAction: false,
                 isAnnouncement: false,
                 isFirstMessage: false,
@@ -263,11 +263,10 @@ final class AfreecaTvChat: NSObject {
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.httpBody = """
+        request.httpBody = Data("""
         bid=\(channelName)&bno=\(streamId)&type=live&confirm_adult=false\
         &player_type=html5&mode=landing&from_api=0&pwd=&stream_type=common&quality=HD
-        """
-        .data(using: String.Encoding.utf8)
+        """.utf8)
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response.http else {
