@@ -1,7 +1,6 @@
 import Foundation
 import Network
 
-private let connectionRemoveTimeout = 10.0
 private let clientRemoveTimeout = 10.0
 
 class SrtlaServerClient {
@@ -12,7 +11,7 @@ class SrtlaServerClient {
 
     init(srtPort: UInt16) {
         logger.info("srtla-server-client: Creating local SRT server connection.")
-        createSrtConnection(srtPort: srtPort)
+        createLocalSrtServerConnection(srtPort: srtPort)
     }
 
     func stop() {
@@ -20,7 +19,7 @@ class SrtlaServerClient {
         localSrtServerConnection = nil
     }
 
-    private func createSrtConnection(srtPort: UInt16) {
+    private func createLocalSrtServerConnection(srtPort: UInt16) {
         let params = NWParameters(dtls: .none)
         localSrtServerConnection = NWConnection(
             host: .ipv4(.loopback),
@@ -39,7 +38,7 @@ class SrtlaServerClient {
     private func receivePacket() {
         localSrtServerConnection?.receiveMessage { packet, _, _, error in
             if let packet, !packet.isEmpty {
-                self.handlePacketFromSrtServer(packet: packet)
+                self.handlePacketFromLocalSrtServer(packet: packet)
             }
             if let error {
                 logger.warning("srtla-server-client: Receive \(error)")
@@ -60,7 +59,7 @@ class SrtlaServerClient {
         logger.info("srtla-server-client: Added connection. Using \(connections.count) connection(s)")
     }
 
-    private func handlePacketFromSrtServer(packet: Data) {
+    private func handlePacketFromLocalSrtServer(packet: Data) {
         if !isDataPacket(packet: packet),
            SrtPacketType(rawValue: getControlPacketType(packet: packet)) == .ack
         {
@@ -77,13 +76,13 @@ class SrtlaServerClient {
         var index = 0
         while index < connections.count {
             let connection = connections[index]
-            if connection.latestReceivedTime.duration(to: now) > .seconds(connectionRemoveTimeout) {
-                connection.connection.cancel()
+            if connection.isActive(now: now) {
+                index += 1
+            } else {
+                connection.stop()
                 connections.remove(at: index)
                 logger
                     .info("srtla-server-client: Removed connection. Using \(connections.count) connection(s)")
-            } else {
-                index += 1
             }
         }
         return connections.isEmpty && createdAt.duration(to: now) > .seconds(clientRemoveTimeout)

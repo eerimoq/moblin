@@ -8,6 +8,8 @@ class SrtServer {
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     private var acceptedStreamId = ""
     var running: Bool = false
+    var totalBytesReceived: Atomic<UInt64> = .init(0)
+    var numberOfClients: Atomic<Int> = .init(0)
 
     func start() {
         srt_startup()
@@ -48,7 +50,9 @@ class SrtServer {
                 logger.error("srt-server: Failed to set lossmaxttl option.")
             }
             logger.info("srt-server: Accepted client \(stream.name).")
+            numberOfClients.mutate { $0 += 1 }
             SrtServerClient(server: self, streamId: acceptedStreamId).run(clientSocket: clientSocket)
+            numberOfClients.mutate { $0 -= 1 }
             logger.info("srt-server: Closed client.")
         }
     }

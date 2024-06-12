@@ -10,3 +10,9 @@ enum SrtlaPacketType: UInt16 {
     case regNgp = 0x1211
     case regNak = 0x1212
 }
+
+func createSrtlaPacket(type: SrtlaPacketType, length: Int) -> Data {
+    var packet = Data(count: length)
+    packet.setUInt16Be(value: type.rawValue | srtControlPacketTypeBit)
+    return packet
+}

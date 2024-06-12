@@ -1118,6 +1118,7 @@ class SettingsDebug: Codable {
     var metalPetalFilters: Bool? = false
     var srtlaServer: Bool? = false
     var higherDataRateLimit: Bool? = true
+    var useAudioForTimestamps: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1168,8 +1169,8 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     func clone() -> SettingsSrtlaServerStream {
         let new = SettingsSrtlaServerStream()
         new.name = name
-        new.streamId = streamId
         new.latency = latency
+        new.streamId = streamId
         return new
     }
 }
@@ -2580,12 +2581,17 @@ final class Settings {
             stream.backgroundStreaming = false
             store()
         }
+<<<<<<< RTMP
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
             if stream.fps != 0 {
                 stream.manualFps = true
             } else {
                 stream.manualFps = false
             }
+=======
+        if realDatabase.debug!.useAudioForTimestamps == nil {
+            realDatabase.debug!.useAudioForTimestamps = false
+>>>>>>> main
             store()
         }
     }

@@ -4245,7 +4245,14 @@
       }
     },
     "⚠️ Does not yet work." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Ei vielä toimi."
+          }
+        }
+      }
     },
     "⚠️ Failed to load settings ⚠️" : {
       "localizations" : {
@@ -5570,7 +5577,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7TV"
           }
         },
@@ -5809,7 +5816,14 @@
       }
     },
     "100 or more milliseconds." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100 tai enemmän millisekuntia."
+          }
+        }
+      }
     },
     "128 Kpbs or higher is recommended." : {
       "localizations" : {
@@ -6332,7 +6346,14 @@
       }
     },
     "500 Kbps by default." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "500 Kbps oletuksena."
+          }
+        }
+      }
     },
     "7654" : {
       "localizations" : {
@@ -7375,7 +7396,14 @@
       }
     },
     "A QR code and copy to clipboard button will show up here when the settings above have been modified (and are not all default values)." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-koodi ja Kopioi leikepöydälle -nappi tulee näkyviin kun ylläolevia asetuksia on muutettu (ja arvo poikkeaa oletusarvosta)"
+          }
+        }
+      }
     },
     "a scene" : {
       "localizations" : {
@@ -12454,7 +12482,14 @@
       }
     },
     "Background streaming" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taustalähetys"
+          }
+        }
+      }
     },
     "Bar" : {
       "localizations" : {
@@ -13497,7 +13532,14 @@
       }
     },
     "Best possible stability. Uses bonding. Free third-party service provided as a courtesy by IRLToolkit. Not to be used if you pay for IRLToolkit." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paras vakaus. Käyttää yhteyksien yhdistämistä. Ilmainen kolmannen osapuolen tarjoama palvelu IRLToolkitiltä. Älä käytä, jos maksat jo IRLToolkitistä."
+          }
+        }
+      }
     },
     "Best possible stability. Uses bonding. Paid third-party service." : {
       "localizations" : {
@@ -15991,7 +16033,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BTTV"
           }
         },
@@ -17421,7 +17463,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat ja katsojat"
           }
         },
@@ -19610,7 +19652,14 @@
       }
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for Fix button and more." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta näkymän nimi Asetukset → Lähetykset %@ → OBS-etähallinta Korjaa-nappia ja muuta varten."
+          }
+        }
+      }
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
       "extractionState" : "stale",
@@ -21434,7 +21483,14 @@
       }
     },
     "Copy to clipboard" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopioi leikepöydälle"
+          }
+        }
+      }
     },
     "Cosmetics" : {
       "localizations" : {
@@ -21957,7 +22013,14 @@
       }
     },
     "Current scene snapshot" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nykyisen näkymän tilannekuva"
+          }
+        }
+      }
     },
     "Custom" : {
       "localizations" : {
@@ -22740,7 +22803,14 @@
       }
     },
     "Deep link creator" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syvälinkin luonti"
+          }
+        }
+      }
     },
     "Delete" : {
       "localizations" : {
@@ -25760,7 +25830,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hymiöt"
           }
         },
@@ -29666,7 +29736,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-tulon korjaaminen epäonnistui"
           }
         },
@@ -30576,8 +30646,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-tallennus epäonnistui"
+            "state" : "translated",
+            "value" : "OBS-tallennuksen aloitus epäonnistui"
           }
         },
         "fr" : {
@@ -30836,8 +30906,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-tallennuksen pysäyttäminen epäonnistui"
+            "state" : "translated",
+            "value" : "OBS-tallennuksen pysäytys epäonnistui"
           }
         },
         "fr" : {
@@ -31486,7 +31556,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFZ"
           }
         },
@@ -33545,7 +33615,14 @@
       }
     },
     "Free IRLToolkit bonding" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmainen IRLToolkit yhteyksien yhdistäminen"
+          }
+        }
+      }
     },
     "front" : {
       "localizations" : {
@@ -38882,7 +38959,14 @@
       }
     },
     "Keep live streams running when the app is in background mode." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pidä livelähetys käynnissä kun sovellus on taustalla."
+          }
+        }
+      }
     },
     "Key frame interval" : {
       "localizations" : {
@@ -41485,7 +41569,14 @@
       }
     },
     "Malformed IRLToolkit URL" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Väärin muotoiltu IRLToolkit -URL-osoite"
+          }
+        }
+      }
     },
     "Malformed RIST URL" : {
       "localizations" : {
@@ -43329,7 +43420,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Media"
           }
         },
@@ -44369,7 +44460,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Minimibittinopeus"
           }
         },
@@ -58539,7 +58630,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytön tallennus aloitettu"
           }
         },
@@ -58669,8 +58760,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytön tallennus lopetettu"
+            "state" : "translated",
+            "value" : "Näytön tallennus pysäytetty"
           }
         },
         "fr" : {
@@ -59168,7 +59259,14 @@
       }
     },
     "Selected" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valittu"
+          }
+        }
+      }
     },
     "Send your location to https://rtirl.com, to let your viewers know where you are." : {
       "localizations" : {
@@ -62681,7 +62779,14 @@
       }
     },
     "SRT port" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT-portti"
+          }
+        }
+      }
     },
     "srt://107.32.12.132:5000" : {
       "localizations" : {
@@ -63077,7 +63182,14 @@
 
     },
     "SRTLA port" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRTLA-portti"
+          }
+        }
+      }
     },
     "SRTLA server" : {
       "localizations" : {
@@ -63621,8 +63733,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aloita nauhottaminen"
+            "state" : "translated",
+            "value" : "Aloita tallennus"
           }
         },
         "fr" : {
@@ -64271,7 +64383,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lopeta tallennus"
           }
         },
@@ -65030,7 +65142,14 @@
       }
     },
     "Stream id missing" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream-id puuttuu"
+          }
+        }
+      }
     },
     "Stream key" : {
       "localizations" : {
@@ -69474,7 +69593,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Enkooderin minimibittinopeus."
           }
         },
@@ -73640,8 +73759,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tuntematon tallennustila."
+            "state" : "translated",
+            "value" : "Tuntematon tallennuksen tila."
           }
         },
         "fr" : {
@@ -75044,6 +75163,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "URL導入失敗"
+          }
+        }
+      }
+    },
+    "Use audio for timestamps" : {
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käytä audiota aikaleimoihin"
           }
         }
       }

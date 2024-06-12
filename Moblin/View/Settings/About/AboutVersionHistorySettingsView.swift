@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.302.0", date: "2024-06-11", changes: [
+        "• Toggle to debug crash when live and entering foreground mode.",
+        "  • Settings → Debug → Use audio for timestamps",
+    ]),
     Version(version: "0.301.0", date: "2024-06-11", changes: [
         "• Show current scene instead of source in OBS remote control preview. 💡 MadMad",
         "  • Always shown. No need to be live anymore.",

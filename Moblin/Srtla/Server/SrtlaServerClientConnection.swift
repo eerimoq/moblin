@@ -5,23 +5,23 @@ protocol SrtlaServerClientConnectionDelegate: AnyObject {
     func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data)
 }
 
-private let ackPacketLength = 2 + 10 * 4
+private let removeTimeout = 10.0
+private let ackPacketLength = srtControlTypeSize + 10 * 4
 
 struct AckPacket {
     var data: Data
-    var nextSnOffset: Int
+    private var nextSnOffset: Int
 
     init() {
-        data = Data(count: ackPacketLength)
-        data.setUInt16Be(value: SrtlaPacketType.ack.rawValue | srtControlPacketTypeBit)
-        nextSnOffset = 2
+        data = createSrtlaPacket(type: .ack, length: ackPacketLength)
+        nextSnOffset = srtControlTypeSize
     }
 
     mutating func appendSequenceNumber(sn: UInt32) -> Bool {
         data.setUInt32Be(value: sn, offset: nextSnOffset)
         nextSnOffset += 4
         if nextSnOffset == ackPacketLength {
-            nextSnOffset = 2
+            nextSnOffset = srtControlTypeSize
             return true
         } else {
             return false
@@ -32,13 +32,20 @@ struct AckPacket {
 class SrtlaServerClientConnection {
     var connection: NWConnection
     var latestReceivedTime = ContinuousClock.now
-    private var latestSentTime = ContinuousClock.now
     var delegate: (any SrtlaServerClientConnectionDelegate)?
     private var ackPacket = AckPacket()
 
     init(connection: NWConnection) {
         self.connection = connection
         receivePacket()
+    }
+
+    func stop() {
+        connection.cancel()
+    }
+
+    func isActive(now: ContinuousClock.Instant) -> Bool {
+        return latestReceivedTime.duration(to: now) < .seconds(removeTimeout)
     }
 
     private func receivePacket() {
@@ -55,7 +62,7 @@ class SrtlaServerClientConnection {
     }
 
     private func handlePacketFromClient(packet: Data) {
-        guard packet.count >= 2 else {
+        guard packet.count >= srtControlTypeSize else {
             logger.error("srtla-server-client: Packet too short (\(packet.count) bytes.")
             return
         }
@@ -90,7 +97,7 @@ class SrtlaServerClientConnection {
     }
 
     private func handleSrtlaKeepalive() {
-        var packet = Data(count: 2)
+        var packet = Data(count: srtControlTypeSize)
         packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtControlPacketTypeBit)
         sendPacket(packet: packet)
     }
@@ -103,7 +110,6 @@ class SrtlaServerClientConnection {
     }
 
     func sendPacket(packet: Data) {
-        latestSentTime = .now
         connection.send(content: packet, completion: .contentProcessed { _ in })
     }
 }

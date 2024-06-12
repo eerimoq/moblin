@@ -444,7 +444,7 @@ final class Model: NSObject, ObservableObject {
     private var latestLowBitrateTime = ContinuousClock.now
 
     private var rtmpServer: RtmpServer?
-    @Published var rtmpSpeedAndTotal = noValue
+    @Published var serversSpeedAndTotal = noValue
 
     private var srtlaServer: SrtlaServer?
 
@@ -801,6 +801,7 @@ final class Model: NSObject, ObservableObject {
         setPixelFormat()
         setMetalPetalFilters()
         setHigherDataRateLimit()
+        setUseAudioForTimestamps()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -919,6 +920,14 @@ final class Model: NSObject, ObservableObject {
 
     func setHigherDataRateLimit() {
         videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
+    }
+
+    func setUseAudioForTimestamps() {
+        if database.debug!.useAudioForTimestamps! {
+            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.audioPacketId
+        } else {
+            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
+        }
     }
 
     private func setupSampleBufferReceiver() {
@@ -1230,6 +1239,7 @@ final class Model: NSObject, ObservableObject {
         stopSrtlaServer()
         if database.debug!.srtlaServer! && database.srtlaServer!.enabled {
             srtlaServer = SrtlaServer(settings: database.srtlaServer!)
+            srtlaServer!.delegate = self
             srtlaServer!.start()
         }
     }
@@ -1529,7 +1539,7 @@ final class Model: NSObject, ObservableObject {
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
-            self.updateRtmpSpeed()
+            self.updateServersSpeed()
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -3522,14 +3532,37 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func updateRtmpSpeed() {
-        let message: String
+    private var serversSpeed: Int64 = 0
+
+    private func updateServersSpeed() {
+        var anyServerEnabled = false
+        var speed: UInt64 = 0
+        var total: UInt64 = 0
+        var numberOfClients = 0
         if let rtmpServer {
             let stats = rtmpServer.updateStats()
-            let numberOfClients = rtmpServer.numberOfClients()
+            numberOfClients += rtmpServer.numberOfClients()
             if rtmpServer.numberOfClients() > 0 {
-                let total = stats.total.formatBytes()
-                let speed = formatBytesPerSecond(speed: Int64(8 * stats.speed))
+                total += stats.total
+                speed += stats.speed
+            }
+            anyServerEnabled = true
+        }
+        if let srtlaServer {
+            let stats = srtlaServer.updateStats()
+            numberOfClients += srtlaServer.numberOfClients()
+            if srtlaServer.numberOfClients() > 0 {
+                total += stats.total
+                speed += stats.speed
+            }
+            anyServerEnabled = true
+        }
+        let message: String
+        if anyServerEnabled {
+            if numberOfClients > 0 {
+                let total = total.formatBytes()
+                serversSpeed = Int64(Double(serversSpeed) * 0.7 + Double(speed) * 0.3)
+                let speed = formatBytesPerSecond(speed: 8 * serversSpeed)
                 message = String(localized: "\(speed) (\(total)) \(numberOfClients)")
             } else {
                 message = String(numberOfClients)
@@ -3537,8 +3570,8 @@ final class Model: NSObject, ObservableObject {
         } else {
             message = noValue
         }
-        if message != rtmpSpeedAndTotal {
-            rtmpSpeedAndTotal = message
+        if message != serversSpeedAndTotal {
+            serversSpeedAndTotal = message
         }
     }
 
@@ -4155,8 +4188,8 @@ final class Model: NSObject, ObservableObject {
         return database.show.audioLevel
     }
 
-    func isShowingStatusRtmpServer() -> Bool {
-        return database.show.rtmpSpeed! && rtmpServerEnabled()
+    func isShowingStatusServers() -> Bool {
+        return database.show.rtmpSpeed! && (rtmpServerEnabled() || srtlaServerEnabled())
     }
 
     func isShowingStatusRemoteControl() -> Bool {
@@ -4271,8 +4304,8 @@ extension Model: RemoteControlStreamerDelegate {
                     formatAudioLevelChannels(channels: self.numberOfAudioChannels)
                 topRight.audioLevel = RemoteControlStatusItem(message: level)
             }
-            if self.isShowingStatusRtmpServer() {
-                topRight.rtmpServer = RemoteControlStatusItem(message: self.rtmpSpeedAndTotal)
+            if self.isShowingStatusServers() {
+                topRight.rtmpServer = RemoteControlStatusItem(message: self.serversSpeedAndTotal)
             }
             if self.isShowingStatusRemoteControl() {
                 topRight.remoteControl = RemoteControlStatusItem(message: self.remoteControlStatus)
@@ -5848,5 +5881,17 @@ extension Model {
         default:
             break
         }
+    }
+}
+
+extension Model: SrtlaServerDelegate {
+    func srtlaServerOnAudioBuffer(streamId _: String, buffer _: AVAudioPCMBuffer) {}
+
+    func srtlaServerOnVideoBuffer(streamId _: String, sampleBuffer _: CMSampleBuffer) {
+        // logger.info("""
+        // srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
+        // \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
+        // PTS \(sampleBuffer.presentationTimeStamp.seconds)
+        // """)
     }
 }
