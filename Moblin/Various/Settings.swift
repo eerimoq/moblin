@@ -2581,17 +2581,16 @@ final class Settings {
             stream.backgroundStreaming = false
             store()
         }
-<<<<<<< RTMP
+        if realDatabase.debug!.useAudioForTimestamps == nil {
+            realDatabase.debug!.useAudioForTimestamps = false
+            store()
+        }
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
             if stream.fps != 0 {
                 stream.manualFps = true
             } else {
                 stream.manualFps = false
             }
-=======
-        if realDatabase.debug!.useAudioForTimestamps == nil {
-            realDatabase.debug!.useAudioForTimestamps = false
->>>>>>> main
             store()
         }
     }
