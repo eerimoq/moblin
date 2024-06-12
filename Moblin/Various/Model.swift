@@ -1280,12 +1280,6 @@ final class Model: NSObject, ObservableObject {
                 outputFrameRate: Double(self.stream.fps)
             )
             self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
-            if stream.autoSelectRtmpScene! {
-                self.setScene(rtmpCameraId: stream.id) {}
-            }
-            if stream.autoSelectRtmpMic! {
-                self.setMic(id: stream.id.uuidString + " 0") {}
-            }
         }
     }
 

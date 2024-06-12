@@ -138,26 +138,6 @@ struct RtmpServerStreamSettingsView: View {
                 """)
             }
             Section {
-                Toggle("Auto set RTMP Scene", isOn: Binding(get: {
-                    stream.autoSelectRtmpScene!
-                }, set: { value in
-                    stream.autoSelectRtmpScene = value
-                    model.store()
-                    model.reloadRtmpServer()
-                    model.objectWillChange.send()
-                }))
-                .disabled(model.rtmpServerEnabled())
-                Toggle("Auto set RTMP-Audio mic", isOn: Binding(get: {
-                    stream.autoSelectRtmpMic!
-                }, set: { value in
-                    stream.autoSelectRtmpMic = value
-                    model.store()
-                    model.reloadRtmpServer()
-                    model.objectWillChange.send()
-                }))
-                .disabled(model.rtmpServerEnabled())
-            }
-            Section {
                 if model.rtmpServerEnabled() {
                     List {
                         ForEach(model.ipStatuses, id: \.name) { status in
