@@ -1248,14 +1248,32 @@ final class Model: NSObject, ObservableObject {
         return srtlaServer != nil
     }
 
+    private func srtlaCameras() -> [String] {
+        return database.srtlaServer!.streams.map { stream in
+            stream.camera()
+        }
+    }
+
+    func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
+        return database.srtlaServer!.streams.first { stream in
+            stream.id == id
+        }
+    }
+
+    func getSrtlaStream(camera: String) -> SettingsSrtlaServerStream? {
+        return database.srtlaServer!.streams.first { stream in
+            camera == stream.camera()
+        }
+    }
+
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
         return database.srtlaServer!.streams.first { stream in
             stream.streamId == streamId
         }
     }
 
-    func isSrtlaStreamConnected(streamId _: String) -> Bool {
-        return false
+    func isSrtlaStreamConnected(streamId: String) -> Bool {
+        return srtlaServer?.isStreamConnected(streamId: streamId) ?? false
     }
 
     func reloadRtmpStreams() {
@@ -3161,6 +3179,8 @@ final class Model: NSObject, ObservableObject {
             isFrontCameraSelected = true
         case .rtmp:
             attachRtmpCamera(cameraId: scene.rtmpCameraId!)
+        case .srtla:
+            attachRtmpCamera(cameraId: scene.srtlaCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
         }
@@ -3174,6 +3194,8 @@ final class Model: NSObject, ObservableObject {
         } + externalCameras.map {
             ($0.id, $0.name)
         } + rtmpCameras().map {
+            ($0, $0)
+        } + srtlaCameras().map {
             ($0, $0)
         }
     }
@@ -3193,6 +3215,12 @@ final class Model: NSObject, ObservableObject {
         switch scene.cameraPosition! {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
+            } else {
+                return ""
+            }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
                 return stream.camera()
             } else {
                 return ""
@@ -3225,6 +3253,12 @@ final class Model: NSObject, ObservableObject {
         switch scene.cameraPosition! {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
+            } else {
+                return "Unknown"
+            }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
                 return stream.camera()
             } else {
                 return "Unknown"
@@ -3754,7 +3788,7 @@ final class Model: NSObject, ObservableObject {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
+        media.attachRtmpCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
     }
 
     private func attachExternalCamera(cameraId _: String) {
@@ -5868,13 +5902,47 @@ extension Model {
 }
 
 extension Model: SrtlaServerDelegate {
-    func srtlaServerOnAudioBuffer(streamId _: String, buffer _: AVAudioPCMBuffer) {}
+    func srtlaServerOnAudioBuffer(streamId: String, buffer _: AVAudioPCMBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        // media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: buffer)
+    }
 
-    func srtlaServerOnVideoBuffer(streamId _: String, sampleBuffer _: CMSampleBuffer) {
-        // logger.info("""
-        // srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
-        // \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
-        // PTS \(sampleBuffer.presentationTimeStamp.seconds)
-        // """)
+    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func srtlaServerOnClientStart(streamId: String) {
+        DispatchQueue.main.async {
+            let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) connected")
+            guard let stream = self.getSrtlaStream(streamId: streamId) else {
+                return
+            }
+            let latency = Double(stream.latency!) / 1000
+            self.media.addRtmpCamera(cameraId: stream.id,
+                                     latency: latency,
+                                     outputFrameRate: Double(self.stream.fps))
+            self.media.addRtmpAudio(cameraId: stream.id, latency: latency)
+        }
+    }
+
+    func srtlaServerOnClientStop(streamId: String) {
+        DispatchQueue.main.async {
+            let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) disconnected")
+            guard let stream = self.getSrtlaStream(streamId: streamId) else {
+                return
+            }
+            self.media.removeRtmpCamera(cameraId: stream.id)
+            self.media.removeRtmpAudio(cameraId: stream.id)
+            if self.currentMic.inputUid == stream.id.uuidString {
+                self.setMicFromSettings()
+            }
+        }
     }
 }

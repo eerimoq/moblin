@@ -17,6 +17,8 @@ class SrtServerClient {
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private let streamId: String
+    private var videoDecoder: VideoCodec?
+    private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
 
     init(server: SrtServer, streamId: String) {
         self.server = server
@@ -52,6 +54,8 @@ class SrtServerClient {
             }
         }
         srt_close(clientSocket)
+        videoDecoder?.stopRunning()
+        videoDecoder = nil
     }
 
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
@@ -148,10 +152,7 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
-            streamId: streamId,
-            sampleBuffer: sampleBuffer
-        )
+        videoDecoder?.appendSampleBuffer(sampleBuffer)
     }
 
     private func handleFormatDescription(
@@ -198,7 +199,15 @@ class SrtServerClient {
         }
     }
 
-    private func handleVideoFormatDescription(_: CMFormatDescription) {}
+    private func handleVideoFormatDescription(_ formatDescription: CMFormatDescription) {
+        guard videoDecoder == nil else {
+            return
+        }
+        videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+        videoDecoder?.formatDescription = formatDescription
+        videoDecoder?.delegate = self
+        videoDecoder?.startRunning()
+    }
 
     private func tryMakeSampleBuffer(packetId: UInt16,
                                      forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)?
@@ -265,5 +274,16 @@ class SrtServerClient {
         default:
             return nil
         }
+    }
+}
+
+extension SrtServerClient: VideoCodecDelegate {
+    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
+
+    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
+            streamId: streamId,
+            sampleBuffer: sampleBuffer
+        )
     }
 }

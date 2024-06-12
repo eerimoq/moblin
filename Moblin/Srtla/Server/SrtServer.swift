@@ -6,7 +6,7 @@ private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server"
 class SrtServer {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
-    private var acceptedStreamId = ""
+    var acceptedStreamId: Atomic<String> = .init("")
     var running: Bool = false
     var totalBytesReceived: Atomic<UInt64> = .init(0)
     var numberOfClients: Atomic<Int> = .init(0)
@@ -38,7 +38,7 @@ class SrtServer {
             logger.info("srt-server: Waiting for client to connect.")
             let clientSocket = try accept()
             guard let stream = srtlaServer?.settings.streams
-                .first(where: { $0.streamId == acceptedStreamId })
+                .first(where: { $0.streamId == acceptedStreamId.value })
             else {
                 srt_close(clientSocket)
                 logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
@@ -51,8 +51,11 @@ class SrtServer {
             }
             logger.info("srt-server: Accepted client \(stream.name).")
             numberOfClients.mutate { $0 += 1 }
-            SrtServerClient(server: self, streamId: acceptedStreamId).run(clientSocket: clientSocket)
+            srtlaServer?.delegate?.srtlaServerOnClientStart(streamId: acceptedStreamId.value)
+            SrtServerClient(server: self, streamId: acceptedStreamId.value).run(clientSocket: clientSocket)
+            srtlaServer?.delegate?.srtlaServerOnClientStop(streamId: acceptedStreamId.value)
             numberOfClients.mutate { $0 -= 1 }
+            acceptedStreamId.mutate { $0 = "" }
             logger.info("srt-server: Closed client.")
         }
     }
@@ -94,7 +97,7 @@ class SrtServer {
                                       }
                                       let srtServer: SrtServer = Unmanaged.fromOpaque(server)
                                           .takeUnretainedValue()
-                                      srtServer.acceptedStreamId = String(cString: streamIdIn)
+                                      srtServer.acceptedStreamId.mutate { $0 = String(cString: streamIdIn) }
                                       return 0
                                   },
                                   server)

@@ -528,6 +528,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case front = "Front"
     case rtmp = "RTMP"
     case external = "External"
+    case srtla = "SRT(LA)"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -544,6 +545,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var backCameraId: String? = getBestBackCameraId()
     var frontCameraId: String? = getBestFrontCameraId()
     var rtmpCameraId: UUID? = .init()
+    var srtlaCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
@@ -566,6 +568,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
         new.backCameraId = backCameraId
         new.frontCameraId = frontCameraId
         new.rtmpCameraId = rtmpCameraId
+        new.srtlaCameraId = srtlaCameraId
         new.externalCameraId = externalCameraId
         new.externalCameraName = externalCameraName
         for widget in widgets {
@@ -1164,6 +1167,10 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var latency: Int32? = defaultSrtLatency
     var streamId: String = ""
+
+    func camera() -> String {
+        return srtlaCamera(name: name)
+    }
 
     func clone() -> SettingsSrtlaServerStream {
         let new = SettingsSrtlaServerStream()
@@ -2589,6 +2596,10 @@ final class Settings {
                 stream.fps = 30
                 store()
             }
+        }
+        for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
+            scene.srtlaCameraId = .init()
+            store()
         }
     }
 }
