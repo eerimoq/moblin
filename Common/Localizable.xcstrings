@@ -5565,7 +5565,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7TV"
           }
         },
@@ -7364,7 +7364,14 @@
       }
     },
     "A QR code and copy to clipboard button will show up here when the settings above have been modified (and are not all default values)." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-koodi ja Kopioi leikepöydälle -nappi tulee näkyviin kun ylläolevia asetuksia on muutettu (ja arvo poikkeaa oletusarvosta)"
+          }
+        }
+      }
     },
     "a scene" : {
       "localizations" : {
@@ -13483,7 +13490,14 @@
       }
     },
     "Best possible stability. Uses bonding. Free third-party service provided as a courtesy by IRLToolkit. Not to be used if you pay for IRLToolkit." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paras vakaus. Käyttää yhteyksien yhdistämistä. Ilmainen kolmannen osapuolen tarjoama palvelu IRLToolkitiltä. Älä käytä, jos maksat jo IRLToolkitistä."
+          }
+        }
+      }
     },
     "Best possible stability. Uses bonding. Paid third-party service." : {
       "localizations" : {
@@ -15977,7 +15991,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BTTV"
           }
         },
@@ -17407,7 +17421,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat ja katsojat"
           }
         },
@@ -21416,7 +21430,14 @@
       }
     },
     "Copy to clipboard" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopioi leikepöydälle"
+          }
+        }
+      }
     },
     "Cosmetics" : {
       "localizations" : {
@@ -22719,7 +22740,14 @@
       }
     },
     "Deep link creator" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syvälinkin luonti"
+          }
+        }
+      }
     },
     "Delete" : {
       "localizations" : {
@@ -25733,7 +25761,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hymiöt"
           }
         },
@@ -29633,7 +29661,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-tulon korjaaminen epäonnistui"
           }
         },
@@ -30543,8 +30571,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-tallennus epäonnistui"
+            "state" : "translated",
+            "value" : "OBS-tallennuksen aloitus epäonnistui"
           }
         },
         "fr" : {
@@ -30803,8 +30831,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-tallennuksen pysäyttäminen epäonnistui"
+            "state" : "translated",
+            "value" : "OBS-tallennuksen pysäytys epäonnistui"
           }
         },
         "fr" : {
@@ -31453,7 +31481,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFZ"
           }
         },
@@ -33512,7 +33540,14 @@
       }
     },
     "Free IRLToolkit bonding" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmainen IRLToolkit yhteyksien yhdistäminen"
+          }
+        }
+      }
     },
     "front" : {
       "localizations" : {
@@ -41445,7 +41480,14 @@
       }
     },
     "Malformed IRLToolkit URL" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Väärin muotoiltu IRLToolkit -URL-osoite"
+          }
+        }
+      }
     },
     "Malformed RIST URL" : {
       "localizations" : {
@@ -43289,7 +43331,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Media"
           }
         },
@@ -44329,7 +44371,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Minimibittinopeus"
           }
         },
@@ -58499,7 +58541,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytön tallennus aloitettu"
           }
         },
@@ -58629,8 +58671,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Näytön tallennus lopetettu"
+            "state" : "translated",
+            "value" : "Näytön tallennus pysäytetty"
           }
         },
         "fr" : {
@@ -59128,7 +59170,14 @@
       }
     },
     "Selected" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valittu"
+          }
+        }
+      }
     },
     "Send your location to https://rtirl.com, to let your viewers know where you are." : {
       "localizations" : {
@@ -63572,8 +63621,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aloita nauhottaminen"
+            "state" : "translated",
+            "value" : "Aloita tallennus"
           }
         },
         "fr" : {
@@ -64222,7 +64271,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lopeta tallennus"
           }
         },
@@ -69422,7 +69471,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Enkooderin minimibittinopeus."
           }
         },
@@ -73582,8 +73631,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tuntematon tallennustila."
+            "state" : "translated",
+            "value" : "Tuntematon tallennuksen tila."
           }
         },
         "fr" : {
