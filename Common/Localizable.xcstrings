@@ -4245,7 +4245,14 @@
       }
     },
     "⚠️ Does not yet work." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ Ei vielä toimi."
+          }
+        }
+      }
     },
     "⚠️ Failed to load settings ⚠️" : {
       "localizations" : {
@@ -5809,7 +5816,14 @@
       }
     },
     "100 or more milliseconds." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100 tai enemmän millisekuntia."
+          }
+        }
+      }
     },
     "128 Kpbs or higher is recommended." : {
       "localizations" : {
@@ -6332,7 +6346,14 @@
       }
     },
     "500 Kbps by default." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "500 Kbps oletuksena."
+          }
+        }
+      }
     },
     "7654" : {
       "localizations" : {
@@ -12461,7 +12482,14 @@
       }
     },
     "Background streaming" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taustalähetys"
+          }
+        }
+      }
     },
     "Bar" : {
       "localizations" : {
@@ -19624,7 +19652,14 @@
       }
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for Fix button and more." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta näkymän nimi Asetukset → Lähetykset %@ → OBS-etähallinta Korjaa-nappia ja muuta varten."
+          }
+        }
+      }
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
       "extractionState" : "stale",
@@ -21978,7 +22013,14 @@
       }
     },
     "Current scene snapshot" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nykyisen näkymän tilannekuva"
+          }
+        }
+      }
     },
     "Custom" : {
       "localizations" : {
@@ -38917,7 +38959,14 @@
       }
     },
     "Keep live streams running when the app is in background mode." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pidä livelähetys käynnissä kun sovellus on taustalla."
+          }
+        }
+      }
     },
     "Key frame interval" : {
       "localizations" : {
@@ -62730,7 +62779,14 @@
       }
     },
     "SRT port" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT-portti"
+          }
+        }
+      }
     },
     "srt://107.32.12.132:5000" : {
       "localizations" : {
@@ -63126,7 +63182,14 @@
 
     },
     "SRTLA port" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRTLA-portti"
+          }
+        }
+      }
     },
     "SRTLA server" : {
       "localizations" : {
@@ -65079,7 +65142,14 @@
       }
     },
     "Stream id missing" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream-id puuttuu"
+          }
+        }
+      }
     },
     "Stream key" : {
       "localizations" : {
@@ -75098,7 +75168,14 @@
       }
     },
     "Use audio for timestamps" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käytä audiota aikaleimoihin"
+          }
+        }
+      }
     },
     "Use game controllers to zoom, set scene, and more, from a distance." : {
       "localizations" : {
