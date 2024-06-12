@@ -8,6 +8,7 @@ class SrtlaServerClient {
     private var connections: [SrtlaServerClientConnection] = []
     private var latestConnection: SrtlaServerClientConnection?
     let createdAt: ContinuousClock.Instant = .now
+    var totalBytesReceived: UInt64 = 0
 
     init(srtPort: UInt16) {
         logger.info("srtla-server-client: Creating local SRT server connection.")
@@ -91,6 +92,7 @@ class SrtlaServerClient {
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
     func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data) {
+        totalBytesReceived += UInt64(packet.count)
         latestConnection = connection
         localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }

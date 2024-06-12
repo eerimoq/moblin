@@ -3,6 +3,11 @@ import Foundation
 import libsrt
 import Network
 
+struct SrtlaServerStats {
+    var total: UInt64
+    var speed: UInt64
+}
+
 let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
 private let periodicTimerTimeout = 3.0
 
@@ -18,6 +23,7 @@ class SrtlaServer {
     private var srtServer: SrtServer
     weak var delegate: (any SrtlaServerDelegate)?
     private var periodicTimer: DispatchSourceTimer?
+    private var prevTotalBytesReceived: UInt64 = 0
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings.clone()
@@ -38,6 +44,24 @@ class SrtlaServer {
             self.stopPeriodicTimer()
             self.stopListener()
             self.srtServer.stop()
+        }
+    }
+
+    func updateStats() -> SrtlaServerStats {
+        return srtlaServerQueue.sync {
+            var totalBytesReceived: UInt64 = 0
+            for client in clients.values {
+                totalBytesReceived += client.totalBytesReceived
+            }
+            let speed = totalBytesReceived - prevTotalBytesReceived
+            prevTotalBytesReceived = totalBytesReceived
+            return SrtlaServerStats(total: totalBytesReceived, speed: speed)
+        }
+    }
+
+    func numberOfClients() -> Int {
+        return srtlaServerQueue.sync {
+            clients.count
         }
     }
 
