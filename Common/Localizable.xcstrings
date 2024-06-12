@@ -3068,6 +3068,7 @@
       }
     },
     "%@ source snapshot" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4243,6 +4244,9 @@
         }
       }
     },
+    "⚠️ Does not yet work." : {
+
+    },
     "⚠️ Failed to load settings ⚠️" : {
       "localizations" : {
         "de" : {
@@ -5154,6 +5158,7 @@
       }
     },
     "2. Replace 192.168.50.72 with your local IP address (typically 192.168.x.y)." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5283,132 +5288,132 @@
         }
       }
     },
-    "3. Replace 7654 with your port." : {
+    "2. Replace 7654 with your port." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. Ersetze 7654 durch deinen Port."
+            "value" : "2. Ersetze 7654 durch deinen Port."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Αντικαταστήστε το 7654 με τη θύρα σας."
+            "value" : "2. Αντικαταστήστε το 7654 με τη θύρα σας."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. Reemplaza 7654 por su puerto."
+            "value" : "2. Reemplaza 7654 por su puerto."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. Korvaa 7654 omalla portillasi."
+            "value" : "2. Korvaa 7654 omalla portillasi."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Remplacez 7654 par votre port."
+            "value" : "2. Remplacez 7654 par votre port."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. 7654 को अपने पोर्ट से बदलें।"
+            "value" : "2. 7654 को अपने पोर्ट से बदलें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Ganti 7654 dengan port Anda."
+            "value" : "2. Ganti 7654 dengan port Anda."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Sostituisci 7654 con la tua porta."
+            "value" : "2. Sostituisci 7654 con la tua porta."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. 7654 を実際のポートに置き換えます。"
+            "value" : "2. 7654 を実際のポートに置き換えます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. 7654를 해당 포트로 바꾸십시오."
+            "value" : "2. 7654를 해당 포트로 바꾸십시오."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Vervang 7654 door uw poort."
+            "value" : "2. Vervang 7654 door uw poort."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. Zamień 7654 na swój port."
+            "value" : "2. Zamień 7654 na swój port."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Substitua 7654 pela sua porta."
+            "value" : "2. Substitua 7654 pela sua porta."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Substitua 7654 pela sua porta."
+            "value" : "2. Substitua 7654 pela sua porta."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Замените 7654 на свой порт."
+            "value" : "2. Замените 7654 на свой порт."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. Ersätt 7654 med din port."
+            "value" : "2. Ersätt 7654 med din port."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. 7654'ü bağlantı noktanızla değiştirin."
+            "value" : "2. 7654'ü bağlantı noktanızla değiştirin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3. Замініть 7654 своїм портом."
+            "value" : "2. Замініть 7654 своїм портом."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. Thay thế 7654 bằng cổng của bạn."
+            "value" : "2. Thay thế 7654 bằng cổng của bạn."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. 将 7654 替换为您的端口。"
+            "value" : "2. 将 7654 替换为您的端口。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "3. 將 7654 替換為您的連接埠。"
+            "value" : "2. 將 7654 替換為您的連接埠。"
           }
         }
       }
@@ -5802,6 +5807,9 @@
           }
         }
       }
+    },
+    "100 or more milliseconds." : {
+
     },
     "128 Kpbs or higher is recommended." : {
       "localizations" : {
@@ -6322,6 +6330,9 @@
           }
         }
       }
+    },
+    "500 Kbps by default." : {
+
     },
     "7654" : {
       "localizations" : {
@@ -12448,6 +12459,9 @@
           }
         }
       }
+    },
+    "Background streaming" : {
+
     },
     "Bar" : {
       "localizations" : {
@@ -19609,7 +19623,11 @@
         }
       }
     },
+    "Configure source name in Settings → Streams → %@ → OBS remote control for Fix button and more." : {
+
+    },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -21959,6 +21977,9 @@
         }
       }
     },
+    "Current scene snapshot" : {
+
+    },
     "Custom" : {
       "localizations" : {
         "de" : {
@@ -23788,6 +23809,9 @@
           }
         }
       }
+    },
+    "Disable the SRT(LA) server to change its settings." : {
+
     },
     "Disabled connections will not be used." : {
       "localizations" : {
@@ -25739,6 +25763,9 @@
         }
       }
     },
+    "Each stream can receive video from one SRT(LA) publisher." : {
+
+    },
     "Emotes" : {
       "localizations" : {
         "de" : {
@@ -26388,6 +26415,9 @@
           }
         }
       }
+    },
+    "Enable the SRT(LA) server to see URLs." : {
+
     },
     "Enable to allow an assistant to monitor and control this device from a different device." : {
       "localizations" : {
@@ -27428,6 +27458,9 @@
           }
         }
       }
+    },
+    "Enter one of the URLs into the SRT(LA) publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
+
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
@@ -35370,6 +35403,7 @@
       }
     },
     "Go live to see snapshot." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -36278,6 +36312,9 @@
           }
         }
       }
+    },
+    "Higher data rate limit" : {
+
     },
     "Highest bitrate" : {
       "localizations" : {
@@ -38878,6 +38915,9 @@
           }
         }
       }
+    },
+    "Keep live streams running when the app is in background mode." : {
+
     },
     "Key frame interval" : {
       "localizations" : {
@@ -50069,36 +50109,36 @@
         }
       }
     },
-    "Often bad stability if network connection is unstable. No server side disconnection protection possible (no NOALBS)." : {
+    "Often bad stability if network connection is unstable. No server side disconnection protection possible." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oft schlechte Stabilität, wenn die Netzwerkverbindung instabil ist. Kein serverseitiger Verbindungsabbruchschutz möglich (kein NOALBS)."
+            "value" : "Oft schlechte Stabilität, wenn die Netzwerkverbindung instabil ist. Kein serverseitiger Verbindungsabbruchschutz möglich."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Συχνά κακή σταθερότητα εάν η σύνδεση δικτύου είναι ασταθής. Δεν είναι δυνατή η προστασία αποσύνδεσης από την πλευρά του διακομιστή (χωρίς NOALBS)."
+            "value" : "Συχνά κακή σταθερότητα εάν η σύνδεση δικτύου είναι ασταθής. Δεν είναι δυνατή η προστασία αποσύνδεσης από την πλευρά του διακομιστή."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A menudo, la estabilidad es mala si la conexión de red es inestable. No es posible la protección de desconexión del lado del servidor (sin NOALBS)."
+            "value" : "A menudo, la estabilidad es mala si la conexión de red es inestable. No es posible la protección de desconexión del lado del servidor."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usein huono vakaus, jos verkkoyhteys on epävakaa. Yhteyden katkeamissuojaus palvelimelta ei ole mahdollista (NOALBS ei käytettävissä)."
+            "value" : "Usein huono vakaus, jos verkkoyhteys on epävakaa. Yhteyden katkeamissuojaus palvelimelta ei ole mahdollista."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Stabilité souvent mauvaise si la connexion réseau est instable. Aucune protection contre les déconnexions côté serveur possible (pas de NOALBS)."
+            "value" : "Stabilité souvent mauvaise si la connexion réseau est instable. Aucune protection contre les déconnexions côté serveur possible."
           }
         },
         "hi" : {
@@ -50110,91 +50150,91 @@
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Seringkali stabilitas buruk jika koneksi jaringan tidak stabil. Tidak ada perlindungan pemutusan sisi server yang dimungkinkan (tidak ada NOALBS)."
+            "value" : "Seringkali stabilitas buruk jika koneksi jaringan tidak stabil. Tidak ada perlindungan pemutusan sisi server yang dimungkinkan."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Spesso scarsa stabilità se la connessione di rete è instabile. Non è possibile alcuna protezione dalla disconnessione lato server (no NOALBS)."
+            "value" : "Spesso scarsa stabilità se la connessione di rete è instabile. Non è possibile alcuna protezione dalla disconnessione lato server."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ネットワーク接続が不安定な場合、安定性が低下することがよくあります。サーバー側の切断保護は不可能です (NOALBS はありません)。"
+            "value" : "ネットワーク接続が不安定な場合、安定性が低下することがよくあります。サーバー側の切断保護は不可能です"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "종종 네트워크 연결이 불안정하면 방송이 원활하지 않습니다. 서버 측 연결 끊김 보호가 불가능합니다(NOALBS 없음)."
+            "value" : "종종 네트워크 연결이 불안정하면 방송이 원활하지 않습니다. 서버 측 연결 끊김 보호가 불가능합니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Vaak slechte stabiliteit als de netwerkverbinding instabiel is. Geen server-side ontkoppelingsbeveiliging mogelijk (geen NOALBS)."
+            "value" : "Vaak slechte stabiliteit als de netwerkverbinding instabiel is. Geen server-side ontkoppelingsbeveiliging mogelijk."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Często zła stabilność, jeśli połączenie sieciowe jest niestabilne. Brak możliwości zabezpieczenia przed rozłączeniem po stronie serwera (brak NOALBS)."
+            "value" : "Często zła stabilność, jeśli połączenie sieciowe jest niestabilne. Brak możliwości zabezpieczenia przed rozłączeniem po stronie serwera."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Muitas vezes, a estabilidade é ruim se a conexão de rede estiver instável. Nenhuma proteção de desconexão do lado do servidor é possível (sem NOALBS)."
+            "value" : "Muitas vezes, a estabilidade é ruim se a conexão de rede estiver instável. Nenhuma proteção de desconexão do lado do servidor é possível."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Muitas vezes, a estabilidade é ruim se a conexão de rede estiver instável. Nenhuma proteção de desconexão do lado do servidor é possível (sem NOALBS)."
+            "value" : "Muitas vezes, a estabilidade é ruim se a conexão de rede estiver instável. Nenhuma proteção de desconexão do lado do servidor é possível."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Часто нестабильно при плохом соединении. Защита от разрыва на стороне сервера невозможна (нет NOALBS)."
+            "value" : "Часто нестабильно при плохом соединении. Защита от разрыва на стороне сервера невозможна."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ofta dålig stabilitet om nätverksanslutningen är instabil. Inget skydd från serversidan är möjligt (ingen NOALBS)."
+            "value" : "Ofta dålig stabilitet om nätverksanslutningen är instabil. Inget skydd från serversidan är möjligt."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ağ bağlantısı kararsızsa genellikle kötü kararlılık olur. Sunucu tarafı bağlantı kesilmesi koruması mümkün değil (NOALBS yok)."
+            "value" : "Ağ bağlantısı kararsızsa genellikle kötü kararlılık olur. Sunucu tarafı bağlantı kesilmesi koruması mümkün değil."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Часто погана стабільність, якщо з’єднання з мережею нестабільне. Захист від відключення на стороні сервера неможливий (без NOALBS)."
+            "value" : "Часто погана стабільність, якщо з’єднання з мережею нестабільне. Захист від відключення на стороні сервера неможливий."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Độ ổn định thường kém nếu kết nối mạng không ổn định. Không có khả năng bảo vệ ngắt kết nối phía máy chủ (không có NOALBS)."
+            "value" : "Độ ổn định thường kém nếu kết nối mạng không ổn định. Không có khả năng bảo vệ ngắt kết nối phía máy chủ."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "如果网络连接不稳定，稳定性通常会很差。不可能提供服务器端断开连接保护（无 NOALBS）。"
+            "value" : "如果网络连接不稳定，稳定性通常会很差。不可能提供服务器端断开连接保护。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "如果網路連線不穩定，穩定性通常會很差。無法提供伺服器端斷線保護（無 NOALBS）。"
+            "value" : "如果網路連線不穩定，穩定性通常會很差。無法提供伺服器端斷線保護。"
           }
         }
       }
@@ -62689,6 +62729,9 @@
         }
       }
     },
+    "SRT port" : {
+
+    },
     "srt://107.32.12.132:5000" : {
       "localizations" : {
         "de" : {
@@ -63078,6 +63121,12 @@
           }
         }
       }
+    },
+    "SRT(LA) server" : {
+
+    },
+    "SRTLA port" : {
+
     },
     "SRTLA server" : {
       "localizations" : {
@@ -65028,6 +65077,9 @@
           }
         }
       }
+    },
+    "Stream id missing" : {
+
     },
     "Stream key" : {
       "localizations" : {
@@ -70359,6 +70411,12 @@
         }
       }
     },
+    "The UDP port the SRT(LA) server listens for SRT publishers on." : {
+
+    },
+    "The UDP port the SRT(LA) server listens for SRTLA publishers on." : {
+
+    },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
       "localizations" : {
         "de" : {
@@ -75038,6 +75096,9 @@
           }
         }
       }
+    },
+    "Use audio for timestamps" : {
+
     },
     "Use game controllers to zoom, set scene, and more, from a distance." : {
       "localizations" : {

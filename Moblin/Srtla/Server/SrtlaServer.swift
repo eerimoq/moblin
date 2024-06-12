@@ -1,40 +1,80 @@
+import AVFoundation
 import Foundation
+import libsrt
 import Network
 
-private let srtlaServerDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
+let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
+private let periodicTimerTimeout = 3.0
 
-class SettingsSrtlaServer {
-    var port: UInt16 = 5000
+protocol SrtlaServerDelegate: AnyObject {
+    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
+    func srtlaServerOnAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer)
 }
 
 class SrtlaServer {
     private var listener: NWListener!
     private var clients: [Data: SrtlaServerClient] = [:]
     var settings: SettingsSrtlaServer
+    private var srtServer: SrtServer
+    weak var delegate: (any SrtlaServerDelegate)?
+    private var periodicTimer: DispatchSourceTimer?
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings
+        srtServer = SrtServer()
+        srtServer.srtlaServer = self
     }
 
     func start() {
-        srtlaServerDispatchQueue.async {
-            self.setupListener()
+        srtlaServerQueue.async {
+            self.srtServer.start()
+            self.startListener()
+            self.startPeriodicTimer()
         }
     }
 
     func stop() {
-        srtlaServerDispatchQueue.async {
-            self.listener?.cancel()
-            self.listener = nil
+        srtlaServerQueue.async {
+            self.stopListener()
+            self.srtServer.stop()
+            self.stopPeriodicTimer()
         }
     }
 
-    private func setupListener() {
+    private func startPeriodicTimer() {
+        periodicTimer = DispatchSource.makeTimerSource(queue: srtlaServerQueue)
+        periodicTimer!.schedule(deadline: .now() + periodicTimerTimeout, repeating: periodicTimerTimeout)
+        periodicTimer!.setEventHandler { [weak self] in
+            self?.handlePeriodicTimer()
+        }
+        periodicTimer!.activate()
+    }
+
+    private func stopPeriodicTimer() {
+        periodicTimer?.cancel()
+        periodicTimer = nil
+    }
+
+    private func handlePeriodicTimer() {
+        var groupIdsToRemove: [Data] = []
+        for (groupId, client) in clients where client.handlePeriodicTimer() {
+            client.stop()
+            groupIdsToRemove.append(groupId)
+            logger.info("srtla-server: Removed client")
+        }
+        for groupId in groupIdsToRemove {
+            clients.removeValue(forKey: groupId)
+        }
+    }
+
+    private func startListener() {
+        logger.info("srtla-server: Setup listener")
+        guard let srtlaPort = NWEndpoint.Port(rawValue: settings.srtlaPort) else {
+            logger.error("srtla-server: Bad listener port \(settings.srtlaPort)")
+            return
+        }
         let parameters = NWParameters(dtls: .none, udp: .init())
-        parameters.requiredLocalEndpoint = .hostPort(
-            host: .ipv4(.any),
-            port: NWEndpoint.Port(rawValue: settings.port) ?? 5000
-        )
+        parameters.requiredLocalEndpoint = .hostPort(host: .ipv4(.any), port: srtlaPort)
         parameters.allowLocalEndpointReuse = true
         do {
             listener = try NWListener(using: parameters)
@@ -44,7 +84,12 @@ class SrtlaServer {
         }
         listener.stateUpdateHandler = handleListenerStateChange(to:)
         listener.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener.start(queue: srtlaServerDispatchQueue)
+        listener.start(queue: srtlaServerQueue)
+    }
+
+    private func stopListener() {
+        listener?.cancel()
+        listener = nil
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {
@@ -58,7 +103,7 @@ class SrtlaServer {
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
-        logger.info("srtla-server: Client connected \(connection.debugDescription)")
+        logger.info("srtla-server: Client \(connection.endpoint) connected")
         connection.start(queue: srtlaDispatchQueue)
         receivePacket(connection: connection)
     }
@@ -119,7 +164,7 @@ class SrtlaServer {
             return
         }
         let groupId = packet[2 ..< 2 + 128] + Data.random(length: 128)
-        clients[groupId] = .init()
+        clients[groupId] = .init(srtPort: settings.srtPort)
         sendSrtlaReg2(connection: connection, groupId: groupId)
     }
 
@@ -142,7 +187,7 @@ class SrtlaServer {
     private func sendSrtlaReg2(connection: NWConnection, groupId: Data) {
         logger.info("srtla-server: Sending reg 2 (group created)")
         var packet = Data(count: 258)
-        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | srtControlPacketTypeBit)
         packet[2...] = groupId
         sendPacket(connection: connection, packet: packet)
     }
@@ -150,7 +195,7 @@ class SrtlaServer {
     private func sendSrtlaReg3(connection: NWConnection) {
         logger.info("srtla-server: Sending reg 3 (connection registered)")
         var packet = Data(count: 2)
-        packet.setUInt16Be(value: SrtlaPacketType.reg3.rawValue | srtlaPacketTypeBit)
+        packet.setUInt16Be(value: SrtlaPacketType.reg3.rawValue | srtControlPacketTypeBit)
         sendPacket(connection: connection, packet: packet)
     }
 

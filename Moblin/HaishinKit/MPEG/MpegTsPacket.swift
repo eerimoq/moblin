@@ -6,6 +6,9 @@ import AVFoundation
 struct MpegTsPacket {
     static let size = 188
     static let fixedHeaderSize = 4
+    static let syncByte: UInt8 = 0x47
+    static let programAssociationTableId: UInt16 = 0
+    static let nullId: UInt16 = 0x1FFF
     var payloadUnitStartIndicator = false
     var id: UInt16 = 0
     var continuityCounter: UInt8 = 0
@@ -19,6 +22,28 @@ struct MpegTsPacket {
 
     init(id: UInt16) {
         self.id = id
+    }
+
+    init(reader: ByteArray) throws {
+        let startPosition = reader.position
+        guard try reader.readUInt8() == MpegTsPacket.syncByte else {
+            throw "Invalid sync byte"
+        }
+        var byte = try reader.readUInt8()
+        payloadUnitStartIndicator = (byte & 0x40) == 0x40
+        id = UInt16(byte & 0x1F) << 8
+        try id |= UInt16(reader.readUInt8())
+        byte = try reader.readUInt8()
+        continuityCounter = (byte & 0xF)
+        let hasAdaptationField = (byte & 0x20) == 0x20
+        if hasAdaptationField {
+            let length = try reader.readUInt8()
+            adaptationField = try MpegTsAdaptationField(reader: reader, length: length)
+        }
+        let hasPayload = (byte & 0x10) == 0x10
+        if hasPayload {
+            payload = try reader.readBytes(MpegTsPacket.size - (reader.position - startPosition))
+        }
     }
 
     mutating func setPayload(_ data: Data) -> Int {
@@ -37,7 +62,7 @@ struct MpegTsPacket {
     }
 
     func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {
-        pointer.storeBytes(of: 0x47, toByteOffset: 0, as: UInt8.self)
+        pointer.storeBytes(of: MpegTsPacket.syncByte, toByteOffset: 0, as: UInt8.self)
         pointer.storeBytes(
             of: (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(id >> 8),
             toByteOffset: 1,
@@ -72,6 +97,14 @@ enum TSTimestamp {
         encoded[3] = UInt8(truncatingIfNeeded: b >> 7)
         encoded[4] = UInt8(truncatingIfNeeded: b << 1) | 0x01
         return encoded
+    }
+
+    static func decode(_ data: Data, offset: Int = 0) -> Int64 {
+        var result: Int64 = 0
+        result |= Int64(data[offset + 0] & 0x0E) << 29
+        result |= Int64(data[offset + 1]) << 22 | Int64(data[offset + 2] & 0xFE) << 14
+        result |= Int64(data[offset + 3]) << 7 | Int64(data[offset + 3] & 0xFE) << 1
+        return result
     }
 }
 

@@ -27,3 +27,19 @@ func getKickChannelInfo(channelName: String) async throws -> KickChannel {
     }
     return try JSONDecoder().decode(KickChannel.self, from: data)
 }
+
+func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?) -> Void) {
+    guard let url = URL(string: "https://kick.com/api/v1/channels/\(channelName)") else {
+        onComplete(nil)
+        return
+    }
+    let request = URLRequest(url: url)
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        guard error == nil, let data, response?.http?.isSuccessful == true else {
+            onComplete(nil)
+            return
+        }
+        onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
+    }
+    .resume()
+}

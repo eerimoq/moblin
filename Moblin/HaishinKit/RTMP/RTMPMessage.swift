@@ -646,7 +646,7 @@ final class RTMPVideoMessage: RTMPMessage {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isKeyFrame = payload[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
+        sampleBuffer?.isSync = payload[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
         return sampleBuffer
     }
 

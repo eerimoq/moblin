@@ -8,9 +8,43 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.302.0", date: "2024-06-11", changes: [
+        "• Toggle to debug crash when live and entering foreground mode.",
+        "  • Settings → Debug → Use audio for timestamps",
+    ]),
+    Version(version: "0.301.0", date: "2024-06-11", changes: [
+        "• Show current scene instead of source in OBS remote control preview. 💡 MadMad",
+        "  • Always shown. No need to be live anymore.",
+    ]),
+    Version(version: "0.300.0", date: "2024-06-11", changes: [
+        "• Do not navigate to \"Remote control\" when tapping \"Background streaming\". 🐛 Onur",
+    ]),
+    Version(version: "0.299.0", date: "2024-06-09", changes: [
+        "• 25% instead of 5% default overhead bandwidth for SRT(LA).",
+        "  • Hard to say which is better.",
+        "• \"Background streaming\" toggle. 💡 tokon2000",
+        "  • Background streaming is off by default.",
+        "  • Added for privacy reasons.",
+        "  • Live streams will automatically end when entering background when this toggle is off.",
+        "  • Toggle in Settings → Streams → My stream at the bottom.",
+    ]),
+    Version(version: "0.298.0", date: "2024-06-08", changes: [
+        "• Make stream setup wizard even better. 💡 banj",
+        "• Adaptive bitrate tweaks. Goal is fewer dropped frames and higher image quality on average.",
+        "  • Minimum bitrate 500 Kbps by default.",
+        "  • Adapt faster to current RTT.",
+        "• Make debug toggle to make bitrate closer to configured bitrate on by default.",
+    ]),
+    Version(version: "0.297.0", date: "2024-06-06", changes: [
+        "• Debug toggle to make bitrate closer to configured bitrate.",
+        "  • Settings → Debug → Higher data rate limit.",
+        "• Configurable minimum bitrate in Fast IRL adaptive bitrate algorithm.",
+        "  • Will probably be fewer dropped frames if set to 500 Kbps or above.",
+        "  • A higher value means greater risk of dropped packets and interrupted stream.",
+    ]),
     Version(version: "0.296.0", date: "2024-06-05", changes: [
         "• Fix upside down image when switching stream with phone USB connector to the left. 🐛 Marlow",
-        "• Make \"OBS remote control\" and \"Remote control\" connection handling more robust. 🐛 djandrea. and others",
+        "• Make \"OBS remote control\", \"Remote control\", \"Twitch chat\" and \"Kick chat\" connection handling more robust. 🐛 djandrea. and others",
         "  • If for example WiFi fails, try cellular.",
     ]),
     Version(version: "0.295.0", date: "2024-06-03", changes: [
@@ -933,7 +967,7 @@ private let versions = [
         "• Game controller settings localized.",
         "• Replace OBS start/stop stream and OBS scene quick buttons with a OBS quick button.",
         "  • The new quick button opens a panel where you can start/stop stream, change scene, see source snapshot and source audio levels.",
-        "  • Configure OBS scene name in Settings → My stream → OBS remote control for snapshot and audio levels.",
+        "  • Configure OBS source name in Settings → My stream → OBS remote control for snapshot and audio levels.",
     ]),
     Version(version: "0.146.0", date: "2024-01-11", changes: [
         "• Only send location to RealtimeIRL when live.",

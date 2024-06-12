@@ -146,10 +146,12 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
+    var minimumBitrate: Float? = 500
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
         let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
         new.packetsInFlight = packetsInFlight
+        new.minimumBitrate = minimumBitrate
         return new
     }
 }
@@ -160,7 +162,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
-    var minimumBitrate: Float? = 50
+    var minimumBitrate: Float? = 500
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -363,6 +365,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var realtimeIrlEnabled: Bool? = false
     var realtimeIrlPushKey: String? = ""
     var portrait: Bool? = false
+    var backgroundStreaming: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -1114,6 +1117,8 @@ class SettingsDebug: Codable {
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
     var srtlaServer: Bool? = false
+    var higherDataRateLimit: Bool? = true
+    var useAudioForTimestamps: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1146,6 +1151,39 @@ class SettingsRtmpServer: Codable {
         let new = SettingsRtmpServer()
         new.enabled = enabled
         new.port = port
+        for stream in streams {
+            new.streams.append(stream.clone())
+        }
+        return new
+    }
+}
+
+class SettingsSrtlaServerStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My stream"
+    var latency: Int32? = defaultSrtLatency
+    var streamId: String = ""
+
+    func clone() -> SettingsSrtlaServerStream {
+        let new = SettingsSrtlaServerStream()
+        new.name = name
+        new.streamId = streamId
+        new.latency = latency
+        return new
+    }
+}
+
+class SettingsSrtlaServer: Codable {
+    var enabled: Bool = false
+    var srtPort: UInt16 = 4000
+    var srtlaPort: UInt16 = 5000
+    var streams: [SettingsSrtlaServerStream] = []
+
+    func clone() -> SettingsSrtlaServer {
+        let new = SettingsSrtlaServer()
+        new.enabled = enabled
+        new.srtPort = srtPort
+        new.srtlaPort = srtlaPort
         for stream in streams {
             new.streams.append(stream.clone())
         }
@@ -1489,6 +1527,7 @@ class Database: Codable {
     var audio: AudioSettings? = .init()
     var webBrowser: WebBrowserSettings? = .init()
     var deepLinkCreator: DeepLinkCreator? = .init()
+    var srtlaServer: SettingsSrtlaServer? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2495,7 +2534,7 @@ final class Settings {
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 50
+            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 500
             store()
         }
         if realDatabase.deepLinkCreator == nil {
@@ -2520,6 +2559,28 @@ final class Settings {
         }
         if realDatabase.debug!.srtlaServer == nil {
             realDatabase.debug!.srtlaServer = false
+            store()
+        }
+        if realDatabase.srtlaServer == nil {
+            realDatabase.srtlaServer = .init()
+            store()
+        }
+        if realDatabase.debug!.higherDataRateLimit == nil {
+            realDatabase.debug!.higherDataRateLimit = true
+            store()
+        }
+        for stream in realDatabase.streams
+            where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
+        {
+            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 500
+            store()
+        }
+        for stream in realDatabase.streams where stream.backgroundStreaming == nil {
+            stream.backgroundStreaming = false
+            store()
+        }
+        if realDatabase.debug!.useAudioForTimestamps == nil {
+            realDatabase.debug!.useAudioForTimestamps = false
             store()
         }
     }

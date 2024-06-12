@@ -161,6 +161,16 @@ struct StreamSettingsView: View {
                     }))
                 }
             }
+            Section {
+                Toggle("Background streaming", isOn: Binding(get: {
+                    stream.backgroundStreaming!
+                }, set: { value in
+                    stream.backgroundStreaming = value
+                    model.store()
+                }))
+            } footer: {
+                Text("Keep live streams running when the app is in background mode.")
+            }
         }
         .navigationTitle("Stream")
         .toolbar {

@@ -6,6 +6,7 @@ import CoreMedia
  */
 
 private struct OptionalHeader {
+    static let fixedSectionSize: Int = 3
     var markerBits: UInt8 = 2
     var scramblingControl: UInt8 = 0
     var priority = false
@@ -22,6 +23,28 @@ private struct OptionalHeader {
     var pesHeaderLength: UInt8 = 0
     var optionalFields = Data()
     var stuffingBytes = Data()
+
+    init() {}
+
+    init(data: Data) throws {
+        let reader = ByteArray(data: data)
+        let bytes = try reader.readBytes(OptionalHeader.fixedSectionSize)
+        markerBits = (bytes[0] & 0b1100_0000) >> 6
+        scramblingControl = bytes[0] & 0b0011_0000 >> 4
+        priority = (bytes[0] & 0b0000_1000) == 0b0000_1000
+        dataAlignmentIndicator = (bytes[0] & 0b0000_0100) == 0b0000_0100
+        copyright = (bytes[0] & 0b0000_0010) == 0b0000_0010
+        originalOrCopy = (bytes[0] & 0b0000_0001) == 0b0000_0001
+        ptsDtsIndicator = (bytes[1] & 0b1100_0000) >> 6
+        esCRFlag = (bytes[1] & 0b0010_0000) == 0b0010_0000
+        esRateFlag = (bytes[1] & 0b0001_0000) == 0b0001_0000
+        dsmTrickModeFlag = (bytes[1] & 0b0000_1000) == 0b0000_1000
+        additionalCopyInfoFlag = (bytes[1] & 0b0000_0100) == 0b0000_0100
+        crcFlag = (bytes[1] & 0b0000_0010) == 0b0000_0010
+        extentionFlag = (bytes[1] & 0b0000_0001) == 0b0000_0001
+        pesHeaderLength = bytes[2]
+        optionalFields = try reader.readBytes(Int(pesHeaderLength))
+    }
 
     mutating func setTimestamp(
         _ timestamp: CMTime,
@@ -68,15 +91,34 @@ private struct OptionalHeader {
             .writeBytes(stuffingBytes)
             .data
     }
+
+    func makeSampleTimingInfo(_ previousPresentationTimeStamp: CMTime) -> CMSampleTimingInfo? {
+        var presentationTimeStamp: CMTime = .invalid
+        var decodeTimeStamp: CMTime = .invalid
+        if ptsDtsIndicator & 0x02 == 0x02 {
+            let pts = TSTimestamp.decode(optionalFields, offset: 0)
+            presentationTimeStamp = .init(value: pts, timescale: CMTimeScale(TSTimestamp.resolution))
+        }
+        if ptsDtsIndicator & 0x01 == 0x01 {
+            let dts = TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize)
+            decodeTimeStamp = .init(value: dts, timescale: CMTimeScale(TSTimestamp.resolution))
+        }
+        return CMSampleTimingInfo(
+            duration: presentationTimeStamp - previousPresentationTimeStamp,
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
+        )
+    }
 }
 
 struct MpegTsPacketizedElementaryStream {
+    static let untilPacketLengthSize: Int = 6
     static let startCode = Data([0x00, 0x00, 0x01])
     private var startCode = MpegTsPacketizedElementaryStream.startCode
     private var streamID: UInt8 = 0
     private var packetLength: UInt16 = 0
     private var optionalHeader = OptionalHeader()
-    private var data = Data()
+    var data = Data()
 
     init?(
         bytes: UnsafePointer<UInt8>,
@@ -163,6 +205,28 @@ struct MpegTsPacketizedElementaryStream {
         self.streamID = streamID
     }
 
+    init(data: Data) throws {
+        let reader = ByteArray(data: data)
+        startCode = try reader.readBytes(3)
+        streamID = try reader.readUInt8()
+        packetLength = try reader.readUInt16()
+        optionalHeader = try OptionalHeader(data: reader.readBytes(reader.bytesAvailable))
+        reader.position = MpegTsPacketizedElementaryStream
+            .untilPacketLengthSize + 3 + Int(optionalHeader.pesHeaderLength)
+        self.data = try reader.readBytes(reader.bytesAvailable)
+    }
+
+    mutating func append(data: Data) {
+        self.data.append(data)
+    }
+
+    func isComplete() -> Bool {
+        if packetLength > 0 {
+            return data.count == packetLength - 8
+        }
+        return false
+    }
+
     private func encode() -> Data {
         ByteArray()
             .writeBytes(startCode)
@@ -217,5 +281,49 @@ struct MpegTsPacketizedElementaryStream {
             packets.append(packet)
         }
         return packets
+    }
+
+    mutating func makeSampleBuffer(
+        _ streamType: ElementaryStreamType,
+        _ previousPresentationTimeStamp: CMTime,
+        _ formatDescription: CMFormatDescription?
+    ) -> CMSampleBuffer? {
+        var blockBuffer: CMBlockBuffer?
+        var sampleSizes: [Int] = []
+        switch streamType {
+        case .h264, .h265:
+            IsoTypeBufferUtil.toNALFileFormat(&data)
+            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
+            sampleSizes.append(blockBuffer?.dataLength ?? 0)
+        case .adtsAac:
+            blockBuffer = data.makeBlockBuffer(advancedBy: 7)
+            let reader = ADTSReader()
+            reader.read(data)
+            var iterator = reader.makeIterator()
+            while let next = iterator.next() {
+                sampleSizes.append(next)
+            }
+        default:
+            break
+        }
+        var sampleBuffer: CMSampleBuffer?
+        var timing = optionalHeader.makeSampleTimingInfo(previousPresentationTimeStamp) ?? .invalid
+        guard let blockBuffer, CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: sampleSizes.count,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: sampleSizes.count,
+            sampleSizeArray: &sampleSizes,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr else {
+            return nil
+        }
+        return sampleBuffer
     }
 }

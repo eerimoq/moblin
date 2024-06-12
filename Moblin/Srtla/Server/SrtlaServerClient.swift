@@ -1,15 +1,98 @@
 import Foundation
 import Network
 
-class SrtlaServerClient {
-    private var connections: [SrtlaServerClientConnection] = []
+private let connectionRemoveTimeout = 10.0
+private let clientRemoveTimeout = 10.0
 
-    init() {
-        logger.info("srtla-server-client: Created")
+class SrtlaServerClient {
+    private var localSrtServerConnection: NWConnection?
+    private var connections: [SrtlaServerClientConnection] = []
+    private var latestConnection: SrtlaServerClientConnection?
+    let createdAt: ContinuousClock.Instant = .now
+
+    init(srtPort: UInt16) {
+        logger.info("srtla-server-client: Creating local SRT server connection.")
+        createSrtConnection(srtPort: srtPort)
+    }
+
+    func stop() {
+        localSrtServerConnection?.cancel()
+        localSrtServerConnection = nil
+    }
+
+    private func createSrtConnection(srtPort: UInt16) {
+        let params = NWParameters(dtls: .none)
+        localSrtServerConnection = NWConnection(
+            host: .ipv4(.loopback),
+            port: .init(integerLiteral: srtPort),
+            using: params
+        )
+        localSrtServerConnection!.stateUpdateHandler = handleStateUpdate(to:)
+        localSrtServerConnection!.start(queue: srtlaServerQueue)
+        receivePacket()
+    }
+
+    private func handleStateUpdate(to state: NWConnection.State) {
+        logger.info("srtla-server-client: State change to \(state)")
+    }
+
+    private func receivePacket() {
+        localSrtServerConnection?.receiveMessage { packet, _, _, error in
+            if let packet, !packet.isEmpty {
+                self.handlePacketFromSrtServer(packet: packet)
+            }
+            if let error {
+                logger.warning("srtla-server-client: Receive \(error)")
+                return
+            }
+            self.receivePacket()
+        }
     }
 
     func addConnection(connection: NWConnection) {
-        connections.append(.init(connection: connection))
-        logger.info("srtla-server-client: Using \(connections.count) connection(s)")
+        guard !connections.contains(where: { $0.connection.endpoint == connection.endpoint }) else {
+            logger.info("srtla-server-client: Connection \(connection.endpoint) already registered")
+            return
+        }
+        let connection = SrtlaServerClientConnection(connection: connection)
+        connection.delegate = self
+        connections.append(connection)
+        logger.info("srtla-server-client: Added connection. Using \(connections.count) connection(s)")
+    }
+
+    private func handlePacketFromSrtServer(packet: Data) {
+        if !isDataPacket(packet: packet),
+           SrtPacketType(rawValue: getControlPacketType(packet: packet)) == .ack
+        {
+            for connection in connections {
+                connection.sendPacket(packet: packet)
+            }
+        } else {
+            latestConnection?.sendPacket(packet: packet)
+        }
+    }
+
+    func handlePeriodicTimer() -> Bool {
+        let now = ContinuousClock.now
+        var index = 0
+        while index < connections.count {
+            let connection = connections[index]
+            if connection.latestReceivedTime.duration(to: now) > .seconds(connectionRemoveTimeout) {
+                connection.connection.cancel()
+                connections.remove(at: index)
+                logger
+                    .info("srtla-server-client: Removed connection. Using \(connections.count) connection(s)")
+            } else {
+                index += 1
+            }
+        }
+        return connections.isEmpty && createdAt.duration(to: now) > .seconds(clientRemoveTimeout)
+    }
+}
+
+extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
+    func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data) {
+        latestConnection = connection
+        localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 }

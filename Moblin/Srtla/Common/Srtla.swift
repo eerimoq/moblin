@@ -1,7 +1,5 @@
 import Foundation
 
-let srtlaPacketTypeBit: UInt16 = 0x8000
-
 enum SrtlaPacketType: UInt16 {
     case keepalive = 0x1000
     case ack = 0x1100

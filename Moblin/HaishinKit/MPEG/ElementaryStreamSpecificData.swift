@@ -15,11 +15,22 @@ enum ElementaryStreamType: UInt8 {
     case h265 = 0x24
 }
 
-struct ElementaryStreamSpecificData {
+struct ElementaryStreamSpecificData: Equatable {
+    static let fixedHeaderSize: Int = 5
     var streamType: ElementaryStreamType = .unspecific
     var elementaryPacketId: UInt16 = 0
     var esInfoLength: UInt16 = 0
     var esDescriptors = Data()
+
+    init() {}
+
+    init(data: Data) throws {
+        let reader = ByteArray(data: data)
+        streamType = try ElementaryStreamType(rawValue: reader.readUInt8()) ?? .unspecific
+        elementaryPacketId = try reader.readUInt16() & 0x0FFF
+        esInfoLength = try reader.readUInt16() & 0x01FF
+        esDescriptors = try reader.readBytes(Int(esInfoLength))
+    }
 
     func encode() -> Data {
         return ByteArray()

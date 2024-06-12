@@ -338,48 +338,19 @@ struct ObsView: View {
                 } header: {
                     Text("Scenes")
                 }
+                Section {
+                    if let image = model.obsScreenshot {
+                        Image(image, scale: 1, label: Text(""))
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .background(.black)
+                    } else {
+                        Text("No snapshot received yet.")
+                    }
+                } header: {
+                    Text("Current scene snapshot")
+                }
                 if !model.stream.obsSourceName!.isEmpty {
-                    Section {
-                        ValueEditView(
-                            title: "Delay",
-                            value: "\(model.obsAudioDelay)",
-                            minimum: Double(obsMinimumAudioDelay),
-                            maximum: Double(min(obsMaximumAudioDelay, 9999)),
-                            onSubmit: submitAudioDelay,
-                            increment: 10,
-                            unit: "ms"
-                        )
-                    } header: {
-                        Text("\(model.stream.obsSourceName!) source audio sync")
-                    }
-                    Section {
-                        if model.isLive {
-                            if let image = model.obsScreenshot {
-                                Image(image, scale: 1, label: Text(""))
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            } else {
-                                Text("No snapshot received yet.")
-                            }
-                        } else {
-                            Text("Go live to see snapshot.")
-                        }
-                    } header: {
-                        Text("\(model.stream.obsSourceName!) source snapshot")
-                    }
-                    Section {
-                        if model.isLive {
-                            if !model.obsAudioVolume.isEmpty {
-                                Text(model.obsAudioVolume)
-                            } else {
-                                Text("No audio levels received yet.")
-                            }
-                        } else {
-                            Text("Go live to see audio levels.")
-                        }
-                    } header: {
-                        Text("\(model.stream.obsSourceName!) source audio levels")
-                    }
                     if !model.obsFixOngoing {
                         Section {
                             HStack {
@@ -417,11 +388,37 @@ struct ObsView: View {
                         }
                         .listRowBackground(Color.gray)
                     }
+                    Section {
+                        ValueEditView(
+                            title: "Delay",
+                            value: "\(model.obsAudioDelay)",
+                            minimum: Double(obsMinimumAudioDelay),
+                            maximum: Double(min(obsMaximumAudioDelay, 9999)),
+                            onSubmit: submitAudioDelay,
+                            increment: 10,
+                            unit: "ms"
+                        )
+                    } header: {
+                        Text("\(model.stream.obsSourceName!) source audio sync")
+                    }
+                    Section {
+                        if model.isLive {
+                            if !model.obsAudioVolume.isEmpty {
+                                Text(model.obsAudioVolume)
+                            } else {
+                                Text("No audio levels received yet.")
+                            }
+                        } else {
+                            Text("Go live to see audio levels.")
+                        }
+                    } header: {
+                        Text("\(model.stream.obsSourceName!) source audio levels")
+                    }
                 } else {
                     Text("""
                     Configure source name in \
                     Settings → Streams → \(model.stream.name) → OBS remote control for \
-                    snapshot and more.
+                    Fix button and more.
                     """)
                 }
             }

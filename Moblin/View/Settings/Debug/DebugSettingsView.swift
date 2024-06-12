@@ -111,6 +111,20 @@ struct DebugSettingsView: View {
                     model.store()
                     model.reloadSrtlaServer()
                 }))
+                Toggle("Higher data rate limit", isOn: Binding(get: {
+                    model.database.debug!.higherDataRateLimit!
+                }, set: { value in
+                    model.database.debug!.higherDataRateLimit = value
+                    model.store()
+                    model.setHigherDataRateLimit()
+                }))
+                Toggle("Use audio for timestamps", isOn: Binding(get: {
+                    model.database.debug!.useAudioForTimestamps!
+                }, set: { value in
+                    model.database.debug!.useAudioForTimestamps = value
+                    model.store()
+                    model.setUseAudioForTimestamps()
+                }))
             } header: {
                 Text("Experimental")
             }

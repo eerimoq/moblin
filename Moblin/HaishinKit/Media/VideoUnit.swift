@@ -98,7 +98,7 @@ private class ReplaceVideo {
         else {
             return nil
         }
-        sampleBuffer.isKeyFrame = replaceSampleBuffer.isKeyFrame
+        sampleBuffer.isSync = replaceSampleBuffer.isSync
         return sampleBuffer
     }
 }

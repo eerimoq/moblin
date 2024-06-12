@@ -21,6 +21,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
+    private func submitFastMinimumBitrate(value: Float) {
+        adaptiveBitrate.fastIrlSettings!.minimumBitrate = value / 1000
+        model.store()
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+    }
+
     private func submitBitrateIncreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.pifDiffIncreaseFactor = value
         model.store()
@@ -102,8 +108,8 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 Section {
                     SliderView(value: Float(adaptiveBitrate.fastIrlSettings!.packetsInFlight),
                                minimum: 200,
-                               maximum: 1000,
-                               step: 5,
+                               maximum: 700,
+                               step: 10,
                                onSubmit: submitFastIrlPacketsInFlight,
                                width: 70,
                                format: formatPacketsInFlight)
@@ -116,6 +122,22 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                         in flight are above this value.
                         """)
                         Text("200 by default.")
+                    }
+                }
+                Section {
+                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings!.minimumBitrate!,
+                               minimum: 50000,
+                               maximum: 2_000_000,
+                               step: 50000,
+                               onSubmit: submitFastMinimumBitrate,
+                               width: 80,
+                               format: formatMinimumBitrate)
+                } header: {
+                    Text("Minimum bitrate")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("The minimum encoder bitrate.")
+                        Text("500 Kbps by default.")
                     }
                 }
             }
@@ -198,7 +220,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     SliderView(value: 1000 * adaptiveBitrate.customSettings.minimumBitrate!,
                                minimum: 50000,
                                maximum: 2_000_000,
-                               step: 10000,
+                               step: 50000,
                                onSubmit: submitMinimumBitrate,
                                width: 80,
                                format: formatMinimumBitrate)

@@ -22,17 +22,17 @@ class VideoCodec {
 
     var settings: VideoCodecSettings = .init() {
         didSet {
-            if settings.shouldInvalidateSession(oldValue) {
-                invalidateSession = true
-            } else {
-                settings.apply(self)
+            lockQueue.async {
+                if self.settings.shouldInvalidateSession(oldValue) {
+                    self.invalidateSession = true
+                    self.currentBitrate = 0
+                }
             }
         }
     }
 
-    private(set) var isRunning: Atomic<Bool> = .init(false)
+    private var isRunning: Bool = false
     private let lockQueue: DispatchQueue
-    var expectedFrameRate = VideoUnit.defaultFrameRate
     var formatDescription: CMFormatDescription? {
         didSet {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
@@ -45,7 +45,7 @@ class VideoCodec {
         }
     }
 
-    private var needsSync: Atomic<Bool> = .init(true)
+    private var needsSync = true
     var attributes: [NSString: AnyObject]? {
         guard VideoCodec.defaultAttributes != nil else {
             return nil
@@ -67,15 +67,33 @@ class VideoCodec {
         }
     }
 
-    var invalidateSession = true
+    private var invalidateSession = true
+    private var currentBitrate: UInt32 = 0
+
+    private func updateBitrate() {
+        guard currentBitrate != settings.bitRate else {
+            return
+        }
+        currentBitrate = settings.bitRate
+        let bitRate = currentBitrate
+        let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
+        if let status = session?.setOption(option), status != noErr {
+            logger.info("video: Failed to set option \(status) \(option)")
+        }
+        let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
+        if let status = session?.setOption(optionLimit), status != noErr {
+            logger.info("video: Failed to set option \(status) \(optionLimit)")
+        }
+    }
 
     func appendImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
-        guard isRunning.value else {
+        guard isRunning else {
             return
         }
         if invalidateSession {
             session = makeVideoCompressionSession(self)
         }
+        updateBitrate()
         let err = session?.encodeFrame(
             imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
@@ -95,19 +113,20 @@ class VideoCodec {
         if err == kVTInvalidSessionErr {
             logger.debug("video: Encode failed. Resetting session.")
             invalidateSession = true
+            currentBitrate = 0
         }
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard isRunning.value else {
+        guard isRunning else {
             return
         }
         if invalidateSession {
             session = makeVideoDecompressionSession(self)
-            needsSync.mutate { $0 = true }
+            needsSync = true
         }
-        if sampleBuffer.isKeyFrame {
-            needsSync.mutate { $0 = false }
+        if sampleBuffer.isSync {
+            needsSync = false
         }
         let err = session?.decodeFrame(sampleBuffer) { [
             unowned self
@@ -132,12 +151,13 @@ class VideoCodec {
         if err == kVTInvalidSessionErr {
             logger.debug("video: Decode failed. Resetting session.")
             invalidateSession = true
+            currentBitrate = 0
         }
     }
 
     func startRunning() {
         lockQueue.async {
-            self.isRunning.mutate { $0 = true }
+            self.isRunning = true
             numberOfFailedEncodings = 0
         }
     }
@@ -146,9 +166,10 @@ class VideoCodec {
         lockQueue.async {
             self.session = nil
             self.invalidateSession = true
-            self.needsSync.mutate { $0 = true }
+            self.currentBitrate = 0
+            self.needsSync = true
             self.formatDescription = nil
-            self.isRunning.mutate { $0 = false }
+            self.isRunning = false
         }
     }
 }

@@ -65,7 +65,7 @@ final class Media: NSObject {
         srtlaClient?.setConnectionPriorities(connectionPriorities: connectionPriorities)
     }
 
-    func setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings) {
+    func setAdaptiveBitrateSettings(settings: AdaptiveBitrateSettings) {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
@@ -195,7 +195,7 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrate(
+            adaptiveBitrate = AdaptiveBitrateSrtFight(
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -216,7 +216,7 @@ final class Media: NSObject {
         srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
-    func updateAdaptiveBitrate(overlay: Bool) -> [String]? {
+    func updateAdaptiveBitrate(overlay: Bool) -> ([String], [String])? {
         if srtStream != nil {
             return updateAdaptiveBitrateSrt(overlay: overlay)
         } else if let rtmpStream {
@@ -227,7 +227,7 @@ final class Media: NSObject {
         return nil
     }
 
-    private func updateAdaptiveBitrateSrt(overlay: Bool) -> [String]? {
+    private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
@@ -238,7 +238,7 @@ final class Media: NSObject {
             return nil
         }
         if let adaptiveBitrate {
-            return [
+            return ([
                 """
                 R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
                 D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
@@ -246,27 +246,27 @@ final class Media: NSObject {
                 "msRTT: \(stats.msRTT)",
                 """
                 pktFlightSize: \(stats.pktFlightSize)   \
-                \(adaptiveBitrate.getFastPif)   \
-                \(adaptiveBitrate.getSmoothPif)
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
                 """,
                 """
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ] + adaptiveBitrate.getAdaptiveActions
+            ], adaptiveBitrate.getActionsTaken())
         } else {
-            return [
+            return ([
                 "pktRetransTotal: \(stats.pktRetransTotal)",
                 "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
                 "pktSndDropTotal: \(stats.pktSndDropTotal)",
                 "msRTT: \(stats.msRTT)",
                 "pktFlightSize: \(stats.pktFlightSize)",
                 "pktSndBuf: \(stats.pktSndBuf)",
-            ]
+            ], [])
         }
     }
 
-    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> [String]? {
+    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> ([String], [String])? {
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
@@ -277,27 +277,27 @@ final class Media: NSObject {
             return nil
         }
         if let adaptiveBitrate {
-            return [
+            return ([
                 "rttMs: \(stats.rttMs)",
                 """
                 packetsInFlight: \(stats.packetsInFlight)   \
-                \(adaptiveBitrate.getFastPif)   \
-                \(adaptiveBitrate.getSmoothPif)
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
                 """,
                 """
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ] + adaptiveBitrate.getAdaptiveActions
+            ], adaptiveBitrate.getActionsTaken())
         } else {
-            return [
+            return ([
                 "rttMs: \(stats.rttMs)",
                 "packetsInFlight: \(stats.packetsInFlight)",
-            ]
+            ], [])
         }
     }
 
-    private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> [String]? {
+    private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> ([String], [String])? {
         let stats = ristStream.getStats()
         var rtt = 1000.0
         for stat in stats {
@@ -313,21 +313,21 @@ final class Media: NSObject {
             return nil
         }
         if let adaptiveBitrate {
-            return [
+            return ([
                 "rttMs: \(rtt)",
                 """
-                \(adaptiveBitrate.getFastPif)   \
-                \(adaptiveBitrate.getSmoothPif)
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
                 """,
                 """
                 B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
                 \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
                 """,
-            ] + adaptiveBitrate.getAdaptiveActions
+            ], adaptiveBitrate.getActionsTaken())
         } else {
-            return [
+            return ([
                 "rttMs: \(rtt)",
-            ]
+            ], [])
         }
     }
 
@@ -432,7 +432,7 @@ final class Media: NSObject {
             observer: self
         )
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrate(
+            adaptiveBitrate = AdaptiveBitrateSrtFight(
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -481,7 +481,7 @@ final class Media: NSObject {
         adaptiveBitrate adaptiveBitrateEnabled: Bool
     ) {
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrate(
+            adaptiveBitrate = AdaptiveBitrateRistExperiment(
                 targetBitrate: targetBitrate,
                 delegate: self
             )

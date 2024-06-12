@@ -1,3 +1,4 @@
+import Network
 import SwiftUI
 import TwitchChat
 
@@ -14,18 +15,22 @@ private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
 }
 
 final class TwitchChatMoblin {
-    private var twitchChat: TwitchChat!
     private var model: Model
-    private var task: Task<Void, Error>?
-    private var connected: Bool = false
+    private var webSocket: WebSocketClient
     private var emotes: Emotes
+    private var channelName: String
 
     init(model: Model) {
         self.model = model
+        channelName = ""
         emotes = Emotes()
+        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
     }
 
-    func start(channelName: String, channelId: String, settings: SettingsStreamChat!) {
+    func start(channelName: String, channelId: String, settings: SettingsStreamChat) {
+        self.channelName = channelName
+        logger.debug("twitch: chat: Start")
+        stopInternal()
         emotes.start(
             platform: .twitch,
             channelId: channelId,
@@ -33,72 +38,53 @@ final class TwitchChatMoblin {
             onOk: handleOk,
             settings: settings
         )
-        task = Task.init {
-            do {
-                logger.info("twitch: chat: \(channelName): Connecting")
-                while true {
-                    twitchChat = TwitchChat(
-                        token: "SCHMOOPIIE",
-                        nick: "justinfan67420",
-                        name: channelName
-                    )
-                    do {
-                        logger.info("twitch: chat: \(channelName): Connected")
-                        connected = true
-                        for try await message in self.twitchChat.messages {
-                            let emotes = getEmotes(from: message)
-                            let text: String
-                            let isAction = message.isAction()
-                            if isAction {
-                                text = String(message.text.dropFirst(7))
-                            } else {
-                                text = message.text
-                            }
-                            let segments = createSegments(
-                                text: text,
-                                emotes: emotes,
-                                emotesManager: self.emotes
-                            )
-                            await MainActor.run {
-                                self.model.appendChatMessage(
-                                    user: message.sender,
-                                    userColor: message.senderColor,
-                                    segments: segments,
-                                    timestamp: model.digitalClock,
-                                    timestampTime: .now,
-                                    isAction: isAction,
-                                    isAnnouncement: message.announcement,
-                                    isFirstMessage: message.firstMessage,
-                                    isSubscriber: message.subscriber
-                                )
-                            }
-                        }
-                    } catch {
-                        logger.warning("twitch: chat: \(channelName): Got error \(error)")
-                    }
-                    logger.info("twitch: chat: \(channelName): Disconnected")
-                    if Task.isCancelled {
-                        return
-                    }
-                    connected = false
-                    try await sleep(seconds: 5)
-                    logger.info("twitch: chat: \(channelName): Reconnecting")
-                }
-            } catch {
-                logger.info("Twitch chat ended with error \(error)")
-            }
-        }
+        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
+        webSocket.delegate = self
+        webSocket.start()
     }
 
     func stop() {
+        logger.debug("twitch: chat: Stop")
+        stopInternal()
+    }
+
+    func stopInternal() {
         emotes.stop()
-        task?.cancel()
-        task = nil
-        connected = false
+        webSocket.stop()
+    }
+
+    private func handleMessage(message: String) throws {
+        guard let message = try ChatMessage(Message(string: message)) else {
+            return
+        }
+        let emotes = getEmotes(from: message)
+        let text: String
+        let isAction = message.isAction()
+        if isAction {
+            text = String(message.text.dropFirst(7))
+        } else {
+            text = message.text
+        }
+        let segments = createSegments(
+            text: text,
+            emotes: emotes,
+            emotesManager: self.emotes
+        )
+        model.appendChatMessage(
+            user: message.sender,
+            userColor: message.senderColor,
+            segments: segments,
+            timestamp: model.digitalClock,
+            timestampTime: .now,
+            isAction: isAction,
+            isAnnouncement: message.announcement,
+            isFirstMessage: message.firstMessage,
+            isSubscriber: message.subscriber
+        )
     }
 
     func isConnected() -> Bool {
-        return connected
+        return webSocket.isConnected()
     }
 
     func hasEmotes() -> Bool {
@@ -193,5 +179,27 @@ final class TwitchChatMoblin {
 extension ChatMessage {
     func isAction() -> Bool {
         return text.starts(with: "\u{01}ACTION")
+    }
+}
+
+extension TwitchChatMoblin: WebSocketClientDelegate {
+    func webSocketClientConnected() {
+        logger.debug("twitch: chat: Connected")
+        webSocket.send(string: "CAP REQ :twitch.tv/membership")
+        webSocket.send(string: "CAP REQ :twitch.tv/tags")
+        webSocket.send(string: "CAP REQ :twitch.tv/commands")
+        webSocket.send(string: "PASS oauth:SCHMOOPIIE")
+        webSocket.send(string: "NICK justinfan67420")
+        webSocket.send(string: "JOIN #\(channelName)")
+    }
+
+    func webSocketClientDisconnected() {
+        logger.debug("twitch: chat: Disconnected")
+    }
+
+    func webSocketClientReceiveMessage(string: String) {
+        for line in string.split(whereSeparator: { $0.isNewline }) {
+            try? handleMessage(message: String(line))
+        }
     }
 }

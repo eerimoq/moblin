@@ -500,12 +500,14 @@ final class Model: NSObject, ObservableObject {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
             settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight)
-            media.setAdaptiveBitrateAlgorithm(settings: settings)
+            settings
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate! * 1000)
+            media.setAdaptiveBitrateSettings(settings: settings)
         case .slowIrl:
-            media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
+            media.setAdaptiveBitrateSettings(settings: adaptiveBitrateSlowSettings)
         case .customIrl:
             let customSettings = stream.srt.adaptiveBitrate!.customSettings
-            media.setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings(
+            media.setAdaptiveBitrateSettings(settings: AdaptiveBitrateSettings(
                 packetsInFlight: Int64(customSettings.packetsInFlight),
                 rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
@@ -519,12 +521,12 @@ final class Model: NSObject, ObservableObject {
     func updateAdaptiveBitrateRtmpIfEnabled() {
         var settings = adaptiveBitrateFastSettings
         settings.rttDiffHighAllowedSpike = 500
-        media.setAdaptiveBitrateAlgorithm(settings: settings)
+        media.setAdaptiveBitrateSettings(settings: settings)
     }
 
     func updateAdaptiveBitrateRistIfEnabled() {
-        let settings = adaptiveBitrateFastSettings
-        media.setAdaptiveBitrateAlgorithm(settings: settings)
+        let settings = adaptiveBitrateRistFastSettings
+        media.setAdaptiveBitrateSettings(settings: settings)
     }
 
     @MainActor
@@ -798,6 +800,8 @@ final class Model: NSObject, ObservableObject {
         media.onFindVideoFormatError = handleFindVideoFormatError
         setPixelFormat()
         setMetalPetalFilters()
+        setHigherDataRateLimit()
+        setUseAudioForTimestamps()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -912,6 +916,18 @@ final class Model: NSObject, ObservableObject {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
+    }
+
+    func setHigherDataRateLimit() {
+        videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
+    }
+
+    func setUseAudioForTimestamps() {
+        if database.debug!.useAudioForTimestamps! {
+            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.audioPacketId
+        } else {
+            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
+        }
     }
 
     private func setupSampleBufferReceiver() {
@@ -1167,7 +1183,8 @@ final class Model: NSObject, ObservableObject {
         if isRecording {
             suspendRecording()
         }
-        if !isLive {
+        if !shouldStreamInBackground() {
+            stopStream()
             stopRtmpServer()
             teardownAudioSession()
             chatTextToSpeech.reset(running: false)
@@ -1175,7 +1192,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleWillEnterForegroundNotification() {
-        if !isLive {
+        if !shouldStreamInBackground() {
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
@@ -1185,6 +1202,10 @@ final class Model: NSObject, ObservableObject {
         if isRecording {
             resumeRecording()
         }
+    }
+
+    private func shouldStreamInBackground() -> Bool {
+        return isLive && stream.backgroundStreaming!
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -1216,10 +1237,25 @@ final class Model: NSObject, ObservableObject {
 
     func reloadSrtlaServer() {
         stopSrtlaServer()
-        if database.debug!.srtlaServer! {
-            srtlaServer = SrtlaServer(settings: .init())
+        if database.debug!.srtlaServer! && database.srtlaServer!.enabled {
+            srtlaServer = SrtlaServer(settings: database.srtlaServer!)
+            srtlaServer!.delegate = self
             srtlaServer!.start()
         }
+    }
+
+    func srtlaServerEnabled() -> Bool {
+        return srtlaServer != nil
+    }
+
+    func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
+        return database.srtlaServer!.streams.first { stream in
+            stream.streamId == streamId
+        }
+    }
+
+    func isSrtlaStreamConnected(streamId _: String) -> Bool {
+        return false
     }
 
     func handleRtmpServerPublishStart(streamKey: String) {
@@ -1634,8 +1670,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateAdaptiveBitrate() {
-        if let lines = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
-            debugLines = lines
+        if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
+            debugLines = lines + actions
             debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))
@@ -2184,7 +2220,7 @@ final class Model: NSObject, ObservableObject {
                                   adaptiveBitrate: stream.rtmp!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
@@ -2200,7 +2236,7 @@ final class Model: NSObject, ObservableObject {
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .irltk:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
             media.irlToolkitStartStream(
                 url: stream.url,
                 reconnectTime: 5,
@@ -2899,10 +2935,10 @@ final class Model: NSObject, ObservableObject {
         guard !obsSourceScreenshotIsFetching else {
             return
         }
-        guard !stream.obsSourceName!.isEmpty else {
+        guard !obsCurrentScenePicker.isEmpty else {
             return
         }
-        obsWebSocket?.getSourceScreenshot(name: stream.obsSourceName!, onSuccess: { data in
+        obsWebSocket?.getSourceScreenshot(name: obsCurrentScenePicker, onSuccess: { data in
             let screenshot = UIImage(data: data)?.cgImage
             DispatchQueue.main.async {
                 self.obsScreenshot = screenshot
@@ -5799,5 +5835,17 @@ extension Model {
         default:
             break
         }
+    }
+}
+
+extension Model: SrtlaServerDelegate {
+    func srtlaServerOnAudioBuffer(streamId _: String, buffer _: AVAudioPCMBuffer) {}
+
+    func srtlaServerOnVideoBuffer(streamId _: String, sampleBuffer _: CMSampleBuffer) {
+        // logger.info("""
+        // srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
+        // \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
+        // PTS \(sampleBuffer.presentationTimeStamp.seconds)
+        // """)
     }
 }
