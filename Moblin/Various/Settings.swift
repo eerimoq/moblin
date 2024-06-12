@@ -1167,8 +1167,8 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     func clone() -> SettingsSrtlaServerStream {
         let new = SettingsSrtlaServerStream()
         new.name = name
-        new.streamId = streamId
         new.latency = latency
+        new.streamId = streamId
         return new
     }
 }

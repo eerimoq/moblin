@@ -12,7 +12,7 @@ protocol SrtlaServerDelegate: AnyObject {
 }
 
 class SrtlaServer {
-    private var listener: NWListener!
+    private var listener: NWListener?
     private var clients: [Data: SrtlaServerClient] = [:]
     var settings: SettingsSrtlaServer
     private var srtServer: SrtServer
@@ -82,9 +82,9 @@ class SrtlaServer {
             logger.error("srtla-server: Failed to create listener with error \(error)")
             return
         }
-        listener.stateUpdateHandler = handleListenerStateChange(to:)
-        listener.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener.start(queue: srtlaServerQueue)
+        listener?.stateUpdateHandler = handleListenerStateChange(to:)
+        listener?.newConnectionHandler = handleNewListenerConnection(connection:)
+        listener?.start(queue: srtlaServerQueue)
     }
 
     private func stopListener() {
@@ -96,7 +96,7 @@ class SrtlaServer {
         logger.info("srtla-server: State change to \(state)")
         switch state {
         case .ready:
-            logger.info("srtla-server: Listening on port \(listener.port!.rawValue)")
+            logger.info("srtla-server: Listening on port \(listener?.port?.rawValue ?? 0)")
         default:
             break
         }
