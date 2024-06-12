@@ -48,21 +48,14 @@ class SrtlaServer {
     }
 
     func updateStats() -> SrtlaServerStats {
-        return srtlaServerQueue.sync {
-            var totalBytesReceived: UInt64 = 0
-            for client in clients.values {
-                totalBytesReceived += client.totalBytesReceived
-            }
-            let speed = totalBytesReceived - prevTotalBytesReceived
-            prevTotalBytesReceived = totalBytesReceived
-            return SrtlaServerStats(total: totalBytesReceived, speed: speed)
-        }
+        let totalBytesReceived: UInt64 = srtServer.totalBytesReceived.value
+        let speed = totalBytesReceived - prevTotalBytesReceived
+        prevTotalBytesReceived = totalBytesReceived
+        return SrtlaServerStats(total: totalBytesReceived, speed: speed)
     }
 
     func numberOfClients() -> Int {
-        return srtlaServerQueue.sync {
-            clients.count
-        }
+        return srtServer.numberOfClients.value
     }
 
     private func startPeriodicTimer() {
