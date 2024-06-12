@@ -115,7 +115,7 @@ private class ReplaceAudio {
             if firstPresentationTimeStamp.isNaN {
                 firstPresentationTimeStamp = realPresentationTimeStamp
             }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency  >
+            if firstPresentationTimeStamp + presentationTimeStamp + latency >
                 realPresentationTimeStamp
             {
                 break
