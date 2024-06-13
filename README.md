@@ -132,6 +132,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     (never upside down).
 - Portrait.
   - UI in portrait, but video in landscape. To be improved.
+- Background streaming.
+  - With audio.
+  - Video will be a freezed frame as video cannot be captured in background.
 
 ## Apple Watch companion app
 
