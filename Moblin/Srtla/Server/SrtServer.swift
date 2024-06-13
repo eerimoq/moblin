@@ -32,6 +32,7 @@ class SrtServer {
 
     private func main() throws {
         try open()
+        try setSrtlaPatchesOption()
         try bind()
         try listen()
         while true {
@@ -64,6 +65,13 @@ class SrtServer {
         listenerSocket = srt_create_socket()
         guard listenerSocket != SRT_ERROR else {
             throw "Failed to create socket."
+        }
+    }
+
+    private func setSrtlaPatchesOption() throws {
+        let srtlaPatches = SRTSocketOption(rawValue: "srtlaPatches")!
+        guard srtlaPatches.setOption(listenerSocket, value: "1") else {
+            throw "Failed to set srtlaPatches option."
         }
     }
 

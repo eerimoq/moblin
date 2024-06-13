@@ -10,7 +10,7 @@ fi
 if [ ! -e srt ] ; then
   git clone git@github.com:eerimoq/srt.git
   pushd srt
-  git checkout moblin
+  git checkout moblin-0.1.0
   popd
 fi
 
