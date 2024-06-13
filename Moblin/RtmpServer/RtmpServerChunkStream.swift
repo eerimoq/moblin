@@ -19,7 +19,7 @@ class RtmpServerChunkStream {
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoCodec?
     private var numberOfFrames: UInt64 = 0
-    private var numberOfSamples: UInt64 = 0
+    private var numberOfAudioBuffers: UInt64 = 0
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
@@ -455,12 +455,10 @@ class RtmpServerChunkStream {
     }
 
     private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
-        var presentationTimeStamp: Int64
-        var decodeTimeStamp: Int64
-        var duration: Int64
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
+        var duration: Int64
         if client.manualFps {
             duration = Int64(1000 / client.fps)
             videoTimestamp = Double(numberOfFrames) / client.fps * 1000
@@ -477,8 +475,8 @@ class RtmpServerChunkStream {
                 videoTimestamp += Double(messageTimestamp)
             }
         }
-        presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
-        decodeTimeStamp = Int64(videoTimestamp)
+        let presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
+        let decodeTimeStamp = Int64(videoTimestamp)
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
@@ -519,10 +517,9 @@ class RtmpServerChunkStream {
                                        audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
     {
         if client.manualFps {
-            audioTimestamp = Double(numberOfSamples) /
+            audioTimestamp = Double(numberOfAudioBuffers) /
                 (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
-
-            numberOfSamples += 1
+            numberOfAudioBuffers += 1
         } else {
             if isMessageType0 {
                 if audioTimestampZero == -1 {
@@ -534,13 +531,6 @@ class RtmpServerChunkStream {
             }
         }
         let presentationTimeStamp = CMTimeMake(value: Int64(audioTimestamp), timescale: 1000)
-        /* logger.info("""
-         rtmp-server: client: Created audio sample buffer \
-         MTS: \(messageTimestamp * messageTimestampScaling) \
-         DUR: \(timing.duration.seconds), \
-         PTS: \(timing.presentationTimeStamp.seconds), \
-         DTS: \(timing.decodeTimeStamp.seconds)
-         """) */
         return audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
     }
 }

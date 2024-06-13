@@ -1263,11 +1263,9 @@ final class Model: NSObject, ObservableObject {
             guard let stream = getRtmpStream(camera: rtmpCamera) else {
                 continue
             }
-
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
                 let micId = "\(stream.id.uuidString) 0"
                 let isLastMic = (currentMic.id == micId)
-
                 handleRtmpServerPublishStop(streamKey: stream.streamKey)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
                 if currentMic.id != micId, isLastMic {
@@ -1284,12 +1282,13 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
+            let latency = Double(stream.latency!) / 1000
             self.media.addRtmpCamera(
                 cameraId: stream.id,
-                latency: Double(stream.latency! / 1000),
+                latency: latency,
                 outputFrameRate: Double(self.stream.fps)
             )
-            self.media.addRtmpAudio(cameraId: stream.id, latency: Double(stream.latency! / 1000))
+            self.media.addRtmpAudio(cameraId: stream.id, latency: latency)
         }
     }
 
@@ -3410,15 +3409,6 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func selectScene(rtmpCameraId: UUID) {
-        if let index = enabledScenes.firstIndex(where: { scene in
-            scene.rtmpCameraId == rtmpCameraId
-        }) {
-            sceneIndex = index
-            setSceneId(id: enabledScenes[index].id)
-        }
-    }
-
     func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
         if store {
             self.store()
@@ -4371,13 +4361,6 @@ extension Model: RemoteControlStreamerDelegate {
     func setScene(id: UUID, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.selectScene(id: id)
-            onComplete()
-        }
-    }
-
-    func setScene(rtmpCameraId: UUID, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            self.selectScene(rtmpCameraId: rtmpCameraId)
             onComplete()
         }
     }

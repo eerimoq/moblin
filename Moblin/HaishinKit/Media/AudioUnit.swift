@@ -44,7 +44,6 @@ private class ReplaceAudio {
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBufferQueue.append(sampleBuffer)
         sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
-        // logger.info("ReplaceAudio Queue Count: \(sampleBufferQueue.count)")
         if !isInitialized {
             isInitialized = true
             initialize(sampleBuffer: sampleBuffer)
@@ -56,9 +55,9 @@ private class ReplaceAudio {
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
-        frameLength = Double(CMSampleBufferGetNumSamples(sampleBuffer))
-        if let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) {
-            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 0.0
+        frameLength = Double(sampleBuffer.numSamples)
+        if let formatDescription = sampleBuffer.formatDescription {
+            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 1
         }
     }
 
@@ -77,7 +76,7 @@ private class ReplaceAudio {
     private func output() {
         let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
         guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
-            logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
+            // logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
             return
         }
         let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
@@ -248,9 +247,7 @@ final class AudioUnit: NSObject {
     }
 
     func removeReplaceAudioInner(cameraId: UUID) {
-        let replaceAudio = replaceAudios[cameraId]
-        replaceAudio?.stopOutput()
-        replaceAudios.removeValue(forKey: cameraId)
+        replaceAudios.removeValue(forKey: cameraId)?.stopOutput()
     }
 
     func prepareSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
@@ -298,15 +295,15 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
 
 extension AudioUnit: ReplaceAudioSampleBufferDelegate {
     func didOutputReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        if cameraId == selectedReplaceAudioId {
-            let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?
-                .numberOfChannels ?? 0
-            prepareSampleBuffer(
-                sampleBuffer: sampleBuffer,
-                audioLevel: .infinity,
-                numberOfAudioChannels: numberOfAudioChannels
-            )
+        guard selectedReplaceAudioId == cameraId else {
+            return
         }
+        let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
+        prepareSampleBuffer(
+            sampleBuffer: sampleBuffer,
+            audioLevel: .infinity,
+            numberOfAudioChannels: numberOfAudioChannels
+        )
     }
 }
 

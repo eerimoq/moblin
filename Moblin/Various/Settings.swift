@@ -1107,7 +1107,6 @@ class SettingsDebug: Codable {
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
-    var enableRtmpAudio: Bool? = false
     var bluetoothOutputOnly: Bool? = false
     var maximumLogLines: Int? = 500
     var pixelFormat: String? = pixelFormats[1]
@@ -1127,7 +1126,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
     var manualFps: Bool? = false
-    var fps: Double? = 0
+    var fps: Double? = 30
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -2187,7 +2186,7 @@ final class Settings {
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.fps == nil {
-            stream.fps = 0
+            stream.fps = 30
             store()
         }
         for stream in database.streams where stream.realtimeIrlEnabled == nil {
@@ -2286,10 +2285,6 @@ final class Settings {
         }
         if realDatabase.show.browserWidgets == nil {
             realDatabase.show.browserWidgets = true
-            store()
-        }
-        if realDatabase.debug!.enableRtmpAudio == nil {
-            realDatabase.debug!.enableRtmpAudio = false
             store()
         }
         if realDatabase.debug!.bluetoothOutputOnly == nil {
@@ -2586,12 +2581,14 @@ final class Settings {
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
-            if stream.fps != 0 {
-                stream.manualFps = true
-            } else {
-                stream.manualFps = false
-            }
+            stream.manualFps = stream.fps! != 0
             store()
+        }
+        for stream in realDatabase.rtmpServer!.streams {
+            if stream.fps! < 1 || stream.fps! > 100 {
+                stream.fps = 30
+                store()
+            }
         }
     }
 }

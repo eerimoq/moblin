@@ -3985,6 +3985,7 @@
       }
     },
     "⚠️ Audio is not yet implemented." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -26198,7 +26199,11 @@
         }
       }
     },
+    "Enable manual FPS to force given FPS. This is needed when the publisher does not provide accurate timestamps. B-frames does not work with manual FPS. Manual FPS is typically needed for DJI devices." : {
+
+    },
     "Enable RTMP audio" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33355,6 +33360,7 @@
       }
     },
     "Force given FPS, or set to 0 to use the publisher's FPS. B-frames does not work with forced FPS. Forced FPS is typically needed for DJI drones." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -42487,6 +42493,9 @@
           }
         }
       }
+    },
+    "Manual FPS" : {
+
     },
     "Manual white balance not supported for this camera" : {
       "localizations" : {

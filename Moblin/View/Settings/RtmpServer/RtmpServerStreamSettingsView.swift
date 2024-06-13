@@ -62,7 +62,7 @@ struct RtmpServerStreamSettingsView: View {
         guard let latency = Int32(value) else {
             return
         }
-        guard latency >= 0 else {
+        guard latency > 0 else {
             return
         }
         stream.latency = latency
@@ -75,7 +75,7 @@ struct RtmpServerStreamSettingsView: View {
         guard let fps = Double(value) else {
             return
         }
-        guard fps >= 0 && fps <= 1000 else {
+        guard fps >= 1 && fps <= 100 else {
             return
         }
         stream.fps = fps
@@ -122,7 +122,7 @@ struct RtmpServerStreamSettingsView: View {
                     model.objectWillChange.send()
                 }))
                 .disabled(model.rtmpServerEnabled())
-                if stream.manualFps == true {
+                if stream.manualFps! {
                     TextEditNavigationView(
                         title: String(localized: "FPS"),
                         value: String(stream.fps!),
@@ -133,8 +133,9 @@ struct RtmpServerStreamSettingsView: View {
                 }
             } footer: {
                 Text("""
-                Activate this setting to manually define the FPS when accurate timestamps \
-                from the publisher, such as DJI devices, are not available.
+                Enable manual FPS to force given FPS. This is needed when the publisher \
+                does not provide accurate timestamps. B-frames does not work with manual \
+                FPS. Manual FPS is typically needed for DJI devices.
                 """)
             }
             Section {
