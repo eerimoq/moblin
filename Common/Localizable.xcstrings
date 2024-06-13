@@ -81563,6 +81563,7 @@
       }
     },
     "Zoom preset" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

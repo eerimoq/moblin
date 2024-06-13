@@ -7,11 +7,6 @@ struct ZoomPresetSettingsView: View {
     let minX: Float
     let maxX: Float
 
-    func submitName(name: String) {
-        preset.name = name
-        model.store()
-    }
-
     func submitX(x: String) {
         guard let x = Float(x) else {
             return
@@ -21,6 +16,7 @@ struct ZoomPresetSettingsView: View {
             return
         }
         preset.x = x
+        preset.name = "\(Int(x.rounded()))x"
         model.store()
     }
 
@@ -29,26 +25,14 @@ struct ZoomPresetSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            NavigationLink(destination: NameEditView(
-                name: preset.name,
-                onSubmit: submitName
-            )) {
-                TextItemView(name: String(localized: "Name"), value: preset.name)
-            }
-            TextEditNavigationView(
-                title: String(localized: "X"),
-                value: String(preset.x!),
-                onSubmit: submitX,
-                footer: Text(
-                    "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."
-                ),
-                keyboardType: .numbersAndPunctuation
-            )
-        }
-        .navigationTitle("Zoom preset")
-        .toolbar {
-            SettingsToolbar()
-        }
+        TextEditView(
+            title: String(localized: "X"),
+            value: String(preset.x!),
+            onSubmit: submitX,
+            footer: Text(
+                "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."
+            ),
+            keyboardType: .numbersAndPunctuation
+        )
     }
 }
