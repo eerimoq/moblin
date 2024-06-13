@@ -69,7 +69,7 @@ final class Media: NSObject {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
-    func setNetStream(proto: SettingsStreamProtocol, enableRtmpAudio: Bool) {
+    func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -95,9 +95,7 @@ final class Media: NSObject {
         }
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
-        if !enableRtmpAudio {
-            attachAudio(device: AVCaptureDevice.default(for: .audio))
-        }
+        attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func getAudioLevel() -> Float {
@@ -681,20 +679,31 @@ final class Media: NSObject {
         netStream.attachAudio(device, replaceAudioId: cameraId)
     }
 
-    func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    func addRtmpSampleBuffer(
+        cameraId: UUID,
+        sampleBuffer: CMSampleBuffer
+    ) {
         netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpAudioBuffer(cameraId: UUID, audioBuffer: AVAudioPCMBuffer) {
-        netStream.addAudioPCMBuffer(id: cameraId, audioBuffer)
+    func addRtmpAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpCamera(cameraId: UUID, latency: Double) {
-        netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
+    func addRtmpCamera(
+        cameraId: UUID,
+        latency: Double,
+        outputFrameRate: Double
+    ) {
+        netStream.addReplaceVideo(
+            cameraId: cameraId,
+            latency: latency,
+            outputFrameRate: outputFrameRate
+        )
     }
 
-    func addRtmpAudio(cameraId: UUID) {
-        netStream.addReplaceAudio(cameraId: cameraId)
+    func addRtmpAudio(cameraId: UUID, latency: Double) {
+        netStream.addReplaceAudio(cameraId: cameraId, latency: latency)
     }
 
     func removeRtmpCamera(cameraId: UUID) {

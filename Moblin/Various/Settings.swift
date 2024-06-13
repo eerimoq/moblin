@@ -1126,6 +1126,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
+    var manualFps: Bool? = false
     var fps: Double? = 0
 
     func camera() -> String {
@@ -1137,6 +1138,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.manualFps = manualFps
         new.fps = fps
         return new
     }
@@ -2581,6 +2583,14 @@ final class Settings {
         }
         if realDatabase.debug!.useAudioForTimestamps == nil {
             realDatabase.debug!.useAudioForTimestamps = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
+            if stream.fps != 0 {
+                stream.manualFps = true
+            } else {
+                stream.manualFps = false
+            }
             store()
         }
     }

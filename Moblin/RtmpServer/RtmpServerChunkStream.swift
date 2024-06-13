@@ -2,16 +2,6 @@ import AVFoundation
 import Foundation
 import Network
 
-private func makeTimingInfo(duration: Int64, presentationTimeStamp: Int64,
-                            decodeTimeStamp: Int64) -> CMSampleTimingInfo
-{
-    return CMSampleTimingInfo(
-        duration: CMTimeMake(value: duration, timescale: 1000),
-        presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
-        decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
-    )
-}
-
 class RtmpServerChunkStream {
     private var messageData: Data
     var messageLength: Int
@@ -29,6 +19,7 @@ class RtmpServerChunkStream {
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoCodec?
     private var numberOfFrames: UInt64 = 0
+    private var numberOfSamples: UInt64 = 0
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
@@ -236,6 +227,7 @@ class RtmpServerChunkStream {
             if let stream = client.server?.settings.streams.first(where: { stream in
                 stream.streamKey == streamKey
             }) {
+                client.manualFps = stream.manualFps!
                 client.fps = stream.fps!
                 return true
             } else {
@@ -307,25 +299,6 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported audio codec \(codec)")
             return
         }
-        var duration = Int64(messageTimestamp)
-        if isMessageType0 {
-            if audioTimestampZero == -1 {
-                audioTimestampZero = Double(messageTimestamp)
-            }
-            duration -= Int64(audioTimestamp)
-            audioTimestamp = Double(messageTimestamp) - audioTimestampZero
-        } else {
-            audioTimestamp += Double(messageTimestamp)
-        }
-        _ = makeTimingInfo(duration: duration, presentationTimeStamp: Int64(audioTimestamp),
-                           decodeTimeStamp: Int64(audioTimestamp))
-        /* logger.info("""
-         rtmp-server: client: Created audio sample buffer \
-         MTS: \(messageTimestamp * messageTimestampScaling) \
-         DUR: \(timing.duration.seconds), \
-         PTS: \(timing.presentationTimeStamp.seconds), \
-         DTS: \(timing.decodeTimeStamp.seconds)
-         """) */
         switch FLVAACPacketType(rawValue: messageData[1]) {
         case .seq:
             processMessageAudioTypeSeq(client: client, codec: codec)
@@ -371,7 +344,7 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func processMessageAudioTypeRaw(client _: RtmpServerClient, codec: FLVAudioCodec) {
+    private func processMessageAudioTypeRaw(client: RtmpServerClient, codec: FLVAudioCodec) {
         guard let audioBuffer else {
             return
         }
@@ -403,7 +376,10 @@ class RtmpServerChunkStream {
         if let error {
             logger.info("rtmp-server: client: Error \(error)")
         } else {
-            client?.handleAudioBuffer(audioBuffer: outputBuffer)
+            let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer)
+            if sampleBuffer != nil {
+                client.handleAudioBuffer(sampleBuffer: sampleBuffer!)
+            }
         }
     }
 
@@ -471,40 +447,43 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
             return
         }
-        if let sampleBuffer = makeSampleBuffer(client: client) {
+        if let sampleBuffer = makeVideoSampleBuffer(client: client) {
             videoDecoder?.appendSampleBuffer(sampleBuffer)
         } else {
             client.stopInternal(reason: "Make sample buffer failed")
         }
     }
 
-    private func makeSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
+    private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
+        var presentationTimeStamp: Int64
+        var decodeTimeStamp: Int64
+        var duration: Int64
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        var duration = Int64(messageTimestamp)
-        if isMessageType0 {
-            if videoTimestampZero == -1 {
-                videoTimestampZero = Double(messageTimestamp)
-            }
-            duration -= Int64(videoTimestamp)
-            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
-        } else {
-            videoTimestamp += Double(messageTimestamp)
-        }
-        var presentationTimeStamp: Int64
-        var decodeTimeStamp: Int64
-        if client.fps == 0 {
-            presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
-            decodeTimeStamp = Int64(videoTimestamp)
-        } else {
+        if client.manualFps {
             duration = Int64(1000 / client.fps)
-            presentationTimeStamp = Int64(1000 * Double(numberOfFrames) / client.fps)
-            decodeTimeStamp = presentationTimeStamp
+            videoTimestamp = Double(numberOfFrames) / client.fps * 1000
             numberOfFrames += 1
+        } else {
+            duration = Int64(messageTimestamp)
+            if isMessageType0 {
+                if videoTimestampZero == -1 {
+                    videoTimestampZero = Double(messageTimestamp)
+                }
+                duration -= Int64(videoTimestamp)
+                videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+            } else {
+                videoTimestamp += Double(messageTimestamp)
+            }
         }
-        var timing = makeTimingInfo(duration: duration, presentationTimeStamp: presentationTimeStamp,
-                                    decodeTimeStamp: decodeTimeStamp)
+        presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
+        decodeTimeStamp = Int64(videoTimestamp)
+        var timing = CMSampleTimingInfo(
+            duration: CMTimeMake(value: duration, timescale: 1000),
+            presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
+            decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
+        )
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
@@ -534,6 +513,35 @@ class RtmpServerChunkStream {
         }
         sampleBuffer?.isSync = messageData[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
         return sampleBuffer
+    }
+
+    private func makeAudioSampleBuffer(client: RtmpServerClient,
+                                       audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
+    {
+        if client.manualFps {
+            audioTimestamp = Double(numberOfSamples) /
+                (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
+
+            numberOfSamples += 1
+        } else {
+            if isMessageType0 {
+                if audioTimestampZero == -1 {
+                    audioTimestampZero = Double(messageTimestamp)
+                }
+                audioTimestamp = Double(messageTimestamp) - audioTimestampZero
+            } else {
+                audioTimestamp += Double(messageTimestamp)
+            }
+        }
+        let presentationTimeStamp = CMTimeMake(value: Int64(audioTimestamp), timescale: 1000)
+        /* logger.info("""
+         rtmp-server: client: Created audio sample buffer \
+         MTS: \(messageTimestamp * messageTimestampScaling) \
+         DUR: \(timing.duration.seconds), \
+         PTS: \(timing.presentationTimeStamp.seconds), \
+         DTS: \(timing.decodeTimeStamp.seconds)
+         """) */
+        return audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
     }
 }
 
