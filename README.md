@@ -126,6 +126,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Torch.
 - Mute audio.
 - Deep link settings (moblin://).
+  - Including a deep link creator for service providers.
 - Landscape.
   - Both 0 and 180 degrees orientation. Video always with gravity down
     (never upside down).
