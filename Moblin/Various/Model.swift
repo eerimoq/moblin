@@ -1301,11 +1301,7 @@ final class Model: NSObject, ObservableObject {
                 return
             }
             let latency = Double(stream.latency!) / 1000
-            self.media.addRtmpCamera(
-                cameraId: stream.id,
-                latency: latency,
-                outputFrameRate: Double(self.stream.fps)
-            )
+            self.media.addRtmpCamera(cameraId: stream.id, latency: latency)
             self.media.addRtmpAudio(cameraId: stream.id, latency: latency)
         }
     }
@@ -5326,7 +5322,6 @@ extension Model {
                 }
             }
         }
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func setMicFromSettings() {
@@ -5398,7 +5393,6 @@ extension Model {
                     }
                 }
                 currentMic = mic
-                media.attachAudio(device: AVCaptureDevice.default(for: .audio))
                 remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
             } catch {
                 logger.error("Failed to select mic: \(error)")
@@ -5924,9 +5918,7 @@ extension Model: SrtlaServerDelegate {
                 return
             }
             let latency = Double(stream.latency!) / 1000
-            self.media.addRtmpCamera(cameraId: stream.id,
-                                     latency: latency,
-                                     outputFrameRate: Double(self.stream.fps))
+            self.media.addRtmpCamera(cameraId: stream.id, latency: latency)
             self.media.addRtmpAudio(cameraId: stream.id, latency: latency)
         }
     }
