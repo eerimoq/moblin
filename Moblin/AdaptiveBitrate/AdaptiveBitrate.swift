@@ -9,6 +9,8 @@ struct StreamStats {
     let rttMs: Double
     let packetsInFlight: Double
     let transportBitrate: Int64?
+    let latency: Int32?
+    let mbpsSendRate: Double?
 }
 
 struct AdaptiveBitrateSettings {
