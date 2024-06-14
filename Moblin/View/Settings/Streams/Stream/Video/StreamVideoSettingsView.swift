@@ -21,7 +21,6 @@ struct StreamVideoSettingsView: View {
     private func onCodecChange(codec: String) {
         stream.codec = SettingsStreamCodec(rawValue: codec)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
-        model.updateOrientation()
     }
 
     private func submitMaxKeyFrameInterval(value: String) {
@@ -96,7 +95,6 @@ struct StreamVideoSettingsView: View {
                 }, set: { value in
                     stream.bFrames = value
                     model.storeAndReloadStreamIfEnabled(stream: stream)
-                    model.updateOrientation()
                 }))
                 .disabled(stream.enabled && model.isLive)
             }
