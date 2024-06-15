@@ -1,9 +1,9 @@
 import AVFoundation
+import Collections
 import CoreImage
 import MetalPetal
 import UIKit
 import Vision
-import Collections
 
 var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
