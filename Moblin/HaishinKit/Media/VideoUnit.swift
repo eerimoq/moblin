@@ -56,6 +56,7 @@ private class ReplaceVideo {
 
     func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
         var sampleBuffer = currentSampleBuffer
+        // var numberOfBuffersConsumed = 0
         while let replaceSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
                 sampleBuffer = replaceSampleBuffer
@@ -64,6 +65,7 @@ private class ReplaceVideo {
                 logger.info("replace-video: Over 200 frames buffered. Dropping oldest frame.")
                 sampleBuffer = replaceSampleBuffer
                 sampleBuffers.removeFirst()
+                // numberOfBuffersConsumed += 1
                 continue
             }
             let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
@@ -76,9 +78,12 @@ private class ReplaceVideo {
             }
             sampleBuffer = replaceSampleBuffer
             sampleBuffers.removeFirst()
+            // numberOfBuffersConsumed += 1
         }
-        // if sampleBuffer?.presentationTimeStamp == currentSampleBuffer?.presentationTimeStamp {
-        //     logger.info("replace-video: Duplicating last frame.")
+        // if numberOfBuffersConsumed == 0 {
+        //     logger.info("replace-video: Duplicating buffer.")
+        // } else if numberOfBuffersConsumed > 1 {
+        //     logger.info("replace-video: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
         // }
         currentSampleBuffer = sampleBuffer
     }
