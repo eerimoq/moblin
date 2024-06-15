@@ -109,7 +109,8 @@ private class ReplaceAudio {
         logger.info("replace-audio: output has been stopped.")
     }
 
-    func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
+    func getSampleBuffer() -> CMSampleBuffer? {
+        var realPresentationTimeStamp = presentationTimeStamp.seconds
         var sampleBuffer: CMSampleBuffer?
         while let replaceSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
