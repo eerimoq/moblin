@@ -30,7 +30,7 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var realPresentationTimeStamp: CMTime = .zero
+    private var presentationTimeStamp: CMTime = .zero
     private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
@@ -41,7 +41,7 @@ private class ReplaceAudio {
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
         self.latency = latency
-        self.realPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        self.presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -76,18 +76,20 @@ private class ReplaceAudio {
         outputTimer?.activate()
     }
 
+    var nilCounter: Int = 0
     private func output() {
-        realPresentationTimeStamp = CMTimeAdd(
-            realPresentationTimeStamp,
+        presentationTimeStamp = CMTimeAdd(
+            presentationTimeStamp,
             CMTime(
                 value: CMTimeValue(Double(frameLength)),
                 timescale: CMTimeScale(sampleRate)
             ))
-        guard let sampleBuffer = getSampleBuffer(realPresentationTimeStamp.seconds) else {
-            // logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
+        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
+            nilCounter += 1
+            logger.info("No valid audio timestamp found. Waiting for more sampleBuffers. Count: \(nilCounter)")
             return
         }
-        let timeOffset = CMTimeSubtract(realPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
+        let timeOffset = CMTimeSubtract(presentationTimeStamp, sampleBuffer.presentationTimeStamp)
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
