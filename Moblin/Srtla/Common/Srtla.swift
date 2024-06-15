@@ -1,3 +1,7 @@
+// SRTLA is a bonding protocol on top of SRT.
+// Designed by rationalsa for the BELABOX projecct.
+// https://github.com/BELABOX/srtla
+
 import Foundation
 
 enum SrtlaPacketType: UInt16 {
