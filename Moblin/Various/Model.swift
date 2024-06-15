@@ -1286,7 +1286,7 @@ final class Model: NSObject, ObservableObject {
                 let isLastMic = (currentMic.id == micId)
                 handleRtmpServerPublishStop(streamKey: stream.streamKey)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
-                if isLastMic {
+                if currentMic.id != micId, isLastMic {
                     setMic(id: micId) {}
                 }
             }
@@ -5372,9 +5372,10 @@ extension Model {
         if mic.builtInOrientation == .rtmp {
             currentMic = mic
             let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
-            media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
+            media.attachRtmpAudio(cameraId: cameraId, device: nil)
             remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
         } else {
+            media.attachRtmpAudio(cameraId: nil, device: nil)
             let session = AVAudioSession.sharedInstance()
             do {
                 for inputPort in session.availableInputs ?? [] {

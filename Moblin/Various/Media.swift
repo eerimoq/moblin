@@ -675,7 +675,7 @@ final class Media: NSObject {
         netStream.attachCamera(device, replaceVideoCameraId: cameraId)
     }
 
-    func attachRtmpAudio(cameraId: UUID, device: AVCaptureDevice?) {
+    func attachRtmpAudio(cameraId: UUID?, device: AVCaptureDevice?) {
         netStream.attachAudio(device, replaceAudioId: cameraId)
     }
 

@@ -3,6 +3,7 @@ import CoreImage
 import MetalPetal
 import UIKit
 import Vision
+import Collections
 
 var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
@@ -40,7 +41,7 @@ private struct FaceDetectionsCompletion {
 
 private class ReplaceVideo {
     private var latency: Double
-    private var sampleBuffers: [CMSampleBuffer] = []
+    private var sampleBuffers: Deque<CMSampleBuffer> = []
     private var firstPresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
 
@@ -55,15 +56,14 @@ private class ReplaceVideo {
 
     func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
         var sampleBuffer = currentSampleBuffer
-        while !sampleBuffers.isEmpty {
-            let replaceSampleBuffer = sampleBuffers.first!
+        while let replaceSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
                 sampleBuffer = replaceSampleBuffer
             }
             if sampleBuffers.count > 200 {
-                logger.info("Over 200 frames buffered. Dropping oldest frame.")
+                logger.info("replace-video: Over 200 frames buffered. Dropping oldest frame.")
                 sampleBuffer = replaceSampleBuffer
-                sampleBuffers.remove(at: 0)
+                sampleBuffers.removeFirst()
                 continue
             }
             let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
@@ -74,8 +74,11 @@ private class ReplaceVideo {
                 break
             }
             sampleBuffer = replaceSampleBuffer
-            sampleBuffers.remove(at: 0)
+            sampleBuffers.removeFirst()
         }
+        // if sampleBuffer?.presentationTimeStamp == currentSampleBuffer?.presentationTimeStamp {
+        //     logger.info("replace-video: Duplicating last frame.")
+        // }
         currentSampleBuffer = sampleBuffer
     }
 
@@ -256,7 +259,6 @@ final class VideoUnit: NSObject {
         guard delta > 0.05 else {
             return
         }
-        logger.info("Outputting gap frame")
         let timeDelta = CMTime(seconds: delta, preferredTimescale: 1000)
         guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
                                                        latestSampleBuffer.formatDescription!,
