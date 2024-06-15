@@ -30,7 +30,7 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var presentationTimeStamp: CMTime = .zero
+    private var realPresentationTimeStamp: CMTime = .zero
     private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
@@ -41,7 +41,7 @@ private class ReplaceAudio {
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
         self.latency = latency
-        self.presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        self.realPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -76,20 +76,11 @@ private class ReplaceAudio {
         outputTimer?.activate()
     }
 
-    var nilCounter: Int = 0
     private func output() {
-        presentationTimeStamp = CMTimeAdd(
-            presentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(Double(frameLength)),
-                timescale: CMTimeScale(sampleRate)
-            ))
         guard let sampleBuffer = getSampleBuffer() else {
-            nilCounter += 1
-            logger.info("Audio nil. Count: \(nilCounter)")
             return
         }
-        let timeOffset = CMTimeSubtract(presentationTimeStamp, sampleBuffer.presentationTimeStamp)
+        let timeOffset = CMTimeSubtract(realPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
@@ -110,7 +101,12 @@ private class ReplaceAudio {
     }
 
     func getSampleBuffer() -> CMSampleBuffer? {
-        var realPresentationTimeStamp = presentationTimeStamp.seconds
+        realPresentationTimeStamp = CMTimeAdd(
+            realPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(Double(frameLength)),
+                timescale: CMTimeScale(sampleRate)
+            ))
         var sampleBuffer: CMSampleBuffer?
         while let replaceSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
@@ -119,8 +115,8 @@ private class ReplaceAudio {
                 sampleBuffers.removeFirst()
                 continue
             }
+            let realPresentationTimeStamp = realPresentationTimeStamp.seconds
             let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
-            let duration = replaceSampleBuffer.duration.seconds
             if firstPresentationTimeStamp.isNaN {
                 // Add 0.005 to account for jitter in timestamps.
                 firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp + 0.005
