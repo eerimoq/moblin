@@ -1301,8 +1301,8 @@ final class Model: NSObject, ObservableObject {
                 return
             }
             let latency = Double(stream.latency!) / 1000
-            self.media.addRtmpCamera(cameraId: stream.id, latency: latency)
-            self.media.addRtmpAudio(cameraId: stream.id, latency: latency)
+            self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
+            self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
         }
     }
 
@@ -1313,8 +1313,8 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.media.removeRtmpCamera(cameraId: stream.id)
-            self.media.removeRtmpAudio(cameraId: stream.id)
+            self.media.removeReplaceCamera(cameraId: stream.id)
+            self.media.removeReplaceAudio(cameraId: stream.id)
             if self.currentMic.inputUid == stream.id.uuidString {
                 self.setMicFromSettings()
             }
@@ -1325,14 +1325,14 @@ final class Model: NSObject, ObservableObject {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func handleRtmpServerAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer) {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        media.addRtmpAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
@@ -3316,8 +3316,8 @@ final class Model: NSObject, ObservableObject {
 
     func stopAllRtmpStreams() {
         for stream in database.rtmpServer!.streams {
-            media.removeRtmpCamera(cameraId: stream.id)
-            media.removeRtmpAudio(cameraId: stream.id)
+            media.removeReplaceCamera(cameraId: stream.id)
+            media.removeReplaceAudio(cameraId: stream.id)
         }
     }
 
@@ -5940,7 +5940,7 @@ extension Model: SrtlaServerDelegate {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return
         }
-        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func srtlaServerOnClientStart(streamId: String) {
@@ -5951,8 +5951,8 @@ extension Model: SrtlaServerDelegate {
                 return
             }
             let latency = Double(stream.latency!) / 1000
-            self.media.addRtmpCamera(cameraId: stream.id, latency: latency)
-            self.media.addRtmpAudio(cameraId: stream.id, latency: latency)
+            self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
+            self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
         }
     }
 
@@ -5963,8 +5963,8 @@ extension Model: SrtlaServerDelegate {
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
-            self.media.removeRtmpCamera(cameraId: stream.id)
-            self.media.removeRtmpAudio(cameraId: stream.id)
+            self.media.removeReplaceCamera(cameraId: stream.id)
+            self.media.removeReplaceAudio(cameraId: stream.id)
             if self.currentMic.inputUid == stream.id.uuidString {
                 self.setMicFromSettings()
             }

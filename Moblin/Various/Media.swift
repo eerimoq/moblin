@@ -679,27 +679,27 @@ final class Media: NSObject {
         netStream.attachAudio(nil, replaceAudioId: cameraId)
     }
 
-    func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    func addReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    func addReplaceAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         netStream.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpCamera(cameraId: UUID, latency: Double) {
+    func addReplaceCamera(cameraId: UUID, latency: Double) {
         netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
     }
 
-    func addRtmpAudio(cameraId: UUID, latency: Double) {
+    func addReplaceAudio(cameraId: UUID, latency: Double) {
         netStream.addReplaceAudio(cameraId: cameraId, latency: latency)
     }
 
-    func removeRtmpCamera(cameraId: UUID) {
+    func removeReplaceCamera(cameraId: UUID) {
         netStream.removeReplaceVideo(cameraId: cameraId)
     }
 
-    func removeRtmpAudio(cameraId: UUID) {
+    func removeReplaceAudio(cameraId: UUID) {
         netStream.removeReplaceAudio(cameraId: cameraId)
     }
 
