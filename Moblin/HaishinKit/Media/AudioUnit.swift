@@ -84,9 +84,9 @@ private class ReplaceAudio {
                 value: CMTimeValue(Double(frameLength)),
                 timescale: CMTimeScale(sampleRate)
             ))
-        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
+        guard let sampleBuffer = getSampleBuffer() else {
             nilCounter += 1
-            logger.info("No valid audio timestamp found. Waiting for more sampleBuffers. Count: \(nilCounter)")
+            logger.info("Audio nil. Count: \(nilCounter)")
             return
         }
         let timeOffset = CMTimeSubtract(presentationTimeStamp, sampleBuffer.presentationTimeStamp)

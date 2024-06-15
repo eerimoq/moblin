@@ -42,11 +42,13 @@ private struct FaceDetectionsCompletion {
 private class ReplaceVideo {
     private var latency: Double
     private var sampleBuffers: Deque<CMSampleBuffer> = []
+    private var presentationTimeStamp: CMTime = .zero
     private var firstPresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
 
     init(latency: Double) {
         self.latency = latency
+        self.presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -54,8 +56,16 @@ private class ReplaceVideo {
         sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
     }
 
-    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
-        var sampleBuffer = currentSampleBuffer
+    func updateSampleBuffer(_ frameRate: Double) {
+        presentationTimeStamp = CMTimeAdd(
+                   presentationTimeStamp,
+                   CMTime(
+                       value: CMTimeValue(Double(1)),
+                       timescale: CMTimeScale(frameRate)
+                   ))
+        let realPresentationTimeStamp = presentationTimeStamp.seconds
+        var sampleBuffer: CMSampleBuffer?
+        // var sampleBuffer = currentSampleBuffer
         while let replaceSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
                 sampleBuffer = replaceSampleBuffer
@@ -83,7 +93,12 @@ private class ReplaceVideo {
         currentSampleBuffer = sampleBuffer
     }
 
+    var nilCounter: Int = 0
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+        if currentSampleBuffer == nil {
+            nilCounter += 1
+            logger.info("Video nil. Count: \(nilCounter)")
+        }
         return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
     }
 }
@@ -229,7 +244,7 @@ final class VideoUnit: NSObject {
     private func handleReplaceVideo() {
         let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         for replaceVideo in replaceVideos.values {
-            replaceVideo.updateSampleBuffer(presentationTimeStamp.seconds)
+            replaceVideo.updateSampleBuffer(frameRate)
         }
         guard let selectedReplaceVideoCameraId else {
             return
