@@ -1,3 +1,7 @@
+// Adaptive bitrate algorithm from Belacoder.
+// Designed by rationalsa for the BELABOX projecct.
+// https://github.com/BELABOX/belacoder
+
 import Collections
 import Foundation
 
