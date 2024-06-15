@@ -30,6 +30,7 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
+    private var realPresentationTimeStamp: CMTime = .zero
     private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
@@ -40,6 +41,7 @@ private class ReplaceAudio {
     init(cameraId: UUID, latency: Double) {
         self.cameraId = cameraId
         self.latency = latency
+        self.realPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -75,12 +77,17 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
-        guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
+        realPresentationTimeStamp = CMTimeAdd(
+            realPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(Double(frameLength)),
+                timescale: CMTimeScale(sampleRate)
+            ))
+        guard let sampleBuffer = getSampleBuffer(realPresentationTimeStamp.seconds) else {
             // logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
             return
         }
-        let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
+        let timeOffset = CMTimeSubtract(realPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
