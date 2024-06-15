@@ -1,4 +1,5 @@
 import AVFoundation
+import Collections
 
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
 
@@ -28,7 +29,7 @@ private class ReplaceAudio {
     private var latency: Double
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
-    private var sampleBufferQueue: [CMSampleBuffer] = []
+    private var sampleBuffers: Deque<CMSampleBuffer> = []
     private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
@@ -42,8 +43,8 @@ private class ReplaceAudio {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        sampleBufferQueue.append(sampleBuffer)
-        sampleBufferQueue.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
+        sampleBuffers.append(sampleBuffer)
+        sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         if !isInitialized {
             isInitialized = true
             initialize(sampleBuffer: sampleBuffer)
@@ -62,9 +63,9 @@ private class ReplaceAudio {
     }
 
     private func startOutput() {
-        logger.info("ReplaceAudio latency: \(latency)")
-        logger.info("ReplaceAudio sampleRate: \(sampleRate)")
-        logger.info("ReplaceAudio frameLength: \(frameLength)")
+        logger.info("replace-audio: latency: \(latency)")
+        logger.info("replace-audio: sampleRate: \(sampleRate)")
+        logger.info("replace-audio: frameLength: \(frameLength)")
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
         outputTimer?.setEventHandler { [weak self] in
@@ -86,7 +87,6 @@ private class ReplaceAudio {
         else {
             return
         }
-        // logger.info("ReplaceAudio PresentationTimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: updatedSampleBuffer)
     }
 
@@ -95,32 +95,30 @@ private class ReplaceAudio {
         isOutputting = false
         outputTimer?.cancel()
         outputTimer = nil
-        sampleBufferQueue.removeAll()
+        sampleBuffers.removeAll()
         firstPresentationTimeStamp = .nan
-        logger.info("ReplaceAudio output has been stopped.")
+        logger.info("replace-audio: output has been stopped.")
     }
 
     func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
-        while !sampleBufferQueue.isEmpty {
-            let replaceSampleBuffer = sampleBufferQueue.first!
-            if sampleBufferQueue.count > 300 {
-                logger.info("Over 300 frames buffered. Dropping oldest frame.")
+        while let replaceSampleBuffer = sampleBuffers.first {
+            if sampleBuffers.count > 300 {
+                logger.info("replace-audio: Over 300 buffers buffered. Dropping oldest buffer.")
                 sampleBuffer = replaceSampleBuffer
-                sampleBufferQueue.remove(at: 0)
+                sampleBuffers.removeFirst()
                 continue
             }
             let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
+            let duration = replaceSampleBuffer.duration.seconds
             if firstPresentationTimeStamp.isNaN {
-                firstPresentationTimeStamp = realPresentationTimeStamp
+                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
             }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency >
-                realPresentationTimeStamp
-            {
+            if firstPresentationTimeStamp + presentationTimeStamp + latency > realPresentationTimeStamp {
                 break
             }
             sampleBuffer = replaceSampleBuffer
-            sampleBufferQueue.remove(at: 0)
+            sampleBuffers.removeFirst()
         }
         return sampleBuffer
     }
@@ -158,11 +156,13 @@ final class AudioUnit: NSObject {
         lockQueue.sync {
             self.selectedReplaceAudioId = replaceAudio
         }
-        output?.setSampleBufferDelegate(nil, queue: lockQueue)
-        try attachDevice(device, session)
-        self.device = device
-        output?.setSampleBufferDelegate(self, queue: lockQueue)
-        session.automaticallyConfiguresApplicationAudioSession = false
+        if let device {
+            output?.setSampleBufferDelegate(nil, queue: lockQueue)
+            try attachDevice(device, session)
+            self.device = device
+            output?.setSampleBufferDelegate(self, queue: lockQueue)
+            session.automaticallyConfiguresApplicationAudioSession = false
+        }
     }
 
     func appendSampleBuffer(
