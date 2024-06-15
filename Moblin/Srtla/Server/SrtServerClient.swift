@@ -12,7 +12,7 @@ class SrtServerClient {
     private var nalUnitReader = NALUnitReader()
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var audioBuffer: AVAudioCompressedBuffer?
-    private var latestAudioBuffer: AVAudioPCMBuffer?
+    private var latestAudioSampleBuffer: CMSampleBuffer?
     private var latestAudioBufferPresentationTimeStamp = 0.0
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
@@ -129,7 +129,7 @@ class SrtServerClient {
             return
         }
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        if let latestAudioBuffer {
+        if let latestAudioSampleBuffer {
             let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
             // Assume 1024 samples/buffer at 48 kHz for now
             var gapBuffers = Int(((ptsDelta / 0.021333) - 1).rounded())
@@ -139,16 +139,29 @@ class SrtServerClient {
             // """)
             while gapBuffers > 0 {
                 logger.info("srt-server: Audio gap filler buffer")
+                guard let sampleBuffer = latestAudioSampleBuffer
+                    .replacePresentationTimeStamp(presentationTimeStamp: .init())
+                else {
+                    continue
+                }
                 server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
                     streamId: streamId,
-                    buffer: latestAudioBuffer
+                    sampleBuffer: sampleBuffer
                 )
                 gapBuffers -= 1
             }
         }
-        latestAudioBuffer = outputBuffer
         latestAudioBufferPresentationTimeStamp = presentationTimeStamp
-        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(streamId: streamId, buffer: outputBuffer)
+        guard let sampleBuffer = outputBuffer
+            .makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)
+        else {
+            return
+        }
+        latestAudioSampleBuffer = sampleBuffer
+        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
+            streamId: streamId,
+            sampleBuffer: sampleBuffer
+        )
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {

@@ -19,7 +19,7 @@ protocol SrtlaServerDelegate: AnyObject {
     func srtlaServerOnClientStart(streamId: String)
     func srtlaServerOnClientStop(streamId: String)
     func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
-    func srtlaServerOnAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer)
+    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
 }
 
 class SrtlaServer {

@@ -5929,11 +5929,11 @@ extension Model {
 }
 
 extension Model: SrtlaServerDelegate {
-    func srtlaServerOnAudioBuffer(streamId _: String, buffer _: AVAudioPCMBuffer) {
-        // guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
-        //     return
-        // }
-        // media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: buffer)
+    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
