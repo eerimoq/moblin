@@ -5289,6 +5289,18 @@ extension Model {
                 ))
             }
         }
+        for srtlaCamera in srtlaCameras() {
+            guard let stream = getSrtlaStream(camera: srtlaCamera) else {
+                continue
+            }
+            if isSrtlaStreamConnected(streamId: stream.streamId) {
+                mics.append(Mic(
+                    name: srtlaCamera,
+                    inputUid: stream.id.uuidString,
+                    builtInOrientation: .srtla
+                ))
+            }
+        }
         return mics
     }
 
@@ -5304,6 +5316,8 @@ extension Model {
         case .top:
             wantedOrientation = .top
         case .rtmp:
+            wantedOrientation = .bottom
+        case .srtla:
             wantedOrientation = .bottom
         }
         let session = AVAudioSession.sharedInstance()
@@ -5369,39 +5383,57 @@ extension Model {
     }
 
     private func selectMic(mic: Mic) {
-        if mic.builtInOrientation == .rtmp {
-            currentMic = mic
-            let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
-            media.attachRtmpAudio(cameraId: cameraId, device: nil)
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-        } else {
-            media.attachRtmpAudio(cameraId: nil, device: nil)
-            let session = AVAudioSession.sharedInstance()
-            do {
-                for inputPort in session.availableInputs ?? [] {
-                    if mic.inputUid != inputPort.uid {
-                        continue
-                    }
-                    try session.setPreferredInput(inputPort)
-                    if let dataSourceID = mic.dataSourceID {
-                        for dataSource in inputPort.dataSources ?? [] {
-                            if dataSourceID != dataSource.dataSourceID {
-                                continue
-                            }
-                            try setBuiltInMicAudioMode(dataSource: dataSource)
-                            try session.setInputDataSource(dataSource)
+        switch mic.builtInOrientation {
+        case .rtmp:
+            selectMicRtmp(mic: mic)
+        case .srtla:
+            selectMicSrtla(mic: mic)
+        default:
+            selectMicDefault(mic: mic)
+        }
+    }
+
+    private func selectMicRtmp(mic: Mic) {
+        currentMic = mic
+        let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
+        media.attachReplaceAudio(cameraId: cameraId)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    private func selectMicSrtla(mic: Mic) {
+        currentMic = mic
+        let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
+        media.attachReplaceAudio(cameraId: cameraId)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    private func selectMicDefault(mic: Mic) {
+        media.attachReplaceAudio(cameraId: nil)
+        let session = AVAudioSession.sharedInstance()
+        do {
+            for inputPort in session.availableInputs ?? [] {
+                if mic.inputUid != inputPort.uid {
+                    continue
+                }
+                try session.setPreferredInput(inputPort)
+                if let dataSourceID = mic.dataSourceID {
+                    for dataSource in inputPort.dataSources ?? [] {
+                        if dataSourceID != dataSource.dataSourceID {
+                            continue
                         }
+                        try setBuiltInMicAudioMode(dataSource: dataSource)
+                        try session.setInputDataSource(dataSource)
                     }
                 }
-                currentMic = mic
-                remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-            } catch {
-                logger.error("Failed to select mic: \(error)")
-                makeErrorToast(
-                    title: String(localized: "Failed to select mic"),
-                    subTitle: error.localizedDescription
-                )
             }
+            currentMic = mic
+            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        } catch {
+            logger.error("Failed to select mic: \(error)")
+            makeErrorToast(
+                title: String(localized: "Failed to select mic"),
+                subTitle: error.localizedDescription
+            )
         }
     }
 

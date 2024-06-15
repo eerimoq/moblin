@@ -1042,6 +1042,7 @@ enum SettingsMic: String, Codable, CaseIterable {
     case back = "Back"
     case top = "Top"
     case rtmp = "RTMP"
+    case srtla = "SRT(LA)"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsMic(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .bottom
