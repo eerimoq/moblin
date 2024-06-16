@@ -5,9 +5,26 @@
 import Collections
 import Foundation
 
+private let bitrateIncrMin: Int64 = (100 * 1000)
+private let bitrateIncrInt: UInt64 = 400
+private let bitrateIncrScale: Int64 = 30
+private let bitrateDecrMin: Int64 = (100 * 1000)
+private let bitrateDecrInt: UInt64 = 200
+private let bitrateDecrFastInt: UInt64 = 250
+private let bitrateDecrScale: Int64 = 10
+
+let adaptiveBitrateBelaboxSettings = AdaptiveBitrateSettings(
+    packetsInFlight: 200,
+    rttDiffHighFactor: 0.9,
+    rttDiffHighAllowedSpike: 50,
+    rttDiffHighMinDecrease: 250_000,
+    pifDiffIncreaseFactor: 100_000,
+    minimumBitrate: 500_000
+)
+
 class AdaptiveBitrateSrtBela: AdaptiveBitrate {
     private var targetBitrate: Int64
-    private var settings = adaptiveBitrateFastSettings
+    private var settings = adaptiveBitrateBelaboxSettings
     private var bsAvg: Double = 0
     private var bsJitter: Double = 0
     private var prevBs: Double = 0
@@ -101,13 +118,6 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         let bsTh1 = max(50, bsAvg + bsJitter * 2.5)
         let rttThMax = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
         let rttThMin = rttMin + max(1, rttJitter * 2)
-        let bitrateIncrMin: Int64 = (100 * 1000)
-        let bitrateIncrInt: UInt64 = 400
-        let bitrateIncrScale: Int64 = 30
-        let bitrateDecrMin: Int64 = (100 * 1000)
-        let bitrateDecrInt: UInt64 = 200
-        let bitrateDecrFastInt: UInt64 = 250
-        let bitrateDecrScale: Int64 = 10
         if bitrate > settings.minimumBitrate && (rtt >= (srtLatency / 3) || bs > bsTh3) {
             bitrate = settings.minimumBitrate
             nextBitrateDecr = currentTimeMs + bitrateDecrInt
