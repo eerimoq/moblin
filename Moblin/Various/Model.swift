@@ -1366,6 +1366,12 @@ final class Model: NSObject, ObservableObject {
             } else {
                 return false
             }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.rtmpCameraId!) {
+                return isSrtlaStreamConnected(streamId: stream.streamId)
+            } else {
+                return false
+            }
         case .external:
             return isExternalCameraConnected(id: scene.externalCameraId!)
         default:
@@ -5356,7 +5362,7 @@ extension Model {
             return
         }
         if var builtInOrientation = mic.builtInOrientation {
-            if builtInOrientation == .rtmp {
+            if builtInOrientation == .rtmp || builtInOrientation == .srtla {
                 builtInOrientation = .bottom
             }
             if database.mic != builtInOrientation {
@@ -5377,7 +5383,7 @@ extension Model {
             return
         }
         if var builtInOrientation = mic.builtInOrientation {
-            if builtInOrientation == .rtmp {
+            if builtInOrientation == .rtmp || builtInOrientation == .srtla {
                 builtInOrientation = .bottom
             }
             database.mic = builtInOrientation
