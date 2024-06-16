@@ -77,18 +77,21 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        guard let sampleBuffer = getSampleBuffer() else {
+        if firstReplaceTimeStamp.isNaN {
+            firstReplaceTimeStamp = CACurrentMediaTime()
+        }
+        replaceCounter += 1
+        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / (sampleRate / Double(frameLength)))
+        guard let sampleBuffer = getSampleBuffer(realPresentationTimeStamp) else {
             return
         }
-        let timeOffset = CMTimeSubtract(CMClockGetTime(CMClockGetHostTimeClock()), sampleBuffer.presentationTimeStamp)
+        let timeOffset = CMTimeSubtract(CMTimeMake(value: Int64(realPresentationTimeStamp * 1000), timescale: 1000), sampleBuffer.presentationTimeStamp)
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
             return
         }
-       // logger.info("updatedSampleBuffer TS: \(CMTimeMake(value: Int64(presentationTimeStamp), timescale: 1000).seconds)")
-
         delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: updatedSampleBuffer)
     }
 
@@ -102,12 +105,7 @@ private class ReplaceAudio {
         logger.info("replace-audio: output has been stopped.")
     }
 
-    func getSampleBuffer() -> CMSampleBuffer? {
-        if firstReplaceTimeStamp.isNaN {
-            firstReplaceTimeStamp = CACurrentMediaTime()
-        }
-        replaceCounter += 1
-        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / (sampleRate / frameLength))
+    func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         while let replaceSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
