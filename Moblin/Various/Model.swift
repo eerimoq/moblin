@@ -1308,6 +1308,9 @@ final class Model: NSObject, ObservableObject {
             let latency = Double(stream.latency!) / 1000
             self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
             self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
+            if false {
+                self.selectMicById(id: "\(stream.id) 0")
+            }
         }
     }
 
@@ -1320,7 +1323,7 @@ final class Model: NSObject, ObservableObject {
             }
             self.media.removeReplaceCamera(cameraId: stream.id)
             self.media.removeReplaceAudio(cameraId: stream.id)
-            if self.currentMic.inputUid == stream.id.uuidString {
+            if self.currentMic.id == "\(stream.id) 0" {
                 self.setMicFromSettings()
             }
         }
@@ -5969,6 +5972,9 @@ extension Model: SrtlaServerDelegate {
             let latency = 0.2
             self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
             self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
+            if false {
+                self.selectMicById(id: "\(stream.id) 0")
+            }
         }
     }
 
@@ -5981,7 +5987,7 @@ extension Model: SrtlaServerDelegate {
             }
             self.media.removeReplaceCamera(cameraId: stream.id)
             self.media.removeReplaceAudio(cameraId: stream.id)
-            if self.currentMic.inputUid == stream.id.uuidString {
+            if self.currentMic.id == "\(stream.id) 0" {
                 self.setMicFromSettings()
             }
         }
