@@ -52,6 +52,7 @@
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
 		0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324CD062BEBFBBA004AA063 /* RistStream.swift */; };
+		0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */; };
 		0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */; };
 		0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */; };
 		0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */; };
@@ -467,6 +468,7 @@
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
+		0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourThreeEffect.swift; sourceTree = "<group>"; };
 		0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsernamesToIgnoreSettingsView.swift; sourceTree = "<group>"; };
 		0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeechSettingsView.swift; sourceTree = "<group>"; };
 		0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickViewers.swift; sourceTree = "<group>"; };
@@ -1966,6 +1968,7 @@
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
+				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				038F42EC2B6849D400E68752 /* LutEffect.swift */,
@@ -2701,6 +2704,7 @@
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B7DAB22BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift in Sources */,
 				03DAC9392BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift in Sources */,
+				0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,

@@ -486,6 +486,7 @@ final class Model: NSObject, ObservableObject {
     @Published var ipStatuses: [IPMonitor.Status] = []
     private var faceEffect = FaceEffect(fps: 30)
     private var movieEffect = MovieEffect()
+    private var fourThreeEffect = FourThreeEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
@@ -1959,6 +1960,9 @@ final class Model: NSObject, ObservableObject {
         }
         if isGlobalButtonOn(type: .movie) {
             effects.append(movieEffect)
+        }
+        if isGlobalButtonOn(type: .fourThree) {
+            effects.append(fourThreeEffect)
         }
         if isGlobalButtonOn(type: .grayScale) {
             effects.append(grayScaleEffect)

@@ -782,6 +782,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case lut = "LUT"
     case cameraPreview = "Camera preview"
     case face = "Face"
+    case fourThree = "4:3"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -1811,6 +1812,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "4:3"))
+    button.id = UUID()
+    button.type = .fourThree
+    button.imageType = "System name"
+    button.systemImageNameOn = "square"
+    button.systemImageNameOff = "square"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Gray scale"))

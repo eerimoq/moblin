@@ -509,6 +509,10 @@ struct ButtonsInnerView: View {
         videoEffectAction(state: state, type: .movie)
     }
 
+    private func fourThreeAction(state: ButtonState) {
+        videoEffectAction(state: state, type: .fourThree)
+    }
+
     private func grayScaleAction(state: ButtonState) {
         videoEffectAction(state: state, type: .grayScale)
     }
@@ -692,6 +696,12 @@ struct ButtonsInnerView: View {
             case .movie:
                 Button(action: {
                     movieAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .fourThree:
+                Button(action: {
+                    fourThreeAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
