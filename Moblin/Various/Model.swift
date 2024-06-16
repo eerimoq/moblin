@@ -5451,6 +5451,7 @@ extension Model {
                 }
             }
             currentMic = mic
+            saveSelectedMic(mic: mic)
             remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
         } catch {
             logger.error("Failed to select mic: \(error)")
@@ -5459,6 +5460,14 @@ extension Model {
                 subTitle: error.localizedDescription
             )
         }
+    }
+
+    private func saveSelectedMic(mic: Mic) {
+        guard let orientation = mic.builtInOrientation, database.mic != orientation else {
+            return
+        }
+        database.mic = orientation
+        store()
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
