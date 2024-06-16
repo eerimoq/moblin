@@ -30,6 +30,8 @@ class SrtlaServer {
     weak var delegate: (any SrtlaServerDelegate)?
     private var periodicTimer: DispatchSourceTimer?
     private var prevTotalBytesReceived: UInt64 = 0
+    var totalBytesReceived: Atomic<UInt64> = .init(0)
+    private var numberOfClients: Atomic<Int> = .init(0)
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings.clone()
@@ -58,14 +60,24 @@ class SrtlaServer {
     }
 
     func updateStats() -> SrtlaServerStats {
-        let totalBytesReceived: UInt64 = srtServer.totalBytesReceived.value
+        let totalBytesReceived = totalBytesReceived.value
         let speed = totalBytesReceived - prevTotalBytesReceived
         prevTotalBytesReceived = totalBytesReceived
         return SrtlaServerStats(total: totalBytesReceived, speed: speed)
     }
 
-    func numberOfClients() -> Int {
-        return srtServer.numberOfClients.value
+    func getNumberOfClients() -> Int {
+        return numberOfClients.value
+    }
+
+    func clientConnected(streamId: String) {
+        numberOfClients.mutate { $0 += 1 }
+        delegate?.srtlaServerOnClientStart(streamId: streamId)
+    }
+
+    func clientDisconnected(streamId: String) {
+        delegate?.srtlaServerOnClientStop(streamId: streamId)
+        numberOfClients.mutate { $0 -= 1 }
     }
 
     private func startPeriodicTimer() {

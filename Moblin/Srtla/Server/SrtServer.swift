@@ -8,8 +8,6 @@ class SrtServer {
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     var acceptedStreamId: Atomic<String> = .init("")
     var running: Bool = false
-    var totalBytesReceived: Atomic<UInt64> = .init(0)
-    var numberOfClients: Atomic<Int> = .init(0)
 
     func start() {
         srt_startup()
@@ -33,6 +31,7 @@ class SrtServer {
     private func main() throws {
         try open()
         try setSrtlaPatchesOption()
+        try setLossMaxTtlOption()
         try bind()
         try listen()
         while true {
@@ -45,17 +44,10 @@ class SrtServer {
                 logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
                 continue
             }
-            // Makes NAK too slow?
-            let option = SRTSocketOption(rawValue: "lossmaxttl")!
-            if !option.setOption(clientSocket, value: "200") {
-                logger.error("srt-server: Failed to set lossmaxttl option.")
-            }
             logger.info("srt-server: Accepted client \(stream.name).")
-            numberOfClients.mutate { $0 += 1 }
-            srtlaServer?.delegate?.srtlaServerOnClientStart(streamId: acceptedStreamId.value)
+            srtlaServer?.clientConnected(streamId: acceptedStreamId.value)
             SrtServerClient(server: self, streamId: acceptedStreamId.value).run(clientSocket: clientSocket)
-            srtlaServer?.delegate?.srtlaServerOnClientStop(streamId: acceptedStreamId.value)
-            numberOfClients.mutate { $0 -= 1 }
+            srtlaServer?.clientDisconnected(streamId: acceptedStreamId.value)
             acceptedStreamId.mutate { $0 = "" }
             logger.info("srt-server: Closed client.")
         }
@@ -72,6 +64,14 @@ class SrtServer {
         let srtlaPatches = SRTSocketOption(rawValue: "srtlaPatches")!
         guard srtlaPatches.setOption(listenerSocket, value: "1") else {
             throw "Failed to set srtlaPatches option."
+        }
+    }
+
+    private func setLossMaxTtlOption() throws {
+        // Makes NAK too slow?
+        let option = SRTSocketOption(rawValue: "lossmaxttl")!
+        if !option.setOption(listenerSocket, value: "200") {
+            logger.error("srt-server: Failed to set lossmaxttl option.")
         }
     }
 
@@ -98,17 +98,19 @@ class SrtServer {
             throw "Listen failed."
         }
         let server = Unmanaged.passRetained(self).toOpaque()
-        res = srt_listen_callback(listenerSocket,
-                                  { server, _, _, _, streamIdIn in
-                                      guard let server, let streamIdIn else {
-                                          return SRT_ERROR
-                                      }
-                                      let srtServer: SrtServer = Unmanaged.fromOpaque(server)
-                                          .takeUnretainedValue()
-                                      srtServer.acceptedStreamId.mutate { $0 = String(cString: streamIdIn) }
-                                      return 0
-                                  },
-                                  server)
+        res = srt_listen_callback(
+            listenerSocket,
+            { server, _, _, _, streamIdIn in
+                guard let server, let streamIdIn else {
+                    return SRT_ERROR
+                }
+                let srtServer: SrtServer = Unmanaged.fromOpaque(server)
+                    .takeUnretainedValue()
+                srtServer.acceptedStreamId.mutate { $0 = String(cString: streamIdIn) }
+                return 0
+            },
+            server
+        )
         guard res != SRT_ERROR else {
             throw "Listen callback failed."
         }

@@ -3580,8 +3580,8 @@ final class Model: NSObject, ObservableObject {
         }
         if let srtlaServer {
             let stats = srtlaServer.updateStats()
-            numberOfClients += srtlaServer.numberOfClients()
-            if srtlaServer.numberOfClients() > 0 {
+            numberOfClients += srtlaServer.getNumberOfClients()
+            if srtlaServer.getNumberOfClients() > 0 {
                 total += stats.total
                 speed += stats.speed
             }
