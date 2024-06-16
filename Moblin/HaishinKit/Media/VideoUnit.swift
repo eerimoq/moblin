@@ -43,14 +43,14 @@ private class ReplaceVideo {
     private var latency: Double
     private var frameRate: Double
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var realPresentationTimeStamp: CMTime = .zero
+    private var firstReplaceTimeStamp: Double = .nan
     private var firstPresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
+    private var replaceCounter: Int32 = 0
 
     init(latency: Double, frameRate: Double) {
         self.latency = latency
         self.frameRate = frameRate
-        self.realPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -59,13 +59,11 @@ private class ReplaceVideo {
     }
 
     func updateSampleBuffer() {
-        realPresentationTimeStamp = CMTimeAdd(
-            realPresentationTimeStamp,
-                   CMTime(
-                       value: CMTimeValue(Double(1)),
-                       timescale: CMTimeScale(frameRate)
-                   ))
-        let realPresentationTimeStamp = realPresentationTimeStamp.seconds
+        if firstReplaceTimeStamp.isNaN {
+            firstReplaceTimeStamp = CACurrentMediaTime()
+        }
+        replaceCounter += 1
+        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / frameRate)
         var sampleBuffer = currentSampleBuffer
         while let replaceSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
