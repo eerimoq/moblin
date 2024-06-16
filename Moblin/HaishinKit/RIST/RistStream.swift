@@ -194,7 +194,9 @@ class RistStream: NetStream {
             adaptiveWeight.update(stats: StreamStats(
                 rttMs: Double(stats.rtt),
                 packetsInFlight: 10,
-                transportBitrate: nil
+                transportBitrate: nil,
+                latency: nil,
+                mbpsSendRate: nil
             ))
             let weight = max(adaptiveWeight.getCurrentBitrate() / (weigthTargetBitrate / 25), 1)
             logger.debug("rist: peer \(stats.peerId): weight \(weight)")

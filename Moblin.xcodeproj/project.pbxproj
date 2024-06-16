@@ -364,6 +364,7 @@
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
 		03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */; };
+		ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */; };
 		C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 /* End PBXBuildFile section */
 
@@ -821,6 +822,7 @@
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 		03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerClient.swift; sourceTree = "<group>"; };
 		03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerChunkStream.swift; sourceTree = "<group>"; };
+		ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrateSrtBela.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2231,6 +2233,7 @@
 				03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */,
 				034FA1B72C151DFF00695825 /* AdaptiveBitrateSrtFight.swift */,
 				034FA1BA2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift */,
+				ABF045842C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift */,
 			);
 			path = AdaptiveBitrate;
 			sourceTree = "<group>";
@@ -2550,6 +2553,7 @@
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
+				ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */,
 				030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */,
 				0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */,
 				03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */,

@@ -193,7 +193,7 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtFight(
+            adaptiveBitrate = AdaptiveBitrateSrtBela(
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -227,10 +227,14 @@ final class Media: NSObject {
 
     private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
         let stats = srtConnection.performanceData
+        //var snd_data = stats.pktFlightSize
+        var snd_data = srtConnection.socket?.snd_data() ?? 0
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
-            packetsInFlight: Double(stats.pktFlightSize),
-            transportBitrate: streamSpeed()
+            packetsInFlight: Double(snd_data),
+            transportBitrate: streamSpeed(),
+            latency: self.latency,
+            mbpsSendRate: stats.mbpsSendRate
         ))
         guard overlay else {
             return nil
@@ -243,7 +247,7 @@ final class Media: NSObject {
                 """,
                 "msRTT: \(stats.msRTT)",
                 """
-                pktFlightSize: \(stats.pktFlightSize)   \
+                pktFlightSize: \(snd_data)   \
                 \(adaptiveBitrate.getFastPif())   \
                 \(adaptiveBitrate.getSmoothPif())
                 """,
@@ -269,7 +273,9 @@ final class Media: NSObject {
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
             packetsInFlight: Double(stats.packetsInFlight),
-            transportBitrate: streamSpeed()
+            transportBitrate: streamSpeed(),
+            latency: nil,
+            mbpsSendRate: nil
         ))
         guard overlay else {
             return nil
@@ -304,7 +310,9 @@ final class Media: NSObject {
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: rtt,
             packetsInFlight: 10,
-            transportBitrate: nil
+            transportBitrate: nil,
+            latency: nil,
+            mbpsSendRate: nil
         ))
         ristStream.updateConnectionsWeights()
         guard overlay else {
