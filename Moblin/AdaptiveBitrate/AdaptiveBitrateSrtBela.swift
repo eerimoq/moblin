@@ -48,123 +48,105 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
     }
 
     private func currentTimeMillis() -> UInt64 {
-        let nowDouble = NSDate().timeIntervalSince1970
-        return UInt64(nowDouble * 1000)
+        return UInt64(NSDate().timeIntervalSince1970 * 1000)
     }
 
     private func updateBitrate(stats: StreamStats) {
         if stats.rttMs == 0 {
             return
         }
-
         if curBitrate == 0 {
             curBitrate = settings.minimumBitrate
         }
-
-        let srt_latency = Double(stats.latency ?? 2000)
-
-        let ctime: UInt64 = currentTimeMillis()
-        let bs: Double = stats.packetsInFlight
-
+        let srtLatency = Double(stats.latency ?? 2000)
+        let currentTimeMs = currentTimeMillis()
+        let bs = stats.packetsInFlight
         // Rolling average
         bsAvg = bsAvg * 0.99 + bs * 0.01
-
         // Update the buffer size jitter
         bsJitter = 0.99 * bsJitter
-        let delta_bs: Double = bs - prevBs
-        if delta_bs > bsJitter {
-            bsJitter = delta_bs
+        let deltaBs = bs - prevBs
+        if deltaBs > bsJitter {
+            bsJitter = deltaBs
         }
         prevBs = bs
-
         // Update the average RTT
-        let rtt: Double = stats.rttMs
+        let rtt = stats.rttMs
         if rttAvg == 0.0 {
             rttAvg = rtt
         } else {
             rttAvg = rttAvg * 0.99 + 0.01 * rtt
         }
-
         // Update the average RTT delta
-        let delta_rtt: Double = rtt - prevRtt
-        rttAvgDelta = rttAvgDelta * 0.8 + delta_rtt * 0.2
+        let deltaRtt = rtt - prevRtt
+        rttAvgDelta = rttAvgDelta * 0.8 + deltaRtt * 0.2
         prevRtt = rtt
-
         // Update the minimum RTT
         rttMin *= 1.001
         if rtt != 100 && rtt < rttMin && rttAvgDelta < 1.0 {
             rttMin = rtt
         }
-
         // Update the RTT jitter
         rttJitter *= 0.99
-        if delta_rtt > rttJitter {
-            rttJitter = delta_rtt
+        if deltaRtt > rttJitter {
+            rttJitter = deltaRtt
         }
-
         // Rolling average of the network throughput
         throughput *= 0.97
         throughput += (stats.mbpsSendRate! * 1000.0 * 1000.0 / 1024.0) * 0.03
-
-        var bitrate: Int64 = curBitrate
-
-        let bs_th3 = (bsAvg + bsJitter) * 4
-        var bs_th2 = max(50, bsAvg + max(bsJitter * 3.0, bsAvg))
-        bs_th2 = min(bs_th2, rttToBs(rtt: srt_latency / 2, throughput: throughput))
-        let bs_th1 = max(50, bsAvg + bsJitter * 2.5)
-        let rtt_th_max = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
-        let rtt_th_min = rttMin + max(1, rttJitter * 2)
-
-        let bitrate_incr_min: Int64 = (100 * 1000)
-        let bitrate_incr_int: UInt64 = 400
-        let bitrate_incr_scale: Int64 = 30
-
-        let bitrate_decr_min: Int64 = (100 * 1000)
-        let bitrate_decr_int: UInt64 = 200
-        let bitrate_decr_fast_int: UInt64 = 250
-        let bitrate_decr_scale: Int64 = 10
-
-        if bitrate > settings.minimumBitrate && (rtt >= (srt_latency / 3) || bs > bs_th3) {
+        var bitrate = curBitrate
+        let bsTh3 = (bsAvg + bsJitter) * 4
+        var bsTh2 = max(50, bsAvg + max(bsJitter * 3.0, bsAvg))
+        bsTh2 = min(bsTh2, rttToBs(rtt: srtLatency / 2, throughput: throughput))
+        let bsTh1 = max(50, bsAvg + bsJitter * 2.5)
+        let rttThMax = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
+        let rttThMin = rttMin + max(1, rttJitter * 2)
+        let bitrateIncrMin: Int64 = (100 * 1000)
+        let bitrateIncrInt: UInt64 = 400
+        let bitrateIncrScale: Int64 = 30
+        let bitrateDecrMin: Int64 = (100 * 1000)
+        let bitrateDecrInt: UInt64 = 200
+        let bitrateDecrFastInt: UInt64 = 250
+        let bitrateDecrScale: Int64 = 10
+        if bitrate > settings.minimumBitrate && (rtt >= (srtLatency / 3) || bs > bsTh3) {
             bitrate = settings.minimumBitrate
-            nextBitrateDecr = ctime + bitrate_decr_int
+            nextBitrateDecr = currentTimeMs + bitrateDecrInt
             logAdaptiveAcion(
                 actionTaken: """
-                Set min: \(bitrate / 1000), rtt: \(rtt) >= latency / 3: \(srt_latency / 3) \
-                or bs: \(bs) > bs_th3: \(formatTwoDecimals(value: bs_th3))
+                Set min: \(bitrate / 1000), rtt: \(rtt) >= latency / 3: \(srtLatency / 3) \
+                or bs: \(bs) > bs_th3: \(formatTwoDecimals(value: bsTh3))
                 """
             )
-        } else if ctime > nextBitrateDecr && (rtt > (srt_latency / 5) || bs > bs_th2) {
-            bitrate -= (bitrate_decr_min + bitrate / bitrate_decr_scale)
-            nextBitrateDecr = ctime + bitrate_decr_fast_int
+        } else if currentTimeMs > nextBitrateDecr && (rtt > (srtLatency / 5) || bs > bsTh2) {
+            bitrate -= (bitrateDecrMin + bitrate / bitrateDecrScale)
+            nextBitrateDecr = currentTimeMs + bitrateDecrFastInt
             logAdaptiveAcion(
                 actionTaken: """
-                Fast decr: \((bitrate_decr_min + bitrate / bitrate_decr_scale) / 1000), \
-                rtt: \(rtt) > latency / 5: \(srt_latency / 5) or bs: \(bs) > bs_th2: \
-                \(formatTwoDecimals(value: bs_th2))
+                Fast decr: \((bitrateDecrMin + bitrate / bitrateDecrScale) / 1000), \
+                rtt: \(rtt) > latency / 5: \(srtLatency / 5) or bs: \(bs) > bs_th2: \
+                \(formatTwoDecimals(value: bsTh2))
                 """
             )
-        } else if ctime > nextBitrateDecr && (rtt > rtt_th_max || bs > bs_th1) {
-            bitrate -= bitrate_decr_min
-            nextBitrateDecr = ctime + bitrate_decr_int
+        } else if currentTimeMs > nextBitrateDecr && (rtt > rttThMax || bs > bsTh1) {
+            bitrate -= bitrateDecrMin
+            nextBitrateDecr = currentTimeMs + bitrateDecrInt
             logAdaptiveAcion(
                 actionTaken: """
-                Decr: \(bitrate_decr_min / 1000), rtt: \(rtt) > rtt_th_max: \
-                \(formatTwoDecimals(value: rtt_th_max)) or bs: \(bs) > bs_th1: \
-                \(formatTwoDecimals(value: bs_th1))
+                Decr: \(bitrateDecrMin / 1000), rtt: \(rtt) > rtt_th_max: \
+                \(formatTwoDecimals(value: rttThMax)) or bs: \(bs) > bs_th1: \
+                \(formatTwoDecimals(value: bsTh1))
                 """
             )
-        } else if ctime > nextBitrateIncr && rtt < rtt_th_min && rttAvgDelta < 0.01 {
-            bitrate += bitrate_incr_min + bitrate / bitrate_incr_scale
-            nextBitrateIncr = ctime + bitrate_incr_int
+        } else if currentTimeMs > nextBitrateIncr && rtt < rttThMin && rttAvgDelta < 0.01 {
+            bitrate += bitrateIncrMin + bitrate / bitrateIncrScale
+            nextBitrateIncr = currentTimeMs + bitrateIncrInt
             // logAdaptiveAcion(actionTaken: """
             //      Incr: \(bitrate_incr_min + bitrate / bitrate_incr_scale), \
             //      rtt: \(String(format:"%.2f", rtt)) < rtt_th_min: \(String(format:"%.2f",rtt_th_min)) \
             //      and rtt_avg_delta: \(String(format:"%.2f",rtt_avg_delta)) < 0.01
             //      """)
         }
-
         bitrate = max(min(bitrate, targetBitrate), settings.minimumBitrate)
-
         if bitrate != curBitrate {
             curBitrate = bitrate
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(bitrate))
