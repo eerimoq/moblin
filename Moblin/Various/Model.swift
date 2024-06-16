@@ -1189,6 +1189,7 @@ final class Model: NSObject, ObservableObject {
         if !shouldStreamInBackground() {
             stopStream()
             stopRtmpServer()
+            stopSrtlaServer()
             teardownAudioSession()
             chatTextToSpeech.reset(running: false)
         }
@@ -1200,6 +1201,7 @@ final class Model: NSObject, ObservableObject {
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
             reloadRtmpServer()
+            reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
         }
         if isRecording {
