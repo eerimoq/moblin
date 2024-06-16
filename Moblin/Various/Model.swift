@@ -5316,7 +5316,7 @@ extension Model {
                 mics.append(Mic(
                     name: rtmpCamera,
                     inputUid: stream.id.uuidString,
-                    builtInOrientation: .rtmp
+                    builtInOrientation: nil
                 ))
             }
         }
@@ -5328,7 +5328,7 @@ extension Model {
                 mics.append(Mic(
                     name: srtlaCamera,
                     inputUid: stream.id.uuidString,
-                    builtInOrientation: .srtla
+                    builtInOrientation: nil
                 ))
             }
         }
@@ -5346,9 +5346,7 @@ extension Model {
             wantedOrientation = .back
         case .top:
             wantedOrientation = .top
-        case .rtmp:
-            wantedOrientation = .bottom
-        case .srtla:
+        default:
             wantedOrientation = .bottom
         }
         let session = AVAudioSession.sharedInstance()
@@ -5382,15 +5380,6 @@ extension Model {
             )
             return
         }
-        if var builtInOrientation = mic.builtInOrientation {
-            if builtInOrientation == .rtmp || builtInOrientation == .srtla {
-                builtInOrientation = .bottom
-            }
-            if database.mic != builtInOrientation {
-                database.mic = builtInOrientation
-                store()
-            }
-        }
         selectMic(mic: mic)
     }
 
@@ -5403,25 +5392,31 @@ extension Model {
             )
             return
         }
-        if var builtInOrientation = mic.builtInOrientation {
-            if builtInOrientation == .rtmp || builtInOrientation == .srtla {
-                builtInOrientation = .bottom
-            }
-            database.mic = builtInOrientation
-            store()
-        }
         selectMic(mic: mic)
     }
 
     private func selectMic(mic: Mic) {
-        switch mic.builtInOrientation {
-        case .rtmp:
+        if isRtmpMic(mic: mic) {
             selectMicRtmp(mic: mic)
-        case .srtla:
+        } else if isSrtlaMic(mic: mic) {
             selectMicSrtla(mic: mic)
-        default:
+        } else {
             selectMicDefault(mic: mic)
         }
+    }
+
+    private func isRtmpMic(mic: Mic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getRtmpStream(id: id) != nil
+    }
+
+    private func isSrtlaMic(mic: Mic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getSrtlaStream(id: id) != nil
     }
 
     private func selectMicRtmp(mic: Mic) {
