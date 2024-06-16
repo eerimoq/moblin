@@ -193,7 +193,7 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtBela(
+            adaptiveBitrate = AdaptiveBitrateSrtFight(
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -227,11 +227,10 @@ final class Media: NSObject {
 
     private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
         let stats = srtConnection.performanceData
-        //var snd_data = stats.pktFlightSize
-        var snd_data = srtConnection.socket?.snd_data() ?? 0
+        // var snd_data = srtConnection.socket?.snd_data() ?? 0
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
-            packetsInFlight: Double(snd_data),
+            packetsInFlight: Double(stats.pktFlightSize),
             transportBitrate: streamSpeed(),
             latency: self.latency,
             mbpsSendRate: stats.mbpsSendRate
@@ -247,7 +246,7 @@ final class Media: NSObject {
                 """,
                 "msRTT: \(stats.msRTT)",
                 """
-                pktFlightSize: \(snd_data)   \
+                pktFlightSize: \(stats.pktFlightSize)   \
                 \(adaptiveBitrate.getFastPif())   \
                 \(adaptiveBitrate.getSmoothPif())
                 """,
