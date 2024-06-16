@@ -3067,137 +3067,6 @@
         }
       }
     },
-    "%@ source snapshot" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ Quellen-Schnappschuss"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "στιγμιότυπο πηγής %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@: Instantánea"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ lähteen tilannekuva"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ instantané source"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ स्रोत स्नैपशॉट"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ cuplikan sumber"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ istantanea di origine"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ ソース スナップショット"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 소스 스냅샷"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ bronmomentopname"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ migawka źródłowa"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ instantâneo de origem"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ instantâneo de origem"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ исходный снимок"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ översiktsbild"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ kaynak anlık görüntüsü"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ вихідний знімок"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ảnh chụp nhanh nguồn %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 源快照"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 來源快照"
-          }
-        }
-      }
-    },
     "%lld %%" : {
       "localizations" : {
         "de" : {
@@ -3984,137 +3853,6 @@
         }
       }
     },
-    "⚠️ Audio is not yet implemented." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Audio ist noch nicht implementiert."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Ο ήχος δεν έχει εφαρμοστεί ακόμη."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ El audio aún no está implementado."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Ääntä ei ole vielä toteutettu."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ L'audio n'est pas encore implémenté."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ ऑडियो अभी लागू नहीं हुआ है।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Audio belum diterapkan."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ L'audio non è ancora stato implementato."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️オーディオはまだ実装されていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ 오디오는 아직 구현되지 않았습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️Audio is nog niet geïmplementeerd."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Dźwięk nie jest jeszcze zaimplementowany."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ O áudio ainda não está implementado."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ O áudio ainda não está implementado."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Аудио пока не реализовано."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Ljud är inte implementerat ännu."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Ses henüz uygulanmadı."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Аудіо ще не реалізовано."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Âm thanh chưa được triển khai."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ 音频尚未实现。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ 音源尚未支援。"
-          }
-        }
-      }
-    },
     "⚠️ Deleting old settings ⚠️" : {
       "localizations" : {
         "de" : {
@@ -4241,16 +3979,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "⚠️刪除舊設定⚠️"
-          }
-        }
-      }
-    },
-    "⚠️ Does not yet work." : {
-      "localizations" : {
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Ei vielä toimi."
           }
         }
       }
@@ -5165,137 +4893,6 @@
         }
       }
     },
-    "2. Replace 192.168.50.72 with your local IP address (typically 192.168.x.y)." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Ersetze 192.168.50.72 durch deine lokale IP-Adresse (normalerweise 192.168.x.y)."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Αντικαταστήστε το 192.168.50.72 με την τοπική σας διεύθυνση IP (συνήθως 192.168.x.y)."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Reemplaza 192.168.50.72 por tu dirección IP local (normalmente 192.168.x.y)."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Korvaa 192.168.50.72 paikallisella IP-osoitteellasi (yleensä 192.168.x.y)."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Remplacez 192.168.50.72 par votre adresse IP locale (généralement 192.168.x.y)."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. 192.168.50.72 को अपने स्थानीय आईपी पते (आमतौर पर 192.168.x.y) से बदलें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Ganti 192.168.50.72 dengan alamat IP lokal Anda (biasanya 192.168.x.y)."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Sostituisci 192.168.50.72 con il tuo indirizzo IP locale (in genere 192.168.x.y)."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. 192.168.50.72 をローカル IP アドレス (通常は 192.168.x.y) に置き換えます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. 192.168.50.72를 로컬 IP 주소(일반적으로 192.168.x.y)로 바꿉니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Vervang 192.168.50.72 door uw lokale IP-adres (meestal 192.168.x.y)."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Zastąp 192.168.50.72 swoim lokalnym adresem IP (zwykle 192.168.x.y)."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Substitua 192.168.50.72 pelo seu endereço IP local (normalmente 192.168.x.y)."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Substitua 192.168.50.72 pelo seu endereço IP local (normalmente 192.168.x.y)."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Замените 192.168.50.72 на свой локальный IP-адрес (обычно 192.168.x.y)."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Ersätt 192.168.50.72 med din lokala IP-adress (vanligtvis 192.168.x.y)."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. 192.168.50.72'yi yerel IP adresinizle değiştirin (genellikle 192.168.x.y)."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. Замініть 192.168.50.72 своєю локальною IP-адресою (зазвичай 192.168.x.y)."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Thay thế 192.168.50.72 bằng địa chỉ IP cục bộ của bạn (thường là 192.168.x.y)."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. 将 192.168.50.72 替换为您的本地 IP 地址（通常为 192.168.x.y）。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. 將 192.168.50.72 替換為您的本機 IP 位址（通常為 192.168.x.y）。"
-          }
-        }
-      }
-    },
     "2. Replace 7654 with your port." : {
       "localizations" : {
         "de" : {
@@ -5427,7 +5024,134 @@
       }
     },
     "4:3" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4:3"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "4:3"
+          }
+        }
+      }
     },
     "4bkf-8d03-g6w3-ekjh-emdc" : {
       "localizations" : {
@@ -5821,10 +5545,130 @@
     },
     "100 or more milliseconds." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 oder mehr Millisekunden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 ή περισσότερα χιλιοστά του δευτερολέπτου."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 o más milisegundos."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "100 tai enemmän millisekuntia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 millisecondes ou plus."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 या अधिक मिलीसेकंड."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 milidetik atau lebih."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 o più millisecondi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100ミリ秒以上。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100밀리초 이상."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 of meer milliseconden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 lub więcej milisekund."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 ou mais milissegundos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 ou mais milissegundos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 или более миллисекунд."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100+ millisekunder."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 veya daha fazla milisaniye."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 або більше мілісекунд."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 mili giây trở lên."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 毫秒或更长。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "100 或更多毫秒。"
           }
         }
       }
@@ -6351,10 +6195,130 @@
     },
     "500 Kbps by default." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbit/s standardmäßig."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps από προεπιλογή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps por defecto."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "500 Kbps oletuksena."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps par défaut."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "डिफ़ॉल्ट रूप से 500 केबीपीएस."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps secara default."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps per impostazione predefinita."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "デフォルトでは 500 Kbps です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "기본적으로 500Kbps입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Standaard 500 Kbps."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Domyślnie 500 Kb/s."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps por padrão."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kbps por padrão."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "По умолчанию 500 Кбит/с."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "500 Kbps som standard."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Varsayılan olarak 500 Kbps."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Кбіт/с за замовчуванням."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "500 Kb/giây theo mặc định."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "默认为 500 Kbps。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "預設為 500 Kbps。"
           }
         }
       }
@@ -7401,10 +7365,130 @@
     },
     "A QR code and copy to clipboard button will show up here when the settings above have been modified (and are not all default values)." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wenn die oben genannten Einstellungen geändert wurden (und nicht alle Standardwerte sind), werden hier ein QR-Code und eine Schaltfläche zum Kopieren in die Zwischenablage angezeigt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ένας κωδικός QR και κουμπί αντιγραφής στο πρόχειρο θα εμφανιστεί εδώ όταν τροποποιηθούν οι παραπάνω ρυθμίσεις (και δεν είναι όλες οι προεπιλεγμένες τιμές)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aquí aparecerá un código QR y un botón para copiar al portapapeles cuando se hayan modificado las configuraciones anteriores (y no todas son valores predeterminados)."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "QR-koodi ja Kopioi leikepöydälle -nappi tulee näkyviin kun ylläolevia asetuksia on muutettu (ja arvo poikkeaa oletusarvosta)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Un code QR et un bouton Copier dans le presse-papiers apparaîtront ici lorsque les paramètres ci-dessus auront été modifiés (et ne sont pas tous des valeurs par défaut)."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "जब उपरोक्त सेटिंग्स संशोधित कर दी जाएंगी (और ये सभी डिफ़ॉल्ट मान नहीं होंगे) तो यहां एक QR कोड और क्लिपबोर्ड पर कॉपी करें बटन दिखाई देगा।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kode QR dan tombol salin ke papan klip akan muncul di sini ketika pengaturan di atas telah diubah (dan tidak semuanya merupakan nilai default)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Un codice QR e il pulsante Copia negli appunti verranno visualizzati qui quando le impostazioni di cui sopra sono state modificate (e non sono tutti valori predefiniti)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "上記の設定が変更されている場合（すべてデフォルト値ではない場合）、ここに QR コードとクリップボードにコピーするボタンが表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "위의 설정이 수정되면(모든 값이 기본값은 아님) 여기에 QR 코드와 클립보드에 복사 버튼이 표시됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Een QR-code en de knop Kopiëren naar klembord verschijnen hier wanneer de bovenstaande instellingen zijn gewijzigd (en niet allemaal standaardwaarden zijn)."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kod QR i przycisk kopiowania do schowka pojawią się tutaj, gdy powyższe ustawienia zostaną zmodyfikowane (i nie wszystkie są wartościami domyślnymi)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Um código QR e um botão copiar para a área de transferência aparecerão aqui quando as configurações acima forem modificadas (e nem todas são valores padrão)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Um código QR e um botão copiar para a área de transferência aparecerão aqui quando as configurações acima forem modificadas (e nem todos são valores padrão)."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "QR-код и кнопка «Копировать в буфер обмена» появятся здесь, если приведенные выше настройки будут изменены (и не все значения по умолчанию)."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En QR-kod och en knapp för att kopiera till urklipp visas här när inställningarna ovan har ändrats (och inte alla är standardvärden)."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yukarıdaki ayarlar değiştirildiğinde (ve hepsi varsayılan değerler olmadığında) burada bir QR kodu ve panoya kopyala düğmesi görünecektir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "QR-код і кнопка «Копіювати в буфер обміну» з’являться тут, коли наведені вище налаштування буде змінено (і це не всі значення за замовчуванням)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mã QR và nút sao chép vào khay nhớ tạm sẽ hiển thị ở đây khi các cài đặt ở trên đã được sửa đổi (và không phải tất cả đều là giá trị mặc định)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "当上述设置被修改（且并非全部为默认值）时，这里将显示一个二维码和复制到剪贴板按钮。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "當上述設定被修改時（並非都是預設值），此處將顯示二維碼和複製到剪貼簿按鈕。"
           }
         }
       }
@@ -12487,10 +12571,130 @@
     },
     "Background streaming" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hintergrund-Streaming"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ροή στο παρασκήνιο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmisión en segundo plano"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Taustalähetys"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Diffusion en arrière-plan"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "पृष्ठभूमि स्ट्रीमिंग"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streaming latar belakang"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streaming in background"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "バックグラウンドストリーミング"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "백그라운드 스트리밍"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Achtergrondstreaming"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przesyłanie strumieniowe w tle"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmissão em segundo plano"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmissão em segundo plano"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фоновая потоковая передача"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strömma i bakgrunden"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Arkaplan akışı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фонове потокове передавання"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Phát trực tuyến trong nền"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "后台流式传输"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "後台串流"
           }
         }
       }
@@ -13537,10 +13741,130 @@
     },
     "Best possible stability. Uses bonding. Free third-party service provided as a courtesy by IRLToolkit. Not to be used if you pay for IRLToolkit." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bestmögliche Stabilität. Verwendet Bonding. Kostenloser Drittanbieterdienst, der von IRLToolkit als Gefälligkeit bereitgestellt wird. Nicht zu verwenden, wenn Sie für IRLToolkit bezahlen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η καλύτερη δυνατή σταθερότητα. Χρησιμοποιεί συγκόλληση. Δωρεάν υπηρεσία τρίτων που παρέχεται ως ευγενική προσφορά από το IRLToolkit. Δεν πρέπει να χρησιμοποιείται εάν πληρώνετε για το IRLToolkit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La mejor estabilidad posible. Utiliza vinculación. Servicio gratuito de terceros proporcionado como cortesía por IRLToolkit. No debe usarse si paga por IRLToolkit."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paras vakaus. Käyttää yhteyksien yhdistämistä. Ilmainen kolmannen osapuolen tarjoama palvelu IRLToolkitiltä. Älä käytä, jos maksat jo IRLToolkitistä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meilleure stabilité possible. Utilise le collage. Service tiers gratuit fourni à titre gracieux par IRLToolkit. Ne pas utiliser si vous payez pour IRLToolkit."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सर्वोत्तम संभव स्थिरता। बॉन्डिंग का उपयोग करता है। IRLToolkit द्वारा सौजन्य के रूप में प्रदान की गई निःशुल्क तृतीय-पक्ष सेवा। यदि आप IRLToolkit के लिए भुगतान करते हैं तो इसका उपयोग नहीं किया जाना चाहिए।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stabilitas terbaik. Menggunakan ikatan. Layanan pihak ketiga gratis disediakan atas izin IRLToolkit. Tidak untuk digunakan jika Anda membayar IRLToolkit."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La migliore stabilità possibile. Utilizza il legame. Servizio gratuito di terze parti fornito a titolo di cortesia da IRLToolkit. Da non utilizzare se si paga IRLToolkit."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最高の安定性。ボンディングを使用します。IRLToolkit の好意により提供される無料のサードパーティ サービスです。IRLToolkit の料金を支払った場合は使用しないでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "최고의 안정성. 결합을 사용합니다. IRLToolkit에서 제공하는 무료 타사 서비스입니다. IRLToolkit 비용을 지불하는 경우에는 사용되지 않습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Best mogelijke stabiliteit. Maakt gebruik van binding. Gratis service van derden, aangeboden als service door IRLToolkit. Niet te gebruiken als u voor IRLToolkit betaalt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Najlepsza możliwa stabilność. Używa wiązania. Bezpłatna usługa strony trzeciej świadczona grzecznościowo przez IRLToolkit. Nie należy używać, jeśli płacisz za IRLToolkit."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Melhor estabilidade possível. Usa colagem. Serviço gratuito de terceiros fornecido como cortesia pelo IRLToolkit. Não deve ser usado se você pagar pelo IRLToolkit."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Melhor estabilidade possível. Usa colagem. Serviço gratuito de terceiros fornecido como cortesia pelo IRLToolkit. Não deve ser usado se você pagar pelo IRLToolkit."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Наилучшая стабильность. Использует склеивание. Бесплатная сторонняя услуга, предоставленная IRLToolkit. Не использовать, если вы платите за IRLToolkit."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bästa möjliga stabilitet. Använder bonding. Gratis tredjepartstjänst tillhandahållen som en artighet av IRLToolkit. Ska inte användas om du betalar för IRLToolkit."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mümkün olan en iyi stabilite. Bağlanmayı kullanır. IRLToolkit'in nezaketi olarak sağlanan ücretsiz üçüncü taraf hizmeti. IRLToolkit için ödeme yaparsanız kullanılmaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Найкраща стабільність. Використовує склеювання. IRLToolkit надає безкоштовні сторонні послуги. Не використовувати, якщо ви платите за IRLToolkit."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sự ổn định tốt nhất có thể. Sử dụng liên kết. Dịch vụ miễn phí của bên thứ ba được cung cấp bởi IRLToolkit. Không được sử dụng nếu bạn trả tiền cho IRLToolkit."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最佳稳定性。使用粘合。IRLToolkit 提供免费的第三方服务。如果您为 IRLToolkit 付费，则不可使用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最好的穩定性。使用黏合。 IRLToolkit 提供免費的第三方服務。如果您為 IRLToolkit 付費，則不能使用。"
           }
         }
       }
@@ -19657,141 +19981,130 @@
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for Fix button and more." : {
       "localizations" : {
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aseta näkymän nimi Asetukset → Lähetykset %@ → OBS-etähallinta Korjaa-nappia ja muuta varten."
-          }
-        }
-      }
-    },
-    "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
-      "extractionState" : "stale",
-      "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konfiguriere den Quellnamen unter Einstellungen → Streams → %@ → OBS-Fernbedienung für Snapshot und mehr."
+            "state" : "needs_review",
+            "value" : "Konfigurieren Sie den Quellennamen in Einstellungen → Streams → %@ → OBS-Fernbedienung für die Fix-Schaltfläche und mehr."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Διαμορφώστε το όνομα της πηγής στις Ρυθμίσεις → Ροές → %@ → Τηλεχειριστήριο OBS για στιγμιότυπο και άλλα."
+            "value" : "Διαμορφώστε το όνομα της πηγής στις Ρυθμίσεις → Ροές → %@ → Τηλεχειριστήριο OBS για το κουμπί Διόρθωση και άλλα."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configura el nombre de la fuente en Ajustes → Transmisiones → %@ → Control remoto de OBS para instantánea y más."
+            "state" : "needs_review",
+            "value" : "Configure el nombre de la fuente en Configuración → Transmisiones → %@ → Control remoto OBS para el botón Reparar y más."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Määritä lähteen nimi kohdassa Asetukset → Lähetykset → %@ → OBS-etähallinta tilannekuvaa ja muita tietoja varten."
+            "value" : "Aseta näkymän nimi Asetukset → Lähetykset %@ → OBS-etähallinta Korjaa-nappia ja muuta varten."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Configurez le nom de la source dans Paramètres → Flux → %@ → Télécommande OBS pour l'instantané et plus encore."
+            "value" : "Configurez le nom de la source dans Paramètres → Flux → %@ → Télécommande OBS pour le bouton Fix et plus encore."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "सेटिंग्स में स्रोत का नाम कॉन्फ़िगर करें → स्ट्रीम → %@ → स्नैपशॉट और अधिक के लिए ओबीएस रिमोट कंट्रोल।"
+            "value" : "सेटिंग्स → स्ट्रीम्स → %@ → फिक्स बटन और अधिक के लिए OBS रिमोट कंट्रोल में स्रोत नाम कॉन्फ़िगर करें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Konfigurasikan nama sumber di Pengaturan → Streaming → %@ → kendali jarak jauh OBS untuk snapshot dan banyak lagi."
+            "value" : "Konfigurasikan nama sumber di Pengaturan → Aliran → %@ → kendali jarak jauh OBS untuk tombol Perbaiki dan banyak lagi."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Configura il nome della sorgente in Impostazioni → Stream → %@ → Controllo remoto OBS per istantanee e altro."
+            "value" : "Configura il nome della sorgente in Impostazioni → Stream → %@ → Controllo remoto OBS per il pulsante Correggi e altro."
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "[設定]→[ストリーム]→[%@]→スナップショットなどの OBS リモート コントロールでソース名を設定します。"
+            "state" : "needs_review",
+            "value" : "設定 → ストリーム → %@ → OBS リモート コントロールで、修正ボタンなどのソース名を設定します。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "설정 → 스트림 → %@ → 스냅샷 등에 대한 OBS 원격 제어에서 소스 이름을 구성하세요."
+            "state" : "needs_review",
+            "value" : "설정 → 스트림 → %@ → 수정 버튼 등에 대한 OBS 원격 제어에서 소스 이름을 구성합니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Configureer de bronnaam in Instellingen → Streams → %@ → OBS-afstandsbediening voor snapshots en meer."
+            "value" : "Configureer de bronnaam in Instellingen → Streams → %@ → OBS-afstandsbediening voor de Fix-knop en meer."
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skonfiguruj nazwę źródła w Ustawieniach → Strumienie → %@ → Pilot OBS dla Snapshop i nie tylko."
+            "state" : "needs_review",
+            "value" : "Skonfiguruj nazwę źródła w Ustawieniach → Strumienie → %@ → Pilot OBS dla przycisku Napraw i nie tylko."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Configure o nome da fonte em Configurações → Streams → %@ → Controle remoto OBS para instantâneo e muito mais."
+            "value" : "Configure o nome da fonte em Configurações → Streams → %@ → Controle remoto OBS para o botão Fixar e muito mais."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Configure o nome da fonte em Configurações → Streams → %@ → Controle remoto OBS para instantâneo e muito mais."
+            "value" : "Configure o nome da fonte em Configurações → Streams → %@ → Controle remoto OBS para o botão Fixar e muito mais."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Настройте имя источника в Настройки → Стримы → %@ → Удаленное управление OBS для получения снимков и прочего."
+            "state" : "needs_review",
+            "value" : "Настройте имя источника в «Настройки» → «Потоки» → %@ → Пульт дистанционного управления OBS для кнопки «Исправить» и т. д."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Konfigurera källnamnet i Inställningar → Strömmar → %@ → OBS-fjärrkontroll för ögonblicksbild och mer."
+            "value" : "Konfigurera källnamnet i Inställningar → Strömmar → %@ → OBS-fjärrkontroll för Fix-knapp och mer."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Anlık görüntü ve daha fazlası için Ayarlar → Akışlar → %@ → OBS uzaktan kumandasında kaynak adını yapılandırın."
+            "value" : "Kaynak adını Ayarlar → Akışlar → %@ → Düzelt düğmesi ve daha fazlası için OBS uzaktan kumandasında yapılandırın."
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Налаштуйте ім’я джерела в меню Налаштування → Трансляції → %@ → Пульт дистанційного керування OBS для знімка тощо."
+            "state" : "needs_review",
+            "value" : "Налаштуйте ім’я джерела в Налаштуваннях → Потоки → %@ → Пульт дистанційного керування OBS для кнопки Fix тощо."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Định cấu hình tên nguồn trong Cài đặt → Luồng → %@ → Điều khiển từ xa OBS để chụp nhanh và hơn thế nữa."
+            "value" : "Định cấu hình tên nguồn trong Cài đặt → Luồng → %@ → Điều khiển từ xa OBS cho nút Sửa và hơn thế nữa."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "在设置 → 流 → %@ → OBS 远程控制中配置快照等的源名称。"
+            "value" : "在设置 → 流 → %@ → OBS 远程控制中配置源名称以获取修复按钮等。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "在設定 → 串流 → %@ → OBS 遠端控制中配置快照等的來源名稱。"
+            "state" : "needs_review",
+            "value" : "在設定 → 流 → %@ → OBS 遠端控制中配置修復按鈕等的來源名稱。"
           }
         }
       }
@@ -21488,10 +21801,130 @@
     },
     "Copy to clipboard" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "In die Zwischenablage kopieren"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Αντιγραφή στο πρόχειρο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copiar al portapapeles"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kopioi leikepöydälle"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copier dans le presse-papier"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "क्लिपबोर्ड पर कॉपी करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Menyalin ke clipboard"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copia negli appunti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "クリップボードにコピー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "클립 보드에 복사"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kopieer naar klembord"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Skopiuj do schowka"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copiar para área de transferência"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copiar para área de transferência"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Скопировать в буфер обмена"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiera till urklipp"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Panoya kopyala"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Копіювати в буфер обміну"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sao chép vào clipboard"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "复制到剪贴板"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "複製到剪貼簿"
           }
         }
       }
@@ -22018,10 +22451,130 @@
     },
     "Current scene snapshot" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktueller Szenen-Schnappschuss"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Στιγμιότυπο τρέχουσας σκηνής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantánea de la escena actual"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nykyisen näkymän tilannekuva"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantané de la scène actuelle"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वर्तमान दृश्य स्नैपशॉट"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cuplikan adegan saat ini"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Istantanea della scena corrente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "現在のシーンのスナップショット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "현재 장면 스냅샷"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Momentopname van de huidige scène"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktualna migawka sceny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantâneo da cena atual"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantâneo da cena atual"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Снимок текущей сцены"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuell scen's bild"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mevcut sahnenin anlık görüntüsü"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Знімок поточної сцени"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ảnh chụp cảnh hiện tại"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "当前场景快照"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "目前場景快照"
           }
         }
       }
@@ -22808,10 +23361,130 @@
     },
     "Deep link creator" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Deeplink-Ersteller"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δημιουργός βαθιάς σύνδεσης"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Creador de enlaces profundos"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Syvälinkin luonti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Créateur de liens profonds"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "डीप लिंक निर्माता"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pembuat tautan dalam"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Creatore di deep link"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ディープリンククリエーター"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "딥링크 생성자"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schepper van deeplinks"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kreator głębokich linków"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Criador de links diretos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Criador de links diretos"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Создатель глубоких ссылок"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skapa djupa länkar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Derin bağlantı yaratıcısı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Творець глибоких посилань"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Người tạo liên kết sâu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "深度链接创建者"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "深層連結創作者"
           }
         }
       }
@@ -23857,7 +24530,134 @@
       }
     },
     "Disable the SRT(LA) server to change its settings." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Deaktivieren Sie den SRT(LA)-Server, um seine Einstellungen zu ändern."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Απενεργοποιήστε τον διακομιστή SRT(LA) για να αλλάξετε τις ρυθμίσεις του."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Deshabilite el servidor SRT(LA) para cambiar su configuración."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Poista SRT(LA)-palvelin käytöstä muuttaaksesi sen asetuksia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Désactivez le serveur SRT(LA) pour modifier ses paramètres."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) सर्वर की सेटिंग बदलने के लिए उसे अक्षम करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nonaktifkan server SRT(LA) untuk mengubah pengaturannya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Disabilitare il server SRT(LA) per modificarne le impostazioni."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "設定を変更するには、SRT(LA) サーバーを無効にします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "설정을 변경하려면 SRT(LA) 서버를 비활성화하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schakel de SRT(LA)-server uit om de instellingen ervan te wijzigen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wyłącz serwer SRT(LA), aby zmienić jego ustawienia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desative o servidor SRT(LA) para alterar suas configurações."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desative o servidor SRT(LA) para alterar suas configurações."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Отключите сервер SRT(LA), чтобы изменить его настройки."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inaktivera SRT(LA)-servern för att ändra dess inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ayarlarını değiştirmek için SRT(LA) sunucusunu devre dışı bırakın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Вимкніть сервер SRT(LA), щоб змінити його налаштування."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vô hiệu hóa máy chủ SRT(LA) để thay đổi cài đặt của nó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "禁用 SRT(LA) 服务器以更改其设置。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "停用 SRT(LA) 伺服器以變更其設定。"
+          }
+        }
+      }
     },
     "Disabled connections will not be used." : {
       "localizations" : {
@@ -25810,7 +26610,134 @@
       }
     },
     "Each stream can receive video from one SRT(LA) publisher." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jeder Stream kann Videos von einem SRT(LA)-Publisher empfangen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Κάθε ροή μπορεί να λάβει βίντεο από έναν εκδότη SRT(LA)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cada transmisión puede recibir video de un editor SRT(LA)."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jokainen stream voi vastaanottaa videota yhdeltä SRT(LA)-julkaisijalta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chaque flux peut recevoir des vidéos d'un éditeur SRT(LA)."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "प्रत्येक स्ट्रीम एक SRT(LA) प्रकाशक से वीडियो प्राप्त कर सकती है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Setiap streaming dapat menerima video dari satu penerbit SRT(LA)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ogni flusso può ricevere video da un editore SRT(LA)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "各ストリームは 1 つの SRT(LA) パブリッシャーからビデオを受信できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "각 스트림은 하나의 SRT(LA) 게시자로부터 비디오를 수신할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Elke stream kan video ontvangen van één SRT(LA)-uitgever."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Do każdego strumienia można przesyłać wideo od jednego wydawcy SRT(LA)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cada stream pode receber vídeo de um editor SRT(LA)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cada stream pode receber vídeo de um editor SRT(LA)."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Каждый поток может получать видео от одного издателя SRT(LA)."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varje stream kan ta emot video från en SRT(LA)-klient."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Her akış, bir SRT(LA) yayıncısından video alabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Кожен потік може отримувати відео від одного видавця SRT(LA)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mỗi luồng có thể nhận video từ một nhà xuất bản SRT(LA)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "每个流都可以从一个 SRT(LA) 发布者接收视频。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "每個串流都可以接收來自一個 SRT(LA) 發布者的影片。"
+          }
+        }
+      }
     },
     "Emotes" : {
       "localizations" : {
@@ -26203,135 +27130,131 @@
       }
     },
     "Enable manual FPS to force given FPS. This is needed when the publisher does not provide accurate timestamps. B-frames does not work with manual FPS. Manual FPS is typically needed for DJI devices." : {
-
-    },
-    "Enable RTMP audio" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiviere RTMP-Audio"
+            "state" : "needs_review",
+            "value" : "Aktivieren Sie manuelle FPS, um die angegebene FPS zu erzwingen. Dies ist erforderlich, wenn der Herausgeber keine genauen Zeitstempel bereitstellt. B-Frames funktionieren nicht mit manueller FPS. Manuelle FPS werden normalerweise für DJI-Geräte benötigt."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ενεργοποίηση ήχου RTMP"
+            "value" : "Ενεργοποιήστε το μη αυτόματο FPS για να εξαναγκάσετε το συγκεκριμένο FPS. Αυτό απαιτείται όταν ο εκδότης δεν παρέχει ακριβείς χρονικές σημάνσεις. Τα B-frames δεν λειτουργούν με χειροκίνητα FPS. Συνήθως απαιτείται χειροκίνητο FPS για συσκευές DJI."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habilitar audio RTMP"
+            "state" : "needs_review",
+            "value" : "Habilite FPS manual para forzar un FPS determinado. Esto es necesario cuando el editor no proporciona marcas de tiempo precisas. B-frames no funciona con FPS manual. Normalmente se necesita FPS manual para dispositivos DJI."
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ota RTMP-ääni käyttöön"
+            "state" : "needs_review",
+            "value" : "Ota manuaalinen FPS käyttöön pakottaaksesi tietyn FPS:n. Tätä tarvitaan, kun julkaisija ei toimita tarkkoja aikaleimoja. B-frames ei toimi manuaalisen FPS:n kanssa. Manuaalinen FPS tarvitaan yleensä DJI-laitteille."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Activer l'audio RTMP"
+            "value" : "Activez le FPS manuel pour forcer le FPS donné. Cela est nécessaire lorsque l'éditeur ne fournit pas d'horodatages précis. Les B-frames ne fonctionnent pas avec les FPS manuels. Le FPS manuel est généralement nécessaire pour les appareils DJI."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "आरटीएमपी ऑडियो सक्षम करें"
+            "value" : "दिए गए FPS को लागू करने के लिए मैन्युअल FPS सक्षम करें। इसकी आवश्यकता तब होती है जब प्रकाशक सटीक टाइमस्टैम्प प्रदान नहीं करता है। B-फ़्रेम मैन्युअल FPS के साथ काम नहीं करता है। मैन्युअल FPS आमतौर पर DJI डिवाइस के लिए आवश्यक होता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Aktifkan audio RTMP"
+            "value" : "Aktifkan FPS manual untuk memaksa FPS yang diberikan. Ini diperlukan ketika penerbit tidak memberikan stempel waktu yang akurat. B-frame tidak berfungsi dengan FPS manual. FPS manual biasanya diperlukan untuk perangkat DJI."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Abilita l'audio RTMP"
+            "value" : "Abilita FPS manuale per forzare determinati FPS. Ciò è necessario quando l'editore non fornisce timestamp accurati. I fotogrammi B non funzionano con gli FPS manuali. L'FPS manuale è in genere necessario per i dispositivi DJI."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP オーディオを有効にする"
+            "value" : "手動 FPS を有効にして、指定された FPS を強制します。これは、発行者が正確なタイムスタンプを提供しない場合に必要です。B フレームは手動 FPS では機能しません。手動 FPS は通常、DJI デバイスに必要です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP 오디오 활성화"
+            "value" : "특정 FPS를 강제하려면 수동 FPS를 활성화하세요. 이는 게시자가 정확한 타임스탬프를 제공하지 않는 경우 필요합니다. B-프레임은 수동 FPS에서 작동하지 않습니다. DJI 기기에는 일반적으로 수동 FPS가 필요합니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Schakel RTMP-audio in"
+            "value" : "Schakel handmatige FPS in om bepaalde FPS te forceren. Dit is nodig als de uitgever geen nauwkeurige tijdstempels verstrekt. B-frames werken niet met handmatige FPS. Handmatige FPS is doorgaans nodig voor DJI-apparaten."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Włącz dźwięk RTMP"
+            "value" : "Włącz ręczny FPS, aby wymusić zadany FPS. Jest to potrzebne, gdy wydawca nie podaje dokładnych znaczników czasu. Ramki B nie działają z ręcznym FPS. Ręczny tryb FPS jest zazwyczaj wymagany w przypadku urządzeń DJI."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ativar áudio RTMP"
+            "value" : "Habilite o FPS manual para forçar determinado FPS. Isso é necessário quando o editor não fornece carimbos de data/hora precisos. B-frames não funciona com FPS manual. O FPS manual normalmente é necessário para dispositivos DJI."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ativar áudio RTMP"
+            "value" : "Habilite o FPS manual para forçar determinado FPS. Isso é necessário quando o editor não fornece carimbos de data/hora precisos. B-frames não funciona com FPS manual. O FPS manual normalmente é necessário para dispositivos DJI."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Включить звук RTMP"
+            "value" : "Включите ручной FPS для принудительного использования заданного FPS. Это необходимо, когда издатель не предоставляет точные временные метки. B-кадры не работают с ручным FPS. Ручной FPS обычно требуется для устройств DJI."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktivera RTMP-ljud"
+            "value" : "Aktivera manuell FPS för att tvinga given FPS. Detta behövs när utgivaren inte tillhandahåller korrekta tidsstämplar. B-frames fungerar inte med manuell FPS. Manuell FPS behövs vanligtvis för DJI-enheter."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP sesi etkinleştir"
+            "value" : "Verilen FPS'yi zorlamak için manuel FPS'yi etkinleştirin. Yayıncı doğru zaman damgalarını sağlamadığında bu gereklidir. B-kareler manuel FPS ile çalışmaz. Manuel FPS genellikle DJI cihazları için gereklidir."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Увімкнути аудіо RTMP"
+            "value" : "Увімкніть FPS вручну, щоб форсувати заданий FPS. Це потрібно, якщо видавець не надає точні мітки часу. B-кадри не працюють з ручним FPS. Ручна FPS зазвичай потрібна для пристроїв DJI."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Bật âm thanh RTMP"
+            "value" : "Bật FPS thủ công để buộc FPS nhất định. Điều này là cần thiết khi nhà xuất bản không cung cấp dấu thời gian chính xác. Khung B không hoạt động với FPS thủ công. FPS thủ công thường cần thiết cho các thiết bị DJI."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "启用 RTMP 音频"
+            "value" : "启用手动 FPS 以强制指定 FPS。当发布者未提供准确的时间戳时，需要此功能。B 帧不适用于手动 FPS。DJI 设备通常需要手动 FPS。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "啟用 RTMP 音訊"
+            "value" : "啟用手動 FPS 以強制給定 FPS。當發布者不提供準確的時間戳記時，就需要這樣做。 B 幀不適用於手動 FPS。 DJI 設備通常需要手動 FPS。"
           }
         }
       }
@@ -26467,7 +27390,134 @@
       }
     },
     "Enable the SRT(LA) server to see URLs." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktivieren Sie den SRT(LA)-Server, um URLs anzuzeigen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ενεργοποιήστε τον διακομιστή SRT(LA) για να βλέπει διευθύνσεις URL."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite el servidor SRT(LA) para ver las URL."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ota SRT(LA)-palvelin käyttöön nähdäksesi URL-osoitteet."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Activez le serveur SRT(LA) pour voir les URL."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) सर्वर को URL देखने के लिए सक्षम करें."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktifkan server SRT(LA) untuk melihat URL."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abilita il server SRT(LA) a visualizzare gli URL."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) サーバーを有効にして URL を表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL을 보려면 SRT(LA) 서버를 활성화하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schakel de SRT(LA)-server in om URL's te zien."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Włącz serwer SRT(LA), aby zobaczyć adresy URL."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite o servidor SRT(LA) para ver URLs."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite o servidor SRT(LA) para ver URLs."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Включите сервер SRT(LA), чтобы видеть URL-адреса."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera SRT(LA)-servern för att se URL:er."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL'leri görmek için SRT(LA) sunucusunu etkinleştirin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Увімкніть сервер SRT(LA), щоб побачити URL-адреси."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cho phép máy chủ SRT(LA) xem URL."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "启用 SRT(LA) 服务器以查看 URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "啟用 SRT(LA) 伺服器以查看 URL。"
+          }
+        }
+      }
     },
     "Enable to allow an assistant to monitor and control this device from a different device." : {
       "localizations" : {
@@ -27510,7 +28560,134 @@
       }
     },
     "Enter one of the URLs into the SRT(LA) publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geben Sie eine der URLs in das SRT(LA)-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Geben Sie normalerweise die WLAN- oder persönliche Hotspot-URL ein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Εισαγάγετε ένα από τα URL στη συσκευή εκδότη SRT(LA) για να στείλετε βίντεο σε αυτήν τη ροή. Συνήθως εισάγετε τη διεύθυνση URL WiFi ή Προσωπικού Hotspot."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ingrese una de las URL en el dispositivo del editor SRT(LA) para enviar video a esta transmisión. Por lo general, ingrese la URL de WiFi o punto de acceso personal."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kirjoita yksi URL-osoitteista SRT(LA)-julkaisijalaitteeseen lähettääksesi videon tähän streamiin. Kirjoita yleensä WiFi- tai henkilökohtaisen yhteyspisteen URL-osoite."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Saisissez l'une des URL dans l'appareil de l'éditeur SRT(LA) pour envoyer la vidéo à ce flux. Entrez généralement l'URL du WiFi ou du point d'accès personnel."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इस स्ट्रीम पर वीडियो भेजने के लिए SRT(LA) प्रकाशक डिवाइस में URL में से एक दर्ज करें। आमतौर पर WiFi या पर्सनल हॉटस्पॉट URL दर्ज करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Masukkan salah satu URL ke perangkat penerbit SRT(LA) untuk mengirim video ke aliran ini. Biasanya masukkan URL WiFi atau Personal Hotspot."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Inserisci uno degli URL nel dispositivo editore SRT(LA) per inviare video a questo stream. Di solito inserisci l'URL WiFi o Hotspot personale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "このストリームにビデオを送信するには、SRT(LA) パブリッシャー デバイスに URL の 1 つを入力します。通常は、WiFi またはパーソナル ホットスポットの URL を入力します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "비디오를 이 스트림으로 보내려면 SRT(LA) 게시자 장치에 URL 중 하나를 입력하세요. 일반적으로 WiFi 또는 개인 핫스팟 URL을 입력합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voer een van de URL's in op het SRT(LA)-uitgeverapparaat om video naar deze stream te verzenden. Voer meestal de WiFi- of persoonlijke hotspot-URL in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wprowadź jeden z adresów URL do urządzenia wydawcy SRT(LA), aby wysłać wideo do tego strumienia. Zwykle wprowadź adres URL WiFi lub Personal Hotspot."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira um dos URLs no dispositivo do editor SRT(LA) para enviar o vídeo para este stream. Geralmente insira o URL do WiFi ou do ponto de acesso pessoal."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira um dos URLs no dispositivo do editor SRT(LA) para enviar o vídeo para este stream. Geralmente insira o URL do WiFi ou do ponto de acesso pessoal."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Введите один из URL-адресов в устройство SRT(LA) для отправки видео в этот поток. Обычно вводят URL-адрес WiFi или персональной точки доступа."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange en av URL:erna i SRT(LA)-utgivarenheten för att skicka video till denna stream. Ange vanligtvis WiFi- eller personlig hotspot-URL."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu akışa video göndermek için URL'lerden birini SRT(LA) yayıncı cihazına girin. Genellikle WiFi veya Kişisel Erişim Noktası URL'sini girin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Введіть одну з URL-адрес у пристрій видавця SRT(LA), щоб надіслати відео в цей потік. Зазвичай введіть URL-адресу WiFi або персональної точки доступу."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nhập một trong các URL vào thiết bị của nhà xuất bản SRT(LA) để gửi video tới luồng này. Thường nhập URL WiFi hoặc Điểm truy cập cá nhân."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "将其中一个 URL 输入 SRT(LA) 发布器设备以将视频发送到此流。通常输入 WiFi 或个人热点 URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在 SRT(LA) 發布者裝置中輸入 URL 之一，以將影片傳送至該串流。通常會輸入 WiFi 或個人熱點 URL。"
+          }
+        }
+      }
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
@@ -33362,137 +34539,6 @@
         }
       }
     },
-    "Force given FPS, or set to 0 to use the publisher's FPS. B-frames does not work with forced FPS. Forced FPS is typically needed for DJI drones." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erzwinge die angegebenen FPS oder setze sie auf 0, um die FPS des Herausgebers zu verwenden. B-Frames funktionieren nicht mit erzwungenen FPS. Für DJI-Drohnen ist normalerweise eine erzwungene FPS erforderlich."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Επιβολή του FPS που δόθηκε ή ορίστε στο 0 για να χρησιμοποιήσετε το FPS του εκδότη. Τα B-frames δεν λειτουργούν με εξαναγκασμένο FPS. Το υποχρεωτικό FPS είναι συνήθως απαραίτητο για τα drones DJI."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fuerza el FPS o lo establece a 0 para usar el FPS del publisher. B-frames no funciona con FPS forzado. Los drones DJI suelen necesitar FPS forzados."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pakota annettu FPS tai aseta arvoksi 0 käyttääksesi julkaisijan FPS:ää. B-ruudut eivät toimi pakotetulla FPS:llä. Pakotettua FPS:ää tarvitaan yleensä DJI-droneille."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Forcer le FPS donné, ou définir sur 0 pour utiliser le FPS de l'éditeur. Les B-frames ne fonctionnent pas avec les FPS forcés. Le FPS forcé est généralement nécessaire pour les drones DJI."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "दिए गए FPS को बाध्य करें, या प्रकाशक के FPS का उपयोग करने के लिए 0 पर सेट करें। बी-फ़्रेम फ़ोर्स्ड एफपीएस के साथ काम नहीं करता है। डीजेआई ड्रोन के लिए आमतौर पर फोर्स्ड एफपीएस की आवश्यकता होती है।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Paksa FPS yang diberikan, atau setel ke 0 untuk menggunakan FPS penerbit. B-frame tidak berfungsi dengan FPS yang dipaksakan. FPS paksa biasanya diperlukan untuk drone DJI."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Forza gli FPS specificati o impostali su 0 per utilizzare gli FPS dell'editore. I fotogrammi B non funzionano con gli FPS forzati. L'FPS forzato è in genere necessario per i droni DJI."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "指定された FPS を強制するか、0 に設定してパブリッシャーの FPS を使用します。 B フレームは強制 FPS では機能しません。強制 FPS は通常、DJI ドローンに必要です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지정된 FPS를 강제로 설정하거나 게시자의 FPS를 사용하려면 0으로 설정하세요. B-프레임은 강제 FPS에서 작동하지 않습니다. 강제 FPS는 일반적으로 DJI 드론에 필요합니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Forceer de gegeven FPS, of stel deze in op 0 om de FPS van de uitgever te gebruiken. B-frames werken niet met geforceerde FPS. Gedwongen FPS is doorgaans nodig voor DJI-drones."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wymuś zadany FPS lub ustaw na 0, aby użyć FPS wydawcy. Klatki B nie działają z wymuszonym FPS. W przypadku dronów DJI zwykle potrzebny jest wymuszony FPS."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Force o FPS fornecido ou defina como 0 para usar o FPS do editor. B-frames não funciona com FPS forçado. FPS forçado normalmente é necessário para drones DJI."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Force o FPS fornecido ou defina como 0 para usar o FPS do editor. B-frames não funciona com FPS forçado. FPS forçado normalmente é necessário para drones DJI."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Задайте значение FPS вручную или установите 0, чтобы использовать значение FPS источника. B-кадры не работает с установленным вручную FPS. Ручная установка FPS обычно нужна для дронов DJI."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tvinga given FPS, eller sätt tilll 0 för att använda klientens FPS. B-frames fungerar inte med tvingad FPS. Tvingad FPS behövs vanligtvis för DJI-drönare."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verilen FPS'yi zorla veya yayıncının FPS'sini kullanmak için 0'a ayarlayın. B-kareler zorunlu FPS ile çalışmaz. Zorunlu FPS genellikle DJI drone'lar için gereklidir."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Примусово наданий FPS або встановіть 0, щоб використовувати FPS видавця. B-кадри не працюють з примусовою FPS. Примусова FPS зазвичай потрібна для дронів DJI."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Buộc FPS nhất định hoặc đặt thành 0 để sử dụng FPS của nhà xuất bản. Khung B không hoạt động với FPS bắt buộc. FPS cưỡng bức thường cần thiết cho máy bay không người lái DJI."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "强制给定 FPS，或设置为 0 以使用发布商的 FPS。 B 帧不适用于强制 FPS。 DJI 无人机通常需要强制 FPS。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "強制設定 FPS，或設定 0 以使用 Publisher 的 FPS。B 畫格並不適用於強制 FPS，通常是 DJI 無人機需要進行強制設定 FPS。"
-          }
-        }
-      }
-    },
     "FPS" : {
       "localizations" : {
         "de" : {
@@ -33625,10 +34671,130 @@
     },
     "Free IRLToolkit bonding" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kostenloses IRLToolkit-Bonding"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δωρεάν συγκόλληση IRLToolkit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vinculación gratuita de IRLToolkit"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ilmainen IRLToolkit yhteyksien yhdistäminen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Liaison IRLToolkit gratuite"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "निःशुल्क IRLToolkit बॉन्डिंग"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ikatan IRLToolkit gratis"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Collegamento IRLToolkit gratuito"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "無料のIRLToolkitボンディング"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "무료 IRLToolkit 본딩"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gratis IRLToolkit-binding"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bezpłatne łączenie IRLToolkit"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ligação IRLToolkit gratuita"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ligação IRLToolkit gratuita"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Бесплатный IRLToolkit для склеивания"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratis IRLToolkit-bonding"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ücretsiz IRLToolkit bağlama"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Безкоштовне склеювання IRLToolkit"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Liên kết IRLToolkit miễn phí"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "免费 IRLToolkit 粘合"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "免費 IRLToolkit 綁定"
           }
         }
       }
@@ -35453,137 +36619,6 @@
         }
       }
     },
-    "Go live to see snapshot." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geh live, um den Schnappschuss anzusehen."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μεταβείτε ζωντανά για να δείτε στιγμιότυπο."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia la transmisión para ver la instantánea."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aloita lähetys nähdäksesi tilannekuvan."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Allez en direct pour voir l'instantané."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "स्नैपशॉट देखने के लिए लाइव हों."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Siarkan langsung untuk melihat cuplikannya."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vai in diretta per vedere l'istantanea."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ライブに移動してスナップショットを確認します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "실시간으로 전환하여 스냅샷을 확인하세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ga live om de momentopname te zien."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Przejdź na żywo, aby zobaczyć migawkę."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Transmita ao vivo para ver o instantâneo."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Transmita ao vivo para ver o instantâneo."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Выйдите в эфир чтобы увидеть снимок."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gå live för att se ögonblicksbild."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Anlık görüntüyü görmek için canlı yayına geçin."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Перейдіть у прямому етері, щоб побачити знімок."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hãy phát trực tiếp để xem ảnh chụp nhanh."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "实时查看快照。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開始直播以查看快照。"
-          }
-        }
-      }
-    },
     "Good stability in most network conditions." : {
       "localizations" : {
         "de" : {
@@ -36365,7 +37400,134 @@
       }
     },
     "Higher data rate limit" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Höhere Datenratenbegrenzung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Υψηλότερο όριο ταχύτητας δεδομένων"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Límite de velocidad de datos más alto"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Korkeampi tiedonsiirtonopeusraja"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite de débit de données plus élevée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उच्चतर डेटा दर सीमा"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Batas kecepatan data yang lebih tinggi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite di velocità dati più elevato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "データレート制限の上昇"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "더 높은 데이터 속도 제한"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hogere datasnelheidlimiet"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wyższy limit szybkości transmisji danych"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite de taxa de dados mais alto"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite de taxa de dados mais alto"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Более высокий предел скорости передачи данных"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Högre datahastighetsgräns"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Daha yüksek veri hızı sınırı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Вища межа швидкості передачі даних"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Giới hạn tốc độ dữ liệu cao hơn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "更高的数据速率限制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "更高的數據速率限制"
+          }
+        }
+      }
     },
     "Highest bitrate" : {
       "localizations" : {
@@ -38969,10 +40131,130 @@
     },
     "Keep live streams running when the app is in background mode." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lassen Sie Live-Streams laufen, wenn sich die App im Hintergrundmodus befindet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Διατηρήστε τις ζωντανές ροές σε λειτουργία όταν η εφαρμογή βρίσκεται σε λειτουργία παρασκηνίου."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mantenga las transmisiones en vivo ejecutándose cuando la aplicación esté en modo de fondo."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pidä livelähetys käynnissä kun sovellus on taustalla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Continuez à diffuser des flux en direct lorsque l'application est en mode arrière-plan."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "जब ऐप बैकग्राउंड मोड में हो, तब भी लाइव स्ट्रीम चालू रखें."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tetap jalankan streaming langsung saat aplikasi dalam mode latar belakang."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mantieni i live streaming in esecuzione quando l'app è in modalità background."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "アプリがバックグラウンド モードの場合でもライブ ストリームを実行したままにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "앱이 백그라운드 모드에 있을 때 라이브 스트림을 계속 실행하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Houd livestreams actief als de app zich in de achtergrondmodus bevindt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kontynuuj transmisje na żywo, gdy aplikacja działa w tle."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mantenha as transmissões ao vivo em execução quando o aplicativo estiver em modo de segundo plano."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mantenha as transmissões ao vivo em execução quando o aplicativo estiver em modo de segundo plano."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Продолжайте прямые трансляции, когда приложение находится в фоновом режиме."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Håll liveströmmar igång när appen är i bakgrundsläge."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uygulama arka plan modundayken canlı yayınların çalışmaya devam etmesini sağlayın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Продовжуйте прямі трансляції, коли програма працює у фоновому режимі."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tiếp tục chạy luồng trực tiếp khi ứng dụng ở chế độ nền."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "当应用程序处于后台模式时保持直播运行。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "當應用程式處於背景模式時，保持即時串流運行。"
           }
         }
       }
@@ -41579,10 +42861,130 @@
     },
     "Malformed IRLToolkit URL" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fehlerhafte IRLToolkit-URL"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Λανθασμένη μορφή διεύθυνσης URL του IRLToolkit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de IRLToolkit mal formada"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Väärin muotoiltu IRLToolkit -URL-osoite"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL IRLToolkit mal formée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "विकृत IRLToolkit URL"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL IRLToolkit salah format"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL IRLToolkit non valido"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "不正な IRLToolkit URL"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "잘못된 IRLToolkit URL"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Onjuist opgemaakte IRLToolkit-URL"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zniekształcony adres URL IRLToolkit"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL do IRLToolkit malformado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL do IRLToolkit malformado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Неверный URL-адрес IRLToolkit"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felaktig IRLToolkit-URL"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kötü biçimlendirilmiş IRLToolkit URL'si"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Неправильна URL-адреса IRLToolkit"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL IRLToolkit không đúng định dạng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "IRLToolkit URL 格式错误"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "IRLToolkit URL 格式錯誤"
           }
         }
       }
@@ -42498,7 +43900,134 @@
       }
     },
     "Manual FPS" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Manuelle FPS"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χειροκίνητο FPS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS manuales"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Manuaalinen FPS"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS manuels"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "मैनुअल एफपीएस"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS manual"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS manuale"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "手動FPS"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "수동 FPS"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Handmatige FPS"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ręczny FPS"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS manual"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS manual"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ручной FPS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuell FPS"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Manuel FPS"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ручний FPS"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS thủ công"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "手动 FPS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "手動FPS"
+          }
+        }
+      }
     },
     "Manual white balance not supported for this camera" : {
       "localizations" : {
@@ -59272,10 +60801,130 @@
     },
     "Selected" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ausgewählt"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Επιλεγμένο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Seleccionado"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Valittu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Choisi"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "चयनित"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Terpilih"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selezionato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "選択済み"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "선택된"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geselecteerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wybrany"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecionado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecionado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Выбрано"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vald"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Seçildi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Вибране"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đã chọn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "选定"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "已選擇"
           }
         }
       }
@@ -62792,10 +64441,130 @@
     },
     "SRT port" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT-Anschluss"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Θύρα SRT"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Puerto SRT"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT-portti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port SRT"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "एसआरटी पोर्ट"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pelabuhan SRT"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta SRT"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTポート"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT 포트"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT-poort"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "portu SRT"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta SRT"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta SRT"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "СРТ-порт"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT-port"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT bağlantı noktası"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "порт SRT"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "cổng SRT"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT 端口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT埠"
           }
         }
       }
@@ -63191,14 +64960,261 @@
       }
     },
     "SRT(LA) server" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA)-Server"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Διακομιστής SRT(LA)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRT(LA)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA)-palvelin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Serveur SRT(LA)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "एसआरटी(एलए) सर्वर"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Server SRT(LA)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Server SRT(LA)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) サーバー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 서버"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA)-server"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Serwer SRT(LA)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRT(LA)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRT(LA)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сервер SRT(LA)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA)-server"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) sunucusu"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сервер SRT(LA)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "máy chủ SRT(LA)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(洛杉磯)伺服器"
+          }
+        }
+      }
     },
     "SRTLA port" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA-Anschluss"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Λιμάνι SRTLA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Puerto SRTLA"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRTLA-portti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port SRTLA"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "एसआरटीएलए बंदरगाह"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pelabuhan SRTLA"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porto SRTLA"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA ポート"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA 포트"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA-poort"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "portu SRTLA"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta SRTLA"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta SRTLA"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "порт СРТЛА"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRTLA-port"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA bağlantı noktası"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Порт SRTLA"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "cổng SRTLA"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA 港口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRTLA港口"
           }
         }
       }
@@ -65155,10 +67171,130 @@
     },
     "Stream id missing" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stream-ID fehlt"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Λείπει το αναγνωριστικό ροής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falta la identificación de la transmisión"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stream-id puuttuu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID de flux manquant"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीम आईडी गायब है"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID aliran tidak ada"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID streaming mancante"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリーム ID がありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스트림 ID가 없습니다"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stream-ID ontbreekt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Brak identyfikatora strumienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID da transmissão ausente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID da transmissão ausente"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Идентификатор потока отсутствует"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ström-id saknas"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akış kimliği eksik"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відсутній ідентифікатор потоку"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thiếu id luồng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "缺少流 ID"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "流 ID 遺失"
           }
         }
       }
@@ -70494,10 +72630,264 @@
       }
     },
     "The UDP port the SRT(LA) server listens for SRT publishers on." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der UDP-Port, auf dem der SRT(LA)-Server auf SRT-Publisher wartet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η θύρα UDP στον διακομιστή SRT(LA) ακούει για εκδότες SRT."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El puerto UDP en el que el servidor SRT(LA) escucha a los publicadores SRT."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA)-palvelimen UDP-portti kuuntelee SRT-julkaisijoita."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP sur lequel le serveur SRT(LA) écoute les éditeurs SRT."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वह UDP पोर्ट जिस पर SRT(LA) सर्वर SRT प्रकाशकों को सुनता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP tempat server SRT(LA) mendengarkan penerbit SRT."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La porta UDP su cui il server SRT(LA) ascolta gli editori SRT."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) サーバーが SRT パブリッシャーをリッスンする UDP ポート。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 서버가 SRT 게시자를 수신 대기하는 UDP 포트입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De UDP-poort waarop de SRT(LA)-server luistert naar SRT-uitgevers."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP, na którym serwer SRT(LA) nasłuchuje wydawców SRT."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta UDP na qual o servidor SRT(LA) escuta editores SRT."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta UDP na qual o servidor SRT(LA) escuta editores SRT."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Порт UDP, на котором сервер SRT(LA) прослушивает издателей SRT."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UDP-porten som SRT(LA)-servern lyssnar efter SRT-klienter på."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) sunucusunun SRT yayıncılarını dinlediği UDP bağlantı noktası."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Порт UDP, на якому сервер SRT(LA) прослуховує видавців SRT."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cổng UDP mà máy chủ SRT(LA) lắng nghe các nhà xuất bản SRT."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 服务器监听 SRT 发布者的 UDP 端口。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 伺服器偵聽 SRT 發布者的 UDP 連接埠。"
+          }
+        }
+      }
     },
     "The UDP port the SRT(LA) server listens for SRTLA publishers on." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der UDP-Port, auf dem der SRT(LA)-Server auf SRTLA-Publisher wartet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η θύρα UDP στον διακομιστή SRT(LA) ακούει για εκδότες SRTLA."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El puerto UDP en el que el servidor SRT(LA) escucha a los publicadores de SRTLA."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA)-palvelimen UDP-portti kuuntelee SRTLA-julkaisijoita."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP sur lequel le serveur SRT(LA) écoute les éditeurs SRTLA."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वह UDP पोर्ट जिस पर SRT(LA) सर्वर SRTLA प्रकाशकों को सुनता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP yang digunakan server SRT(LA) untuk mendengarkan penerbit SRTLA."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La porta UDP su cui il server SRT(LA) ascolta gli editori SRTLA."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) サーバーが SRTLA パブリッシャーをリッスンする UDP ポート。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 서버가 SRTLA 게시자를 수신 대기하는 UDP 포트입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De UDP-poort waarop de SRT(LA)-server luistert naar SRTLA-uitgevers."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP, na którym serwer SRT(LA) nasłuchuje wydawców SRTLA."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta UDP na qual o servidor SRT(LA) atende aos editores SRTLA."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta UDP na qual o servidor SRT(LA) atende aos editores SRTLA."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Порт UDP, на котором сервер SRT(LA) прослушивает издателей SRTLA."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UDP-porten som SRT(LA)-servern lyssnar efter SRTLA-klienter på."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) sunucusunun SRTLA yayıncılarını dinlediği UDP portu."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Порт UDP, на якому сервер SRT(LA) прослуховує видавців SRTLA."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cổng UDP mà máy chủ SRT(LA) lắng nghe các nhà xuất bản SRTLA."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 服务器监听 SRTLA 发布者的 UDP 端口。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA) 伺服器偵聽 SRTLA 發布者的 UDP 連接埠。"
+          }
+        }
+      }
     },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
       "localizations" : {
@@ -75181,10 +77571,130 @@
     },
     "Use audio for timestamps" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Audio für Zeitstempel verwenden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χρησιμοποιήστε ήχο για χρονικές σημάνσεις"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Usar audio para las marcas de tiempo"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Käytä audiota aikaleimoihin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utiliser l'audio pour les horodatages"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "टाइमस्टैम्प के लिए ऑडियो का उपयोग करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gunakan audio untuk stempel waktu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utilizza l'audio per i timestamp"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "タイムスタンプに音声を使用する"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "타임스탬프에 오디오 사용"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gebruik audio voor tijdstempels"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Użyj dźwięku do sygnatur czasowych"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use áudio para carimbos de data/hora"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use áudio para registros de data e hora"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Используйте аудио для временных меток"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd ljud för tidsstämplar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zaman damgaları için ses kullanın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Використовуйте аудіо для позначок часу"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sử dụng âm thanh cho dấu thời gian"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用音频作为时间戳"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用音訊作為時間戳"
           }
         }
       }
@@ -81561,137 +84071,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "縮小"
-          }
-        }
-      }
-    },
-    "Zoom preset" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zoom Voreinstellung"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Προϋπάρχουσα ζουμ"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preset de Zoom"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zoomauksen esiasetus"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Préréglage zoom"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ज़ूम प्रीसेट"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zoom Preset"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Preimpostazione dello zoom"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ズームプリセット"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "줌 프리셋"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zoom vooraf ingesteld"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preset zoomu"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Predefinição de zoom"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Predefinição de zoom"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пресет масштабирования"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Förinställd zoom"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zoom önceden ayarlanmış"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Попереднє налаштування масштабу"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Đầu tiên thu phóng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "预设放大"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "預設變焦"
           }
         }
       }
