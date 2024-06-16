@@ -41,12 +41,16 @@ private struct FaceDetectionsCompletion {
 
 private class ReplaceVideo {
     private var latency: Double
+    private var frameRate: Double
     private var sampleBuffers: Deque<CMSampleBuffer> = []
+    private var firstReplaceTimeStamp: Double = .nan
     private var firstPresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
+    private var replaceCounter: Int32 = 0
 
-    init(latency: Double) {
+    init(latency: Double, frameRate: Double) {
         self.latency = latency
+        self.frameRate = frameRate
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -54,7 +58,12 @@ private class ReplaceVideo {
         sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
     }
 
-    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
+    func updateSampleBuffer() {
+        if firstReplaceTimeStamp.isNaN {
+            firstReplaceTimeStamp = CACurrentMediaTime()
+        }
+        replaceCounter += 1
+        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / frameRate)
         var sampleBuffer = currentSampleBuffer
         // var numberOfBuffersConsumed = 0
         while let replaceSampleBuffer = sampleBuffers.first {
@@ -234,7 +243,7 @@ final class VideoUnit: NSObject {
     private func handleReplaceVideo() {
         let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         for replaceVideo in replaceVideos.values {
-            replaceVideo.updateSampleBuffer(presentationTimeStamp.seconds)
+            replaceVideo.updateSampleBuffer()
         }
         guard let selectedReplaceVideoCameraId else {
             return
@@ -665,7 +674,7 @@ final class VideoUnit: NSObject {
     }
 
     private func addReplaceVideoInner(cameraId: UUID, latency: Double) {
-        replaceVideos[cameraId] = ReplaceVideo(latency: latency)
+        replaceVideos[cameraId] = ReplaceVideo(latency: latency, frameRate: frameRate)
     }
 
     func removeReplaceVideo(cameraId: UUID) {

@@ -30,10 +30,12 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
+    private var firstReplaceTimeStamp: Double = .nan
     private var firstPresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
+    private var replaceCounter: Int32 = 0
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
@@ -75,12 +77,19 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
-        guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
-            // logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
+        if firstReplaceTimeStamp.isNaN {
+            firstReplaceTimeStamp = CACurrentMediaTime()
+        }
+        replaceCounter += 1
+        let realPresentationTimeStamp = firstReplaceTimeStamp +
+            (Double(replaceCounter) / (sampleRate / Double(frameLength)))
+        guard let sampleBuffer = getSampleBuffer(realPresentationTimeStamp) else {
             return
         }
-        let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
+        let timeOffset = CMTimeSubtract(
+            CMTimeMake(value: Int64(realPresentationTimeStamp * 1000), timescale: 1000),
+            sampleBuffer.presentationTimeStamp
+        )
         let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
