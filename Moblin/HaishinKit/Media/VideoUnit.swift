@@ -86,6 +86,11 @@ private class ReplaceVideo {
             sampleBuffer = replaceSampleBuffer
             sampleBuffers.removeFirst()
         }
+        // if numberOfBuffersConsumed == 0 {
+        //     logger.info("replace-video: Duplicating buffer.")
+        // } else if numberOfBuffersConsumed > 1 {
+        //     logger.info("replace-video: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
+        // }
         currentSampleBuffer = sampleBuffer
     }
 
