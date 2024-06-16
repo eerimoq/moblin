@@ -232,7 +232,7 @@ final class Media: NSObject {
             rttMs: stats.msRTT,
             packetsInFlight: Double(stats.pktFlightSize),
             transportBitrate: streamSpeed(),
-            latency: self.latency,
+            latency: latency,
             mbpsSendRate: stats.mbpsSendRate
         ))
         guard overlay else {

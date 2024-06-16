@@ -291,6 +291,10 @@ func formatOneDecimal(value: Float) -> String {
     return String(format: "%.01f", value)
 }
 
+func formatTwoDecimals(value: Double) -> String {
+    return String(format: "%.02f", value)
+}
+
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         return min(max(self, limits.lowerBound), limits.upperBound)
