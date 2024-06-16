@@ -516,6 +516,8 @@ final class Model: NSObject, ObservableObject {
                 pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000),
                 minimumBitrate: Int64(customSettings.minimumBitrate! * 1000)
             ))
+        case .belabox:
+            break
         }
     }
 
@@ -2266,7 +2268,8 @@ final class Model: NSObject, ObservableObject {
                 url: stream.url,
                 reconnectTime: 5,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
+                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
+                    .algorithm : nil,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
@@ -2281,7 +2284,8 @@ final class Model: NSObject, ObservableObject {
                 url: stream.url,
                 reconnectTime: 5,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
+                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
+                    .algorithm : nil,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,

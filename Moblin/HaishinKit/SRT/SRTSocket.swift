@@ -130,7 +130,7 @@ final class SRTSocket {
         return srt_bstats(socket, &perf, 1)
     }
 
-    func snd_data() -> Int32 {
+    func sndData() -> Int32 {
         guard socket != SRT_INVALID_SOCK else {
             return SRT_ERROR
         }

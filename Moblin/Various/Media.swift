@@ -145,7 +145,7 @@ final class Media: NSObject {
         url: String,
         reconnectTime: Double,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
@@ -157,7 +157,7 @@ final class Media: NSObject {
         srtInitStream(
             isSrtla: isSrtla,
             targetBitrate: targetBitrate,
-            adaptiveBitrate: adaptiveBitrateEnabled,
+            adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm,
             latency: latency,
             overheadBandwidth: overheadBandwidth,
             maximumBandwidthFollowInput: maximumBandwidthFollowInput,
@@ -171,7 +171,7 @@ final class Media: NSObject {
     private func srtInitStream(
         isSrtla: Bool,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
@@ -192,12 +192,12 @@ final class Media: NSObject {
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities
         )
-        if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtFight(
-                targetBitrate: targetBitrate,
-                delegate: self
-            )
-        } else {
+        switch adaptiveBitrateAlgorithm {
+        case .fastIrl, .slowIrl, .customIrl:
+            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
+        case .belabox:
+            adaptiveBitrate = AdaptiveBitrateSrtBela(targetBitrate: targetBitrate, delegate: self)
+        case nil:
             adaptiveBitrate = nil
         }
     }
@@ -226,8 +226,42 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
+        if adaptiveBitrate is AdaptiveBitrateSrtBela {
+            return updateAdaptiveBitrateSrtBela(overlay: overlay)
+        } else {
+            return updateAdaptiveBitrateSrtFight(overlay: overlay)
+        }
+    }
+
+    private func updateAdaptiveBitrateSrtBela(overlay: Bool) -> ([String], [String])? {
+        guard let adaptiveBitrate else {
+            return nil
+        }
         let stats = srtConnection.performanceData
-        // var snd_data = srtConnection.socket?.snd_data() ?? 0
+        let sndData = srtConnection.socket?.sndData() ?? 0
+        adaptiveBitrate.update(stats: StreamStats(
+            rttMs: stats.msRTT,
+            packetsInFlight: Double(sndData),
+            transportBitrate: streamSpeed(),
+            latency: latency,
+            mbpsSendRate: stats.mbpsSendRate
+        ))
+        guard overlay else {
+            return nil
+        }
+        return ([
+            """
+            R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+            D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
+            """,
+            "msRTT: \(stats.msRTT)",
+            "sndData: \(sndData)",
+            "B: \(adaptiveBitrate.getCurrentBitrateInKbps())",
+        ], adaptiveBitrate.getActionsTaken())
+    }
+
+    private func updateAdaptiveBitrateSrtFight(overlay: Bool) -> ([String], [String])? {
+        let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
             packetsInFlight: Double(stats.pktFlightSize),
@@ -504,7 +538,7 @@ final class Media: NSObject {
         url: String,
         reconnectTime: Double,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
@@ -515,7 +549,7 @@ final class Media: NSObject {
         srtInitStream(
             isSrtla: true,
             targetBitrate: targetBitrate,
-            adaptiveBitrate: adaptiveBitrateEnabled,
+            adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm,
             latency: latency,
             overheadBandwidth: overheadBandwidth,
             maximumBandwidthFollowInput: maximumBandwidthFollowInput,
