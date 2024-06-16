@@ -5346,8 +5346,6 @@ extension Model {
             wantedOrientation = .back
         case .top:
             wantedOrientation = .top
-        default:
-            wantedOrientation = .bottom
         }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
