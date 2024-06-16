@@ -214,7 +214,14 @@ final class Media: NSObject {
         srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
+    private var updateTickCount: UInt64 = 0
+
+    private func is200MsTick() -> Bool {
+        return updateTickCount % 10 == 0
+    }
+
     func updateAdaptiveBitrate(overlay: Bool) -> ([String], [String])? {
+        updateTickCount += 1
         if srtStream != nil {
             return updateAdaptiveBitrateSrt(overlay: overlay)
         } else if let rtmpStream {
@@ -233,6 +240,8 @@ final class Media: NSObject {
         }
     }
 
+    private var belaLinesAndActions: ([String], [String])?
+
     private func updateAdaptiveBitrateSrtBela(overlay: Bool) -> ([String], [String])? {
         guard let adaptiveBitrate else {
             return nil
@@ -246,21 +255,28 @@ final class Media: NSObject {
             latency: latency,
             mbpsSendRate: stats.mbpsSendRate
         ))
-        guard overlay else {
-            return nil
+        if overlay {
+            if is200MsTick() {
+                belaLinesAndActions = ([
+                    """
+                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                    D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
+                    """,
+                    "msRTT: \(stats.msRTT)",
+                    "sndData: \(sndData)",
+                    "B: \(adaptiveBitrate.getCurrentBitrateInKbps())",
+                ], adaptiveBitrate.getActionsTaken())
+            }
+        } else {
+            belaLinesAndActions = nil
         }
-        return ([
-            """
-            R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
-            D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
-            """,
-            "msRTT: \(stats.msRTT)",
-            "sndData: \(sndData)",
-            "B: \(adaptiveBitrate.getCurrentBitrateInKbps())",
-        ], adaptiveBitrate.getActionsTaken())
+        return belaLinesAndActions
     }
 
     private func updateAdaptiveBitrateSrtFight(overlay: Bool) -> ([String], [String])? {
+        guard is200MsTick() else {
+            return nil
+        }
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
@@ -302,6 +318,9 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> ([String], [String])? {
+        guard is200MsTick() else {
+            return nil
+        }
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
@@ -335,6 +354,9 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> ([String], [String])? {
+        guard is200MsTick() else {
+            return nil
+        }
         let stats = ristStream.getStats()
         var rtt = 1000.0
         for stat in stats {

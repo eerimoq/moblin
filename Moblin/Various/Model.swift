@@ -433,6 +433,8 @@ final class Model: NSObject, ObservableObject {
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
     @Published var debugLines: [String] = []
+    private var latestDebugLines: [String] = []
+    private var latestDebugActions: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
 
@@ -1578,6 +1580,7 @@ final class Model: NSObject, ObservableObject {
             self.updateBrowserWidgetStatus()
             self.logStatus()
             self.updateFailedVideoEffects()
+            self.updateAdaptiveBitrateDebug()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1596,7 +1599,6 @@ final class Model: NSObject, ObservableObject {
             filter.log()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            self.updateAdaptiveBitrate()
             if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -1608,6 +1610,9 @@ final class Model: NSObject, ObservableObject {
                 self.updateTorch()
                 self.lastAttachCompletedTime = nil
             }
+        })
+        Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
+            self.updateAdaptiveBitrate()
         })
     }
 
@@ -1715,10 +1720,17 @@ final class Model: NSObject, ObservableObject {
 
     private func updateAdaptiveBitrate() {
         if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
-            debugLines = lines + actions
+            latestDebugLines = lines
+            latestDebugActions = actions
+        }
+    }
+
+    private func updateAdaptiveBitrateDebug() {
+        if database.debug!.srtOverlay {
+            debugLines = latestDebugLines + latestDebugActions
             debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
-                logger.debug(lines.joined(separator: ", "))
+                logger.debug(latestDebugLines.joined(separator: ", "))
             }
         } else if !debugLines.isEmpty {
             debugLines = []
