@@ -137,16 +137,16 @@ class SrtServerClient {
             // srt-server: Decoded audio \(outputBuffer) for PTS \
             // \(presentationTimeStamp) delta \(ptsDelta) gap \(gapBuffers)
             // """)
-            let isGap = gapBuffers > 0
-            if isGap {
+            if gapBuffers > 0 {
                 logger
                     .info("srt-server: Audio gap latest buffer PTS \(latestAudioBufferPresentationTimeStamp)")
             }
-            while gapBuffers > 0 {
+            var index = 0
+            while index < gapBuffers {
                 let newPresentationTimeStamp = CMTimeAdd(
                     latestAudioSampleBuffer.presentationTimeStamp,
                     CMTime(
-                        value: CMTimeValue(Double(1024)),
+                        value: CMTimeValue(Double(1024 * (1 + index))),
                         timescale: CMTimeScale(48000)
                     )
                 )
@@ -160,9 +160,9 @@ class SrtServerClient {
                     streamId: streamId,
                     sampleBuffer: sampleBuffer
                 )
-                gapBuffers -= 1
+                index += 1
             }
-            if isGap {
+            if gapBuffers > 0 {
                 logger.info("srt-server: Audio gap new buffer PTS \(presentationTimeStamp)")
             }
         }
