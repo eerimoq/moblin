@@ -58,19 +58,6 @@ struct SrtlaServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
-    func submitLatency(value: String) {
-        guard let latency = Int32(value) else {
-            return
-        }
-        guard latency >= 100 else {
-            return
-        }
-        stream.latency = latency
-        model.store()
-        model.reloadSrtlaServer()
-        model.objectWillChange.send()
-    }
-
     var body: some View {
         Form {
             Section {
@@ -85,15 +72,6 @@ struct SrtlaServerStreamSettingsView: View {
                     title: String(localized: "Stream id"),
                     value: stream.streamId,
                     onSubmit: submitStreamId
-                )
-                .disabled(model.srtlaServerEnabled())
-                TextEditNavigationView(
-                    title: String(localized: "Latency"),
-                    value: String(stream.latency!),
-                    onSubmit: submitLatency,
-                    footer: Text("100 or more milliseconds."),
-                    keyboardType: .numbersAndPunctuation,
-                    valueFormat: { "\($0) ms" }
                 )
                 .disabled(model.srtlaServerEnabled())
             } footer: {

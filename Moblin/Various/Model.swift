@@ -5960,7 +5960,7 @@ extension Model: SrtlaServerDelegate {
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
-            let latency = Double(stream.latency!) / 1000
+            let latency = 0.2
             self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
             self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
         }

@@ -1167,7 +1167,6 @@ class SettingsRtmpServer: Codable {
 class SettingsSrtlaServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
-    var latency: Int32? = defaultSrtLatency
     var streamId: String = ""
 
     func camera() -> String {
@@ -1177,7 +1176,6 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     func clone() -> SettingsSrtlaServerStream {
         let new = SettingsSrtlaServerStream()
         new.name = name
-        new.latency = latency
         new.streamId = streamId
         return new
     }
