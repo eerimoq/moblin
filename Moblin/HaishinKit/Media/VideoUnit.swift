@@ -58,12 +58,7 @@ private class ReplaceVideo {
         sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
     }
 
-    func updateSampleBuffer() {
-        if firstReplaceTimeStamp.isNaN {
-            firstReplaceTimeStamp = CACurrentMediaTime()
-        }
-        replaceCounter += 1
-        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / frameRate)
+    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
         var sampleBuffer = currentSampleBuffer
         // var numberOfBuffersConsumed = 0
         while let replaceSampleBuffer = sampleBuffers.first {
@@ -181,6 +176,8 @@ final class VideoUnit: NSObject {
     private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
+    private var firstReplaceTimeStamp: Double = .nan
+    private var replaceCounter: Int32 = 0
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -241,13 +238,18 @@ final class VideoUnit: NSObject {
     }
 
     private func handleReplaceVideo() {
-        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        if firstReplaceTimeStamp.isNaN {
+            firstReplaceTimeStamp = CACurrentMediaTime()
+        }
+        replaceCounter += 1
+        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / frameRate)
         for replaceVideo in replaceVideos.values {
-            replaceVideo.updateSampleBuffer()
+            replaceVideo.updateSampleBuffer(realPresentationTimeStamp)
         }
         guard let selectedReplaceVideoCameraId else {
             return
         }
+        var presentationTimeStamp = CMTimeMake(value: Int64(realPresentationTimeStamp * 1000), timescale: 1000)
         if let sampleBuffer = replaceVideos[selectedReplaceVideoCameraId]?
             .getSampleBuffer(presentationTimeStamp)
         {
