@@ -1310,8 +1310,10 @@ final class Model: NSObject, ObservableObject {
             let latency = Double(stream.latency!) / 1000
             self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
             self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
-            if false {
-                self.selectMicById(id: "\(stream.id) 0")
+            if stream.autoSelectMic! {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.selectMicById(id: "\(stream.id) 0")
+                }
             }
         }
     }
@@ -5982,11 +5984,13 @@ extension Model: SrtlaServerDelegate {
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
-            let latency = 0.2
+            let latency = 0.5
             self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
             self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
-            if false {
-                self.selectMicById(id: "\(stream.id) 0")
+            if stream.autoSelectMic! {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    self.selectMicById(id: "\(stream.id) 0")
+                }
             }
         }
     }

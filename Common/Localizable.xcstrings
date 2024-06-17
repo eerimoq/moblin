@@ -11269,6 +11269,9 @@
         }
       }
     },
+    "Auto select mic" : {
+
+    },
     "Auto start recording when going live" : {
       "localizations" : {
         "de" : {
@@ -11658,6 +11661,9 @@
           }
         }
       }
+    },
+    "Automatically select the stream's audio as mic when connected." : {
+
     },
     "Average bitrate" : {
       "localizations" : {

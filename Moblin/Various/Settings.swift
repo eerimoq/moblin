@@ -1136,6 +1136,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var latency: Int32? = defaultRtmpLatency
     var manualFps: Bool? = false
     var fps: Double? = 30
+    var autoSelectMic: Bool? = true
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -1148,6 +1149,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.latency = latency
         new.manualFps = manualFps
         new.fps = fps
+        new.autoSelectMic = autoSelectMic
         return new
     }
 }
@@ -1172,6 +1174,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamId: String = ""
+    var autoSelectMic: Bool? = true
 
     func camera() -> String {
         return srtlaCamera(name: name)
@@ -1181,6 +1184,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable {
         let new = SettingsSrtlaServerStream()
         new.name = name
         new.streamId = streamId
+        new.autoSelectMic = autoSelectMic
         return new
     }
 }
@@ -2611,6 +2615,14 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
             scene.srtlaCameraId = .init()
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.autoSelectMic == nil {
+            stream.autoSelectMic = true
+            store()
+        }
+        for stream in realDatabase.srtlaServer!.streams where stream.autoSelectMic == nil {
+            stream.autoSelectMic = true
             store()
         }
     }
