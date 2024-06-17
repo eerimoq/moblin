@@ -46,7 +46,6 @@ private class ReplaceVideo {
     private var firstReplaceTimeStamp: Double = .nan
     private var firstPresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
-    private var replaceCounter: Int32 = 0
 
     init(latency: Double, frameRate: Double) {
         self.latency = latency
