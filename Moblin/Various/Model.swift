@@ -5366,19 +5366,14 @@ extension Model {
     }
 
     func setMicFromSettings() {
-        selectMicByOrientation(orientation: database.mic!)
-    }
-
-    func selectMicByOrientation(orientation: SettingsMic) {
-        guard let mic = listMics().first(where: { mic in mic.builtInOrientation == orientation }) else {
-            logger.info("Mic with orientation \(orientation) not found")
-            makeErrorToast(
-                title: String(localized: "Mic not found"),
-                subTitle: String(localized: "Mic orientation \(orientation.rawValue)")
-            )
-            return
+        let mics = listMics()
+        if let mic = mics.first(where: { mic in mic.builtInOrientation == database.mic! }) {
+            selectMic(mic: mic)
+        } else if let mic = mics.first {
+            selectMic(mic: mic)
+        } else {
+            logger.error("No mic to select from settings.")
         }
-        selectMic(mic: mic)
     }
 
     func selectMicById(id: String) {
@@ -5471,7 +5466,11 @@ extension Model {
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        try dataSource.setPreferredPolarPattern(.none)
+        if false, dataSource.supportedPolarPatterns?.contains(.stereo) == true {
+            try dataSource.setPreferredPolarPattern(.stereo)
+        } else {
+            try dataSource.setPreferredPolarPattern(.none)
+        }
     }
 }
 

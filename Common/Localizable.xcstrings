@@ -45850,6 +45850,7 @@
       }
     },
     "Mic orientation %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
