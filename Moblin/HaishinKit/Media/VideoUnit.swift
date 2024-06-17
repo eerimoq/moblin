@@ -249,7 +249,10 @@ final class VideoUnit: NSObject {
         guard let selectedReplaceVideoCameraId else {
             return
         }
-        var presentationTimeStamp = CMTimeMake(value: Int64(realPresentationTimeStamp * 1000), timescale: 1000)
+        var presentationTimeStamp = CMTimeMake(
+            value: Int64(realPresentationTimeStamp * 1000),
+            timescale: 1000
+        )
         if let sampleBuffer = replaceVideos[selectedReplaceVideoCameraId]?
             .getSampleBuffer(presentationTimeStamp)
         {
