@@ -86,11 +86,10 @@ private class ReplaceAudio {
         guard let sampleBuffer = getSampleBuffer(realPresentationTimeStamp) else {
             return
         }
-        let timeOffset = CMTimeSubtract(
-            CMTimeMake(value: Int64(realPresentationTimeStamp * 1000), timescale: 1000),
-            sampleBuffer.presentationTimeStamp
+        var presentationTimeStamp = CMTimeMake(
+            value: Int64(realPresentationTimeStamp * 1000),
+            timescale: 1000
         )
-        let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
         guard let updatedSampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
         else {
