@@ -35,7 +35,6 @@ private class ReplaceAudio {
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
-    private var replaceCounter: Int32 = 0
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
@@ -80,9 +79,10 @@ private class ReplaceAudio {
         if firstReplaceTimeStamp.isNaN {
             firstReplaceTimeStamp = CACurrentMediaTime()
         }
-        replaceCounter += 1
+        let delta = CACurrentMediaTime() - firstReplaceTimeStamp
+        let counter = Int32((delta / (1 / (sampleRate / frameLength))).rounded())
         let realPresentationTimeStamp = firstReplaceTimeStamp +
-            (Double(replaceCounter) / (sampleRate / Double(frameLength)))
+            (Double(counter) / (sampleRate / Double(frameLength)))
         guard let sampleBuffer = getSampleBuffer(realPresentationTimeStamp) else {
             return
         }

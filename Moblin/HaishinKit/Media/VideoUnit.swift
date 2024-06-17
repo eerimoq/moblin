@@ -177,7 +177,6 @@ final class VideoUnit: NSObject {
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
     private var firstReplaceTimeStamp: Double = .nan
-    private var replaceCounter: Int32 = 0
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -241,8 +240,9 @@ final class VideoUnit: NSObject {
         if firstReplaceTimeStamp.isNaN {
             firstReplaceTimeStamp = CACurrentMediaTime()
         }
-        replaceCounter += 1
-        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(replaceCounter) / frameRate)
+        var delta = CACurrentMediaTime() - firstReplaceTimeStamp
+        var counter = Int32((delta / (1 / frameRate)).rounded())
+        let realPresentationTimeStamp = firstReplaceTimeStamp + (Double(counter) / frameRate)
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(realPresentationTimeStamp)
         }
