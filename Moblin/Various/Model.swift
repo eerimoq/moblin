@@ -3213,9 +3213,9 @@ final class Model: NSObject, ObservableObject {
             attachCamera(position: .front)
             isFrontCameraSelected = true
         case .rtmp:
-            attachRtmpCamera(cameraId: scene.rtmpCameraId!)
+            attachReplaceCamera(cameraId: scene.rtmpCameraId!)
         case .srtla:
-            attachRtmpCamera(cameraId: scene.srtlaCameraId!)
+            attachReplaceCamera(cameraId: scene.srtlaCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
         }
@@ -3818,12 +3818,12 @@ final class Model: NSObject, ObservableObject {
         hasZoom = true
     }
 
-    private func attachRtmpCamera(cameraId: UUID) {
+    private func attachReplaceCamera(cameraId: UUID) {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachRtmpCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
+        media.attachReplaceCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
         media.usePendingAfterAttachEffects()
     }
 
@@ -5946,8 +5946,8 @@ extension Model {
             title: String(localized: "Screen recording started"),
             subTitle: "DOES NOT YET WORK!!!"
         )
-        // media.addRtmpCamera(cameraId: sampleBufferCameraId, latency: 0.5)
-        // attachRtmpCamera(cameraId: sampleBufferCameraId)
+        // media.addReplaceCamera(cameraId: sampleBufferCameraId, latency: 0.5)
+        // attachReplaceCamera(cameraId: sampleBufferCameraId)
     }
 
     private func handleSampleBufferSenderDisconnected() {
