@@ -1185,6 +1185,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
+        guard !ProcessInfo().isiOSAppOnMac else {
+            return
+        }
         if isRecording {
             suspendRecording()
         }
@@ -1198,6 +1201,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleWillEnterForegroundNotification() {
+        guard !ProcessInfo().isiOSAppOnMac else {
+            return
+        }
         if !shouldStreamInBackground() {
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
