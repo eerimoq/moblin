@@ -3824,6 +3824,7 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
+        media.usePendingAfterAttachEffects()
     }
 
     private func attachExternalCamera(cameraId _: String) {

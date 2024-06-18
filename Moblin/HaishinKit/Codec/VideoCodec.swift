@@ -15,7 +15,8 @@ class VideoCodec {
         self.lockQueue = lockQueue
     }
 
-    static var defaultAttributes: [NSString: AnyObject]? = [
+    static let defaultAttributes: [NSString: AnyObject]? = [
+        kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
         kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
         kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
     ]
