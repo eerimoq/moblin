@@ -8,6 +8,21 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.303.0", date: "2024-06-18", changes: [
+        "• Automatic zoom preset names based on zoom x. 💡 JohannesLiv",
+        "  • Less to type!",
+        "• Major RTMP server redesign. Hopefully to the better. 🧑‍🏭 ErAzOr",
+        "  • Both video and audio should work.",
+        "  • Auto select mic toggle per stream.",
+        "• 4:3 filter quick button. 💡 Tozadius",
+        "• Experimental support for BELABOX adaptive bitrate algorithm. 🧑‍🏭 mikeful",
+        "• Exterimental SRT(LA) server.",
+        "  • Optimized for SRTLA, not SRT.",
+        "  • Not very well tested.",
+        "• Background streaming always on for Mac. 💡 ariathome",
+        "• Do not stop recording when entering background mode on Mac.",
+        "• Support for video effects on RTMP and SRT(LA) server streams.",
+    ]),
     Version(version: "0.302.0", date: "2024-06-11", changes: [
         "• Toggle to debug crash when live and entering foreground mode.",
         "  • Settings → Debug → Use audio for timestamps",
