@@ -1124,7 +1124,6 @@ class SettingsDebug: Codable {
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
-    var srtlaServer: Bool? = false
     var higherDataRateLimit: Bool? = true
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
@@ -2576,10 +2575,6 @@ final class Settings {
         }
         if realDatabase.deepLinkCreator!.webBrowserEnabled == nil {
             realDatabase.deepLinkCreator!.webBrowserEnabled = false
-            store()
-        }
-        if realDatabase.debug!.srtlaServer == nil {
-            realDatabase.debug!.srtlaServer = false
             store()
         }
         if realDatabase.srtlaServer == nil {

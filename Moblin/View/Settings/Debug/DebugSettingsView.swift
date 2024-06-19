@@ -104,13 +104,6 @@ struct DebugSettingsView: View {
                     model.setMetalPetalFilters()
                     model.store()
                 }))
-                Toggle("SRTLA server", isOn: Binding(get: {
-                    model.database.debug!.srtlaServer!
-                }, set: { value in
-                    model.database.debug!.srtlaServer = value
-                    model.store()
-                    model.reloadSrtlaServer()
-                }))
                 Toggle("Higher data rate limit", isOn: Binding(get: {
                     model.database.debug!.higherDataRateLimit!
                 }, set: { value in
