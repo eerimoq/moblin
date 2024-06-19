@@ -9,14 +9,14 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.304.0", date: "2024-06-19", changes: [
-        "- Experimental support for built-in stereo mic.",
-        "  - Works with front or back mic selected.",
-        "  - Enable Settings → Debug → Audio → Prefer stereo mic to test.",
-        "- Remove SRT(LA) server experimental debug toggle.",
-        "  - Still experimental though.",
-        "- Configurable remote control preview FPS. 💡 ariathome",
-        "  - 1-5 FPS allowed.",
-        "- Double tap preview in remote control assistant to toggle full screen. 💡 ariathome",
+        "• Experimental support for built-in stereo mic.",
+        "  • Works with front or back mic selected.",
+        "  • Enable Settings → Debug → Audio → Prefer stereo mic to test.",
+        "• Remove SRT(LA) server experimental debug toggle.",
+        "  • Still experimental though.",
+        "• Configurable remote control preview FPS. 💡 ariathome",
+        "  • 1-5 FPS allowed.",
+        "• Double tap preview in remote control assistant to toggle full screen. 💡 ariathome",
     ]),
     Version(version: "0.303.0", date: "2024-06-18", changes: [
         "• Automatic zoom preset names based on zoom x. 💡 JohannesLiv",
