@@ -19,7 +19,7 @@ let adaptiveBitrateBelaboxSettings = AdaptiveBitrateSettings(
     rttDiffHighAllowedSpike: 50,
     rttDiffHighMinDecrease: 250_000,
     pifDiffIncreaseFactor: 100_000,
-    minimumBitrate: 500_000
+    minimumBitrate: 250_000
 )
 
 class AdaptiveBitrateSrtBela: AdaptiveBitrate {

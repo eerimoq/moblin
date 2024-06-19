@@ -6063,7 +6063,11 @@
         }
       }
     },
+    "250 Kbps by default." : {
+
+    },
     "500 Kbps by default." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

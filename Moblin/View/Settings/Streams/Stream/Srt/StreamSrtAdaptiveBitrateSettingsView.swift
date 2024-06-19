@@ -87,6 +87,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         return "\(Int(value))"
     }
 
+    private func submitBelaboxMinimumBitrate(value: Float) {
+        adaptiveBitrate.belaboxSettings!.minimumBitrate = value / 1000
+        model.store()
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+    }
+
     var body: some View {
         Form {
             Section {
@@ -137,11 +143,10 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("The minimum encoder bitrate.")
-                        Text("500 Kbps by default.")
+                        Text("250 Kbps by default.")
                     }
                 }
-            }
-            if adaptiveBitrate.algorithm == .customIrl {
+            } else if adaptiveBitrate.algorithm == .customIrl {
                 Section {
                     HStack {
                         Text("⚠️")
@@ -228,6 +233,23 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     Text("Minimum bitrate")
                 } footer: {
                     Text("The minimum encoder bitrate.")
+                }
+            } else if adaptiveBitrate.algorithm == .belabox {
+                Section {
+                    SliderView(value: 1000 * adaptiveBitrate.belaboxSettings!.minimumBitrate,
+                               minimum: 50000,
+                               maximum: 2_000_000,
+                               step: 50000,
+                               onSubmit: submitBelaboxMinimumBitrate,
+                               width: 80,
+                               format: formatMinimumBitrate)
+                } header: {
+                    Text("Minimum bitrate")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("The minimum encoder bitrate.")
+                        Text("250 Kbps by default.")
+                    }
                 }
             }
         }

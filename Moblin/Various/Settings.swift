@@ -151,7 +151,7 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
-    var minimumBitrate: Float? = 500
+    var minimumBitrate: Float? = 250
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
         let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
@@ -167,7 +167,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
-    var minimumBitrate: Float? = 500
+    var minimumBitrate: Float? = 250
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -181,16 +181,28 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     }
 }
 
+class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
+    var minimumBitrate: Float = 250
+
+    func clone() -> SettingsStreamSrtAdaptiveBitrateBelaboxSettings {
+        let new = SettingsStreamSrtAdaptiveBitrateBelaboxSettings()
+        new.minimumBitrate = minimumBitrate
+        return new
+    }
+}
+
 class SettingsStreamSrtAdaptiveBitrate: Codable {
     var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .fastIrl
     var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings? = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
+    var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings? = .init()
 
     func clone() -> SettingsStreamSrtAdaptiveBitrate {
         let new = SettingsStreamSrtAdaptiveBitrate()
         new.algorithm = algorithm
         new.fastIrlSettings = fastIrlSettings!.clone()
         new.customSettings = customSettings.clone()
+        new.belaboxSettings = belaboxSettings!.clone()
         return new
     }
 }
@@ -2557,7 +2569,7 @@ final class Settings {
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 500
+            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 250
             store()
         }
         if realDatabase.deepLinkCreator == nil {
@@ -2591,7 +2603,7 @@ final class Settings {
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 500
+            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
             store()
         }
         for stream in realDatabase.streams where stream.backgroundStreaming == nil {
@@ -2630,6 +2642,10 @@ final class Settings {
         }
         if realDatabase.remoteControl!.server.previewFps == nil {
             realDatabase.remoteControl!.server.previewFps = 1.0
+            store()
+        }
+        for stream in database.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
+            stream.srt.adaptiveBitrate!.belaboxSettings = .init()
             store()
         }
     }

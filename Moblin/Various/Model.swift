@@ -521,7 +521,10 @@ final class Model: NSObject, ObservableObject {
                 minimumBitrate: Int64(customSettings.minimumBitrate! * 1000)
             ))
         case .belabox:
-            break
+            var settings = adaptiveBitrateBelaboxSettings
+            settings
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.belaboxSettings!.minimumBitrate * 1000)
+            media.setAdaptiveBitrateSettings(settings: settings)
         }
     }
 
