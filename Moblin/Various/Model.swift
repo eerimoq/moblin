@@ -5475,8 +5475,14 @@ extension Model {
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        if false, dataSource.supportedPolarPatterns?.contains(.stereo) == true {
-            try dataSource.setPreferredPolarPattern(.stereo)
+        if database.debug!.preferStereoMic! {
+            if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
+                try dataSource.setPreferredPolarPattern(.stereo)
+            } else {
+                try dataSource.setPreferredPolarPattern(.none)
+            }
+            setupAudioSession()
+            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
         } else {
             try dataSource.setPreferredPolarPattern(.none)
         }

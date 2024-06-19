@@ -1127,6 +1127,7 @@ class SettingsDebug: Codable {
     var srtlaServer: Bool? = false
     var higherDataRateLimit: Bool? = true
     var useAudioForTimestamps: Bool? = false
+    var preferStereoMic: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2623,6 +2624,10 @@ final class Settings {
         }
         for stream in realDatabase.srtlaServer!.streams where stream.autoSelectMic == nil {
             stream.autoSelectMic = true
+            store()
+        }
+        if realDatabase.debug!.preferStereoMic == nil {
+            realDatabase.debug!.preferStereoMic = false
             store()
         }
     }

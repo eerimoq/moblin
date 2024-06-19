@@ -15,6 +15,16 @@ struct DebugAudioSettingsView: View {
             } footer: {
                 Text("App restart needed to take effect.")
             }
+            Section {
+                Toggle("Prefer stereo mic", isOn: Binding(get: {
+                    model.database.debug!.preferStereoMic!
+                }, set: { value in
+                    model.database.debug!.preferStereoMic = value
+                    model.store()
+                }))
+            } footer: {
+                Text("Switching between mono and stereo mics may not work.")
+            }
         }
         .navigationTitle("Audio")
         .toolbar {

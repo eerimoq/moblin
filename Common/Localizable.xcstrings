@@ -54169,6 +54169,9 @@
         }
       }
     },
+    "Prefer stereo mic" : {
+
+    },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
       "localizations" : {
         "de" : {
@@ -69508,6 +69511,9 @@
           }
         }
       }
+    },
+    "Switching between mono and stereo mics may not work." : {
+
     },
     "Tap screen to focus" : {
       "localizations" : {
