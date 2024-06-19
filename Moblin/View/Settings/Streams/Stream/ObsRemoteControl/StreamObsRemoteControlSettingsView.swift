@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct StreamObsSettingsView: View {
+struct StreamObsRemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 
@@ -46,16 +46,18 @@ struct StreamObsSettingsView: View {
                     onSubmit: submitWebSocketPassword,
                     sensitive: true
                 )
+            } header: {
+                Text("WebSocket")
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "Source name"),
                     value: stream.obsSourceName!,
                     onSubmit: submitSourceName,
                     capitalize: true
                 )
-            } header: {
-                Text("WebSocket")
             } footer: {
-                Text("Source name is the name of the Source in OBS that receives the stream from Moblin.")
+                Text("The name of the Source in OBS that receives the stream from Moblin.")
             }
         }
         .navigationTitle("OBS remote control")

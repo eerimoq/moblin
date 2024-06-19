@@ -315,7 +315,7 @@
 		03BC90B02BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90AF2BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift */; };
 		03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */; };
 		03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
-		03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */; };
+		03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsRemoteControlSettingsView.swift */; };
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
@@ -773,7 +773,7 @@
 		03BC90AF2BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupMyServersSrtSettingsView.swift; sourceTree = "<group>"; };
 		03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupMyServersRtmpSettingsView.swift; sourceTree = "<group>"; };
 		03BDE2212B24367D00DF193A /* ObsWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsWebSocket.swift; sourceTree = "<group>"; };
-		03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsSettingsView.swift; sourceTree = "<group>"; };
+		03BDE2252B24656400DF193A /* StreamObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
@@ -964,7 +964,7 @@
 				031A4DC42B2CED2D0053F67D /* Audio */,
 				03BBAE972B2EB4CE0033D425 /* Chat */,
 				036BE2D02ABD51770048F9C5 /* Kick */,
-				03BDE2242B24654E00DF193A /* OBS */,
+				03BDE2242B24654E00DF193A /* ObsRemoteControl */,
 				034CE2EA2B4D2E5A00E2C1BD /* RealtimeIrl */,
 				03D3C04F2B452D14006BAEAC /* Recording */,
 				03A29A242BECA9F300DAA1B1 /* Rist */,
@@ -2060,12 +2060,12 @@
 			path = OBS;
 			sourceTree = "<group>";
 		};
-		03BDE2242B24654E00DF193A /* OBS */ = {
+		03BDE2242B24654E00DF193A /* ObsRemoteControl */ = {
 			isa = PBXGroup;
 			children = (
-				03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */,
+				03BDE2252B24656400DF193A /* StreamObsRemoteControlSettingsView.swift */,
 			);
-			path = OBS;
+			path = ObsRemoteControl;
 			sourceTree = "<group>";
 		};
 		03BE504E2B3EC107004720AF /* Various */ = {
@@ -2766,7 +2766,7 @@
 				03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
-				03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */,
+				03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */,
 				03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */,
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				0359F8C52BD3DA61005BFDA8 /* FLVAACPacket.swift in Sources */,

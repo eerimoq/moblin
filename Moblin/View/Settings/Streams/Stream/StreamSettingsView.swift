@@ -138,7 +138,7 @@ struct StreamSettingsView: View {
                 Text("Chat and viewers")
             }
             Section {
-                NavigationLink(destination: StreamObsSettingsView(stream: stream)) {
+                NavigationLink(destination: StreamObsRemoteControlSettingsView(stream: stream)) {
                     Toggle("OBS remote control", isOn: Binding(get: {
                         stream.obsWebSocketEnabled!
                     }, set: { value in
