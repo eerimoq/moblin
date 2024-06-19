@@ -6064,135 +6064,131 @@
       }
     },
     "250 Kbps by default." : {
-
-    },
-    "500 Kbps by default." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbit/s standardmäßig."
+            "value" : "Standardmäßig 250 Kbit/s."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps από προεπιλογή."
+            "value" : "250 Kbps από προεπιλογή."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps por defecto."
+            "value" : "250 Kbps por defecto."
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "500 Kbps oletuksena."
+            "state" : "needs_review",
+            "value" : "Oletuksena 250 kbps."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps par défaut."
+            "value" : "250 Kbps par défaut."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "डिफ़ॉल्ट रूप से 500 केबीपीएस."
+            "value" : "डिफ़ॉल्ट रूप से 250 केबीपीएस."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps secara default."
+            "value" : "250 Kbps secara default."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps per impostazione predefinita."
+            "value" : "250 Kbps per impostazione predefinita."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "デフォルトでは 500 Kbps です。"
+            "value" : "デフォルトでは 250 Kbps です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "기본적으로 500Kbps입니다."
+            "value" : "기본적으로 250Kbps입니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Standaard 500 Kbps."
+            "value" : "Standaard 250 Kbps."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Domyślnie 500 Kb/s."
+            "value" : "Domyślnie 250 Kb/s."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps por padrão."
+            "value" : "250 Kbps por padrão."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kbps por padrão."
+            "value" : "250 Kbps por padrão."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "По умолчанию 500 Кбит/с."
+            "value" : "По умолчанию 250 Кбит/с."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "500 Kbps som standard."
+            "value" : "250 Kbps som standard."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Varsayılan olarak 500 Kbps."
+            "value" : "Varsayılan olarak 250 Kbps."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Кбіт/с за замовчуванням."
+            "value" : "250 Кбіт/с за замовчуванням."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "500 Kb/giây theo mặc định."
+            "value" : "250 Kb/giây theo mặc định."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "默认为 500 Kbps。"
+            "value" : "默认为 250 Kbps。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "預設為 500 Kbps。"
+            "value" : "預設為 250 Kbps。"
           }
         }
       }
@@ -54174,7 +54170,134 @@
       }
     },
     "Prefer stereo mic" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stereo-Mikrofon bevorzugen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προτιμήστε στερεοφωνικό μικρόφωνο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Prefiero micrófono estéreo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Suosi stereomikrofonia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Préférez un micro stéréo"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्टीरियो माइक को प्राथमिकता दें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lebih suka mikrofon stereo"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Preferisci il microfono stereo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ステレオマイクを優先"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스테레오 마이크를 선호함"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Liever stereomicrofoon"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Preferuję mikrofon stereo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Prefira microfone estéreo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Prefira microfone estéreo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Предпочитаю стереомикрофон"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Föredra stereomikrofon"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stereo mikrofonu tercih edin"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Надаю перевагу стереомікрофону"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thích mic âm thanh nổi hơn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "更喜欢立体声麦克风"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "更喜歡立體聲麥克風"
+          }
+        }
+      }
     },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
       "localizations" : {
@@ -54437,7 +54560,134 @@
       }
     },
     "Preview FPS" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS-Vorschau"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προεπισκόπηση FPS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vista previa de FPS"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esikatsele FPS"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aperçu des FPS"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "पूर्वावलोकन एफपीएस"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pratinjau FPS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Anteprima dell'FPS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "プレビューFPS"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS 미리보기"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voorbeeld-FPS"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Podgląd FPS-ów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Visualizar FPS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Visualizar FPS"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Предварительный просмотр FPS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Förhandsgranska FPS"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS'yi önizle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Попередній перегляд FPS"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Xem trước FPS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "预览 FPS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "預覽 FPS"
+          }
+        }
+      }
     },
     "Privacy policy" : {
       "localizations" : {
@@ -69520,7 +69770,134 @@
       }
     },
     "Switching between mono and stereo mics may not work." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Das Umschalten zwischen Mono- und Stereomikrofonen funktioniert möglicherweise nicht."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η εναλλαγή μεταξύ μονοφωνικών και στερεοφωνικών μικροφώνων ενδέχεται να μην λειτουργεί."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Es posible que no funcione el cambio entre micrófonos mono y estéreo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vaihtaminen mono- ja stereomikrofonien välillä ei välttämättä toimi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La commutation entre les micros mono et stéréo peut ne pas fonctionner."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "मोनो और स्टीरियो माइक के बीच स्विच करना काम नहीं कर सकता।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beralih antara mikrofon mono dan stereo mungkin tidak berhasil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Il passaggio tra microfoni mono e stereo potrebbe non funzionare."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "モノラル マイクとステレオ マイクの切り替えが機能しない場合があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "모노 마이크와 스테레오 마이크 간 전환이 작동하지 않을 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Het schakelen tussen mono- en stereomicrofoons werkt mogelijk niet."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przełączanie między mikrofonami mono i stereo może nie działać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Alternar entre microfones mono e estéreo pode não funcionar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Alternar entre microfones mono e estéreo pode não funcionar."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Переключение между моно- и стереомикрофонами может не работать."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Att växla mellan mono- och stereomikrofoner kanske inte fungerar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mono ve stereo mikrofonlar arasında geçiş yapmak işe yaramayabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Перемикання між моно та стерео мікрофонами може не працювати."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Việc chuyển đổi giữa micrô đơn âm và micrô âm thanh nổi có thể không hiệu quả."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "单声道和立体声麦克风之间的切换可能不起作用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在單聲道和立體聲麥克風之間切換可能不起作用。"
+          }
+        }
+      }
     },
     "Tap screen to focus" : {
       "localizations" : {
@@ -69652,139 +70029,135 @@
         }
       }
     },
-    "Tap the preview to hide it." : {
-      "extractionState" : "stale",
+    "Tap the preview to hide it. Double tap to toggle full screen." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tippe auf die Vorschau, um sie auszublenden."
+            "state" : "needs_review",
+            "value" : "Tippen Sie auf die Vorschau, um sie auszublenden. Tippen Sie doppelt, um auf den Vollbildmodus umzuschalten."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Πατήστε την προεπισκόπηση για να την αποκρύψετε."
+            "value" : "Πατήστε την προεπισκόπηση για να την αποκρύψετε. Πατήστε δύο φορές για εναλλαγή πλήρους οθόνης."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toca la vista previa para ocultarla."
+            "state" : "needs_review",
+            "value" : "Toca la vista previa para ocultarla. Toca dos veces para alternar en pantalla completa."
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piilotta esikatselu napauttamalla sitä."
+            "state" : "needs_review",
+            "value" : "Napauta esikatselua piilottaaksesi sen. Kaksoisnapauta vaihtaaksesi koko näyttöön."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Appuyez sur l'aperçu pour le masquer."
+            "value" : "Appuyez sur l'aperçu pour le masquer. Appuyez deux fois pour basculer en plein écran."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "इसे छिपाने के लिए पूर्वावलोकन पर टैप करें।"
+            "value" : "पूर्वावलोकन को छिपाने के लिए उस पर टैप करें। पूर्ण स्क्रीन पर टॉगल करने के लिए डबल टैप करें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ketuk pratinjau untuk menyembunyikannya."
+            "value" : "Ketuk pratinjau untuk menyembunyikannya. Ketuk dua kali untuk beralih ke layar penuh."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Tocca l'anteprima per nasconderla."
+            "value" : "Tocca l'anteprima per nasconderla. Tocca due volte per attivare lo schermo intero."
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "プレビューをタップすると非表示になります。"
+            "state" : "needs_review",
+            "value" : "プレビューをタップすると非表示になります。ダブルタップすると全画面表示に切り替わります。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "숨기려면 미리보기를 탭하세요."
+            "state" : "needs_review",
+            "value" : "숨기려면 미리보기를 탭하세요. 전체 화면으로 전환하려면 두 번 탭하세요."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Tik op het voorbeeld om het te verbergen."
+            "value" : "Tik op het voorbeeld om het te verbergen. Dubbeltik om naar volledig scherm te schakelen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Kliknij podgląd, aby go ukryć."
+            "value" : "Stuknij podgląd, aby go ukryć. Stuknij dwukrotnie, aby przełączyć na pełny ekran."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Toque na visualização para ocultá-la."
+            "value" : "Toque na visualização para ocultá-la. Toque duas vezes para alternar para tela inteira."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Toque na visualização para ocultá-la."
+            "value" : "Toque na visualização para ocultá-la. Toque duas vezes para alternar para tela inteira."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Нажмите на предварительный просмотр, чтобы скрыть его."
+            "value" : "Нажмите на предварительный просмотр, чтобы скрыть его. Нажмите дважды, чтобы переключиться в полноэкранный режим."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tryck på förhandsvisningen för att dölja den."
+            "value" : "Tryck på förhandsvisningen för att dölja den. Dubbeltryck för att växla helskärm."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Gizlemek için önizlemeye dokunun."
+            "value" : "Gizlemek için önizlemeye dokunun. Tam ekrana geçiş yapmak için iki kez dokunun."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Торкніться попереднього перегляду, щоб приховати його."
+            "value" : "Торкніться попереднього перегляду, щоб приховати його. Двічі торкніться, щоб перемкнути на весь екран."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Nhấn vào bản xem trước để ẩn nó."
+            "value" : "Nhấn vào bản xem trước để ẩn nó. Nhấn đúp để chuyển đổi toàn màn hình."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "点击预览即可将其隐藏。"
+            "value" : "点击预览可将其隐藏。双击可切换至全屏。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "點擊預覽將其隱藏。"
+            "value" : "點擊預覽將其隱藏。雙擊可切換全螢幕。"
           }
         }
       }
-    },
-    "Tap the preview to hide it. Double tap to toggle full screen." : {
-
     },
     "Tap to focus not supported for this camera" : {
       "localizations" : {
