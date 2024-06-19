@@ -426,6 +426,7 @@ final class Model: NSObject, ObservableObject {
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
     @Published var remoteControlAssistantShowPreview = true
+    @Published var remoteControlAssistantShowPreviewFullScreen = false
 
     private var currentWiFiSsid: String?
 

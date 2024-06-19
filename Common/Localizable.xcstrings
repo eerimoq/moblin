@@ -69649,6 +69649,7 @@
       }
     },
     "Tap the preview to hide it." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -69777,6 +69778,9 @@
           }
         }
       }
+    },
+    "Tap the preview to hide it. Double tap to toggle full screen." : {
+
     },
     "Tap to focus not supported for this camera" : {
       "localizations" : {
