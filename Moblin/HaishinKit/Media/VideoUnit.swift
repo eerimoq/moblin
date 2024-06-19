@@ -7,7 +7,6 @@ import Vision
 
 var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
-var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
@@ -166,7 +165,9 @@ final class VideoUnit: NSObject {
     private var isFirstAfterAttach = false
     private var latestSampleBufferAppendTime = CMTime.zero
     private var lowFpsImageEnabled: Bool = false
+    private var lowFpsImageInterval: Double = 1.0
     private var lowFpsImageLatest: Double = 0.0
+    private var lowFpsImageFrameNumber: UInt64 = 0
     private var pool: CVPixelBufferPool?
     private var poolWidth: Int32 = 0
     private var poolHeight: Int32 = 0
@@ -634,14 +635,15 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setLowFpsImage(enabled: Bool) {
+    func setLowFpsImage(fps: Float) {
         lockQueue.sync {
-            self.setLowFpsImageInner(enabled: enabled)
+            self.setLowFpsImageInner(fps: fps)
         }
     }
 
-    private func setLowFpsImageInner(enabled: Bool) {
-        lowFpsImageEnabled = enabled
+    private func setLowFpsImageInner(fps: Float) {
+        lowFpsImageInterval = Double(1 / fps).clamped(to: 0.2 ... 1.0)
+        lowFpsImageEnabled = fps != 0.0
         lowFpsImageLatest = 0.0
     }
 
@@ -838,12 +840,13 @@ final class VideoUnit: NSObject {
             modImageBuffer,
             withPresentationTime: modSampleBuffer.presentationTimeStamp
         )
-        if lowFpsImageEnabled,
-           lowFpsImageLatest + ioVideoUnitWatchInterval < modSampleBuffer.presentationTimeStamp.seconds
-        {
-            lowFpsImageLatest = modSampleBuffer.presentationTimeStamp.seconds
-            lowFpsImageQueue.async {
-                self.createLowFpsImage(imageBuffer: modImageBuffer)
+        if lowFpsImageEnabled {
+            let presentationTimeStamp = modSampleBuffer.presentationTimeStamp.seconds
+            if lowFpsImageLatest + lowFpsImageInterval < presentationTimeStamp {
+                lowFpsImageLatest = presentationTimeStamp
+                lowFpsImageQueue.async {
+                    self.createLowFpsImage(imageBuffer: modImageBuffer)
+                }
             }
         }
         filterHistogram.add(value: Int(startTime.duration(to: .now).milliseconds))
@@ -855,7 +858,11 @@ final class VideoUnit: NSObject {
         ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
-        mixer?.delegate?.mixerVideo(lowFpsImage: image.jpegData(compressionQuality: 0.3))
+        mixer?.delegate?.mixerVideo(
+            lowFpsImage: image.jpegData(compressionQuality: 0.3),
+            frameNumber: lowFpsImageFrameNumber
+        )
+        lowFpsImageFrameNumber += 1
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {

@@ -377,6 +377,7 @@ final class Model: NSObject, ObservableObject {
     var drawOnStreamSize: CGSize = .zero
     @Published var webBrowserUrl: String = ""
     private var webBrowser: WKWebView?
+    private var lowFpsImageFps: UInt64 = 1
 
     @Published var isPresentingWizard = false
     @Published var isPresentingSetupWizard = false
@@ -2977,7 +2978,15 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setLowFpsImage() {
-        media.setLowFpsImage(enabled: isWatchReachable() || isRemoteControlStreamerConnected())
+        var fps: Float = 0.0
+        if isWatchReachable() {
+            fps = 1.0
+        }
+        if isRemoteControlStreamerConnected() {
+            fps = database.remoteControl!.server.previewFps!
+        }
+        media.setLowFpsImage(fps: fps)
+        lowFpsImageFps = max(UInt64(fps), 1)
     }
 
     func toggleLocalOverlays() {
@@ -3995,12 +4004,14 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleLowFpsImage(image: Data?) {
+    private func handleLowFpsImage(image: Data?, frameNumber: UInt64) {
         guard let image else {
             return
         }
         DispatchQueue.main.async {
-            self.sendPreviewToWatch(image: image)
+            if frameNumber % self.lowFpsImageFps == 0 {
+                self.sendPreviewToWatch(image: image)
+            }
             self.sendPreviewToRemoteControlAssistant(preview: image)
         }
     }

@@ -1411,6 +1411,7 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
+// Assistant
 class SettingsRemoteControlClient: Codable {
     var enabled: Bool = false
     // periphery:ignore
@@ -1420,11 +1421,13 @@ class SettingsRemoteControlClient: Codable {
     var password: String? = ""
 }
 
+// Streamer
 class SettingsRemoteControlServer: Codable {
     var enabled: Bool = false
     var url: String = ""
     // periphery:ignore
     var password: String? = ""
+    var previewFps: Float? = 1.0
 }
 
 class SettingsRemoteControl: Codable {
@@ -2623,6 +2626,10 @@ final class Settings {
         }
         if realDatabase.debug!.preferStereoMic == nil {
             realDatabase.debug!.preferStereoMic = false
+            store()
+        }
+        if realDatabase.remoteControl!.server.previewFps == nil {
+            realDatabase.remoteControl!.server.previewFps = 1.0
             store()
         }
     }

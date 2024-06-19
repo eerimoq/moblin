@@ -43,7 +43,7 @@ final class Media: NSObject {
     var onRistConnected: (() -> Void)!
     var onRistDisconnected: (() -> Void)!
     var onAudioMuteChange: (() -> Void)!
-    var onLowFpsImage: ((Data?) -> Void)!
+    var onLowFpsImage: ((Data?, UInt64) -> Void)!
     var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
@@ -615,8 +615,8 @@ final class Media: NSObject {
         netStream.usePendingAfterAttachEffects()
     }
 
-    func setLowFpsImage(enabled: Bool) {
-        netStream.setLowFpsImage(enabled: enabled)
+    func setLowFpsImage(fps: Float) {
+        netStream.setLowFpsImage(fps: fps)
     }
 
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
@@ -858,8 +858,8 @@ extension Media: NetStreamDelegate {
         }
     }
 
-    func streamVideo(_: NetStream, lowFpsImage: Data?) {
-        onLowFpsImage(lowFpsImage)
+    func streamVideo(_: NetStream, lowFpsImage: Data?, frameNumber: UInt64) {
+        onLowFpsImage(lowFpsImage, frameNumber)
     }
 
     func streamVideo(_: NetStream, findVideoFormatError: String, activeFormat: String) {
