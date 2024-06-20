@@ -5039,7 +5039,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "4:3"
           }
         },
@@ -5299,7 +5299,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7TV"
           }
         },
@@ -6079,7 +6079,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "250 Kbps por defecto."
           }
         },
@@ -7249,8 +7249,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aquí aparecerá un código QR y un botón para copiar al portapapeles cuando se hayan modificado las configuraciones anteriores (y no todas son valores predeterminados)."
+            "state" : "translated",
+            "value" : "Aquí aparecerán un código QR y un botón para copiar al portapapeles cuando se hayan modificado las configuraciones anteriores (y no todas sean valores predeterminados)."
           }
         },
         "fi" : {
@@ -11285,7 +11285,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Selección automática de micrófono"
           }
         },
@@ -11805,7 +11805,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Seleccione automáticamente el audio de la transmisión como micrófono cuando esté conectado."
           }
         },
@@ -12715,7 +12715,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Transmisión en segundo plano"
           }
         },
@@ -13235,7 +13235,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX"
           }
         },
@@ -14015,8 +14015,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La mejor estabilidad posible. Utiliza vinculación. Servicio gratuito de terceros proporcionado como cortesía por IRLToolkit. No debe usarse si paga por IRLToolkit."
+            "state" : "translated",
+            "value" : "La mejor estabilidad posible. Utiliza bonding. Servicio gratuito de terceros proporcionado como cortesía por IRLToolkit. No debe usarse si paga por IRLToolkit."
           }
         },
         "fi" : {
@@ -16615,7 +16615,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BTTV"
           }
         },
@@ -18045,7 +18045,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat y espectadores"
           }
         },
@@ -20255,8 +20255,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configure el nombre de la fuente en Configuración → Transmisiones → %@ → Control remoto OBS para el botón Reparar y más."
+            "state" : "translated",
+            "value" : "Configure el nombre de la fuente en Configuración → Transmisiones → %@ → Control remoto de OBS para el botón Reiniciar y más."
           }
         },
         "fi" : {
@@ -22075,7 +22075,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Copiar al portapapeles"
           }
         },
@@ -22725,8 +22725,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Instantánea de la escena actual"
+            "state" : "translated",
+            "value" : "Captura de la escena actual"
           }
         },
         "fi" : {
@@ -23635,7 +23635,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Creador de enlaces profundos"
           }
         },
@@ -24805,8 +24805,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Deshabilite el servidor SRT(LA) para cambiar su configuración."
+            "state" : "translated",
+            "value" : "Deshabilita el servidor SRT(LA) para cambiar su configuración."
           }
         },
         "fi" : {
@@ -26885,8 +26885,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cada transmisión puede recibir video de un editor SRT(LA)."
+            "state" : "translated",
+            "value" : "Cada transmisión puede recibir vídeo de un SRT(LA) publisher."
           }
         },
         "fi" : {
@@ -27015,8 +27015,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Emoticones"
+            "state" : "translated",
+            "value" : "Emotes"
           }
         },
         "fi" : {
@@ -27405,8 +27405,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habilite FPS manual para forzar un FPS determinado. Esto es necesario cuando el editor no proporciona marcas de tiempo precisas. B-frames no funciona con FPS manual. Normalmente se necesita FPS manual para dispositivos DJI."
+            "state" : "translated",
+            "value" : "Habilita FPS manuales para forzar un FPS determinado. Esto es necesario cuando el publisher no proporciona marcas de tiempo precisas. B-frames no funciona con FPS manuales. Normalmente se necesitan FPS manuales para dispositivos DJI."
           }
         },
         "fi" : {
@@ -27665,8 +27665,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habilite el servidor SRT(LA) para ver las URL."
+            "state" : "translated",
+            "value" : "Habilita el servidor SRT(LA) para ver las URL."
           }
         },
         "fi" : {
@@ -28835,8 +28835,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrese una de las URL en el dispositivo del editor SRT(LA) para enviar video a esta transmisión. Por lo general, ingrese la URL de WiFi o punto de acceso personal."
+            "state" : "translated",
+            "value" : "Ingresa una de las URL en el dispositivo del SRT(LA) publisher para enviar vídeo a esta transmisión. Por lo general, ingresa la URL de WiFi o punto de acceso personal."
           }
         },
         "fi" : {
@@ -31175,8 +31175,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo arreglar la entrada OBS"
+            "state" : "translated",
+            "value" : "No se pudo reiniciar la entrada OBS"
           }
         },
         "fi" : {
@@ -32085,8 +32085,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo iniciar la grabación OBS"
+            "state" : "translated",
+            "value" : "No se pudo iniciar la grabación en OBS"
           }
         },
         "fi" : {
@@ -32345,8 +32345,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo detener la grabación de OBS"
+            "state" : "translated",
+            "value" : "No se pudo detener la grabación en OBS"
           }
         },
         "fi" : {
@@ -32995,7 +32995,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFZ"
           }
         },
@@ -34945,8 +34945,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vinculación gratuita de IRLToolkit"
+            "state" : "translated",
+            "value" : "Bonding gratuito de IRLToolkit"
           }
         },
         "fi" : {
@@ -37675,8 +37675,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Límite de velocidad de datos más alto"
+            "state" : "translated",
+            "value" : "Límite de bitrate más preciso"
           }
         },
         "fi" : {
@@ -40405,8 +40405,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mantenga las transmisiones en vivo ejecutándose cuando la aplicación esté en modo de fondo."
+            "state" : "translated",
+            "value" : "Mantiene las transmisiones en vivo ejecutándose cuando la aplicación está en segundo plano."
           }
         },
         "fi" : {
@@ -43135,8 +43135,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL de IRLToolkit mal formada"
+            "state" : "translated",
+            "value" : "URL de IRLToolkit errónea"
           }
         },
         "fi" : {
@@ -44175,7 +44175,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FPS manuales"
           }
         },
@@ -45215,8 +45215,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Medios de comunicación"
+            "state" : "translated",
+            "value" : "Media"
           }
         },
         "fi" : {
@@ -46125,8 +46125,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tasa de bits mínima"
+            "state" : "translated",
+            "value" : "Bitrate mínimo"
           }
         },
         "fi" : {
@@ -54185,8 +54185,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prefiero micrófono estéreo"
+            "state" : "translated",
+            "value" : "Preferir micrófono estéreo"
           }
         },
         "fi" : {
@@ -54575,8 +54575,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vista previa de FPS"
+            "state" : "translated",
+            "value" : "FPS de la vista previa"
           }
         },
         "fi" : {
@@ -60555,8 +60555,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Se inició la grabación de pantalla"
+            "state" : "translated",
+            "value" : "Grabación de pantalla iniciada"
           }
         },
         "fi" : {
@@ -60685,7 +60685,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Grabación de pantalla detenida"
           }
         },
@@ -61205,7 +61205,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Seleccionado"
           }
         },
@@ -64845,7 +64845,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Puerto SRT"
           }
         },
@@ -65365,7 +65365,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Servidor SRT(LA)"
           }
         },
@@ -65495,7 +65495,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Puerto SRTLA"
           }
         },
@@ -66145,8 +66145,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Empezar a grabar"
+            "state" : "translated",
+            "value" : "Empezar grabación"
           }
         },
         "fi" : {
@@ -66795,8 +66795,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Para de grabar"
+            "state" : "translated",
+            "value" : "Detener grabación"
           }
         },
         "fi" : {
@@ -67575,8 +67575,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falta la identificación de la transmisión"
+            "state" : "translated",
+            "value" : "Falta el ID de la transmisión"
           }
         },
         "fi" : {
@@ -69785,7 +69785,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Es posible que no funcione el cambio entre micrófonos mono y estéreo."
           }
         },
@@ -70045,7 +70045,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Toca la vista previa para ocultarla. Toca dos veces para alternar en pantalla completa."
           }
         },
@@ -72255,8 +72255,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La tasa de bits mínima del codificador."
+            "state" : "translated",
+            "value" : "Bitrate mínimo del codificador."
           }
         },
         "fi" : {
@@ -73165,8 +73165,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El puerto UDP en el que el servidor SRT(LA) escucha a los publicadores SRT."
+            "state" : "translated",
+            "value" : "El puerto UDP en el que el servidor SRT(LA) escucha a los SRT publishers."
           }
         },
         "fi" : {
@@ -73295,8 +73295,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El puerto UDP en el que el servidor SRT(LA) escucha a los publicadores de SRTLA."
+            "state" : "translated",
+            "value" : "El puerto UDP en el que el servidor SRT(LA) escucha a los SRTLA publishers."
           }
         },
         "fi" : {
@@ -76675,8 +76675,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Estado de grabación desconocido."
+            "state" : "translated",
+            "value" : "Estado de la grabación desconocido."
           }
         },
         "fi" : {
@@ -78105,7 +78105,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Usar audio para las marcas de tiempo"
           }
         },
