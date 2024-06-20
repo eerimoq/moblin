@@ -293,7 +293,7 @@ struct MpegTsPacketizedElementaryStream {
         switch streamType {
         case .h264, .h265:
             IsoTypeBufferUtil.toNALFileFormat(&data)
-            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
+            blockBuffer = data.makeBlockBuffer()
             sampleSizes.append(blockBuffer?.dataLength ?? 0)
         case .adtsAac:
             blockBuffer = data.makeBlockBuffer(advancedBy: 7)

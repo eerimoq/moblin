@@ -7,9 +7,16 @@ protocol NalUnit {
 
 final class NALUnitReader {
     static let defaultNALUnitHeaderLength: Int32 = 4
-    var nalUnitHeaderLength: Int32 = NALUnitReader.defaultNALUnitHeaderLength
 
-    func read<T: NalUnit>(_ data: inout Data, type _: T.Type) -> [T] {
+    func readH264(_ data: inout Data) -> [AvcNalUnit] {
+        return read(&data, type: AvcNalUnit.self)
+    }
+
+    func readH265(_ data: inout Data) -> [HevcNalUnit] {
+        return read(&data, type: HevcNalUnit.self)
+    }
+
+    private func read<T: NalUnit>(_ data: inout Data, type _: T.Type) -> [T] {
         var units: [T] = .init()
         var lastIndexOf = data.count - 1
         for i in (2 ..< data.count).reversed() {
@@ -21,18 +28,5 @@ final class NALUnitReader {
             lastIndexOf = i - startCodeLength
         }
         return units
-    }
-
-    func makeFormatDescription(_ data: inout Data, type: ElementaryStreamType) -> CMFormatDescription? {
-        switch type {
-        case .h264:
-            let units = read(&data, type: AvcNalUnit.self)
-            return units.makeFormatDescription(nalUnitHeaderLength)
-        case .h265:
-            let units = read(&data, type: HevcNalUnit.self)
-            return units.makeFormatDescription(nalUnitHeaderLength)
-        default:
-            return nil
-        }
     }
 }

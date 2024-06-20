@@ -179,7 +179,7 @@ class SrtServerClient {
         guard let dataBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024) else {
             return nil
         }
-        guard var data = dataBuffer.int16ChannelData else {
+        guard let data = dataBuffer.int16ChannelData else {
             return nil
         }
         for i in 0 ..< 1024 {
@@ -262,28 +262,39 @@ class SrtServerClient {
         defer {
             packetizedElementaryStreams[packetId] = nil
         }
-        let formatDescription = makeFormatDescription(data, &packetizedElementaryStream)
+        switch data.streamType {
+        case .adtsAac:
+            return tryMakeSampleBufferAac(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
+        case .h264:
+            return tryMakeSampleBufferH264(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
+        case .h265:
+            return tryMakeSampleBufferH265(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
+        default:
+            return nil
+        }
+    }
+
+    private func tryMakeSampleBufferAac(packetId: UInt16,
+                                        data: ElementaryStreamSpecificData,
+                                        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
+        -> (CMSampleBuffer, ElementaryStreamType)?
+    {
+        let formatDescription = AdtsHeader(data: packetizedElementaryStream.data).makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
-            handleFormatDescription(data.streamType, formatDescription)
-        }
-        var isSync = false
-        switch data.streamType {
-        case .h264:
-            let units = nalUnitReader.read(&packetizedElementaryStream.data, type: AvcNalUnit.self)
-            if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
-                var data = Data([0x00, 0x00, 0x00, 0x01])
-                data.append(unit.data)
-                packetizedElementaryStream.data = data
-            }
-            isSync = units.contains { $0.type == .idr }
-        case .h265:
-            let units = nalUnitReader.read(&packetizedElementaryStream.data, type: HevcNalUnit.self)
-            isSync = units.contains { $0.type == .sps }
-        case .adtsAac:
-            isSync = true
-        default:
-            break
+            handleAudioFormatDescription(formatDescription)
         }
         guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
@@ -292,26 +303,60 @@ class SrtServerClient {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = isSync
+        sampleBuffer.isSync = true
         previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
         return (sampleBuffer, data.streamType)
     }
 
-    private func makeFormatDescription(
-        _ data: ElementaryStreamSpecificData,
-        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    ) -> CMFormatDescription? {
-        switch data.streamType {
-        case .adtsAac:
-            return AdtsHeader(data: packetizedElementaryStream.data).makeFormatDescription()
-        case .h264, .h265:
-            return nalUnitReader.makeFormatDescription(
-                &packetizedElementaryStream.data,
-                type: data.streamType
-            )
-        default:
+    private func tryMakeSampleBufferH264(packetId: UInt16,
+                                         data: ElementaryStreamSpecificData,
+                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
+        -> (CMSampleBuffer, ElementaryStreamType)?
+    {
+        let units = nalUnitReader.readH264(&packetizedElementaryStream.data)
+        if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
+            var data = Data([0x00, 0x00, 0x00, 0x01])
+            data.append(unit.data)
+            packetizedElementaryStream.data = data
+        }
+        let formatDescription = units.makeFormatDescription(NALUnitReader.defaultNALUnitHeaderLength)
+        if let formatDescription, formatDescriptions[packetId] != formatDescription {
+            formatDescriptions[packetId] = formatDescription
+            handleVideoFormatDescription(formatDescription)
+        }
+        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+            data.streamType,
+            previousPresentationTimeStamps[packetId] ?? .invalid,
+            formatDescriptions[packetId]
+        ) else {
             return nil
         }
+        sampleBuffer.isSync = units.contains { $0.type == .idr }
+        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        return (sampleBuffer, data.streamType)
+    }
+
+    private func tryMakeSampleBufferH265(packetId: UInt16,
+                                         data: ElementaryStreamSpecificData,
+                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
+        -> (CMSampleBuffer, ElementaryStreamType)?
+    {
+        let units = nalUnitReader.readH265(&packetizedElementaryStream.data)
+        let formatDescription = units.makeFormatDescription(NALUnitReader.defaultNALUnitHeaderLength)
+        if let formatDescription, formatDescriptions[packetId] != formatDescription {
+            formatDescriptions[packetId] = formatDescription
+            handleVideoFormatDescription(formatDescription)
+        }
+        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+            data.streamType,
+            previousPresentationTimeStamps[packetId] ?? .invalid,
+            formatDescriptions[packetId]
+        ) else {
+            return nil
+        }
+        sampleBuffer.isSync = units.contains { $0.type == .sps }
+        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        return (sampleBuffer, data.streamType)
     }
 }
 
