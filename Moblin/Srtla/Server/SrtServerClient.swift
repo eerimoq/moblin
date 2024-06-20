@@ -193,18 +193,6 @@ class SrtServerClient {
         videoDecoder?.appendSampleBuffer(sampleBuffer)
     }
 
-    private func handleFormatDescription(
-        _ streamType: ElementaryStreamType,
-        _ formatDescription: CMFormatDescription
-    ) {
-        switch streamType {
-        case .adtsAac:
-            handleAudioFormatDescription(formatDescription)
-        default:
-            handleVideoFormatDescription(formatDescription)
-        }
-    }
-
     private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {
         guard let streamBasicDescription = formatDescription.streamBasicDescription else {
             return
