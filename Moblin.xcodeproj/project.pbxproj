@@ -17,6 +17,8 @@
 		03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C0E2B487D950009DAB6 /* PixellateEffect.swift */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030A8B662BC2D38300F149AF /* WebBrowserView.swift */; };
+		030B413A2C24CB83000F7134 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 030B41392C24CB83000F7134 /* InfoPlist.xcstrings */; };
+		030B413C2C24CB83000F7134 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 030B413B2C24CB83000F7134 /* Localizable.xcstrings */; };
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
@@ -438,6 +440,8 @@
 		03085C0E2B487D950009DAB6 /* PixellateEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixellateEffect.swift; sourceTree = "<group>"; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		030A8B662BC2D38300F149AF /* WebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
+		030B41392C24CB83000F7134 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		030B413B2C24CB83000F7134 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
@@ -919,6 +923,8 @@
 		0312E4312C00F24E00C6F878 /* Moblin Screen Recording */ = {
 			isa = PBXGroup;
 			children = (
+				030B41392C24CB83000F7134 /* InfoPlist.xcstrings */,
+				030B413B2C24CB83000F7134 /* Localizable.xcstrings */,
 				0312E4462C00F80D00C6F878 /* Shared */,
 				0312E4472C00FA5900C6F878 /* Moblin Screen Recording.entitlements */,
 				0312E4322C00F24E00C6F878 /* SampleHandler.swift */,
@@ -2429,6 +2435,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				030B413C2C24CB83000F7134 /* Localizable.xcstrings in Resources */,
+				030B413A2C24CB83000F7134 /* InfoPlist.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

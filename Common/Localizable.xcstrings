@@ -5027,7 +5027,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "4:3"
           }
         },
@@ -6067,7 +6067,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Standardmäßig 250 Kbit/s."
           }
         },
@@ -7237,8 +7237,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wenn die oben genannten Einstellungen geändert wurden (und nicht alle Standardwerte sind), werden hier ein QR-Code und eine Schaltfläche zum Kopieren in die Zwischenablage angezeigt."
+            "state" : "translated",
+            "value" : "Wenn die oben genannten Einstellungen geändert wurden (und nicht die Standardwerte sind), wird hier ein QR-Code und eine Schaltfläche zum Kopieren in die Zwischenablage angezeigt."
           }
         },
         "el" : {
@@ -11273,7 +11273,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofon automatisch auswählen"
           }
         },
@@ -11793,7 +11793,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bei Verbindung wird der Ton des Streams automatisch als Mikrofon ausgewählt."
           }
         },
@@ -12703,7 +12703,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hintergrund-Streaming"
           }
         },
@@ -13223,7 +13223,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX"
           }
         },
@@ -14003,8 +14003,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bestmögliche Stabilität. Verwendet Bonding. Kostenloser Drittanbieterdienst, der von IRLToolkit als Gefälligkeit bereitgestellt wird. Nicht zu verwenden, wenn Sie für IRLToolkit bezahlen."
+            "state" : "translated",
+            "value" : "Bestmögliche Stabilität. Verwendet Bonding. Kostenloser Drittanbieterdienst, der von IRLToolkit zur Verfügung gestellt wird. Nicht zu verwenden, wenn du für IRLToolkit bezahlst."
           }
         },
         "el" : {
@@ -16603,7 +16603,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BTTV"
           }
         },
@@ -18033,7 +18033,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat und Zuschauer"
           }
         },
@@ -20243,8 +20243,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie den Quellennamen in Einstellungen → Streams → %@ → OBS-Fernbedienung für die Fix-Schaltfläche und mehr."
+            "state" : "translated",
+            "value" : "Konfiguriere den Quellennamen in Einstellungen → Streams → %@ → OBS-Fernbedienung für die Fix-Schaltfläche und mehr."
           }
         },
         "el" : {
@@ -22063,7 +22063,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "In die Zwischenablage kopieren"
           }
         },
@@ -22713,7 +22713,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktueller Szenen-Schnappschuss"
           }
         },
@@ -23623,7 +23623,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deeplink-Ersteller"
           }
         },
@@ -24793,8 +24793,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Deaktivieren Sie den SRT(LA)-Server, um seine Einstellungen zu ändern."
+            "state" : "translated",
+            "value" : "Deaktiviere den SRT(LA)-Server, um seine Einstellungen zu ändern."
           }
         },
         "el" : {
@@ -26873,7 +26873,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Jeder Stream kann Videos von einem SRT(LA)-Publisher empfangen."
           }
         },
@@ -27003,7 +27003,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Emotes"
           }
         },
@@ -27393,8 +27393,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie manuelle FPS, um die angegebene FPS zu erzwingen. Dies ist erforderlich, wenn der Herausgeber keine genauen Zeitstempel bereitstellt. B-Frames funktionieren nicht mit manueller FPS. Manuelle FPS werden normalerweise für DJI-Geräte benötigt."
+            "state" : "translated",
+            "value" : "Aktiviere manuelle FPS, um die angegebene FPS zu erzwingen. Dies ist erforderlich, wenn der Herausgeber keine genauen Zeitstempel bereitstellt. B-Frames funktionieren nicht mit manueller FPS. Manuelle FPS werden normalerweise für DJI-Geräte benötigt."
           }
         },
         "el" : {
@@ -27653,8 +27653,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie den SRT(LA)-Server, um URLs anzuzeigen."
+            "state" : "translated",
+            "value" : "Aktiviere den SRT(LA)-Server, um URLs anzuzeigen."
           }
         },
         "el" : {
@@ -28823,8 +28823,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geben Sie eine der URLs in das SRT(LA)-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Geben Sie normalerweise die WLAN- oder persönliche Hotspot-URL ein."
+            "state" : "translated",
+            "value" : "Gib eine der URLs in das SRT(LA)-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Gib normalerweise die WLAN- oder persönliche Hotspot-URL ein."
           }
         },
         "el" : {
@@ -31163,7 +31163,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-Eingabe konnte nicht repariert werden"
           }
         },
@@ -32073,7 +32073,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die OBS-Aufzeichnung konnte nicht gestartet werden."
           }
         },
@@ -32333,7 +32333,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die OBS-Aufzeichnung konnte nicht gestoppt werden."
           }
         },
@@ -32983,7 +32983,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFZ"
           }
         },
@@ -34933,7 +34933,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kostenloses IRLToolkit-Bonding"
           }
         },
@@ -37663,7 +37663,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Höhere Datenratenbegrenzung"
           }
         },
@@ -40393,8 +40393,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lassen Sie Live-Streams laufen, wenn sich die App im Hintergrundmodus befindet."
+            "state" : "translated",
+            "value" : "Lass Live-Streams laufen, wenn sich die App im Hintergrundmodus befindet."
           }
         },
         "el" : {
@@ -43123,7 +43123,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fehlerhafte IRLToolkit-URL"
           }
         },
@@ -44163,7 +44163,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Manuelle FPS"
           }
         },
@@ -45203,7 +45203,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Medien"
           }
         },
@@ -46113,7 +46113,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Minimale Bitrate"
           }
         },
@@ -54173,7 +54173,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stereo-Mikrofon bevorzugen"
           }
         },
@@ -54563,7 +54563,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FPS-Vorschau"
           }
         },
@@ -60543,7 +60543,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bildschirmaufnahme gestartet"
           }
         },
@@ -60673,7 +60673,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bildschirmaufnahme gestoppt"
           }
         },
@@ -61193,7 +61193,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ausgewählt"
           }
         },
@@ -64833,8 +64833,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT-Anschluss"
+            "state" : "translated",
+            "value" : "SRT-Port"
           }
         },
         "el" : {
@@ -65353,7 +65353,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT(LA)-Server"
           }
         },
@@ -65483,8 +65483,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA-Anschluss"
+            "state" : "translated",
+            "value" : "SRTLA-Port"
           }
         },
         "el" : {
@@ -66133,8 +66133,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Starte die Aufnahme"
+            "state" : "translated",
+            "value" : "Aufnahme starten"
           }
         },
         "el" : {
@@ -66783,8 +66783,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Höre auf, aufzunehmen"
+            "state" : "translated",
+            "value" : "Aufnahme stoppen"
           }
         },
         "el" : {
@@ -67563,7 +67563,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stream-ID fehlt"
           }
         },
@@ -69773,7 +69773,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das Umschalten zwischen Mono- und Stereomikrofonen funktioniert möglicherweise nicht."
           }
         },
@@ -70033,8 +70033,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tippen Sie auf die Vorschau, um sie auszublenden. Tippen Sie doppelt, um auf den Vollbildmodus umzuschalten."
+            "state" : "translated",
+            "value" : "Tipp auf die Vorschau, um sie auszublenden. Tipp doppelt, um auf den Vollbildmodus umzuschalten."
           }
         },
         "el" : {
@@ -72243,7 +72243,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die minimale Encoder-Bitrate."
           }
         },
@@ -73153,7 +73153,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der UDP-Port, auf dem der SRT(LA)-Server auf SRT-Publisher wartet."
           }
         },
@@ -73283,7 +73283,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der UDP-Port, auf dem der SRT(LA)-Server auf SRTLA-Publisher wartet."
           }
         },
@@ -76663,7 +76663,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unbekannter Aufnahmestatus."
           }
         },
@@ -78093,7 +78093,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Audio für Zeitstempel verwenden"
           }
         },
