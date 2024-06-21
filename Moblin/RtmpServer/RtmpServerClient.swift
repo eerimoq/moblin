@@ -81,6 +81,21 @@ class RtmpServerClient {
         server?.handleClientDisconnected(client: self, reason: reason)
     }
 
+    func getInfo() -> RtmpServerClientInfo {
+        var audioSamplesPerSecond = 0.0
+        var videoFps = 0.0
+        for chunkStream in chunkStreams.values {
+            let info = chunkStream.getInfo()
+            if info.audioSamplesPerSecond != 0.0 {
+                audioSamplesPerSecond = info.audioSamplesPerSecond
+            }
+            if info.videoFps != 0.0 {
+                videoFps = info.videoFps
+            }
+        }
+        return RtmpServerClientInfo(audioSamplesPerSecond: audioSamplesPerSecond, videoFps: videoFps)
+    }
+
     private func handleStateUpdate(to _: NWConnection.State) {
         // logger.info("rtmp-server: client: Socket state change to \(state)")
     }

@@ -545,4 +545,8 @@ extension Duration {
     var milliseconds: Int64 {
         return components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000
     }
+
+    var seconds: Double {
+        return Double(milliseconds) / 1000
+    }
 }

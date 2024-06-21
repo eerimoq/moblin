@@ -1358,6 +1358,23 @@ final class Model: NSObject, ObservableObject {
         media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
+    private func rtmpServerInfo() {
+        guard let rtmpServer, logger.debugEnabled else {
+            return
+        }
+        for stream in database.rtmpServer!.streams {
+            guard let info = rtmpServer.streamInfo(streamKey: stream.streamKey) else {
+                continue
+            }
+            let audioRate = formatTwoDecimals(value: info.audioSamplesPerSecond)
+            let fps = formatTwoDecimals(value: info.videoFps)
+            logger
+                .debug(
+                    "RTMP server stream \(stream.streamKey) has FPS \(fps) and \(audioRate) audio samples/second"
+                )
+        }
+    }
+
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
         var deviceTypes: [AVCaptureDevice.DeviceType] = [
             .builtInTripleCamera,
@@ -1607,6 +1624,7 @@ final class Model: NSObject, ObservableObject {
             self.media.logTiming()
             self.updateViewers()
             self.updateCurrentSsid()
+            self.rtmpServerInfo()
             let (detections, filter) = self.media.getNetStream().getHistograms()
             detections.log()
             filter.log()

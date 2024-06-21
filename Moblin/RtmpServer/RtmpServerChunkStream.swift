@@ -24,6 +24,10 @@ class RtmpServerChunkStream {
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
+    private var firstAudioBufferTimestamp: ContinuousClock.Instant?
+    private var totalNumberOfAudioSamples: UInt64 = 0
+    private var firstVideoFrameTimestamp: ContinuousClock.Instant?
+    private var totalNumberOfVideoFrames: UInt64 = 0
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -61,6 +65,24 @@ class RtmpServerChunkStream {
             processMessage()
             messageData.removeAll(keepingCapacity: true)
         }
+    }
+
+    func getInfo() -> RtmpServerClientInfo {
+        var audioSamplesPerSecond = 0.0
+        var videoFps = 0.0
+        let now = ContinuousClock.now
+        if let firstTimestamp = firstAudioBufferTimestamp {
+            audioSamplesPerSecond = Double(totalNumberOfAudioSamples) / firstTimestamp.duration(to: now)
+                .seconds
+            firstAudioBufferTimestamp = now
+            totalNumberOfAudioSamples = 0
+        }
+        if let firstTimestamp = firstVideoFrameTimestamp {
+            videoFps = Double(totalNumberOfVideoFrames) / firstTimestamp.duration(to: now).seconds
+            firstVideoFrameTimestamp = now
+            totalNumberOfVideoFrames = 0
+        }
+        return RtmpServerClientInfo(audioSamplesPerSecond: audioSamplesPerSecond, videoFps: videoFps)
     }
 
     private func messageRemain() -> Int {
@@ -376,9 +398,12 @@ class RtmpServerChunkStream {
         if let error {
             logger.info("rtmp-server: client: Error \(error)")
         } else {
-            let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer)
-            if sampleBuffer != nil {
-                client.handleAudioBuffer(sampleBuffer: sampleBuffer!)
+            if let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) {
+                if firstAudioBufferTimestamp == nil {
+                    firstAudioBufferTimestamp = .now
+                }
+                totalNumberOfAudioSamples += UInt64(sampleBuffer.dataBuffer?.dataLength ?? 0) / 2
+                client.handleAudioBuffer(sampleBuffer: sampleBuffer)
             }
         }
     }
@@ -447,6 +472,10 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
             return
         }
+        if firstVideoFrameTimestamp == nil {
+            firstVideoFrameTimestamp = .now
+        }
+        totalNumberOfVideoFrames += 1
         if let sampleBuffer = makeVideoSampleBuffer(client: client) {
             videoDecoder?.appendSampleBuffer(sampleBuffer)
         } else {

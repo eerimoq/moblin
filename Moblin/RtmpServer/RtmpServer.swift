@@ -11,6 +11,11 @@ struct RtmpServerStats {
     var speed: UInt64
 }
 
+struct RtmpServerClientInfo {
+    var audioSamplesPerSecond: Double
+    var videoFps: Double
+}
+
 class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
@@ -62,6 +67,14 @@ class RtmpServer {
             clients.contains(where: { client in
                 client.streamKey == streamKey
             })
+        }
+    }
+
+    func streamInfo(streamKey: String) -> RtmpServerClientInfo? {
+        return rtmpServerDispatchQueue.sync {
+            clients.first(where: { client in
+                client.streamKey == streamKey
+            })?.getInfo()
         }
     }
 
