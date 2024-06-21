@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.306.0", date: "2024-06-21", changes: [
+        "• Updated Spanish translation. ✍️ adriportela95",
+        "• Updated German translation. ✍️ MaurisonX",
+        "• Play silence when audio has been dropped in SRT(LA) server.",
+    ]),
     Version(version: "0.305.0", date: "2024-06-19", changes: [
         "• Make minimum bitrate configurable for belabox algorithm. :bulb: djandrea.",
         "• Lower minimum bitrate default value from 500 Kbps to 250 Kbps.",
