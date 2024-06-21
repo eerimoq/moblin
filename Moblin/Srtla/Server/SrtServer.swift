@@ -56,7 +56,7 @@ class SrtServer {
     private func open() throws {
         listenerSocket = srt_create_socket()
         guard listenerSocket != SRT_ERROR else {
-            throw "Failed to create socket."
+            throw "Failed to create socket: \(lastSrtSocketError())"
         }
     }
 
@@ -88,14 +88,14 @@ class SrtServer {
             }
         }
         guard res != SRT_ERROR else {
-            throw "Bind failed."
+            throw "Bind failed: \(lastSrtSocketError())"
         }
     }
 
     private func listen() throws {
         var res = srt_listen(listenerSocket, 5)
         guard res != SRT_ERROR else {
-            throw "Listen failed."
+            throw "Listen failed: \(lastSrtSocketError())"
         }
         let server = Unmanaged.passRetained(self).toOpaque()
         res = srt_listen_callback(
@@ -112,15 +112,19 @@ class SrtServer {
             server
         )
         guard res != SRT_ERROR else {
-            throw "Listen callback failed."
+            throw "Listen callback failed: \(lastSrtSocketError())"
         }
     }
 
     private func accept() throws -> Int32 {
         let clientSocket = srt_accept(listenerSocket, nil, nil)
         guard clientSocket != SRT_ERROR else {
-            throw "Accept failed."
+            throw "Accept failed: \(lastSrtSocketError())"
         }
         return clientSocket
     }
+}
+
+private func lastSrtSocketError() -> String {
+    return String(cString: srt_getlasterror_str())
 }
