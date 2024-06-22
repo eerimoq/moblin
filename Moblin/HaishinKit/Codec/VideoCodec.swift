@@ -46,7 +46,6 @@ class VideoCodec {
         }
     }
 
-    private var needsSync = true
     var attributes: [NSString: AnyObject]? {
         guard VideoCodec.defaultAttributes != nil else {
             return nil
@@ -124,10 +123,6 @@ class VideoCodec {
         }
         if invalidateSession {
             session = makeVideoDecompressionSession(self)
-            needsSync = true
-        }
-        if sampleBuffer.isSync {
-            needsSync = false
         }
         let err = session?.decodeFrame(sampleBuffer) { [
             unowned self
@@ -168,7 +163,6 @@ class VideoCodec {
             self.session = nil
             self.invalidateSession = true
             self.currentBitrate = 0
-            self.needsSync = true
             self.formatDescription = nil
             self.isRunning = false
         }
