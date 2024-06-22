@@ -41,7 +41,7 @@ private struct FaceDetectionsCompletion {
 private class ReplaceVideo {
     private var latency: Double
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var firstPresentationTimeStamp: Double = .nan
+    private var basePresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
 
     init(latency: Double) {
@@ -53,42 +53,48 @@ private class ReplaceVideo {
         sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
     }
 
-    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
+    func updateSampleBuffer(_ outputPresentationTimeStamp: Double) {
         var sampleBuffer = currentSampleBuffer
-        // var numberOfBuffersConsumed = 0
-        while let replaceSampleBuffer = sampleBuffers.first {
+        var numberOfBuffersConsumed = 0
+        while let inputSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
-                sampleBuffer = replaceSampleBuffer
+                sampleBuffer = inputSampleBuffer
+                currentSampleBuffer = inputSampleBuffer
             }
             if sampleBuffers.count > 200 {
                 logger.info("replace-video: Over 200 frames buffered. Dropping oldest frame.")
-                sampleBuffer = replaceSampleBuffer
+                sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
-                // numberOfBuffersConsumed += 1
+                numberOfBuffersConsumed += 1
                 continue
             }
-            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
-            if firstPresentationTimeStamp.isNaN {
+            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
+            if basePresentationTimeStamp.isNaN {
                 // Add 0.005 to account for jitter in timestamps.
-                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp + 0.005
+                basePresentationTimeStamp = outputPresentationTimeStamp - inputPresentationTimeStamp +
+                    latency + 0.05
             }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency > realPresentationTimeStamp {
+            // Break on first frame that is ahead in time.
+            if inputPresentationTimeStamp > outputPresentationTimeStamp - basePresentationTimeStamp {
                 break
             }
-            sampleBuffer = replaceSampleBuffer
+            sampleBuffer = inputSampleBuffer
             sampleBuffers.removeFirst()
-            // numberOfBuffersConsumed += 1
+            numberOfBuffersConsumed += 1
         }
-        // if numberOfBuffersConsumed == 0 {
-        //     logger.info("replace-video: Duplicating buffer.")
-        // } else if numberOfBuffersConsumed > 1 {
-        //     logger.info("replace-video: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
-        // }
+        if logger.debugEnabled {
+            if numberOfBuffersConsumed == 0 {
+                logger.debug("replace-video: Duplicating buffer.")
+            } else if numberOfBuffersConsumed > 1 {
+                logger.debug("replace-video: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
+            }
+        }
         currentSampleBuffer = sampleBuffer
     }
 
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
+        // logger.info("replace-video: Get \(currentSampleBuffer?.presentationTimeStamp.seconds)")
+        return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
     }
 }
 
@@ -251,7 +257,7 @@ final class VideoUnit: NSObject {
         ) {
             appendSampleBuffer(sampleBuffer: sampleBuffer)
         } else {
-            logger.info("Failed to output replace video frame")
+            logger.info("replace-video: Failed to output frame")
         }
     }
 

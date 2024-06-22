@@ -132,7 +132,7 @@ class SrtServerClient {
         if let latestAudioSampleBuffer {
             let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
             // Assume 1024 samples/buffer at 48 kHz for now
-            let numberOfGapBuffers = Int(((ptsDelta / (1024 / 48000)) - 1).rounded())
+            let numberOfGapBuffers = max(Int(((ptsDelta / (1024 / 48000)) - 1).rounded()), 0)
             if numberOfGapBuffers > 0 {
                 logger
                     .info("srt-server: Audio gap latest buffer PTS \(latestAudioBufferPresentationTimeStamp)")

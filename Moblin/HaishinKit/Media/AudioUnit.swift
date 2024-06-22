@@ -44,7 +44,6 @@ private class ReplaceAudio {
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBuffers.append(sampleBuffer)
-        sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
         if !isInitialized {
             isInitialized = true
             initialize(sampleBuffer: sampleBuffer)
@@ -55,60 +54,15 @@ private class ReplaceAudio {
         }
     }
 
-    private func initialize(sampleBuffer: CMSampleBuffer) {
-        frameLength = Double(sampleBuffer.numSamples)
-        if let formatDescription = sampleBuffer.formatDescription {
-            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 1
-        }
-    }
-
-    private func startOutput() {
-        logger.info("replace-audio: latency: \(latency)")
-        logger.info("replace-audio: sampleRate: \(sampleRate)")
-        logger.info("replace-audio: frameLength: \(frameLength)")
-        outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
-        outputTimer?.setEventHandler { [weak self] in
-            self?.output()
-        }
-        outputTimer?.activate()
-    }
-
-    private func output() {
-        let systemTime = CMClockGetTime(CMClockGetHostTimeClock())
-        guard let sampleBuffer = getSampleBuffer(systemTime.seconds) else {
-            // logger.info("No valid timestamp found. Waiting for more sampleBuffers.")
-            return
-        }
-        let timeOffset = CMTimeSubtract(systemTime, sampleBuffer.presentationTimeStamp)
-        let presentationTimeStamp = CMTimeAdd(sampleBuffer.presentationTimeStamp, timeOffset)
-        guard let updatedSampleBuffer = sampleBuffer
-            .replacePresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
-        else {
-            return
-        }
-        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: updatedSampleBuffer)
-    }
-
-    func stopOutput() {
-        isInitialized = false
-        isOutputting = false
-        outputTimer?.cancel()
-        outputTimer = nil
-        sampleBuffers.removeAll()
-        firstPresentationTimeStamp = .nan
-        logger.info("replace-audio: output has been stopped.")
-    }
-
     func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
-        // var numberOfBuffersConsumed = 0
+        var numberOfBuffersConsumed = 0
         while let replaceSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
                 logger.info("replace-audio: Over 300 buffers buffered. Dropping oldest buffer.")
                 sampleBuffer = replaceSampleBuffer
                 sampleBuffers.removeFirst()
-                // numberOfBuffersConsumed += 1
+                numberOfBuffersConsumed += 1
                 continue
             }
             let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
@@ -121,14 +75,54 @@ private class ReplaceAudio {
             }
             sampleBuffer = replaceSampleBuffer
             sampleBuffers.removeFirst()
-            // numberOfBuffersConsumed += 1
+            numberOfBuffersConsumed += 1
         }
-        // if numberOfBuffersConsumed == 0 {
-        //     logger.info("replace-audio: Duplicating buffer.")
-        // } else if numberOfBuffersConsumed > 1 {
-        //     logger.info("replace-audio: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
-        // }
+        if logger.debugEnabled {
+            if numberOfBuffersConsumed == 0 {
+                logger.debug("replace-audio: Duplicating buffer.")
+            } else if numberOfBuffersConsumed > 1 {
+                logger.debug("replace-audio: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
+            }
+        }
         return sampleBuffer
+    }
+
+    private func initialize(sampleBuffer: CMSampleBuffer) {
+        frameLength = Double(sampleBuffer.numSamples)
+        if let formatDescription = sampleBuffer.formatDescription {
+            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 1
+        }
+    }
+
+    private func startOutput() {
+        logger.info("""
+        replace-audio: Start output with latency \(latency), sample rate \(sampleRate) and \
+        frame length \(frameLength)
+        """)
+        outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+        outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
+        outputTimer?.setEventHandler { [weak self] in
+            self?.output()
+        }
+        outputTimer?.activate()
+    }
+
+    func stopOutput() {
+        logger.info("replace-audio: Stopping output.")
+        outputTimer?.cancel()
+        outputTimer = nil
+    }
+
+    private func output() {
+        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
+            return
+        }
+        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
+        else {
+            return
+        }
+        delegate?.didOutputReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 }
 
@@ -230,10 +224,7 @@ final class AudioUnit: NSObject {
     }
 
     func addReplaceAudioSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        guard let replaceAudio = replaceAudios[id] else {
-            return
-        }
-        replaceAudio.appendSampleBuffer(sampleBuffer)
+        replaceAudios[id]?.appendSampleBuffer(sampleBuffer)
     }
 
     func addReplaceAudio(cameraId: UUID, latency: Double) {

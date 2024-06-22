@@ -95,10 +95,8 @@ extension CMSampleBuffer {
         return CMSampleBufferGetSampleSize(self, at: at)
     }
 
-    func replacePresentationTimeStamp(presentationTimeStamp: CMTime,
-                                      decodeTimeStamp: CMTime = .invalid) -> CMSampleBuffer?
-    {
-        if let formatDescription = formatDescription {
+    func replacePresentationTimeStamp(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+        if let formatDescription {
             let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
             switch mediaType {
             case kCMMediaType_Audio:
@@ -106,7 +104,7 @@ extension CMSampleBuffer {
             case kCMMediaType_Video:
                 return replaceVideoPresentationTimeStamp(
                     presentationTimeStamp: presentationTimeStamp,
-                    decodeTimeStamp: decodeTimeStamp
+                    decodeTimeStamp: .invalid
                 )
             default:
                 return nil
