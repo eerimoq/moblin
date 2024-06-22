@@ -1,7 +1,7 @@
 import AVFoundation
 import libsrt
 
-private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server")
+private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server", qos: .userInteractive)
 
 class SrtServer {
     weak var srtlaServer: SrtlaServer?

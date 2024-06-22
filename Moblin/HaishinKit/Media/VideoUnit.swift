@@ -10,7 +10,10 @@ var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
-private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
+private let lockQueue = DispatchQueue(
+    label: "com.haishinkit.HaishinKit.VideoIOComponent",
+    qos: .userInteractive
+)
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent
@@ -43,6 +46,7 @@ private class ReplaceVideo {
     private var sampleBuffers: Deque<CMSampleBuffer> = []
     private var basePresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
+    private var timeOffset = 0.0
 
     init(latency: Double) {
         self.latency = latency
@@ -72,10 +76,20 @@ private class ReplaceVideo {
             if basePresentationTimeStamp.isNaN {
                 // Add 0.005 to account for jitter in timestamps.
                 basePresentationTimeStamp = outputPresentationTimeStamp - inputPresentationTimeStamp +
-                    latency + 0.05
+                    latency
+            }
+            let inputOutputDelta = inputPresentationTimeStamp -
+                (outputPresentationTimeStamp - basePresentationTimeStamp) + timeOffset
+            if abs(inputOutputDelta) < 0.002 {
+                logger.info("replace-video: Small delta. Swap offset from \(timeOffset).")
+                if timeOffset == 0.0 {
+                    timeOffset = 0.01
+                } else {
+                    timeOffset = 0.0
+                }
             }
             // Break on first frame that is ahead in time.
-            if inputPresentationTimeStamp > outputPresentationTimeStamp - basePresentationTimeStamp {
+            if inputOutputDelta > 0 {
                 break
             }
             sampleBuffer = inputSampleBuffer
@@ -93,7 +107,6 @@ private class ReplaceVideo {
     }
 
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        // logger.info("replace-video: Get \(currentSampleBuffer?.presentationTimeStamp.seconds)")
         return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
     }
 }

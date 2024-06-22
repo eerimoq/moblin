@@ -1,7 +1,10 @@
 import AVFoundation
 import Collections
 
-private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
+private let lockQueue = DispatchQueue(
+    label: "com.haishinkit.HaishinKit.AudioIOUnit.lock",
+    qos: .userInteractive
+)
 
 func makeChannelMap(
     numberOfInputChannels: Int,

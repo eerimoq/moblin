@@ -12,7 +12,7 @@ struct SrtlaServerStats {
     var speed: UInt64
 }
 
-let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
+let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server", qos: .userInitiated)
 private let periodicTimerTimeout = 3.0
 
 protocol SrtlaServerDelegate: AnyObject {
