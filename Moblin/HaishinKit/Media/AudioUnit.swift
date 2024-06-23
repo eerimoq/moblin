@@ -33,10 +33,11 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var firstPresentationTimeStamp: Double = .nan
+    private var basePresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
+    private var latestSampleBuffer: CMSampleBuffer?
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
@@ -57,35 +58,56 @@ private class ReplaceAudio {
         }
     }
 
-    func getSampleBuffer(_ realPresentationTimeStamp: Double) -> CMSampleBuffer? {
+    func getSampleBuffer(_ outputPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
-        while let replaceSampleBuffer = sampleBuffers.first {
+        while let inputSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
                 logger.info("replace-audio: Over 300 buffers buffered. Dropping oldest buffer.")
-                sampleBuffer = replaceSampleBuffer
+                sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
                 continue
             }
-            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
-            if firstPresentationTimeStamp.isNaN {
-                // Add 0.005 to account for jitter in timestamps.
-                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp + 0.005
+            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
+            if basePresentationTimeStamp.isNaN {
+                basePresentationTimeStamp = outputPresentationTimeStamp - inputPresentationTimeStamp + latency
             }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency > realPresentationTimeStamp {
+            let inputOutputDelta = inputPresentationTimeStamp -
+                (outputPresentationTimeStamp - basePresentationTimeStamp)
+            if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
                 break
             }
-            sampleBuffer = replaceSampleBuffer
+            sampleBuffer = inputSampleBuffer
             sampleBuffers.removeFirst()
             numberOfBuffersConsumed += 1
         }
         if logger.debugEnabled {
             if numberOfBuffersConsumed == 0 {
-                logger.debug("replace-audio: Duplicating buffer.")
+                logger.debug("""
+                replace-audio: Duplicating buffer. \
+                Output time \(outputPresentationTimeStamp) \
+                Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
+                Buffers count is \(sampleBuffers.count). \
+                First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
+                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+                """)
             } else if numberOfBuffersConsumed > 1 {
-                logger.debug("replace-audio: Skipping \(numberOfBuffersConsumed - 1) buffer(s).")
+                logger.debug("""
+                replace-audio: Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
+                Output time \(outputPresentationTimeStamp) \
+                Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
+                Buffers count is \(sampleBuffers.count). \
+                First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
+                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+                """)
             }
+        }
+        if sampleBuffer != nil {
+            latestSampleBuffer = sampleBuffer
+        } else if latestSampleBuffer != nil {
+            logger.info("replace-audio: Using latest sample buffer.")
+            sampleBuffer = latestSampleBuffer
         }
         return sampleBuffer
     }
