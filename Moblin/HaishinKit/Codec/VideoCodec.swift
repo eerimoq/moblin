@@ -111,7 +111,7 @@ class VideoCodec {
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
-            logger.debug("video: Encode failed. Resetting session.")
+            logger.info("video: Encode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
         }
@@ -145,7 +145,7 @@ class VideoCodec {
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
-            logger.debug("video: Decode failed. Resetting session.")
+            logger.info("video: Decode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
         }
