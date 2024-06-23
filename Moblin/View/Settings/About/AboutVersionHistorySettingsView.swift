@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.307.0", date: "2024-06-23", changes: [
+        "• RTMP and SRT(LA) servers improvements.",
+    ]),
     Version(version: "0.306.0", date: "2024-06-21", changes: [
         "• Updated Spanish translation. ✍️ adriportela95",
         "• Updated German translation. ✍️ MaurisonX",
