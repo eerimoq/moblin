@@ -15,7 +15,8 @@ class VideoCodec {
         self.lockQueue = lockQueue
     }
 
-    static var defaultAttributes: [NSString: AnyObject]? = [
+    static let defaultAttributes: [NSString: AnyObject]? = [
+        kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
         kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
         kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
     ]
@@ -45,7 +46,6 @@ class VideoCodec {
         }
     }
 
-    private var needsSync = true
     var attributes: [NSString: AnyObject]? {
         guard VideoCodec.defaultAttributes != nil else {
             return nil
@@ -111,7 +111,7 @@ class VideoCodec {
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
-            logger.debug("video: Encode failed. Resetting session.")
+            logger.info("video: Encode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
         }
@@ -123,10 +123,6 @@ class VideoCodec {
         }
         if invalidateSession {
             session = makeVideoDecompressionSession(self)
-            needsSync = true
-        }
-        if sampleBuffer.isSync {
-            needsSync = false
         }
         let err = session?.decodeFrame(sampleBuffer) { [
             unowned self
@@ -149,7 +145,7 @@ class VideoCodec {
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
-            logger.debug("video: Decode failed. Resetting session.")
+            logger.info("video: Decode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
         }
@@ -167,7 +163,6 @@ class VideoCodec {
             self.session = nil
             self.invalidateSession = true
             self.currentBitrate = 0
-            self.needsSync = true
             self.formatDescription = nil
             self.isRunning = false
         }

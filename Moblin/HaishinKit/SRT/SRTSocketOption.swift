@@ -81,6 +81,7 @@ enum SRTSocketOption: String {
     case kmrefreshrate
     case kmpreannounce
     case maxrexmitbw
+    case srtlaPatches
 
     private var symbol: SRT_SOCKOPT {
         switch self {
@@ -174,6 +175,8 @@ enum SRTSocketOption: String {
             return SRT_SOCKOPT(rawValue: 32)
         case .sndkmstate:
             return SRTO_SNDKMSTATE
+        case .srtlaPatches:
+            return SRTO_SRTLAPATCHES
         }
     }
 
@@ -269,6 +272,8 @@ enum SRTSocketOption: String {
             return .post
         case .sndkmstate:
             return .post
+        case .srtlaPatches:
+            return .pre
         }
     }
 
@@ -364,6 +369,8 @@ enum SRTSocketOption: String {
             return .int
         case .sndkmstate:
             return .int
+        case .srtlaPatches:
+            return .bool
         }
     }
 

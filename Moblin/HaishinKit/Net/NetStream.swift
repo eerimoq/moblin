@@ -13,7 +13,7 @@ protocol NetStreamDelegate: AnyObject {
     )
     func streamVideo(_ stream: NetStream, presentationTimestamp: Double)
     func streamVideo(_ stream: NetStream, failedEffect: String?)
-    func streamVideo(_ stream: NetStream, lowFpsImage: Data?)
+    func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
     func stream(_ stream: NetStream, recorderFinishWriting writer: AVAssetWriter)
 }
@@ -119,16 +119,16 @@ open class NetStream: NSObject {
         mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
     }
 
-    func addAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
-        mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
+    func addAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.audio.addReplaceAudioSampleBuffer(id: id, sampleBuffer)
     }
 
     func addReplaceVideo(cameraId: UUID, latency: Double) {
         mixer.video.addReplaceVideo(cameraId: cameraId, latency: latency)
     }
 
-    func addReplaceAudio(cameraId: UUID) {
-        mixer.audio.addReplaceAudio(cameraId: cameraId)
+    func addReplaceAudio(cameraId: UUID, latency: Double) {
+        mixer.audio.addReplaceAudio(cameraId: cameraId, latency: latency)
     }
 
     func removeReplaceVideo(cameraId: UUID) {
@@ -159,8 +159,8 @@ open class NetStream: NSObject {
         mixer.video.usePendingAfterAttachEffects()
     }
 
-    func setLowFpsImage(enabled: Bool) {
-        mixer.video.setLowFpsImage(enabled: enabled)
+    func setLowFpsImage(fps: Float) {
+        mixer.video.setLowFpsImage(fps: fps)
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
@@ -202,8 +202,8 @@ extension NetStream: MixerDelegate {
         delegate?.streamVideo(self, failedEffect: failedEffect)
     }
 
-    func mixerVideo(lowFpsImage: Data?) {
-        delegate?.streamVideo(self, lowFpsImage: lowFpsImage)
+    func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64) {
+        delegate?.streamVideo(self, lowFpsImage: lowFpsImage, frameNumber: frameNumber)
     }
 
     func mixer(findVideoFormatError: String, activeFormat: String) {

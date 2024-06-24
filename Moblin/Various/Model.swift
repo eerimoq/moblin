@@ -377,6 +377,7 @@ final class Model: NSObject, ObservableObject {
     var drawOnStreamSize: CGSize = .zero
     @Published var webBrowserUrl: String = ""
     private var webBrowser: WKWebView?
+    private var lowFpsImageFps: UInt64 = 1
 
     @Published var isPresentingWizard = false
     @Published var isPresentingSetupWizard = false
@@ -425,6 +426,7 @@ final class Model: NSObject, ObservableObject {
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
     @Published var remoteControlAssistantShowPreview = true
+    @Published var remoteControlAssistantShowPreviewFullScreen = false
 
     private var currentWiFiSsid: String?
 
@@ -433,6 +435,8 @@ final class Model: NSObject, ObservableObject {
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
     @Published var debugLines: [String] = []
+    private var latestDebugLines: [String] = []
+    private var latestDebugActions: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
 
@@ -486,6 +490,7 @@ final class Model: NSObject, ObservableObject {
     @Published var ipStatuses: [IPMonitor.Status] = []
     private var faceEffect = FaceEffect(fps: 30)
     private var movieEffect = MovieEffect()
+    private var fourThreeEffect = FourThreeEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
@@ -515,6 +520,11 @@ final class Model: NSObject, ObservableObject {
                 pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000),
                 minimumBitrate: Int64(customSettings.minimumBitrate! * 1000)
             ))
+        case .belabox:
+            var settings = adaptiveBitrateBelaboxSettings
+            settings
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate!.belaboxSettings!.minimumBitrate * 1000)
+            media.setAdaptiveBitrateSettings(settings: settings)
         }
     }
 
@@ -1180,23 +1190,31 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
+        guard !ProcessInfo().isiOSAppOnMac else {
+            return
+        }
         if isRecording {
             suspendRecording()
         }
         if !shouldStreamInBackground() {
             stopStream()
             stopRtmpServer()
+            stopSrtlaServer()
             teardownAudioSession()
             chatTextToSpeech.reset(running: false)
         }
     }
 
     @objc func handleWillEnterForegroundNotification() {
+        guard !ProcessInfo().isiOSAppOnMac else {
+            return
+        }
         if !shouldStreamInBackground() {
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
             reloadRtmpServer()
+            reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
         }
         if isRecording {
@@ -1237,7 +1255,7 @@ final class Model: NSObject, ObservableObject {
 
     func reloadSrtlaServer() {
         stopSrtlaServer()
-        if database.debug!.srtlaServer! && database.srtlaServer!.enabled {
+        if database.srtlaServer!.enabled {
             srtlaServer = SrtlaServer(settings: database.srtlaServer!)
             srtlaServer!.delegate = self
             srtlaServer!.start()
@@ -1248,14 +1266,49 @@ final class Model: NSObject, ObservableObject {
         return srtlaServer != nil
     }
 
+    private func srtlaCameras() -> [String] {
+        return database.srtlaServer!.streams.map { stream in
+            stream.camera()
+        }
+    }
+
+    func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
+        return database.srtlaServer!.streams.first { stream in
+            stream.id == id
+        }
+    }
+
+    func getSrtlaStream(camera: String) -> SettingsSrtlaServerStream? {
+        return database.srtlaServer!.streams.first { stream in
+            camera == stream.camera()
+        }
+    }
+
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
         return database.srtlaServer!.streams.first { stream in
             stream.streamId == streamId
         }
     }
 
-    func isSrtlaStreamConnected(streamId _: String) -> Bool {
-        return false
+    func isSrtlaStreamConnected(streamId: String) -> Bool {
+        return srtlaServer?.isStreamConnected(streamId: streamId) ?? false
+    }
+
+    func reloadRtmpStreams() {
+        for rtmpCamera in rtmpCameras() {
+            guard let stream = getRtmpStream(camera: rtmpCamera) else {
+                continue
+            }
+            if isRtmpStreamConnected(streamKey: stream.streamKey) {
+                let micId = "\(stream.id.uuidString) 0"
+                let isLastMic = (currentMic.id == micId)
+                handleRtmpServerPublishStop(streamKey: stream.streamKey)
+                handleRtmpServerPublishStart(streamKey: stream.streamKey)
+                if currentMic.id != micId, isLastMic {
+                    setMic(id: micId) {}
+                }
+            }
+        }
     }
 
     func handleRtmpServerPublishStart(streamKey: String) {
@@ -1265,9 +1318,13 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.media.addRtmpCamera(cameraId: stream.id, latency: Double(stream.latency! / 1000))
-            if self.database.debug!.enableRtmpAudio! {
-                self.media.addRtmpAudio(cameraId: stream.id)
+            let latency = Double(stream.latency!) / 1000
+            self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
+            self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
+            if stream.autoSelectMic! {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.selectMicById(id: "\(stream.id) 0")
+                }
             }
         }
     }
@@ -1279,12 +1336,10 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.media.removeRtmpCamera(cameraId: stream.id)
-            if self.database.debug!.enableRtmpAudio! {
-                self.media.removeRtmpAudio(cameraId: stream.id)
-                if self.currentMic.inputUid == stream.id.uuidString {
-                    self.setMicFromSettings()
-                }
+            self.media.removeReplaceCamera(cameraId: stream.id)
+            self.media.removeReplaceAudio(cameraId: stream.id)
+            if self.currentMic.id == "\(stream.id) 0" {
+                self.setMicFromSettings()
             }
         }
     }
@@ -1293,15 +1348,30 @@ final class Model: NSObject, ObservableObject {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func handleRtmpServerAudioBuffer(streamKey: String, audioBuffer: AVAudioPCMBuffer) {
+    func handleRtmpServerAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer) {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        if database.debug!.enableRtmpAudio! {
-            media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: audioBuffer)
+        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    private func rtmpServerInfo() {
+        guard let rtmpServer, logger.debugEnabled else {
+            return
+        }
+        for stream in database.rtmpServer!.streams {
+            guard let info = rtmpServer.streamInfo(streamKey: stream.streamKey) else {
+                continue
+            }
+            let audioRate = formatTwoDecimals(value: info.audioSamplesPerSecond)
+            let fps = formatTwoDecimals(value: info.videoFps)
+            logger
+                .debug(
+                    "RTMP server stream \(stream.streamKey) has FPS \(fps) and \(audioRate) audio samples/second"
+                )
         }
     }
 
@@ -1332,6 +1402,12 @@ final class Model: NSObject, ObservableObject {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
                 return isRtmpStreamConnected(streamKey: stream.streamKey)
+            } else {
+                return false
+            }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.rtmpCameraId!) {
+                return isSrtlaStreamConnected(streamId: stream.streamId)
             } else {
                 return false
             }
@@ -1534,6 +1610,7 @@ final class Model: NSObject, ObservableObject {
             self.updateBrowserWidgetStatus()
             self.logStatus()
             self.updateFailedVideoEffects()
+            self.updateAdaptiveBitrateDebug()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1547,12 +1624,12 @@ final class Model: NSObject, ObservableObject {
             self.media.logTiming()
             self.updateViewers()
             self.updateCurrentSsid()
+            self.rtmpServerInfo()
             let (detections, filter) = self.media.getNetStream().getHistograms()
             detections.log()
             filter.log()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            self.updateAdaptiveBitrate()
             if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -1564,6 +1641,9 @@ final class Model: NSObject, ObservableObject {
                 self.updateTorch()
                 self.lastAttachCompletedTime = nil
             }
+        })
+        Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
+            self.updateAdaptiveBitrate()
         })
     }
 
@@ -1671,10 +1751,17 @@ final class Model: NSObject, ObservableObject {
 
     private func updateAdaptiveBitrate() {
         if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
-            debugLines = lines + actions
+            latestDebugLines = lines
+            latestDebugActions = actions
+        }
+    }
+
+    private func updateAdaptiveBitrateDebug() {
+        if database.debug!.srtOverlay {
+            debugLines = latestDebugLines + latestDebugActions
             debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
-                logger.debug(lines.joined(separator: ", "))
+                logger.debug(latestDebugLines.joined(separator: ", "))
             }
         } else if !debugLines.isEmpty {
             debugLines = []
@@ -1929,6 +2016,9 @@ final class Model: NSObject, ObservableObject {
         }
         if isGlobalButtonOn(type: .movie) {
             effects.append(movieEffect)
+        }
+        if isGlobalButtonOn(type: .fourThree) {
+            effects.append(fourThreeEffect)
         }
         if isGlobalButtonOn(type: .grayScale) {
             effects.append(grayScaleEffect)
@@ -2226,7 +2316,8 @@ final class Model: NSObject, ObservableObject {
                 url: stream.url,
                 reconnectTime: 5,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
+                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
+                    .algorithm : nil,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
@@ -2241,7 +2332,8 @@ final class Model: NSObject, ObservableObject {
                 url: stream.url,
                 reconnectTime: 5,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
+                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
+                    .algorithm : nil,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
@@ -2319,6 +2411,7 @@ final class Model: NSObject, ObservableObject {
         reloadConnections()
         resetChat()
         reloadLocation()
+        reloadRtmpStreams()
     }
 
     func reloadChats() {
@@ -2347,7 +2440,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func setNetStream() {
-        media.setNetStream(proto: stream.getProtocol(), enableRtmpAudio: database.debug!.enableRtmpAudio!)
+        media.setNetStream(proto: stream.getProtocol())
         updateTorch()
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())
@@ -2907,7 +3000,15 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setLowFpsImage() {
-        media.setLowFpsImage(enabled: isWatchReachable() || isRemoteControlStreamerConnected())
+        var fps: Float = 0.0
+        if isWatchReachable() {
+            fps = 1.0
+        }
+        if isRemoteControlStreamerConnected() {
+            fps = database.remoteControl!.server.previewFps!
+        }
+        media.setLowFpsImage(fps: fps)
+        lowFpsImageFps = max(UInt64(fps), 1)
     }
 
     func toggleLocalOverlays() {
@@ -3143,7 +3244,9 @@ final class Model: NSObject, ObservableObject {
             attachCamera(position: .front)
             isFrontCameraSelected = true
         case .rtmp:
-            attachRtmpCamera(cameraId: scene.rtmpCameraId!)
+            attachReplaceCamera(cameraId: scene.rtmpCameraId!)
+        case .srtla:
+            attachReplaceCamera(cameraId: scene.srtlaCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
         }
@@ -3157,6 +3260,8 @@ final class Model: NSObject, ObservableObject {
         } + externalCameras.map {
             ($0.id, $0.name)
         } + rtmpCameras().map {
+            ($0, $0)
+        } + srtlaCameras().map {
             ($0, $0)
         }
     }
@@ -3176,6 +3281,12 @@ final class Model: NSObject, ObservableObject {
         switch scene.cameraPosition! {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
+            } else {
+                return ""
+            }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
                 return stream.camera()
             } else {
                 return ""
@@ -3208,6 +3319,12 @@ final class Model: NSObject, ObservableObject {
         switch scene.cameraPosition! {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
+            } else {
+                return "Unknown"
+            }
+        case .srtla:
+            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
                 return stream.camera()
             } else {
                 return "Unknown"
@@ -3269,7 +3386,8 @@ final class Model: NSObject, ObservableObject {
 
     func stopAllRtmpStreams() {
         for stream in database.rtmpServer!.streams {
-            media.removeRtmpCamera(cameraId: stream.id)
+            media.removeReplaceCamera(cameraId: stream.id)
+            media.removeReplaceAudio(cameraId: stream.id)
         }
     }
 
@@ -3522,8 +3640,8 @@ final class Model: NSObject, ObservableObject {
         }
         if let srtlaServer {
             let stats = srtlaServer.updateStats()
-            numberOfClients += srtlaServer.numberOfClients()
-            if srtlaServer.numberOfClients() > 0 {
+            numberOfClients += srtlaServer.getNumberOfClients()
+            if srtlaServer.getNumberOfClients() > 0 {
                 total += stats.total
                 speed += stats.speed
             }
@@ -3731,12 +3849,13 @@ final class Model: NSObject, ObservableObject {
         hasZoom = true
     }
 
-    private func attachRtmpCamera(cameraId: UUID) {
+    private func attachReplaceCamera(cameraId: UUID) {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
+        media.attachReplaceCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
+        media.usePendingAfterAttachEffects()
     }
 
     private func attachExternalCamera(cameraId _: String) {
@@ -3907,12 +4026,14 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleLowFpsImage(image: Data?) {
+    private func handleLowFpsImage(image: Data?, frameNumber: UInt64) {
         guard let image else {
             return
         }
         DispatchQueue.main.async {
-            self.sendPreviewToWatch(image: image)
+            if frameNumber % self.lowFpsImageFps == 0 {
+                self.sendPreviewToWatch(image: image)
+            }
             self.sendPreviewToRemoteControlAssistant(preview: image)
         }
     }
@@ -5229,18 +5350,28 @@ extension Model {
                 mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
             }
         }
-        if database.debug!.enableRtmpAudio! {
-            for rtmpCamera in rtmpCameras() {
-                guard let stream = getRtmpStream(camera: rtmpCamera) else {
-                    continue
-                }
-                if isRtmpStreamConnected(streamKey: stream.streamKey) {
-                    mics.append(Mic(
-                        name: rtmpCamera,
-                        inputUid: stream.id.uuidString,
-                        builtInOrientation: .rtmp
-                    ))
-                }
+        for rtmpCamera in rtmpCameras() {
+            guard let stream = getRtmpStream(camera: rtmpCamera) else {
+                continue
+            }
+            if isRtmpStreamConnected(streamKey: stream.streamKey) {
+                mics.append(Mic(
+                    name: rtmpCamera,
+                    inputUid: stream.id.uuidString,
+                    builtInOrientation: nil
+                ))
+            }
+        }
+        for srtlaCamera in srtlaCameras() {
+            guard let stream = getSrtlaStream(camera: srtlaCamera) else {
+                continue
+            }
+            if isSrtlaStreamConnected(streamId: stream.streamId) {
+                mics.append(Mic(
+                    name: srtlaCamera,
+                    inputUid: stream.id.uuidString,
+                    builtInOrientation: nil
+                ))
             }
         }
         return mics
@@ -5257,8 +5388,6 @@ extension Model {
             wantedOrientation = .back
         case .top:
             wantedOrientation = .top
-        case .rtmp:
-            wantedOrientation = .bottom
         }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
@@ -5276,36 +5405,17 @@ extension Model {
                 }
             }
         }
-        if database.debug!.enableRtmpAudio! {
-            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-        }
     }
 
     func setMicFromSettings() {
-        selectMicByOrientation(orientation: database.mic!)
-    }
-
-    func selectMicByOrientation(orientation: SettingsMic) {
-        guard let mic = listMics().first(where: { mic in mic.builtInOrientation == orientation }) else {
-            logger.info("Mic with orientation \(orientation) not found")
-            makeErrorToast(
-                title: String(localized: "Mic not found"),
-                subTitle: String(localized: "Mic orientation \(orientation.rawValue)")
-            )
-            return
+        let mics = listMics()
+        if let mic = mics.first(where: { mic in mic.builtInOrientation == database.mic! }) {
+            selectMic(mic: mic)
+        } else if let mic = mics.first {
+            selectMic(mic: mic)
+        } else {
+            logger.error("No mic to select from settings.")
         }
-        if var builtInOrientation = mic.builtInOrientation {
-            if database.debug!.enableRtmpAudio! {
-                if builtInOrientation == .rtmp {
-                    builtInOrientation = .bottom
-                }
-            }
-            if database.mic != builtInOrientation {
-                database.mic = builtInOrientation
-                store()
-            }
-        }
-        selectMic(mic: mic)
     }
 
     func selectMicById(id: String) {
@@ -5317,61 +5427,98 @@ extension Model {
             )
             return
         }
-        if var builtInOrientation = mic.builtInOrientation {
-            if database.debug!.enableRtmpAudio! {
-                if builtInOrientation == .rtmp {
-                    builtInOrientation = .bottom
-                }
-            }
-            database.mic = builtInOrientation
-            store()
-        }
         selectMic(mic: mic)
     }
 
     private func selectMic(mic: Mic) {
-        if mic.builtInOrientation == .rtmp {
-            currentMic = mic
-            let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
-            if database.debug!.enableRtmpAudio! {
-                media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
-            }
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        if isRtmpMic(mic: mic) {
+            selectMicRtmp(mic: mic)
+        } else if isSrtlaMic(mic: mic) {
+            selectMicSrtla(mic: mic)
         } else {
-            let session = AVAudioSession.sharedInstance()
-            do {
-                for inputPort in session.availableInputs ?? [] {
-                    if mic.inputUid != inputPort.uid {
-                        continue
-                    }
-                    try session.setPreferredInput(inputPort)
-                    if let dataSourceID = mic.dataSourceID {
-                        for dataSource in inputPort.dataSources ?? [] {
-                            if dataSourceID != dataSource.dataSourceID {
-                                continue
-                            }
-                            try setBuiltInMicAudioMode(dataSource: dataSource)
-                            try session.setInputDataSource(dataSource)
-                        }
-                    }
-                }
-                currentMic = mic
-                if database.debug!.enableRtmpAudio! {
-                    media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-                }
-                remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-            } catch {
-                logger.error("Failed to select mic: \(error)")
-                makeErrorToast(
-                    title: String(localized: "Failed to select mic"),
-                    subTitle: error.localizedDescription
-                )
-            }
+            selectMicDefault(mic: mic)
         }
     }
 
+    private func isRtmpMic(mic: Mic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getRtmpStream(id: id) != nil
+    }
+
+    private func isSrtlaMic(mic: Mic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getSrtlaStream(id: id) != nil
+    }
+
+    private func selectMicRtmp(mic: Mic) {
+        currentMic = mic
+        let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
+        media.attachReplaceAudio(cameraId: cameraId)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    private func selectMicSrtla(mic: Mic) {
+        currentMic = mic
+        let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
+        media.attachReplaceAudio(cameraId: cameraId)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    private func selectMicDefault(mic: Mic) {
+        media.attachReplaceAudio(cameraId: nil)
+        let session = AVAudioSession.sharedInstance()
+        do {
+            for inputPort in session.availableInputs ?? [] {
+                if mic.inputUid != inputPort.uid {
+                    continue
+                }
+                try session.setPreferredInput(inputPort)
+                if let dataSourceID = mic.dataSourceID {
+                    for dataSource in inputPort.dataSources ?? [] {
+                        if dataSourceID != dataSource.dataSourceID {
+                            continue
+                        }
+                        try setBuiltInMicAudioMode(dataSource: dataSource)
+                        try session.setInputDataSource(dataSource)
+                    }
+                }
+            }
+            currentMic = mic
+            saveSelectedMic(mic: mic)
+            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        } catch {
+            logger.error("Failed to select mic: \(error)")
+            makeErrorToast(
+                title: String(localized: "Failed to select mic"),
+                subTitle: error.localizedDescription
+            )
+        }
+    }
+
+    private func saveSelectedMic(mic: Mic) {
+        guard let orientation = mic.builtInOrientation, database.mic != orientation else {
+            return
+        }
+        database.mic = orientation
+        store()
+    }
+
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        try dataSource.setPreferredPolarPattern(.none)
+        if database.debug!.preferStereoMic! {
+            if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
+                try dataSource.setPreferredPolarPattern(.stereo)
+            } else {
+                try dataSource.setPreferredPolarPattern(.none)
+            }
+            setupAudioSession()
+            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        } else {
+            try dataSource.setPreferredPolarPattern(.none)
+        }
     }
 }
 
@@ -5838,8 +5985,8 @@ extension Model {
             title: String(localized: "Screen recording started"),
             subTitle: "DOES NOT YET WORK!!!"
         )
-        // media.addRtmpCamera(cameraId: sampleBufferCameraId, latency: 0.5)
-        // attachRtmpCamera(cameraId: sampleBufferCameraId)
+        // media.addReplaceCamera(cameraId: sampleBufferCameraId, latency: 0.5)
+        // attachReplaceCamera(cameraId: sampleBufferCameraId)
     }
 
     private func handleSampleBufferSenderDisconnected() {
@@ -5862,13 +6009,50 @@ extension Model {
 }
 
 extension Model: SrtlaServerDelegate {
-    func srtlaServerOnAudioBuffer(streamId _: String, buffer _: AVAudioPCMBuffer) {}
+    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
 
-    func srtlaServerOnVideoBuffer(streamId _: String, sampleBuffer _: CMSampleBuffer) {
-        // logger.info("""
-        // srt-server: Video sample buffer sync \(sampleBuffer.isSync) length \
-        // \(sampleBuffer.dataBuffer?.dataLength ?? -1) \
-        // PTS \(sampleBuffer.presentationTimeStamp.seconds)
-        // """)
+    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.addReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func srtlaServerOnClientStart(streamId: String) {
+        DispatchQueue.main.async {
+            let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) connected")
+            guard let stream = self.getSrtlaStream(streamId: streamId) else {
+                return
+            }
+            let latency = 0.5
+            self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
+            self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
+            if stream.autoSelectMic! {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    self.selectMicById(id: "\(stream.id) 0")
+                }
+            }
+        }
+    }
+
+    func srtlaServerOnClientStop(streamId: String) {
+        DispatchQueue.main.async {
+            let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) disconnected")
+            guard let stream = self.getSrtlaStream(streamId: streamId) else {
+                return
+            }
+            self.media.removeReplaceCamera(cameraId: stream.id)
+            self.media.removeReplaceAudio(cameraId: stream.id)
+            if self.currentMic.id == "\(stream.id) 0" {
+                self.setMicFromSettings()
+            }
+        }
     }
 }

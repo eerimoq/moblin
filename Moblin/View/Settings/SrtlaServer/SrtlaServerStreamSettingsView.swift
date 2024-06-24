@@ -58,19 +58,6 @@ struct SrtlaServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
-    func submitLatency(value: String) {
-        guard let latency = Int32(value) else {
-            return
-        }
-        guard latency >= 100 else {
-            return
-        }
-        stream.latency = latency
-        model.store()
-        model.reloadSrtlaServer()
-        model.objectWillChange.send()
-    }
-
     var body: some View {
         Form {
             Section {
@@ -87,17 +74,21 @@ struct SrtlaServerStreamSettingsView: View {
                     onSubmit: submitStreamId
                 )
                 .disabled(model.srtlaServerEnabled())
-                TextEditNavigationView(
-                    title: String(localized: "Latency"),
-                    value: String(stream.latency!),
-                    onSubmit: submitLatency,
-                    footer: Text("100 or more milliseconds."),
-                    keyboardType: .numbersAndPunctuation,
-                    valueFormat: { "\($0) ms" }
-                )
-                .disabled(model.srtlaServerEnabled())
             } footer: {
                 Text("The stream name is shown in the list of cameras in scene settings.")
+            }
+            Section {
+                Toggle("Auto select mic", isOn: Binding(get: {
+                    stream.autoSelectMic!
+                }, set: { value in
+                    stream.autoSelectMic = value
+                    model.store()
+                    model.reloadSrtlaServer()
+                    model.objectWillChange.send()
+                }))
+                .disabled(model.srtlaServerEnabled())
+            } footer: {
+                Text("Automatically select the stream's audio as mic when connected.")
             }
             Section {
                 if model.srtlaServerEnabled() {

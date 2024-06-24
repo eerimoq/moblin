@@ -11,13 +11,18 @@ struct RtmpServerStats {
     var speed: UInt64
 }
 
+struct RtmpServerClientInfo {
+    var audioSamplesPerSecond: Double
+    var videoFps: Double
+}
+
 class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
     var onPublishStart: (String) -> Void
     var onPublishStop: (String) -> Void
     var onFrame: (String, CMSampleBuffer) -> Void
-    var onAudioBuffer: (String, AVAudioPCMBuffer) -> Void
+    var onAudioBuffer: (String, CMSampleBuffer) -> Void
     var settings: SettingsRtmpServer
     private var periodicTimer: DispatchSourceTimer?
     var totalBytesReceived: UInt64 = 0
@@ -27,7 +32,7 @@ class RtmpServer {
          onPublishStart: @escaping (String) -> Void,
          onPublishStop: @escaping (String) -> Void,
          onFrame: @escaping (String, CMSampleBuffer) -> Void,
-         onAudioBuffer: @escaping (String, AVAudioPCMBuffer) -> Void)
+         onAudioBuffer: @escaping (String, CMSampleBuffer) -> Void)
     {
         self.settings = settings
         self.onPublishStart = onPublishStart
@@ -62,6 +67,14 @@ class RtmpServer {
             clients.contains(where: { client in
                 client.streamKey == streamKey
             })
+        }
+    }
+
+    func streamInfo(streamKey: String) -> RtmpServerClientInfo? {
+        return rtmpServerDispatchQueue.sync {
+            clients.first(where: { client in
+                client.streamKey == streamKey
+            })?.getInfo()
         }
     }
 

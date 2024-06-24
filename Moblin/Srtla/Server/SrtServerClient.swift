@@ -12,11 +12,13 @@ class SrtServerClient {
     private var nalUnitReader = NALUnitReader()
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var audioBuffer: AVAudioCompressedBuffer?
-    private var latestAudioBuffer: AVAudioPCMBuffer?
+    private var latestAudioSampleBuffer: CMSampleBuffer?
     private var latestAudioBufferPresentationTimeStamp = 0.0
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private let streamId: String
+    private var videoDecoder: VideoCodec?
+    private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
 
     init(server: SrtServer, streamId: String) {
         self.server = server
@@ -34,7 +36,7 @@ class SrtServerClient {
                 break
             }
             packet.count = Int(count)
-            server?.totalBytesReceived.mutate { $0 += UInt64(count) }
+            server?.srtlaServer?.totalBytesReceived.mutate { $0 += UInt64(count) }
             let reader = ByteArray(data: packet)
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
@@ -52,6 +54,8 @@ class SrtServerClient {
             }
         }
         srt_close(clientSocket)
+        videoDecoder?.stopRunning()
+        videoDecoder = nil
     }
 
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
@@ -125,45 +129,68 @@ class SrtServerClient {
             return
         }
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        if let latestAudioBuffer {
+        if let latestAudioSampleBuffer {
             let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
             // Assume 1024 samples/buffer at 48 kHz for now
-            var gapBuffers = Int(((ptsDelta / 0.021333) - 1).rounded())
-            // logger.info("""
-            // srt-server: Decoded audio \(outputBuffer) for PTS \
-            // \(presentationTimeStamp) delta \(ptsDelta) gap \(gapBuffers)
-            // """)
-            while gapBuffers > 0 {
-                logger.info("srt-server: Audio gap filler buffer")
-                server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
-                    streamId: streamId,
-                    buffer: latestAudioBuffer
+            let numberOfGapBuffers = max(Int(((ptsDelta / (1024 / 48000)) - 1).rounded()), 0)
+            if numberOfGapBuffers > 0 {
+                logger
+                    .info("srt-server: Audio gap latest buffer PTS \(latestAudioBufferPresentationTimeStamp)")
+            }
+            for index in 0 ..< numberOfGapBuffers {
+                let newPresentationTimeStamp = CMTimeAdd(
+                    latestAudioSampleBuffer.presentationTimeStamp,
+                    CMTime(
+                        value: CMTimeValue(Double(1024 * (1 + index))),
+                        timescale: CMTimeScale(48000)
+                    )
                 )
-                gapBuffers -= 1
+                logger.info("srt-server: Audio gap filler buffer PTS \(newPresentationTimeStamp.seconds)")
+                if let sampleBuffer = createSilentSampleBuffer(
+                    format: pcmAudioFormat,
+                    presentationTimeStamp: newPresentationTimeStamp
+                ) {
+                    server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
+                        streamId: streamId,
+                        sampleBuffer: sampleBuffer
+                    )
+                }
+            }
+            if numberOfGapBuffers > 0 {
+                logger.info("srt-server: Audio gap new buffer PTS \(presentationTimeStamp)")
             }
         }
-        latestAudioBuffer = outputBuffer
         latestAudioBufferPresentationTimeStamp = presentationTimeStamp
-        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(streamId: streamId, buffer: outputBuffer)
-    }
-
-    private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
+        guard let sampleBuffer = outputBuffer
+            .makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)
+        else {
+            return
+        }
+        latestAudioSampleBuffer = sampleBuffer
+        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
             streamId: streamId,
             sampleBuffer: sampleBuffer
         )
     }
 
-    private func handleFormatDescription(
-        _ streamType: ElementaryStreamType,
-        _ formatDescription: CMFormatDescription
-    ) {
-        switch streamType {
-        case .adtsAac:
-            handleAudioFormatDescription(formatDescription)
-        default:
-            handleVideoFormatDescription(formatDescription)
+    private func createSilentSampleBuffer(format: AVAudioFormat,
+                                          presentationTimeStamp: CMTime) -> CMSampleBuffer?
+    {
+        guard let dataBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024) else {
+            return nil
         }
+        guard let data = dataBuffer.int16ChannelData else {
+            return nil
+        }
+        for i in 0 ..< 1024 {
+            data.pointee[i] = 0
+        }
+        dataBuffer.frameLength = 1024
+        return dataBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
+    }
+
+    private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        videoDecoder?.appendSampleBuffer(sampleBuffer)
     }
 
     private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {
@@ -198,7 +225,15 @@ class SrtServerClient {
         }
     }
 
-    private func handleVideoFormatDescription(_: CMFormatDescription) {}
+    private func handleVideoFormatDescription(_ formatDescription: CMFormatDescription) {
+        guard videoDecoder == nil else {
+            return
+        }
+        videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+        videoDecoder?.formatDescription = formatDescription
+        videoDecoder?.delegate = self
+        videoDecoder?.startRunning()
+    }
 
     private func tryMakeSampleBuffer(packetId: UInt16,
                                      forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)?
@@ -215,28 +250,39 @@ class SrtServerClient {
         defer {
             packetizedElementaryStreams[packetId] = nil
         }
-        let formatDescription = makeFormatDescription(data, &packetizedElementaryStream)
+        switch data.streamType {
+        case .adtsAac:
+            return tryMakeSampleBufferAac(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
+        case .h264:
+            return tryMakeSampleBufferH264(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
+        case .h265:
+            return tryMakeSampleBufferH265(
+                packetId: packetId,
+                data: data,
+                packetizedElementaryStream: &packetizedElementaryStream
+            )
+        default:
+            return nil
+        }
+    }
+
+    private func tryMakeSampleBufferAac(packetId: UInt16,
+                                        data: ElementaryStreamSpecificData,
+                                        packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
+        -> (CMSampleBuffer, ElementaryStreamType)?
+    {
+        let formatDescription = AdtsHeader(data: packetizedElementaryStream.data).makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
-            handleFormatDescription(data.streamType, formatDescription)
-        }
-        var isSync = false
-        switch data.streamType {
-        case .h264:
-            let units = nalUnitReader.read(&packetizedElementaryStream.data, type: AvcNalUnit.self)
-            if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
-                var data = Data([0x00, 0x00, 0x00, 0x01])
-                data.append(unit.data)
-                packetizedElementaryStream.data = data
-            }
-            isSync = units.contains { $0.type == .idr }
-        case .h265:
-            let units = nalUnitReader.read(&packetizedElementaryStream.data, type: HevcNalUnit.self)
-            isSync = units.contains { $0.type == .sps }
-        case .adtsAac:
-            isSync = true
-        default:
-            break
+            handleAudioFormatDescription(formatDescription)
         }
         guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
@@ -245,25 +291,70 @@ class SrtServerClient {
         ) else {
             return nil
         }
-        sampleBuffer.isSync = isSync
+        sampleBuffer.isSync = true
         previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
         return (sampleBuffer, data.streamType)
     }
 
-    private func makeFormatDescription(
-        _ data: ElementaryStreamSpecificData,
-        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
-    ) -> CMFormatDescription? {
-        switch data.streamType {
-        case .adtsAac:
-            return AdtsHeader(data: packetizedElementaryStream.data).makeFormatDescription()
-        case .h264, .h265:
-            return nalUnitReader.makeFormatDescription(
-                &packetizedElementaryStream.data,
-                type: data.streamType
-            )
-        default:
+    private func tryMakeSampleBufferH264(packetId: UInt16,
+                                         data: ElementaryStreamSpecificData,
+                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
+        -> (CMSampleBuffer, ElementaryStreamType)?
+    {
+        let units = nalUnitReader.readH264(&packetizedElementaryStream.data)
+        if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
+            var data = Data([0x00, 0x00, 0x00, 0x01])
+            data.append(unit.data)
+            packetizedElementaryStream.data = data
+        }
+        let formatDescription = units.makeFormatDescription(NALUnitReader.defaultNALUnitHeaderLength)
+        if let formatDescription, formatDescriptions[packetId] != formatDescription {
+            formatDescriptions[packetId] = formatDescription
+            handleVideoFormatDescription(formatDescription)
+        }
+        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+            data.streamType,
+            previousPresentationTimeStamps[packetId] ?? .invalid,
+            formatDescriptions[packetId]
+        ) else {
             return nil
         }
+        sampleBuffer.isSync = units.contains { $0.type == .idr }
+        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        return (sampleBuffer, data.streamType)
+    }
+
+    private func tryMakeSampleBufferH265(packetId: UInt16,
+                                         data: ElementaryStreamSpecificData,
+                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
+        -> (CMSampleBuffer, ElementaryStreamType)?
+    {
+        let units = nalUnitReader.readH265(&packetizedElementaryStream.data)
+        let formatDescription = units.makeFormatDescription(NALUnitReader.defaultNALUnitHeaderLength)
+        if let formatDescription, formatDescriptions[packetId] != formatDescription {
+            formatDescriptions[packetId] = formatDescription
+            handleVideoFormatDescription(formatDescription)
+        }
+        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+            data.streamType,
+            previousPresentationTimeStamps[packetId] ?? .invalid,
+            formatDescriptions[packetId]
+        ) else {
+            return nil
+        }
+        sampleBuffer.isSync = units.contains { $0.type == .sps }
+        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        return (sampleBuffer, data.streamType)
+    }
+}
+
+extension SrtServerClient: VideoCodecDelegate {
+    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
+
+    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
+            streamId: streamId,
+            sampleBuffer: sampleBuffer
+        )
     }
 }

@@ -130,6 +130,27 @@ final class SRTSocket {
         return srt_bstats(socket, &perf, 1)
     }
 
+    func sndData() -> Int32 {
+        guard socket != SRT_INVALID_SOCK else {
+            return SRT_ERROR
+        }
+
+        var sndData: Int32 = 0
+        var size = Int32(MemoryLayout<Int32>.size)
+        let result = withUnsafeMutablePointer(to: &sndData) { sndDataPointer -> Int32 in
+            srt_getsockflag(
+                socket,
+                SRTO_SNDDATA,
+                sndDataPointer,
+                &size
+            )
+        }
+        if result == SRT_ERROR {
+            // To do: check result
+        }
+        return sndData
+    }
+
     private func makeSocketError() -> String {
         return String(cString: srt_getlasterror_str())
     }

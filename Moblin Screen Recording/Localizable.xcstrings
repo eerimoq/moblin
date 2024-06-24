@@ -1,0 +1,136 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    " %lld ch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld ch"
+          }
+        }
+      }
+    },
+    "%lld dB," : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB,"
+          }
+        }
+      }
+    },
+    "Host missing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host fehlt"
+          }
+        }
+      }
+    },
+    "Malformed IRLToolkit URL" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte IRLToolkit URL"
+          }
+        }
+      }
+    },
+    "Malformed RIST URL" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte RIST URL"
+          }
+        }
+      }
+    },
+    "Malformed RTMP URL" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte RTMP URL"
+          }
+        }
+      }
+    },
+    "Malformed SRT(LA) URL" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte SRT(LA) URL"
+          }
+        }
+      }
+    },
+    "Malformed URL" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte URL"
+          }
+        }
+      }
+    },
+    "RIST port number missing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RIST-Port Nummer fehlt"
+          }
+        }
+      }
+    },
+    "RTMP stream name missing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP Stream Name fehlt"
+          }
+        }
+      }
+    },
+    "Scheme missing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlendes Schema"
+          }
+        }
+      }
+    },
+    "SRT(LA) port number missing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA) Port Nummer fehlt"
+          }
+        }
+      }
+    },
+    "Unsupported scheme %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht unterstütztes Schema"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

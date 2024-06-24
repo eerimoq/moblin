@@ -265,6 +265,8 @@ struct CSrtConfig: CSrtMuxerConfig
     unsigned int uKmRefreshRatePkt;
     unsigned int uKmPreAnnouncePkt;
 
+    bool srtlaPatches;
+
     uint32_t uSrtVersion;
     uint32_t uMinimumPeerSrtVersion;
 
@@ -315,6 +317,7 @@ struct CSrtConfig: CSrtMuxerConfig
         , iMaxReorderTolerance(0) // Sensible optimal value is 10, 0 preserves old behavior
         , uKmRefreshRatePkt(0)
         , uKmPreAnnouncePkt(0)
+        , srtlaPatches(false)
         , uSrtVersion(SRT_DEF_VERSION)
         , uMinimumPeerSrtVersion(SRT_VERSION_MAJ1)
 

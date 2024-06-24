@@ -15,7 +15,7 @@ protocol MixerDelegate: AnyObject {
     func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
     func mixerVideo(presentationTimestamp: Double)
     func mixerVideo(failedEffect: String?)
-    func mixerVideo(lowFpsImage: Data?)
+    func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
     func mixer(recorderFinishWriting writer: AVAssetWriter)
     func mixer(findVideoFormatError: String, activeFormat: String)
 }

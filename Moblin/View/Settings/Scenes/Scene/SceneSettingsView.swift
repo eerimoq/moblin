@@ -52,7 +52,10 @@ struct SceneSettingsView: View {
     }
 
     private func onCameraChange(cameraId: String) {
-        if isRtmpCamera(camera: cameraId) {
+        if isSrtlaCamera(camera: cameraId) {
+            scene.cameraPosition = .srtla
+            scene.srtlaCameraId = model.getSrtlaStream(camera: cameraId)?.id ?? .init()
+        } else if isRtmpCamera(camera: cameraId) {
             scene.cameraPosition = .rtmp
             scene.rtmpCameraId = model.getRtmpStream(camera: cameraId)?.id ?? .init()
         } else if model.isBackCamera(cameraId: cameraId) {

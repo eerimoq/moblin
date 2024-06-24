@@ -1,3 +1,7 @@
+// SRTLA is a bonding protocol on top of SRT.
+// Designed by rationalsa for the BELABOX projecct.
+// https://github.com/BELABOX/srtla
+
 import AVFoundation
 import Foundation
 import libsrt
@@ -8,12 +12,14 @@ struct SrtlaServerStats {
     var speed: UInt64
 }
 
-let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server")
+let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server", qos: .userInitiated)
 private let periodicTimerTimeout = 3.0
 
 protocol SrtlaServerDelegate: AnyObject {
+    func srtlaServerOnClientStart(streamId: String)
+    func srtlaServerOnClientStop(streamId: String)
     func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
-    func srtlaServerOnAudioBuffer(streamId: String, buffer: AVAudioPCMBuffer)
+    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
 }
 
 class SrtlaServer {
@@ -24,6 +30,8 @@ class SrtlaServer {
     weak var delegate: (any SrtlaServerDelegate)?
     private var periodicTimer: DispatchSourceTimer?
     private var prevTotalBytesReceived: UInt64 = 0
+    var totalBytesReceived: Atomic<UInt64> = .init(0)
+    private var numberOfClients: Atomic<Int> = .init(0)
 
     init(settings: SettingsSrtlaServer) {
         self.settings = settings.clone()
@@ -47,15 +55,29 @@ class SrtlaServer {
         }
     }
 
+    func isStreamConnected(streamId: String) -> Bool {
+        return srtServer.acceptedStreamId.value == streamId
+    }
+
     func updateStats() -> SrtlaServerStats {
-        let totalBytesReceived: UInt64 = srtServer.totalBytesReceived.value
+        let totalBytesReceived = totalBytesReceived.value
         let speed = totalBytesReceived - prevTotalBytesReceived
         prevTotalBytesReceived = totalBytesReceived
         return SrtlaServerStats(total: totalBytesReceived, speed: speed)
     }
 
-    func numberOfClients() -> Int {
-        return srtServer.numberOfClients.value
+    func getNumberOfClients() -> Int {
+        return numberOfClients.value
+    }
+
+    func clientConnected(streamId: String) {
+        numberOfClients.mutate { $0 += 1 }
+        delegate?.srtlaServerOnClientStart(streamId: streamId)
+    }
+
+    func clientDisconnected(streamId: String) {
+        delegate?.srtlaServerOnClientStop(streamId: streamId)
+        numberOfClients.mutate { $0 -= 1 }
     }
 
     private func startPeriodicTimer() {

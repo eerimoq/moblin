@@ -24,9 +24,6 @@ struct SrtlaServerSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("⚠️ Does not yet work.")
-            }
-            Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     model.database.srtlaServer!.enabled
                 }, set: { value in

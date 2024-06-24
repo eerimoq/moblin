@@ -85,11 +85,7 @@ public class SRTStream: NetStream {
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
     ) {
-        if camera == nil {
-            writer.expectedMedias.remove(.video)
-        } else {
-            writer.expectedMedias.insert(.video)
-        }
+        writer.expectedMedias.insert(.video)
         super.attachCamera(
             camera,
             onError: onError,
@@ -103,11 +99,7 @@ public class SRTStream: NetStream {
         onError: ((Error) -> Void)? = nil,
         replaceAudioId: UUID? = nil
     ) {
-        if audio == nil {
-            writer.expectedMedias.remove(.audio)
-        } else {
-            writer.expectedMedias.insert(.audio)
-        }
+        writer.expectedMedias.insert(.audio)
         super.attachAudio(audio, onError: onError, replaceAudioId: replaceAudioId)
     }
 

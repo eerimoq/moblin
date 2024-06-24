@@ -1,3 +1,7 @@
+// SRTLA is a bonding protocol on top of SRT.
+// Designed by rationalsa for the BELABOX projecct.
+// https://github.com/BELABOX/srtla
+
 import Foundation
 import Network
 
@@ -6,7 +10,7 @@ protocol SrtlaServerClientConnectionDelegate: AnyObject {
 }
 
 private let removeTimeout = 10.0
-private let ackPacketLength = srtControlTypeSize + 10 * 4
+private let ackPacketLength = srtControlTypeSize + 2 + 10 * 4
 
 struct AckPacket {
     var data: Data
@@ -14,14 +18,14 @@ struct AckPacket {
 
     init() {
         data = createSrtlaPacket(type: .ack, length: ackPacketLength)
-        nextSnOffset = srtControlTypeSize
+        nextSnOffset = srtControlTypeSize + 2
     }
 
     mutating func appendSequenceNumber(sn: UInt32) -> Bool {
         data.setUInt32Be(value: sn, offset: nextSnOffset)
         nextSnOffset += 4
         if nextSnOffset == ackPacketLength {
-            nextSnOffset = srtControlTypeSize
+            nextSnOffset = srtControlTypeSize + 2
             return true
         } else {
             return false

@@ -160,7 +160,6 @@ open class RTMPConnection: EventDispatcher {
     var chunkSize: Int = RTMPConnection.defaultChunkSizeS
     private(set) var uri: URL?
     private(set) var connected = false
-    var parameters: Any?
     var objectEncoding = RTMPConnection.defaultObjectEncoding
     var socket: RTMPSocket!
     var streams: [RTMPStream] = []
@@ -236,9 +235,8 @@ open class RTMPConnection: EventDispatcher {
         self.arguments = arguments
         socket = socket != nil ? socket : RTMPSocket()
         socket.delegate = self
-        socket.setProperty(parameters, forKey: "parameters")
         let secure = uri.scheme == "rtmps" || uri.scheme == "rtmpts"
-        socket.securityLevel = secure ? .negotiatedSSL : .none
+        socket.secure = secure
         socket.connect(
             withName: uri.host!,
             port: uri.port ?? (secure ? Self.defaultSecurePort : Self.defaultPort)

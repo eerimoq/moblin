@@ -8,6 +8,44 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.307.0", date: "2024-06-23", changes: [
+        "• RTMP and SRT(LA) servers improvements.",
+    ]),
+    Version(version: "0.306.0", date: "2024-06-21", changes: [
+        "• Updated Spanish translation. ✍️ adriportela95",
+        "• Updated German translation. ✍️ MaurisonX",
+        "• Play silence when audio has been dropped in SRT(LA) server.",
+    ]),
+    Version(version: "0.305.0", date: "2024-06-19", changes: [
+        "• Make minimum bitrate configurable for belabox algorithm. :bulb: djandrea.",
+        "• Lower minimum bitrate default value from 500 Kbps to 250 Kbps.",
+        "• Fix bug in SRT(LA) server. Start sending valid SRTLA ACK packets.",
+    ]),
+    Version(version: "0.304.0", date: "2024-06-19", changes: [
+        "• Experimental support for built-in stereo mic.",
+        "  • Works with front or back mic selected.",
+        "  • Enable Settings → Debug → Audio → Prefer stereo mic to test.",
+        "• Remove SRT(LA) server experimental debug toggle.",
+        "  • Still experimental though.",
+        "• Configurable remote control preview FPS. 💡 ariathome",
+        "  • 1-5 FPS allowed.",
+        "• Double tap preview in remote control assistant to toggle full screen. 💡 ariathome",
+    ]),
+    Version(version: "0.303.0", date: "2024-06-18", changes: [
+        "• Automatic zoom preset names based on zoom x. 💡 JohannesLiv",
+        "  • Less to type!",
+        "• Major RTMP server redesign. Hopefully to the better. 🧑‍🏭 ErAzOr",
+        "  • Both video and audio should work.",
+        "  • Auto select mic toggle per stream.",
+        "• 4:3 filter quick button. 💡 Tozadius",
+        "• Experimental support for BELABOX adaptive bitrate algorithm. 🧑‍🏭 mikeful",
+        "• Exterimental SRT(LA) server.",
+        "  • Optimized for SRTLA, not SRT.",
+        "  • Not very well tested.",
+        "• Background streaming always on for Mac. 💡 ariathome",
+        "• Do not stop recording when entering background mode on Mac.",
+        "• Support for video effects on RTMP and SRT(LA) server streams.",
+    ]),
     Version(version: "0.302.0", date: "2024-06-11", changes: [
         "• Toggle to debug crash when live and entering foreground mode.",
         "  • Settings → Debug → Use audio for timestamps",

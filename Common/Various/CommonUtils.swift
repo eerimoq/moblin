@@ -291,6 +291,10 @@ func formatOneDecimal(value: Float) -> String {
     return String(format: "%.01f", value)
 }
 
+func formatTwoDecimals(value: Double) -> String {
+    return String(format: "%.02f", value)
+}
+
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         return min(max(self, limits.lowerBound), limits.upperBound)
@@ -472,6 +476,7 @@ extension Data {
 }
 
 private let cameraPositionRtmp = "(RTMP)"
+private let cameraPositionSrtla = "(SRT(LA))"
 
 func rtmpCamera(name: String) -> String {
     return "\(name) \(cameraPositionRtmp)"
@@ -479,6 +484,14 @@ func rtmpCamera(name: String) -> String {
 
 func isRtmpCamera(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionRtmp)
+}
+
+func srtlaCamera(name: String) -> String {
+    return "\(name) \(cameraPositionSrtla)"
+}
+
+func isSrtlaCamera(camera: String) -> Bool {
+    return camera.hasSuffix(cameraPositionSrtla)
 }
 
 func formatAudioLevelDb(level: Float) -> String {
@@ -531,5 +544,9 @@ let moblinAppGroup = "group.com.eerimoq.Moblin"
 extension Duration {
     var milliseconds: Int64 {
         return components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000
+    }
+
+    var seconds: Double {
+        return Double(milliseconds) / 1000
     }
 }

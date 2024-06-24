@@ -1,15 +1,13 @@
 import AVFoundation
 import libsrt
 
-private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server")
+private let srtServerQueue = DispatchQueue(label: "com.eerimoq.srtla-srt-server", qos: .userInteractive)
 
 class SrtServer {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
-    private var acceptedStreamId = ""
+    var acceptedStreamId: Atomic<String> = .init("")
     var running: Bool = false
-    var totalBytesReceived: Atomic<UInt64> = .init(0)
-    var numberOfClients: Atomic<Int> = .init(0)
 
     func start() {
         srt_startup()
@@ -32,27 +30,25 @@ class SrtServer {
 
     private func main() throws {
         try open()
+        try setSrtlaPatchesOption()
+        try setLossMaxTtlOption()
         try bind()
         try listen()
         while true {
             logger.info("srt-server: Waiting for client to connect.")
             let clientSocket = try accept()
             guard let stream = srtlaServer?.settings.streams
-                .first(where: { $0.streamId == acceptedStreamId })
+                .first(where: { $0.streamId == acceptedStreamId.value })
             else {
                 srt_close(clientSocket)
                 logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
                 continue
             }
-            // Makes NAK too slow?
-            let option = SRTSocketOption(rawValue: "lossmaxttl")!
-            if !option.setOption(clientSocket, value: "200") {
-                logger.error("srt-server: Failed to set lossmaxttl option.")
-            }
             logger.info("srt-server: Accepted client \(stream.name).")
-            numberOfClients.mutate { $0 += 1 }
-            SrtServerClient(server: self, streamId: acceptedStreamId).run(clientSocket: clientSocket)
-            numberOfClients.mutate { $0 -= 1 }
+            srtlaServer?.clientConnected(streamId: acceptedStreamId.value)
+            SrtServerClient(server: self, streamId: acceptedStreamId.value).run(clientSocket: clientSocket)
+            srtlaServer?.clientDisconnected(streamId: acceptedStreamId.value)
+            acceptedStreamId.mutate { $0 = "" }
             logger.info("srt-server: Closed client.")
         }
     }
@@ -60,7 +56,22 @@ class SrtServer {
     private func open() throws {
         listenerSocket = srt_create_socket()
         guard listenerSocket != SRT_ERROR else {
-            throw "Failed to create socket."
+            throw "Failed to create socket: \(lastSrtSocketError())"
+        }
+    }
+
+    private func setSrtlaPatchesOption() throws {
+        let srtlaPatches = SRTSocketOption(rawValue: "srtlaPatches")!
+        guard srtlaPatches.setOption(listenerSocket, value: "1") else {
+            throw "Failed to set srtlaPatches option."
+        }
+    }
+
+    private func setLossMaxTtlOption() throws {
+        // Makes NAK too slow?
+        let option = SRTSocketOption(rawValue: "lossmaxttl")!
+        if !option.setOption(listenerSocket, value: "30") {
+            logger.error("srt-server: Failed to set lossmaxttl option.")
         }
     }
 
@@ -77,37 +88,43 @@ class SrtServer {
             }
         }
         guard res != SRT_ERROR else {
-            throw "Bind failed."
+            throw "Bind failed: \(lastSrtSocketError())"
         }
     }
 
     private func listen() throws {
         var res = srt_listen(listenerSocket, 5)
         guard res != SRT_ERROR else {
-            throw "Listen failed."
+            throw "Listen failed: \(lastSrtSocketError())"
         }
         let server = Unmanaged.passRetained(self).toOpaque()
-        res = srt_listen_callback(listenerSocket,
-                                  { server, _, _, _, streamIdIn in
-                                      guard let server, let streamIdIn else {
-                                          return SRT_ERROR
-                                      }
-                                      let srtServer: SrtServer = Unmanaged.fromOpaque(server)
-                                          .takeUnretainedValue()
-                                      srtServer.acceptedStreamId = String(cString: streamIdIn)
-                                      return 0
-                                  },
-                                  server)
+        res = srt_listen_callback(
+            listenerSocket,
+            { server, _, _, _, streamIdIn in
+                guard let server, let streamIdIn else {
+                    return SRT_ERROR
+                }
+                let srtServer: SrtServer = Unmanaged.fromOpaque(server)
+                    .takeUnretainedValue()
+                srtServer.acceptedStreamId.mutate { $0 = String(cString: streamIdIn) }
+                return 0
+            },
+            server
+        )
         guard res != SRT_ERROR else {
-            throw "Listen callback failed."
+            throw "Listen callback failed: \(lastSrtSocketError())"
         }
     }
 
     private func accept() throws -> Int32 {
         let clientSocket = srt_accept(listenerSocket, nil, nil)
         guard clientSocket != SRT_ERROR else {
-            throw "Accept failed."
+            throw "Accept failed: \(lastSrtSocketError())"
         }
         return clientSocket
     }
+}
+
+private func lastSrtSocketError() -> String {
+    return String(cString: srt_getlasterror_str())
 }

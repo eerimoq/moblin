@@ -116,6 +116,7 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
     case fastIrl
     case slowIrl
     case customIrl
+    case belabox
 
     static func fromString(value: String) -> SettingsStreamSrtAdaptiveBitrateAlgorithm {
         switch value {
@@ -125,6 +126,8 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
             return .slowIrl
         case String(localized: "Custom IRL"):
             return .customIrl
+        case String(localized: "BELABOX"):
+            return .belabox
         default:
             return .fastIrl
         }
@@ -138,6 +141,8 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
             return String(localized: "Slow IRL")
         case .customIrl:
             return String(localized: "Custom IRL")
+        case .belabox:
+            return String(localized: "BELABOX")
         }
     }
 }
@@ -146,7 +151,7 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
-    var minimumBitrate: Float? = 500
+    var minimumBitrate: Float? = 250
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
         let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
@@ -162,7 +167,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
     var rttDiffHighMinimumDecrease: Float = 250
-    var minimumBitrate: Float? = 500
+    var minimumBitrate: Float? = 250
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
@@ -176,16 +181,28 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     }
 }
 
+class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
+    var minimumBitrate: Float = 250
+
+    func clone() -> SettingsStreamSrtAdaptiveBitrateBelaboxSettings {
+        let new = SettingsStreamSrtAdaptiveBitrateBelaboxSettings()
+        new.minimumBitrate = minimumBitrate
+        return new
+    }
+}
+
 class SettingsStreamSrtAdaptiveBitrate: Codable {
     var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .fastIrl
     var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings? = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
+    var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings? = .init()
 
     func clone() -> SettingsStreamSrtAdaptiveBitrate {
         let new = SettingsStreamSrtAdaptiveBitrate()
         new.algorithm = algorithm
         new.fastIrlSettings = fastIrlSettings!.clone()
         new.customSettings = customSettings.clone()
+        new.belaboxSettings = belaboxSettings!.clone()
         return new
     }
 }
@@ -528,6 +545,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case front = "Front"
     case rtmp = "RTMP"
     case external = "External"
+    case srtla = "SRT(LA)"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -544,6 +562,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var backCameraId: String? = getBestBackCameraId()
     var frontCameraId: String? = getBestFrontCameraId()
     var rtmpCameraId: UUID? = .init()
+    var srtlaCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
@@ -566,6 +585,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
         new.backCameraId = backCameraId
         new.frontCameraId = frontCameraId
         new.rtmpCameraId = rtmpCameraId
+        new.srtlaCameraId = srtlaCameraId
         new.externalCameraId = externalCameraId
         new.externalCameraName = externalCameraName
         for widget in widgets {
@@ -779,6 +799,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case lut = "LUT"
     case cameraPreview = "Camera preview"
     case face = "Face"
+    case fourThree = "4:3"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -1038,10 +1059,10 @@ enum SettingsMic: String, Codable, CaseIterable {
     case front = "Front"
     case back = "Back"
     case top = "Top"
-    case rtmp = "RTMP"
 
     public init(from decoder: Decoder) throws {
-        self = try SettingsMic(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .bottom
+        self = try SettingsMic(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            getDefaultMic()
     }
 }
 
@@ -1107,7 +1128,6 @@ class SettingsDebug: Codable {
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
-    var enableRtmpAudio: Bool? = false
     var bluetoothOutputOnly: Bool? = false
     var maximumLogLines: Int? = 500
     var pixelFormat: String? = pixelFormats[1]
@@ -1116,9 +1136,9 @@ class SettingsDebug: Codable {
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
-    var srtlaServer: Bool? = false
     var higherDataRateLimit: Bool? = true
     var useAudioForTimestamps: Bool? = false
+    var preferStereoMic: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1126,7 +1146,9 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
-    var fps: Double? = 0
+    var manualFps: Bool? = false
+    var fps: Double? = 30
+    var autoSelectMic: Bool? = true
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -1137,7 +1159,9 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.manualFps = manualFps
         new.fps = fps
+        new.autoSelectMic = autoSelectMic
         return new
     }
 }
@@ -1161,14 +1185,18 @@ class SettingsRtmpServer: Codable {
 class SettingsSrtlaServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
-    var latency: Int32? = defaultSrtLatency
     var streamId: String = ""
+    var autoSelectMic: Bool? = true
+
+    func camera() -> String {
+        return srtlaCamera(name: name)
+    }
 
     func clone() -> SettingsSrtlaServerStream {
         let new = SettingsSrtlaServerStream()
         new.name = name
-        new.latency = latency
         new.streamId = streamId
+        new.autoSelectMic = autoSelectMic
         return new
     }
 }
@@ -1395,6 +1423,7 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
+// Assistant
 class SettingsRemoteControlClient: Codable {
     var enabled: Bool = false
     // periphery:ignore
@@ -1404,11 +1433,13 @@ class SettingsRemoteControlClient: Codable {
     var password: String? = ""
 }
 
+// Streamer
 class SettingsRemoteControlServer: Codable {
     var enabled: Bool = false
     var url: String = ""
     // periphery:ignore
     var password: String? = ""
+    var previewFps: Float? = 1.0
 }
 
 class SettingsRemoteControl: Codable {
@@ -1804,6 +1835,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "film"
     updateGlobalButton(database: database, button: button)
 
+    button = SettingsButton(name: String(localized: "4:3"))
+    button.id = UUID()
+    button.type = .fourThree
+    button.imageType = "System name"
+    button.systemImageNameOn = "square"
+    button.systemImageNameOff = "square"
+    updateGlobalButton(database: database, button: button)
+
     button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
     button.type = .grayScale
@@ -2185,7 +2224,7 @@ final class Settings {
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.fps == nil {
-            stream.fps = 0
+            stream.fps = 30
             store()
         }
         for stream in database.streams where stream.realtimeIrlEnabled == nil {
@@ -2284,10 +2323,6 @@ final class Settings {
         }
         if realDatabase.show.browserWidgets == nil {
             realDatabase.show.browserWidgets = true
-            store()
-        }
-        if realDatabase.debug!.enableRtmpAudio == nil {
-            realDatabase.debug!.enableRtmpAudio = false
             store()
         }
         if realDatabase.debug!.bluetoothOutputOnly == nil {
@@ -2534,7 +2569,7 @@ final class Settings {
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.customSettings.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 500
+            stream.srt.adaptiveBitrate!.customSettings.minimumBitrate = 250
             store()
         }
         if realDatabase.deepLinkCreator == nil {
@@ -2557,10 +2592,6 @@ final class Settings {
             realDatabase.deepLinkCreator!.webBrowserEnabled = false
             store()
         }
-        if realDatabase.debug!.srtlaServer == nil {
-            realDatabase.debug!.srtlaServer = false
-            store()
-        }
         if realDatabase.srtlaServer == nil {
             realDatabase.srtlaServer = .init()
             store()
@@ -2572,7 +2603,7 @@ final class Settings {
         for stream in realDatabase.streams
             where stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate == nil
         {
-            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 500
+            stream.srt.adaptiveBitrate!.fastIrlSettings!.minimumBitrate = 250
             store()
         }
         for stream in realDatabase.streams where stream.backgroundStreaming == nil {
@@ -2581,6 +2612,40 @@ final class Settings {
         }
         if realDatabase.debug!.useAudioForTimestamps == nil {
             realDatabase.debug!.useAudioForTimestamps = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
+            stream.manualFps = stream.fps! != 0
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams {
+            if stream.fps! < 1 || stream.fps! > 100 {
+                stream.fps = 30
+                store()
+            }
+        }
+        for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
+            scene.srtlaCameraId = .init()
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.autoSelectMic == nil {
+            stream.autoSelectMic = true
+            store()
+        }
+        for stream in realDatabase.srtlaServer!.streams where stream.autoSelectMic == nil {
+            stream.autoSelectMic = true
+            store()
+        }
+        if realDatabase.debug!.preferStereoMic == nil {
+            realDatabase.debug!.preferStereoMic = false
+            store()
+        }
+        if realDatabase.remoteControl!.server.previewFps == nil {
+            realDatabase.remoteControl!.server.previewFps = 1.0
+            store()
+        }
+        for stream in database.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
+            stream.srt.adaptiveBitrate!.belaboxSettings = .init()
             store()
         }
     }

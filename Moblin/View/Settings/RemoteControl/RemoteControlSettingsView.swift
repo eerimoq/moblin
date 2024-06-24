@@ -94,6 +94,16 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlStreamer()
     }
 
+    private func submitStreamerPreviewFps(value: Float) {
+        model.database.remoteControl!.server.previewFps = value
+        model.store()
+        model.setLowFpsImage()
+    }
+
+    private func formatStreamerPreviewFps(value: Float) -> String {
+        return String(Int(value))
+    }
+
     private func submitAssistantPort(value: String) {
         guard let port = UInt16(value.trim()) else {
             return
@@ -140,6 +150,18 @@ struct RemoteControlSettingsView: View {
                     keyboardType: .URL,
                     placeholder: "ws://32.143.32.12:2345"
                 )
+                HStack {
+                    Text("Preview FPS")
+                    SliderView(
+                        value: model.database.remoteControl!.server.previewFps!,
+                        minimum: 1,
+                        maximum: 5,
+                        step: 1,
+                        onSubmit: submitStreamerPreviewFps,
+                        width: 20,
+                        format: formatStreamerPreviewFps
+                    )
+                }
             } header: {
                 Text("Streamer")
             } footer: {

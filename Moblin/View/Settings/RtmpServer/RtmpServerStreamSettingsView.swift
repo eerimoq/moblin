@@ -62,7 +62,7 @@ struct RtmpServerStreamSettingsView: View {
         guard let latency = Int32(value) else {
             return
         }
-        guard latency >= 0 else {
+        guard latency > 0 else {
             return
         }
         stream.latency = latency
@@ -75,7 +75,7 @@ struct RtmpServerStreamSettingsView: View {
         guard let fps = Double(value) else {
             return
         }
-        guard fps >= 0 && fps <= 1000 else {
+        guard fps >= 1 && fps <= 100 else {
             return
         }
         stream.fps = fps
@@ -109,19 +109,47 @@ struct RtmpServerStreamSettingsView: View {
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(model.rtmpServerEnabled())
-                TextEditNavigationView(
-                    title: String(localized: "FPS"),
-                    value: String(stream.fps!),
-                    onSubmit: submitFps,
-                    footer: Text("""
-                    Force given FPS, or set to 0 to use the publisher's FPS. B-frames \
-                    does not work with forced FPS. Forced FPS is typically needed for DJI drones.
-                    """),
-                    keyboardType: .numbersAndPunctuation
-                )
-                .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("The stream name is shown in the list of cameras in scene settings.")
+            }
+            Section {
+                Toggle("Auto select mic", isOn: Binding(get: {
+                    stream.autoSelectMic!
+                }, set: { value in
+                    stream.autoSelectMic = value
+                    model.store()
+                    model.reloadRtmpServer()
+                    model.objectWillChange.send()
+                }))
+                .disabled(model.rtmpServerEnabled())
+            } footer: {
+                Text("Automatically select the stream's audio as mic when connected.")
+            }
+            Section {
+                Toggle("Manual FPS", isOn: Binding(get: {
+                    stream.manualFps!
+                }, set: { value in
+                    stream.manualFps = value
+                    model.store()
+                    model.reloadRtmpServer()
+                    model.objectWillChange.send()
+                }))
+                .disabled(model.rtmpServerEnabled())
+                if stream.manualFps! {
+                    TextEditNavigationView(
+                        title: String(localized: "FPS"),
+                        value: String(stream.fps!),
+                        onSubmit: submitFps,
+                        keyboardType: .numbersAndPunctuation
+                    )
+                    .disabled(model.rtmpServerEnabled())
+                }
+            } footer: {
+                Text("""
+                Enable manual FPS to force given FPS. This is needed when the publisher \
+                does not provide accurate timestamps. B-frames does not work with manual \
+                FPS. Manual FPS is typically needed for DJI devices.
+                """)
             }
             Section {
                 if model.rtmpServerEnabled() {

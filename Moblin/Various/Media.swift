@@ -43,7 +43,7 @@ final class Media: NSObject {
     var onRistConnected: (() -> Void)!
     var onRistDisconnected: (() -> Void)!
     var onAudioMuteChange: (() -> Void)!
-    var onLowFpsImage: ((Data?) -> Void)!
+    var onLowFpsImage: ((Data?, UInt64) -> Void)!
     var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
@@ -69,7 +69,7 @@ final class Media: NSObject {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
-    func setNetStream(proto: SettingsStreamProtocol, enableRtmpAudio: Bool) {
+    func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -95,9 +95,7 @@ final class Media: NSObject {
         }
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
-        if !enableRtmpAudio {
-            attachAudio(device: AVCaptureDevice.default(for: .audio))
-        }
+        attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func getAudioLevel() -> Float {
@@ -147,7 +145,7 @@ final class Media: NSObject {
         url: String,
         reconnectTime: Double,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
@@ -159,7 +157,7 @@ final class Media: NSObject {
         srtInitStream(
             isSrtla: isSrtla,
             targetBitrate: targetBitrate,
-            adaptiveBitrate: adaptiveBitrateEnabled,
+            adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm,
             latency: latency,
             overheadBandwidth: overheadBandwidth,
             maximumBandwidthFollowInput: maximumBandwidthFollowInput,
@@ -173,7 +171,7 @@ final class Media: NSObject {
     private func srtInitStream(
         isSrtla: Bool,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
@@ -194,12 +192,12 @@ final class Media: NSObject {
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities
         )
-        if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtFight(
-                targetBitrate: targetBitrate,
-                delegate: self
-            )
-        } else {
+        switch adaptiveBitrateAlgorithm {
+        case .fastIrl, .slowIrl, .customIrl:
+            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
+        case .belabox:
+            adaptiveBitrate = AdaptiveBitrateSrtBela(targetBitrate: targetBitrate, delegate: self)
+        case nil:
             adaptiveBitrate = nil
         }
     }
@@ -216,7 +214,14 @@ final class Media: NSObject {
         srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
+    private var updateTickCount: UInt64 = 0
+
+    private func is200MsTick() -> Bool {
+        return updateTickCount % 10 == 0
+    }
+
     func updateAdaptiveBitrate(overlay: Bool) -> ([String], [String])? {
+        updateTickCount += 1
         if srtStream != nil {
             return updateAdaptiveBitrateSrt(overlay: overlay)
         } else if let rtmpStream {
@@ -228,11 +233,57 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
+        if adaptiveBitrate is AdaptiveBitrateSrtBela {
+            return updateAdaptiveBitrateSrtBela(overlay: overlay)
+        } else {
+            return updateAdaptiveBitrateSrtFight(overlay: overlay)
+        }
+    }
+
+    private var belaLinesAndActions: ([String], [String])?
+
+    private func updateAdaptiveBitrateSrtBela(overlay: Bool) -> ([String], [String])? {
+        guard let adaptiveBitrate else {
+            return nil
+        }
+        let stats = srtConnection.performanceData
+        let sndData = srtConnection.socket?.sndData() ?? 0
+        adaptiveBitrate.update(stats: StreamStats(
+            rttMs: stats.msRTT,
+            packetsInFlight: Double(sndData),
+            transportBitrate: streamSpeed(),
+            latency: latency,
+            mbpsSendRate: stats.mbpsSendRate
+        ))
+        if overlay {
+            if is200MsTick() {
+                belaLinesAndActions = ([
+                    """
+                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                    D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
+                    """,
+                    "msRTT: \(stats.msRTT)",
+                    "sndData: \(sndData)",
+                    "B: \(adaptiveBitrate.getCurrentBitrateInKbps())",
+                ], adaptiveBitrate.getActionsTaken())
+            }
+        } else {
+            belaLinesAndActions = nil
+        }
+        return belaLinesAndActions
+    }
+
+    private func updateAdaptiveBitrateSrtFight(overlay: Bool) -> ([String], [String])? {
+        guard is200MsTick() else {
+            return nil
+        }
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
             packetsInFlight: Double(stats.pktFlightSize),
-            transportBitrate: streamSpeed()
+            transportBitrate: streamSpeed(),
+            latency: latency,
+            mbpsSendRate: stats.mbpsSendRate
         ))
         guard overlay else {
             return nil
@@ -267,11 +318,16 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> ([String], [String])? {
+        guard is200MsTick() else {
+            return nil
+        }
         let stats = rtmpStream.info.stats.value
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
             packetsInFlight: Double(stats.packetsInFlight),
-            transportBitrate: streamSpeed()
+            transportBitrate: streamSpeed(),
+            latency: nil,
+            mbpsSendRate: nil
         ))
         guard overlay else {
             return nil
@@ -298,6 +354,9 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> ([String], [String])? {
+        guard is200MsTick() else {
+            return nil
+        }
         let stats = ristStream.getStats()
         var rtt = 1000.0
         for stat in stats {
@@ -306,7 +365,9 @@ final class Media: NSObject {
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: rtt,
             packetsInFlight: 10,
-            transportBitrate: nil
+            transportBitrate: nil,
+            latency: nil,
+            mbpsSendRate: nil
         ))
         ristStream.updateConnectionsWeights()
         guard overlay else {
@@ -499,7 +560,7 @@ final class Media: NSObject {
         url: String,
         reconnectTime: Double,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
@@ -510,7 +571,7 @@ final class Media: NSObject {
         srtInitStream(
             isSrtla: true,
             targetBitrate: targetBitrate,
-            adaptiveBitrate: adaptiveBitrateEnabled,
+            adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm,
             latency: latency,
             overheadBandwidth: overheadBandwidth,
             maximumBandwidthFollowInput: maximumBandwidthFollowInput,
@@ -554,8 +615,8 @@ final class Media: NSObject {
         netStream.usePendingAfterAttachEffects()
     }
 
-    func setLowFpsImage(enabled: Bool) {
-        netStream.setLowFpsImage(enabled: enabled)
+    func setLowFpsImage(fps: Float) {
+        netStream.setLowFpsImage(fps: fps)
     }
 
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
@@ -673,35 +734,35 @@ final class Media: NSObject {
         })
     }
 
-    func attachRtmpCamera(cameraId: UUID, device: AVCaptureDevice?) {
+    func attachReplaceCamera(cameraId: UUID, device: AVCaptureDevice?) {
         netStream.attachCamera(device, replaceVideoCameraId: cameraId)
     }
 
-    func attachRtmpAudio(cameraId: UUID, device: AVCaptureDevice?) {
-        netStream.attachAudio(device, replaceAudioId: cameraId)
+    func attachReplaceAudio(cameraId: UUID?) {
+        netStream.attachAudio(nil, replaceAudioId: cameraId)
     }
 
-    func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    func addReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpAudioBuffer(cameraId: UUID, audioBuffer: AVAudioPCMBuffer) {
-        netStream.addAudioPCMBuffer(id: cameraId, audioBuffer)
+    func addReplaceAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpCamera(cameraId: UUID, latency: Double) {
+    func addReplaceCamera(cameraId: UUID, latency: Double) {
         netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
     }
 
-    func addRtmpAudio(cameraId: UUID) {
-        netStream.addReplaceAudio(cameraId: cameraId)
+    func addReplaceAudio(cameraId: UUID, latency: Double) {
+        netStream.addReplaceAudio(cameraId: cameraId, latency: latency)
     }
 
-    func removeRtmpCamera(cameraId: UUID) {
+    func removeReplaceCamera(cameraId: UUID) {
         netStream.removeReplaceVideo(cameraId: cameraId)
     }
 
-    func removeRtmpAudio(cameraId: UUID) {
+    func removeReplaceAudio(cameraId: UUID) {
         netStream.removeReplaceAudio(cameraId: cameraId)
     }
 
@@ -797,8 +858,8 @@ extension Media: NetStreamDelegate {
         }
     }
 
-    func streamVideo(_: NetStream, lowFpsImage: Data?) {
-        onLowFpsImage(lowFpsImage)
+    func streamVideo(_: NetStream, lowFpsImage: Data?, frameNumber: UInt64) {
+        onLowFpsImage(lowFpsImage, frameNumber)
     }
 
     func streamVideo(_: NetStream, findVideoFormatError: String, activeFormat: String) {

@@ -17,7 +17,7 @@ final class MovieEffect: VideoEffect {
             context.setFillColor(UIColor.black.cgColor)
             context.fill([
                 CGRect(x: 0, y: 0, width: width, height: height),
-                CGRect(x: 0, y: 5 * height, width: width, height: height),
+                CGRect(x: 0, y: extent.size.height - height, width: width, height: height),
             ])
             black = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
             UIGraphicsEndImageContext()

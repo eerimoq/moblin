@@ -94,4 +94,67 @@ extension CMSampleBuffer {
     func getSampleSize(at: Int) -> Int {
         return CMSampleBufferGetSampleSize(self, at: at)
     }
+
+    func replacePresentationTimeStamp(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+        if let formatDescription {
+            let mediaType = CMFormatDescriptionGetMediaType(formatDescription)
+            switch mediaType {
+            case kCMMediaType_Audio:
+                return replaceAudioPresentationTimeStamp(presentationTimeStamp: presentationTimeStamp)
+            case kCMMediaType_Video:
+                return replaceVideoPresentationTimeStamp(
+                    presentationTimeStamp: presentationTimeStamp,
+                    decodeTimeStamp: .invalid
+                )
+            default:
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
+
+    private func replaceAudioPresentationTimeStamp(presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+        var newSampleBuffer: CMSampleBuffer?
+        var timingInfo = CMSampleTimingInfo(
+            duration: duration,
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
+        )
+
+        CMSampleBufferCreateCopyWithNewTiming(
+            allocator: kCFAllocatorDefault,
+            sampleBuffer: self,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timingInfo,
+            sampleBufferOut: &newSampleBuffer
+        )
+        return newSampleBuffer
+    }
+
+    private func replaceVideoPresentationTimeStamp(presentationTimeStamp: CMTime,
+                                                   decodeTimeStamp: CMTime) -> CMSampleBuffer?
+    {
+        var timingInfo = CMSampleTimingInfo(
+            duration: CMSampleBufferGetDuration(self),
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
+        )
+
+        var newSampleBuffer: CMSampleBuffer?
+
+        CMSampleBufferCreateCopyWithNewTiming(
+            allocator: kCFAllocatorDefault,
+            sampleBuffer: self,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timingInfo,
+            sampleBufferOut: &newSampleBuffer
+        )
+
+        guard let newSampleBuffer else {
+            return nil
+        }
+        newSampleBuffer.isSync = isSync
+        return newSampleBuffer
+    }
 }

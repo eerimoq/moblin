@@ -30,13 +30,12 @@ final class RTMPSocket {
         }
     }
 
-    var securityLevel: StreamSocketSecurityLevel = .none {
+    var secure: Bool = false {
         didSet {
-            switch securityLevel {
-            case .ssLv2, .ssLv3, .tlSv1, .negotiatedSSL:
-                parameters = .tls
-            default:
-                parameters = .tcp
+            if secure {
+                tlsOptions = .init()
+            } else {
+                tlsOptions = nil
             }
         }
     }
@@ -74,7 +73,7 @@ final class RTMPSocket {
         }
     }
 
-    private var parameters: NWParameters = .tcp
+    private var tlsOptions: NWProtocolTLS.Options?
     private lazy var networkQueue = DispatchQueue(
         label: "com.haishinkit.HaishinKit.RTMPSocket.network",
         qos: .userInitiated
@@ -89,11 +88,13 @@ final class RTMPSocket {
         totalBytesIn.mutate { $0 = 0 }
         totalBytesOut.mutate { $0 = 0 }
         inputBuffer.removeAll(keepingCapacity: false)
+        let tcpOptions = NWProtocolTCP.Options()
+        // tcpOptions.noDelay = true
         connection = NWConnection(
             to: NWEndpoint
                 .hostPort(host: .init(withName),
                           port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
-            using: parameters
+            using: .init(tls: tlsOptions, tcp: tcpOptions)
         )
         connection?.viabilityUpdateHandler = viabilityDidChange(to:)
         connection?.stateUpdateHandler = stateDidChange(to:)
@@ -163,18 +164,6 @@ final class RTMPSocket {
             self.totalBytesOut.mutate { $0 += Int64(data.count) }
             self.delegate?.socket(self, totalBytesOut: self.totalBytesOut.value)
         })
-    }
-
-    func setProperty(_ value: Any?, forKey: String) {
-        switch forKey {
-        case "parameters":
-            guard let value = value as? NWParameters else {
-                return
-            }
-            parameters = value
-        default:
-            break
-        }
     }
 
     private func viabilityDidChange(to viability: Bool) {
