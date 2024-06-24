@@ -6,6 +6,55 @@ import Vision
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
+struct TextEffectStats {
+    var bitrate: UInt32 = 0
+    var date = Date()
+    var debugOverlayLines: [String] = []
+}
+
+private enum FormatPart {
+    case text(String)
+    case clock
+    case bitrate
+    case debugOverlay
+}
+
+private func loadFormat(format: String) -> [FormatPart] {
+    var parts: [FormatPart] = []
+    let format = format.replacing("\\n", with: "\n")
+    var index = format.startIndex
+    var textStartIndex = format.startIndex
+    while index < format.endIndex {
+        switch format[index] {
+        case "{":
+            if textStartIndex < index {
+                parts.append(.text(String(format[textStartIndex ..< index])))
+            }
+            if format[index ..< format.index(index, offsetBy: 6)].lowercased() == "{time}" {
+                parts.append(.clock)
+                index = format.index(index, offsetBy: 6)
+                textStartIndex = index
+            } else if format[index ..< format.index(index, offsetBy: 9)].lowercased() == "{bitrate}" {
+                parts.append(.bitrate)
+                index = format.index(index, offsetBy: 9)
+                textStartIndex = index
+            } else if format[index ..< format.index(index, offsetBy: 14)].lowercased() == "{debugoverlay}" {
+                parts.append(.debugOverlay)
+                index = format.index(index, offsetBy: 14)
+                textStartIndex = index
+            } else {
+                index = format.index(after: index)
+            }
+        default:
+            index = format.index(after: index)
+        }
+    }
+    if textStartIndex < index {
+        parts.append(.text(String(format[textStartIndex ..< index])))
+    }
+    return parts
+}
+
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var fontSize: CGFloat
@@ -16,8 +65,11 @@ final class TextEffect: VideoEffect {
     private var image: UIImage?
     private let settingName: String
     private var nextUpdateTime = ContinuousClock.now
+    private var stats = TextEffectStats()
+    private var formatParts: [FormatPart]
 
-    init(format _: String, fontSize: CGFloat, settingName: String) {
+    init(format: String, fontSize: CGFloat, settingName: String) {
+        formatParts = loadFormat(format: format)
         self.fontSize = fontSize
         self.settingName = settingName
         x = 0
@@ -25,12 +77,31 @@ final class TextEffect: VideoEffect {
         super.init()
     }
 
+    func updateStats(stats: TextEffectStats) {
+        textQueue.sync {
+            self.stats = stats
+        }
+    }
+
     override func getName() -> String {
         return "\(settingName) browser widget"
     }
 
     private func formatted() -> String {
-        return Date().formatted(.dateTime.hour().minute().second())
+        var parts: [String] = []
+        for formatPart in formatParts {
+            switch formatPart {
+            case let .text(text):
+                parts.append(text)
+            case .clock:
+                parts.append(stats.date.formatted(.dateTime.hour().minute().second()))
+            case .bitrate:
+                parts.append(formatBytesPerSecond(speed: Int64(stats.bitrate)))
+            case .debugOverlay:
+                parts.append(stats.debugOverlayLines.joined(separator: "\n"))
+            }
+        }
+        return parts.joined()
     }
 
     private func scaledFontSize(width: Double) -> CGFloat {

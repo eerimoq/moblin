@@ -202,6 +202,7 @@
 		036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
 		036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
+		037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */; };
@@ -670,6 +671,7 @@
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
+		037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -1035,6 +1037,7 @@
 				039A9E262BAEC58F00A23F97 /* Crop */,
 				03403DF32AD05C700079D8E4 /* Browser */,
 				0315A3652AA33C5400295443 /* Image */,
+				037132CC2C29FEED00393605 /* Text */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Widget;
@@ -1625,6 +1628,14 @@
 				03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */,
 			);
 			path = Rtmp;
+			sourceTree = "<group>";
+		};
+		037132CC2C29FEED00393605 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */,
+			);
+			path = Text;
 			sourceTree = "<group>";
 		};
 		0376F6FC2B9511030056B3D2 /* Moblin Widget */ = {
@@ -2773,6 +2784,7 @@
 				037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */,
 				03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
+				037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */,
 				03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */,

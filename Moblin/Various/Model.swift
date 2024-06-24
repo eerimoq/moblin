@@ -1611,6 +1611,7 @@ final class Model: NSObject, ObservableObject {
             self.logStatus()
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
+            self.updateTextEffects(now: now)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2035,6 +2036,19 @@ final class Model: NSObject, ObservableObject {
         return effects
     }
 
+    private func updateTextEffects(now: Date) {
+        guard !textEffects.isEmpty else {
+            return
+        }
+        var stats = TextEffectStats()
+        stats.bitrate = media.getVideoStreamBitrate(bitrate: stream.bitrate)
+        stats.date = now
+        stats.debugOverlayLines = debugLines
+        for textEffect in textEffects.values {
+            textEffect.updateStats(stats: stats)
+        }
+    }
+
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty && changeScene {
             setSceneId(id: enabledScenes[0].id)
@@ -2045,7 +2059,7 @@ final class Model: NSObject, ObservableObject {
             media.unregisterEffect(textEffect)
         }
         textEffects.removeAll()
-        for widget in database.widgets where widget.type == .time {
+        for widget in database.widgets where widget.type == .text {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
                 fontSize: 40,
@@ -3424,7 +3438,7 @@ final class Model: NSObject, ObservableObject {
                 if let imageEffect = imageEffects[sceneWidget.id] {
                     effects.append(imageEffect)
                 }
-            case .time:
+            case .text:
                 if let textEffect = textEffects[widget.id] {
                     textEffect.x = sceneWidget.x
                     textEffect.y = sceneWidget.y

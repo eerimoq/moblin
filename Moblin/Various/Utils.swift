@@ -44,8 +44,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "camera.filters"
     case .browser:
         return "globe"
-    case .time:
-        return "calendar.badge.clock"
+    case .text:
+        return "textformat"
     case .crop:
         return "crop"
     }

@@ -41,8 +41,8 @@ struct WidgetSettingsView: View {
                 EmptyView()
             case .browser:
                 WidgetBrowserSettingsView(widget: widget)
-            case .time:
-                EmptyView()
+            case .text:
+                WidgetTextSettingsView(widget: widget)
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             }

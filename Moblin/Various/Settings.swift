@@ -656,13 +656,13 @@ class SettingsWidgetVideoEffect: Codable {
 enum SettingsWidgetType: String, Codable, CaseIterable {
     case browser = "Browser"
     case image = "Image"
-    case time = "Time"
+    case text = "Text"
     case videoEffect = "Video effect"
     case crop = "Crop"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .browser
+            .text
     }
 
     static func fromString(value: String) -> SettingsWidgetType {
@@ -671,8 +671,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .browser
         case String(localized: "Image"):
             return .image
-        case String(localized: "Time"):
-            return .time
+        case String(localized: "Text"):
+            return .text
         case String(localized: "Video effect"):
             return .videoEffect
         case String(localized: "Crop"):
@@ -688,8 +688,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Browser")
         case .image:
             return String(localized: "Image")
-        case .time:
-            return String(localized: "Time")
+        case .text:
+            return String(localized: "Text")
         case .videoEffect:
             return String(localized: "Video effect")
         case .crop:
