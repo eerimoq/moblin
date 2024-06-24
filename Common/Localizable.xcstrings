@@ -5045,7 +5045,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "4:3"
           }
         },
@@ -6085,8 +6085,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Oletuksena 250 kbps."
+            "state" : "translated",
+            "value" : "Oletuksena 250 Kbps."
           }
         },
         "fr" : {
@@ -11291,8 +11291,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Automaattinen mikrofonin valinta"
+            "state" : "translated",
+            "value" : "Valitse mikrofoni automaattisesti"
           }
         },
         "fr" : {
@@ -11811,8 +11811,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Valitse streamin ääni automaattisesti mikrofoniksi, kun se on yhdistetty."
+            "state" : "translated",
+            "value" : "Valitse lähetyksen ääni automaattisesti mikrofoniksi, kun se on yhdistänyt."
           }
         },
         "fr" : {
@@ -12202,7 +12202,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "takaisin"
+            "value" : "taka"
           }
         },
         "fr" : {
@@ -12332,7 +12332,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Takaisin"
+            "value" : "Taka"
           }
         },
         "fr" : {
@@ -13241,7 +13241,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX"
           }
         },
@@ -24811,7 +24811,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Poista SRT(LA)-palvelin käytöstä muuttaaksesi sen asetuksia."
           }
         },
@@ -26891,8 +26891,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jokainen stream voi vastaanottaa videota yhdeltä SRT(LA)-julkaisijalta."
+            "state" : "translated",
+            "value" : "Jokainen lähetys voi vastaanottaa videota yhdeltä SRT(LA)-lähettäjältä."
           }
         },
         "fr" : {
@@ -27411,8 +27411,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ota manuaalinen FPS käyttöön pakottaaksesi tietyn FPS:n. Tätä tarvitaan, kun julkaisija ei toimita tarkkoja aikaleimoja. B-frames ei toimi manuaalisen FPS:n kanssa. Manuaalinen FPS tarvitaan yleensä DJI-laitteille."
+            "state" : "translated",
+            "value" : "Ota manuaalinen FPS käyttöön pakottaaksesi tietyn FPS:n. Tätä tarvitaan, kun lähettäjä ei tarjoa tarkkoja aikaleimoja. B-ruudut ei toimi manuaalisen FPS:n kanssa. Manuaalinen FPS tarvitaan yleensä DJI-laitteille."
           }
         },
         "fr" : {
@@ -27671,7 +27671,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ota SRT(LA)-palvelin käyttöön nähdäksesi URL-osoitteet."
           }
         },
@@ -28841,8 +28841,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kirjoita yksi URL-osoitteista SRT(LA)-julkaisijalaitteeseen lähettääksesi videon tähän streamiin. Kirjoita yleensä WiFi- tai henkilökohtaisen yhteyspisteen URL-osoite."
+            "state" : "translated",
+            "value" : "Kirjoita yksi URL-osoitteista SRT(LA)-lähetyslaitteeseen striimataksesi videon tähän lähetykseen. Kirjoita yleensä WiFin tai hotspotin URL-osoite."
           }
         },
         "fr" : {
@@ -37681,7 +37681,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Korkeampi tiedonsiirtonopeusraja"
           }
         },
@@ -44181,7 +44181,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Manuaalinen FPS"
           }
         },
@@ -54191,7 +54191,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Suosi stereomikrofonia"
           }
         },
@@ -54581,8 +54581,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Esikatsele FPS"
+            "state" : "translated",
+            "value" : "Esikatselun FPS"
           }
         },
         "fr" : {
@@ -65371,7 +65371,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT(LA)-palvelin"
           }
         },
@@ -69791,7 +69791,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vaihtaminen mono- ja stereomikrofonien välillä ei välttämättä toimi."
           }
         },
@@ -70051,7 +70051,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Napauta esikatselua piilottaaksesi sen. Kaksoisnapauta vaihtaaksesi koko näyttöön."
           }
         },
@@ -73171,8 +73171,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT(LA)-palvelimen UDP-portti kuuntelee SRT-julkaisijoita."
+            "state" : "translated",
+            "value" : "UDP-portti jossa SRT(LA)-palvelin kuuntelee SRT-lähettäjiä."
           }
         },
         "fr" : {
@@ -73301,8 +73301,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT(LA)-palvelimen UDP-portti kuuntelee SRTLA-julkaisijoita."
+            "state" : "translated",
+            "value" : "UDP-portti jossa SRT(LA)-palvelin kuuntelee SRTLA-lähettäjiä."
           }
         },
         "fr" : {
