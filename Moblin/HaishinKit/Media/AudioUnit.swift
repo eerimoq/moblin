@@ -106,8 +106,15 @@ private class ReplaceAudio {
         if sampleBuffer != nil {
             latestSampleBuffer = sampleBuffer
         } else if latestSampleBuffer != nil {
-            logger.info("replace-audio: Using latest sample buffer.")
             sampleBuffer = latestSampleBuffer
+            logger.debug("""
+            replace-audio: Using latest sample buffer. \
+            Output time \(outputPresentationTimeStamp) \
+            Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
+            Buffers count is \(sampleBuffers.count). \
+            First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
+            Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+            """)
         }
         return sampleBuffer
     }
