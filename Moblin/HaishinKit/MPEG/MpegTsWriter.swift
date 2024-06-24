@@ -247,8 +247,10 @@ class MpegTsWriter {
         {
             let baseTimestamp = (packetId == MpegTsWriter
                 .videoPacketId ? baseVideoTimestamp : baseAudioTimestamp)
-            programClockReference =
-                UInt64((timestamp.seconds - baseTimestamp.seconds) * TSTimestamp.resolution)
+            let delta = timestamp.seconds - baseTimestamp.seconds
+            // Negative delta handling is not correct, but makes the app not crash. Improve
+            // timestamp handling in general at some point. How?
+            programClockReference = UInt64(max(delta, 0) * TSTimestamp.resolution)
             programClockReferenceTimestamp = timestamp
         }
         return PES.arrayOfPackets(packetId, programClockReference)

@@ -509,9 +509,9 @@ struct RightOverlayView: View {
                 )
             }
             StreamOverlayIconAndTextView(
-                show: model.isShowingStatusRtmpServer(),
+                show: model.isShowingStatusServers(),
                 icon: "server.rack",
-                text: model.rtmpSpeedAndTotal,
+                text: model.serversSpeedAndTotal,
                 textFirst: true,
                 color: .white
             )
