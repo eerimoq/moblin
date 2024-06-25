@@ -11,6 +11,7 @@ class MoblinSettingsSrt: Codable {
 
 class MoblinSettingsUrlStreamVideo: Codable {
     var codec: SettingsStreamCodec?
+    var bFrames: Bool?
 }
 
 class MoblinSettingsUrlStreamObs: Codable {

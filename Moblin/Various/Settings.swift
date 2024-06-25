@@ -1476,6 +1476,7 @@ class WebBrowserSettings: Codable {
 
 class DeepLinkCreatorStreamVideo: Codable {
     var codec: SettingsStreamCodec = .h265hevc
+    var bFrames: Bool? = false
 }
 
 class DeepLinkCreatorStreamSrt: Codable {
@@ -2644,8 +2645,12 @@ final class Settings {
             realDatabase.remoteControl!.server.previewFps = 1.0
             store()
         }
-        for stream in database.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
+        for stream in realDatabase.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
             stream.srt.adaptiveBitrate!.belaboxSettings = .init()
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.bFrames == nil {
+            stream.video.bFrames = false
             store()
         }
     }

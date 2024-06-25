@@ -28,6 +28,9 @@ struct DeepLinkCreatorSettingsView: View {
         }
         newStream.video = .init()
         newStream.video!.codec = stream.video.codec
+        if stream.video.bFrames! {
+            newStream.video!.bFrames = stream.video.bFrames!
+        }
         newStream.srt = .init()
         newStream.srt!.latency = stream.srt.latency
         newStream.srt!.adaptiveBitrateEnabled = false

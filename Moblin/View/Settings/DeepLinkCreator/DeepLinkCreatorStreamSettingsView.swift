@@ -20,6 +20,14 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 )) {
                     TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
                 }
+                Toggle(isOn: Binding(get: {
+                    video.bFrames!
+                }, set: { value in
+                    video.bFrames = value
+                    model.store()
+                }), label: {
+                    Text("B-frames")
+                })
             }
         }
         .navigationTitle("Video")

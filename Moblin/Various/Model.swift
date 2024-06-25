@@ -1490,6 +1490,9 @@ final class Model: NSObject, ObservableObject {
                 if let codec = video.codec {
                     newStream.codec = codec
                 }
+                if let bFrames = video.bFrames {
+                    newStream.bFrames = bFrames
+                }
             }
             if let srt = stream.srt {
                 if let latency = srt.latency {
