@@ -8,6 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.308.0", date: "2024-06-25", changes: [
+        "• Adjust BELABOX adaptive bitrate algorithm for encoder trickery.",
+        "  • Let the BELABOX algorithm know the actual output bitrate (well, including SRT overhead).",
+        "• B-frames, Twitch and Kick parameters in deep link. 💡 tt2468",
+        "• Finnish translation updates. ✍️ mikeful",
+        "• Replaced time widget with general text widget.",
+        "  • Text.",
+        "  • Current time.",
+        "  • Current encoder bitrate.",
+        "  • Debug overlay.",
+    ]),
     Version(version: "0.307.0", date: "2024-06-23", changes: [
         "• RTMP and SRT(LA) servers improvements.",
     ]),
