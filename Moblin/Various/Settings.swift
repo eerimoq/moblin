@@ -118,6 +118,21 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
     case customIrl
     case belabox
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if container.contains(CodingKeys.fastIrl) {
+            self = .fastIrl
+        } else if container.contains(CodingKeys.slowIrl) {
+            self = .slowIrl
+        } else if container.contains(CodingKeys.customIrl) {
+            self = .customIrl
+        } else if container.contains(CodingKeys.belabox) {
+            self = .belabox
+        } else {
+            self = .fastIrl
+        }
+    }
+
     static func fromString(value: String) -> SettingsStreamSrtAdaptiveBitrateAlgorithm {
         switch value {
         case String(localized: "Fast IRL"):
