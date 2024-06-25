@@ -1482,7 +1482,7 @@ final class Model: NSObject, ObservableObject {
         var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
-            newStream.url = stream.url
+            newStream.url = stream.url.trim()
             if stream.selected == true {
                 newSelectedStream = newStream
             }
@@ -1503,8 +1503,18 @@ final class Model: NSObject, ObservableObject {
                 }
             }
             if let obs = stream.obs {
-                newStream.obsWebSocketUrl = obs.webSocketUrl
-                newStream.obsWebSocketPassword = obs.webSocketPassword
+                newStream.obsWebSocketEnabled = true
+                newStream.obsWebSocketUrl = obs.webSocketUrl.trim()
+                newStream.obsWebSocketPassword = obs.webSocketPassword.trim()
+            }
+            if let twitch = stream.twitch {
+                newStream.twitchEnabled = true
+                newStream.twitchChannelName = twitch.channelName.trim()
+                newStream.twitchChannelId = twitch.channelId.trim()
+            }
+            if let kick = stream.kick {
+                newStream.kickEnabled = true
+                newStream.kickChannelName = kick.channelName.trim()
             }
             database.streams.append(newStream)
         }
@@ -5150,12 +5160,6 @@ extension Model {
 
     func createStreamFromWizard() {
         let stream = SettingsStream(name: wizardName.trim())
-        stream.twitchEnabled = false
-        stream.kickEnabled = false
-        stream.youTubeEnabled = false
-        stream.afreecaTvEnabled = false
-        stream.openStreamingPlatformEnabled = false
-        stream.obsWebSocketEnabled = false
         if wizardPlatform != .custom {
             if wizardNetworkSetup != .direct {
                 if wizardObsRemoteControlEnabled {

@@ -345,22 +345,22 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var enabled: Bool = false
     var url: String = defaultStreamUrl
-    var twitchEnabled: Bool? = true
+    var twitchEnabled: Bool? = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var kickEnabled: Bool? = true
+    var kickEnabled: Bool? = false
     var kickChatroomId: String = ""
     var kickChannelName: String? = ""
-    var youTubeEnabled: Bool? = true
+    var youTubeEnabled: Bool? = false
     var youTubeApiKey: String? = ""
     var youTubeVideoId: String? = ""
-    var afreecaTvEnabled: Bool? = true
+    var afreecaTvEnabled: Bool? = false
     var afreecaTvChannelName: String? = ""
     var afreecaTvStreamId: String? = ""
-    var openStreamingPlatformEnabled: Bool? = true
+    var openStreamingPlatformEnabled: Bool? = false
     var openStreamingPlatformUrl: String? = ""
     var openStreamingPlatformChannelId: String? = ""
-    var obsWebSocketEnabled: Bool? = true
+    var obsWebSocketEnabled: Bool? = false
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
     var obsSourceName: String? = ""
@@ -1489,6 +1489,15 @@ class DeepLinkCreatorStreamObs: Codable {
     var webSocketPassword: String = ""
 }
 
+class DeepLinkCreatorStreamTwitch: Codable {
+    var channelName: String = ""
+    var channelId: String = ""
+}
+
+class DeepLinkCreatorStreamKick: Codable {
+    var channelName: String = ""
+}
+
 class DeepLinkCreatorStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
@@ -1497,6 +1506,8 @@ class DeepLinkCreatorStream: Codable, Identifiable {
     var video: DeepLinkCreatorStreamVideo = .init()
     var srt: DeepLinkCreatorStreamSrt = .init()
     var obs: DeepLinkCreatorStreamObs = .init()
+    var twitch: DeepLinkCreatorStreamTwitch? = .init()
+    var kick: DeepLinkCreatorStreamKick? = .init()
 }
 
 class DeepLinkCreatorQuickButton: Codable, Identifiable {
@@ -2651,6 +2662,14 @@ final class Settings {
         }
         for stream in realDatabase.deepLinkCreator!.streams where stream.video.bFrames == nil {
             stream.video.bFrames = false
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.twitch == nil {
+            stream.twitch = .init()
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.kick == nil {
+            stream.kick = .init()
             store()
         }
     }

@@ -34,10 +34,21 @@ struct DeepLinkCreatorSettingsView: View {
         newStream.srt = .init()
         newStream.srt!.latency = stream.srt.latency
         newStream.srt!.adaptiveBitrateEnabled = false
-        newStream.obs = .init(
-            webSocketUrl: stream.obs.webSocketUrl,
-            webSocketPassword: stream.obs.webSocketPassword
-        )
+        if !stream.obs.webSocketUrl.isEmpty {
+            newStream.obs = .init(
+                webSocketUrl: stream.obs.webSocketUrl,
+                webSocketPassword: stream.obs.webSocketPassword
+            )
+        }
+        if !stream.twitch!.channelName.isEmpty || !stream.twitch!.channelId.isEmpty {
+            newStream.twitch = .init(
+                channelName: stream.twitch!.channelName,
+                channelId: stream.twitch!.channelId
+            )
+        }
+        if !stream.kick!.channelName.isEmpty {
+            newStream.kick = .init(channelName: stream.kick!.channelName)
+        }
         return newStream
     }
 

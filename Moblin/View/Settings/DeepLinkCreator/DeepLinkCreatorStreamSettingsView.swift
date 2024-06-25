@@ -131,6 +131,70 @@ private struct DeepLinkCreatorStreamObsView: View {
     }
 }
 
+struct DeepLinkCreatorStreamTwitchView: View {
+    @EnvironmentObject var model: Model
+    var stream: DeepLinkCreatorStream
+
+    func submitChannelName(value: String) {
+        stream.twitch!.channelName = value
+        model.store()
+    }
+
+    func submitChannelId(value: String) {
+        stream.twitch!.channelId = value
+        model.store()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Channel name"),
+                    value: stream.twitch!.channelName,
+                    onSubmit: submitChannelName,
+                    capitalize: true
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Channel id"),
+                    value: stream.twitch!.channelId,
+                    onSubmit: submitChannelId
+                )
+            }
+        }
+        .navigationTitle("Twitch")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+struct DeepLinkCreatorStreamKickView: View {
+    @EnvironmentObject var model: Model
+    var stream: DeepLinkCreatorStream
+
+    func submitChannelName(value: String) {
+        stream.kick!.channelName = value
+        model.store()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Channel name"),
+                    value: stream.kick!.channelName,
+                    onSubmit: submitChannelName,
+                    capitalize: true
+                )
+            }
+        }
+        .navigationTitle("Kick")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 struct DeepLinkCreatorStreamSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: DeepLinkCreatorStream
@@ -154,14 +218,6 @@ struct DeepLinkCreatorStreamSettingsView: View {
                         model.store()
                     }
                 )
-                Toggle(isOn: Binding(get: {
-                    stream.selected
-                }, set: { value in
-                    stream.selected = value
-                    model.store()
-                }), label: {
-                    Text("Selected")
-                })
                 NavigationLink(destination: DeepLinkCreatorStreamVideoView(video: stream.video)) {
                     Text("Video")
                 }
@@ -170,11 +226,33 @@ struct DeepLinkCreatorStreamSettingsView: View {
                         Text("SRT(LA)")
                     }
                 }
+            } header: {
+                Text("Media")
+            }
+            Section {
+                NavigationLink(destination: DeepLinkCreatorStreamTwitchView(stream: stream)) {
+                    Text("Twitch")
+                }
+                NavigationLink(destination: DeepLinkCreatorStreamKickView(stream: stream)) {
+                    Text("Kick")
+                }
+            } header: {
+                Text("Chat and viewers")
             }
             Section {
                 NavigationLink(destination: DeepLinkCreatorStreamObsView(obs: stream.obs)) {
                     Text("OBS remote control")
                 }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    stream.selected
+                }, set: { value in
+                    stream.selected = value
+                    model.store()
+                }), label: {
+                    Text("Selected")
+                })
             }
         }
         .navigationTitle("Stream")
