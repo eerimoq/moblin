@@ -21,7 +21,7 @@ struct WidgetTextSettingsView: View {
         } footer: {
             VStack(alignment: .leading) {
                 Text("{time} - Show time as HH:MM:SS")
-                Text("{bitrate} - Show bitrate")
+                Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
                 Text("{debugOverlay} - Show debug overlay (if enabled)")
             }
         }

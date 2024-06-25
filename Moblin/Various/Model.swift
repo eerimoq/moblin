@@ -2054,7 +2054,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         var stats = TextEffectStats()
-        stats.bitrate = media.getVideoStreamBitrate(bitrate: stream.bitrate)
+        stats.bitrateAndTotal = speedAndTotal
         stats.date = now
         stats.debugOverlayLines = debugLines
         for textEffect in textEffects.values {

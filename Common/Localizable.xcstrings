@@ -945,7 +945,7 @@
         }
       }
     },
-    "{bitrate} - Show bitrate" : {
+    "{bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
 
     },
     "{debugOverlay} - Show debug overlay (if enabled)" : {
