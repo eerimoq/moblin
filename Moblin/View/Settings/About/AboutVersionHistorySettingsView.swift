@@ -12,7 +12,7 @@ private let versions = [
         "• Adjust BELABOX adaptive bitrate algorithm for encoder trickery.",
         "  • Let the BELABOX algorithm know the actual output bitrate (well, including SRT overhead).",
         "• B-frames, Twitch and Kick parameters in deep link. 💡 tt2468",
-        "• Finnish translation updates. ✍️ mikeful",
+        "• Finnish translation updated. ✍️ mikeful",
         "• Replaced time widget with general text widget.",
         "  • Text.",
         "  • Current time.",
