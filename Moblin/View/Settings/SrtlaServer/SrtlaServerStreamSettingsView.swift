@@ -49,6 +49,9 @@ struct SrtlaServerStreamSettingsView: View {
 
     private func submitStreamId(value: String) {
         let streamId = value.trim()
+        guard streamId.wholeMatch(of: /[a-z]*/) != nil else {
+            return
+        }
         if model.getSrtlaStream(streamId: streamId) != nil {
             return
         }
@@ -71,7 +74,8 @@ struct SrtlaServerStreamSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Stream id"),
                     value: stream.streamId,
-                    onSubmit: submitStreamId
+                    onSubmit: submitStreamId,
+                    footer: Text("May only contain lower case letters.")
                 )
                 .disabled(model.srtlaServerEnabled())
             } footer: {

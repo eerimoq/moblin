@@ -246,9 +246,10 @@ class RtmpServerChunkStream {
             return
         }
         let isStreamKeyConfigured = DispatchQueue.main.sync {
-            if let stream = client.server?.settings.streams.first(where: { stream in
-                stream.streamKey == streamKey
-            }) {
+            if let stream = client.server?.settings.streams
+                .filter({ !$0.streamKey.isEmpty })
+                .first(where: { $0.streamKey == streamKey })
+            {
                 client.manualFps = stream.manualFps!
                 client.fps = stream.fps!
                 return true

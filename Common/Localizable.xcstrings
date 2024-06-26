@@ -45078,6 +45078,9 @@
         }
       }
     },
+    "May only contain lower case letters." : {
+
+    },
     "Me in username color" : {
       "localizations" : {
         "de" : {
