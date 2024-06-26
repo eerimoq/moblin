@@ -1487,11 +1487,25 @@ final class Model: NSObject, ObservableObject {
                 newSelectedStream = newStream
             }
             if let video = stream.video {
+                if let resolution = video.resolution {
+                    newStream.resolution = resolution
+                }
+                if let fps = video.fps, fpss.contains(String(fps)) {
+                    newStream.fps = fps
+                }
+                if let bitrate = video.bitrate, bitrate >= 100_000, bitrate <= 5_000_000 {
+                    newStream.bitrate = bitrate
+                }
                 if let codec = video.codec {
                     newStream.codec = codec
                 }
                 if let bFrames = video.bFrames {
                     newStream.bFrames = bFrames
+                }
+                if let maxKeyFrameInterval = video.maxKeyFrameInterval, maxKeyFrameInterval >= 0,
+                   maxKeyFrameInterval <= 10
+                {
+                    newStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
             if let srt = stream.srt {

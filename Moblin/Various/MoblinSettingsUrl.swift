@@ -10,8 +10,12 @@ class MoblinSettingsSrt: Codable {
 }
 
 class MoblinSettingsUrlStreamVideo: Codable {
+    var resolution: SettingsStreamResolution?
+    var fps: Int?
+    var bitrate: UInt32?
     var codec: SettingsStreamCodec?
     var bFrames: Bool?
+    var maxKeyFrameInterval: Int32?
 }
 
 class MoblinSettingsUrlStreamObs: Codable {

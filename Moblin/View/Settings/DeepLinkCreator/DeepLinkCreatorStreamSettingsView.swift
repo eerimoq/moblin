@@ -4,14 +4,51 @@ private struct DeepLinkCreatorStreamVideoView: View {
     @EnvironmentObject var model: Model
     var video: DeepLinkCreatorStreamVideo
 
+    private func onResolutionChange(resolution: String) {
+        video.resolution = SettingsStreamResolution(rawValue: resolution)!
+        model.store()
+    }
+
+    private func onFpsChange(fps: String) {
+        video.fps = Int(fps)!
+        model.store()
+    }
+
     private func onCodecChange(codec: String) {
         video.codec = SettingsStreamCodec(rawValue: codec)!
+        model.store()
+    }
+
+    private func submitMaxKeyFrameInterval(value: String) {
+        guard let interval = Int32(value) else {
+            return
+        }
+        guard interval >= 0 && interval <= 10 else {
+            return
+        }
+        video.maxKeyFrameInterval = interval
         model.store()
     }
 
     var body: some View {
         Form {
             Section {
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "Resolution"),
+                    onChange: onResolutionChange,
+                    items: InlinePickerItem.fromStrings(values: resolutions),
+                    selectedId: video.resolution!.rawValue
+                )) {
+                    TextItemView(name: String(localized: "Resolution"), value: video.resolution!.rawValue)
+                }
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "FPS"),
+                    onChange: onFpsChange,
+                    items: InlinePickerItem.fromStrings(values: fpss),
+                    selectedId: String(video.fps!)
+                )) {
+                    TextItemView(name: "FPS", value: String(video.fps!))
+                }
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Codec"),
                     onChange: onCodecChange,
@@ -20,6 +57,19 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 )) {
                     TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
                 }
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Key frame interval"),
+                    value: String(video.maxKeyFrameInterval!),
+                    onSubmit: submitMaxKeyFrameInterval,
+                    footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
+                    keyboardType: .numbersAndPunctuation
+                )) {
+                    TextItemView(
+                        name: String(localized: "Key frame interval"),
+                        value: "\(video.maxKeyFrameInterval!) s"
+                    )
+                }
+
                 Toggle(isOn: Binding(get: {
                     video.bFrames!
                 }, set: { value in

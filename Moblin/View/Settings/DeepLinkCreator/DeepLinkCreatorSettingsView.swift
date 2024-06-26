@@ -27,9 +27,21 @@ struct DeepLinkCreatorSettingsView: View {
             newStream.selected = true
         }
         newStream.video = .init()
+        if stream.video.resolution! != .r1920x1080 {
+            newStream.video!.resolution = stream.video.resolution!
+        }
+        if stream.video.fps! != 30 {
+            newStream.video!.fps = stream.video.fps!
+        }
+        if stream.video.bitrate! != 5_000_000 {
+            newStream.video!.bitrate = stream.video.bitrate!
+        }
         newStream.video!.codec = stream.video.codec
         if stream.video.bFrames! {
             newStream.video!.bFrames = stream.video.bFrames!
+        }
+        if stream.video.maxKeyFrameInterval! != 2 {
+            newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval!
         }
         newStream.srt = .init()
         newStream.srt!.latency = stream.srt.latency

@@ -1491,8 +1491,12 @@ class WebBrowserSettings: Codable {
 }
 
 class DeepLinkCreatorStreamVideo: Codable {
+    var resolution: SettingsStreamResolution? = .r1920x1080
+    var fps: Int? = 30
+    var bitrate: UInt32? = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
+    var maxKeyFrameInterval: Int32? = 2
 }
 
 class DeepLinkCreatorStreamSrt: Codable {
@@ -2686,6 +2690,26 @@ final class Settings {
         }
         for stream in realDatabase.deepLinkCreator!.streams where stream.kick == nil {
             stream.kick = .init()
+            store()
+        }
+        if realDatabase.chat.botEnabled == nil {
+            realDatabase.chat.botEnabled = false
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.resolution == nil {
+            stream.video.resolution = .r1920x1080
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.fps == nil {
+            stream.video.fps = 30
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.bitrate == nil {
+            stream.video.bitrate = 5_000_000
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.maxKeyFrameInterval == nil {
+            stream.video.maxKeyFrameInterval = 2
             store()
         }
     }
