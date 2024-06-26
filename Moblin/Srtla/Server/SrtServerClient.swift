@@ -154,10 +154,10 @@ class SrtServerClient {
         // Assume 1024 samples/buffer at 48 kHz for now
         var numberOfGapBuffers = max(Int(((ptsDelta / (1024 / 48000)) - 1).rounded()), 0)
         if numberOfGapBuffers > 0 {
-            logger
-                .info(
-                    "srt-server: Audio gap latest buffer PTS \(latestAudioBufferPresentationTimeStamp.seconds)"
-                )
+            logger.info("""
+            srt-server: Audio gap latest buffer PTS \
+            \(latestAudioBufferPresentationTimeStamp.seconds)
+            """)
             latestMissingAudioBufferPresentationTimeStamp = CMTimeAdd(
                 latestAudioBufferPresentationTimeStamp,
                 CMTime(
