@@ -129,6 +129,16 @@ struct ChatSettingsView: View {
                         Text("Text to speech")
                     }
                 }
+                NavigationLink(destination: ChatBotSettingsView()) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.botEnabled!
+                    }, set: { value in
+                        model.database.chat.botEnabled = value
+                        model.store()
+                    })) {
+                        Text("Bot")
+                    }
+                }
                 Toggle(isOn: Binding(get: {
                     model.database.chat.mirrored!
                 }, set: { value in

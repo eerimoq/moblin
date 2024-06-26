@@ -3171,6 +3171,26 @@ final class Model: NSObject, ObservableObject {
                           isSubscriber: post.isSubscriber)
     }
 
+    private func handleChatBotMessage(segments: [ChatPostSegment]) {
+        var command = ""
+        for segment in segments {
+            if let text = segment.text {
+                command += text
+            }
+        }
+        switch command.trim() {
+        case "!moblin tts on":
+            database.chat.textToSpeechEnabled = true
+            store()
+        case "!moblin tts off":
+            database.chat.textToSpeechEnabled = false
+            store()
+            chatTextToSpeech.reset(running: true)
+        default:
+            logger.info("chat-bot: Unknown command \(command)")
+        }
+    }
+
     func appendChatMessage(
         user: String?,
         userColor: String?,
@@ -3183,6 +3203,10 @@ final class Model: NSObject, ObservableObject {
         isSubscriber: Bool
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
+            return
+        }
+        if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
+            handleChatBotMessage(segments: segments)
             return
         }
         let post = ChatPost(

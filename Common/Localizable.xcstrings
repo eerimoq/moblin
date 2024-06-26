@@ -685,6 +685,12 @@
         }
       }
     },
+    "!moblin tts off" : {
+
+    },
+    "!moblin tts on" : {
+
+    },
     "???" : {
       "localizations" : {
         "de" : {
@@ -16217,6 +16223,9 @@
           }
         }
       }
+    },
+    "Bot" : {
+
     },
     "Bottom right" : {
       "localizations" : {
@@ -82784,6 +82793,9 @@
           }
         }
       }
+    },
+    "Work in progress!" : {
+
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {

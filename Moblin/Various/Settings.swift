@@ -1067,6 +1067,7 @@ class SettingsChat: Codable {
     var textToSpeechSubscribersOnly: Bool? = false
     var textToSpeechFilter: Bool? = true
     var mirrored: Bool? = false
+    var botEnabled: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
