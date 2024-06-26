@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.309.0", date: "2024-06-26", changes: [
+        "• Silence instead of robotic sound when using SRT(LA) server.",
+        "• Only allow lower case letters as SRT(LA) server stream id. 🐛 JohannesLiv",
+    ]),
     Version(version: "0.308.0", date: "2024-06-25", changes: [
         "• Adjust BELABOX adaptive bitrate algorithm for encoder trickery.",
         "  • Let the BELABOX algorithm know the actual output bitrate (well, including SRT overhead).",
