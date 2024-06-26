@@ -189,9 +189,9 @@ final class VideoUnit: NSObject {
     private var blackFormatDescription: CMVideoFormatDescription?
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
-    private var latestSampleBufferDate: Date?
+    private var latestSampleBufferTime: ContinuousClock.Instant?
     private var frameTimer: DispatchSourceTimer?
-    private var firstFrameDate: Date?
+    private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
     private var latestSampleBufferAppendTime = CMTime.zero
     private var lowFpsImageEnabled: Bool = false
@@ -289,14 +289,14 @@ final class VideoUnit: NSObject {
         guard isFirstAfterAttach else {
             return
         }
-        guard let latestSampleBuffer, let latestSampleBufferDate else {
+        guard let latestSampleBuffer, let latestSampleBufferTime else {
             return
         }
-        let delta = Date().timeIntervalSince(latestSampleBufferDate)
-        guard delta > 0.05 else {
+        let delta = latestSampleBufferTime.duration(to: .now)
+        guard delta > .seconds(0.05) else {
             return
         }
-        let timeDelta = CMTime(seconds: delta, preferredTimescale: 1000)
+        let timeDelta = CMTime(seconds: delta.seconds, preferredTimescale: 1000)
         guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
                                                        latestSampleBuffer.formatDescription!,
                                                        latestSampleBuffer.duration,
@@ -360,7 +360,7 @@ final class VideoUnit: NSObject {
     }
 
     private func prepareFirstFrame() {
-        firstFrameDate = nil
+        firstFrameTime = nil
         isFirstAfterAttach = true
     }
 
@@ -1104,16 +1104,15 @@ final class VideoUnit: NSObject {
 
     private func appendSampleBuffer(sampleBuffer: CMSampleBuffer) {
         let rotateDegrees = 0
-        let now = Date()
-        if firstFrameDate == nil {
-            firstFrameDate = now
+        let now = ContinuousClock.now
+        if firstFrameTime == nil {
+            firstFrameTime = now
         }
-        guard now.timeIntervalSince(firstFrameDate!) > ioVideoUnitIgnoreFramesAfterAttachSeconds
-        else {
+        guard firstFrameTime!.duration(to: now) > .seconds(ioVideoUnitIgnoreFramesAfterAttachSeconds) else {
             return
         }
         latestSampleBuffer = sampleBuffer
-        latestSampleBufferDate = now
+        latestSampleBufferTime = now
         guard mixer?.useSampleBuffer(sampleBuffer.presentationTimeStamp, mediaType: AVMediaType.video) == true
         else {
             return
