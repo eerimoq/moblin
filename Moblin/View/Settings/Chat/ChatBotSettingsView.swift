@@ -5,9 +5,9 @@ struct ChatBotSettingsView: View {
         Form {
             Section {
                 Text("""
-                     Only configured Twitch and Kick channel names and Twitch mods are \
-                     allowed to execute commands.
-                     """)
+                Only configured Twitch and Kick channel names and Twitch mods are \
+                allowed to execute commands.
+                """)
             }
             Section {
                 Text("!moblin tts on")
