@@ -685,6 +685,9 @@
         }
       }
     },
+    "!moblin obs fix" : {
+
+    },
     "!moblin tts off" : {
 
     },
@@ -34037,6 +34040,9 @@
         }
       }
     },
+    "Fix OBS input." : {
+
+    },
     "Fixing..." : {
       "localizations" : {
         "de" : {
@@ -52109,6 +52115,9 @@
           }
         }
       }
+    },
+    "Only configured Twitch and Kick channel names and Twitch mods are allowed to execute commands." : {
+
     },
     "Only needed for chat." : {
       "localizations" : {
@@ -75904,6 +75913,12 @@
         }
       }
     },
+    "Turn off chat text to speech." : {
+
+    },
+    "Turn on chat text to speech." : {
+
+    },
     "Twitch" : {
       "localizations" : {
         "de" : {
@@ -82793,9 +82808,6 @@
           }
         }
       }
-    },
-    "Work in progress!" : {
-
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {
