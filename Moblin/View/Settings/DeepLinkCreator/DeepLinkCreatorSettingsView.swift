@@ -43,6 +43,12 @@ struct DeepLinkCreatorSettingsView: View {
         if stream.video.maxKeyFrameInterval! != 2 {
             newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval!
         }
+        if stream.audio!.bitrate != 128_000 {
+            newStream.audio = .init()
+            if stream.audio!.bitrate != 128_000 {
+                newStream.audio!.bitrate = stream.audio!.bitrate
+            }
+        }
         newStream.srt = .init()
         newStream.srt!.latency = stream.srt.latency
         newStream.srt!.adaptiveBitrateEnabled = false

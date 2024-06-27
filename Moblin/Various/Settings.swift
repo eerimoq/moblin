@@ -1499,6 +1499,10 @@ class DeepLinkCreatorStreamVideo: Codable {
     var maxKeyFrameInterval: Int32? = 2
 }
 
+class DeepLinkCreatorStreamAudio: Codable {
+    var bitrate: Int = 128_000
+}
+
 class DeepLinkCreatorStreamSrt: Codable {
     var latency: Int32 = defaultSrtLatency
     var adaptiveBitrateEnabled: Bool = true
@@ -1524,6 +1528,7 @@ class DeepLinkCreatorStream: Codable, Identifiable {
     var url: String = defaultStreamUrl
     var selected: Bool = false
     var video: DeepLinkCreatorStreamVideo = .init()
+    var audio: DeepLinkCreatorStreamAudio? = .init()
     var srt: DeepLinkCreatorStreamSrt = .init()
     var obs: DeepLinkCreatorStreamObs = .init()
     var twitch: DeepLinkCreatorStreamTwitch? = .init()
@@ -2710,6 +2715,10 @@ final class Settings {
         }
         for stream in realDatabase.deepLinkCreator!.streams where stream.video.maxKeyFrameInterval == nil {
             stream.video.maxKeyFrameInterval = 2
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.audio == nil {
+            stream.audio = .init()
             store()
         }
     }

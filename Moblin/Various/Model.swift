@@ -1510,6 +1510,11 @@ final class Model: NSObject, ObservableObject {
                     newStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
+            if let audio = stream.audio {
+                if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
+                    newStream.audioBitrate = bitrate
+                }
+            }
             if let srt = stream.srt {
                 if let latency = srt.latency {
                     newStream.srt.latency = latency

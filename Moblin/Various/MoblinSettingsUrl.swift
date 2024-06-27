@@ -18,6 +18,10 @@ class MoblinSettingsUrlStreamVideo: Codable {
     var maxKeyFrameInterval: Int32?
 }
 
+class MoblinSettingsUrlStreamAudio: Codable {
+    var bitrate: Int?
+}
+
 class MoblinSettingsUrlStreamObs: Codable {
     var webSocketUrl: String
     var webSocketPassword: String
@@ -53,6 +57,7 @@ class MoblinSettingsUrlStream: Codable {
     var enabled: Bool?
     var selected: Bool?
     var video: MoblinSettingsUrlStreamVideo?
+    var audio: MoblinSettingsUrlStreamAudio?
     var srt: MoblinSettingsSrt?
     var obs: MoblinSettingsUrlStreamObs?
     var twitch: MoblinSettingsUrlStreamTwitch?

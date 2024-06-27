@@ -87,6 +87,43 @@ private struct DeepLinkCreatorStreamVideoView: View {
     }
 }
 
+private struct DeepLinkCreatorStreamAudioView: View {
+    @EnvironmentObject var model: Model
+    var audio: DeepLinkCreatorStreamAudio
+    @State var bitrate: Float
+
+    private func calcBitrate() -> Int {
+        return Int((bitrate * 1000).rounded(.up))
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                HStack {
+                    Slider(
+                        value: $bitrate,
+                        in: 32 ... 320,
+                        step: 32,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            audio.bitrate = calcBitrate()
+                            model.store()
+                        }
+                    )
+                    Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
+                        .frame(width: 90)
+                }
+                .navigationTitle("Audio")
+                .toolbar {
+                    SettingsToolbar()
+                }
+            }
+        }
+    }
+}
+
 private struct DeepLinkCreatorStreamSrtView: View {
     @EnvironmentObject var model: Model
     var srt: DeepLinkCreatorStreamSrt
@@ -270,6 +307,12 @@ struct DeepLinkCreatorStreamSettingsView: View {
                 )
                 NavigationLink(destination: DeepLinkCreatorStreamVideoView(video: stream.video)) {
                     Text("Video")
+                }
+                NavigationLink(destination: DeepLinkCreatorStreamAudioView(
+                    audio: stream.audio!,
+                    bitrate: Float(stream.audio!.bitrate / 1000)
+                )) {
+                    Text("Audio")
                 }
                 if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
                     NavigationLink(destination: DeepLinkCreatorStreamSrtView(srt: stream.srt)) {
