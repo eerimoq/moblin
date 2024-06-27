@@ -80,7 +80,8 @@ final class TwitchChatMoblin {
             isAction: isAction,
             isAnnouncement: message.announcement,
             isFirstMessage: message.firstMessage,
-            isSubscriber: message.subscriber
+            isSubscriber: message.subscriber,
+            isModerator: message.moderator
         )
     }
 

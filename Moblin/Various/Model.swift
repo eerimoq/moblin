@@ -138,6 +138,7 @@ struct ChatPost: Identifiable, Equatable {
     var isAnnouncement: Bool
     var isFirstMessage: Bool
     var isSubscriber: Bool
+    var isModerator: Bool
 }
 
 class ButtonState {
@@ -1917,7 +1918,8 @@ final class Model: NSObject, ObservableObject {
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,
-            isSubscriber: false
+            isSubscriber: false,
+            isModerator: false
         )
     }
 
@@ -3188,11 +3190,17 @@ final class Model: NSObject, ObservableObject {
                           isAction: post.isAction,
                           isAnnouncement: post.isAnnouncement,
                           isFirstMessage: post.isFirstMessage,
-                          isSubscriber: post.isSubscriber)
+                          isSubscriber: post.isSubscriber,
+                          isModerator: post.isModerator)
     }
 
-    private func handleChatBotMessage(platform: Platform, user: String?, segments: [ChatPostSegment]) {
-        guard isUserAllowedToUseChatBot(platform: platform, user: user) else {
+    private func handleChatBotMessage(
+        platform: Platform,
+        user: String?,
+        isModerator: Bool,
+        segments: [ChatPostSegment]
+    ) {
+        guard isUserAllowedToUseChatBot(platform: platform, user: user, isModerator: isModerator) else {
             return
         }
         var command = ""
@@ -3238,7 +3246,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func isUserAllowedToUseChatBot(platform: Platform, user: String?) -> Bool {
+    private func isUserAllowedToUseChatBot(platform: Platform, user: String?, isModerator: Bool) -> Bool {
+        if isModerator {
+            return true
+        }
         guard let user else {
             return false
         }
@@ -3271,13 +3282,14 @@ final class Model: NSObject, ObservableObject {
         isAction: Bool,
         isAnnouncement: Bool,
         isFirstMessage: Bool,
-        isSubscriber: Bool
+        isSubscriber: Bool,
+        isModerator: Bool
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
         }
         if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
-            handleChatBotMessage(platform: platform, user: user, segments: segments)
+            handleChatBotMessage(platform: platform, user: user, isModerator: isModerator, segments: segments)
             return
         }
         let post = ChatPost(
@@ -3291,7 +3303,8 @@ final class Model: NSObject, ObservableObject {
             isAction: isAction,
             isAnnouncement: isAnnouncement,
             isFirstMessage: isFirstMessage,
-            isSubscriber: isSubscriber
+            isSubscriber: isSubscriber,
+            isModerator: isModerator
         )
         chatPostId += 1
         if chatPaused {

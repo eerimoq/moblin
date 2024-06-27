@@ -251,7 +251,8 @@ final class AfreecaTvChat: NSObject {
                 isAction: false,
                 isAnnouncement: false,
                 isFirstMessage: false,
-                isSubscriber: false
+                isSubscriber: false,
+                isModerator: false
             )
         }
     }

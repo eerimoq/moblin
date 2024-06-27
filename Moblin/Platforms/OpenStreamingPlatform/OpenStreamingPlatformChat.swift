@@ -228,7 +228,8 @@ class OpenStreamingPlatformChat {
                                     isAction: false,
                                     isAnnouncement: false,
                                     isFirstMessage: false,
-                                    isSubscriber: false)
+                                    isSubscriber: false,
+                                    isModerator: false)
         }
     }
 
