@@ -176,6 +176,7 @@ final class KickPusher: NSObject {
             segments.append(segment)
         }
         model.appendChatMessage(
+            platform: .kick,
             user: message.sender.username,
             userColor: message.sender.identity.color,
             segments: segments,

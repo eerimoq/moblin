@@ -71,6 +71,7 @@ final class TwitchChatMoblin {
             emotesManager: self.emotes
         )
         model.appendChatMessage(
+            platform: .twitch,
             user: message.sender,
             userColor: message.senderColor,
             segments: segments,

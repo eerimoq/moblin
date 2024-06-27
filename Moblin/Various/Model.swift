@@ -128,6 +128,7 @@ struct ChatPost: Identifiable, Equatable {
     }
 
     var id: Int
+    var platform: Platform
     var user: String?
     var userColor: String?
     var segments: [ChatPostSegment]
@@ -1907,6 +1908,7 @@ final class Model: NSObject, ObservableObject {
         chatPaused = true
         pausedChatPostsCount = 0
         appendChatMessage(
+            platform: .unknown,
             user: nil,
             userColor: nil,
             segments: [],
@@ -3174,7 +3176,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func appendChatPost(post: ChatPost) {
-        appendChatMessage(user: post.user,
+        appendChatMessage(platform: post.platform,
+                          user: post.user,
                           userColor: post.userColor,
                           segments: post.segments,
                           timestamp: post.timestamp,
@@ -3185,7 +3188,7 @@ final class Model: NSObject, ObservableObject {
                           isSubscriber: post.isSubscriber)
     }
 
-    private func handleChatBotMessage(segments: [ChatPostSegment]) {
+    private func handleChatBotMessage(platform _: Platform, segments: [ChatPostSegment]) {
         var command = ""
         for segment in segments {
             if let text = segment.text {
@@ -3206,6 +3209,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func appendChatMessage(
+        platform: Platform,
         user: String?,
         userColor: String?,
         segments: [ChatPostSegment],
@@ -3220,11 +3224,12 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
-            handleChatBotMessage(segments: segments)
+            handleChatBotMessage(platform: platform, segments: segments)
             return
         }
         let post = ChatPost(
             id: chatPostId,
+            platform: platform,
             user: user,
             userColor: userColor,
             segments: segments,
