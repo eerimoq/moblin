@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.310.0", date: "2024-06-27", changes: [
+        "• Builtin chat bot started. 💡 disco",
+        "  • Enable in Settings → Chat → Bot.",
+        "  • Only configured Twitch and Kick channel names and Twitch mods are allowed to execute commands.",
+        "  • Three commands implemented:",
+        "    • !moblin tts on",
+        "    • !moblin tts off",
+        "    • !moblin obs fix",
+        "• Resolution, FPS, video and audio bitrates and keyframe interval parameters in deep link. 💡 Tican",
+    ]),
     Version(version: "0.309.0", date: "2024-06-26", changes: [
         "• Silence instead of robotic sound when using SRT(LA) server.",
         "• Only allow lower case letters as SRT(LA) server stream id. 🐛 JohannesLiv",
