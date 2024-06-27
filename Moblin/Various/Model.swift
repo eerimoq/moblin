@@ -2973,19 +2973,22 @@ final class Model: NSObject, ObservableObject {
     }
 
     func obsFixStream() {
+        guard let obsWebSocket else {
+            return
+        }
         obsFixOngoing = true
-        obsWebSocket?.setInputSettings(inputName: stream.obsSourceName!,
-                                       onSuccess: {
-                                           self.obsFixOngoing = false
-                                       }, onError: { message in
-                                           self.obsFixOngoing = false
-                                           DispatchQueue.main.async {
-                                               self.makeErrorToast(
-                                                   title: String(localized: "Failed to fix OBS input"),
-                                                   subTitle: message
-                                               )
-                                           }
-                                       })
+        obsWebSocket.setInputSettings(inputName: stream.obsSourceName!,
+                                      onSuccess: {
+                                          self.obsFixOngoing = false
+                                      }, onError: { message in
+                                          self.obsFixOngoing = false
+                                          DispatchQueue.main.async {
+                                              self.makeErrorToast(
+                                                  title: String(localized: "Failed to fix OBS input"),
+                                                  subTitle: message
+                                              )
+                                          }
+                                      })
     }
 
     func startObsAudioVolume() {
@@ -3188,7 +3191,10 @@ final class Model: NSObject, ObservableObject {
                           isSubscriber: post.isSubscriber)
     }
 
-    private func handleChatBotMessage(platform _: Platform, segments: [ChatPostSegment]) {
+    private func handleChatBotMessage(platform: Platform, user: String?, segments: [ChatPostSegment]) {
+        guard isUserAllowedToUseChatBot(platform: platform, user: user) else {
+            return
+        }
         var command = ""
         for segment in segments {
             if let text = segment.text {
@@ -3197,15 +3203,62 @@ final class Model: NSObject, ObservableObject {
         }
         switch command.trim() {
         case "!moblin tts on":
-            database.chat.textToSpeechEnabled = true
-            store()
+            handleChatBotMessageTtsOn()
         case "!moblin tts off":
-            database.chat.textToSpeechEnabled = false
-            store()
-            chatTextToSpeech.reset(running: true)
+            handleChatBotMessageTtsOff()
+        case "!moblin obs fix":
+            handleChatBotMessageObsFix()
         default:
-            logger.info("chat-bot: Unknown command \(command)")
+            makeErrorToast(title: "Chat bot", subTitle: "Unknown command \(command)")
         }
+    }
+
+    private func handleChatBotMessageTtsOn() {
+        makeToast(title: "Chat bot", subTitle: "Turning on chat text to speech")
+        database.chat.textToSpeechEnabled = true
+        store()
+    }
+
+    private func handleChatBotMessageTtsOff() {
+        makeToast(title: "Chat bot", subTitle: "Turning off chat text to speech")
+        database.chat.textToSpeechEnabled = false
+        store()
+        chatTextToSpeech.reset(running: true)
+    }
+
+    private func handleChatBotMessageObsFix() {
+        if obsWebSocket != nil {
+            makeToast(title: "Chat bot", subTitle: "Fixing OBS input")
+            obsFixStream()
+        } else {
+            makeErrorToast(
+                title: "Chat bot",
+                subTitle: "Cannot fix OBS input. OBS remote control is not configured."
+            )
+        }
+    }
+
+    private func isUserAllowedToUseChatBot(platform: Platform, user: String?) -> Bool {
+        guard let user else {
+            return false
+        }
+        switch platform {
+        case .twitch:
+            return isTwitchUserAllowedToUseChatBot(user: user)
+        case .kick:
+            return isKickUserAllowedToUseChatBot(user: user)
+        default:
+            break
+        }
+        return false
+    }
+
+    private func isTwitchUserAllowedToUseChatBot(user: String) -> Bool {
+        return user == stream.twitchChannelName
+    }
+
+    private func isKickUserAllowedToUseChatBot(user: String) -> Bool {
+        return user == stream.kickChannelName
     }
 
     func appendChatMessage(
@@ -3224,7 +3277,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
-            handleChatBotMessage(platform: platform, segments: segments)
+            handleChatBotMessage(platform: platform, user: user, segments: segments)
             return
         }
         let post = ChatPost(
