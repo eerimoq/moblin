@@ -1,5 +1,36 @@
 import SwiftUI
 
+struct DeepLinkCreatorStreamVideoBitrateView: View {
+    @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
+    var video: DeepLinkCreatorStreamVideo
+    @State var selection: UInt32
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("", selection: $selection) {
+                    ForEach(model.database.bitratePresets) { preset in
+                        Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
+                            .tag(preset.bitrate)
+                    }
+                }
+                .onChange(of: selection) { bitrate in
+                    video.bitrate = bitrate
+                    model.store()
+                    dismiss()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .navigationTitle("Bitrate")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 private struct DeepLinkCreatorStreamVideoView: View {
     @EnvironmentObject var model: Model
     var video: DeepLinkCreatorStreamVideo
@@ -56,6 +87,15 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     selectedId: video.codec.rawValue
                 )) {
                     TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
+                }
+                NavigationLink(destination: DeepLinkCreatorStreamVideoBitrateView(
+                    video: video,
+                    selection: video.bitrate!
+                )) {
+                    TextItemView(
+                        name: String(localized: "Bitrate"),
+                        value: formatBytesPerSecond(speed: Int64(video.bitrate!))
+                    )
                 }
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Key frame interval"),
