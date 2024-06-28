@@ -52,9 +52,11 @@ class StreamingHistoryStream: Identifiable, Codable {
     var lowestBatteryLevel: Double? = 1.0
     var highestBitrate: Int64? = Int64.min
     var numberOfChatMessages: Int? = 0
+    var logId: UUID?
 
     init(settings: SettingsStream) {
         self.settings = settings
+        logId = UUID()
     }
 
     func updateBitrate(bitrate: Int64) {

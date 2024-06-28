@@ -315,6 +315,7 @@ final class Model: NSObject, ObservableObject {
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
+    var logsStorage = LogsStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
     private var logId = 1
@@ -488,6 +489,7 @@ final class Model: NSObject, ObservableObject {
     private var products: [String: Product] = [:]
     private var streamTotalBytes: UInt64 = 0
     private var streamTotalChatMessages: Int = 0
+    private var streamLog: Deque<String> = []
     var ipMonitor = IPMonitor(ipType: .ipv4)
     @Published var ipStatuses: [IPMonitor.Status] = []
     private var faceEffect = FaceEffect(fps: 30)
@@ -710,7 +712,7 @@ final class Model: NSObject, ObservableObject {
         buttonPairs = pairs.reversed()
     }
 
-    func debugLog(message: String) {
+    private func debugLog(message: String) {
         DispatchQueue.main.async {
             if self.log.count > self.database.debug!.maximumLogLines! {
                 self.log.removeFirst()
@@ -718,7 +720,15 @@ final class Model: NSObject, ObservableObject {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlStreamer?.log(entry: message)
+            if self.streamLog.count >= 100_000 {
+                self.streamLog.removeFirst()
+            }
+            self.streamLog.append(message)
         }
+    }
+
+    func makeStreamShareLogUrl(logId: UUID) -> URL {
+        return logsStorage.makePath(id: logId)
     }
 
     func clearLog() {
@@ -790,6 +800,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        for logId in logsStorage.ids()
+            where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
+        {
+            logsStorage.remove(id: logId)
+        }
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
         supportsAppleLog = hasAppleLog()
@@ -2308,6 +2323,7 @@ final class Model: NSObject, ObservableObject {
             )
             return
         }
+        streamLog.removeAll()
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
@@ -2338,6 +2354,9 @@ final class Model: NSObject, ObservableObject {
         stopNetStream()
         streamState = .disconnected
         if let streamingHistoryStream {
+            if let logId = streamingHistoryStream.logId {
+                logsStorage.write(id: logId, data: streamLog.joined(separator: "\n").utf8Data)
+            }
             streamingHistoryStream.stopTime = Date()
             streamingHistoryStream.totalBytes = streamTotalBytes
             streamingHistoryStream.numberOfChatMessages = streamTotalChatMessages
