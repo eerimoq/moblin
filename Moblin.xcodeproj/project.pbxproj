@@ -43,6 +43,7 @@
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
 		031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */; };
+		031BD2C52C2D11DC002D4E10 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031BD2C42C2D11DC002D4E10 /* Platform.swift */; };
 		031C15B52B93326500BA967D /* WatchChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15B42B93326500BA967D /* WatchChatSettingsView.swift */; };
 		031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15B82B93339C00BA967D /* WatchSettingsView.swift */; };
 		031C15C02B9336D700BA967D /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15BE2B9336D200BA967D /* ControlView.swift */; };
@@ -202,6 +203,7 @@
 		036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
 		036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
+		037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */; };
@@ -224,6 +226,7 @@
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */; };
 		037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037EBE762B666F66004D5774 /* DrawOnStreamView.swift */; };
+		0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
 		03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
@@ -466,6 +469,7 @@
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
 		031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAudioSettingsView.swift; sourceTree = "<group>"; };
+		031BD2C42C2D11DC002D4E10 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		031C15B42B93326500BA967D /* WatchChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchChatSettingsView.swift; sourceTree = "<group>"; };
 		031C15B82B93339C00BA967D /* WatchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettingsView.swift; sourceTree = "<group>"; };
 		031C15BE2B9336D200BA967D /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
@@ -670,6 +674,7 @@
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
+		037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -693,6 +698,7 @@
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
+		0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
@@ -883,9 +889,10 @@
 		030399112AE2D0E900D27530 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */,
 				030399122AE2D0FC00D27530 /* ChatSettingsView.swift */,
-				0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */,
 				0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */,
+				0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -916,6 +923,7 @@
 				03B7DAAF2BA63F4600CEFC1B /* OpenStreamingPlatform */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
 				0330F2AE2AFAD24F001262C3 /* YouTube */,
+				031BD2C42C2D11DC002D4E10 /* Platform.swift */,
 			);
 			path = Platforms;
 			sourceTree = "<group>";
@@ -1035,6 +1043,7 @@
 				039A9E262BAEC58F00A23F97 /* Crop */,
 				03403DF32AD05C700079D8E4 /* Browser */,
 				0315A3652AA33C5400295443 /* Image */,
+				037132CC2C29FEED00393605 /* Text */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Widget;
@@ -1625,6 +1634,14 @@
 				03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */,
 			);
 			path = Rtmp;
+			sourceTree = "<group>";
+		};
+		037132CC2C29FEED00393605 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */,
+			);
+			path = Text;
 			sourceTree = "<group>";
 		};
 		0376F6FC2B9511030056B3D2 /* Moblin Widget */ = {
@@ -2680,6 +2697,7 @@
 				0359F8DC2BD3DA61005BFDA8 /* ElementaryStreamSpecificData.swift in Sources */,
 				0359F9022BD3DA61005BFDA8 /* ByteArray.swift in Sources */,
 				0359F8CC2BD3DA61005BFDA8 /* FLVTagType.swift in Sources */,
+				0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */,
 				0359F8F02BD3DA61005BFDA8 /* RTMPObjectEncoding.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
@@ -2742,6 +2760,7 @@
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
 				0359F9002BD3DA61005BFDA8 /* AnyUtil.swift in Sources */,
 				03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */,
+				031BD2C52C2D11DC002D4E10 /* Platform.swift in Sources */,
 				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0359F8D72BD3DA61005BFDA8 /* MpegTsAudioConfig.swift in Sources */,
 				0359F8B42BD3DA61005BFDA8 /* AVAudioPCMBuffer+Extension.swift in Sources */,
@@ -2773,6 +2792,7 @@
 				037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */,
 				03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
+				037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */,
 				03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */,
@@ -3112,7 +3132,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.307.0;
+				MARKETING_VERSION = 0.310.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3163,7 +3183,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.307.0;
+				MARKETING_VERSION = 0.310.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -10,7 +10,16 @@ class MoblinSettingsSrt: Codable {
 }
 
 class MoblinSettingsUrlStreamVideo: Codable {
+    var resolution: SettingsStreamResolution?
+    var fps: Int?
+    var bitrate: UInt32?
     var codec: SettingsStreamCodec?
+    var bFrames: Bool?
+    var maxKeyFrameInterval: Int32?
+}
+
+class MoblinSettingsUrlStreamAudio: Codable {
+    var bitrate: Int?
 }
 
 class MoblinSettingsUrlStreamObs: Codable {
@@ -23,6 +32,24 @@ class MoblinSettingsUrlStreamObs: Codable {
     }
 }
 
+class MoblinSettingsUrlStreamTwitch: Codable {
+    var channelName: String
+    var channelId: String
+
+    init(channelName: String, channelId: String) {
+        self.channelName = channelName
+        self.channelId = channelId
+    }
+}
+
+class MoblinSettingsUrlStreamKick: Codable {
+    var channelName: String
+
+    init(channelName: String) {
+        self.channelName = channelName
+    }
+}
+
 class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
@@ -30,8 +57,11 @@ class MoblinSettingsUrlStream: Codable {
     var enabled: Bool?
     var selected: Bool?
     var video: MoblinSettingsUrlStreamVideo?
+    var audio: MoblinSettingsUrlStreamAudio?
     var srt: MoblinSettingsSrt?
     var obs: MoblinSettingsUrlStreamObs?
+    var twitch: MoblinSettingsUrlStreamTwitch?
+    var kick: MoblinSettingsUrlStreamKick?
 
     init(name: String, url: String) {
         self.name = name

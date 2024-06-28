@@ -6,6 +6,83 @@ import Vision
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
+struct TextEffectStats {
+    var bitrateAndTotal: String = ""
+    var date = Date()
+    var debugOverlayLines: [String] = []
+}
+
+private enum FormatPart {
+    case text(String)
+    case clock
+    case bitrateAndTotal
+    case debugOverlay
+}
+
+private class FormatLoader {
+    private var format: String = ""
+    private var parts: [FormatPart] = []
+    private var index: String.Index!
+    private var textStartIndex: String.Index!
+
+    func load(format inputFormat: String) -> [FormatPart] {
+        format = inputFormat.replacing("\\n", with: "\n")
+        parts = []
+        index = format.startIndex
+        textStartIndex = format.startIndex
+        while index < format.endIndex {
+            switch format[index] {
+            case "{":
+                let formatFromIndex = format[index ..< format.endIndex].lowercased()
+                if formatFromIndex.hasPrefix("{time}") {
+                    loadTime()
+                } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
+                    loadBitrateAndTotal()
+                } else if formatFromIndex.hasPrefix("{debugoverlay}") {
+                    loadDebugOverlay()
+                } else {
+                    index = format.index(after: index)
+                }
+            default:
+                index = format.index(after: index)
+            }
+        }
+        appendTextIfPresent()
+        return parts
+    }
+
+    private func appendTextIfPresent() {
+        if textStartIndex < index {
+            parts.append(.text(String(format[textStartIndex ..< index])))
+        }
+    }
+
+    private func loadTime() {
+        appendTextIfPresent()
+        parts.append(.clock)
+        index = format.index(index, offsetBy: 6)
+        textStartIndex = index
+    }
+
+    private func loadBitrateAndTotal() {
+        appendTextIfPresent()
+        parts.append(.bitrateAndTotal)
+        index = format.index(index, offsetBy: 17)
+        textStartIndex = index
+    }
+
+    private func loadDebugOverlay() {
+        appendTextIfPresent()
+        parts.append(.debugOverlay)
+        index = format.index(index, offsetBy: 14)
+        textStartIndex = index
+    }
+}
+
+private func loadFormat(format: String) -> [FormatPart] {
+    return FormatLoader().load(format: format)
+}
+
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var fontSize: CGFloat
@@ -16,8 +93,11 @@ final class TextEffect: VideoEffect {
     private var image: UIImage?
     private let settingName: String
     private var nextUpdateTime = ContinuousClock.now
+    private var stats = TextEffectStats()
+    private var formatParts: [FormatPart]
 
-    init(format _: String, fontSize: CGFloat, settingName: String) {
+    init(format: String, fontSize: CGFloat, settingName: String) {
+        formatParts = loadFormat(format: format)
         self.fontSize = fontSize
         self.settingName = settingName
         x = 0
@@ -25,12 +105,31 @@ final class TextEffect: VideoEffect {
         super.init()
     }
 
+    func updateStats(stats: TextEffectStats) {
+        textQueue.sync {
+            self.stats = stats
+        }
+    }
+
     override func getName() -> String {
         return "\(settingName) browser widget"
     }
 
     private func formatted() -> String {
-        return Date().formatted(.dateTime.hour().minute().second())
+        var parts: [String] = []
+        for formatPart in formatParts {
+            switch formatPart {
+            case let .text(text):
+                parts.append(text)
+            case .clock:
+                parts.append(stats.date.formatted(.dateTime.hour().minute().second()))
+            case .bitrateAndTotal:
+                parts.append(stats.bitrateAndTotal)
+            case .debugOverlay:
+                parts.append(stats.debugOverlayLines.joined(separator: "\n"))
+            }
+        }
+        return parts.joined()
     }
 
     private func scaledFontSize(width: Double) -> CGFloat {

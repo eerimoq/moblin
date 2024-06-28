@@ -12,8 +12,8 @@ class SrtServerClient {
     private var nalUnitReader = NALUnitReader()
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var audioBuffer: AVAudioCompressedBuffer?
-    private var latestAudioSampleBuffer: CMSampleBuffer?
-    private var latestAudioBufferPresentationTimeStamp = 0.0
+    private var latestAudioBufferPresentationTimeStamp: CMTime?
+    private var latestMissingAudioBufferPresentationTimeStamp: CMTime = .zero
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private let streamId: String
@@ -128,49 +128,74 @@ class SrtServerClient {
             logger.info("srt-server: Error \(error)")
             return
         }
-        let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        if let latestAudioSampleBuffer {
-            let ptsDelta = presentationTimeStamp - latestAudioBufferPresentationTimeStamp
-            // Assume 1024 samples/buffer at 48 kHz for now
-            let numberOfGapBuffers = max(Int(((ptsDelta / (1024 / 48000)) - 1).rounded()), 0)
-            if numberOfGapBuffers > 0 {
-                logger
-                    .info("srt-server: Audio gap latest buffer PTS \(latestAudioBufferPresentationTimeStamp)")
-            }
-            for index in 0 ..< numberOfGapBuffers {
-                let newPresentationTimeStamp = CMTimeAdd(
-                    latestAudioSampleBuffer.presentationTimeStamp,
-                    CMTime(
-                        value: CMTimeValue(Double(1024 * (1 + index))),
-                        timescale: CMTimeScale(48000)
-                    )
-                )
-                logger.info("srt-server: Audio gap filler buffer PTS \(newPresentationTimeStamp.seconds)")
-                if let sampleBuffer = createSilentSampleBuffer(
-                    format: pcmAudioFormat,
-                    presentationTimeStamp: newPresentationTimeStamp
-                ) {
-                    server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
-                        streamId: streamId,
-                        sampleBuffer: sampleBuffer
-                    )
-                }
-            }
-            if numberOfGapBuffers > 0 {
-                logger.info("srt-server: Audio gap new buffer PTS \(presentationTimeStamp)")
-            }
+        guard !outputSilence(sampleBuffer.presentationTimeStamp, pcmAudioFormat) else {
+            return
         }
-        latestAudioBufferPresentationTimeStamp = presentationTimeStamp
         guard let sampleBuffer = outputBuffer
             .makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)
         else {
             return
         }
-        latestAudioSampleBuffer = sampleBuffer
         server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
             streamId: streamId,
             sampleBuffer: sampleBuffer
         )
+    }
+
+    // Maybe only fill gaps in audio unit?
+    private func outputSilence(_ presentationTimeStamp: CMTime, _ pcmAudioFormat: AVAudioFormat) -> Bool {
+        defer {
+            latestAudioBufferPresentationTimeStamp = presentationTimeStamp
+        }
+        guard let latestAudioBufferPresentationTimeStamp else {
+            return false
+        }
+        let ptsDelta = (presentationTimeStamp - latestAudioBufferPresentationTimeStamp).seconds
+        // Assume 1024 samples/buffer at 48 kHz for now
+        var numberOfGapBuffers = max(Int(((ptsDelta / (1024 / 48000)) - 1).rounded()), 0)
+        if numberOfGapBuffers > 0 {
+            logger.info("""
+            srt-server: Audio gap latest buffer PTS \
+            \(latestAudioBufferPresentationTimeStamp.seconds)
+            """)
+            latestMissingAudioBufferPresentationTimeStamp = CMTimeAdd(
+                latestAudioBufferPresentationTimeStamp,
+                CMTime(
+                    value: CMTimeValue(Double(1024 * numberOfGapBuffers)),
+                    timescale: CMTimeScale(48000)
+                )
+            )
+            numberOfGapBuffers += 1
+        } else if (presentationTimeStamp - latestMissingAudioBufferPresentationTimeStamp).seconds < 0.5 {
+            logger.info("""
+            srt-server: Audio gap latest missing buffer PTS \
+            \(latestMissingAudioBufferPresentationTimeStamp.seconds)
+            """)
+            numberOfGapBuffers = 1
+        }
+        for index in 0 ..< numberOfGapBuffers {
+            let newPresentationTimeStamp = CMTimeAdd(
+                latestAudioBufferPresentationTimeStamp,
+                CMTime(
+                    value: CMTimeValue(Double(1024 * (1 + index))),
+                    timescale: CMTimeScale(48000)
+                )
+            )
+            logger.info("srt-server: Audio gap filler buffer PTS \(newPresentationTimeStamp.seconds)")
+            if let sampleBuffer = createSilentSampleBuffer(
+                format: pcmAudioFormat,
+                presentationTimeStamp: newPresentationTimeStamp
+            ) {
+                server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
+                    streamId: streamId,
+                    sampleBuffer: sampleBuffer
+                )
+            }
+        }
+        if numberOfGapBuffers > 0 {
+            logger.info("srt-server: Audio gap new buffer PTS \(presentationTimeStamp.seconds)")
+        }
+        return numberOfGapBuffers > 0
     }
 
     private func createSilentSampleBuffer(format: AVAudioFormat,

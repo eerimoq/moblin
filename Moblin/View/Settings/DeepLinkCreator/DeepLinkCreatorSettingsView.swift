@@ -27,14 +27,46 @@ struct DeepLinkCreatorSettingsView: View {
             newStream.selected = true
         }
         newStream.video = .init()
+        if stream.video.resolution! != .r1920x1080 {
+            newStream.video!.resolution = stream.video.resolution!
+        }
+        if stream.video.fps! != 30 {
+            newStream.video!.fps = stream.video.fps!
+        }
+        if stream.video.bitrate! != 5_000_000 {
+            newStream.video!.bitrate = stream.video.bitrate!
+        }
         newStream.video!.codec = stream.video.codec
+        if stream.video.bFrames! {
+            newStream.video!.bFrames = stream.video.bFrames!
+        }
+        if stream.video.maxKeyFrameInterval! != 2 {
+            newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval!
+        }
+        if stream.audio!.bitrate != 128_000 {
+            newStream.audio = .init()
+            if stream.audio!.bitrate != 128_000 {
+                newStream.audio!.bitrate = stream.audio!.bitrate
+            }
+        }
         newStream.srt = .init()
         newStream.srt!.latency = stream.srt.latency
         newStream.srt!.adaptiveBitrateEnabled = false
-        newStream.obs = .init(
-            webSocketUrl: stream.obs.webSocketUrl,
-            webSocketPassword: stream.obs.webSocketPassword
-        )
+        if !stream.obs.webSocketUrl.isEmpty {
+            newStream.obs = .init(
+                webSocketUrl: stream.obs.webSocketUrl,
+                webSocketPassword: stream.obs.webSocketPassword
+            )
+        }
+        if !stream.twitch!.channelName.isEmpty || !stream.twitch!.channelId.isEmpty {
+            newStream.twitch = .init(
+                channelName: stream.twitch!.channelName,
+                channelId: stream.twitch!.channelId
+            )
+        }
+        if !stream.kick!.channelName.isEmpty {
+            newStream.kick = .init(channelName: stream.kick!.channelName)
+        }
         return newStream
     }
 

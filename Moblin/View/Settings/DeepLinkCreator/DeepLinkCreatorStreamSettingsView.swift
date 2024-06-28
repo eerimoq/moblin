@@ -1,17 +1,85 @@
 import SwiftUI
 
+struct DeepLinkCreatorStreamVideoBitrateView: View {
+    @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
+    var video: DeepLinkCreatorStreamVideo
+    @State var selection: UInt32
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("", selection: $selection) {
+                    ForEach(model.database.bitratePresets) { preset in
+                        Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
+                            .tag(preset.bitrate)
+                    }
+                }
+                .onChange(of: selection) { bitrate in
+                    video.bitrate = bitrate
+                    model.store()
+                    dismiss()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .navigationTitle("Bitrate")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 private struct DeepLinkCreatorStreamVideoView: View {
     @EnvironmentObject var model: Model
     var video: DeepLinkCreatorStreamVideo
+
+    private func onResolutionChange(resolution: String) {
+        video.resolution = SettingsStreamResolution(rawValue: resolution)!
+        model.store()
+    }
+
+    private func onFpsChange(fps: String) {
+        video.fps = Int(fps)!
+        model.store()
+    }
 
     private func onCodecChange(codec: String) {
         video.codec = SettingsStreamCodec(rawValue: codec)!
         model.store()
     }
 
+    private func submitMaxKeyFrameInterval(value: String) {
+        guard let interval = Int32(value) else {
+            return
+        }
+        guard interval >= 0 && interval <= 10 else {
+            return
+        }
+        video.maxKeyFrameInterval = interval
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "Resolution"),
+                    onChange: onResolutionChange,
+                    items: InlinePickerItem.fromStrings(values: resolutions),
+                    selectedId: video.resolution!.rawValue
+                )) {
+                    TextItemView(name: String(localized: "Resolution"), value: video.resolution!.rawValue)
+                }
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "FPS"),
+                    onChange: onFpsChange,
+                    items: InlinePickerItem.fromStrings(values: fpss),
+                    selectedId: String(video.fps!)
+                )) {
+                    TextItemView(name: "FPS", value: String(video.fps!))
+                }
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Codec"),
                     onChange: onCodecChange,
@@ -20,11 +88,78 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 )) {
                     TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
                 }
+                NavigationLink(destination: DeepLinkCreatorStreamVideoBitrateView(
+                    video: video,
+                    selection: video.bitrate!
+                )) {
+                    TextItemView(
+                        name: String(localized: "Bitrate"),
+                        value: formatBytesPerSecond(speed: Int64(video.bitrate!))
+                    )
+                }
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Key frame interval"),
+                    value: String(video.maxKeyFrameInterval!),
+                    onSubmit: submitMaxKeyFrameInterval,
+                    footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
+                    keyboardType: .numbersAndPunctuation
+                )) {
+                    TextItemView(
+                        name: String(localized: "Key frame interval"),
+                        value: "\(video.maxKeyFrameInterval!) s"
+                    )
+                }
+
+                Toggle(isOn: Binding(get: {
+                    video.bFrames!
+                }, set: { value in
+                    video.bFrames = value
+                    model.store()
+                }), label: {
+                    Text("B-frames")
+                })
             }
         }
         .navigationTitle("Video")
         .toolbar {
             SettingsToolbar()
+        }
+    }
+}
+
+private struct DeepLinkCreatorStreamAudioView: View {
+    @EnvironmentObject var model: Model
+    var audio: DeepLinkCreatorStreamAudio
+    @State var bitrate: Float
+
+    private func calcBitrate() -> Int {
+        return Int((bitrate * 1000).rounded(.up))
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                HStack {
+                    Slider(
+                        value: $bitrate,
+                        in: 32 ... 320,
+                        step: 32,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            audio.bitrate = calcBitrate()
+                            model.store()
+                        }
+                    )
+                    Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
+                        .frame(width: 90)
+                }
+                .navigationTitle("Audio")
+                .toolbar {
+                    SettingsToolbar()
+                }
+            }
         }
     }
 }
@@ -123,6 +258,70 @@ private struct DeepLinkCreatorStreamObsView: View {
     }
 }
 
+struct DeepLinkCreatorStreamTwitchView: View {
+    @EnvironmentObject var model: Model
+    var stream: DeepLinkCreatorStream
+
+    func submitChannelName(value: String) {
+        stream.twitch!.channelName = value
+        model.store()
+    }
+
+    func submitChannelId(value: String) {
+        stream.twitch!.channelId = value
+        model.store()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Channel name"),
+                    value: stream.twitch!.channelName,
+                    onSubmit: submitChannelName,
+                    capitalize: true
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Channel id"),
+                    value: stream.twitch!.channelId,
+                    onSubmit: submitChannelId
+                )
+            }
+        }
+        .navigationTitle("Twitch")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+struct DeepLinkCreatorStreamKickView: View {
+    @EnvironmentObject var model: Model
+    var stream: DeepLinkCreatorStream
+
+    func submitChannelName(value: String) {
+        stream.kick!.channelName = value
+        model.store()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Channel name"),
+                    value: stream.kick!.channelName,
+                    onSubmit: submitChannelName,
+                    capitalize: true
+                )
+            }
+        }
+        .navigationTitle("Kick")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 struct DeepLinkCreatorStreamSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: DeepLinkCreatorStream
@@ -146,6 +345,39 @@ struct DeepLinkCreatorStreamSettingsView: View {
                         model.store()
                     }
                 )
+                NavigationLink(destination: DeepLinkCreatorStreamVideoView(video: stream.video)) {
+                    Text("Video")
+                }
+                NavigationLink(destination: DeepLinkCreatorStreamAudioView(
+                    audio: stream.audio!,
+                    bitrate: Float(stream.audio!.bitrate / 1000)
+                )) {
+                    Text("Audio")
+                }
+                if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
+                    NavigationLink(destination: DeepLinkCreatorStreamSrtView(srt: stream.srt)) {
+                        Text("SRT(LA)")
+                    }
+                }
+            } header: {
+                Text("Media")
+            }
+            Section {
+                NavigationLink(destination: DeepLinkCreatorStreamTwitchView(stream: stream)) {
+                    Text("Twitch")
+                }
+                NavigationLink(destination: DeepLinkCreatorStreamKickView(stream: stream)) {
+                    Text("Kick")
+                }
+            } header: {
+                Text("Chat and viewers")
+            }
+            Section {
+                NavigationLink(destination: DeepLinkCreatorStreamObsView(obs: stream.obs)) {
+                    Text("OBS remote control")
+                }
+            }
+            Section {
                 Toggle(isOn: Binding(get: {
                     stream.selected
                 }, set: { value in
@@ -154,19 +386,6 @@ struct DeepLinkCreatorStreamSettingsView: View {
                 }), label: {
                     Text("Selected")
                 })
-                NavigationLink(destination: DeepLinkCreatorStreamVideoView(video: stream.video)) {
-                    Text("Video")
-                }
-                if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
-                    NavigationLink(destination: DeepLinkCreatorStreamSrtView(srt: stream.srt)) {
-                        Text("SRT(LA)")
-                    }
-                }
-            }
-            Section {
-                NavigationLink(destination: DeepLinkCreatorStreamObsView(obs: stream.obs)) {
-                    Text("OBS remote control")
-                }
             }
         }
         .navigationTitle("Stream")

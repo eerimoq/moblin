@@ -18,7 +18,7 @@ struct SceneSettingsView: View {
     private func widgetHasPosition(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
             return widget.type == .image || widget.type == .browser || widget
-                .type == .time || widget.type == .crop
+                .type == .text || widget.type == .crop
         } else {
             logger.error("Unable to find widget type")
             return false
@@ -37,7 +37,7 @@ struct SceneSettingsView: View {
     private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
         let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
         switch widget.type {
-        case .time:
+        case .text:
             sceneWidget.x = 91
             sceneWidget.y = 1
             sceneWidget.width = 8

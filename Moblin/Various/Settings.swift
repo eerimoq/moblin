@@ -118,6 +118,21 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
     case customIrl
     case belabox
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if container.contains(CodingKeys.fastIrl) {
+            self = .fastIrl
+        } else if container.contains(CodingKeys.slowIrl) {
+            self = .slowIrl
+        } else if container.contains(CodingKeys.customIrl) {
+            self = .customIrl
+        } else if container.contains(CodingKeys.belabox) {
+            self = .belabox
+        } else {
+            self = .fastIrl
+        }
+    }
+
     static func fromString(value: String) -> SettingsStreamSrtAdaptiveBitrateAlgorithm {
         switch value {
         case String(localized: "Fast IRL"):
@@ -345,22 +360,22 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var enabled: Bool = false
     var url: String = defaultStreamUrl
-    var twitchEnabled: Bool? = true
+    var twitchEnabled: Bool? = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var kickEnabled: Bool? = true
+    var kickEnabled: Bool? = false
     var kickChatroomId: String = ""
     var kickChannelName: String? = ""
-    var youTubeEnabled: Bool? = true
+    var youTubeEnabled: Bool? = false
     var youTubeApiKey: String? = ""
     var youTubeVideoId: String? = ""
-    var afreecaTvEnabled: Bool? = true
+    var afreecaTvEnabled: Bool? = false
     var afreecaTvChannelName: String? = ""
     var afreecaTvStreamId: String? = ""
-    var openStreamingPlatformEnabled: Bool? = true
+    var openStreamingPlatformEnabled: Bool? = false
     var openStreamingPlatformUrl: String? = ""
     var openStreamingPlatformChannelId: String? = ""
-    var obsWebSocketEnabled: Bool? = true
+    var obsWebSocketEnabled: Bool? = false
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
     var obsSourceName: String? = ""
@@ -656,13 +671,13 @@ class SettingsWidgetVideoEffect: Codable {
 enum SettingsWidgetType: String, Codable, CaseIterable {
     case browser = "Browser"
     case image = "Image"
-    case time = "Time"
+    case text = "Text"
     case videoEffect = "Video effect"
     case crop = "Crop"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .browser
+            .text
     }
 
     static func fromString(value: String) -> SettingsWidgetType {
@@ -671,8 +686,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .browser
         case String(localized: "Image"):
             return .image
-        case String(localized: "Time"):
-            return .time
+        case String(localized: "Text"):
+            return .text
         case String(localized: "Video effect"):
             return .videoEffect
         case String(localized: "Crop"):
@@ -688,8 +703,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Browser")
         case .image:
             return String(localized: "Image")
-        case .time:
-            return String(localized: "Time")
+        case .text:
+            return String(localized: "Text")
         case .videoEffect:
             return String(localized: "Video effect")
         case .crop:
@@ -1052,6 +1067,7 @@ class SettingsChat: Codable {
     var textToSpeechSubscribersOnly: Bool? = false
     var textToSpeechFilter: Bool? = true
     var mirrored: Bool? = false
+    var botEnabled: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -1475,7 +1491,16 @@ class WebBrowserSettings: Codable {
 }
 
 class DeepLinkCreatorStreamVideo: Codable {
+    var resolution: SettingsStreamResolution? = .r1920x1080
+    var fps: Int? = 30
+    var bitrate: UInt32? = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
+    var bFrames: Bool? = false
+    var maxKeyFrameInterval: Int32? = 2
+}
+
+class DeepLinkCreatorStreamAudio: Codable {
+    var bitrate: Int = 128_000
 }
 
 class DeepLinkCreatorStreamSrt: Codable {
@@ -1488,14 +1513,26 @@ class DeepLinkCreatorStreamObs: Codable {
     var webSocketPassword: String = ""
 }
 
+class DeepLinkCreatorStreamTwitch: Codable {
+    var channelName: String = ""
+    var channelId: String = ""
+}
+
+class DeepLinkCreatorStreamKick: Codable {
+    var channelName: String = ""
+}
+
 class DeepLinkCreatorStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var url: String = defaultStreamUrl
     var selected: Bool = false
     var video: DeepLinkCreatorStreamVideo = .init()
+    var audio: DeepLinkCreatorStreamAudio? = .init()
     var srt: DeepLinkCreatorStreamSrt = .init()
     var obs: DeepLinkCreatorStreamObs = .init()
+    var twitch: DeepLinkCreatorStreamTwitch? = .init()
+    var kick: DeepLinkCreatorStreamKick? = .init()
 }
 
 class DeepLinkCreatorQuickButton: Codable, Identifiable {
@@ -2644,8 +2681,44 @@ final class Settings {
             realDatabase.remoteControl!.server.previewFps = 1.0
             store()
         }
-        for stream in database.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
+        for stream in realDatabase.streams where stream.srt.adaptiveBitrate!.belaboxSettings == nil {
             stream.srt.adaptiveBitrate!.belaboxSettings = .init()
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.bFrames == nil {
+            stream.video.bFrames = false
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.twitch == nil {
+            stream.twitch = .init()
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.kick == nil {
+            stream.kick = .init()
+            store()
+        }
+        if realDatabase.chat.botEnabled == nil {
+            realDatabase.chat.botEnabled = false
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.resolution == nil {
+            stream.video.resolution = .r1920x1080
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.fps == nil {
+            stream.video.fps = 30
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.bitrate == nil {
+            stream.video.bitrate = 5_000_000
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.video.maxKeyFrameInterval == nil {
+            stream.video.maxKeyFrameInterval = 2
+            store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.audio == nil {
+            stream.audio = .init()
             store()
         }
     }

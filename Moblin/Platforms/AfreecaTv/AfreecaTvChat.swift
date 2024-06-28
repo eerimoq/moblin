@@ -242,6 +242,7 @@ final class AfreecaTvChat: NSObject {
         let segments = createSegments(message: parts[0])
         await MainActor.run {
             self.model.appendChatMessage(
+                platform: .afreecaTv,
                 user: user,
                 userColor: nil,
                 segments: segments,
@@ -250,7 +251,8 @@ final class AfreecaTvChat: NSObject {
                 isAction: false,
                 isAnnouncement: false,
                 isFirstMessage: false,
-                isSubscriber: false
+                isSubscriber: false,
+                isModerator: false
             )
         }
     }

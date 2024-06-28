@@ -685,6 +685,15 @@
         }
       }
     },
+    "!moblin obs fix" : {
+
+    },
+    "!moblin tts off" : {
+
+    },
+    "!moblin tts on" : {
+
+    },
     "???" : {
       "localizations" : {
         "de" : {
@@ -944,6 +953,15 @@
           }
         }
       }
+    },
+    "{bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
+
+    },
+    "{debugOverlay} - Show debug overlay (if enabled)" : {
+
+    },
+    "{time} - Show time as HH:MM:SS" : {
+
     },
     "/" : {
       "localizations" : {
@@ -16208,6 +16226,9 @@
           }
         }
       }
+    },
+    "Bot" : {
+
     },
     "Bottom right" : {
       "localizations" : {
@@ -34019,6 +34040,9 @@
         }
       }
     },
+    "Fix OBS input." : {
+
+    },
     "Fixing..." : {
       "localizations" : {
         "de" : {
@@ -45069,6 +45093,9 @@
         }
       }
     },
+    "May only contain lower case letters." : {
+
+    },
     "Me in username color" : {
       "localizations" : {
         "de" : {
@@ -52088,6 +52115,9 @@
           }
         }
       }
+    },
+    "Only configured Twitch and Kick channel names and Twitch mods are allowed to execute commands." : {
+
     },
     "Only needed for chat." : {
       "localizations" : {
@@ -71199,6 +71229,9 @@
         }
       }
     },
+    "Text" : {
+
+    },
     "Text to speech" : {
       "localizations" : {
         "de" : {
@@ -73930,6 +73963,7 @@
       }
     },
     "Time" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -75878,6 +75912,12 @@
           }
         }
       }
+    },
+    "Turn off chat text to speech." : {
+
+    },
+    "Turn on chat text to speech." : {
+
     },
     "Twitch" : {
       "localizations" : {

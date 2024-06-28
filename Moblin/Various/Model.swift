@@ -128,6 +128,7 @@ struct ChatPost: Identifiable, Equatable {
     }
 
     var id: Int
+    var platform: Platform
     var user: String?
     var userColor: String?
     var segments: [ChatPostSegment]
@@ -137,6 +138,7 @@ struct ChatPost: Identifiable, Equatable {
     var isAnnouncement: Bool
     var isFirstMessage: Bool
     var isSubscriber: Bool
+    var isModerator: Bool
 }
 
 class ButtonState {
@@ -1285,7 +1287,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer!.streams.first { stream in
+        return database.srtlaServer!.streams.filter { stream in !stream.streamId.isEmpty }.first { stream in
             stream.streamId == streamId
         }
     }
@@ -1482,13 +1484,35 @@ final class Model: NSObject, ObservableObject {
         var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
-            newStream.url = stream.url
+            newStream.url = stream.url.trim()
             if stream.selected == true {
                 newSelectedStream = newStream
             }
             if let video = stream.video {
+                if let resolution = video.resolution {
+                    newStream.resolution = resolution
+                }
+                if let fps = video.fps, fpss.contains(String(fps)) {
+                    newStream.fps = fps
+                }
+                if let bitrate = video.bitrate, bitrate >= 100_000, bitrate <= 50_000_000 {
+                    newStream.bitrate = bitrate
+                }
                 if let codec = video.codec {
                     newStream.codec = codec
+                }
+                if let bFrames = video.bFrames {
+                    newStream.bFrames = bFrames
+                }
+                if let maxKeyFrameInterval = video.maxKeyFrameInterval, maxKeyFrameInterval >= 0,
+                   maxKeyFrameInterval <= 10
+                {
+                    newStream.maxKeyFrameInterval = maxKeyFrameInterval
+                }
+            }
+            if let audio = stream.audio {
+                if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
+                    newStream.audioBitrate = bitrate
                 }
             }
             if let srt = stream.srt {
@@ -1500,8 +1524,18 @@ final class Model: NSObject, ObservableObject {
                 }
             }
             if let obs = stream.obs {
-                newStream.obsWebSocketUrl = obs.webSocketUrl
-                newStream.obsWebSocketPassword = obs.webSocketPassword
+                newStream.obsWebSocketEnabled = true
+                newStream.obsWebSocketUrl = obs.webSocketUrl.trim()
+                newStream.obsWebSocketPassword = obs.webSocketPassword.trim()
+            }
+            if let twitch = stream.twitch {
+                newStream.twitchEnabled = true
+                newStream.twitchChannelName = twitch.channelName.trim()
+                newStream.twitchChannelId = twitch.channelId.trim()
+            }
+            if let kick = stream.kick {
+                newStream.kickEnabled = true
+                newStream.kickChannelName = kick.channelName.trim()
             }
             database.streams.append(newStream)
         }
@@ -1611,6 +1645,7 @@ final class Model: NSObject, ObservableObject {
             self.logStatus()
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
+            self.updateTextEffects(now: now)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1879,6 +1914,7 @@ final class Model: NSObject, ObservableObject {
         chatPaused = true
         pausedChatPostsCount = 0
         appendChatMessage(
+            platform: .unknown,
             user: nil,
             userColor: nil,
             segments: [],
@@ -1887,7 +1923,8 @@ final class Model: NSObject, ObservableObject {
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,
-            isSubscriber: false
+            isSubscriber: false,
+            isModerator: false
         )
     }
 
@@ -2035,6 +2072,19 @@ final class Model: NSObject, ObservableObject {
         return effects
     }
 
+    private func updateTextEffects(now: Date) {
+        guard !textEffects.isEmpty else {
+            return
+        }
+        var stats = TextEffectStats()
+        stats.bitrateAndTotal = speedAndTotal
+        stats.date = now
+        stats.debugOverlayLines = debugLines
+        for textEffect in textEffects.values {
+            textEffect.updateStats(stats: stats)
+        }
+    }
+
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty && changeScene {
             setSceneId(id: enabledScenes[0].id)
@@ -2045,7 +2095,7 @@ final class Model: NSObject, ObservableObject {
             media.unregisterEffect(textEffect)
         }
         textEffects.removeAll()
-        for widget in database.widgets where widget.type == .time {
+        for widget in database.widgets where widget.type == .text {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
                 fontSize: 40,
@@ -2930,19 +2980,22 @@ final class Model: NSObject, ObservableObject {
     }
 
     func obsFixStream() {
+        guard let obsWebSocket else {
+            return
+        }
         obsFixOngoing = true
-        obsWebSocket?.setInputSettings(inputName: stream.obsSourceName!,
-                                       onSuccess: {
-                                           self.obsFixOngoing = false
-                                       }, onError: { message in
-                                           self.obsFixOngoing = false
-                                           DispatchQueue.main.async {
-                                               self.makeErrorToast(
-                                                   title: String(localized: "Failed to fix OBS input"),
-                                                   subTitle: message
-                                               )
-                                           }
-                                       })
+        obsWebSocket.setInputSettings(inputName: stream.obsSourceName!,
+                                      onSuccess: {
+                                          self.obsFixOngoing = false
+                                      }, onError: { message in
+                                          self.obsFixOngoing = false
+                                          DispatchQueue.main.async {
+                                              self.makeErrorToast(
+                                                  title: String(localized: "Failed to fix OBS input"),
+                                                  subTitle: message
+                                              )
+                                          }
+                                      })
     }
 
     func startObsAudioVolume() {
@@ -3133,7 +3186,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func appendChatPost(post: ChatPost) {
-        appendChatMessage(user: post.user,
+        appendChatMessage(platform: post.platform,
+                          user: post.user,
                           userColor: post.userColor,
                           segments: post.segments,
                           timestamp: post.timestamp,
@@ -3141,10 +3195,90 @@ final class Model: NSObject, ObservableObject {
                           isAction: post.isAction,
                           isAnnouncement: post.isAnnouncement,
                           isFirstMessage: post.isFirstMessage,
-                          isSubscriber: post.isSubscriber)
+                          isSubscriber: post.isSubscriber,
+                          isModerator: post.isModerator)
+    }
+
+    private func handleChatBotMessage(
+        platform: Platform,
+        user: String?,
+        isModerator: Bool,
+        segments: [ChatPostSegment]
+    ) {
+        guard isUserAllowedToUseChatBot(platform: platform, user: user, isModerator: isModerator) else {
+            return
+        }
+        var command = ""
+        for segment in segments {
+            if let text = segment.text {
+                command += text
+            }
+        }
+        switch command.trim() {
+        case "!moblin tts on":
+            handleChatBotMessageTtsOn()
+        case "!moblin tts off":
+            handleChatBotMessageTtsOff()
+        case "!moblin obs fix":
+            handleChatBotMessageObsFix()
+        default:
+            makeErrorToast(title: "Chat bot", subTitle: "Unknown command \(command)")
+        }
+    }
+
+    private func handleChatBotMessageTtsOn() {
+        makeToast(title: "Chat bot", subTitle: "Turning on chat text to speech")
+        database.chat.textToSpeechEnabled = true
+        store()
+    }
+
+    private func handleChatBotMessageTtsOff() {
+        makeToast(title: "Chat bot", subTitle: "Turning off chat text to speech")
+        database.chat.textToSpeechEnabled = false
+        store()
+        chatTextToSpeech.reset(running: true)
+    }
+
+    private func handleChatBotMessageObsFix() {
+        if obsWebSocket != nil {
+            makeToast(title: "Chat bot", subTitle: "Fixing OBS input")
+            obsFixStream()
+        } else {
+            makeErrorToast(
+                title: "Chat bot",
+                subTitle: "Cannot fix OBS input. OBS remote control is not configured."
+            )
+        }
+    }
+
+    private func isUserAllowedToUseChatBot(platform: Platform, user: String?, isModerator: Bool) -> Bool {
+        if isModerator {
+            return true
+        }
+        guard let user else {
+            return false
+        }
+        switch platform {
+        case .twitch:
+            return isTwitchUserAllowedToUseChatBot(user: user)
+        case .kick:
+            return isKickUserAllowedToUseChatBot(user: user)
+        default:
+            break
+        }
+        return false
+    }
+
+    private func isTwitchUserAllowedToUseChatBot(user: String) -> Bool {
+        return user == stream.twitchChannelName
+    }
+
+    private func isKickUserAllowedToUseChatBot(user: String) -> Bool {
+        return user == stream.kickChannelName
     }
 
     func appendChatMessage(
+        platform: Platform,
         user: String?,
         userColor: String?,
         segments: [ChatPostSegment],
@@ -3153,13 +3287,19 @@ final class Model: NSObject, ObservableObject {
         isAction: Bool,
         isAnnouncement: Bool,
         isFirstMessage: Bool,
-        isSubscriber: Bool
+        isSubscriber: Bool,
+        isModerator: Bool
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
         }
+        if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
+            handleChatBotMessage(platform: platform, user: user, isModerator: isModerator, segments: segments)
+            return
+        }
         let post = ChatPost(
             id: chatPostId,
+            platform: platform,
             user: user,
             userColor: userColor,
             segments: segments,
@@ -3168,7 +3308,8 @@ final class Model: NSObject, ObservableObject {
             isAction: isAction,
             isAnnouncement: isAnnouncement,
             isFirstMessage: isFirstMessage,
-            isSubscriber: isSubscriber
+            isSubscriber: isSubscriber,
+            isModerator: isModerator
         )
         chatPostId += 1
         if chatPaused {
@@ -3424,7 +3565,7 @@ final class Model: NSObject, ObservableObject {
                 if let imageEffect = imageEffects[sceneWidget.id] {
                     effects.append(imageEffect)
                 }
-            case .time:
+            case .text:
                 if let textEffect = textEffects[widget.id] {
                     textEffect.x = sceneWidget.x
                     textEffect.y = sceneWidget.y
@@ -5133,12 +5274,6 @@ extension Model {
 
     func createStreamFromWizard() {
         let stream = SettingsStream(name: wizardName.trim())
-        stream.twitchEnabled = false
-        stream.kickEnabled = false
-        stream.youTubeEnabled = false
-        stream.afreecaTvEnabled = false
-        stream.openStreamingPlatformEnabled = false
-        stream.obsWebSocketEnabled = false
         if wizardPlatform != .custom {
             if wizardNetworkSetup != .direct {
                 if wizardObsRemoteControlEnabled {

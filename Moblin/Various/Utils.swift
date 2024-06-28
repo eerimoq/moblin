@@ -44,8 +44,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "camera.filters"
     case .browser:
         return "globe"
-    case .time:
-        return "calendar.badge.clock"
+    case .text:
+        return "textformat"
     case .crop:
         return "crop"
     }
@@ -392,4 +392,14 @@ extension MTILayer {
             blendMode: .normal
         )
     }
+}
+
+func isValidAudioBitrate(bitrate: Int) -> Bool {
+    guard bitrate >= 32000, bitrate <= 320_000 else {
+        return false
+    }
+    guard bitrate % 32000 == 0 else {
+        return false
+    }
+    return true
 }
