@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.311.0", date: "2024-06-29", changes: [
+        "• Save log per live stream. 💡 xcopy94",
+        "  • Share the after the live stream ended in Settings → Streaming history → A stream → Share log.",
+        "  • At most 100K messages are saved.",
+        "• Make LUT quick button states survive app restart. 💡 ariathome",
+    ]),
     Version(version: "0.310.0", date: "2024-06-27", changes: [
         "• Builtin chat bot started. 💡 disco",
         "  • Enable in Settings → Chat → Bot.",
