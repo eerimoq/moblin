@@ -853,12 +853,10 @@ final class Model: NSObject, ObservableObject {
         updateButtonStates()
         scrollQuickButtonsToBottom()
         removeUnusedImages()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(orientationDidChange),
-            name: UIDevice.orientationDidChangeNotification,
-            object: nil
-        )
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(orientationDidChange),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: nil)
         iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
@@ -869,24 +867,20 @@ final class Model: NSObject, ObservableObject {
             }
         }
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleAudioRouteChange
-                                               ),
-                                               name: AVAudioSession
-                                                   .routeChangeNotification,
+                                               selector: #selector(handleAudioRouteChange),
+                                               name: AVAudioSession.routeChangeNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleDidEnterBackgroundNotification
-                                               ),
+                                               selector: #selector(handleDidEnterBackgroundNotification),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleWillEnterForegroundNotification
-                                               ),
-                                               name: UIApplication
-                                                   .willEnterForegroundNotification,
+                                               selector: #selector(handleWillEnterForegroundNotification),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleWillTerminate),
+                                               name: UIApplication.willTerminateNotification,
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
@@ -894,9 +888,7 @@ final class Model: NSObject, ObservableObject {
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleBatteryStateDidChangeNotification
-                                               ),
+                                               selector: #selector(handleBatteryStateDidChangeNotification),
                                                name: UIDevice.batteryStateDidChangeNotification,
                                                object: nil)
         updateBatteryState()
@@ -1237,6 +1229,10 @@ final class Model: NSObject, ObservableObject {
         if isRecording {
             resumeRecording()
         }
+    }
+
+    @objc func handleWillTerminate() {
+        store()
     }
 
     private func shouldStreamInBackground() -> Bool {

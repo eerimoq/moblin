@@ -1612,7 +1612,7 @@ class Database: Codable {
             addDefaultBitratePresets(database: database)
         }
         addMissingGlobalButtons(database: database)
-        for button in database.globalButtons! {
+        for button in database.globalButtons! where button.type != .lut {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
