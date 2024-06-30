@@ -326,6 +326,9 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private var pollVotes: [Int] = [0, 0, 0]
+    private var pollEnabled = false
+
     @Published var showingBitrate = false
     @Published var showingMic = false
     @Published var showingRecordings = false
@@ -499,6 +502,7 @@ final class Model: NSObject, ObservableObject {
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
     private var pixellateEffect = PixellateEffect()
+    private var pollEffect = PollEffect()
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
@@ -1657,6 +1661,7 @@ final class Model: NSObject, ObservableObject {
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
             self.updateTextEffects(now: now)
+            self.updatePoll()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2080,6 +2085,9 @@ final class Model: NSObject, ObservableObject {
         if isGlobalButtonOn(type: .pixellate) {
             effects.append(pixellateEffect)
         }
+        if isGlobalButtonOn(type: .poll) {
+            effects.append(pollEffect)
+        }
         return effects
     }
 
@@ -2094,6 +2102,41 @@ final class Model: NSObject, ObservableObject {
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
         }
+    }
+
+    func togglePoll() {
+        pollEnabled = !pollEnabled
+        pollVotes = [0, 0, 0]
+        pollEffect = PollEffect()
+    }
+
+    private func handlePollVote(vote: String?) {
+        switch vote {
+        case "1":
+            pollVotes[0] += 1
+        case "2":
+            pollVotes[1] += 1
+        case "3":
+            pollVotes[2] += 1
+        default:
+            break
+        }
+    }
+
+    private func updatePoll() {
+        guard pollEnabled else {
+            return
+        }
+        let totalVotes = Double(pollVotes.reduce(0, +))
+        guard totalVotes > 0 else {
+            return
+        }
+        var votes: [String] = []
+        for index in 0 ..< pollVotes.count {
+            let percentage = Int((Double(100 * pollVotes[index]) / totalVotes).rounded())
+            votes.append("\(index + 1): \(percentage)%")
+        }
+        pollEffect.updateText(text: votes.joined(separator: ", "))
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
@@ -3310,7 +3353,9 @@ final class Model: NSObject, ObservableObject {
         }
         if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
             handleChatBotMessage(platform: platform, user: user, isModerator: isModerator, segments: segments)
-            return
+        }
+        if pollEnabled {
+            handlePollVote(vote: segments.first?.text?.trim())
         }
         let post = ChatPost(
             id: chatPostId,
