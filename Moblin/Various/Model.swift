@@ -804,6 +804,10 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        // let player = RecordingPlayer()
+        // if let url = recordingsStorage.database.recordings.first?.url() {
+        //     player.start(url: url)
+        // }
         for logId in logsStorage.ids()
             where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
         {
