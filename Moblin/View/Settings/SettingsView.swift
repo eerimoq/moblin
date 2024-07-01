@@ -136,11 +136,13 @@ struct SettingsView: View {
                 NavigationLink(destination: SrtlaServerSettingsView()) {
                     IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                 }
-                NavigationLink(destination: MediaPlayersSettingsView()) {
-                    IconAndTextView(
-                        image: "play.rectangle.on.rectangle",
-                        text: String(localized: "Media players")
-                    )
+                if false {
+                    NavigationLink(destination: MediaPlayersSettingsView()) {
+                        IconAndTextView(
+                            image: "play.rectangle.on.rectangle",
+                            text: String(localized: "Media players")
+                        )
+                    }
                 }
                 NavigationLink(destination: GameControllersSettingsView()) {
                     IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
