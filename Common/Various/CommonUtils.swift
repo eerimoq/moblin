@@ -477,7 +477,7 @@ extension Data {
 
 private let cameraPositionRtmp = "(RTMP)"
 private let cameraPositionSrtla = "(SRT(LA))"
-private let cameraPositionPlayer = "(Player)"
+private let cameraPositionMediaPlayer = "(Media player)"
 
 func rtmpCamera(name: String) -> String {
     return "\(name) \(cameraPositionRtmp)"
@@ -495,12 +495,12 @@ func isSrtlaCamera(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionSrtla)
 }
 
-func playerCamera(name: String) -> String {
-    return "\(name) \(cameraPositionPlayer)"
+func mediaPlayerCamera(name: String) -> String {
+    return "\(name) \(cameraPositionMediaPlayer)"
 }
 
-func isPlayerCamera(camera: String) -> Bool {
-    return camera.hasSuffix(cameraPositionPlayer)
+func isMediaPlayerCamera(camera: String) -> Bool {
+    return camera.hasSuffix(cameraPositionMediaPlayer)
 }
 
 func formatAudioLevelDb(level: Float) -> String {

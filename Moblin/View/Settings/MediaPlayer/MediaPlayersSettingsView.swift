@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct PlayerSettingsView: View {
+struct MediaPlayersSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.player!.players) { player in
-                        NavigationLink(destination: PlayerPlayerSettingsView(player: player)) {
+                    ForEach(model.database.mediaPlayers!.players) { player in
+                        NavigationLink(destination: MediaPlayerSettingsView(player: player)) {
                             HStack {
                                 Text(player.name)
                                 Spacer()
@@ -16,18 +16,18 @@ struct PlayerSettingsView: View {
                         }
                     }
                     .onDelete(perform: { indexes in
-                        model.database.player!.players.remove(atOffsets: indexes)
+                        model.database.mediaPlayers!.players.remove(atOffsets: indexes)
                         model.store()
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.player!.players.append(SettingsPlayerPlayer())
+                    model.database.mediaPlayers!.players.append(SettingsMediaPlayer())
                     model.store()
                     model.objectWillChange.send()
                 })
             }
         }
-        .navigationTitle("Players")
+        .navigationTitle("Media players")
         .toolbar {
             SettingsToolbar()
         }

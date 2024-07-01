@@ -561,7 +561,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case rtmp = "RTMP"
     case external = "External"
     case srtla = "SRT(LA)"
-    case player = "Player"
+    case mediaPlayer = "Media player"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -579,7 +579,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var frontCameraId: String? = getBestFrontCameraId()
     var rtmpCameraId: UUID? = .init()
     var srtlaCameraId: UUID? = .init()
-    var playerCameraId: UUID? = .init()
+    var mediaPlayerCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
@@ -1238,32 +1238,34 @@ class SettingsSrtlaServer: Codable {
     }
 }
 
-class SettingsPlayerPlayerFile: Codable, Identifiable {
+class SettingsMediaPlayerFile: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My video"
     var path: String = ""
 
-    func clone() -> SettingsPlayerPlayerFile {
-        let new = SettingsPlayerPlayerFile()
+    func clone() -> SettingsMediaPlayerFile {
+        let new = SettingsMediaPlayerFile()
+        new.id = id
         new.name = name
         new.path = path
         return new
     }
 }
 
-class SettingsPlayerPlayer: Codable, Identifiable {
+class SettingsMediaPlayer: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My player"
     var playerId: String = ""
     var autoSelectMic: Bool = true
-    var files: [SettingsPlayerPlayerFile] = []
+    var files: [SettingsMediaPlayerFile] = []
 
     func camera() -> String {
-        return playerCamera(name: name)
+        return mediaPlayerCamera(name: name)
     }
 
-    func clone() -> SettingsPlayerPlayer {
-        let new = SettingsPlayerPlayer()
+    func clone() -> SettingsMediaPlayer {
+        let new = SettingsMediaPlayer()
+        new.id = id
         new.name = name
         new.playerId = playerId
         new.autoSelectMic = autoSelectMic
@@ -1274,16 +1276,8 @@ class SettingsPlayerPlayer: Codable, Identifiable {
     }
 }
 
-class SettingsPlayer: Codable {
-    var players: [SettingsPlayerPlayer] = []
-
-    func clone() -> SettingsPlayer {
-        let new = SettingsPlayer()
-        for file in players {
-            new.players.append(file.clone())
-        }
-        return new
-    }
+class SettingsMediaPlayers: Codable {
+    var players: [SettingsMediaPlayer] = []
 }
 
 class SettingsQuickButtons: Codable {
@@ -1647,7 +1641,7 @@ class Database: Codable {
     var webBrowser: WebBrowserSettings? = .init()
     var deepLinkCreator: DeepLinkCreator? = .init()
     var srtlaServer: SettingsSrtlaServer? = .init()
-    var player: SettingsPlayer? = .init()
+    var mediaPlayers: SettingsMediaPlayers? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2781,8 +2775,8 @@ final class Settings {
             stream.audio = .init()
             store()
         }
-        if realDatabase.player == nil {
-            realDatabase.player = .init()
+        if realDatabase.mediaPlayers == nil {
+            realDatabase.mediaPlayers = .init()
             store()
         }
     }

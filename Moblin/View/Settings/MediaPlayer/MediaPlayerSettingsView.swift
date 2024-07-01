@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct PlayerPlayerSettingsView: View {
+struct MediaPlayerSettingsView: View {
     @EnvironmentObject var model: Model
-    var player: SettingsPlayerPlayer
+    var player: SettingsMediaPlayer
 
     private func submitName(value: String) {
         player.name = value.trim()
@@ -32,7 +32,7 @@ struct PlayerPlayerSettingsView: View {
             Section {
                 List {
                     ForEach(player.files) { file in
-                        NavigationLink(destination: PlayerPlayerFileSettingsView(file: file)) {
+                        NavigationLink(destination: MediaPlayerFileSettingsView(file: file)) {
                             HStack {
                                 Text(file.name)
                                 Spacer()
@@ -45,15 +45,15 @@ struct PlayerPlayerSettingsView: View {
                     })
                 }
                 CreateButtonView(action: {
-                    player.files.append(SettingsPlayerPlayerFile())
+                    player.files.append(SettingsMediaPlayerFile())
                     model.store()
                     model.objectWillChange.send()
                 })
             } header: {
-                Text("Files")
+                Text("Media files")
             }
         }
-        .navigationTitle("Player")
+        .navigationTitle("Media player")
         .toolbar {
             SettingsToolbar()
         }

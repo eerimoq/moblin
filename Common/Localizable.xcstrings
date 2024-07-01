@@ -33263,9 +33263,6 @@
     "File" : {
 
     },
-    "Files" : {
-
-    },
     "Filter" : {
       "localizations" : {
         "de" : {
@@ -45362,6 +45359,15 @@
         }
       }
     },
+    "Media files" : {
+
+    },
+    "Media player" : {
+
+    },
+    "Media players" : {
+
+    },
     "Message" : {
       "localizations" : {
         "de" : {
@@ -53554,12 +53560,6 @@
           }
         }
       }
-    },
-    "Player" : {
-
-    },
-    "Players" : {
-
     },
     "Please enter your stream URL in stream settings before going live." : {
       "localizations" : {

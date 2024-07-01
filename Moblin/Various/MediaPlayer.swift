@@ -1,28 +1,26 @@
 import AVFoundation
 
-protocol PlayerDelegate: AnyObject {
-    func playerOnStart(playerId: UUID)
-    func playerOnStop(playerId: UUID)
-    func playerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
-    func playerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+protocol MediaPlayerDelegate: AnyObject {
+    func mediaPlayerOnStart(playerId: UUID)
+    func mediaPlayerOnStop(playerId: UUID)
+    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
 }
 
-class Player {
-    var name: String
-    let id: UUID
+class MediaPlayer {
     private var asset: AVAsset?
     private var reader: AVAssetReader?
     private var videoTrackOutput: AVAssetReaderTrackOutput?
     private var audioTrackOutput: AVAssetReaderTrackOutput?
-    var delegate: (any PlayerDelegate)?
+    private var settings: SettingsMediaPlayer
+    var delegate: (any MediaPlayerDelegate)?
 
-    init(name: String, id: UUID) {
-        self.name = name
-        self.id = id
+    init(settings: SettingsMediaPlayer) {
+        self.settings = settings.clone()
     }
 
     func start(url: URL) {
-        logger.info("player: Start playing \(url)")
+        logger.info("media-player: Start playing \(url)")
         asset = AVAsset(url: url)
         guard let asset else {
             return
@@ -30,7 +28,7 @@ class Player {
         do {
             reader = try AVAssetReader(asset: asset)
         } catch {
-            logger.info("player: Failed to create reader with error: \(error)")
+            logger.info("media-player: Failed to create reader with error: \(error)")
         }
         Task { @MainActor in
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first else {
@@ -59,20 +57,20 @@ class Player {
             )
             reader?.add(audioTrackOutput!)
             guard reader?.startReading() == true else {
-                logger.info("player: Start failed")
+                logger.info("media-player: Start failed")
                 return
             }
-            delegate?.playerOnStart(playerId: self.id)
+            delegate?.mediaPlayerOnStart(playerId: self.settings.id)
             while let videoTrackOutput, let audioTrackOutput {
                 if let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
-                    delegate?.playerOnVideoBuffer(playerId: id, sampleBuffer: sampleBuffer)
+                    delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
                 }
                 if let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
-                    delegate?.playerOnAudioBuffer(playerId: id, sampleBuffer: sampleBuffer)
+                    delegate?.mediaPlayerOnAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
                 }
                 try? await sleep(milliSeconds: 200)
             }
-            delegate?.playerOnStop(playerId: self.id)
+            delegate?.mediaPlayerOnStop(playerId: settings.id)
         }
     }
 

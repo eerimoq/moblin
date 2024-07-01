@@ -328,7 +328,7 @@ final class Model: NSObject, ObservableObject {
 
     private var pollVotes: [Int] = [0, 0, 0]
     private var pollEnabled = false
-    private var players: [UUID: Player] = [:]
+    private var mediaPlayers: [UUID: MediaPlayer] = [:]
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -805,12 +805,12 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
-        for playerSettings in database.player!.players {
+        for mediaPlayerSettings in database.mediaPlayers!.players {
             if let url = recordingsStorage.database.recordings.first?.url() {
-                let player = Player(name: playerSettings.name, id: playerSettings.id)
-                player.delegate = self
-                player.start(url: url)
-                players[playerSettings.id] = player
+                let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings)
+                mediaPlayer.delegate = self
+                mediaPlayer.start(url: url)
+                mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
             }
         }
         for logId in logsStorage.ids()
@@ -1321,17 +1321,17 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func playerCameras() -> [String] {
-        return database.player!.players.map { $0.camera() }
+        return database.mediaPlayers!.players.map { $0.camera() }
     }
 
-    func getPlayer(camera: String) -> SettingsPlayerPlayer? {
-        return database.player!.players.first {
+    func getMediaPlayer(camera: String) -> SettingsMediaPlayer? {
+        return database.mediaPlayers!.players.first {
             $0.camera() == camera
         }
     }
 
-    func getPlayer(id: UUID) -> SettingsPlayerPlayer? {
-        return database.player!.players.first {
+    func getMediaPlayer(id: UUID) -> SettingsMediaPlayer? {
+        return database.mediaPlayers!.players.first {
             $0.id == id
         }
     }
@@ -3473,8 +3473,8 @@ final class Model: NSObject, ObservableObject {
             attachReplaceCamera(cameraId: scene.rtmpCameraId!)
         case .srtla:
             attachReplaceCamera(cameraId: scene.srtlaCameraId!)
-        case .player:
-            attachReplaceCamera(cameraId: scene.playerCameraId!)
+        case .mediaPlayer:
+            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
         }
@@ -3520,8 +3520,8 @@ final class Model: NSObject, ObservableObject {
             return getRtmpStream(id: scene.rtmpCameraId!)?.camera() ?? ""
         case .srtla:
             return getSrtlaStream(id: scene.srtlaCameraId!)?.camera() ?? ""
-        case .player:
-            return getPlayer(id: scene.playerCameraId!)?.camera() ?? ""
+        case .mediaPlayer:
+            return getMediaPlayer(id: scene.mediaPlayerCameraId!)?.camera() ?? ""
         case .external:
             return scene.externalCameraId!
         case .back:
@@ -3540,8 +3540,8 @@ final class Model: NSObject, ObservableObject {
             return getRtmpStream(id: scene.rtmpCameraId!)?.camera() ?? "Unknown"
         case .srtla:
             return getSrtlaStream(id: scene.srtlaCameraId!)?.camera() ?? "Unknown"
-        case .player:
-            return getPlayer(id: scene.playerCameraId!)?.camera() ?? "Unknown"
+        case .mediaPlayer:
+            return getMediaPlayer(id: scene.mediaPlayerCameraId!)?.camera() ?? "Unknown"
         case .external:
             if !scene.externalCameraName!.isEmpty {
                 return scene.externalCameraName!
@@ -6264,25 +6264,25 @@ extension Model: SrtlaServerDelegate {
     }
 }
 
-extension Model: PlayerDelegate {
-    func playerOnStart(playerId: UUID) {
+extension Model: MediaPlayerDelegate {
+    func mediaPlayerOnStart(playerId: UUID) {
         logger.info("Player \(playerId) start")
         let latency = 0.5
         media.addReplaceCamera(cameraId: playerId, latency: latency)
         media.addReplaceAudio(cameraId: playerId, latency: latency)
     }
 
-    func playerOnStop(playerId: UUID) {
+    func mediaPlayerOnStop(playerId: UUID) {
         logger.info("Player \(playerId) stop")
         media.removeReplaceCamera(cameraId: playerId)
         media.removeReplaceAudio(cameraId: playerId)
     }
 
-    func playerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
-    func playerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }
