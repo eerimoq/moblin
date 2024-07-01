@@ -70,7 +70,7 @@ class Player {
                 if let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
                     delegate?.playerOnAudioBuffer(playerId: id, sampleBuffer: sampleBuffer)
                 }
-                try? await sleep(milliSeconds: 500)
+                try? await sleep(milliSeconds: 200)
             }
             delegate?.playerOnStop(playerId: self.id)
         }

@@ -805,13 +805,12 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
-        if false {
+        for playerSettings in database.player!.players {
             if let url = recordingsStorage.database.recordings.first?.url() {
-                let playerId = UUID()
-                let player = Player(name: "test", id: playerId)
+                let player = Player(name: playerSettings.name, id: playerSettings.id)
                 player.delegate = self
                 player.start(url: url)
-                players[playerId] = player
+                players[playerSettings.id] = player
             }
         }
         for logId in logsStorage.ids()
@@ -6280,12 +6279,10 @@ extension Model: PlayerDelegate {
     }
 
     func playerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
-        logger.info("Player \(playerId) video buffer \(sampleBuffer.presentationTimeStamp.seconds)")
         media.addReplaceSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
     func playerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
-        logger.info("Player \(playerId) audio buffer \(sampleBuffer.presentationTimeStamp.seconds)")
         media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }
