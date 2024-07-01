@@ -75,7 +75,7 @@
 		032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDC012B0B11C5007BE85E /* SizeEditView.swift */; };
 		0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */; };
 		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
-		03311B8B2C3271B90073F9E2 /* RecordingPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03311B8A2C3271B90073F9E2 /* RecordingPlayer.swift */; };
+		03311B8B2C3271B90073F9E2 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03311B8A2C3271B90073F9E2 /* Player.swift */; };
 		033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = 033235402BFBAFD800B897A5 /* MetalPetal.metal */; };
 		0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */; };
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
@@ -236,6 +236,9 @@
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
 		038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */; };
 		038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */; };
+		038E7BE02C32F381008994BA /* PlayerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E7BDF2C32F381008994BA /* PlayerSettingsView.swift */; };
+		038E7BE32C32F391008994BA /* PlayerPlayerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E7BE22C32F391008994BA /* PlayerPlayerSettingsView.swift */; };
+		038E7BE72C331272008994BA /* PlayerPlayerFileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E7BE62C331272008994BA /* PlayerPlayerFileSettingsView.swift */; };
 		038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */; };
 		038F42ED2B6849D400E68752 /* LutEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038F42EC2B6849D400E68752 /* LutEffect.swift */; };
 		038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 038F42F32B685ACF00E68752 /* LUTs.bundle */; };
@@ -500,7 +503,7 @@
 		032FDC012B0B11C5007BE85E /* SizeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeEditView.swift; sourceTree = "<group>"; };
 		0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeLiveChat.swift; sourceTree = "<group>"; };
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
-		03311B8A2C3271B90073F9E2 /* RecordingPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingPlayer.swift; sourceTree = "<group>"; };
+		03311B8A2C3271B90073F9E2 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		033235402BFBAFD800B897A5 /* MetalPetal.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalPetal.metal; sourceTree = "<group>"; };
 		0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerSettingsView.swift; sourceTree = "<group>"; };
 		0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerStreamSettingsView.swift; sourceTree = "<group>"; };
@@ -711,6 +714,9 @@
 		038C0F682C312C3900A258C6 /* PollEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollEffect.swift; sourceTree = "<group>"; };
 		038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
+		038E7BDF2C32F381008994BA /* PlayerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSettingsView.swift; sourceTree = "<group>"; };
+		038E7BE22C32F391008994BA /* PlayerPlayerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPlayerSettingsView.swift; sourceTree = "<group>"; };
+		038E7BE62C331272008994BA /* PlayerPlayerFileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPlayerFileSettingsView.swift; sourceTree = "<group>"; };
 		038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysNetworkInterfaceNamesSettingsView.swift; sourceTree = "<group>"; };
 		038F42EC2B6849D400E68752 /* LutEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LutEffect.swift; sourceTree = "<group>"; };
 		038F42F32B685ACF00E68752 /* LUTs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LUTs.bundle; sourceTree = "<group>"; };
@@ -1780,6 +1786,16 @@
 			path = Cosmetics;
 			sourceTree = "<group>";
 		};
+		038E7BDE2C32F362008994BA /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				038E7BDF2C32F381008994BA /* PlayerSettingsView.swift */,
+				038E7BE22C32F391008994BA /* PlayerPlayerSettingsView.swift */,
+				038E7BE62C331272008994BA /* PlayerPlayerFileSettingsView.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
 		038ED3D92B403633005DEC08 /* NetworkInterfaceNames */ = {
 			isa = PBXGroup;
 			children = (
@@ -1951,6 +1967,7 @@
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
 				03ACC7C52B7C94AA003B6CD6 /* Location */,
+				038E7BDE2C32F362008994BA /* Player */,
 				03B16A222B35610100E5AB07 /* Recordings */,
 				034844F32B57AB5B0089B874 /* RemoteControl */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
@@ -2113,12 +2130,12 @@
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
+				03311B8A2C3271B90073F9E2 /* Player.swift */,
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
 				0384C0372C10E14900B82216 /* WebSocketClient.swift */,
-				03311B8A2C3271B90073F9E2 /* RecordingPlayer.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -2585,6 +2602,7 @@
 				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
+				038E7BE32C32F391008994BA /* PlayerPlayerSettingsView.swift in Sources */,
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */,
@@ -2595,7 +2613,7 @@
 				03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */,
 				0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */,
 				0359F8D52BD3DA61005BFDA8 /* VideoEffect.swift in Sources */,
-				03311B8B2C3271B90073F9E2 /* RecordingPlayer.swift in Sources */,
+				03311B8B2C3271B90073F9E2 /* Player.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
@@ -2657,6 +2675,7 @@
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,
 				03BC90AC2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift in Sources */,
+				038E7BE02C32F381008994BA /* PlayerSettingsView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */,
 				0359F8D82BD3DA61005BFDA8 /* MpegTsVideoConfigAvc.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
@@ -2712,6 +2731,7 @@
 				0359F8F02BD3DA61005BFDA8 /* RTMPObjectEncoding.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
+				038E7BE72C331272008994BA /* PlayerPlayerFileSettingsView.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,

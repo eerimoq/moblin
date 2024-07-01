@@ -36,7 +36,7 @@ class LogsStorage {
         do {
             try data.write(to: makePath(id: id))
         } catch {
-            logger.error("logs-storage: write failed with error \(error)")
+            logger.error("logs-storage: Write failed with error \(error)")
         }
     }
 
@@ -44,7 +44,7 @@ class LogsStorage {
         do {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
-            logger.error("logs-storage: remove failed with error \(error)")
+            logger.error("logs-storage: Remove failed with error \(error)")
         }
     }
 }

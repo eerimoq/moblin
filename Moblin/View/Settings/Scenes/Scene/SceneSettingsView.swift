@@ -58,6 +58,9 @@ struct SceneSettingsView: View {
         } else if isRtmpCamera(camera: cameraId) {
             scene.cameraPosition = .rtmp
             scene.rtmpCameraId = model.getRtmpStream(camera: cameraId)?.id ?? .init()
+        } else if isPlayerCamera(camera: cameraId) {
+            scene.cameraPosition = .player
+            scene.playerCameraId = model.getPlayer(camera: cameraId)?.id ?? .init()
         } else if model.isBackCamera(cameraId: cameraId) {
             scene.cameraPosition = .back
             scene.backCameraId = cameraId

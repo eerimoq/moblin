@@ -1,15 +1,28 @@
 import AVFoundation
 
-class RecordingPlayer {
+protocol PlayerDelegate: AnyObject {
+    func playerOnStart(playerId: UUID)
+    func playerOnStop(playerId: UUID)
+    func playerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+    func playerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+}
+
+class Player {
+    var name: String
+    let id: UUID
     private var asset: AVAsset?
     private var reader: AVAssetReader?
     private var videoTrackOutput: AVAssetReaderTrackOutput?
     private var audioTrackOutput: AVAssetReaderTrackOutput?
+    var delegate: (any PlayerDelegate)?
 
-    init() {}
+    init(name: String, id: UUID) {
+        self.name = name
+        self.id = id
+    }
 
     func start(url: URL) {
-        logger.info("recording-player: Start playing \(url)")
+        logger.info("player: Start playing \(url)")
         asset = AVAsset(url: url)
         guard let asset else {
             return
@@ -17,15 +30,12 @@ class RecordingPlayer {
         do {
             reader = try AVAssetReader(asset: asset)
         } catch {
-            logger.info("recording-player: Failed to create reader with error: \(error)")
+            logger.info("player: Failed to create reader with error: \(error)")
         }
         Task { @MainActor in
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first else {
                 return
             }
-            // print("recording-player size:", try? await videoTrack.load(.naturalSize))
-            // print("recording-player fps", try? await videoTrack.load(.nominalFrameRate))
-            // print("xxx format", try? await videoTrack.load(.formatDescriptions).first?.mediaType)
             let videoOutputSettings: [String: Any] = [
                 kCVPixelBufferPixelFormatTypeKey: pixelFormatType,
                 kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
@@ -49,27 +59,26 @@ class RecordingPlayer {
             )
             reader?.add(audioTrackOutput!)
             guard reader?.startReading() == true else {
-                logger.info("recording-player: Start failed")
+                logger.info("player: Start failed")
                 return
             }
-            while let videoSampleBuffer = videoTrackOutput?.copyNextSampleBuffer() {
-                print(
-                    "recording-player video",
-                    videoSampleBuffer.presentationTimeStamp.seconds,
-                    videoSampleBuffer.numSamples
-                )
+            delegate?.playerOnStart(playerId: self.id)
+            while let videoTrackOutput, let audioTrackOutput {
+                if let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
+                    delegate?.playerOnVideoBuffer(playerId: id, sampleBuffer: sampleBuffer)
+                }
+                if let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
+                    delegate?.playerOnAudioBuffer(playerId: id, sampleBuffer: sampleBuffer)
+                }
+                try? await sleep(milliSeconds: 500)
             }
-            while let audioSampleBuffer = audioTrackOutput?.copyNextSampleBuffer() {
-                print(
-                    "recording-player audio",
-                    audioSampleBuffer.presentationTimeStamp.seconds,
-                    audioSampleBuffer.numSamples
-                )
-            }
+            delegate?.playerOnStop(playerId: self.id)
         }
     }
 
     func stop() {
         reader = nil
+        videoTrackOutput = nil
+        audioTrackOutput = nil
     }
 }

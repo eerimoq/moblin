@@ -561,6 +561,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case rtmp = "RTMP"
     case external = "External"
     case srtla = "SRT(LA)"
+    case player = "Player"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -578,6 +579,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var frontCameraId: String? = getBestFrontCameraId()
     var rtmpCameraId: UUID? = .init()
     var srtlaCameraId: UUID? = .init()
+    var playerCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
@@ -1236,6 +1238,54 @@ class SettingsSrtlaServer: Codable {
     }
 }
 
+class SettingsPlayerPlayerFile: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My video"
+    var path: String = ""
+
+    func clone() -> SettingsPlayerPlayerFile {
+        let new = SettingsPlayerPlayerFile()
+        new.name = name
+        new.path = path
+        return new
+    }
+}
+
+class SettingsPlayerPlayer: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My player"
+    var playerId: String = ""
+    var autoSelectMic: Bool = true
+    var files: [SettingsPlayerPlayerFile] = []
+
+    func camera() -> String {
+        return playerCamera(name: name)
+    }
+
+    func clone() -> SettingsPlayerPlayer {
+        let new = SettingsPlayerPlayer()
+        new.name = name
+        new.playerId = playerId
+        new.autoSelectMic = autoSelectMic
+        for file in files {
+            new.files.append(file.clone())
+        }
+        return new
+    }
+}
+
+class SettingsPlayer: Codable {
+    var players: [SettingsPlayerPlayer] = []
+
+    func clone() -> SettingsPlayer {
+        let new = SettingsPlayer()
+        for file in players {
+            new.players.append(file.clone())
+        }
+        return new
+    }
+}
+
 class SettingsQuickButtons: Codable {
     var twoColumns: Bool = true
     var showName: Bool = false
@@ -1597,6 +1647,7 @@ class Database: Codable {
     var webBrowser: WebBrowserSettings? = .init()
     var deepLinkCreator: DeepLinkCreator? = .init()
     var srtlaServer: SettingsSrtlaServer? = .init()
+    var player: SettingsPlayer? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2728,6 +2779,10 @@ final class Settings {
         }
         for stream in realDatabase.deepLinkCreator!.streams where stream.audio == nil {
             stream.audio = .init()
+            store()
+        }
+        if realDatabase.player == nil {
+            realDatabase.player = .init()
             store()
         }
     }
