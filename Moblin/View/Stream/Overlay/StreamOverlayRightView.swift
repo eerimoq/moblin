@@ -397,10 +397,10 @@ private struct MediaPlayerControlsView: View {
                 .padding([.trailing], 8)
             HStack {
                 Text(model.mediaPlayerTime)
-                Slider(value: $model.mediaPlayerTimeline, in: 0 ... 100)
+                Slider(value: $model.mediaPlayerPosition, in: 0 ... 100)
                     .frame(width: 250)
                     .accentColor(.white)
-                    .onChange(of: model.mediaPlayerTimeline) { position in
+                    .onChange(of: model.mediaPlayerPosition) { position in
                         model.mediaPlayerSeek(position: position)
                     }
                 Button {

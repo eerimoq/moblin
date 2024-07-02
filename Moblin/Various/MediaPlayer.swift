@@ -3,6 +3,7 @@ import AVFoundation
 protocol MediaPlayerDelegate: AnyObject {
     func mediaPlayerOnLoad(playerId: UUID, name: String)
     func mediaPlayerOnUnload(playerId: UUID)
+    func mediaPlayerOnPositionChanged(playerId: UUID, position: Float, time: String)
     func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
     func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
 }
@@ -16,6 +17,7 @@ class MediaPlayer {
     private var mediaStorage: MediaStorage
     private var playing = false
     private var currentFileIndex = 0
+    private var fileDuration = 0.0
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
@@ -100,13 +102,20 @@ class MediaPlayer {
                 logger.info("media-player: Start failed")
                 return
             }
+            guard let duration = try? await asset.load(.duration) else {
+                logger.info("media-player: No duration")
+                return
+            }
+            fileDuration = duration.seconds
             delegate?.mediaPlayerOnLoad(playerId: self.settings.id, name: file.name)
             let startTime = ContinuousClock.now
             while let videoTrackOutput, let audioTrackOutput {
+                var time = 0.0
                 if playing {
                     let now = ContinuousClock.now
                     while let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
                         delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+                        time = sampleBuffer.presentationTimeStamp.seconds
                         if startTime
                             .advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now
                         {
@@ -122,9 +131,21 @@ class MediaPlayer {
                         }
                     }
                 }
+                delegate?.mediaPlayerOnPositionChanged(
+                    playerId: settings.id,
+                    position: Float(100 * time / fileDuration),
+                    time: formatTime(time)
+                )
                 try? await sleep(milliSeconds: 100)
             }
             delegate?.mediaPlayerOnUnload(playerId: settings.id)
         }
+    }
+
+    private func formatTime(_ time: Double) -> String {
+        let time = Int(time.rounded())
+        let seconds = String(format: "%02d", time % 60)
+        let minutes = time / 60
+        return "\(minutes):\(seconds)"
     }
 }

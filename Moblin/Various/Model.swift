@@ -332,7 +332,7 @@ final class Model: NSObject, ObservableObject {
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
     @Published var showMediaPlayerControls = false
     @Published var mediaPlayerPlaying = false
-    @Published var mediaPlayerTimeline: Float = 0
+    @Published var mediaPlayerPosition: Float = 0
     @Published var mediaPlayerTime = "0:09"
     @Published var mediaPlayerFileName = "Media name"
 
@@ -6350,6 +6350,11 @@ extension Model: MediaPlayerDelegate {
         mediaPlayerFileName = ""
         media.removeReplaceCamera(cameraId: playerId)
         media.removeReplaceAudio(cameraId: playerId)
+    }
+
+    func mediaPlayerOnPositionChanged(playerId _: UUID, position: Float, time: String) {
+        mediaPlayerPosition = position
+        mediaPlayerTime = time
     }
 
     func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
