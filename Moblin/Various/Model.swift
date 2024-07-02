@@ -6338,7 +6338,7 @@ extension Model: SrtlaServerDelegate {
 extension Model: MediaPlayerDelegate {
     func mediaPlayerOnStart(playerId: UUID) {
         logger.info("Player \(playerId) start")
-        let latency = 0.5
+        let latency = 0.250
         media.addReplaceCamera(cameraId: playerId, latency: latency)
         media.addReplaceAudio(cameraId: playerId, latency: latency)
     }
