@@ -18,6 +18,7 @@ class MediaPlayer {
     private var playing = false
     private var currentFileIndex = 0
     private var fileDuration = 0.0
+    private var seeking = false
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
@@ -52,6 +53,12 @@ class MediaPlayer {
 
     func seek(position: Float) {
         logger.info("media-player: Seek \(position)")
+        let time = formatTime(Double(position) / 100 * fileDuration)
+        delegate?.mediaPlayerOnPositionChanged(playerId: settings.id, position: position, time: time)
+    }
+
+    func setSeeking(on: Bool) {
+        seeking = on
     }
 
     private func loadFile() {
@@ -131,11 +138,13 @@ class MediaPlayer {
                         }
                     }
                 }
-                delegate?.mediaPlayerOnPositionChanged(
-                    playerId: settings.id,
-                    position: Float(100 * time / fileDuration),
-                    time: formatTime(time)
-                )
+                if !seeking {
+                    delegate?.mediaPlayerOnPositionChanged(
+                        playerId: settings.id,
+                        position: Float(100 * time / fileDuration),
+                        time: formatTime(time)
+                    )
+                }
                 try? await sleep(milliSeconds: 100)
             }
             delegate?.mediaPlayerOnUnload(playerId: settings.id)

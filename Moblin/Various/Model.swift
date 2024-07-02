@@ -335,6 +335,7 @@ final class Model: NSObject, ObservableObject {
     @Published var mediaPlayerPosition: Float = 0
     @Published var mediaPlayerTime = "0:09"
     @Published var mediaPlayerFileName = "Media name"
+    @Published var mediaPlayerSeeking = false
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -982,6 +983,10 @@ final class Model: NSObject, ObservableObject {
 
     func mediaPlayerSeek(position: Float) {
         getCurrentMediaPlayer()?.seek(position: position)
+    }
+
+    func mediaPlayerSetSeeking(on: Bool) {
+        getCurrentMediaPlayer()?.setSeeking(on: on)
     }
 
     func getCurrentMediaPlayer() -> MediaPlayer? {
@@ -6353,7 +6358,9 @@ extension Model: MediaPlayerDelegate {
     }
 
     func mediaPlayerOnPositionChanged(playerId _: UUID, position: Float, time: String) {
-        mediaPlayerPosition = position
+        if !mediaPlayerSeeking {
+            mediaPlayerPosition = position
+        }
         mediaPlayerTime = time
     }
 
