@@ -2066,6 +2066,7 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
+        media.unregisterEffect(pollEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -2073,6 +2074,7 @@ final class Model: NSObject, ObservableObject {
         sepiaEffect = SepiaEffect()
         tripleEffect = TripleEffect()
         pixellateEffect = PixellateEffect()
+        pollEffect = PollEffect()
     }
 
     private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
@@ -2110,6 +2112,11 @@ final class Model: NSObject, ObservableObject {
         if isGlobalButtonOn(type: .pixellate) {
             effects.append(pixellateEffect)
         }
+        return effects
+    }
+
+    private func registerGlobalVideoEffectsOnTop() -> [VideoEffect] {
+        var effects: [VideoEffect] = []
         if isGlobalButtonOn(type: .poll) {
             effects.append(pollEffect)
         }
@@ -3676,6 +3683,7 @@ final class Model: NSObject, ObservableObject {
         if !drawOnStreamLines.isEmpty {
             effects.append(drawOnStreamEffect)
         }
+        effects += registerGlobalVideoEffectsOnTop()
         media.setPendingAfterAttachEffects(effects: effects)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
