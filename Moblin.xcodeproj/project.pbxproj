@@ -69,6 +69,11 @@
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */; };
+		032B4ED72C34918E00204547 /* SceneSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4ED62C34918E00204547 /* SceneSelectorView.swift */; };
+		032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4ED92C3491A100204547 /* ZoomPresetSelctorView.swift */; };
+		032B4EDC2C3491F200204547 /* CameraSettingsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */; };
+		032B4EDE2C34927C00204547 /* SegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4EDD2C34927C00204547 /* SegmentedPicker.swift */; };
 		032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */; };
 		032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */; };
 		032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFB2B0B1183007BE85E /* ValueEditView.swift */; };
@@ -497,6 +502,11 @@
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
+		032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerControlsView.swift; sourceTree = "<group>"; };
+		032B4ED62C34918E00204547 /* SceneSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneSelectorView.swift; sourceTree = "<group>"; };
+		032B4ED92C3491A100204547 /* ZoomPresetSelctorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSelctorView.swift; sourceTree = "<group>"; };
+		032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "\U0004CameraSettingsControlView.swift"; sourceTree = "<group>"; };
+		032B4EDD2C34927C00204547 /* SegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedPicker.swift; sourceTree = "<group>"; };
 		032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
@@ -1160,6 +1170,18 @@
 			path = ImportExport;
 			sourceTree = "<group>";
 		};
+		032B4ED22C3490DF00204547 /* Right */ = {
+			isa = PBXGroup;
+			children = (
+				032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */,
+				032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */,
+				032B4ED62C34918E00204547 /* SceneSelectorView.swift */,
+				032B4EDD2C34927C00204547 /* SegmentedPicker.swift */,
+				032B4ED92C3491A100204547 /* ZoomPresetSelctorView.swift */,
+			);
+			path = Right;
+			sourceTree = "<group>";
+		};
 		032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */ = {
 			isa = PBXGroup;
 			children = (
@@ -1721,6 +1743,7 @@
 		0379BB9A2AAD811100B718B6 /* Overlay */ = {
 			isa = PBXGroup;
 			children = (
+				032B4ED22C3490DF00204547 /* Right */,
 				030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */,
 				0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */,
 				0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */,
@@ -2648,6 +2671,7 @@
 				03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */,
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
+				032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
 				0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
@@ -2746,6 +2770,7 @@
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
 				03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */,
 				031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */,
+				032B4EDC2C3491F200204547 /* CameraSettingsControlView.swift in Sources */,
 				0359F8CE2BD3DA61005BFDA8 /* FLVVideoFourCC.swift in Sources */,
 				0359F8C82BD3DA61005BFDA8 /* FLVFrameType.swift in Sources */,
 				03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */,
@@ -2784,6 +2809,7 @@
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
+				032B4EDE2C34927C00204547 /* SegmentedPicker.swift in Sources */,
 				0359F8AE2BD3DA61005BFDA8 /* VideoCodec.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
@@ -2791,6 +2817,7 @@
 				0359F8C62BD3DA61005BFDA8 /* FLVAudioCodec.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				0359F8D42BD3DA61005BFDA8 /* PreviewView.swift in Sources */,
+				032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */,
 				034844EF2B579D4C0089B874 /* RemoteControlAssistant.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
 				0359F9002BD3DA61005BFDA8 /* AnyUtil.swift in Sources */,
@@ -2831,6 +2858,7 @@
 				037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */,
+				032B4ED72C34918E00204547 /* SceneSelectorView.swift in Sources */,
 				03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */,
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				0359F8C52BD3DA61005BFDA8 /* FLVAACPacket.swift in Sources */,

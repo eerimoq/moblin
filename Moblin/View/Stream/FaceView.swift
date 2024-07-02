@@ -1,11 +1,6 @@
 import SwiftUI
 
-private let segmentHeight = 40.0
 private let sliderWidth = 200.0
-private let sliderHeight = 40.0
-private let cameraButtonWidth = 70.0
-private let pickerBorderColor = Color.gray
-private var pickerBackgroundColor = Color.black.opacity(0.6)
 
 private struct FaceButtonView: View {
     var title: String
