@@ -14,6 +14,7 @@ class MediaPlayer {
     private var audioTrackOutput: AVAssetReaderTrackOutput?
     private var settings: SettingsMediaPlayer
     private var mediaStorage: MediaStorage
+    private var playing = false
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
@@ -22,11 +23,14 @@ class MediaPlayer {
     }
 
     func play() {
+        playing = true
+        guard reader == nil else {
+            return
+        }
         guard let fileId = settings.playlist.first?.id else {
             return
         }
         let url = mediaStorage.makePath(id: fileId)
-        logger.info("media-player: Start playing \(url)")
         asset = AVAsset(url: url)
         guard let asset else {
             return
@@ -69,22 +73,44 @@ class MediaPlayer {
             delegate?.mediaPlayerOnStart(playerId: self.settings.id)
             let startTime = ContinuousClock.now
             while let videoTrackOutput, let audioTrackOutput {
-                let now = ContinuousClock.now
-                while let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
-                    delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
-                    if startTime.advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now {
-                        break
+                if playing {
+                    let now = ContinuousClock.now
+                    while let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
+                        delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+                        if startTime
+                            .advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now
+                        {
+                            break
+                        }
                     }
-                }
-                while let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
-                    delegate?.mediaPlayerOnAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
-                    if startTime.advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now {
-                        break
+                    while let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
+                        delegate?.mediaPlayerOnAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+                        if startTime
+                            .advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now
+                        {
+                            break
+                        }
                     }
                 }
                 try? await sleep(milliSeconds: 100)
             }
             delegate?.mediaPlayerOnStop(playerId: settings.id)
         }
+    }
+
+    func pause() {
+        playing = false
+    }
+
+    func next() {
+        logger.info("media-player: Next")
+    }
+
+    func previous() {
+        logger.info("media-player: Previous")
+    }
+
+    func seek(position: Float) {
+        logger.info("media-player: Seek \(position)")
     }
 }

@@ -388,10 +388,32 @@ private struct MediaPlayerControlsView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             HStack {
+                Text(model.mediaPlayerTime)
+                Slider(value: $model.mediaPlayerTimeline, in: 0 ... 100)
+                    .frame(width: 250)
+                    .accentColor(.white)
+                    .onChange(of: model.mediaPlayerTimeline) { position in
+                        model.mediaPlayerSeek(position: position)
+                    }
+                Button {
+                    model.mediaPlayerPrevious()
+                } label: {
+                    Image(systemName: "arrow.left.to.line.compact")
+                        .frame(width: 30)
+                        .font(.title)
+                }
                 Button {
                     model.mediaPlayerTogglePlaying()
                 } label: {
                     Image(systemName: playPauseImage())
+                        .frame(width: 30)
+                        .font(.title)
+                }
+                Button {
+                    model.mediaPlayerNext()
+                } label: {
+                    Image(systemName: "arrow.right.to.line.compact")
+                        .frame(width: 30)
                         .font(.title)
                 }
             }

@@ -332,6 +332,8 @@ final class Model: NSObject, ObservableObject {
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
     @Published var showMediaPlayerControls = false
     @Published var mediaPlayerPlaying = false
+    @Published var mediaPlayerTimeline: Float = 0
+    @Published var mediaPlayerTime = "0:09"
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -939,11 +941,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func initMediaPlayers() {
-        return
         for mediaPlayerSettings in database.mediaPlayers!.players {
             let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings, mediaStorage: mediaStorage)
             mediaPlayer.delegate = self
-            mediaPlayer.play()
             mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
         }
         for mediaId in mediaStorage.ids() {
@@ -960,7 +960,40 @@ final class Model: NSObject, ObservableObject {
     }
 
     func mediaPlayerTogglePlaying() {
+        guard let mediaPlayer = getCurrentMediaPlayer() else {
+            return
+        }
+        if mediaPlayerPlaying {
+            mediaPlayer.pause()
+        } else {
+            mediaPlayer.play()
+        }
         mediaPlayerPlaying = !mediaPlayerPlaying
+    }
+
+    func mediaPlayerNext() {
+        getCurrentMediaPlayer()?.next()
+    }
+
+    func mediaPlayerPrevious() {
+        getCurrentMediaPlayer()?.previous()
+    }
+
+    func mediaPlayerSeek(position: Float) {
+        getCurrentMediaPlayer()?.seek(position: position)
+    }
+
+    func getCurrentMediaPlayer() -> MediaPlayer? {
+        guard let scene = getSelectedScene() else {
+            return nil
+        }
+        guard scene.cameraPosition == .mediaPlayer else {
+            return nil
+        }
+        guard let mediaPlayerSettings = getMediaPlayer(id: scene.mediaPlayerCameraId!) else {
+            return nil
+        }
+        return mediaPlayers[mediaPlayerSettings.id]
     }
 
     private func removeUnusedLogs() {
@@ -3747,6 +3780,10 @@ final class Model: NSObject, ObservableObject {
         showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
     }
 
+    private func getSelectedScene() -> SettingsScene? {
+        return findEnabledScene(id: selectedSceneId)
+    }
+
     private func selectScene(id: UUID) {
         if let index = enabledScenes.firstIndex(where: { scene in
             scene.id == id
@@ -3763,7 +3800,7 @@ final class Model: NSObject, ObservableObject {
         if imageEffectChanged {
             reloadImageEffects()
         }
-        guard let scene = findEnabledScene(id: selectedSceneId) else {
+        guard let scene = getSelectedScene() else {
             sceneUpdatedOff()
             return
         }

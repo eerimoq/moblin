@@ -31,7 +31,7 @@ struct MediaPlayerSettingsView: View {
     }
 
     private func appendMedia(url: URL) {
-        var file = SettingsMediaPlayerFile()
+        let file = SettingsMediaPlayerFile()
         model.mediaStorage.add(id: file.id, url: url)
         player.playlist.append(file)
         model.objectWillChange.send()
