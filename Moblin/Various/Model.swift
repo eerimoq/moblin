@@ -939,11 +939,9 @@ final class Model: NSObject, ObservableObject {
     private func initMediaPlayers() {
         return
         for mediaPlayerSettings in database.mediaPlayers!.players {
-            let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings)
+            let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings, mediaStorage: mediaStorage)
             mediaPlayer.delegate = self
-            if let file = mediaPlayerSettings.playlist.first {
-                mediaPlayer.play(url: mediaStorage.makePath(id: file.id))
-            }
+            mediaPlayer.play()
             mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
         }
         for mediaId in mediaStorage.ids() {

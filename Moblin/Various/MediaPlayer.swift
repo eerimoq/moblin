@@ -13,13 +13,19 @@ class MediaPlayer {
     private var videoTrackOutput: AVAssetReaderTrackOutput?
     private var audioTrackOutput: AVAssetReaderTrackOutput?
     private var settings: SettingsMediaPlayer
+    private var mediaStorage: MediaStorage
     var delegate: (any MediaPlayerDelegate)?
 
-    init(settings: SettingsMediaPlayer) {
+    init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
         self.settings = settings.clone()
+        self.mediaStorage = mediaStorage
     }
 
-    func play(url: URL) {
+    func play() {
+        guard let fileId = settings.playlist.first?.id else {
+            return
+        }
+        let url = mediaStorage.makePath(id: fileId)
         logger.info("media-player: Start playing \(url)")
         asset = AVAsset(url: url)
         guard let asset else {
@@ -61,22 +67,24 @@ class MediaPlayer {
                 return
             }
             delegate?.mediaPlayerOnStart(playerId: self.settings.id)
+            let startTime = ContinuousClock.now
             while let videoTrackOutput, let audioTrackOutput {
-                if let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
+                let now = ContinuousClock.now
+                while let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
                     delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+                    if startTime.advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now {
+                        break
+                    }
                 }
-                if let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
+                while let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
                     delegate?.mediaPlayerOnAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+                    if startTime.advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now {
+                        break
+                    }
                 }
-                try? await sleep(milliSeconds: 200)
+                try? await sleep(milliSeconds: 100)
             }
             delegate?.mediaPlayerOnStop(playerId: settings.id)
         }
-    }
-
-    func stop() {
-        reader = nil
-        videoTrackOutput = nil
-        audioTrackOutput = nil
     }
 }
