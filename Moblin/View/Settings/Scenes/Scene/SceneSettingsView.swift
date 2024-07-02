@@ -89,7 +89,7 @@ struct SceneSettingsView: View {
             }
             Section {
                 NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Camera"),
+                    title: String(localized: "Video source"),
                     onChange: onCameraChange,
                     footers: [
                         String(localized: """
@@ -109,7 +109,7 @@ struct SceneSettingsView: View {
                     selectedId: model.getCameraPositionId(scene: scene)
                 )) {
                     HStack {
-                        Text(String(localized: "Camera"))
+                        Text(String(localized: "Video source"))
                         Spacer()
                         if !model.isSceneActive(scene: scene) {
                             Image(systemName: "cable.connector.slash")
