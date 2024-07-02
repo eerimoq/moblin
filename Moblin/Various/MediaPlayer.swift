@@ -19,7 +19,7 @@ class MediaPlayer {
         self.settings = settings.clone()
     }
 
-    func start(url: URL) {
+    func play(url: URL) {
         logger.info("media-player: Start playing \(url)")
         asset = AVAsset(url: url)
         guard let asset else {

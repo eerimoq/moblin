@@ -316,6 +316,7 @@ final class Model: NSObject, ObservableObject {
     var remoteControlAssistantLog: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
     var logsStorage = LogsStorage()
+    var mediaStorage = MediaStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
     private var logId = 1
@@ -805,19 +806,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
-        for mediaPlayerSettings in database.mediaPlayers!.players {
-            if let url = recordingsStorage.database.recordings.first?.url() {
-                let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings)
-                mediaPlayer.delegate = self
-                mediaPlayer.start(url: url)
-                mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
-            }
-        }
-        for logId in logsStorage.ids()
-            where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
-        {
-            logsStorage.remove(id: logId)
-        }
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
         supportsAppleLog = hasAppleLog()
@@ -944,6 +932,39 @@ final class Model: NSObject, ObservableObject {
         updateOrientationLock()
         updateFaceFilterSettings()
         setupSampleBufferReceiver()
+        initMediaPlayers()
+        removeUnusedLogs()
+    }
+
+    private func initMediaPlayers() {
+        return
+        for mediaPlayerSettings in database.mediaPlayers!.players {
+            let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings)
+            mediaPlayer.delegate = self
+            if let file = mediaPlayerSettings.playlist.first {
+                mediaPlayer.play(url: mediaStorage.makePath(id: file.id))
+            }
+            mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
+        }
+        for mediaId in mediaStorage.ids() {
+            var found = false
+            for player in database.mediaPlayers!.players
+                where player.playlist.contains(where: { $0.id == mediaId })
+            {
+                found = true
+            }
+            if !found {
+                mediaStorage.remove(id: mediaId)
+            }
+        }
+    }
+
+    private func removeUnusedLogs() {
+        for logId in logsStorage.ids()
+            where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
+        {
+            logsStorage.remove(id: logId)
+        }
     }
 
     func setMetalPetalFilters() {

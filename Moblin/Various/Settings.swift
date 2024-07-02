@@ -1241,13 +1241,11 @@ class SettingsSrtlaServer: Codable {
 class SettingsMediaPlayerFile: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My video"
-    var path: String = ""
 
     func clone() -> SettingsMediaPlayerFile {
         let new = SettingsMediaPlayerFile()
         new.id = id
         new.name = name
-        new.path = path
         return new
     }
 }
@@ -1257,7 +1255,7 @@ class SettingsMediaPlayer: Codable, Identifiable {
     var name: String = "My player"
     var playerId: String = ""
     var autoSelectMic: Bool = true
-    var files: [SettingsMediaPlayerFile] = []
+    var playlist: [SettingsMediaPlayerFile] = []
 
     func camera() -> String {
         return mediaPlayerCamera(name: name)
@@ -1269,8 +1267,8 @@ class SettingsMediaPlayer: Codable, Identifiable {
         new.name = name
         new.playerId = playerId
         new.autoSelectMic = autoSelectMic
-        for file in files {
-            new.files.append(file.clone())
+        for file in playlist {
+            new.playlist.append(file.clone())
         }
         return new
     }

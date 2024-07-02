@@ -36,7 +36,7 @@ class ImageStorage {
         do {
             try data.write(to: makePath(id: id))
         } catch {
-            logger.error("image-storage: write failed with error \(error)")
+            logger.error("image-storage: Write failed with error \(error)")
         }
     }
 
@@ -44,7 +44,7 @@ class ImageStorage {
         do {
             return try Data(contentsOf: makePath(id: id))
         } catch {
-            logger.error("image-storage: read failed with error \(error)")
+            logger.error("image-storage: Read failed with error \(error)")
         }
         return nil
     }
@@ -57,7 +57,7 @@ class ImageStorage {
         do {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
-            logger.error("image-storage: remove failed with error \(error)")
+            logger.error("image-storage: Remove failed with error \(error)")
         }
     }
 }

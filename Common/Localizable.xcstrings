@@ -45359,9 +45359,6 @@
         }
       }
     },
-    "Media files" : {
-
-    },
     "Media player" : {
 
     },
@@ -53560,6 +53557,9 @@
           }
         }
       }
+    },
+    "Playlist" : {
+
     },
     "Please enter your stream URL in stream settings before going live." : {
       "localizations" : {
