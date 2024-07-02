@@ -613,6 +613,11 @@ struct ButtonsInnerView: View {
         model.showFace.toggle()
     }
 
+    private func pollAction(state _: ButtonState) {
+        model.togglePoll()
+        videoEffectAction(state: state, type: .poll)
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -786,6 +791,12 @@ struct ButtonsInnerView: View {
             case .face:
                 Button(action: {
                     faceAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .poll:
+                Button(action: {
+                    pollAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

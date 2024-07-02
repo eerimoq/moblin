@@ -315,6 +315,8 @@ final class Model: NSObject, ObservableObject {
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
+    var logsStorage = LogsStorage()
+    var mediaStorage = MediaStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
     private var logId = 1
@@ -324,6 +326,10 @@ final class Model: NSObject, ObservableObject {
             showingToast.toggle()
         }
     }
+
+    private var pollVotes: [Int] = [0, 0, 0]
+    private var pollEnabled = false
+    private var mediaPlayers: [UUID: MediaPlayer] = [:]
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -488,6 +494,7 @@ final class Model: NSObject, ObservableObject {
     private var products: [String: Product] = [:]
     private var streamTotalBytes: UInt64 = 0
     private var streamTotalChatMessages: Int = 0
+    private var streamLog: Deque<String> = []
     var ipMonitor = IPMonitor(ipType: .ipv4)
     @Published var ipStatuses: [IPMonitor.Status] = []
     private var faceEffect = FaceEffect(fps: 30)
@@ -497,6 +504,7 @@ final class Model: NSObject, ObservableObject {
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
     private var pixellateEffect = PixellateEffect()
+    private var pollEffect = PollEffect()
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
@@ -710,7 +718,7 @@ final class Model: NSObject, ObservableObject {
         buttonPairs = pairs.reversed()
     }
 
-    func debugLog(message: String) {
+    private func debugLog(message: String) {
         DispatchQueue.main.async {
             if self.log.count > self.database.debug!.maximumLogLines! {
                 self.log.removeFirst()
@@ -718,7 +726,15 @@ final class Model: NSObject, ObservableObject {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlStreamer?.log(entry: message)
+            if self.streamLog.count >= 100_000 {
+                self.streamLog.removeFirst()
+            }
+            self.streamLog.append(message)
         }
+    }
+
+    func makeStreamShareLogUrl(logId: UUID) -> URL {
+        return logsStorage.makePath(id: logId)
     }
 
     func clearLog() {
@@ -838,12 +854,10 @@ final class Model: NSObject, ObservableObject {
         updateButtonStates()
         scrollQuickButtonsToBottom()
         removeUnusedImages()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(orientationDidChange),
-            name: UIDevice.orientationDidChangeNotification,
-            object: nil
-        )
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(orientationDidChange),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: nil)
         iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
@@ -854,24 +868,20 @@ final class Model: NSObject, ObservableObject {
             }
         }
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleAudioRouteChange
-                                               ),
-                                               name: AVAudioSession
-                                                   .routeChangeNotification,
+                                               selector: #selector(handleAudioRouteChange),
+                                               name: AVAudioSession.routeChangeNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleDidEnterBackgroundNotification
-                                               ),
+                                               selector: #selector(handleDidEnterBackgroundNotification),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleWillEnterForegroundNotification
-                                               ),
-                                               name: UIApplication
-                                                   .willEnterForegroundNotification,
+                                               selector: #selector(handleWillEnterForegroundNotification),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleWillTerminate),
+                                               name: UIApplication.willTerminateNotification,
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
@@ -879,9 +889,7 @@ final class Model: NSObject, ObservableObject {
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(
-                                                   handleBatteryStateDidChangeNotification
-                                               ),
+                                               selector: #selector(handleBatteryStateDidChangeNotification),
                                                name: UIDevice.batteryStateDidChangeNotification,
                                                object: nil)
         updateBatteryState()
@@ -924,6 +932,37 @@ final class Model: NSObject, ObservableObject {
         updateOrientationLock()
         updateFaceFilterSettings()
         setupSampleBufferReceiver()
+        initMediaPlayers()
+        removeUnusedLogs()
+    }
+
+    private func initMediaPlayers() {
+        return
+        for mediaPlayerSettings in database.mediaPlayers!.players {
+            let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings, mediaStorage: mediaStorage)
+            mediaPlayer.delegate = self
+            mediaPlayer.play()
+            mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
+        }
+        for mediaId in mediaStorage.ids() {
+            var found = false
+            for player in database.mediaPlayers!.players
+                where player.playlist.contains(where: { $0.id == mediaId })
+            {
+                found = true
+            }
+            if !found {
+                mediaStorage.remove(id: mediaId)
+            }
+        }
+    }
+
+    private func removeUnusedLogs() {
+        for logId in logsStorage.ids()
+            where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
+        {
+            logsStorage.remove(id: logId)
+        }
     }
 
     func setMetalPetalFilters() {
@@ -1224,6 +1263,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    @objc func handleWillTerminate() {
+        store()
+    }
+
     private func shouldStreamInBackground() -> Bool {
         return isLive && stream.backgroundStreaming!
     }
@@ -1294,6 +1337,22 @@ final class Model: NSObject, ObservableObject {
 
     func isSrtlaStreamConnected(streamId: String) -> Bool {
         return srtlaServer?.isStreamConnected(streamId: streamId) ?? false
+    }
+
+    private func playerCameras() -> [String] {
+        return database.mediaPlayers!.players.map { $0.camera() }
+    }
+
+    func getMediaPlayer(camera: String) -> SettingsMediaPlayer? {
+        return database.mediaPlayers!.players.first {
+            $0.camera() == camera
+        }
+    }
+
+    func getMediaPlayer(id: UUID) -> SettingsMediaPlayer? {
+        return database.mediaPlayers!.players.first {
+            $0.id == id
+        }
     }
 
     func reloadRtmpStreams() {
@@ -1646,6 +1705,7 @@ final class Model: NSObject, ObservableObject {
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
             self.updateTextEffects(now: now)
+            self.updatePoll()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2025,6 +2085,7 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
+        media.unregisterEffect(pollEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -2032,6 +2093,7 @@ final class Model: NSObject, ObservableObject {
         sepiaEffect = SepiaEffect()
         tripleEffect = TripleEffect()
         pixellateEffect = PixellateEffect()
+        pollEffect = PollEffect()
     }
 
     private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
@@ -2072,6 +2134,14 @@ final class Model: NSObject, ObservableObject {
         return effects
     }
 
+    private func registerGlobalVideoEffectsOnTop() -> [VideoEffect] {
+        var effects: [VideoEffect] = []
+        if isGlobalButtonOn(type: .poll) {
+            effects.append(pollEffect)
+        }
+        return effects
+    }
+
     private func updateTextEffects(now: Date) {
         guard !textEffects.isEmpty else {
             return
@@ -2083,6 +2153,41 @@ final class Model: NSObject, ObservableObject {
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
         }
+    }
+
+    func togglePoll() {
+        pollEnabled = !pollEnabled
+        pollVotes = [0, 0, 0]
+        pollEffect = PollEffect()
+    }
+
+    private func handlePollVote(vote: String?) {
+        switch vote {
+        case "1":
+            pollVotes[0] += 1
+        case "2":
+            pollVotes[1] += 1
+        case "3":
+            pollVotes[2] += 1
+        default:
+            break
+        }
+    }
+
+    private func updatePoll() {
+        guard pollEnabled else {
+            return
+        }
+        let totalVotes = Double(pollVotes.reduce(0, +))
+        guard totalVotes > 0 else {
+            return
+        }
+        var votes: [String] = []
+        for index in 0 ..< pollVotes.count {
+            let percentage = Int((Double(100 * pollVotes[index]) / totalVotes).rounded())
+            votes.append("\(index + 1): \(percentage)%")
+        }
+        pollEffect.updateText(text: votes.joined(separator: ", "))
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
@@ -2308,6 +2413,7 @@ final class Model: NSObject, ObservableObject {
             )
             return
         }
+        streamLog.removeAll()
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
@@ -2338,6 +2444,9 @@ final class Model: NSObject, ObservableObject {
         stopNetStream()
         streamState = .disconnected
         if let streamingHistoryStream {
+            if let logId = streamingHistoryStream.logId {
+                logsStorage.write(id: logId, data: streamLog.joined(separator: "\n").utf8Data)
+            }
             streamingHistoryStream.stopTime = Date()
             streamingHistoryStream.totalBytes = streamTotalBytes
             streamingHistoryStream.numberOfChatMessages = streamTotalChatMessages
@@ -3295,7 +3404,9 @@ final class Model: NSObject, ObservableObject {
         }
         if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
             handleChatBotMessage(platform: platform, user: user, isModerator: isModerator, segments: segments)
-            return
+        }
+        if pollEnabled {
+            handlePollVote(vote: segments.first?.text?.trim())
         }
         let post = ChatPost(
             id: chatPostId,
@@ -3388,23 +3499,34 @@ final class Model: NSObject, ObservableObject {
             attachReplaceCamera(cameraId: scene.rtmpCameraId!)
         case .srtla:
             attachReplaceCamera(cameraId: scene.srtlaCameraId!)
+        case .mediaPlayer:
+            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
         }
     }
 
     func listCameraPositions() -> [(String, String)] {
-        return backCameras.map {
+        var cameras: [(String, String)] = []
+        cameras += backCameras.map {
             ($0.id, "Back \($0.name)")
-        } + frontCameras.map {
+        }
+        cameras += frontCameras.map {
             ($0.id, "Front \($0.name)")
-        } + externalCameras.map {
+        }
+        cameras += externalCameras.map {
             ($0.id, $0.name)
-        } + rtmpCameras().map {
-            ($0, $0)
-        } + srtlaCameras().map {
+        }
+        cameras += rtmpCameras().map {
             ($0, $0)
         }
+        cameras += srtlaCameras().map {
+            ($0, $0)
+        }
+        cameras += playerCameras().map {
+            ($0, $0)
+        }
+        return cameras
     }
 
     func isBackCamera(cameraId: String) -> Bool {
@@ -3421,35 +3543,17 @@ final class Model: NSObject, ObservableObject {
         }
         switch scene.cameraPosition! {
         case .rtmp:
-            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
-                return stream.camera()
-            } else {
-                return ""
-            }
+            return getRtmpStream(id: scene.rtmpCameraId!)?.camera() ?? ""
         case .srtla:
-            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
-                return stream.camera()
-            } else {
-                return ""
-            }
+            return getSrtlaStream(id: scene.srtlaCameraId!)?.camera() ?? ""
+        case .mediaPlayer:
+            return getMediaPlayer(id: scene.mediaPlayerCameraId!)?.camera() ?? ""
         case .external:
-            if !scene.externalCameraId!.isEmpty {
-                return scene.externalCameraId!
-            } else {
-                return ""
-            }
+            return scene.externalCameraId!
         case .back:
-            if !scene.backCameraId!.isEmpty {
-                return scene.backCameraId!
-            } else {
-                return ""
-            }
+            return scene.backCameraId!
         case .front:
-            if !scene.frontCameraId!.isEmpty {
-                return scene.frontCameraId!
-            } else {
-                return ""
-            }
+            return scene.frontCameraId!
         }
     }
 
@@ -3459,17 +3563,11 @@ final class Model: NSObject, ObservableObject {
         }
         switch scene.cameraPosition! {
         case .rtmp:
-            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
-                return stream.camera()
-            } else {
-                return "Unknown"
-            }
+            return getRtmpStream(id: scene.rtmpCameraId!)?.camera() ?? "Unknown"
         case .srtla:
-            if let stream = getSrtlaStream(id: scene.srtlaCameraId!) {
-                return stream.camera()
-            } else {
-                return "Unknown"
-            }
+            return getSrtlaStream(id: scene.srtlaCameraId!)?.camera() ?? "Unknown"
+        case .mediaPlayer:
+            return getMediaPlayer(id: scene.mediaPlayerCameraId!)?.camera() ?? "Unknown"
         case .external:
             if !scene.externalCameraName!.isEmpty {
                 return scene.externalCameraName!
@@ -3604,6 +3702,7 @@ final class Model: NSObject, ObservableObject {
         if !drawOnStreamLines.isEmpty {
             effects.append(drawOnStreamEffect)
         }
+        effects += registerGlobalVideoEffectsOnTop()
         media.setPendingAfterAttachEffects(effects: effects)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
@@ -6189,5 +6288,28 @@ extension Model: SrtlaServerDelegate {
                 self.setMicFromSettings()
             }
         }
+    }
+}
+
+extension Model: MediaPlayerDelegate {
+    func mediaPlayerOnStart(playerId: UUID) {
+        logger.info("Player \(playerId) start")
+        let latency = 0.5
+        media.addReplaceCamera(cameraId: playerId, latency: latency)
+        media.addReplaceAudio(cameraId: playerId, latency: latency)
+    }
+
+    func mediaPlayerOnStop(playerId: UUID) {
+        logger.info("Player \(playerId) stop")
+        media.removeReplaceCamera(cameraId: playerId)
+        media.removeReplaceAudio(cameraId: playerId)
+    }
+
+    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+        media.addReplaceSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+    }
+
+    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+        media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }

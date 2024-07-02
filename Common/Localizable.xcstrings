@@ -33260,6 +33260,9 @@
         }
       }
     },
+    "File" : {
+
+    },
     "Filter" : {
       "localizations" : {
         "de" : {
@@ -45356,6 +45359,12 @@
         }
       }
     },
+    "Media player" : {
+
+    },
+    "Media players" : {
+
+    },
     "Message" : {
       "localizations" : {
         "de" : {
@@ -53549,6 +53558,9 @@
         }
       }
     },
+    "Playlist" : {
+
+    },
     "Please enter your stream URL in stream settings before going live." : {
       "localizations" : {
         "de" : {
@@ -53808,6 +53820,9 @@
           }
         }
       }
+    },
+    "Poll" : {
+
     },
     "Port" : {
       "localizations" : {
@@ -62388,6 +62403,9 @@
           }
         }
       }
+    },
+    "Share log" : {
+
     },
     "Show" : {
       "localizations" : {
@@ -80468,6 +80486,9 @@
           }
         }
       }
+    },
+    "Video source" : {
+
     },
     "Video stabilization" : {
       "localizations" : {

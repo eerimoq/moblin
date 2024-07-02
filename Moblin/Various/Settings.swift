@@ -561,6 +561,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case rtmp = "RTMP"
     case external = "External"
     case srtla = "SRT(LA)"
+    case mediaPlayer = "Media player"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -578,6 +579,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var frontCameraId: String? = getBestFrontCameraId()
     var rtmpCameraId: UUID? = .init()
     var srtlaCameraId: UUID? = .init()
+    var mediaPlayerCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
@@ -815,6 +817,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case cameraPreview = "Camera preview"
     case face = "Face"
     case fourThree = "4:3"
+    case poll = "Poll"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -1235,6 +1238,46 @@ class SettingsSrtlaServer: Codable {
     }
 }
 
+class SettingsMediaPlayerFile: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My video"
+
+    func clone() -> SettingsMediaPlayerFile {
+        let new = SettingsMediaPlayerFile()
+        new.id = id
+        new.name = name
+        return new
+    }
+}
+
+class SettingsMediaPlayer: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My player"
+    var playerId: String = ""
+    var autoSelectMic: Bool = true
+    var playlist: [SettingsMediaPlayerFile] = []
+
+    func camera() -> String {
+        return mediaPlayerCamera(name: name)
+    }
+
+    func clone() -> SettingsMediaPlayer {
+        let new = SettingsMediaPlayer()
+        new.id = id
+        new.name = name
+        new.playerId = playerId
+        new.autoSelectMic = autoSelectMic
+        for file in playlist {
+            new.playlist.append(file.clone())
+        }
+        return new
+    }
+}
+
+class SettingsMediaPlayers: Codable {
+    var players: [SettingsMediaPlayer] = []
+}
+
 class SettingsQuickButtons: Codable {
     var twoColumns: Bool = true
     var showName: Bool = false
@@ -1596,6 +1639,7 @@ class Database: Codable {
     var webBrowser: WebBrowserSettings? = .init()
     var deepLinkCreator: DeepLinkCreator? = .init()
     var srtlaServer: SettingsSrtlaServer? = .init()
+    var mediaPlayers: SettingsMediaPlayers? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1612,7 +1656,7 @@ class Database: Codable {
             addDefaultBitratePresets(database: database)
         }
         addMissingGlobalButtons(database: database)
-        for button in database.globalButtons! {
+        for button in database.globalButtons! where button.type != .lut {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
@@ -1918,6 +1962,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "square.stack.3d.up.slash.fill"
     button.systemImageNameOff = "square.stack.3d.up.slash"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Poll"))
+    button.id = UUID()
+    button.type = .poll
+    button.imageType = "System name"
+    button.systemImageNameOn = "chart.bar.xaxis"
+    button.systemImageNameOff = "chart.bar.xaxis"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in
@@ -2719,6 +2771,10 @@ final class Settings {
         }
         for stream in realDatabase.deepLinkCreator!.streams where stream.audio == nil {
             stream.audio = .init()
+            store()
+        }
+        if realDatabase.mediaPlayers == nil {
+            realDatabase.mediaPlayers = .init()
             store()
         }
     }

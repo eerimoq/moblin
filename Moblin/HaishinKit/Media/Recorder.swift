@@ -52,7 +52,6 @@ class Recorder {
         guard let writer else {
             return
         }
-        // logger.info("xxx audio \(sampleBuffer.presentationTimeStamp.seconds)")
         let sampleBuffer = convert(sampleBuffer)
         guard
             let input = makeAudioWriterInput(sourceFormatHint: sampleBuffer.formatDescription),
@@ -114,7 +113,6 @@ class Recorder {
         guard let writer else {
             return
         }
-        // logger.info("xxx video \(withPresentationTime.seconds)")
         if dimensions.width != pixelBuffer.width || dimensions.height != pixelBuffer.height {
             dimensions = .init(width: Int32(pixelBuffer.width), height: Int32(pixelBuffer.height))
         }

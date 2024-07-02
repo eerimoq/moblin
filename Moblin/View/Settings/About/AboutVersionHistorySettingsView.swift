@@ -8,6 +8,21 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.312.0", date: "2024-06-30", changes: [
+        "• Show/hide a simple poll in top right of video by tapping the poll quick button.",
+        "  • Chat votes 1, 2 or 3.",
+        "  • The poll is reset when tapping the quick button.",
+        "  • Visible on stream.",
+        "• Text widget styling.",
+        "  • Rounded corners.",
+        "  • Leading and trailing padding.",
+    ]),
+    Version(version: "0.311.0", date: "2024-06-29", changes: [
+        "• Save log per live stream. 💡 xcopy94",
+        "  • Share the after the live stream ended in Settings → Streaming history → A stream → Share log.",
+        "  • At most 100K messages are saved.",
+        "• Make LUT quick button states survive app restart. 💡 ariathome",
+    ]),
     Version(version: "0.310.0", date: "2024-06-27", changes: [
         "• Builtin chat bot started. 💡 disco",
         "  • Enable in Settings → Chat → Bot.",

@@ -106,13 +106,11 @@ final class TextEffect: VideoEffect {
     }
 
     func updateStats(stats: TextEffectStats) {
-        textQueue.sync {
-            self.stats = stats
-        }
+        self.stats = stats
     }
 
     override func getName() -> String {
-        return "\(settingName) browser widget"
+        return "\(settingName) text widget"
     }
 
     private func formatted() -> String {
@@ -143,9 +141,11 @@ final class TextEffect: VideoEffect {
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
             let text = Text(self.formatted())
+                .padding([.leading, .trailing], 7)
                 .background(.black)
                 .foregroundColor(.white)
                 .font(.system(size: self.scaledFontSize(width: size.width)))
+                .cornerRadius(10)
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {
