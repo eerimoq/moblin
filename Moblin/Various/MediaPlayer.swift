@@ -8,6 +8,8 @@ protocol MediaPlayerDelegate: AnyObject {
     func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
 }
 
+private let mediaPlayerQueue = DispatchQueue(label: "com.eerimoq.moblin.media-player")
+
 class MediaPlayer {
     private var asset: AVAsset?
     private var reader: AVAssetReader?
@@ -24,18 +26,48 @@ class MediaPlayer {
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
         self.settings = settings.clone()
         self.mediaStorage = mediaStorage
-        loadCurrentFile()
+        mediaPlayerQueue.async {
+            self.loadCurrentFile()
+        }
     }
 
     func play() {
-        playing = true
+        mediaPlayerQueue.async {
+            self.playing = true
+        }
     }
 
     func pause() {
-        playing = false
+        mediaPlayerQueue.async {
+            self.playing = false
+        }
     }
 
     func next() {
+        mediaPlayerQueue.async {
+            self.nextInner()
+        }
+    }
+
+    func previous() {
+        mediaPlayerQueue.async {
+            self.previousInner()
+        }
+    }
+
+    func seek(position: Float) {
+        mediaPlayerQueue.async {
+            self.seekInner(position: position)
+        }
+    }
+
+    func setSeeking(on: Bool) {
+        mediaPlayerQueue.async {
+            self.seeking = on
+        }
+    }
+
+    private func nextInner() {
         currentFileIndex += 1
         if currentFileIndex == settings.playlist.count {
             currentFileIndex = 0
@@ -43,7 +75,7 @@ class MediaPlayer {
         loadCurrentFile()
     }
 
-    func previous() {
+    private func previousInner() {
         currentFileIndex -= 1
         if currentFileIndex == -1 {
             currentFileIndex = settings.playlist.count - 1
@@ -51,16 +83,12 @@ class MediaPlayer {
         loadCurrentFile()
     }
 
-    func seek(position: Float) {
+    private func seekInner(position: Float) {
         delegate?.mediaPlayerOnPositionChanged(
             playerId: settings.id,
             position: position,
             time: formatTime(Double(position) / 100 * fileDuration)
         )
-    }
-
-    func setSeeking(on: Bool) {
-        seeking = on
     }
 
     private func loadCurrentFile() {
@@ -81,7 +109,7 @@ class MediaPlayer {
         } catch {
             logger.info("media-player: Failed to create reader with error: \(error)")
         }
-        Task { @MainActor in
+        Task {
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first else {
                 return
             }
