@@ -331,6 +331,7 @@ final class Model: NSObject, ObservableObject {
     private var pollEnabled = false
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
     @Published var showMediaPlayerControls = false
+    @Published var mediaPlayerPlaying = false
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -958,7 +959,9 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func mediaPlayerPlay() {}
+    func mediaPlayerTogglePlaying() {
+        mediaPlayerPlaying = !mediaPlayerPlaying
+    }
 
     private func removeUnusedLogs() {
         for logId in logsStorage.ids()

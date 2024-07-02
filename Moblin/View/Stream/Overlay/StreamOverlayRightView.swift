@@ -377,13 +377,21 @@ private struct CameraSettingsControlView: View {
 private struct MediaPlayerControlsView: View {
     @EnvironmentObject var model: Model
 
+    private func playPauseImage() -> String {
+        if model.mediaPlayerPlaying {
+            return "pause"
+        } else {
+            return "play"
+        }
+    }
+
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             HStack {
                 Button {
-                    model.mediaPlayerPlay()
+                    model.mediaPlayerTogglePlaying()
                 } label: {
-                    Image(systemName: "play")
+                    Image(systemName: playPauseImage())
                         .font(.title)
                 }
             }
