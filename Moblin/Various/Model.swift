@@ -981,7 +981,7 @@ final class Model: NSObject, ObservableObject {
         getCurrentMediaPlayer()?.previous()
     }
 
-    func mediaPlayerSeek(position: Float) {
+    func mediaPlayerSeek(position: Double) {
         getCurrentMediaPlayer()?.seek(position: position)
     }
 
@@ -6344,27 +6344,25 @@ extension Model: SrtlaServerDelegate {
 extension Model: MediaPlayerDelegate {
     func mediaPlayerOnLoad(playerId: UUID, name: String) {
         DispatchQueue.main.async {
-            logger.info("Player \(playerId) load \(name)")
-            let latency = 0.250
             self.mediaPlayerFileName = name
-            self.media.addReplaceCamera(cameraId: playerId, latency: latency)
-            self.media.addReplaceAudio(cameraId: playerId, latency: latency)
         }
+        let latency = 0.250
+        media.addReplaceCamera(cameraId: playerId, latency: latency)
+        // media.addReplaceAudio(cameraId: playerId, latency: latency)
     }
 
     func mediaPlayerOnUnload(playerId: UUID) {
         DispatchQueue.main.async {
-            logger.info("Player \(playerId) unload")
             self.mediaPlayerFileName = ""
-            self.media.removeReplaceCamera(cameraId: playerId)
-            self.media.removeReplaceAudio(cameraId: playerId)
         }
+        media.removeReplaceCamera(cameraId: playerId)
+        // media.removeReplaceAudio(cameraId: playerId)
     }
 
-    func mediaPlayerOnPositionChanged(playerId _: UUID, position: Float, time: String) {
+    func mediaPlayerOnPositionChanged(playerId _: UUID, position: Double, time: String) {
         DispatchQueue.main.async {
             if !self.mediaPlayerSeeking {
-                self.mediaPlayerPosition = position
+                self.mediaPlayerPosition = Float(position)
             }
             self.mediaPlayerTime = time
         }

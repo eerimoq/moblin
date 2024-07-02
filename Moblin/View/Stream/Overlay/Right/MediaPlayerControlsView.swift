@@ -27,13 +27,13 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
                                guard !begin else {
                                    return
                                }
-                               model.mediaPlayerSeek(position: model.mediaPlayerPosition)
+                               model.mediaPlayerSeek(position: Double(model.mediaPlayerPosition))
                            })
                            .frame(width: 250)
                            .accentColor(.white)
                            .onChange(of: model.mediaPlayerPosition) { _ in
                                if model.mediaPlayerSeeking {
-                                   model.mediaPlayerSeek(position: model.mediaPlayerPosition)
+                                   model.mediaPlayerSeek(position: Double(model.mediaPlayerPosition))
                                }
                            }
                 }
