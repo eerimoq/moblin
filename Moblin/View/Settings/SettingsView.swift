@@ -127,15 +127,6 @@ struct SettingsView: View {
                 NavigationLink(destination: AudioSettingsView()) {
                     IconAndTextView(image: "waveform", text: String(localized: "Audio"))
                 }
-                NavigationLink(destination: BitratePresetsSettingsView()) {
-                    IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
-                }
-                NavigationLink(destination: RtmpServerSettingsView()) {
-                    IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
-                }
-                NavigationLink(destination: SrtlaServerSettingsView()) {
-                    IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
-                }
                 if false {
                     NavigationLink(destination: MediaPlayersSettingsView()) {
                         IconAndTextView(
@@ -143,6 +134,15 @@ struct SettingsView: View {
                             text: String(localized: "Media players")
                         )
                     }
+                }
+                NavigationLink(destination: RtmpServerSettingsView()) {
+                    IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
+                }
+                NavigationLink(destination: SrtlaServerSettingsView()) {
+                    IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
+                }
+                NavigationLink(destination: BitratePresetsSettingsView()) {
+                    IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
                 }
                 NavigationLink(destination: GameControllersSettingsView()) {
                     IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
