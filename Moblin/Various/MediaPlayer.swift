@@ -24,7 +24,7 @@ class MediaPlayer {
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
         self.settings = settings.clone()
         self.mediaStorage = mediaStorage
-        loadFile()
+        loadCurrentFile()
     }
 
     func play() {
@@ -40,7 +40,7 @@ class MediaPlayer {
         if currentFileIndex == settings.playlist.count {
             currentFileIndex = 0
         }
-        loadFile()
+        loadCurrentFile()
     }
 
     func previous() {
@@ -48,20 +48,22 @@ class MediaPlayer {
         if currentFileIndex == -1 {
             currentFileIndex = settings.playlist.count - 1
         }
-        loadFile()
+        loadCurrentFile()
     }
 
     func seek(position: Float) {
-        logger.info("media-player: Seek \(position)")
-        let time = formatTime(Double(position) / 100 * fileDuration)
-        delegate?.mediaPlayerOnPositionChanged(playerId: settings.id, position: position, time: time)
+        delegate?.mediaPlayerOnPositionChanged(
+            playerId: settings.id,
+            position: position,
+            time: formatTime(Double(position) / 100 * fileDuration)
+        )
     }
 
     func setSeeking(on: Bool) {
         seeking = on
     }
 
-    private func loadFile() {
+    private func loadCurrentFile() {
         guard reader == nil else {
             return
         }

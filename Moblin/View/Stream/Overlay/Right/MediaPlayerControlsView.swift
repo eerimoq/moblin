@@ -18,23 +18,25 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
                 .padding([.trailing], 8)
             HStack {
                 Text(model.mediaPlayerTime)
-                Slider(value: $model.mediaPlayerPosition,
-                       in: 0 ... 100,
-                       onEditingChanged: { begin in
-                           model.mediaPlayerSeeking = begin
-                           model.mediaPlayerSetSeeking(on: begin)
-                           guard !begin else {
-                               return
-                           }
-                           model.mediaPlayerSeek(position: model.mediaPlayerPosition)
-                       })
-                       .frame(width: 250)
-                       .accentColor(.white)
-                       .onChange(of: model.mediaPlayerPosition) { _ in
-                           if model.mediaPlayerSeeking {
+                if false {
+                    Slider(value: $model.mediaPlayerPosition,
+                           in: 0 ... 100,
+                           onEditingChanged: { begin in
+                               model.mediaPlayerSeeking = begin
+                               model.mediaPlayerSetSeeking(on: begin)
+                               guard !begin else {
+                                   return
+                               }
                                model.mediaPlayerSeek(position: model.mediaPlayerPosition)
+                           })
+                           .frame(width: 250)
+                           .accentColor(.white)
+                           .onChange(of: model.mediaPlayerPosition) { _ in
+                               if model.mediaPlayerSeeking {
+                                   model.mediaPlayerSeek(position: model.mediaPlayerPosition)
+                               }
                            }
-                       }
+                }
                 Button {
                     model.mediaPlayerPrevious()
                 } label: {

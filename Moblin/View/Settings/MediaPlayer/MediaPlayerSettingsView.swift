@@ -48,13 +48,18 @@ struct MediaPlayerSettingsView: View {
                 )
             }
             Section {
-                Toggle("Auto select mic", isOn: Binding(get: {
-                    player.autoSelectMic
-                }, set: { value in
-                    player.autoSelectMic = value
-                    model.store()
-                    model.objectWillChange.send()
-                }))
+                Text("⚠️ Audio is not yet implemented.")
+            }
+            if false {
+                Section {
+                    Toggle("Auto select mic", isOn: Binding(get: {
+                        player.autoSelectMic
+                    }, set: { value in
+                        player.autoSelectMic = value
+                        model.store()
+                        model.objectWillChange.send()
+                    }))
+                }
             }
             Section {
                 List {
