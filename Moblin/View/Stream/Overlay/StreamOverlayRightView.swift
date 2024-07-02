@@ -374,6 +374,27 @@ private struct CameraSettingsControlView: View {
     }
 }
 
+private struct MediaPlayerControlsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            HStack {
+                Button {
+                    model.mediaPlayerPlay()
+                } label: {
+                    Image(systemName: "play")
+                        .font(.title)
+                }
+            }
+        }
+        .padding(8)
+        .background(backgroundColor)
+        .foregroundColor(.white)
+        .cornerRadius(8)
+    }
+}
+
 private struct ZoomPresetSelctorView: View {
     @EnvironmentObject var model: Model
 
@@ -573,11 +594,15 @@ struct RightOverlayView: View {
             )
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
-                if model.showingCamera {
-                    CameraSettingsControlView()
-                }
-                if database.show.zoomPresets && model.hasZoom {
-                    ZoomPresetSelctorView()
+                if model.showMediaPlayerControls {
+                    MediaPlayerControlsView()
+                } else {
+                    if model.showingCamera {
+                        CameraSettingsControlView()
+                    }
+                    if database.show.zoomPresets && model.hasZoom {
+                        ZoomPresetSelctorView()
+                    }
                 }
                 SceneSelectorView()
             }

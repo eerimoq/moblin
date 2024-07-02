@@ -330,6 +330,7 @@ final class Model: NSObject, ObservableObject {
     private var pollVotes: [Int] = [0, 0, 0]
     private var pollEnabled = false
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
+    @Published var showMediaPlayerControls = false
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -956,6 +957,8 @@ final class Model: NSObject, ObservableObject {
             }
         }
     }
+
+    func mediaPlayerPlay() {}
 
     private func removeUnusedLogs() {
         for logId in logsStorage.ids()
@@ -3738,6 +3741,7 @@ final class Model: NSObject, ObservableObject {
     func setSceneId(id: UUID) {
         selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
+        showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
     }
 
     private func selectScene(id: UUID) {
