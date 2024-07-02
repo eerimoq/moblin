@@ -26,6 +26,7 @@ private struct CameraSettingButtonView: View {
                 }
             }
             .font(.footnote)
+            .padding([.trailing], 7)
         }
         .frame(width: cameraButtonWidth, height: segmentHeight)
         .background(pickerBackgroundColor)
@@ -141,6 +142,7 @@ private struct CameraSettingsControlView: View {
                 Text("EXPOSURE BIAS")
                     .font(.footnote)
                     .foregroundColor(.white)
+                    .padding([.trailing], 7)
                 Slider(
                     value: $model.bias,
                     in: -2 ... 2,
@@ -166,6 +168,7 @@ private struct CameraSettingsControlView: View {
                 Text("WHITE BALANCE")
                     .font(.footnote)
                     .foregroundColor(.white)
+                    .padding([.trailing], 7)
                 if model.isCameraSupportingManualWhiteBalance() {
                     HStack {
                         Slider(
@@ -211,6 +214,7 @@ private struct CameraSettingsControlView: View {
                 Text("ISO")
                     .font(.footnote)
                     .foregroundColor(.white)
+                    .padding([.trailing], 7)
                 if model.isCameraSupportingManualIso() {
                     HStack {
                         Slider(
@@ -256,6 +260,7 @@ private struct CameraSettingsControlView: View {
                 Text("FOCUS")
                     .font(.footnote)
                     .foregroundColor(.white)
+                    .padding([.trailing], 7)
                 if model.isCameraSupportingManualFocus() {
                     HStack {
                         Slider(
@@ -387,6 +392,9 @@ private struct MediaPlayerControlsView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
+            Text(model.mediaPlayerFileName)
+                .foregroundColor(.white)
+                .padding([.trailing], 8)
             HStack {
                 Text(model.mediaPlayerTime)
                 Slider(value: $model.mediaPlayerTimeline, in: 0 ... 100)
@@ -417,11 +425,11 @@ private struct MediaPlayerControlsView: View {
                         .font(.title)
                 }
             }
+            .padding(8)
+            .background(backgroundColor)
+            .foregroundColor(.white)
+            .cornerRadius(8)
         }
-        .padding(8)
-        .background(backgroundColor)
-        .foregroundColor(.white)
-        .cornerRadius(8)
     }
 }
 

@@ -334,6 +334,7 @@ final class Model: NSObject, ObservableObject {
     @Published var mediaPlayerPlaying = false
     @Published var mediaPlayerTimeline: Float = 0
     @Published var mediaPlayerTime = "0:09"
+    @Published var mediaPlayerFileName = "Media name"
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -6336,15 +6337,17 @@ extension Model: SrtlaServerDelegate {
 }
 
 extension Model: MediaPlayerDelegate {
-    func mediaPlayerOnStart(playerId: UUID) {
-        logger.info("Player \(playerId) start")
+    func mediaPlayerOnLoad(playerId: UUID, name: String) {
+        logger.info("Player \(playerId) load \(name)")
         let latency = 0.250
+        mediaPlayerFileName = name
         media.addReplaceCamera(cameraId: playerId, latency: latency)
         media.addReplaceAudio(cameraId: playerId, latency: latency)
     }
 
-    func mediaPlayerOnStop(playerId: UUID) {
-        logger.info("Player \(playerId) stop")
+    func mediaPlayerOnUnload(playerId: UUID) {
+        logger.info("Player \(playerId) unload")
+        mediaPlayerFileName = ""
         media.removeReplaceCamera(cameraId: playerId)
         media.removeReplaceAudio(cameraId: playerId)
     }

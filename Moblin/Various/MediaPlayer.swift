@@ -1,8 +1,8 @@
 import AVFoundation
 
 protocol MediaPlayerDelegate: AnyObject {
-    func mediaPlayerOnStart(playerId: UUID)
-    func mediaPlayerOnStop(playerId: UUID)
+    func mediaPlayerOnLoad(playerId: UUID, name: String)
+    func mediaPlayerOnUnload(playerId: UUID)
     func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
     func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
 }
@@ -15,22 +15,52 @@ class MediaPlayer {
     private var settings: SettingsMediaPlayer
     private var mediaStorage: MediaStorage
     private var playing = false
+    private var currentFileIndex = 0
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
         self.settings = settings.clone()
         self.mediaStorage = mediaStorage
+        loadFile()
     }
 
     func play() {
         playing = true
+    }
+
+    func pause() {
+        playing = false
+    }
+
+    func next() {
+        currentFileIndex += 1
+        if currentFileIndex == settings.playlist.count {
+            currentFileIndex = 0
+        }
+        loadFile()
+    }
+
+    func previous() {
+        currentFileIndex -= 1
+        if currentFileIndex == -1 {
+            currentFileIndex = settings.playlist.count - 1
+        }
+        loadFile()
+    }
+
+    func seek(position: Float) {
+        logger.info("media-player: Seek \(position)")
+    }
+
+    private func loadFile() {
         guard reader == nil else {
             return
         }
-        guard let fileId = settings.playlist.first?.id else {
+        guard currentFileIndex < settings.playlist.count else {
             return
         }
-        let url = mediaStorage.makePath(id: fileId)
+        let file = settings.playlist[currentFileIndex]
+        let url = mediaStorage.makePath(id: file.id)
         asset = AVAsset(url: url)
         guard let asset else {
             return
@@ -70,7 +100,7 @@ class MediaPlayer {
                 logger.info("media-player: Start failed")
                 return
             }
-            delegate?.mediaPlayerOnStart(playerId: self.settings.id)
+            delegate?.mediaPlayerOnLoad(playerId: self.settings.id, name: file.name)
             let startTime = ContinuousClock.now
             while let videoTrackOutput, let audioTrackOutput {
                 if playing {
@@ -94,23 +124,7 @@ class MediaPlayer {
                 }
                 try? await sleep(milliSeconds: 100)
             }
-            delegate?.mediaPlayerOnStop(playerId: settings.id)
+            delegate?.mediaPlayerOnUnload(playerId: settings.id)
         }
-    }
-
-    func pause() {
-        playing = false
-    }
-
-    func next() {
-        logger.info("media-player: Next")
-    }
-
-    func previous() {
-        logger.info("media-player: Previous")
-    }
-
-    func seek(position: Float) {
-        logger.info("media-player: Seek \(position)")
     }
 }

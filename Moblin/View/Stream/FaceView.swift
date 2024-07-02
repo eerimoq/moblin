@@ -38,6 +38,7 @@ private struct FaceViewSlider: View {
             Text(name)
                 .font(.footnote)
                 .foregroundStyle(.white)
+                .padding([.trailing], 7)
             Slider(
                 value: $value,
                 in: range,
