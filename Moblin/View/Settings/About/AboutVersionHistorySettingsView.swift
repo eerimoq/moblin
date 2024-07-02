@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.313.0", date: "2024-07-03", changes: [
+        "• Show poll in front of other widgets.",
+        "• Rename \"Camera\" to \"Video source\" in scene settings.",
+    ]),
     Version(version: "0.312.0", date: "2024-06-30", changes: [
         "• Show/hide a simple poll in top right of video by tapping the poll quick button.",
         "  • Chat votes 1, 2 or 3.",
