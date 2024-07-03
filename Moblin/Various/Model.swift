@@ -333,7 +333,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showMediaPlayerControls = false
     @Published var mediaPlayerPlaying = false
     @Published var mediaPlayerPosition: Float = 0
-    @Published var mediaPlayerTime = "0:09"
+    @Published var mediaPlayerTime = "0:00"
     @Published var mediaPlayerFileName = "Media name"
     @Published var mediaPlayerSeeking = false
 
@@ -3474,6 +3474,7 @@ final class Model: NSObject, ObservableObject {
 
     private func attachSingleLayout(scene: SettingsScene) {
         isFrontCameraSelected = false
+        deactivateAllMediaPlayers()
         switch scene.cameraPosition! {
         case .back:
             attachCamera(position: .back)
@@ -3485,6 +3486,7 @@ final class Model: NSObject, ObservableObject {
         case .srtla:
             attachReplaceCamera(cameraId: scene.srtlaCameraId!)
         case .mediaPlayer:
+            mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
             attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
@@ -6357,33 +6359,36 @@ extension Model {
         }
         return mediaPlayers[mediaPlayerSettings.id]
     }
+
+    private func deactivateAllMediaPlayers() {
+        for mediaPlayer in mediaPlayers.values {
+            mediaPlayer.deactivate()
+        }
+    }
 }
 
 extension Model: MediaPlayerDelegate {
-    func mediaPlayerOnLoad(playerId: UUID, name: String) {
-        DispatchQueue.main.async {
-            // Will not work with multiple players.
-            self.mediaPlayerFileName = name
-        }
+    func mediaPlayerFileLoaded(playerId: UUID, name _: String) {
         let latency = 0.250
         media.addReplaceCamera(cameraId: playerId, latency: latency)
         // media.addReplaceAudio(cameraId: playerId, latency: latency)
     }
 
-    func mediaPlayerOnUnload(playerId: UUID) {
-        DispatchQueue.main.async {
-            // Will not work with multiple players.
-            self.mediaPlayerFileName = ""
-        }
+    func mediaPlayerFileUnloaded(playerId: UUID) {
         media.removeReplaceCamera(cameraId: playerId)
         // media.removeReplaceAudio(cameraId: playerId)
     }
 
-    func mediaPlayerOnPositionChanged(playerId: UUID, position: Double, time: String) {
+    func mediaPlayerStateUpdate(
+        playerId _: UUID,
+        name: String,
+        playing: Bool,
+        position: Double,
+        time: String
+    ) {
         DispatchQueue.main.async {
-            guard playerId == self.getSelectedScene()?.mediaPlayerCameraId else {
-                return
-            }
+            self.mediaPlayerPlaying = playing
+            self.mediaPlayerFileName = name
             if !self.mediaPlayerSeeking {
                 self.mediaPlayerPosition = Float(position)
             }
@@ -6391,11 +6396,11 @@ extension Model: MediaPlayerDelegate {
         }
     }
 
-    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
-    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }

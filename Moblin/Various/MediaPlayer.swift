@@ -1,11 +1,11 @@
 import AVFoundation
 
 protocol MediaPlayerDelegate: AnyObject {
-    func mediaPlayerOnLoad(playerId: UUID, name: String)
-    func mediaPlayerOnUnload(playerId: UUID)
-    func mediaPlayerOnPositionChanged(playerId: UUID, position: Double, time: String)
-    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
-    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+    func mediaPlayerFileLoaded(playerId: UUID, name: String)
+    func mediaPlayerFileUnloaded(playerId: UUID)
+    func mediaPlayerStateUpdate(playerId: UUID, name: String, playing: Bool, position: Double, time: String)
+    func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+    func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
 }
 
 private let mediaPlayerQueue = DispatchQueue(label: "com.eerimoq.moblin.media-player")
@@ -24,6 +24,8 @@ class MediaPlayer {
     private var startTime: CMTime = .zero
     private var latestVideoTime: CMTime = .zero
     private var outputTimer: DispatchSourceTimer?
+    private var active = false
+    private var filename = ""
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
@@ -36,6 +38,18 @@ class MediaPlayer {
 
     deinit {
         stopOutputTimer()
+    }
+
+    func activate() {
+        mediaPlayerQueue.async {
+            self.activateInner()
+        }
+    }
+
+    func deactivate() {
+        mediaPlayerQueue.async {
+            self.active = false
+        }
     }
 
     func updateSettings(settings: SettingsMediaPlayer) {
@@ -86,6 +100,25 @@ class MediaPlayer {
         }
     }
 
+    private func activateInner() {
+        active = true
+        reportState()
+    }
+
+    private func reportState() {
+        guard active else {
+            return
+        }
+        let time = latestVideoTime.seconds
+        delegate?.mediaPlayerStateUpdate(
+            playerId: settings.id,
+            name: filename,
+            playing: playing,
+            position: 100 * time / fileDuration,
+            time: formatTime(time)
+        )
+    }
+
     private func nextInner() {
         currentFileIndex += 1
         if currentFileIndex >= settings.playlist.count {
@@ -103,18 +136,23 @@ class MediaPlayer {
     }
 
     private func seekInner(position: Double) {
-        delegate?.mediaPlayerOnPositionChanged(
-            playerId: settings.id,
-            position: position,
-            time: formatTime(Double(position) / 100 * fileDuration)
-        )
+        guard currentFileIndex < settings.playlist.count else {
+            logger.info("media-player: File index out of range")
+            return
+        }
+        delegate?.mediaPlayerStateUpdate(playerId: settings.id,
+                                         name: settings.playlist[currentFileIndex].name,
+                                         playing: playing,
+                                         position: position,
+                                         time: formatTime(Double(position) / 100 * fileDuration))
     }
 
     private func loadCurrentFile() {
         stopOutputTimer()
         latestVideoTime = .zero
         if reader != nil {
-            delegate?.mediaPlayerOnUnload(playerId: settings.id)
+            delegate?.mediaPlayerFileUnloaded(playerId: settings.id)
+            reportState()
         }
         videoTrackOutput = nil
         // audioTrackOutput = nil
@@ -123,7 +161,9 @@ class MediaPlayer {
             logger.info("media-player: File index out of range")
             return
         }
-        let url = mediaStorage.makePath(id: settings.playlist[currentFileIndex].id)
+        let file = settings.playlist[currentFileIndex]
+        filename = file.name
+        let url = mediaStorage.makePath(id: file.id)
         asset = AVAsset(url: url)
         guard let asset else {
             logger.info("media-player: No asset \(url)")
@@ -187,7 +227,8 @@ class MediaPlayer {
             logger.info("media-player: File index out of range")
             return
         }
-        delegate?.mediaPlayerOnLoad(playerId: settings.id, name: settings.playlist[currentFileIndex].name)
+        delegate?.mediaPlayerFileLoaded(playerId: settings.id, name: settings.playlist[currentFileIndex].name)
+        reportState()
         startTime = CMClockGetTime(CMClockGetHostTimeClock())
         _ = outputVideoBuffer()
         startOutputTimer()
@@ -198,17 +239,12 @@ class MediaPlayer {
             return nil
         }
         latestVideoTime = sampleBuffer.presentationTimeStamp
-        let time = latestVideoTime.seconds
         let presentationTimeStamp = CMTimeAdd(startTime, sampleBuffer.presentationTimeStamp)
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }
-        delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
-        delegate?.mediaPlayerOnPositionChanged(
-            playerId: settings.id,
-            position: 100 * time / fileDuration,
-            time: formatTime(time)
-        )
+        delegate?.mediaPlayerVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+        reportState()
         return presentationTimeStamp
     }
 
