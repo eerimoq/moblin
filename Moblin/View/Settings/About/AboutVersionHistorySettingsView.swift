@@ -9,17 +9,17 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.314.0", date: "2024-07-03", changes: [
-    "• Simple media player. 💡 Rubaz and others",
-    "  • Configure in Settings → Media players.",
-    "  • Use a media player as video source in scenes.",
-    "  • Each media player has a playlist.",
-    "    • Add/remove videos.",
-    "    • Reorder videos not yet supported.",
-    "  • Basic controls when media player scene is selected.",
-    "    •  Play, pause, next and previous.",
-    "  • Not sure what happens if video resolution does not match stream resolution.",
-    "  • Audio is not supported.",
-    "• Detach any builtin or UVC camera when using RTMP server/SRT(LA) server/Media player as video source. 🧑‍🏭 ErAzOr",
+        "• Simple media player. 💡 Rubaz and others",
+        "  • Configure in Settings → Media players.",
+        "  • Use a media player as video source in scenes.",
+        "  • Each media player has a playlist.",
+        "    • Add/remove videos.",
+        "    • Reorder videos not yet supported.",
+        "  • Basic controls when media player scene is selected.",
+        "    •  Play, pause, next and previous.",
+        "  • Not sure what happens if video resolution does not match stream resolution.",
+        "  • Audio is not supported.",
+        "• Detach any builtin or UVC camera when using RTMP server/SRT(LA) server/Media player as video source. 🧑‍🏭 ErAzOr",
     ]),
     Version(version: "0.313.0", date: "2024-07-03", changes: [
         "• Show poll in front of other widgets.",
