@@ -1133,6 +1133,9 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        guard selectedReplaceVideoCameraId == nil else {
+            return
+        }
         appendSampleBuffer(sampleBuffer: sampleBuffer)
     }
 }
