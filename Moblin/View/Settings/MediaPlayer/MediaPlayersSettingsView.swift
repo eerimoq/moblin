@@ -6,6 +6,15 @@ struct MediaPlayersSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Text("""
+                Use a media player as video source in scenes to stream recordings \
+                or other MP4-files.
+                """)
+            }
+            Section {
+                Text("⚠️ Audio is not yet implemented.")
+            }
+            Section {
                 List {
                     ForEach(model.database.mediaPlayers!.players) { player in
                         NavigationLink(destination: MediaPlayerSettingsView(player: player)) {

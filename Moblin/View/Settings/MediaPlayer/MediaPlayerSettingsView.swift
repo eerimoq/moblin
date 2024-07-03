@@ -49,9 +49,6 @@ struct MediaPlayerSettingsView: View {
                     capitalize: true
                 )
             }
-            Section {
-                Text("⚠️ Audio is not yet implemented.")
-            }
             if false {
                 Section {
                     Toggle("Auto select mic", isOn: Binding(get: {
