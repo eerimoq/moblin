@@ -22,6 +22,8 @@ class MediaPlayer {
     private var fileDuration = 0.0
     private var seeking = false
     private var startTime: CMTime = .zero
+    private var latestVideoTime: CMTime = .zero
+    private var outputTimer: DispatchSourceTimer?
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
@@ -32,9 +34,14 @@ class MediaPlayer {
         }
     }
 
+    deinit {
+        stopOutputTimer()
+    }
+
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
+            self.startTime = CMTimeSubtract(CMClockGetTime(CMClockGetHostTimeClock()), self.latestVideoTime)
         }
     }
 
@@ -93,6 +100,8 @@ class MediaPlayer {
     }
 
     private func loadCurrentFile() {
+        stopOutputTimer()
+        latestVideoTime = .zero
         if reader != nil {
             delegate?.mediaPlayerOnUnload(playerId: settings.id)
         }
@@ -169,24 +178,58 @@ class MediaPlayer {
         }
         delegate?.mediaPlayerOnLoad(playerId: settings.id, name: settings.playlist[currentFileIndex].name)
         startTime = CMClockGetTime(CMClockGetHostTimeClock())
-        outputVideoBuffer()
+        _ = outputVideoBuffer()
+        startOutputTimer()
     }
 
-    private func outputVideoBuffer() {
+    private func outputVideoBuffer() -> CMTime? {
         guard let sampleBuffer = videoTrackOutput?.copyNextSampleBuffer() else {
-            return
+            return nil
         }
-        let position = 100 * sampleBuffer.presentationTimeStamp.seconds / fileDuration
+        latestVideoTime = sampleBuffer.presentationTimeStamp
+        let time = latestVideoTime.seconds
         let presentationTimeStamp = CMTimeAdd(startTime, sampleBuffer.presentationTimeStamp)
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
-            return
+            return nil
         }
         delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
         delegate?.mediaPlayerOnPositionChanged(
             playerId: settings.id,
-            position: position,
-            time: formatTime(position)
+            position: 100 * time / fileDuration,
+            time: formatTime(time)
         )
+        return presentationTimeStamp
+    }
+
+    private func startOutputTimer() {
+        outputTimer = DispatchSource.makeTimerSource(queue: mediaPlayerQueue)
+        outputTimer?.schedule(deadline: .now(), repeating: 0.1)
+        outputTimer?.setEventHandler { [weak self] in
+            self?.handleOutputTimer()
+        }
+        outputTimer?.activate()
+    }
+
+    private func stopOutputTimer() {
+        outputTimer?.cancel()
+        outputTimer = nil
+    }
+
+    private func handleOutputTimer() {
+        guard playing else {
+            return
+        }
+        let now = CMClockGetTime(CMClockGetHostTimeClock())
+        while true {
+            if let time = outputVideoBuffer() {
+                if time >= now {
+                    break
+                }
+            } else {
+                nextInner()
+                break
+            }
+        }
     }
 
     private func formatTime(_ time: Double) -> String {
