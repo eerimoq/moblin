@@ -739,8 +739,8 @@ final class Media: NSObject {
         })
     }
 
-    func attachReplaceCamera(cameraId: UUID, device: AVCaptureDevice?) {
-        netStream.attachCamera(device, replaceVideoCameraId: cameraId)
+    func attachReplaceCamera(cameraId: UUID) {
+        netStream.attachReplaceCamera(replaceVideoCameraId: cameraId)
     }
 
     func attachReplaceAudio(cameraId: UUID?) {

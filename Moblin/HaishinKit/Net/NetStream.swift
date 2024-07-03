@@ -93,7 +93,22 @@ open class NetStream: NSObject {
     ) {
         lockQueue.async {
             do {
-                try self.mixer.attachCamera(device, replaceVideoCameraId)
+                try self.mixer.attachCamera(device)
+                onSuccess?()
+            } catch {
+                onError?(error)
+            }
+        }
+    }
+
+    func attachReplaceCamera(
+        onError: ((_ error: Error) -> Void)? = nil,
+        onSuccess: (() -> Void)? = nil,
+        replaceVideoCameraId: UUID? = nil
+    ) {
+        lockQueue.async {
+            do {
+                try self.mixer.attachReplaceCamera(replaceVideoCameraId)
                 onSuccess?()
             } catch {
                 onError?(error)
