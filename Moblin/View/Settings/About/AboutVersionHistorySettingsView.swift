@@ -19,7 +19,7 @@ private let versions = [
     "    •  Play, pause, next and previous.",
     "  • Not sure what happens if video resolution does not match stream resolution.",
     "  • Audio is not supported.",
-    "• Detach any builtin and UVC camera when using RTMP server/SRT(LA) server/Media player as video source. 🧑‍🏭 ErAzOr",
+    "• Detach any builtin or UVC camera when using RTMP server/SRT(LA) server/Media player as video source. 🧑‍🏭 ErAzOr",
     ]),
     Version(version: "0.313.0", date: "2024-07-03", changes: [
         "• Show poll in front of other widgets.",
