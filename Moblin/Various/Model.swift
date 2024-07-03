@@ -4145,7 +4145,7 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         hasZoom = false
         detachCamera()
-        media.attachReplaceCamera(cameraId: cameraId)
+        media.attachReplaceCamera(cameraId: cameraId, device: nil)
         media.usePendingAfterAttachEffects()
     }
 
