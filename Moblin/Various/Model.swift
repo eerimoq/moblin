@@ -4160,7 +4160,8 @@ final class Model: NSObject, ObservableObject {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachReplaceCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
+        detachCamera()
+        media.attachReplaceCamera(cameraId: cameraId, device: nil)
         media.usePendingAfterAttachEffects()
     }
 
