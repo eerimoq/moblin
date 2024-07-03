@@ -89,7 +89,7 @@ open class NetStream: NSObject {
         _ device: AVCaptureDevice?,
         onError: ((_ error: Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
-        replaceVideoCameraId: UUID? = nil
+        replaceVideoCameraId _: UUID? = nil
     ) {
         lockQueue.async {
             do {

@@ -318,7 +318,7 @@ final class VideoUnit: NSObject {
     }
 
     func attach(_ device: AVCaptureDevice?) throws {
-        self.selectedReplaceVideoCameraId = nil
+        selectedReplaceVideoCameraId = nil
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
         session.beginConfiguration()
         defer {
@@ -345,18 +345,18 @@ final class VideoUnit: NSObject {
         setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: lockQueue)
     }
-    
+
     func attachReplace(_ replaceVideo: UUID?) throws {
         let isOtherReplaceVideo = lockQueue.sync {
             let oldReplaceVideo = self.selectedReplaceVideoCameraId
             self.selectedReplaceVideoCameraId = replaceVideo
             return replaceVideo != oldReplaceVideo
         }
-            if isOtherReplaceVideo {
-                lockQueue.async {
-                    self.prepareFirstFrame()
-                }
+        if isOtherReplaceVideo {
+            lockQueue.async {
+                self.prepareFirstFrame()
             }
+        }
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
     }
 

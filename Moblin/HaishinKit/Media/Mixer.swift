@@ -50,7 +50,7 @@ class Mixer {
     func attachCamera(_ device: AVCaptureDevice?) throws {
         try video.attach(device)
     }
-    
+
     func attachReplaceCamera(_ replaceVideo: UUID?) throws {
         try video.attachReplace(replaceVideo)
     }
