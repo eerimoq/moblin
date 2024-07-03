@@ -127,13 +127,11 @@ struct SettingsView: View {
                 NavigationLink(destination: AudioSettingsView()) {
                     IconAndTextView(image: "waveform", text: String(localized: "Audio"))
                 }
-                if false {
-                    NavigationLink(destination: MediaPlayersSettingsView()) {
-                        IconAndTextView(
-                            image: "play.rectangle.on.rectangle",
-                            text: String(localized: "Media players")
-                        )
-                    }
+                NavigationLink(destination: MediaPlayersSettingsView()) {
+                    IconAndTextView(
+                        image: "play.rectangle.on.rectangle",
+                        text: String(localized: "Media players")
+                    )
                 }
                 NavigationLink(destination: RtmpServerSettingsView()) {
                     IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
