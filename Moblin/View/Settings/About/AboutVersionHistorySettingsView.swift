@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.315.0", date: "2024-07-03", changes: [
+        "• Fixed UI for multiple media players.",
+    ]),
     Version(version: "0.314.0", date: "2024-07-03", changes: [
         "• Simple media player. 💡 Rubaz and others",
         "  • Configure in Settings → Media players.",
