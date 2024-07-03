@@ -942,82 +942,6 @@ final class Model: NSObject, ObservableObject {
         removeUnusedLogs()
     }
 
-    private func initMediaPlayers() {
-        for settings in database.mediaPlayers!.players {
-            addMediaPlayer(settings: settings)
-        }
-        removeUnusedMediaPlayerFiles()
-    }
-
-    private func removeUnusedMediaPlayerFiles() {
-        for mediaId in mediaStorage.ids() {
-            var found = false
-            for player in database.mediaPlayers!.players
-                where player.playlist.contains(where: { $0.id == mediaId })
-            {
-                found = true
-            }
-            if !found {
-                mediaStorage.remove(id: mediaId)
-            }
-        }
-    }
-
-    func addMediaPlayer(settings: SettingsMediaPlayer) {
-        let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
-        mediaPlayer.delegate = self
-        mediaPlayers[settings.id] = mediaPlayer
-    }
-
-    func deleteMediaPlayer(playerId: UUID) {
-        mediaPlayers.removeValue(forKey: playerId)
-    }
-
-    func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {
-        mediaPlayers[playerId]?.updateSettings(settings: settings)
-    }
-
-    func mediaPlayerTogglePlaying() {
-        guard let mediaPlayer = getCurrentMediaPlayer() else {
-            return
-        }
-        if mediaPlayerPlaying {
-            mediaPlayer.pause()
-        } else {
-            mediaPlayer.play()
-        }
-        mediaPlayerPlaying = !mediaPlayerPlaying
-    }
-
-    func mediaPlayerNext() {
-        getCurrentMediaPlayer()?.next()
-    }
-
-    func mediaPlayerPrevious() {
-        getCurrentMediaPlayer()?.previous()
-    }
-
-    func mediaPlayerSeek(position: Double) {
-        getCurrentMediaPlayer()?.seek(position: position)
-    }
-
-    func mediaPlayerSetSeeking(on: Bool) {
-        getCurrentMediaPlayer()?.setSeeking(on: on)
-    }
-
-    func getCurrentMediaPlayer() -> MediaPlayer? {
-        guard let scene = getSelectedScene() else {
-            return nil
-        }
-        guard scene.cameraPosition == .mediaPlayer else {
-            return nil
-        }
-        guard let mediaPlayerSettings = getMediaPlayer(id: scene.mediaPlayerCameraId!) else {
-            return nil
-        }
-        return mediaPlayers[mediaPlayerSettings.id]
-    }
-
     private func removeUnusedLogs() {
         for logId in logsStorage.ids()
             where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
@@ -6354,6 +6278,84 @@ extension Model: SrtlaServerDelegate {
                 self.setMicFromSettings()
             }
         }
+    }
+}
+
+extension Model {
+    private func initMediaPlayers() {
+        for settings in database.mediaPlayers!.players {
+            addMediaPlayer(settings: settings)
+        }
+        removeUnusedMediaPlayerFiles()
+    }
+
+    private func removeUnusedMediaPlayerFiles() {
+        for mediaId in mediaStorage.ids() {
+            var found = false
+            for player in database.mediaPlayers!.players
+                where player.playlist.contains(where: { $0.id == mediaId })
+            {
+                found = true
+            }
+            if !found {
+                mediaStorage.remove(id: mediaId)
+            }
+        }
+    }
+
+    func addMediaPlayer(settings: SettingsMediaPlayer) {
+        let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
+        mediaPlayer.delegate = self
+        mediaPlayers[settings.id] = mediaPlayer
+    }
+
+    func deleteMediaPlayer(playerId: UUID) {
+        mediaPlayers.removeValue(forKey: playerId)
+    }
+
+    func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {
+        mediaPlayers[playerId]?.updateSettings(settings: settings)
+    }
+
+    func mediaPlayerTogglePlaying() {
+        guard let mediaPlayer = getCurrentMediaPlayer() else {
+            return
+        }
+        if mediaPlayerPlaying {
+            mediaPlayer.pause()
+        } else {
+            mediaPlayer.play()
+        }
+        mediaPlayerPlaying = !mediaPlayerPlaying
+    }
+
+    func mediaPlayerNext() {
+        getCurrentMediaPlayer()?.next()
+    }
+
+    func mediaPlayerPrevious() {
+        getCurrentMediaPlayer()?.previous()
+    }
+
+    func mediaPlayerSeek(position: Double) {
+        getCurrentMediaPlayer()?.seek(position: position)
+    }
+
+    func mediaPlayerSetSeeking(on: Bool) {
+        getCurrentMediaPlayer()?.setSeeking(on: on)
+    }
+
+    func getCurrentMediaPlayer() -> MediaPlayer? {
+        guard let scene = getSelectedScene() else {
+            return nil
+        }
+        guard scene.cameraPosition == .mediaPlayer else {
+            return nil
+        }
+        guard let mediaPlayerSettings = getMediaPlayer(id: scene.mediaPlayerCameraId!) else {
+            return nil
+        }
+        return mediaPlayers[mediaPlayerSettings.id]
     }
 }
 
