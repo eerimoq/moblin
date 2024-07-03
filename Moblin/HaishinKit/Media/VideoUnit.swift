@@ -357,6 +357,7 @@ final class VideoUnit: NSObject {
                 self.prepareFirstFrame()
             }
         }
+        self.device = nil
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
     }
 
