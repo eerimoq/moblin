@@ -943,11 +943,13 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func initMediaPlayers() {
-        for mediaPlayerSettings in database.mediaPlayers!.players {
-            let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings, mediaStorage: mediaStorage)
-            mediaPlayer.delegate = self
-            mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
+        for settings in database.mediaPlayers!.players {
+            addMediaPlayer(settings: settings)
         }
+        removeUnusedMediaPlayerFiles()
+    }
+
+    private func removeUnusedMediaPlayerFiles() {
         for mediaId in mediaStorage.ids() {
             var found = false
             for player in database.mediaPlayers!.players
@@ -959,6 +961,20 @@ final class Model: NSObject, ObservableObject {
                 mediaStorage.remove(id: mediaId)
             }
         }
+    }
+
+    func addMediaPlayer(settings: SettingsMediaPlayer) {
+        let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
+        mediaPlayer.delegate = self
+        mediaPlayers[settings.id] = mediaPlayer
+    }
+
+    func deleteMediaPlayer(playerId: UUID) {
+        mediaPlayers.removeValue(forKey: playerId)
+    }
+
+    func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {
+        mediaPlayers[playerId]?.updateSettings(settings: settings)
     }
 
     func mediaPlayerTogglePlaying() {
@@ -6344,6 +6360,7 @@ extension Model: SrtlaServerDelegate {
 extension Model: MediaPlayerDelegate {
     func mediaPlayerOnLoad(playerId: UUID, name: String) {
         DispatchQueue.main.async {
+            // Will not work with multiple players.
             self.mediaPlayerFileName = name
         }
         let latency = 0.250
@@ -6353,14 +6370,18 @@ extension Model: MediaPlayerDelegate {
 
     func mediaPlayerOnUnload(playerId: UUID) {
         DispatchQueue.main.async {
+            // Will not work with multiple players.
             self.mediaPlayerFileName = ""
         }
         media.removeReplaceCamera(cameraId: playerId)
         // media.removeReplaceAudio(cameraId: playerId)
     }
 
-    func mediaPlayerOnPositionChanged(playerId _: UUID, position: Double, time: String) {
+    func mediaPlayerOnPositionChanged(playerId: UUID, position: Double, time: String) {
         DispatchQueue.main.async {
+            guard playerId == self.getSelectedScene()?.mediaPlayerCameraId else {
+                return
+            }
             if !self.mediaPlayerSeeking {
                 self.mediaPlayerPosition = Float(position)
             }

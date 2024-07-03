@@ -28,6 +28,7 @@ struct MediaPlayerSettingsView: View {
         player.name = value.trim()
         model.store()
         model.objectWillChange.send()
+        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
     private func appendMedia(url: URL) {
@@ -35,6 +36,7 @@ struct MediaPlayerSettingsView: View {
         model.mediaStorage.add(id: file.id, url: url)
         player.playlist.append(file)
         model.objectWillChange.send()
+        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
     var body: some View {
@@ -64,7 +66,7 @@ struct MediaPlayerSettingsView: View {
             Section {
                 List {
                     ForEach(player.playlist) { file in
-                        NavigationLink(destination: MediaPlayerFileSettingsView(file: file)) {
+                        NavigationLink(destination: MediaPlayerFileSettingsView(player: player, file: file)) {
                             HStack {
                                 if let image = createThumbnail(path: model.mediaStorage
                                     .makePath(id: file.id))
@@ -83,6 +85,7 @@ struct MediaPlayerSettingsView: View {
                     .onDelete(perform: { indexes in
                         player.playlist.remove(atOffsets: indexes)
                         model.store()
+                        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
                     })
                 }
                 PhotosPicker(selection: $selectedVideoItem, matching: .videos) {

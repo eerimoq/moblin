@@ -38,6 +38,17 @@ class MediaPlayer {
         stopOutputTimer()
     }
 
+    func updateSettings(settings: SettingsMediaPlayer) {
+        let settings = settings.clone()
+        mediaPlayerQueue.async {
+            self.updateSettingsInner(settings: settings)
+        }
+    }
+
+    func updateSettingsInner(settings: SettingsMediaPlayer) {
+        self.settings = settings
+    }
+
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
@@ -77,7 +88,7 @@ class MediaPlayer {
 
     private func nextInner() {
         currentFileIndex += 1
-        if currentFileIndex == settings.playlist.count {
+        if currentFileIndex >= settings.playlist.count {
             currentFileIndex = 0
         }
         loadCurrentFile()
