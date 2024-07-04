@@ -26,6 +26,7 @@ class RealtimeIrl {
           \"latitude\":\(location.coordinate.latitude),
           \"longitude\":\(location.coordinate.longitude),
           \"speed\":\(location.speed),
+          \"altitude\":\(location.altitude),
           \"timestamp\":\(location.timestamp.timeIntervalSince1970)
         }
         """.utf8)
