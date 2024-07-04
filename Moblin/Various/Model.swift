@@ -2143,15 +2143,14 @@ final class Model: NSObject, ObservableObject {
         stats.bitrateAndTotal = speedAndTotal
         stats.date = now
         stats.debugOverlayLines = debugLines
-        if let location = locationManager.getLatestKnownLocation() {
-            stats.speed = String(format: "%.01f km/h", max(Float(3.6 * location.speed), 0))
-            stats.altitude = String(format: "%.01f m", location.altitude)
-            if let latestKnownLocation {
-                distance += location.distance(from: latestKnownLocation)
-                stats.distance = getDistance()
-            }
-            latestKnownLocation = location
+        let location = locationManager.getLatestKnownLocation()
+        if let latestKnownLocation {
+            distance += location?.distance(from: latestKnownLocation) ?? 0
         }
+        stats.speed = String(format: "%.01f km/h", max(Float(3.6 * (location?.speed ?? 0)), 0))
+        stats.altitude = String(format: "%.01f m", location?.altitude ?? 0)
+        stats.distance = getDistance()
+        latestKnownLocation = location
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
         }
