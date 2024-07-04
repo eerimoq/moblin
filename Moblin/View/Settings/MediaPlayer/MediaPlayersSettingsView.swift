@@ -7,12 +7,12 @@ struct MediaPlayersSettingsView: View {
         Form {
             Section {
                 Text("""
-                Use a media player as video source in scenes to stream recordings \
+                Use a media player as video source in scenes and as mic to stream recordings \
                 or other MP4-files.
                 """)
             }
             Section {
-                Text("⚠️ Audio is not yet implemented.")
+                Text("⚠️ Audio is not yet fully supported, but might work.")
             }
             Section {
                 List {
