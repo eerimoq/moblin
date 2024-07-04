@@ -72,7 +72,6 @@ private class ReplaceVideo {
             }
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
             if basePresentationTimeStamp.isNaN {
-                // Add 0.005 to account for jitter in timestamps.
                 basePresentationTimeStamp = outputPresentationTimeStamp - inputPresentationTimeStamp +
                     latency
             }
@@ -338,10 +337,8 @@ final class VideoUnit: NSObject {
             session.commitConfiguration()
         }
         try attachDevice(device, session)
-        if device != nil {
-            lockQueue.async {
-                self.prepareFirstFrame()
-            }
+        lockQueue.async {
+            self.prepareFirstFrame()
         }
         self.device = device
         for connection in output?.connections ?? [] {

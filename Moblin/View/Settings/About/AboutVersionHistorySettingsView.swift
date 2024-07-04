@@ -8,6 +8,34 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.316.0", date: "2024-07-04", changes: [
+        "• Move files around in media player playlists.",
+        "• Add speed and timestamp to RealtimeIRL. 💡 Can't find who",
+        "• Initial support for using a media player as mic.",
+        "  • Problems are expected, but can also work.",
+        "• Fix mirrored media player video if changing from front cam scene to media player scene. 🐛 Martisz",
+        "• Machine translations of new strings.",
+    ]),
+    Version(version: "0.315.0", date: "2024-07-03", changes: [
+        "• Fixed UI for multiple media players.",
+    ]),
+    Version(version: "0.314.0", date: "2024-07-03", changes: [
+        "• Simple media player. 💡 Rubaz and others",
+        "  • Configure in Settings → Media players.",
+        "  • Use a media player as video source in scenes.",
+        "  • Each media player has a playlist.",
+        "    • Add/remove videos.",
+        "    • Reorder videos not yet supported.",
+        "  • Basic controls when media player scene is selected.",
+        "    •  Play, pause, next and previous.",
+        "  • Not sure what happens if video resolution does not match stream resolution.",
+        "  • Audio is not supported.",
+        "• Detach any builtin or UVC camera when using RTMP server/SRT(LA) server/Media player as video source. 🧑‍🏭 ErAzOr",
+    ]),
+    Version(version: "0.313.0", date: "2024-07-03", changes: [
+        "• Show poll in front of other widgets.",
+        "• Rename \"Camera\" to \"Video source\" in scene settings.",
+    ]),
     Version(version: "0.312.0", date: "2024-06-30", changes: [
         "• Show/hide a simple poll in top right of video by tapping the poll quick button.",
         "  • Chat votes 1, 2 or 3.",

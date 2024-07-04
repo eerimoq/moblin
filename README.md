@@ -43,7 +43,10 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Scuffed chat.
 - Basic scenes.
   - Image widget. Show an image on stream.
-  - Time widget. Show local (phone) time on stream.
+  - Text widget.
+    - Any text.
+    - Current local time.
+    - Debug information.
   - Browser widget. Show a web page on stream.
 - Back or front camera.
   - Front camera mirrored on screen for natural experience.
@@ -56,9 +59,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Back camera lens selection.
 - Record to disk (MP4-file).
   - Configurable bitrate, video codec and key frame interval.
-- RTMP server/ingest as camera source.
-  - Only supports video. No audio (yet).
+- RTMP server/ingest as video source.
   - Optionally fixed FPS.
+- SRT(LA) server/ingest as video source.
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
 - Tap screen for manual focus.
@@ -135,6 +138,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Background streaming.
   - With audio.
   - Video will be a freezed frame as video cannot be captured in background.
+- Simple poll.
+  - Chat types 1, 2 or 3.
+- Chat bot.
+  - Turn chat text to speech on an off.
+  - Fix OBS.
 
 ## Apple Watch companion app
 

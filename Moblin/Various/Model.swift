@@ -330,6 +330,12 @@ final class Model: NSObject, ObservableObject {
     private var pollVotes: [Int] = [0, 0, 0]
     private var pollEnabled = false
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
+    @Published var showMediaPlayerControls = false
+    @Published var mediaPlayerPlaying = false
+    @Published var mediaPlayerPosition: Float = 0
+    @Published var mediaPlayerTime = "0:00"
+    @Published var mediaPlayerFileName = "Media name"
+    @Published var mediaPlayerSeeking = false
 
     @Published var showingBitrate = false
     @Published var showingMic = false
@@ -465,6 +471,9 @@ final class Model: NSObject, ObservableObject {
 
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
+
+    private var distance = 0.0
+    private var latestKnownLocation: CLLocation?
 
     @Published var remoteControlStatus = noValue
 
@@ -936,27 +945,6 @@ final class Model: NSObject, ObservableObject {
         removeUnusedLogs()
     }
 
-    private func initMediaPlayers() {
-        return
-        for mediaPlayerSettings in database.mediaPlayers!.players {
-            let mediaPlayer = MediaPlayer(settings: mediaPlayerSettings, mediaStorage: mediaStorage)
-            mediaPlayer.delegate = self
-            mediaPlayer.play()
-            mediaPlayers[mediaPlayerSettings.id] = mediaPlayer
-        }
-        for mediaId in mediaStorage.ids() {
-            var found = false
-            for player in database.mediaPlayers!.players
-                where player.playlist.contains(where: { $0.id == mediaId })
-            {
-                found = true
-            }
-            if !found {
-                mediaStorage.remove(id: mediaId)
-            }
-        }
-    }
-
     private func removeUnusedLogs() {
         for logId in logsStorage.ids()
             where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
@@ -1355,6 +1343,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private func mediaPlayerCameras() -> [String] {
+        return database.mediaPlayers!.players.map { $0.camera() }
+    }
+
     func reloadRtmpStreams() {
         for rtmpCamera in rtmpCameras() {
             guard let stream = getRtmpStream(camera: rtmpCamera) else {
@@ -1723,6 +1715,7 @@ final class Model: NSObject, ObservableObject {
             let (detections, filter) = self.media.getNetStream().getHistograms()
             detections.log()
             filter.log()
+            // self.realtimeIrl?.updateTest()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             if self.database.show.audioBar {
@@ -2150,9 +2143,22 @@ final class Model: NSObject, ObservableObject {
         stats.bitrateAndTotal = speedAndTotal
         stats.date = now
         stats.debugOverlayLines = debugLines
+        if let location = locationManager.getLatestKnownLocation() {
+            stats.speed = String(format: "%.01f km/h", max(Float(3.6 * location.speed), 0))
+            stats.altitude = String(format: "%.01f m", location.altitude)
+            if let latestKnownLocation {
+                distance += location.distance(from: latestKnownLocation)
+                stats.distance = getDistance()
+            }
+            latestKnownLocation = location
+        }
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
         }
+    }
+
+    func getDistance() -> String {
+        return String(format: "%.02f km", distance / 1000)
     }
 
     func togglePoll() {
@@ -3489,6 +3495,7 @@ final class Model: NSObject, ObservableObject {
 
     private func attachSingleLayout(scene: SettingsScene) {
         isFrontCameraSelected = false
+        deactivateAllMediaPlayers()
         switch scene.cameraPosition! {
         case .back:
             attachCamera(position: .back)
@@ -3500,6 +3507,7 @@ final class Model: NSObject, ObservableObject {
         case .srtla:
             attachReplaceCamera(cameraId: scene.srtlaCameraId!)
         case .mediaPlayer:
+            mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
             attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
@@ -3738,6 +3746,11 @@ final class Model: NSObject, ObservableObject {
     func setSceneId(id: UUID) {
         selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
+        showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
+    }
+
+    private func getSelectedScene() -> SettingsScene? {
+        return findEnabledScene(id: selectedSceneId)
     }
 
     private func selectScene(id: UUID) {
@@ -3756,7 +3769,7 @@ final class Model: NSObject, ObservableObject {
         if imageEffectChanged {
             reloadImageEffects()
         }
-        guard let scene = findEnabledScene(id: selectedSceneId) else {
+        guard let scene = getSelectedScene() else {
             sceneUpdatedOff()
             return
         }
@@ -4094,7 +4107,7 @@ final class Model: NSObject, ObservableObject {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachReplaceCamera(cameraId: cameraId, device: AVCaptureDevice(uniqueID: backCameras[0].id))
+        media.attachReplaceCamera(cameraId: cameraId)
         media.usePendingAfterAttachEffects()
     }
 
@@ -5608,6 +5621,16 @@ extension Model {
                 ))
             }
         }
+        for mediaPlayerCamera in mediaPlayerCameras() {
+            guard let mediaPlayer = getMediaPlayer(camera: mediaPlayerCamera) else {
+                continue
+            }
+            mics.append(Mic(
+                name: mediaPlayerCamera,
+                inputUid: mediaPlayer.id.uuidString,
+                builtInOrientation: nil
+            ))
+        }
         return mics
     }
 
@@ -5669,6 +5692,8 @@ extension Model {
             selectMicRtmp(mic: mic)
         } else if isSrtlaMic(mic: mic) {
             selectMicSrtla(mic: mic)
+        } else if isMediaPlayerMic(mic: mic) {
+            selectMicMediaPlayer(mic: mic)
         } else {
             selectMicDefault(mic: mic)
         }
@@ -5688,6 +5713,13 @@ extension Model {
         return getSrtlaStream(id: id) != nil
     }
 
+    private func isMediaPlayerMic(mic: Mic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getMediaPlayer(id: id) != nil
+    }
+
     private func selectMicRtmp(mic: Mic) {
         currentMic = mic
         let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
@@ -5698,6 +5730,13 @@ extension Model {
     private func selectMicSrtla(mic: Mic) {
         currentMic = mic
         let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
+        media.attachReplaceAudio(cameraId: cameraId)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    private func selectMicMediaPlayer(mic: Mic) {
+        currentMic = mic
+        let cameraId = getMediaPlayer(camera: mic.name)?.id ?? .init()
         media.attachReplaceAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
@@ -5775,6 +5814,11 @@ extension Model {
         reloadRealtimeIrl()
     }
 
+    func resetDistance() {
+        distance = 0.0
+        latestKnownLocation = nil
+    }
+
     func isLocationEnabled() -> Bool {
         return database.location!.enabled
     }
@@ -5799,7 +5843,11 @@ extension Model {
     }
 
     func getLatestKnownLocation() -> (Double, Double)? {
-        return locationManager.getLatestKnownLocation()
+        if let location = locationManager.getLatestKnownLocation() {
+            return (location.coordinate.latitude, location.coordinate.longitude)
+        } else {
+            return nil
+        }
     }
 
     func isRealtimeIrlConfigured() -> Bool {
@@ -6291,25 +6339,127 @@ extension Model: SrtlaServerDelegate {
     }
 }
 
-extension Model: MediaPlayerDelegate {
-    func mediaPlayerOnStart(playerId: UUID) {
-        logger.info("Player \(playerId) start")
-        let latency = 0.5
-        media.addReplaceCamera(cameraId: playerId, latency: latency)
-        media.addReplaceAudio(cameraId: playerId, latency: latency)
+extension Model {
+    private func initMediaPlayers() {
+        for settings in database.mediaPlayers!.players {
+            addMediaPlayer(settings: settings)
+        }
+        removeUnusedMediaPlayerFiles()
     }
 
-    func mediaPlayerOnStop(playerId: UUID) {
-        logger.info("Player \(playerId) stop")
+    private func removeUnusedMediaPlayerFiles() {
+        for mediaId in mediaStorage.ids() {
+            var found = false
+            for player in database.mediaPlayers!.players
+                where player.playlist.contains(where: { $0.id == mediaId })
+            {
+                found = true
+            }
+            if !found {
+                mediaStorage.remove(id: mediaId)
+            }
+        }
+    }
+
+    func addMediaPlayer(settings: SettingsMediaPlayer) {
+        let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
+        mediaPlayer.delegate = self
+        mediaPlayers[settings.id] = mediaPlayer
+    }
+
+    func deleteMediaPlayer(playerId: UUID) {
+        mediaPlayers.removeValue(forKey: playerId)
+    }
+
+    func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {
+        mediaPlayers[playerId]?.updateSettings(settings: settings)
+    }
+
+    func mediaPlayerTogglePlaying() {
+        guard let mediaPlayer = getCurrentMediaPlayer() else {
+            return
+        }
+        if mediaPlayerPlaying {
+            mediaPlayer.pause()
+        } else {
+            mediaPlayer.play()
+        }
+        mediaPlayerPlaying = !mediaPlayerPlaying
+    }
+
+    func mediaPlayerNext() {
+        getCurrentMediaPlayer()?.next()
+    }
+
+    func mediaPlayerPrevious() {
+        getCurrentMediaPlayer()?.previous()
+    }
+
+    func mediaPlayerSeek(position: Double) {
+        getCurrentMediaPlayer()?.seek(position: position)
+    }
+
+    func mediaPlayerSetSeeking(on: Bool) {
+        getCurrentMediaPlayer()?.setSeeking(on: on)
+    }
+
+    func getCurrentMediaPlayer() -> MediaPlayer? {
+        guard let scene = getSelectedScene() else {
+            return nil
+        }
+        guard scene.cameraPosition == .mediaPlayer else {
+            return nil
+        }
+        guard let mediaPlayerSettings = getMediaPlayer(id: scene.mediaPlayerCameraId!) else {
+            return nil
+        }
+        return mediaPlayers[mediaPlayerSettings.id]
+    }
+
+    private func deactivateAllMediaPlayers() {
+        for mediaPlayer in mediaPlayers.values {
+            mediaPlayer.deactivate()
+        }
+    }
+}
+
+extension Model: MediaPlayerDelegate {
+    func mediaPlayerFileLoaded(playerId: UUID, name _: String) {
+        let latency = 0.250
+        media.addReplaceCamera(cameraId: playerId, latency: latency)
+        media.addReplaceAudio(cameraId: playerId, latency: latency)
+        // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        //     self.selectMicById(id: "\(playerId) 0")
+        // }
+    }
+
+    func mediaPlayerFileUnloaded(playerId: UUID) {
         media.removeReplaceCamera(cameraId: playerId)
         media.removeReplaceAudio(cameraId: playerId)
     }
 
-    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    func mediaPlayerStateUpdate(
+        playerId _: UUID,
+        name: String,
+        playing: Bool,
+        position: Double,
+        time: String
+    ) {
+        DispatchQueue.main.async {
+            self.mediaPlayerPlaying = playing
+            self.mediaPlayerFileName = name
+            if !self.mediaPlayerSeeking {
+                self.mediaPlayerPosition = Float(position)
+            }
+            self.mediaPlayerTime = time
+        }
+    }
+
+    func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
-    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }

@@ -10,6 +10,9 @@ struct TextEffectStats {
     var bitrateAndTotal: String = ""
     var date = Date()
     var debugOverlayLines: [String] = []
+    var speed: String = ""
+    var altitude: String = ""
+    var distance: String = ""
 }
 
 private enum FormatPart {
@@ -17,6 +20,9 @@ private enum FormatPart {
     case clock
     case bitrateAndTotal
     case debugOverlay
+    case speed
+    case altitude
+    case distance
 }
 
 private class FormatLoader {
@@ -40,6 +46,12 @@ private class FormatLoader {
                     loadBitrateAndTotal()
                 } else if formatFromIndex.hasPrefix("{debugoverlay}") {
                     loadDebugOverlay()
+                } else if formatFromIndex.hasPrefix("{speed}") {
+                    loadSpeed()
+                } else if formatFromIndex.hasPrefix("{altitude}") {
+                    loadAltitude()
+                } else if formatFromIndex.hasPrefix("{distance}") {
+                    loadDistance()
                 } else {
                     index = format.index(after: index)
                 }
@@ -75,6 +87,27 @@ private class FormatLoader {
         appendTextIfPresent()
         parts.append(.debugOverlay)
         index = format.index(index, offsetBy: 14)
+        textStartIndex = index
+    }
+
+    private func loadSpeed() {
+        appendTextIfPresent()
+        parts.append(.speed)
+        index = format.index(index, offsetBy: 7)
+        textStartIndex = index
+    }
+
+    private func loadAltitude() {
+        appendTextIfPresent()
+        parts.append(.altitude)
+        index = format.index(index, offsetBy: 10)
+        textStartIndex = index
+    }
+
+    private func loadDistance() {
+        appendTextIfPresent()
+        parts.append(.distance)
+        index = format.index(index, offsetBy: 10)
         textStartIndex = index
     }
 }
@@ -125,6 +158,12 @@ final class TextEffect: VideoEffect {
                 parts.append(stats.bitrateAndTotal)
             case .debugOverlay:
                 parts.append(stats.debugOverlayLines.joined(separator: "\n"))
+            case .speed:
+                parts.append(stats.speed)
+            case .altitude:
+                parts.append(stats.altitude)
+            case .distance:
+                parts.append(stats.distance)
             }
         }
         return parts.joined()

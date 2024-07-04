@@ -127,8 +127,11 @@ struct SettingsView: View {
                 NavigationLink(destination: AudioSettingsView()) {
                     IconAndTextView(image: "waveform", text: String(localized: "Audio"))
                 }
-                NavigationLink(destination: BitratePresetsSettingsView()) {
-                    IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
+                NavigationLink(destination: MediaPlayersSettingsView()) {
+                    IconAndTextView(
+                        image: "play.rectangle.on.rectangle",
+                        text: String(localized: "Media players")
+                    )
                 }
                 NavigationLink(destination: RtmpServerSettingsView()) {
                     IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
@@ -136,13 +139,8 @@ struct SettingsView: View {
                 NavigationLink(destination: SrtlaServerSettingsView()) {
                     IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                 }
-                if false {
-                    NavigationLink(destination: MediaPlayersSettingsView()) {
-                        IconAndTextView(
-                            image: "play.rectangle.on.rectangle",
-                            text: String(localized: "Media players")
-                        )
-                    }
+                NavigationLink(destination: BitratePresetsSettingsView()) {
+                    IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
                 }
                 NavigationLink(destination: GameControllersSettingsView()) {
                     IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))

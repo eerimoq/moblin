@@ -21,6 +21,9 @@ struct WidgetTextSettingsView: View {
         } footer: {
             VStack(alignment: .leading) {
                 Text("{time} - Show time as HH:MM:SS")
+                Text("{speed} - Show speed (if Settings → Location is enabled)")
+                Text("{altitude} - Show altitude (if Settings → Location is enabled)")
+                Text("{distance} - Show distance (if Settings → Location is enabled)")
                 Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
                 Text("{debugOverlay} - Show debug overlay (if enabled)")
             }

@@ -28,13 +28,15 @@ struct MediaPlayerSettingsView: View {
         player.name = value.trim()
         model.store()
         model.objectWillChange.send()
+        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
     private func appendMedia(url: URL) {
-        var file = SettingsMediaPlayerFile()
+        let file = SettingsMediaPlayerFile()
         model.mediaStorage.add(id: file.id, url: url)
         player.playlist.append(file)
         model.objectWillChange.send()
+        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
     var body: some View {
@@ -47,20 +49,23 @@ struct MediaPlayerSettingsView: View {
                     capitalize: true
                 )
             }
-            Section {
-                Toggle("Auto select mic", isOn: Binding(get: {
-                    player.autoSelectMic
-                }, set: { value in
-                    player.autoSelectMic = value
-                    model.store()
-                    model.objectWillChange.send()
-                }))
+            if false {
+                Section {
+                    Toggle("Auto select mic", isOn: Binding(get: {
+                        player.autoSelectMic
+                    }, set: { value in
+                        player.autoSelectMic = value
+                        model.store()
+                        model.objectWillChange.send()
+                    }))
+                }
             }
             Section {
                 List {
                     ForEach(player.playlist) { file in
-                        NavigationLink(destination: MediaPlayerFileSettingsView(file: file)) {
+                        NavigationLink(destination: MediaPlayerFileSettingsView(player: player, file: file)) {
                             HStack {
+                                DraggableItemPrefixView()
                                 if let image = createThumbnail(path: model.mediaStorage
                                     .makePath(id: file.id))
                                 {
@@ -71,13 +76,19 @@ struct MediaPlayerSettingsView: View {
                                 } else {
                                     Image(systemName: "photo")
                                 }
+                                Text(file.name)
                             }
-                            Text(file.name)
                         }
                     }
+                    .onMove(perform: { froms, to in
+                        player.playlist.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+                    })
                     .onDelete(perform: { indexes in
                         player.playlist.remove(atOffsets: indexes)
                         model.store()
+                        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
                     })
                 }
                 PhotosPicker(selection: $selectedVideoItem, matching: .videos) {

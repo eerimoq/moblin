@@ -1,11 +1,14 @@
 import AVFoundation
 
 protocol MediaPlayerDelegate: AnyObject {
-    func mediaPlayerOnStart(playerId: UUID)
-    func mediaPlayerOnStop(playerId: UUID)
-    func mediaPlayerOnVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
-    func mediaPlayerOnAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+    func mediaPlayerFileLoaded(playerId: UUID, name: String)
+    func mediaPlayerFileUnloaded(playerId: UUID)
+    func mediaPlayerStateUpdate(playerId: UUID, name: String, playing: Bool, position: Double, time: String)
+    func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
+    func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer)
 }
+
+private let mediaPlayerQueue = DispatchQueue(label: "com.eerimoq.moblin.media-player")
 
 class MediaPlayer {
     private var asset: AVAsset?
@@ -14,21 +17,158 @@ class MediaPlayer {
     private var audioTrackOutput: AVAssetReaderTrackOutput?
     private var settings: SettingsMediaPlayer
     private var mediaStorage: MediaStorage
+    private var playing = false
+    private var currentFileIndex = 0
+    private var fileDuration = 0.0
+    private var seeking = false
+    private var startVideoTime: CMTime = .zero
+    private var latestVideoTime: CMTime = .zero
+    private var startAudioTime: CMTime = .zero
+    private var latestAudioTime: CMTime = .zero
+    private var outputTimer: DispatchSourceTimer?
+    private var active = false
+    private var filename = ""
     var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
         self.settings = settings.clone()
         self.mediaStorage = mediaStorage
+        mediaPlayerQueue.async {
+            self.loadCurrentFile()
+        }
+    }
+
+    deinit {
+        stopOutputTimer()
+    }
+
+    func activate() {
+        mediaPlayerQueue.async {
+            self.activateInner()
+        }
+    }
+
+    func deactivate() {
+        mediaPlayerQueue.async {
+            self.active = false
+        }
+    }
+
+    func updateSettings(settings: SettingsMediaPlayer) {
+        let settings = settings.clone()
+        mediaPlayerQueue.async {
+            self.updateSettingsInner(settings: settings)
+        }
+    }
+
+    func updateSettingsInner(settings: SettingsMediaPlayer) {
+        self.settings = settings
     }
 
     func play() {
-        guard let fileId = settings.playlist.first?.id else {
+        mediaPlayerQueue.async {
+            self.playing = true
+            let now = CMClockGetTime(CMClockGetHostTimeClock())
+            self.startVideoTime = CMTimeSubtract(now, self.latestVideoTime)
+            self.startAudioTime = CMTimeSubtract(now, self.latestAudioTime)
+        }
+    }
+
+    func pause() {
+        mediaPlayerQueue.async {
+            self.playing = false
+        }
+    }
+
+    func next() {
+        mediaPlayerQueue.async {
+            self.nextInner()
+        }
+    }
+
+    func previous() {
+        mediaPlayerQueue.async {
+            self.previousInner()
+        }
+    }
+
+    func seek(position: Double) {
+        mediaPlayerQueue.async {
+            self.seekInner(position: position)
+        }
+    }
+
+    func setSeeking(on: Bool) {
+        mediaPlayerQueue.async {
+            self.seeking = on
+        }
+    }
+
+    private func activateInner() {
+        active = true
+        reportState()
+    }
+
+    private func reportState() {
+        guard active else {
             return
         }
-        let url = mediaStorage.makePath(id: fileId)
-        logger.info("media-player: Start playing \(url)")
+        let time = latestVideoTime.seconds
+        delegate?.mediaPlayerStateUpdate(
+            playerId: settings.id,
+            name: filename,
+            playing: playing,
+            position: 100 * time / fileDuration,
+            time: formatTime(time)
+        )
+    }
+
+    private func nextInner() {
+        currentFileIndex += 1
+        if currentFileIndex >= settings.playlist.count {
+            currentFileIndex = 0
+        }
+        loadCurrentFile()
+    }
+
+    private func previousInner() {
+        currentFileIndex -= 1
+        if currentFileIndex == -1 {
+            currentFileIndex = settings.playlist.count - 1
+        }
+        loadCurrentFile()
+    }
+
+    private func seekInner(position: Double) {
+        guard let currentFile = getCurrentFile() else {
+            return
+        }
+        delegate?.mediaPlayerStateUpdate(playerId: settings.id,
+                                         name: currentFile.name,
+                                         playing: playing,
+                                         position: position,
+                                         time: formatTime(Double(position) / 100 * fileDuration))
+    }
+
+    private func loadCurrentFile() {
+        stopOutputTimer()
+        latestVideoTime = .zero
+        if reader != nil {
+            delegate?.mediaPlayerFileUnloaded(playerId: settings.id)
+            reportState()
+            reader = nil
+        }
+        videoTrackOutput = nil
+        audioTrackOutput = nil
+        asset = nil
+        guard let currentFile = getCurrentFile() else {
+            return
+        }
+        filename = currentFile.name
+        let url = mediaStorage.makePath(id: currentFile.id)
         asset = AVAsset(url: url)
         guard let asset else {
+            logger.info("media-player: No asset \(url)")
             return
         }
         do {
@@ -36,55 +176,154 @@ class MediaPlayer {
         } catch {
             logger.info("media-player: Failed to create reader with error: \(error)")
         }
-        Task { @MainActor in
-            guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first else {
-                return
+        fileDuration = max(asset.duration.seconds, 1)
+        asset.loadTracks(withMediaType: .video) { tracks, error in
+            mediaPlayerQueue.async {
+                self.loadVideoTrackCompletion(tracks: tracks, error: error)
             }
-            let videoOutputSettings: [String: Any] = [
-                kCVPixelBufferPixelFormatTypeKey: pixelFormatType,
-                kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
-                kCVPixelBufferMetalCompatibilityKey: true,
-            ] as [String: Any]
-            videoTrackOutput = AVAssetReaderTrackOutput(
-                track: videoTrack,
-                outputSettings: videoOutputSettings
-            )
-            reader?.add(videoTrackOutput!)
-            guard let audioTrack = try? await asset.loadTracks(withMediaType: .audio).first else {
-                return
-            }
-            let audioOutputSettings: [String: Any] = [
-                AVFormatIDKey: kAudioFormatLinearPCM,
-                AVSampleRateKey: 48000.0,
-            ] as [String: Any]
-            audioTrackOutput = AVAssetReaderTrackOutput(
-                track: audioTrack,
-                outputSettings: audioOutputSettings
-            )
-            reader?.add(audioTrackOutput!)
-            guard reader?.startReading() == true else {
-                logger.info("media-player: Start failed")
-                return
-            }
-            delegate?.mediaPlayerOnStart(playerId: self.settings.id)
-            let startTime = ContinuousClock.now
-            while let videoTrackOutput, let audioTrackOutput {
-                let now = ContinuousClock.now
-                while let sampleBuffer = videoTrackOutput.copyNextSampleBuffer() {
-                    delegate?.mediaPlayerOnVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
-                    if startTime.advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now {
-                        break
-                    }
-                }
-                while let sampleBuffer = audioTrackOutput.copyNextSampleBuffer() {
-                    delegate?.mediaPlayerOnAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
-                    if startTime.advanced(by: .seconds(sampleBuffer.presentationTimeStamp.seconds)) > now {
-                        break
-                    }
-                }
-                try? await sleep(milliSeconds: 100)
-            }
-            delegate?.mediaPlayerOnStop(playerId: settings.id)
         }
+    }
+
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+        guard error == nil, let videoTrack = tracks?.first, let asset, let reader else {
+            return
+        }
+        let videoOutputSettings: [String: Any] = [
+            kCVPixelBufferPixelFormatTypeKey: pixelFormatType,
+            kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
+            kCVPixelBufferMetalCompatibilityKey: true,
+        ] as [String: Any]
+        videoTrackOutput = AVAssetReaderTrackOutput(
+            track: videoTrack,
+            outputSettings: videoOutputSettings
+        )
+        reader.add(videoTrackOutput!)
+        asset.loadTracks(withMediaType: .audio) { tracks, error in
+            self.loadAudioTrackCompletion(tracks: tracks, error: error)
+        }
+    }
+
+    private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+        guard let audioTrack = tracks?.first else {
+            logger.info("media-player: No audio in file.")
+            startReading()
+            return
+        }
+        guard error == nil, let reader else {
+            logger.info("media-player: Some error 2")
+            return
+        }
+        let audioOutputSettings: [String: Any] = [
+            AVFormatIDKey: kAudioFormatLinearPCM,
+            AVSampleRateKey: 48000.0,
+        ] as [String: Any]
+        audioTrackOutput = AVAssetReaderTrackOutput(
+            track: audioTrack,
+            outputSettings: audioOutputSettings
+        )
+        reader.add(audioTrackOutput!)
+        startReading()
+    }
+
+    private func startReading() {
+        guard let reader, reader.startReading() == true else {
+            logger.info("media-player: Start reading failed")
+            return
+        }
+        guard let currentFile = getCurrentFile() else {
+            return
+        }
+        delegate?.mediaPlayerFileLoaded(playerId: settings.id, name: currentFile.name)
+        reportState()
+        startVideoTime = CMClockGetTime(CMClockGetHostTimeClock())
+        startAudioTime = startVideoTime
+        _ = outputVideoBuffer()
+        reportState()
+        startOutputTimer()
+    }
+
+    private func outputVideoBuffer() -> CMTime? {
+        guard let sampleBuffer = videoTrackOutput?.copyNextSampleBuffer() else {
+            return nil
+        }
+        latestVideoTime = sampleBuffer.presentationTimeStamp
+        let presentationTimeStamp = CMTimeAdd(startVideoTime, sampleBuffer.presentationTimeStamp)
+        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
+            return nil
+        }
+        delegate?.mediaPlayerVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+        return presentationTimeStamp
+    }
+
+    private func outputAudioBuffer() -> CMTime? {
+        guard let sampleBuffer = audioTrackOutput?.copyNextSampleBuffer() else {
+            return nil
+        }
+        latestAudioTime = sampleBuffer.presentationTimeStamp
+        let presentationTimeStamp = CMTimeAdd(startAudioTime, sampleBuffer.presentationTimeStamp)
+        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
+            return nil
+        }
+        delegate?.mediaPlayerAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
+        return presentationTimeStamp
+    }
+
+    private func startOutputTimer() {
+        outputTimer = DispatchSource.makeTimerSource(queue: mediaPlayerQueue)
+        outputTimer?.schedule(deadline: .now(), repeating: 0.1)
+        outputTimer?.setEventHandler { [weak self] in
+            self?.handleOutputTimer()
+        }
+        outputTimer?.activate()
+    }
+
+    private func stopOutputTimer() {
+        outputTimer?.cancel()
+        outputTimer = nil
+    }
+
+    private func handleOutputTimer() {
+        guard playing else {
+            return
+        }
+        let now = CMClockGetTime(CMClockGetHostTimeClock())
+        while true {
+            if let time = outputVideoBuffer() {
+                if time >= now {
+                    break
+                }
+            } else {
+                nextInner()
+                break
+            }
+        }
+        if audioTrackOutput != nil {
+            while true {
+                if let time = outputAudioBuffer() {
+                    if time >= now {
+                        break
+                    }
+                } else {
+                    nextInner()
+                    break
+                }
+            }
+        }
+        reportState()
+    }
+
+    private func formatTime(_ time: Double) -> String {
+        let time = Int(time.rounded())
+        let seconds = String(format: "%02d", time % 60)
+        let minutes = time / 60
+        return "\(minutes):\(seconds)"
+    }
+
+    private func getCurrentFile() -> SettingsMediaPlayerFile? {
+        guard currentFileIndex < settings.playlist.count else {
+            logger.info("media-player: File index out of range")
+            return nil
+        }
+        return settings.playlist[currentFileIndex]
     }
 }
