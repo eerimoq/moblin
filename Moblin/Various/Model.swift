@@ -472,6 +472,9 @@ final class Model: NSObject, ObservableObject {
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
 
+    private var distance = 0.0
+    private var latestKnownLocation: CLLocation?
+
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
@@ -2140,9 +2143,22 @@ final class Model: NSObject, ObservableObject {
         stats.bitrateAndTotal = speedAndTotal
         stats.date = now
         stats.debugOverlayLines = debugLines
+        if let location = locationManager.getLatestKnownLocation() {
+            stats.speed = String(format: "%.01f km/h", max(Float(3.6 * location.speed), 0))
+            stats.altitude = String(format: "%.01f m", location.altitude)
+            if let latestKnownLocation {
+                distance += location.distance(from: latestKnownLocation)
+                stats.distance = getDistance()
+            }
+            latestKnownLocation = location
+        }
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
         }
+    }
+
+    func getDistance() -> String {
+        return String(format: "%.02f km", distance / 1000)
     }
 
     func togglePoll() {
@@ -5798,6 +5814,11 @@ extension Model {
         reloadRealtimeIrl()
     }
 
+    func resetDistance() {
+        distance = 0.0
+        latestKnownLocation = nil
+    }
+
     func isLocationEnabled() -> Bool {
         return database.location!.enabled
     }
@@ -5822,7 +5843,11 @@ extension Model {
     }
 
     func getLatestKnownLocation() -> (Double, Double)? {
-        return locationManager.getLatestKnownLocation()
+        if let location = locationManager.getLatestKnownLocation() {
+            return (location.coordinate.latitude, location.coordinate.longitude)
+        } else {
+            return nil
+        }
     }
 
     func isRealtimeIrlConfigured() -> Bool {

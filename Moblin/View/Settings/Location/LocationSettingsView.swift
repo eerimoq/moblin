@@ -37,6 +37,20 @@ struct LocationSettingsView: View {
                 }))
             }
             Section {
+                Text(model.getDistance())
+                Button(action: {
+                    model.resetDistance()
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Reset")
+                        Spacer()
+                    }
+                })
+            } header: {
+                Text("Distance")
+            }
+            Section {
                 List {
                     ForEach(model.database.location!.privacyRegions) { region in
                         PrivacyRegionView(region: region, current: MKCoordinateRegion(

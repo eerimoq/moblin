@@ -1335,6 +1335,9 @@
         }
       }
     },
+    "{altitude} - Show altitude (if Settings → Location is enabled)" : {
+
+    },
     "{bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
       "localizations" : {
         "de" : {
@@ -1594,6 +1597,12 @@
           }
         }
       }
+    },
+    "{distance} - Show distance (if Settings → Location is enabled)" : {
+
+    },
+    "{speed} - Show speed (if Settings → Location is enabled)" : {
+
     },
     "{time} - Show time as HH:MM:SS" : {
       "localizations" : {
@@ -26608,6 +26617,9 @@
           }
         }
       }
+    },
+    "Distance" : {
+
     },
     "Do not say messages that are likely spam or bot commands." : {
       "localizations" : {
