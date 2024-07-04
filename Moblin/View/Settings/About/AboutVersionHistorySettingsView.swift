@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.316.0", date: "2024-07-04", changes: [
+        "• Move files around in media player playlists.",
+        "• Add speed and timestamp to RealtimeIRL. 💡 Can't find who",
+        "• Initial support for using a media player as mic.",
+        "  • Problems are expected, but can also work.",
+        "• Fix mirrored media player video if changing from front cam scene to media player scene. 🐛 Martisz",
+        "• Machine translations of new strings.",
+    ]),
     Version(version: "0.315.0", date: "2024-07-03", changes: [
         "• Fixed UI for multiple media players.",
     ]),
