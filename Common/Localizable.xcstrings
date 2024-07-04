@@ -707,7 +707,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin obs fix"
           }
         },
@@ -837,8 +837,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin tts pois päältä"
+            "state" : "translated",
+            "value" : "!moblin tts off"
           }
         },
         "fr" : {
@@ -967,7 +967,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tts on"
           }
         },
@@ -1336,7 +1336,14 @@
       }
     },
     "{altitude} - Show altitude (if Settings → Location is enabled)" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{altitude} - Näytä korkeus (jos Asetukset → Sijainti on käytössä)"
+          }
+        }
+      }
     },
     "{bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
       "localizations" : {
@@ -1360,7 +1367,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{bitrateAndTotal} - Näytä bittinopeus ja lähetettyjen tavujen kokonaismäärä"
           }
         },
@@ -1490,8 +1497,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{debugOverlay} – Näytä virheenkorjauspeittokuva (jos käytössä)"
+            "state" : "translated",
+            "value" : "{debugOverlay} – Näytä virheenkorjauskerroksen (jos käytössä)"
           }
         },
         "fr" : {
@@ -1599,10 +1606,24 @@
       }
     },
     "{distance} - Show distance (if Settings → Location is enabled)" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{distance} - Näytä etäisyys (jos Asetukset → Sijainti on käytössä)"
+          }
+        }
+      }
     },
     "{speed} - Show speed (if Settings → Location is enabled)" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{speed} - Näytä nopeus (jos Asetukset → Sijainti on käytössä)"
+          }
+        }
+      }
     },
     "{time} - Show time as HH:MM:SS" : {
       "localizations" : {
@@ -1626,8 +1647,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{time} - Näytä aika muodossa HH:MM:SS"
+            "state" : "translated",
+            "value" : "{time} - Näytä aika muodossa TT:MM:SS"
           }
         },
         "fr" : {
@@ -4664,7 +4685,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Ääntä ei vielä täysin tueta, mutta se saattaa toimia."
           }
         },
@@ -17150,8 +17171,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bot"
+            "state" : "translated",
+            "value" : "Botti"
           }
         },
         "fr" : {
@@ -26619,7 +26640,14 @@
       }
     },
     "Distance" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etäisyys"
+          }
+        }
+      }
     },
     "Do not say messages that are likely spam or bot commands." : {
       "localizations" : {
@@ -34313,7 +34341,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tiedosto"
           }
         },
@@ -35223,7 +35251,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Korjaa OBS-tulo."
           }
         },
@@ -46403,8 +46431,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saattaa sisältää vain pieniä kirjaimia."
+            "state" : "translated",
+            "value" : "Saa sisältää vain pieniä kirjaimia."
           }
         },
         "fr" : {
@@ -46793,7 +46821,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mediasoitin"
           }
         },
@@ -46923,7 +46951,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mediasoittimet"
           }
         },
@@ -53813,8 +53841,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vain määritetyt Twitch- ja Kick-kanavien nimet ja Twitch-modit saavat suorittaa komentoja."
+            "state" : "translated",
+            "value" : "Vain määritetyt Twitch- ja Kick-kanavien nimet ja Twitch-valvojat saavat suorittaa komentoja."
           }
         },
         "fr" : {
@@ -55373,7 +55401,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Soittolista"
           }
         },
@@ -55763,8 +55791,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Poll"
+            "state" : "translated",
+            "value" : "Äänestys"
           }
         },
         "fr" : {
@@ -64473,7 +64501,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Jaa loki"
           }
         },
@@ -73443,7 +73471,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Teksti"
           }
         },
@@ -78254,8 +78282,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Poista chat tekstistä puheeksi käytöstä."
+            "state" : "translated",
+            "value" : "Poista chat TTS/tekstistä puheeksi käytöstä."
           }
         },
         "fr" : {
@@ -78384,8 +78412,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ota chat tekstistä puheeksi käyttöön."
+            "state" : "translated",
+            "value" : "Ota chat TTS/tekstistä puheeksi käyttöön."
           }
         },
         "fr" : {
@@ -80724,8 +80752,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Käytä mediasoitinta videolähteenä kohtauksissa ja mikrofonina tallenteiden tai muiden MP4-tiedostojen suoratoistoon."
+            "state" : "translated",
+            "value" : "Käytä mediasoitinta videolähteenä näkymissä ja mikrofonina tallenteiden tai muiden MP4-tiedostojen lähettämiseen."
           }
         },
         "fr" : {
@@ -83194,7 +83222,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Videon lähde"
           }
         },
