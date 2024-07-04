@@ -24,7 +24,9 @@ class RealtimeIrl {
         request.httpBody = Data("""
         {
           \"latitude\":\(location.coordinate.latitude),
-          \"longitude\":\(location.coordinate.longitude)
+          \"longitude\":\(location.coordinate.longitude),
+          \"speed\":\(location.speed),
+          \"timestamp\":\(location.timestamp.timeIntervalSince1970)
         }
         """.utf8)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
