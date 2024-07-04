@@ -1340,6 +1340,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private func mediaPlayerCameras() -> [String] {
+        return database.mediaPlayers!.players.map { $0.camera() }
+    }
+
     func reloadRtmpStreams() {
         for rtmpCamera in rtmpCameras() {
             guard let stream = getRtmpStream(camera: rtmpCamera) else {
@@ -1708,6 +1712,7 @@ final class Model: NSObject, ObservableObject {
             let (detections, filter) = self.media.getNetStream().getHistograms()
             detections.log()
             filter.log()
+            // self.realtimeIrl?.updateTest()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             if self.database.show.audioBar {
@@ -5600,6 +5605,16 @@ extension Model {
                 ))
             }
         }
+        for mediaPlayerCamera in mediaPlayerCameras() {
+            guard let mediaPlayer = getMediaPlayer(camera: mediaPlayerCamera) else {
+                continue
+            }
+            mics.append(Mic(
+                name: mediaPlayerCamera,
+                inputUid: mediaPlayer.id.uuidString,
+                builtInOrientation: nil
+            ))
+        }
         return mics
     }
 
@@ -5661,6 +5676,8 @@ extension Model {
             selectMicRtmp(mic: mic)
         } else if isSrtlaMic(mic: mic) {
             selectMicSrtla(mic: mic)
+        } else if isMediaPlayerMic(mic: mic) {
+            selectMicMediaPlayer(mic: mic)
         } else {
             selectMicDefault(mic: mic)
         }
@@ -5680,6 +5697,13 @@ extension Model {
         return getSrtlaStream(id: id) != nil
     }
 
+    private func isMediaPlayerMic(mic: Mic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getMediaPlayer(id: id) != nil
+    }
+
     private func selectMicRtmp(mic: Mic) {
         currentMic = mic
         let cameraId = getRtmpStream(camera: mic.name)?.id ?? .init()
@@ -5690,6 +5714,13 @@ extension Model {
     private func selectMicSrtla(mic: Mic) {
         currentMic = mic
         let cameraId = getSrtlaStream(camera: mic.name)?.id ?? .init()
+        media.attachReplaceAudio(cameraId: cameraId)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+    }
+
+    private func selectMicMediaPlayer(mic: Mic) {
+        currentMic = mic
+        let cameraId = getMediaPlayer(camera: mic.name)?.id ?? .init()
         media.attachReplaceAudio(cameraId: cameraId)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
@@ -6371,12 +6402,15 @@ extension Model: MediaPlayerDelegate {
     func mediaPlayerFileLoaded(playerId: UUID, name _: String) {
         let latency = 0.250
         media.addReplaceCamera(cameraId: playerId, latency: latency)
-        // media.addReplaceAudio(cameraId: playerId, latency: latency)
+        media.addReplaceAudio(cameraId: playerId, latency: latency)
+        // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        //     self.selectMicById(id: "\(playerId) 0")
+        // }
     }
 
     func mediaPlayerFileUnloaded(playerId: UUID) {
         media.removeReplaceCamera(cameraId: playerId)
-        // media.removeReplaceAudio(cameraId: playerId)
+        media.removeReplaceAudio(cameraId: playerId)
     }
 
     func mediaPlayerStateUpdate(

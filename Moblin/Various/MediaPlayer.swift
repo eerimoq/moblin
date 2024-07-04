@@ -14,15 +14,17 @@ class MediaPlayer {
     private var asset: AVAsset?
     private var reader: AVAssetReader?
     private var videoTrackOutput: AVAssetReaderTrackOutput?
-    // private var audioTrackOutput: AVAssetReaderTrackOutput?
+    private var audioTrackOutput: AVAssetReaderTrackOutput?
     private var settings: SettingsMediaPlayer
     private var mediaStorage: MediaStorage
     private var playing = false
     private var currentFileIndex = 0
     private var fileDuration = 0.0
     private var seeking = false
-    private var startTime: CMTime = .zero
+    private var startVideoTime: CMTime = .zero
     private var latestVideoTime: CMTime = .zero
+    private var startAudioTime: CMTime = .zero
+    private var latestAudioTime: CMTime = .zero
     private var outputTimer: DispatchSourceTimer?
     private var active = false
     private var filename = ""
@@ -66,7 +68,9 @@ class MediaPlayer {
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
-            self.startTime = CMTimeSubtract(CMClockGetTime(CMClockGetHostTimeClock()), self.latestVideoTime)
+            let now = CMClockGetTime(CMClockGetHostTimeClock())
+            self.startVideoTime = CMTimeSubtract(now, self.latestVideoTime)
+            self.startAudioTime = CMTimeSubtract(now, self.latestAudioTime)
         }
     }
 
@@ -136,12 +140,11 @@ class MediaPlayer {
     }
 
     private func seekInner(position: Double) {
-        guard currentFileIndex < settings.playlist.count else {
-            logger.info("media-player: File index out of range")
+        guard let currentFile = getCurrentFile() else {
             return
         }
         delegate?.mediaPlayerStateUpdate(playerId: settings.id,
-                                         name: settings.playlist[currentFileIndex].name,
+                                         name: currentFile.name,
                                          playing: playing,
                                          position: position,
                                          time: formatTime(Double(position) / 100 * fileDuration))
@@ -153,17 +156,16 @@ class MediaPlayer {
         if reader != nil {
             delegate?.mediaPlayerFileUnloaded(playerId: settings.id)
             reportState()
+            reader = nil
         }
         videoTrackOutput = nil
-        // audioTrackOutput = nil
-        reader = nil
-        guard currentFileIndex < settings.playlist.count else {
-            logger.info("media-player: File index out of range")
+        audioTrackOutput = nil
+        asset = nil
+        guard let currentFile = getCurrentFile() else {
             return
         }
-        let file = settings.playlist[currentFileIndex]
-        filename = file.name
-        let url = mediaStorage.makePath(id: file.id)
+        filename = currentFile.name
+        let url = mediaStorage.makePath(id: currentFile.id)
         asset = AVAsset(url: url)
         guard let asset else {
             logger.info("media-player: No asset \(url)")
@@ -183,7 +185,7 @@ class MediaPlayer {
     }
 
     private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
-        guard error == nil, let videoTrack = tracks?.first, let reader else {
+        guard error == nil, let videoTrack = tracks?.first, let asset, let reader else {
             return
         }
         let videoOutputSettings: [String: Any] = [
@@ -196,41 +198,47 @@ class MediaPlayer {
             outputSettings: videoOutputSettings
         )
         reader.add(videoTrackOutput!)
-        startReading()
-        // asset.loadTracks(withMediaType: .audio) { tracks, error in
-        //     self.loadAudioTrackCompletion(tracks: tracks, error: error)
-        // }
+        asset.loadTracks(withMediaType: .audio) { tracks, error in
+            self.loadAudioTrackCompletion(tracks: tracks, error: error)
+        }
     }
 
-    // private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
-    //     guard error == nil, let audioTrack = tracks?.first, let reader else {
-    //         logger.info("media-player: Some error 2")
-    //         return
-    //     }
-    //     let audioOutputSettings: [String: Any] = [
-    //         AVFormatIDKey: kAudioFormatLinearPCM,
-    //         AVSampleRateKey: 48000.0,
-    //     ] as [String: Any]
-    //     audioTrackOutput = AVAssetReaderTrackOutput(
-    //         track: audioTrack,
-    //         outputSettings: audioOutputSettings
-    //     )
-    //     reader.add(audioTrackOutput!)
-    // }
+    private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+        guard let audioTrack = tracks?.first else {
+            logger.info("media-player: No audio in file.")
+            startReading()
+            return
+        }
+        guard error == nil, let reader else {
+            logger.info("media-player: Some error 2")
+            return
+        }
+        let audioOutputSettings: [String: Any] = [
+            AVFormatIDKey: kAudioFormatLinearPCM,
+            AVSampleRateKey: 48000.0,
+        ] as [String: Any]
+        audioTrackOutput = AVAssetReaderTrackOutput(
+            track: audioTrack,
+            outputSettings: audioOutputSettings
+        )
+        reader.add(audioTrackOutput!)
+        startReading()
+    }
 
     private func startReading() {
         guard let reader, reader.startReading() == true else {
             logger.info("media-player: Start reading failed")
             return
         }
-        guard currentFileIndex < settings.playlist.count else {
-            logger.info("media-player: File index out of range")
+        guard let currentFile = getCurrentFile() else {
             return
         }
-        delegate?.mediaPlayerFileLoaded(playerId: settings.id, name: settings.playlist[currentFileIndex].name)
+        delegate?.mediaPlayerFileLoaded(playerId: settings.id, name: currentFile.name)
         reportState()
-        startTime = CMClockGetTime(CMClockGetHostTimeClock())
+        startVideoTime = CMClockGetTime(CMClockGetHostTimeClock())
+        startAudioTime = startVideoTime
         _ = outputVideoBuffer()
+        reportState()
         startOutputTimer()
     }
 
@@ -239,12 +247,24 @@ class MediaPlayer {
             return nil
         }
         latestVideoTime = sampleBuffer.presentationTimeStamp
-        let presentationTimeStamp = CMTimeAdd(startTime, sampleBuffer.presentationTimeStamp)
+        let presentationTimeStamp = CMTimeAdd(startVideoTime, sampleBuffer.presentationTimeStamp)
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }
         delegate?.mediaPlayerVideoBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
-        reportState()
+        return presentationTimeStamp
+    }
+
+    private func outputAudioBuffer() -> CMTime? {
+        guard let sampleBuffer = audioTrackOutput?.copyNextSampleBuffer() else {
+            return nil
+        }
+        latestAudioTime = sampleBuffer.presentationTimeStamp
+        let presentationTimeStamp = CMTimeAdd(startAudioTime, sampleBuffer.presentationTimeStamp)
+        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
+            return nil
+        }
+        delegate?.mediaPlayerAudioBuffer(playerId: settings.id, sampleBuffer: sampleBuffer)
         return presentationTimeStamp
     }
 
@@ -277,6 +297,19 @@ class MediaPlayer {
                 break
             }
         }
+        if audioTrackOutput != nil {
+            while true {
+                if let time = outputAudioBuffer() {
+                    if time >= now {
+                        break
+                    }
+                } else {
+                    nextInner()
+                    break
+                }
+            }
+        }
+        reportState()
     }
 
     private func formatTime(_ time: Double) -> String {
@@ -284,5 +317,13 @@ class MediaPlayer {
         let seconds = String(format: "%02d", time % 60)
         let minutes = time / 60
         return "\(minutes):\(seconds)"
+    }
+
+    private func getCurrentFile() -> SettingsMediaPlayerFile? {
+        guard currentFileIndex < settings.playlist.count else {
+            logger.info("media-player: File index out of range")
+            return nil
+        }
+        return settings.playlist[currentFileIndex]
     }
 }
