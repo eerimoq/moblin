@@ -521,6 +521,22 @@ func formatAudioLevelChannels(channels: Int) -> String {
     return String(localized: " \(channels) ch")
 }
 
+func parseAudioLevel(_ string: String?) -> Float {
+    guard let string = string else {
+        return Float.infinity
+    }
+    if string.hasPrefix("Muted,") {
+        return Float.nan
+    } else if string.hasPrefix("Unknown,") {
+        return Float.infinity
+    } else if let range = string.range(of: " dB,") {
+        let levelString = String(string[string.startIndex ..< range.lowerBound])
+        return Float(levelString) ?? Float.nan
+    } else {
+        return Float.nan
+    }
+}
+
 let noValue = ""
 
 func urlImage(interfaceType: NWInterface.InterfaceType) -> String {

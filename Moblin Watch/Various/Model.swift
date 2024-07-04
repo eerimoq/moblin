@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 import WatchConnectivity
 
-private let previewTimeout = Duration.seconds(5)
+private var previewTimeout = Duration.seconds(5)
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
@@ -245,6 +245,11 @@ class Model: NSObject, ObservableObject {
         }
         if self.settings.show == nil {
             self.settings.show = .init()
+        }
+        if self.settings.remoteControl == true {
+            previewTimeout = Duration.seconds(5)
+        } else {
+            previewTimeout = Duration.seconds(10)
         }
     }
 
