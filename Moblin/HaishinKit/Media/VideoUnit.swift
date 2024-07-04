@@ -337,10 +337,8 @@ final class VideoUnit: NSObject {
             session.commitConfiguration()
         }
         try attachDevice(device, session)
-        if device != nil {
-            lockQueue.async {
-                self.prepareFirstFrame()
-            }
+        lockQueue.async {
+            self.prepareFirstFrame()
         }
         self.device = device
         for connection in output?.connections ?? [] {
