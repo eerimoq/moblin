@@ -46,6 +46,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Text widget.
     - Any text.
     - Current local time.
+    - Current speed.
+    - Current altitude.
+    - Distance. Reset manually.
     - Debug information.
   - Browser widget. Show a web page on stream.
 - Back or front camera.
