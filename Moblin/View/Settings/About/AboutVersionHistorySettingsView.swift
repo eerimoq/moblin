@@ -8,9 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.317.0", date: "2024-07-04", changes: [
+        "• Text widget updates.",
+        "  • {speed} for speed.",
+        "  • {altitude} for altitude.",
+        "  • {distance} for distance.",
+        "    • Reset in Settings → Location.",
+        "• Finnish translation updated. ✍️ mikeful",
+        "• Send altitude to RealtimeIRL.",
+    ]),
     Version(version: "0.316.0", date: "2024-07-04", changes: [
         "• Move files around in media player playlists.",
-        "• Add speed and timestamp to RealtimeIRL. 💡 Can't find who",
+        "• Add speed and timestamp to RealtimeIRL. 💡 ForeverMelounKDR",
         "• Initial support for using a media player as mic.",
         "  • Problems are expected, but can also work.",
         "• Fix mirrored media player video if changing from front cam scene to media player scene. 🐛 Martisz",
