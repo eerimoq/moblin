@@ -1715,7 +1715,6 @@ final class Model: NSObject, ObservableObject {
             let (detections, filter) = self.media.getNetStream().getHistograms()
             detections.log()
             filter.log()
-            // self.realtimeIrl?.updateTest()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             if self.database.show.audioBar {
