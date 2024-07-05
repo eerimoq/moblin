@@ -2147,8 +2147,8 @@ final class Model: NSObject, ObservableObject {
         if let latestKnownLocation {
             distance += location?.distance(from: latestKnownLocation) ?? 0
         }
-        stats.speed = String(format: "%.01f km/h", max(Float(3.6 * (location?.speed ?? 0)), 0))
-        stats.altitude = String(format: "%.01f m", location?.altitude ?? 0)
+        stats.speed = format(speed: max(location?.speed ?? 0, 0))
+        stats.altitude = format(altitude: location?.altitude ?? 0)
         stats.distance = getDistance()
         latestKnownLocation = location
         for textEffect in textEffects.values {
@@ -2157,7 +2157,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func getDistance() -> String {
-        return String(format: "%.02f km", distance / 1000)
+        return format(distance: distance)
     }
 
     func togglePoll() {

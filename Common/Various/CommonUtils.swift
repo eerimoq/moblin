@@ -262,6 +262,39 @@ extension Duration {
     }
 }
 
+private var speedFormatter: MeasurementFormatter {
+    let formatter = MeasurementFormatter()
+    formatter.numberFormatter.maximumFractionDigits = 1
+    return formatter
+}
+
+func format(speed: Double) -> String {
+    return speedFormatter.string(from: NSMeasurement(
+        doubleValue: speed,
+        unit: UnitSpeed.metersPerSecond
+    ) as Measurement<Unit>)
+}
+
+private var distanceFormatter: LengthFormatter {
+    let formatter = LengthFormatter()
+    formatter.numberFormatter.maximumFractionDigits = 2
+    return formatter
+}
+
+func format(distance: Double) -> String {
+    return distanceFormatter.string(fromMeters: distance)
+}
+
+private var altitudeFormatter: LengthFormatter {
+    let formatter = LengthFormatter()
+    formatter.numberFormatter.maximumFractionDigits = 1
+    return formatter
+}
+
+func format(altitude: Double) -> String {
+    return altitudeFormatter.string(fromMeters: altitude)
+}
+
 extension ProcessInfo.ThermalState {
     func string() -> String {
         switch self {
