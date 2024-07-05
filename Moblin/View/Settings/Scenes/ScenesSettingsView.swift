@@ -62,6 +62,8 @@ private struct ScenesListView: View {
 }
 
 struct ScenesSettingsView: View {
+    // private func onBrbScene(mode _: String) {}
+
     var body: some View {
         Form {
             ScenesListView()
@@ -70,6 +72,24 @@ struct ScenesSettingsView: View {
                     Text("Widgets")
                 }
             }
+            // Section {
+            //     NavigationLink(destination: InlinePickerView(
+            //         title: String(localized: "BRB scene"),
+            //         onChange: onBrbScene,
+            //         items: InlinePickerItem.fromStrings(values: ["todo", "1", "2"]),
+            //         selectedId: "todo"
+            //     )) {
+            //         TextItemView(
+            //             name: String(localized: "BRB scene"),
+            //             value: "todo"
+            //         )
+            //     }
+            // } footer: {
+            //     Text("""
+            //     The scene Moblin will switch to if the video source of the current \
+            //     scene gets disconnected.
+            //     """)
+            // }
         }
         .navigationTitle("Scenes")
         .toolbar {
