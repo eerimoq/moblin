@@ -315,7 +315,14 @@ class RtmpServerClient {
                 // logger.info("rtmp-server: client: Got data \(data)")
                 self.totalBytesReceived += UInt64(data.count)
                 self.server?.totalBytesReceived += UInt64(data.count)
-                self.latestReceiveTime = .now
+                let now = ContinuousClock.now
+                if logger.debugEnabled {
+                    let elapsed = self.latestReceiveTime.duration(to: now)
+                    if elapsed > .milliseconds(500) {
+                        logger.debug("rtmp-server: client: \(elapsed.milliseconds) ms since last byte")
+                    }
+                }
+                self.latestReceiveTime = now
                 self.handleData(data: data)
                 if self.totalBytesReceived - self.totalBytesReceivedAcked > self.windowAcknowledgementSize {
                     self.sendAck()
