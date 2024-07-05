@@ -33,6 +33,7 @@ class RtmpServerClient {
     private var chunkState: ChunkState
     private var chunkSizeToClient = 128
     var chunkSizeFromClient = 128
+    var windowAcknowledgementSize = 2_500_000
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
     private var chunkStream: RtmpServerChunkStream!
     var streamKey: String = ""
@@ -43,6 +44,9 @@ class RtmpServerClient {
             logger.info("rtmp-server: client: State change \(oldValue) -> \(connectionState)")
         }
     }
+
+    private var totalBytesReceived: UInt64 = 0
+    private var totalBytesReceivedAcked: UInt64 = 0
 
     var manualFps = false
     var fps: Double = 0
@@ -309,14 +313,29 @@ class RtmpServerClient {
         connection.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, error in
             if let data {
                 // logger.info("rtmp-server: client: Got data \(data)")
+                self.totalBytesReceived += UInt64(data.count)
                 self.server?.totalBytesReceived += UInt64(data.count)
                 self.latestReceiveTime = .now
                 self.handleData(data: data)
+                if self.totalBytesReceived - self.totalBytesReceivedAcked > self.windowAcknowledgementSize {
+                    self.sendAck()
+                    self.totalBytesReceivedAcked = self.totalBytesReceived
+                }
             }
             if let error {
                 self.stopInternal(reason: "Error \(error)")
             }
         }
+    }
+
+    private func sendAck() {
+        let message = RTMPAcknowledgementMessage()
+        message.sequence = UInt32(totalBytesReceived & 0xFFFF_FFFF)
+        sendMessage(chunk: RTMPChunk(
+            type: .zero,
+            streamId: RTMPChunk.StreamID.control.rawValue,
+            message: message
+        ))
     }
 
     func sendMessage(chunk: RTMPChunk) {

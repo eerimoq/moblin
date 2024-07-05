@@ -102,6 +102,8 @@ class RtmpServerChunkStream {
             processMessageAmf0Data()
         case .chunkSize:
             processMessageChunkSize()
+        case .windowAck:
+            processMessageWindowAck()
         case .video:
             processMessageVideo()
         case .audio:
@@ -176,17 +178,17 @@ class RtmpServerChunkStream {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: streamId,
+            streamId: RTMPChunk.StreamID.control.rawValue,
             message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: streamId,
+            streamId: RTMPChunk.StreamID.control.rawValue,
             message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: streamId,
+            streamId: RTMPChunk.StreamID.control.rawValue,
             message: RTMPSetChunkSizeMessage(1024)
         ))
         client.sendMessage(chunk: RTMPChunk(
@@ -296,6 +298,21 @@ class RtmpServerChunkStream {
         logger
             .info(
                 "rtmp-server: client: Chunk size from client: \(client.chunkSizeFromClient)"
+            )
+    }
+
+    private func processMessageWindowAck() {
+        guard let client else {
+            return
+        }
+        guard messageData.count == 4 else {
+            client.stopInternal(reason: "Not 4 bytes window acknowledgement size")
+            return
+        }
+        client.windowAcknowledgementSize = Int(messageData.getFourBytesBe())
+        logger
+            .info(
+                "rtmp-server: client: Window acknowledgement size from client: \(client.windowAcknowledgementSize)"
             )
     }
 
