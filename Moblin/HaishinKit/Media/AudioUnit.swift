@@ -106,6 +106,9 @@ private class ReplaceAudio {
         if sampleBuffer != nil {
             latestSampleBuffer = sampleBuffer
         } else if latestSampleBuffer != nil {
+            if let (buffer, size) = latestSampleBuffer?.dataBuffer?.getDataPointer() {
+                buffer.initialize(repeating: 0, count: size)
+            }
             sampleBuffer = latestSampleBuffer
             logger.debug("""
             replace-audio: Using latest sample buffer. \
