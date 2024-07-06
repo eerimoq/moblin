@@ -144,7 +144,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func startTakeSnapshots() {
-        snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: true, block: { _ in
+        snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: false, block: { _ in
             guard !self.audioOnly else {
                 return
             }
@@ -155,6 +155,7 @@ final class BrowserEffect: VideoEffect {
                 configuration.snapshotWidth = NSNumber(value: self.width / self.scale)
             }
             self.webView.takeSnapshot(with: configuration) { image, error in
+                self.startTakeSnapshots()
                 if let error {
                     logger.warning("Browser snapshot error: \(error)")
                 } else if let image {
