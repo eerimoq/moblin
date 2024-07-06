@@ -68,7 +68,7 @@ class MediaPlayer {
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
-            let now = CMClockGetTime(CMClockGetHostTimeClock())
+            let now = currentPresentationTimeStamp()
             self.startVideoTime = CMTimeSubtract(now, self.latestVideoTime)
             self.startAudioTime = CMTimeSubtract(now, self.latestAudioTime)
         }
@@ -235,7 +235,7 @@ class MediaPlayer {
         }
         delegate?.mediaPlayerFileLoaded(playerId: settings.id, name: currentFile.name)
         reportState()
-        startVideoTime = CMClockGetTime(CMClockGetHostTimeClock())
+        startVideoTime = currentPresentationTimeStamp()
         startAudioTime = startVideoTime
         _ = outputVideoBuffer()
         reportState()
@@ -286,7 +286,7 @@ class MediaPlayer {
         guard playing else {
             return
         }
-        let now = CMClockGetTime(CMClockGetHostTimeClock())
+        let now = currentPresentationTimeStamp()
         while true {
             if let time = outputVideoBuffer() {
                 if time >= now {

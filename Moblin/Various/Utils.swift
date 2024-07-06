@@ -403,3 +403,7 @@ func isValidAudioBitrate(bitrate: Int) -> Bool {
     }
     return true
 }
+
+func currentPresentationTimeStamp() -> CMTime {
+    return CMClockGetTime(CMClockGetHostTimeClock())
+}

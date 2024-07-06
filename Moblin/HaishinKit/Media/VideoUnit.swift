@@ -262,7 +262,7 @@ final class VideoUnit: NSObject {
     }
 
     private func handleReplaceVideo() {
-        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        let presentationTimeStamp = currentPresentationTimeStamp()
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(presentationTimeStamp.seconds)
         }

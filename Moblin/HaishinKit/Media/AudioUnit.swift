@@ -149,7 +149,7 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        let presentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        let presentationTimeStamp = currentPresentationTimeStamp()
         guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
             return
         }
