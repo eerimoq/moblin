@@ -1640,6 +1640,7 @@ class Database: Codable {
     var deepLinkCreator: DeepLinkCreator? = .init()
     var srtlaServer: SettingsSrtlaServer? = .init()
     var mediaPlayers: SettingsMediaPlayers? = .init()
+    var showAllSettings: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2775,6 +2776,10 @@ final class Settings {
         }
         if realDatabase.mediaPlayers == nil {
             realDatabase.mediaPlayers = .init()
+            store()
+        }
+        if realDatabase.showAllSettings == nil {
+            realDatabase.showAllSettings = true
             store()
         }
     }

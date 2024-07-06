@@ -56,58 +56,60 @@ struct ChatSettingsView: View {
                     Text(String(Int(fontSize)))
                         .frame(width: 25)
                 }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.timestampColorEnabled
-                }, set: { value in
-                    model.database.chat.timestampColorEnabled = value
-                    model.store()
-                    model.reloadChatMessages()
-                })) {
-                    Text("Timestamp")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.boldUsername
-                }, set: { value in
-                    model.database.chat.boldUsername = value
-                    model.store()
-                    model.reloadChatMessages()
-                })) {
-                    Text("Bold username")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.boldMessage
-                }, set: { value in
-                    model.database.chat.boldMessage = value
-                    model.store()
-                    model.reloadChatMessages()
-                })) {
-                    Text("Bold message")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.animatedEmotes
-                }, set: { value in
-                    model.database.chat.animatedEmotes = value
-                    model.store()
-                    model.reloadChatMessages()
-                })) {
-                    Text("Animated emotes")
-                }
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Maximum age"),
-                    value: String(model.database.chat.maximumAge!),
-                    onSubmit: submitMaximumAge,
-                    footer: Text("Maximum message age in seconds.")
-                )) {
+                if model.database.showAllSettings! {
                     Toggle(isOn: Binding(get: {
-                        model.database.chat.maximumAgeEnabled!
+                        model.database.chat.timestampColorEnabled
                     }, set: { value in
-                        model.database.chat.maximumAgeEnabled = value
+                        model.database.chat.timestampColorEnabled = value
                         model.store()
+                        model.reloadChatMessages()
                     })) {
-                        TextItemView(
-                            name: String(localized: "Maximum age"),
-                            value: String(model.database.chat.maximumAge!)
-                        )
+                        Text("Timestamp")
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.boldUsername
+                    }, set: { value in
+                        model.database.chat.boldUsername = value
+                        model.store()
+                        model.reloadChatMessages()
+                    })) {
+                        Text("Bold username")
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.boldMessage
+                    }, set: { value in
+                        model.database.chat.boldMessage = value
+                        model.store()
+                        model.reloadChatMessages()
+                    })) {
+                        Text("Bold message")
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.animatedEmotes
+                    }, set: { value in
+                        model.database.chat.animatedEmotes = value
+                        model.store()
+                        model.reloadChatMessages()
+                    })) {
+                        Text("Animated emotes")
+                    }
+                    NavigationLink(destination: TextEditView(
+                        title: String(localized: "Maximum age"),
+                        value: String(model.database.chat.maximumAge!),
+                        onSubmit: submitMaximumAge,
+                        footer: Text("Maximum message age in seconds.")
+                    )) {
+                        Toggle(isOn: Binding(get: {
+                            model.database.chat.maximumAgeEnabled!
+                        }, set: { value in
+                            model.database.chat.maximumAgeEnabled = value
+                            model.store()
+                        })) {
+                            TextItemView(
+                                name: String(localized: "Maximum age"),
+                                value: String(model.database.chat.maximumAge!)
+                            )
+                        }
                     }
                 }
                 NavigationLink(destination: ChatUsernamesToIgnoreSettingsView()) {
@@ -139,14 +141,16 @@ struct ChatSettingsView: View {
                         Text("Bot")
                     }
                 }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.mirrored!
-                }, set: { value in
-                    model.database.chat.mirrored = value
-                    model.store()
-                    model.objectWillChange.send()
-                })) {
-                    Text("Mirrored")
+                if model.database.showAllSettings! {
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.mirrored!
+                    }, set: { value in
+                        model.database.chat.mirrored = value
+                        model.store()
+                        model.objectWillChange.send()
+                    })) {
+                        Text("Mirrored")
+                    }
                 }
             } header: {
                 Text("General")
@@ -199,75 +203,77 @@ struct ChatSettingsView: View {
                         .frame(width: 55)
                 }
             }
-            Section {
-                ColorPicker("Timestamp", selection: $timestampColor, supportsOpacity: false)
-                    .onChange(of: timestampColor) { _ in
-                        guard let color = timestampColor.toRgb() else {
-                            return
-                        }
-                        model.database.chat.timestampColor = color
-                        model.reloadChatMessages()
-                    }
-                ColorPicker("Username", selection: $usernameColor, supportsOpacity: false)
-                    .onChange(of: usernameColor) { _ in
-                        guard let color = usernameColor.toRgb() else {
-                            return
-                        }
-                        model.database.chat.usernameColor = color
-                        model.reloadChatMessages()
-                    }
-                ColorPicker("Message", selection: $messageColor, supportsOpacity: false)
-                    .onChange(of: messageColor) { _ in
-                        guard let color = messageColor.toRgb() else {
-                            return
-                        }
-                        model.database.chat.messageColor = color
-                        model.reloadChatMessages()
-                    }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.backgroundColorEnabled
-                }, set: { value in
-                    model.database.chat.backgroundColorEnabled = value
-                    model.store()
-                    model.reloadChatMessages()
-                })) {
-                    ColorPicker("Background", selection: $backgroundColor, supportsOpacity: false)
-                        .onChange(of: backgroundColor) { _ in
-                            guard let color = backgroundColor.toRgb() else {
+            if model.database.showAllSettings! {
+                Section {
+                    ColorPicker("Timestamp", selection: $timestampColor, supportsOpacity: false)
+                        .onChange(of: timestampColor) { _ in
+                            guard let color = timestampColor.toRgb() else {
                                 return
                             }
-                            model.database.chat.backgroundColor = color
+                            model.database.chat.timestampColor = color
                             model.reloadChatMessages()
                         }
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.shadowColorEnabled
-                }, set: { value in
-                    model.database.chat.shadowColorEnabled = value
-                    model.store()
-                    model.reloadChatMessages()
-                })) {
-                    ColorPicker("Border", selection: $shadowColor, supportsOpacity: false)
-                        .onChange(of: shadowColor) { _ in
-                            guard let color = shadowColor.toRgb() else {
+                    ColorPicker("Username", selection: $usernameColor, supportsOpacity: false)
+                        .onChange(of: usernameColor) { _ in
+                            guard let color = usernameColor.toRgb() else {
                                 return
                             }
-                            model.database.chat.shadowColor = color
+                            model.database.chat.usernameColor = color
                             model.reloadChatMessages()
                         }
+                    ColorPicker("Message", selection: $messageColor, supportsOpacity: false)
+                        .onChange(of: messageColor) { _ in
+                            guard let color = messageColor.toRgb() else {
+                                return
+                            }
+                            model.database.chat.messageColor = color
+                            model.reloadChatMessages()
+                        }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.backgroundColorEnabled
+                    }, set: { value in
+                        model.database.chat.backgroundColorEnabled = value
+                        model.store()
+                        model.reloadChatMessages()
+                    })) {
+                        ColorPicker("Background", selection: $backgroundColor, supportsOpacity: false)
+                            .onChange(of: backgroundColor) { _ in
+                                guard let color = backgroundColor.toRgb() else {
+                                    return
+                                }
+                                model.database.chat.backgroundColor = color
+                                model.reloadChatMessages()
+                            }
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.shadowColorEnabled
+                    }, set: { value in
+                        model.database.chat.shadowColorEnabled = value
+                        model.store()
+                        model.reloadChatMessages()
+                    })) {
+                        ColorPicker("Border", selection: $shadowColor, supportsOpacity: false)
+                            .onChange(of: shadowColor) { _ in
+                                guard let color = shadowColor.toRgb() else {
+                                    return
+                                }
+                                model.database.chat.shadowColor = color
+                                model.reloadChatMessages()
+                            }
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.meInUsernameColor!
+                    }, set: { value in
+                        model.database.chat.meInUsernameColor = value
+                        model.store()
+                    })) {
+                        Text("Me in username color")
+                    }
+                } header: {
+                    Text("Colors")
+                } footer: {
+                    Text("Border is fairly CPU intensive. Disable for less power usage.")
                 }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.meInUsernameColor!
-                }, set: { value in
-                    model.database.chat.meInUsernameColor = value
-                    model.store()
-                })) {
-                    Text("Me in username color")
-                }
-            } header: {
-                Text("Colors")
-            } footer: {
-                Text("Border is fairly CPU intensive. Disable for less power usage.")
             }
         }
         .onDisappear {

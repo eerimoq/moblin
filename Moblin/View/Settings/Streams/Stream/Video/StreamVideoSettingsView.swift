@@ -58,45 +58,47 @@ struct StreamVideoSettingsView: View {
                     TextItemView(name: "FPS", value: String(stream.fps))
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
-                NavigationLink(destination: InlinePickerView(title: String(localized: "Codec"),
-                                                             onChange: onCodecChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(values: codecs),
-                                                             selectedId: stream.codec
-                                                                 .rawValue))
-                {
-                    TextItemView(name: String(localized: "Codec"), value: stream.codec.rawValue)
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: InlinePickerView(title: String(localized: "Codec"),
+                                                                 onChange: onCodecChange,
+                                                                 items: InlinePickerItem
+                                                                     .fromStrings(values: codecs),
+                                                                 selectedId: stream.codec
+                                                                     .rawValue))
+                    {
+                        TextItemView(name: String(localized: "Codec"), value: stream.codec.rawValue)
+                    }
+                    .disabled(stream.enabled && model.isLive)
+                    NavigationLink(destination: StreamVideoBitrateSettingsView(
+                        stream: stream,
+                        selection: stream.bitrate
+                    )) {
+                        TextItemView(
+                            name: String(localized: "Bitrate"),
+                            value: formatBytesPerSecond(speed: Int64(stream.bitrate))
+                        )
+                    }
+                    NavigationLink(destination: TextEditView(
+                        title: String(localized: "Key frame interval"),
+                        value: String(stream.maxKeyFrameInterval!),
+                        onSubmit: submitMaxKeyFrameInterval,
+                        footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
+                        keyboardType: .numbersAndPunctuation
+                    )) {
+                        TextItemView(
+                            name: String(localized: "Key frame interval"),
+                            value: "\(stream.maxKeyFrameInterval!) s"
+                        )
+                    }
+                    .disabled(stream.enabled && model.isLive)
+                    Toggle("B-frames", isOn: Binding(get: {
+                        stream.bFrames!
+                    }, set: { value in
+                        stream.bFrames = value
+                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                    }))
+                    .disabled(stream.enabled && model.isLive)
                 }
-                .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: StreamVideoBitrateSettingsView(
-                    stream: stream,
-                    selection: stream.bitrate
-                )) {
-                    TextItemView(
-                        name: String(localized: "Bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(stream.bitrate))
-                    )
-                }
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Key frame interval"),
-                    value: String(stream.maxKeyFrameInterval!),
-                    onSubmit: submitMaxKeyFrameInterval,
-                    footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
-                    keyboardType: .numbersAndPunctuation
-                )) {
-                    TextItemView(
-                        name: String(localized: "Key frame interval"),
-                        value: "\(stream.maxKeyFrameInterval!) s"
-                    )
-                }
-                .disabled(stream.enabled && model.isLive)
-                Toggle("B-frames", isOn: Binding(get: {
-                    stream.bFrames!
-                }, set: { value in
-                    stream.bFrames = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
-                }))
-                .disabled(stream.enabled && model.isLive)
             }
         }
         .navigationTitle("Video")

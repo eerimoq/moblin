@@ -124,35 +124,40 @@ struct SettingsView: View {
                 NavigationLink(destination: CameraSettingsView()) {
                     IconAndTextView(image: "camera", text: String(localized: "Camera"))
                 }
-                NavigationLink(destination: AudioSettingsView()) {
-                    IconAndTextView(image: "waveform", text: String(localized: "Audio"))
-                }
-                NavigationLink(destination: MediaPlayersSettingsView()) {
-                    IconAndTextView(
-                        image: "play.rectangle.on.rectangle",
-                        text: String(localized: "Media players")
-                    )
-                }
-                NavigationLink(destination: RtmpServerSettingsView()) {
-                    IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
-                }
-                NavigationLink(destination: SrtlaServerSettingsView()) {
-                    IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
-                }
-                NavigationLink(destination: BitratePresetsSettingsView()) {
-                    IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
-                }
-                NavigationLink(destination: GameControllersSettingsView()) {
-                    IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
-                }
-                NavigationLink(destination: RemoteControlSettingsView()) {
-                    IconAndTextView(image: "appletvremote.gen1", text: String(localized: "Remote control"))
-                }
-                NavigationLink(destination: LocationSettingsView()) {
-                    IconAndTextView(image: "location", text: String(localized: "Location"))
-                }
-                NavigationLink(destination: WebBrowserSettingsView()) {
-                    IconAndTextView(image: "globe", text: String(localized: "Web browser"))
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: AudioSettingsView()) {
+                        IconAndTextView(image: "waveform", text: String(localized: "Audio"))
+                    }
+                    NavigationLink(destination: MediaPlayersSettingsView()) {
+                        IconAndTextView(
+                            image: "play.rectangle.on.rectangle",
+                            text: String(localized: "Media players")
+                        )
+                    }
+                    NavigationLink(destination: RtmpServerSettingsView()) {
+                        IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
+                    }
+                    NavigationLink(destination: SrtlaServerSettingsView()) {
+                        IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
+                    }
+                    NavigationLink(destination: BitratePresetsSettingsView()) {
+                        IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
+                    }
+                    NavigationLink(destination: GameControllersSettingsView()) {
+                        IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
+                    }
+                    NavigationLink(destination: RemoteControlSettingsView()) {
+                        IconAndTextView(
+                            image: "appletvremote.gen1",
+                            text: String(localized: "Remote control")
+                        )
+                    }
+                    NavigationLink(destination: LocationSettingsView()) {
+                        IconAndTextView(image: "location", text: String(localized: "Location"))
+                    }
+                    NavigationLink(destination: WebBrowserSettingsView()) {
+                        IconAndTextView(image: "globe", text: String(localized: "Web browser"))
+                    }
                 }
             }
             Section {
@@ -169,36 +174,61 @@ struct SettingsView: View {
                 NavigationLink(destination: RecordingsSettingsView()) {
                     IconAndTextView(image: "photo.on.rectangle.angled", text: String(localized: "Recordings"))
                 }
-                NavigationLink(destination: StreamingHistorySettingsView()) {
-                    IconAndTextView(image: "text.book.closed", text: String(localized: "Streaming history"))
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: StreamingHistorySettingsView()) {
+                        IconAndTextView(
+                            image: "text.book.closed",
+                            text: String(localized: "Streaming history")
+                        )
+                    }
                 }
             }
-            Section {
-                NavigationLink(destination: WatchSettingsView()) {
-                    IconAndTextView(image: "applewatch", text: String(localized: "Watch"))
+            if model.database.showAllSettings! {
+                Section {
+                    NavigationLink(destination: WatchSettingsView()) {
+                        IconAndTextView(image: "applewatch", text: String(localized: "Watch"))
+                    }
                 }
             }
             Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
                     IconAndTextView(image: "questionmark.circle", text: String(localized: "Help and support"))
                 }
-                NavigationLink(destination: AboutSettingsView()) {
-                    IconAndTextView(image: "info.circle", text: String(localized: "About"))
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: AboutSettingsView()) {
+                        IconAndTextView(image: "info.circle", text: String(localized: "About"))
+                    }
+                    NavigationLink(
+                        destination: DebugSettingsView(cameraSwitchRemoveBlackish: model.database.debug!
+                            .cameraSwitchRemoveBlackish!)
+                    ) {
+                        IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
+                    }
                 }
-                NavigationLink(
-                    destination: DebugSettingsView(cameraSwitchRemoveBlackish: model.database.debug!
-                        .cameraSwitchRemoveBlackish!)
-                ) {
-                    IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
+            }
+            if model.database.showAllSettings! {
+                Section {
+                    NavigationLink(destination: ImportExportSettingsView()) {
+                        IconAndTextView(
+                            image: "gearshape",
+                            text: String(localized: "Import and export settings")
+                        )
+                    }
+                    NavigationLink(destination: DeepLinkCreatorSettingsView()) {
+                        IconAndTextView(
+                            image: "link.badge.plus",
+                            text: String(localized: "Deep link creator")
+                        )
+                    }
                 }
             }
             Section {
-                NavigationLink(destination: ImportExportSettingsView()) {
-                    IconAndTextView(image: "gearshape", text: String(localized: "Import and export settings"))
-                }
-                NavigationLink(destination: DeepLinkCreatorSettingsView()) {
-                    IconAndTextView(image: "link.badge.plus", text: String(localized: "Deep link creator"))
-                }
+                Toggle("Show all settings", isOn: Binding(get: {
+                    model.database.showAllSettings!
+                }, set: { value in
+                    model.database.showAllSettings = value
+                    model.store()
+                }))
             }
             Section {
                 ResetSettingsView()

@@ -20,38 +20,40 @@ struct DisplaySettingsView: View {
                 NavigationLink(destination: GlobalQuickButtonsSettingsView()) {
                     Text("Quick buttons")
                 }
-                NavigationLink(destination: StreamButtonsSettingsView(
-                    background: model.database.streamButtonColor!.color()
-                )) {
-                    Text("Stream button")
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: StreamButtonsSettingsView(
+                        background: model.database.streamButtonColor!.color()
+                    )) {
+                        Text("Stream button")
+                    }
+                    Toggle("Battery percentage", isOn: Binding(get: {
+                        model.database.batteryPercentage!
+                    }, set: { value in
+                        model.database.batteryPercentage = value
+                        model.store()
+                        model.objectWillChange.send()
+                    }))
+                    NavigationLink(destination: LocalOverlaysSettingsView()) {
+                        Text("Local overlays")
+                    }
+                    NavigationLink(destination: InlinePickerView(title: String(localized: "Audio level"),
+                                                                 onChange: onAudioLevelChange,
+                                                                 items: InlinePickerItem
+                                                                     .fromStrings(values: audioLevels),
+                                                                 selectedId: audioLevel()))
+                    {
+                        TextItemView(name: "Audio level", value: audioLevel())
+                    }
+                    NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
+                        Text("Network interface names")
+                    }
+                    Toggle("Low bitrate warning", isOn: Binding(get: {
+                        model.database.lowBitrateWarning!
+                    }, set: { value in
+                        model.database.lowBitrateWarning = value
+                        model.store()
+                    }))
                 }
-                Toggle("Battery percentage", isOn: Binding(get: {
-                    model.database.batteryPercentage!
-                }, set: { value in
-                    model.database.batteryPercentage = value
-                    model.store()
-                    model.objectWillChange.send()
-                }))
-                NavigationLink(destination: LocalOverlaysSettingsView()) {
-                    Text("Local overlays")
-                }
-                NavigationLink(destination: InlinePickerView(title: String(localized: "Audio level"),
-                                                             onChange: onAudioLevelChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(values: audioLevels),
-                                                             selectedId: audioLevel()))
-                {
-                    TextItemView(name: "Audio level", value: audioLevel())
-                }
-                NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
-                    Text("Network interface names")
-                }
-                Toggle("Low bitrate warning", isOn: Binding(get: {
-                    model.database.lowBitrateWarning!
-                }, set: { value in
-                    model.database.lowBitrateWarning = value
-                    model.store()
-                }))
                 Toggle("Vibrate", isOn: Binding(get: {
                     model.database.vibrate!
                 }, set: { value in
@@ -59,12 +61,14 @@ struct DisplaySettingsView: View {
                     model.store()
                     model.setAllowHapticsAndSystemSoundsDuringRecording()
                 }))
-                Toggle("Recording confirmations", isOn: Binding(get: {
-                    model.database.startStopRecordingConfirmations!
-                }, set: { value in
-                    model.database.startStopRecordingConfirmations = value
-                    model.store()
-                }))
+                if model.database.showAllSettings! {
+                    Toggle("Recording confirmations", isOn: Binding(get: {
+                        model.database.startStopRecordingConfirmations!
+                    }, set: { value in
+                        model.database.startStopRecordingConfirmations = value
+                        model.store()
+                    }))
+                }
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Enable \"Vibrate\" to vibrate the device when the following toasts appear:")

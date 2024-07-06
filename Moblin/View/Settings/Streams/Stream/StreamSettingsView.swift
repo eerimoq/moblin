@@ -30,14 +30,16 @@ struct StreamSettingsView: View {
                 NavigationLink(destination: StreamVideoSettingsView(stream: stream)) {
                     Text("Video")
                 }
-                NavigationLink(destination: StreamAudioSettingsView(
-                    stream: stream,
-                    bitrate: Float(stream.audioBitrate! / 1000)
-                )) {
-                    Text("Audio")
-                }
-                NavigationLink(destination: StreamRecordingSettingsView(stream: stream)) {
-                    Text("Recording")
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: StreamAudioSettingsView(
+                        stream: stream,
+                        bitrate: Float(stream.audioBitrate! / 1000)
+                    )) {
+                        Text("Audio")
+                    }
+                    NavigationLink(destination: StreamRecordingSettingsView(stream: stream)) {
+                        Text("Recording")
+                    }
                 }
                 if UIDevice.current.userInterfaceIdiom == .phone {
                     Toggle(isOn: Binding(get: {
@@ -50,19 +52,21 @@ struct StreamSettingsView: View {
                         Text("Portrait")
                     }
                 }
-                if stream.getProtocol() == .srt {
-                    NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
-                        Text("SRT(LA)")
+                if model.database.showAllSettings! {
+                    if stream.getProtocol() == .srt {
+                        NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
+                            Text("SRT(LA)")
+                        }
                     }
-                }
-                if stream.getProtocol() == .rtmp {
-                    NavigationLink(destination: StreamRtmpSettingsView(stream: stream)) {
-                        Text("RTMP")
+                    if stream.getProtocol() == .rtmp {
+                        NavigationLink(destination: StreamRtmpSettingsView(stream: stream)) {
+                            Text("RTMP")
+                        }
                     }
-                }
-                if stream.getProtocol() == .rist {
-                    NavigationLink(destination: StreamRistSettingsView(stream: stream)) {
-                        Text("RIST")
+                    if stream.getProtocol() == .rist {
+                        NavigationLink(destination: StreamRistSettingsView(stream: stream)) {
+                            Text("RIST")
+                        }
                     }
                 }
             } header: {
@@ -149,28 +153,32 @@ struct StreamSettingsView: View {
                         }
                     }))
                 }
-                NavigationLink(destination: StreamRealtimeIrlSettingsView(stream: stream)) {
-                    Toggle("RealtimeIRL", isOn: Binding(get: {
-                        stream.realtimeIrlEnabled!
-                    }, set: { value in
-                        stream.realtimeIrlEnabled = value
-                        model.store()
-                        if stream.enabled {
-                            model.reloadLocation()
-                        }
-                    }))
+                if model.database.showAllSettings! {
+                    NavigationLink(destination: StreamRealtimeIrlSettingsView(stream: stream)) {
+                        Toggle("RealtimeIRL", isOn: Binding(get: {
+                            stream.realtimeIrlEnabled!
+                        }, set: { value in
+                            stream.realtimeIrlEnabled = value
+                            model.store()
+                            if stream.enabled {
+                                model.reloadLocation()
+                            }
+                        }))
+                    }
                 }
             }
-            if !ProcessInfo().isiOSAppOnMac {
-                Section {
-                    Toggle("Background streaming", isOn: Binding(get: {
-                        stream.backgroundStreaming!
-                    }, set: { value in
-                        stream.backgroundStreaming = value
-                        model.store()
-                    }))
-                } footer: {
-                    Text("Keep live streams running when the app is in background mode.")
+            if model.database.showAllSettings! {
+                if !ProcessInfo().isiOSAppOnMac {
+                    Section {
+                        Toggle("Background streaming", isOn: Binding(get: {
+                            stream.backgroundStreaming!
+                        }, set: { value in
+                            stream.backgroundStreaming = value
+                            model.store()
+                        }))
+                    } footer: {
+                        Text("Keep live streams running when the app is in background mode.")
+                    }
                 }
             }
         }
