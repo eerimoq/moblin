@@ -40,7 +40,7 @@ final class AudioCodecRingBuffer {
                 value: CMTimeValue(offset),
                 timescale: presentationTimeStamp.timescale
             )
-            latestPresentationTimeStamp = CMTimeAdd(presentationTimeStamp, offsetTimeStamp)
+            latestPresentationTimeStamp = presentationTimeStamp + offsetTimeStamp
         }
         if offset == 0 {
             if workingBuffer.frameLength < sampleBuffer.numSamples {

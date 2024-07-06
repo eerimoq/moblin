@@ -158,12 +158,9 @@ class SrtServerClient {
             srt-server: Audio gap latest buffer PTS \
             \(latestAudioBufferPresentationTimeStamp.seconds)
             """)
-            latestMissingAudioBufferPresentationTimeStamp = CMTimeAdd(
-                latestAudioBufferPresentationTimeStamp,
-                CMTime(
-                    value: CMTimeValue(Double(1024 * numberOfGapBuffers)),
-                    timescale: CMTimeScale(48000)
-                )
+            latestMissingAudioBufferPresentationTimeStamp = latestAudioBufferPresentationTimeStamp + CMTime(
+                value: CMTimeValue(Double(1024 * numberOfGapBuffers)),
+                timescale: CMTimeScale(48000)
             )
             numberOfGapBuffers += 1
         } else if (presentationTimeStamp - latestMissingAudioBufferPresentationTimeStamp).seconds < 0.5 {
@@ -174,13 +171,11 @@ class SrtServerClient {
             numberOfGapBuffers = 1
         }
         for index in 0 ..< numberOfGapBuffers {
-            let newPresentationTimeStamp = CMTimeAdd(
-                latestAudioBufferPresentationTimeStamp,
+            let newPresentationTimeStamp = latestAudioBufferPresentationTimeStamp +
                 CMTime(
                     value: CMTimeValue(Double(1024 * (1 + index))),
                     timescale: CMTimeScale(48000)
                 )
-            )
             logger.info("srt-server: Audio gap filler buffer PTS \(newPresentationTimeStamp.seconds)")
             if let sampleBuffer = createSilentSampleBuffer(
                 format: pcmAudioFormat,

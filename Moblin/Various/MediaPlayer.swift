@@ -247,7 +247,7 @@ class MediaPlayer {
             return nil
         }
         latestVideoTime = sampleBuffer.presentationTimeStamp
-        let presentationTimeStamp = CMTimeAdd(startVideoTime, sampleBuffer.presentationTimeStamp)
+        let presentationTimeStamp = startVideoTime + sampleBuffer.presentationTimeStamp
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }
@@ -260,7 +260,7 @@ class MediaPlayer {
             return nil
         }
         latestAudioTime = sampleBuffer.presentationTimeStamp
-        let presentationTimeStamp = CMTimeAdd(startAudioTime, sampleBuffer.presentationTimeStamp)
+        let presentationTimeStamp = startAudioTime + sampleBuffer.presentationTimeStamp
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }

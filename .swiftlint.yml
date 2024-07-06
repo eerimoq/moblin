@@ -12,3 +12,4 @@ disabled_rules:
   - force_cast
   - closure_parameter_position
   - non_optional_string_data_conversion
+  - shorthand_operator

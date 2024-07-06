@@ -113,12 +113,9 @@ class AudioCodec {
                 to: buffer.data
             )
             appendAudioBuffer(buffer, presentationTimeStamp: nextPresentationTimeStamp)
-            nextPresentationTimeStamp = CMTimeAdd(
-                nextPresentationTimeStamp,
-                CMTime(
-                    value: CMTimeValue(1024),
-                    timescale: presentationTimeStamp.timescale
-                )
+            nextPresentationTimeStamp = nextPresentationTimeStamp + CMTime(
+                value: CMTimeValue(1024),
+                timescale: presentationTimeStamp.timescale
             )
             offset += sampleSize
         }
