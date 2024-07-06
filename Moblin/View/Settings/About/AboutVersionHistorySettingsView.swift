@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.321.0", date: "2024-07-06", changes: [
+        "• \"Show all settings\" toggle.",
+        "  • Disabled by default for new app installations.",
+        "  • Enabled by default if upgrading to this version.",
+        "  • The toggle is just hiding/showing settings. Hidden settings are still used.",
+    ]),
     Version(version: "0.320.0", date: "2024-07-06", changes: [
         "• Improved audio/video sync when using RTMP server, SRT(LA) server and Media player.",
     ]),
