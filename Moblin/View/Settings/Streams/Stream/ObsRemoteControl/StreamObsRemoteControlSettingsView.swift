@@ -30,6 +30,11 @@ struct StreamObsRemoteControlSettingsView: View {
         model.store()
     }
 
+    func submitBrbScene(value: String) {
+        stream.obsBrbScene = value
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -58,6 +63,19 @@ struct StreamObsRemoteControlSettingsView: View {
                 )
             } footer: {
                 Text("The name of the Source in OBS that receives the stream from Moblin.")
+            }
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "BRB scene"),
+                    value: stream.obsBrbScene!,
+                    onSubmit: submitBrbScene,
+                    capitalize: true
+                )
+            } footer: {
+                Text("""
+                Moblin will periodically try to switch to this OBS scene if the stream is \
+                likely broken.
+                """)
             }
         }
         .navigationTitle("OBS remote control")

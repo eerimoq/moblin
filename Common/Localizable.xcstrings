@@ -17409,6 +17409,9 @@
         }
       }
     },
+    "BRB scene" : {
+
+    },
     "Browser" : {
       "localizations" : {
         "de" : {
@@ -48488,6 +48491,9 @@
           }
         }
       }
+    },
+    "Moblin will periodically try to switch to this OBS scene if the stream is likely broken." : {
+
     },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
       "localizations" : {

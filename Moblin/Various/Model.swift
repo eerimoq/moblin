@@ -355,6 +355,9 @@ final class Model: NSObject, ObservableObject {
     private var obsAudioVolumeLatest: String = ""
     @Published var obsCurrentScenePicker: String = ""
     @Published var obsCurrentScene: String = ""
+    private var obsSceneBeforeSwitchToBrbScene: String?
+    private var previousSrtDroppedPacketsTotal: Int32 = 0
+    private var streamBecameBrokenTime: ContinuousClock.Instant?
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
@@ -1698,6 +1701,7 @@ final class Model: NSObject, ObservableObject {
             self.updateAdaptiveBitrateDebug()
             self.updateTextEffects(now: now)
             self.updatePoll()
+            self.updateObsSceneSwitcher(now: monotonicNow)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1732,6 +1736,44 @@ final class Model: NSObject, ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
         })
+    }
+
+    private func isStreamLikelyBroken(now: ContinuousClock.Instant) -> Bool {
+        defer {
+            previousSrtDroppedPacketsTotal = media.srtDroppedPacketsTotal
+        }
+        if isLive && streamState == .disconnected {
+            return true
+        }
+        if media.srtDroppedPacketsTotal > previousSrtDroppedPacketsTotal {
+            streamBecameBrokenTime = now
+            return true
+        }
+        if let streamBecameBrokenTime {
+            if streamBecameBrokenTime.duration(to: now) < .seconds(5) {
+                return true
+            } else if obsCurrentScene != stream.obsBrbScene! {
+                return true
+            }
+        }
+        streamBecameBrokenTime = nil
+        return false
+    }
+
+    private func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
+        guard !stream.obsBrbScene!.isEmpty, isObsConnected() else {
+            return
+        }
+        if isStreamLikelyBroken(now: now) {
+            if obsCurrentScene != stream.obsBrbScene! {
+                obsSceneBeforeSwitchToBrbScene = obsCurrentScene
+                setObsScene(name: stream.obsBrbScene!)
+            }
+        } else if obsCurrentScene == stream.obsBrbScene! {
+            if let obsSceneBeforeSwitchToBrbScene {
+                setObsScene(name: obsSceneBeforeSwitchToBrbScene)
+            }
+        }
     }
 
     private func updateCurrentSsid() {

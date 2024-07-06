@@ -379,6 +379,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
     var obsSourceName: String? = ""
+    var obsBrbScene: String? = ""
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
     var bitrate: UInt32 = 5_000_000
@@ -2780,6 +2781,10 @@ final class Settings {
         }
         if realDatabase.showAllSettings == nil {
             realDatabase.showAllSettings = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsBrbScene == nil {
+            stream.obsBrbScene = ""
             store()
         }
     }

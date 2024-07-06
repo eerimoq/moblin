@@ -48,6 +48,7 @@ final class Media: NSObject {
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
     private var irlToolkitFetcher: IrlToolkitFetcher?
+    var srtDroppedPacketsTotal: Int32 = 0
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -247,6 +248,7 @@ final class Media: NSObject {
             return nil
         }
         let stats = srtConnection.performanceData
+        srtDroppedPacketsTotal = stats.pktSndDropTotal
         let sndData = srtConnection.socket?.sndData() ?? 0
         adaptiveBitrate.update(stats: StreamStats(
             rttMs: stats.msRTT,
@@ -278,6 +280,7 @@ final class Media: NSObject {
             return nil
         }
         let stats = srtConnection.performanceData
+        srtDroppedPacketsTotal = stats.pktSndDropTotal
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRTT,
             packetsInFlight: Double(stats.pktFlightSize),
