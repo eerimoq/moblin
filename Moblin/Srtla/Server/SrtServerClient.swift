@@ -11,6 +11,7 @@ class SrtServerClient {
     private var formatDescriptions: [UInt16: CMFormatDescription] = [:]
     private var nalUnitReader = NALUnitReader()
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
+    private var basePresentationTimeStamp: CMTime = .invalid
     private var audioBuffer: AVAudioCompressedBuffer?
     private var latestAudioBufferPresentationTimeStamp: CMTime?
     private var latestMissingAudioBufferPresentationTimeStamp: CMTime = .zero
@@ -306,6 +307,7 @@ class SrtServerClient {
         }
         guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
+            getBasePresentationTimeStamp(),
             previousPresentationTimeStamps[packetId] ?? .invalid,
             formatDescriptions[packetId]
         ) else {
@@ -334,6 +336,7 @@ class SrtServerClient {
         }
         guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
+            getBasePresentationTimeStamp(),
             previousPresentationTimeStamps[packetId] ?? .invalid,
             formatDescriptions[packetId]
         ) else {
@@ -357,6 +360,7 @@ class SrtServerClient {
         }
         guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
+            getBasePresentationTimeStamp(),
             previousPresentationTimeStamps[packetId] ?? .invalid,
             formatDescriptions[packetId]
         ) else {
@@ -365,6 +369,14 @@ class SrtServerClient {
         sampleBuffer.isSync = units.contains { $0.type == .sps }
         previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
         return (sampleBuffer, data.streamType)
+    }
+
+    private func getBasePresentationTimeStamp() -> CMTime {
+        if basePresentationTimeStamp == .invalid {
+            let latency = CMTime(seconds: 0.5, preferredTimescale: 1000)
+            basePresentationTimeStamp = currentPresentationTimeStamp() + latency
+        }
+        return basePresentationTimeStamp
     }
 }
 

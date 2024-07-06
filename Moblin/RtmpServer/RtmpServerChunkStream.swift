@@ -15,6 +15,7 @@ class RtmpServerChunkStream {
     private var audioTimestampZero: Double
     private var audioTimestamp: Double
     private var videoTimestampZero: Double
+    private var basePresentationTimeStamp: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoCodec?
@@ -40,6 +41,7 @@ class RtmpServerChunkStream {
         audioTimestampZero = -1
         audioTimestamp = 0
         videoTimestampZero = -1
+        basePresentationTimeStamp = -1
         videoTimestamp = 0
         isMessageType0 = true
         extendedTimestampPresentInType3 = false
@@ -254,6 +256,7 @@ class RtmpServerChunkStream {
             {
                 client.manualFps = stream.manualFps!
                 client.fps = stream.fps!
+                client.latency = stream.latency!
                 return true
             } else {
                 return false
@@ -336,7 +339,7 @@ class RtmpServerChunkStream {
         guard codec == .aac else {
             // Make lint happy.
             print(soundRate, soundSize, soundType)
-            client.stopInternal(reason: "Unsupported audio codec \(codec)")
+            client.stopInternal(reason: "Unsupported audio codec \(codec). Only AAC is supported.")
             return
         }
         switch FLVAACPacketType(rawValue: messageData[1]) {
@@ -522,8 +525,9 @@ class RtmpServerChunkStream {
                 videoTimestamp += Double(messageTimestamp)
             }
         }
-        let presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
-        let decodeTimeStamp = Int64(videoTimestamp)
+        let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) +
+            Int64(compositionTime + client.latency)
+        let decodeTimeStamp = Int64(videoTimestamp) + Int64(client.latency)
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
@@ -577,8 +581,18 @@ class RtmpServerChunkStream {
                 audioTimestamp += Double(messageTimestamp)
             }
         }
-        let presentationTimeStamp = CMTimeMake(value: Int64(audioTimestamp), timescale: 1000)
+        let presentationTimeStamp = CMTimeMake(
+            value: Int64(audioTimestamp + getBasePresentationTimeStamp()) + Int64(client.latency),
+            timescale: 1000
+        )
         return audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
+    }
+
+    private func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = 1000 * currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
     }
 }
 

@@ -42,14 +42,13 @@ private struct FaceDetectionsCompletion {
 }
 
 private class ReplaceVideo {
-    private var latency: Double
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var basePresentationTimeStamp: Double = .nan
     private var currentSampleBuffer: CMSampleBuffer?
     private var timeOffset = 0.0
+    private let name: String
 
-    init(latency: Double) {
-        self.latency = latency
+    init(name: String) {
+        self.name = name
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -64,21 +63,16 @@ private class ReplaceVideo {
                 currentSampleBuffer = inputSampleBuffer
             }
             if sampleBuffers.count > 200 {
-                logger.info("replace-video: Over 200 frames buffered. Dropping oldest frame.")
+                logger.info("replace-video: \(name): Over 200 frames buffered. Dropping oldest frame.")
                 currentSampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
                 continue
             }
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
-            if basePresentationTimeStamp.isNaN {
-                basePresentationTimeStamp = outputPresentationTimeStamp - inputPresentationTimeStamp +
-                    latency
-            }
-            let inputOutputDelta = inputPresentationTimeStamp -
-                (outputPresentationTimeStamp - basePresentationTimeStamp) + timeOffset
+            let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp + timeOffset
             if abs(inputOutputDelta) < 0.002 {
-                logger.info("replace-video: Small delta. Swap offset from \(timeOffset).")
+                logger.info("replace-video: \(name): Small delta. Swap offset from \(timeOffset).")
                 if timeOffset == 0.0 {
                     timeOffset = 0.01
                 } else {
@@ -96,7 +90,7 @@ private class ReplaceVideo {
         if logger.debugEnabled {
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
-                replace-video: Duplicating buffer. \
+                replace-video: \(name): Duplicating buffer. \
                 Output time \(outputPresentationTimeStamp) \
                 Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
@@ -105,7 +99,7 @@ private class ReplaceVideo {
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
-                replace-video: Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
+                replace-video: \(name): Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output time \(outputPresentationTimeStamp) \
                 Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
@@ -687,14 +681,14 @@ final class VideoUnit: NSObject {
         replaceVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceVideo(cameraId: UUID, latency: Double) {
+    func addReplaceVideo(cameraId: UUID, name: String) {
         lockQueue.async {
-            self.addReplaceVideoInner(cameraId: cameraId, latency: latency)
+            self.addReplaceVideoInner(cameraId: cameraId, name: name)
         }
     }
 
-    private func addReplaceVideoInner(cameraId: UUID, latency: Double) {
-        replaceVideos[cameraId] = ReplaceVideo(latency: latency)
+    private func addReplaceVideoInner(cameraId: UUID, name: String) {
+        replaceVideos[cameraId] = ReplaceVideo(name: name)
     }
 
     func removeReplaceVideo(cameraId: UUID) {

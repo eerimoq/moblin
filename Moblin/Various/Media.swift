@@ -755,12 +755,12 @@ final class Media: NSObject {
         netStream.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addReplaceCamera(cameraId: UUID, latency: Double) {
-        netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
+    func addReplaceCamera(cameraId: UUID, name: String) {
+        netStream.addReplaceVideo(cameraId: cameraId, name: name)
     }
 
-    func addReplaceAudio(cameraId: UUID, latency: Double) {
-        netStream.addReplaceAudio(cameraId: cameraId, latency: latency)
+    func addReplaceAudio(cameraId: UUID, name: String) {
+        netStream.addReplaceAudio(cameraId: cameraId, name: name)
     }
 
     func removeReplaceCamera(cameraId: UUID) {

@@ -50,6 +50,7 @@ class RtmpServerClient {
 
     var manualFps = false
     var fps: Double = 0
+    var latency: Int32 = 2000
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -69,7 +70,8 @@ class RtmpServerClient {
         connectionState = .connecting
     }
 
-    func stop(reason _: String) {
+    func stop(reason: String) {
+        logger.info("rtmp-server: client: Stopping with reason: \(reason)")
         for chunkStream in chunkStreams.values {
             chunkStream.stop()
         }

@@ -1371,9 +1371,9 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            let latency = Double(stream.latency!) / 1000
-            self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
-            self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
+            let name = "RTMP \(camera)"
+            self.media.addReplaceCamera(cameraId: stream.id, name: name)
+            self.media.addReplaceAudio(cameraId: stream.id, name: name)
             if stream.autoSelectMic! {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.selectMicById(id: "\(stream.id) 0")
@@ -6310,9 +6310,9 @@ extension Model: SrtlaServerDelegate {
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
-            let latency = 0.5
-            self.media.addReplaceCamera(cameraId: stream.id, latency: latency)
-            self.media.addReplaceAudio(cameraId: stream.id, latency: latency)
+            let name = "SRTLA \(camera)"
+            self.media.addReplaceCamera(cameraId: stream.id, name: name)
+            self.media.addReplaceAudio(cameraId: stream.id, name: name)
             if stream.autoSelectMic! {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                     self.selectMicById(id: "\(stream.id) 0")
@@ -6422,10 +6422,10 @@ extension Model {
 }
 
 extension Model: MediaPlayerDelegate {
-    func mediaPlayerFileLoaded(playerId: UUID, name _: String) {
-        let latency = 0.250
-        media.addReplaceCamera(cameraId: playerId, latency: latency)
-        media.addReplaceAudio(cameraId: playerId, latency: latency)
+    func mediaPlayerFileLoaded(playerId: UUID, name: String) {
+        let name = "Media player file \(name)"
+        media.addReplaceCamera(cameraId: playerId, name: name)
+        media.addReplaceAudio(cameraId: playerId, name: name)
         // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
         //     self.selectMicById(id: "\(playerId) 0")
         // }

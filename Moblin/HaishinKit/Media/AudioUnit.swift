@@ -29,21 +29,20 @@ protocol ReplaceAudioSampleBufferDelegate: AnyObject {
 
 private class ReplaceAudio {
     private var cameraId: UUID
-    private var latency: Double
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var basePresentationTimeStamp: Double = .nan
     private var outputTimer: DispatchSourceTimer?
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?
+    private let name: String
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
-    init(cameraId: UUID, latency: Double) {
+    init(cameraId: UUID, name: String) {
         self.cameraId = cameraId
-        self.latency = latency
+        self.name = name
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -63,18 +62,14 @@ private class ReplaceAudio {
         var numberOfBuffersConsumed = 0
         while let inputSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
-                logger.info("replace-audio: Over 300 buffers buffered. Dropping oldest buffer.")
+                logger.info("replace-audio: \(name): Over 300 buffers buffered. Dropping oldest buffer.")
                 sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
                 continue
             }
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
-            if basePresentationTimeStamp.isNaN {
-                basePresentationTimeStamp = outputPresentationTimeStamp - inputPresentationTimeStamp + latency
-            }
-            let inputOutputDelta = inputPresentationTimeStamp -
-                (outputPresentationTimeStamp - basePresentationTimeStamp)
+            let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
             if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
                 break
             }
@@ -85,7 +80,7 @@ private class ReplaceAudio {
         if logger.debugEnabled {
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
-                replace-audio: Duplicating buffer. \
+                replace-audio: \(name): Duplicating buffer. \
                 Output time \(outputPresentationTimeStamp) \
                 Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
@@ -94,7 +89,7 @@ private class ReplaceAudio {
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
-                replace-audio: Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
+                replace-audio: \(name): Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output time \(outputPresentationTimeStamp) \
                 Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
@@ -111,7 +106,7 @@ private class ReplaceAudio {
             }
             sampleBuffer = latestSampleBuffer
             logger.debug("""
-            replace-audio: Using latest sample buffer. \
+            replace-audio: \(name): Using latest sample buffer. \
             Output time \(outputPresentationTimeStamp) \
             Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
             Buffers count is \(sampleBuffers.count). \
@@ -131,7 +126,7 @@ private class ReplaceAudio {
 
     private func startOutput() {
         logger.info("""
-        replace-audio: Start output with latency \(latency), sample rate \(sampleRate) and \
+        replace-audio: \(name): Start output with sample rate \(sampleRate) and \
         frame length \(frameLength)
         """)
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
@@ -143,7 +138,7 @@ private class ReplaceAudio {
     }
 
     func stopOutput() {
-        logger.info("replace-audio: Stopping output.")
+        logger.info("replace-audio: \(name): Stopping output.")
         outputTimer?.cancel()
         outputTimer = nil
     }
@@ -262,14 +257,14 @@ final class AudioUnit: NSObject {
         replaceAudios[id]?.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceAudio(cameraId: UUID, latency: Double) {
+    func addReplaceAudio(cameraId: UUID, name: String) {
         lockQueue.async {
-            self.addReplaceAudioInner(cameraId: cameraId, latency: latency)
+            self.addReplaceAudioInner(cameraId: cameraId, name: name)
         }
     }
 
-    func addReplaceAudioInner(cameraId: UUID, latency: Double) {
-        let replaceAudio = ReplaceAudio(cameraId: cameraId, latency: latency)
+    func addReplaceAudioInner(cameraId: UUID, name: String) {
+        let replaceAudio = ReplaceAudio(cameraId: cameraId, name: name)
         replaceAudio.delegate = self
         replaceAudios[cameraId] = replaceAudio
     }

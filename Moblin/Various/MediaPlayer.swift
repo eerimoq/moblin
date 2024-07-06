@@ -68,9 +68,9 @@ class MediaPlayer {
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
-            let now = currentPresentationTimeStamp()
-            self.startVideoTime = CMTimeSubtract(now, self.latestVideoTime)
-            self.startAudioTime = CMTimeSubtract(now, self.latestAudioTime)
+            let now = outputPresentationTimeStamp()
+            self.startVideoTime = now - self.latestVideoTime
+            self.startAudioTime = now - self.latestAudioTime
         }
     }
 
@@ -235,7 +235,7 @@ class MediaPlayer {
         }
         delegate?.mediaPlayerFileLoaded(playerId: settings.id, name: currentFile.name)
         reportState()
-        startVideoTime = currentPresentationTimeStamp()
+        startVideoTime = outputPresentationTimeStamp()
         startAudioTime = startVideoTime
         _ = outputVideoBuffer()
         reportState()
@@ -270,7 +270,7 @@ class MediaPlayer {
 
     private func startOutputTimer() {
         outputTimer = DispatchSource.makeTimerSource(queue: mediaPlayerQueue)
-        outputTimer?.schedule(deadline: .now(), repeating: 0.1)
+        outputTimer?.schedule(deadline: .now(), repeating: 0.3)
         outputTimer?.setEventHandler { [weak self] in
             self?.handleOutputTimer()
         }
@@ -286,7 +286,7 @@ class MediaPlayer {
         guard playing else {
             return
         }
-        let now = currentPresentationTimeStamp()
+        let now = outputPresentationTimeStamp()
         while true {
             if let time = outputVideoBuffer() {
                 if time >= now {
@@ -326,4 +326,8 @@ class MediaPlayer {
         }
         return settings.playlist[currentFileIndex]
     }
+}
+
+private func outputPresentationTimeStamp() -> CMTime {
+    return currentPresentationTimeStamp() + CMTime(seconds: 0.5, preferredTimescale: 1000)
 }

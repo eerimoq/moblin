@@ -92,16 +92,24 @@ private struct OptionalHeader {
             .data
     }
 
-    func makeSampleTimingInfo(_ previousPresentationTimeStamp: CMTime) -> CMSampleTimingInfo? {
+    func makeSampleTimingInfo(_ baseTimeStamp: CMTime,
+                              _ previousPresentationTimeStamp: CMTime) -> CMSampleTimingInfo?
+    {
         var presentationTimeStamp: CMTime = .invalid
         var decodeTimeStamp: CMTime = .invalid
         if ptsDtsIndicator & 0x02 == 0x02 {
             let pts = TSTimestamp.decode(optionalFields, offset: 0)
-            presentationTimeStamp = .init(value: pts, timescale: CMTimeScale(TSTimestamp.resolution))
+            presentationTimeStamp = baseTimeStamp + .init(
+                value: pts,
+                timescale: CMTimeScale(TSTimestamp.resolution)
+            )
         }
         if ptsDtsIndicator & 0x01 == 0x01 {
             let dts = TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize)
-            decodeTimeStamp = .init(value: dts, timescale: CMTimeScale(TSTimestamp.resolution))
+            decodeTimeStamp = baseTimeStamp + .init(
+                value: dts,
+                timescale: CMTimeScale(TSTimestamp.resolution)
+            )
         }
         return CMSampleTimingInfo(
             duration: presentationTimeStamp - previousPresentationTimeStamp,
@@ -285,6 +293,7 @@ struct MpegTsPacketizedElementaryStream {
 
     mutating func makeSampleBuffer(
         _ streamType: ElementaryStreamType,
+        _ basePresentationTimeStamp: CMTime,
         _ previousPresentationTimeStamp: CMTime,
         _ formatDescription: CMFormatDescription?
     ) -> CMSampleBuffer? {
@@ -307,7 +316,10 @@ struct MpegTsPacketizedElementaryStream {
             break
         }
         var sampleBuffer: CMSampleBuffer?
-        var timing = optionalHeader.makeSampleTimingInfo(previousPresentationTimeStamp) ?? .invalid
+        var timing = optionalHeader.makeSampleTimingInfo(
+            basePresentationTimeStamp,
+            previousPresentationTimeStamp
+        ) ?? .invalid
         guard let blockBuffer, CMSampleBufferCreate(
             allocator: kCFAllocatorDefault,
             dataBuffer: blockBuffer,
