@@ -29,6 +29,8 @@ class RtmpServerChunkStream {
     private var totalNumberOfAudioSamples: UInt64 = 0
     private var firstVideoFrameTimestamp: ContinuousClock.Instant?
     private var totalNumberOfVideoFrames: UInt64 = 0
+    private var isVideoReceived = false
+    private var isAudioReceived = false
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -418,14 +420,12 @@ class RtmpServerChunkStream {
         }
         if let error {
             logger.info("rtmp-server: client: Error \(error)")
-        } else {
-            if let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) {
-                if firstAudioBufferTimestamp == nil {
-                    firstAudioBufferTimestamp = .now
-                }
-                totalNumberOfAudioSamples += UInt64(sampleBuffer.dataBuffer?.dataLength ?? 0) / 2
-                client.handleAudioBuffer(sampleBuffer: sampleBuffer)
+        } else if let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) {
+            if firstAudioBufferTimestamp == nil {
+                firstAudioBufferTimestamp = .now
             }
+            totalNumberOfAudioSamples += UInt64(sampleBuffer.dataBuffer?.dataLength ?? 0) / 2
+            client.handleAudioBuffer(sampleBuffer: sampleBuffer)
         }
     }
 
@@ -499,8 +499,6 @@ class RtmpServerChunkStream {
         totalNumberOfVideoFrames += 1
         if let sampleBuffer = makeVideoSampleBuffer(client: client) {
             videoDecoder?.appendSampleBuffer(sampleBuffer)
-        } else {
-            client.stopInternal(reason: "Make sample buffer failed")
         }
     }
 
@@ -510,6 +508,10 @@ class RtmpServerChunkStream {
         compositionTime /= 256
         var duration: Int64
         if client.manualFps {
+            isVideoReceived = true
+            if !isAudioReceived {
+                return nil
+            }
             duration = Int64(1000 / client.fps)
             videoTimestamp = Double(numberOfFrames) / client.fps * 1000
             numberOfFrames += 1
@@ -527,7 +529,7 @@ class RtmpServerChunkStream {
         }
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) +
             Int64(compositionTime + client.latency)
-        let decodeTimeStamp = Int64(videoTimestamp) + Int64(client.latency)
+        let decodeTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) + Int64(client.latency)
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
@@ -568,6 +570,10 @@ class RtmpServerChunkStream {
                                        audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
     {
         if client.manualFps {
+            isAudioReceived = true
+            if !isVideoReceived {
+                return nil
+            }
             audioTimestamp = Double(numberOfAudioBuffers) /
                 (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
             numberOfAudioBuffers += 1
