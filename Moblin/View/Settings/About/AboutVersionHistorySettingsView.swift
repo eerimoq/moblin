@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.323.0", date: "2024-07-06", changes: [
+        "• Client side automatic OBS scene switcher when stream is likely broken. 💡 crow.exe",
+        "  • Only works when the OBS remote control is connected.",
+        "  • Only works for SRT and SRTLA with adaptive bitrate enabled.",
+        "  • Configure BRB scene in Settings → Streams → My stream → OBS remote control.",
+    ]),
     Version(version: "0.322.0", date: "2024-07-06", changes: [
         "• Fix crash when entering foreground from background streaming. 🐛 JohannesLiv",
     ]),
