@@ -305,6 +305,7 @@ final class Model: NSObject, ObservableObject {
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var lutEffects: [UUID: LutEffect] = [:]
+    private var mapEffects: [UUID: MapEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
@@ -1710,6 +1711,7 @@ final class Model: NSObject, ObservableObject {
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
             self.updateTextEffects(now: now)
+            self.updateMapEffects()
             self.updatePoll()
             self.updateObsSceneSwitcher(now: monotonicNow)
         })
@@ -2211,6 +2213,18 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private func updateMapEffects() {
+        guard !mapEffects.isEmpty else {
+            return
+        }
+        guard let location = locationManager.getLatestKnownLocation() else {
+            return
+        }
+        for mapEffect in mapEffects.values {
+            mapEffect.updateLocation(location: location)
+        }
+    }
+
     func getDistance() -> String {
         return format(distance: distance)
     }
@@ -2283,6 +2297,13 @@ final class Model: NSObject, ObservableObject {
                 videoSize: videoSize,
                 settingName: widget.name
             )
+        }
+        for mapEffect in mapEffects.values {
+            media.unregisterEffect(mapEffect)
+        }
+        mapEffects.removeAll()
+        for widget in database.widgets where widget.type == .map {
+            mapEffects[widget.id] = MapEffect(widget: widget.map!)
         }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
@@ -3540,6 +3561,9 @@ final class Model: NSObject, ObservableObject {
             media.unregisterEffect(browserEffect)
             browserEffect.stop()
         }
+        for mapEffect in mapEffects.values {
+            media.unregisterEffect(mapEffect)
+        }
         media.unregisterEffect(drawOnStreamEffect)
         media.unregisterEffect(lutEffect)
         for lutEffect in lutEffects.values {
@@ -3716,6 +3740,7 @@ final class Model: NSObject, ObservableObject {
         }
         effects += registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
+        var usedMapEffects: [MapEffect] = []
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -3759,6 +3784,12 @@ final class Model: NSObject, ObservableObject {
                     }
                     usedBrowserEffects.append(browserEffect)
                 }
+            case .map:
+                if let mapEffect = mapEffects[widget.id], !usedMapEffects.contains(mapEffect) {
+                    mapEffect.setSceneWidget(sceneWidget: sceneWidget, size: media.getVideoSize())
+                    effects.append(mapEffect)
+                    usedMapEffects.append(mapEffect)
+                }
             }
         }
         if !drawOnStreamLines.isEmpty {
@@ -3768,6 +3799,9 @@ final class Model: NSObject, ObservableObject {
         media.setPendingAfterAttachEffects(effects: effects)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
+        }
+        for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
+            mapEffect.setSceneWidget(sceneWidget: nil, size: nil)
         }
         attachSingleLayout(scene: scene)
     }

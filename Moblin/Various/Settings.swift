@@ -648,6 +648,11 @@ class SettingsWidgetBrowser: Codable {
     var fps: Float? = 5.0
 }
 
+class SettingsWidgetMap: Codable {
+    var width: Int = 250
+    var height: Int = 250
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -677,6 +682,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case text = "Text"
     case videoEffect = "Video effect"
     case crop = "Crop"
+    case map = "Map"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -695,6 +701,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .videoEffect
         case String(localized: "Crop"):
             return .crop
+        case String(localized: "Map"):
+            return .map
         default:
             return .videoEffect
         }
@@ -712,6 +720,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Video effect")
         case .crop:
             return String(localized: "Crop")
+        case .map:
+            return String(localized: "Map")
         }
     }
 }
@@ -735,6 +745,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     // periphery:ignore
     var videoEffect: SettingsWidgetVideoEffect? = .init()
     var crop: SettingsWidgetCrop? = .init()
+    var map: SettingsWidgetMap? = .init()
 
     init(name: String) {
         self.name = name
@@ -2794,6 +2805,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsBrbScene == nil {
             stream.obsBrbScene = ""
+            store()
+        }
+        for widget in realDatabase.widgets where widget.map == nil {
+            widget.map = .init()
             store()
         }
     }

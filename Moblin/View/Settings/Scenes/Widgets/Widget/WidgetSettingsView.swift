@@ -45,6 +45,8 @@ struct WidgetSettingsView: View {
                 WidgetTextSettingsView(widget: widget)
             case .crop:
                 WidgetCropSettingsView(widget: widget)
+            case .map:
+                WidgetMapSettingsView(widget: widget)
             }
         }
         .navigationTitle("Widget")

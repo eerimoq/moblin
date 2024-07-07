@@ -234,6 +234,8 @@
 		037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */; };
 		037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037EBE762B666F66004D5774 /* DrawOnStreamView.swift */; };
 		0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */; };
+		03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */; };
+		03828C312C3B0A1600F5A8AC /* WidgetMapSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
 		03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
@@ -718,6 +720,8 @@
 		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
 		0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotSettingsView.swift; sourceTree = "<group>"; };
+		03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEffect.swift; sourceTree = "<group>"; };
+		03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetMapSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
@@ -1067,6 +1071,7 @@
 				039A9E262BAEC58F00A23F97 /* Crop */,
 				03403DF32AD05C700079D8E4 /* Browser */,
 				0315A3652AA33C5400295443 /* Image */,
+				03828C2E2C3B09FF00F5A8AC /* Map */,
 				037132CC2C29FEED00393605 /* Text */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
@@ -1803,6 +1808,14 @@
 			path = Audio;
 			sourceTree = "<group>";
 		};
+		03828C2E2C3B09FF00F5A8AC /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
 		03831D562AD9A188008D26CC /* Cosmetics */ = {
 			isa = PBXGroup;
 			children = (
@@ -2045,6 +2058,7 @@
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				038F42EC2B6849D400E68752 /* LutEffect.swift */,
+				03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */,
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
 				038C0F682C312C3900A258C6 /* PollEffect.swift */,
@@ -2649,6 +2663,7 @@
 				032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
+				03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */,
 				0359F8B12BD3DA61005BFDA8 /* VTSessionConvertible.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */,
@@ -2717,6 +2732,7 @@
 				0359F8DD2BD3DA61005BFDA8 /* MpegTsVideoConfigHevc.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */,
+				03828C312C3B0A1600F5A8AC /* WidgetMapSettingsView.swift in Sources */,
 				03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */,
 				03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */,
 				03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */,

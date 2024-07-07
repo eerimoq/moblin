@@ -17,7 +17,7 @@ struct WidgetBrowserSettingsView: View {
         guard let width = Int(value) else {
             return
         }
-        guard width > 0 else {
+        guard width > 0, width < 4000 else {
             return
         }
         widget.browser.width = width
@@ -29,7 +29,7 @@ struct WidgetBrowserSettingsView: View {
         guard let height = Int(value) else {
             return
         }
-        guard height > 0 else {
+        guard height > 0, height < 4000 else {
             return
         }
         widget.browser.height = height

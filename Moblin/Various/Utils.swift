@@ -48,6 +48,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "textformat"
     case .crop:
         return "crop"
+    case .map:
+        return "map"
     }
 }
 
