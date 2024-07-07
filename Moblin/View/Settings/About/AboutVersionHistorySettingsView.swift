@@ -13,6 +13,7 @@ private let versions = [
         "• Snapshot quick button. 💡 DJMarkOxford and others",
         "  • The snapshot is saved to Camera Roll album (Photos).",
         "  • Same resolution as the stream.",
+        "• Machine translations.",
     ]),
     Version(version: "0.323.0", date: "2024-07-06", changes: [
         "• Client side automatic OBS scene switcher when stream is likely broken. 💡 crow.exe",
