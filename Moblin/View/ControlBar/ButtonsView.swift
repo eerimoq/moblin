@@ -618,6 +618,10 @@ struct ButtonsInnerView: View {
         videoEffectAction(state: state, type: .poll)
     }
 
+    private func snapshotAction(state _: ButtonState) {
+        model.takeSnapshot()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -797,6 +801,12 @@ struct ButtonsInnerView: View {
             case .poll:
                 Button(action: {
                     pollAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .snapshot:
+                Button(action: {
+                    snapshotAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

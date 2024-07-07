@@ -163,6 +163,10 @@ open class NetStream: NSObject {
         mixer.video.setLowFpsImage(fps: fps)
     }
 
+    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
+        mixer.video.takeSnapshot(onComplete: onComplete)
+    }
+
     func setAudioChannelsMap(map: [Int: Int]) {
         audioSettings.channelsMap = map
         mixer.recorder.setAudioChannelsMap(map: map)

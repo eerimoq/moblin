@@ -623,6 +623,10 @@ final class Media: NSObject {
         netStream.setLowFpsImage(fps: fps)
     }
 
+    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
+        netStream.takeSnapshot(onComplete: onComplete)
+    }
+
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
         netStream.setSessionPreset(preset: preset)
     }

@@ -731,6 +731,15 @@ final class Model: NSObject, ObservableObject {
         buttonPairs = pairs.reversed()
     }
 
+    func takeSnapshot() {
+        media.takeSnapshot { image in
+            DispatchQueue.main.async {
+                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                self.makeToast(title: "Snapshot saved to Photos")
+            }
+        }
+    }
+
     private func debugLog(message: String) {
         DispatchQueue.main.async {
             if self.log.count > self.database.debug!.maximumLogLines! {

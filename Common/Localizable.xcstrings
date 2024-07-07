@@ -65667,6 +65667,9 @@
         }
       }
     },
+    "Snapshot" : {
+
+    },
     "Source %@ not found" : {
       "localizations" : {
         "de" : {

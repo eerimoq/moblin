@@ -819,6 +819,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case face = "Face"
     case fourThree = "4:3"
     case poll = "Poll"
+    case snapshot = "Snapshot"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -1814,44 +1815,12 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "message"
     updateGlobalButton(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Draw"))
-    button.id = UUID()
-    button.type = .draw
-    button.imageType = "System name"
-    button.systemImageNameOn = "pencil.line"
-    button.systemImageNameOff = "pencil.line"
-    updateGlobalButton(database: database, button: button)
-
-    button = SettingsButton(name: String(localized: "Camera"))
-    button.id = UUID()
-    button.type = .image
-    button.imageType = "System name"
-    button.systemImageNameOn = "camera"
-    button.systemImageNameOff = "camera"
-    updateGlobalButton(database: database, button: button)
-
     button = SettingsButton(name: String(localized: "Black screen"))
     button.id = UUID()
     button.type = .blackScreen
     button.imageType = "System name"
     button.systemImageNameOn = "sunset"
     button.systemImageNameOff = "sunset"
-    updateGlobalButton(database: database, button: button)
-
-    button = SettingsButton(name: String(localized: "OBS"))
-    button.id = UUID()
-    button.type = .obs
-    button.imageType = "System name"
-    button.systemImageNameOn = "xserve"
-    button.systemImageNameOff = "xserve"
-    updateGlobalButton(database: database, button: button)
-
-    button = SettingsButton(name: String(localized: "Remote"))
-    button.id = UUID()
-    button.type = .remote
-    button.imageType = "System name"
-    button.systemImageNameOn = "appletvremote.gen1"
-    button.systemImageNameOff = "appletvremote.gen1"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Record"))
@@ -1876,6 +1845,46 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo.on.rectangle.angled"
     button.systemImageNameOff = "photo.on.rectangle.angled"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Snapshot"))
+    button.id = UUID()
+    button.type = .snapshot
+    button.imageType = "System name"
+    button.systemImageNameOn = "camera.aperture"
+    button.systemImageNameOff = "camera.aperture"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "OBS"))
+    button.id = UUID()
+    button.type = .obs
+    button.imageType = "System name"
+    button.systemImageNameOn = "xserve"
+    button.systemImageNameOff = "xserve"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Remote"))
+    button.id = UUID()
+    button.type = .remote
+    button.imageType = "System name"
+    button.systemImageNameOn = "appletvremote.gen1"
+    button.systemImageNameOff = "appletvremote.gen1"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Draw"))
+    button.id = UUID()
+    button.type = .draw
+    button.imageType = "System name"
+    button.systemImageNameOn = "pencil.line"
+    button.systemImageNameOff = "pencil.line"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Camera"))
+    button.id = UUID()
+    button.type = .image
+    button.imageType = "System name"
+    button.systemImageNameOn = "camera"
+    button.systemImageNameOff = "camera"
     updateGlobalButton(database: database, button: button)
 
     // button = SettingsButton(name: String(localized: "Camera preview"))

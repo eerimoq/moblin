@@ -191,6 +191,7 @@ final class VideoUnit: NSObject {
     private var lowFpsImageInterval: Double = 1.0
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
+    private var takeSnapshotComplete: ((UIImage) -> Void)?
     private var pool: CVPixelBufferPool?
     private var poolWidth: Int32 = 0
     private var poolHeight: Int32 = 0
@@ -657,7 +658,7 @@ final class VideoUnit: NSObject {
     }
 
     func setLowFpsImage(fps: Float) {
-        lockQueue.sync {
+        lockQueue.async {
             self.setLowFpsImageInner(fps: fps)
         }
     }
@@ -666,6 +667,12 @@ final class VideoUnit: NSObject {
         lowFpsImageInterval = Double(1 / fps).clamped(to: 0.2 ... 1.0)
         lowFpsImageEnabled = fps != 0.0
         lowFpsImageLatest = 0.0
+    }
+
+    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
+        lockQueue.async {
+            self.takeSnapshotComplete = onComplete
+        }
     }
 
     func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
@@ -870,6 +877,12 @@ final class VideoUnit: NSObject {
                 }
             }
         }
+        if let takeSnapshotComplete {
+            DispatchQueue.global().async {
+                self.takeSnapshot(imageBuffer: modImageBuffer, onComplete: takeSnapshotComplete)
+            }
+            self.takeSnapshotComplete = nil
+        }
         filterHistogram.add(value: Int(startTime.duration(to: .now).milliseconds))
     }
 
@@ -884,6 +897,13 @@ final class VideoUnit: NSObject {
             frameNumber: lowFpsImageFrameNumber
         )
         lowFpsImageFrameNumber += 1
+    }
+
+    private func takeSnapshot(imageBuffer: CVImageBuffer, onComplete: @escaping (UIImage) -> Void) {
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
+        let image = UIImage(cgImage: cgImage)
+        onComplete(image)
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {
