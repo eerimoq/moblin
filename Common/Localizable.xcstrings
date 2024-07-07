@@ -1337,10 +1337,130 @@
     },
     "{altitude} - Show altitude (if Settings → Location is enabled)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} – Höhe anzeigen (wenn Einstellungen → Standort aktiviert ist)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Εμφάνιση υψομέτρου (εάν είναι ενεργοποιημένες οι Ρυθμίσεις → Τοποθεσία)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Mostrar altitud (si Configuración → Ubicación está habilitado)"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "{altitude} - Näytä korkeus (jos Asetukset → Sijainti on käytössä)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Afficher l'altitude (si Paramètres → Localisation est activé)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitudeई} - ऊंचाई दिखाएं (यदि सेटिंग्स → स्थान सक्षम है)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Tampilkan ketinggian (jika Pengaturan → Lokasi diaktifkan)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Mostra l'altitudine (se Impostazioni → Posizione è abilitato)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - 高度を表示（設定 → 位置情報が有効になっている場合）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - 고도 표시(설정 → 위치가 활성화된 경우)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Toon hoogte (als Instellingen → Locatie is ingeschakeld)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Pokaż wysokość (jeśli włączono Ustawienia → Lokalizacja)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Mostrar altitude (se Configurações → Localização estiver ativado)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Mostrar altitude (se Configurações → Localização estiver ativado)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Показать высоту (если включены Настройки → Местоположение)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{altitude} - Visa höjd (om Inställningar → Plats är aktiverat)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Rakımı göster (Ayarlar → Konum etkinse)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Показати висоту над рівнем моря (якщо увімкнено «Налаштування» → Розташування)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - Hiển thị độ cao (nếu Cài đặt → Vị trí được bật)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - 显示高度（如果启用了“设置 → 位置”）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{altitude} - 顯示海拔高度（如果設定 → 位置已啟用）"
           }
         }
       }
@@ -1607,20 +1727,260 @@
     },
     "{distance} - Show distance (if Settings → Location is enabled)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} – Entfernung anzeigen (wenn Einstellungen → Standort aktiviert ist)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Εμφάνιση απόστασης (αν είναι ενεργοποιημένες οι Ρυθμίσεις → Τοποθεσία)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Mostrar distancia (si Configuración → Ubicación está habilitado)"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "{distance} - Näytä etäisyys (jos Asetukset → Sijainti on käytössä)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Afficher la distance (si Paramètres → Localisation est activé)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - दूरी दिखाएँ (यदि सेटिंग्स → स्थान सक्षम है)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Tampilkan jarak (jika Pengaturan → Lokasi diaktifkan)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Mostra la distanza (se Impostazioni → Posizione è abilitato)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - 距離を表示（設定 → 位置情報が有効になっている場合）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - 거리 표시(설정 → 위치가 활성화된 경우)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Toon afstand (als Instellingen → Locatie is ingeschakeld)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} – Pokaż odległość (jeśli włączono Ustawienia → Lokalizacja)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Mostrar distância (se Configurações → Localização estiver ativado)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Mostrar distância (se Configurações → Localização estiver ativado)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Показать расстояние (если включены Настройки → Местоположение)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{distance} – Visa avstånd (om Inställningar → Plats är aktiverat)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Mesafeyi göster (Ayarlar → Konum etkinse)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Показати відстань (якщо увімкнуто налаштування → Розташування)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - Hiển thị khoảng cách (nếu Cài đặt → Vị trí được bật)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - 显示距离（如果启用了“设置 → 位置”）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{distance} - 顯示距離（若設定 → 位置已啟用）"
           }
         }
       }
     },
     "{speed} - Show speed (if Settings → Location is enabled)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} – Geschwindigkeit anzeigen (wenn Einstellungen → Standort aktiviert ist)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Εμφάνιση ταχύτητας (εάν είναι ενεργοποιημένες οι Ρυθμίσεις → Τοποθεσία)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Mostrar velocidad (si Configuración → Ubicación está habilitado)"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "{speed} - Näytä nopeus (jos Asetukset → Sijainti on käytössä)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Afficher la vitesse (si Paramètres → Localisation est activé)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - गति दिखाएँ (यदि सेटिंग्स → स्थान सक्षम है)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Tampilkan kecepatan (jika Pengaturan → Lokasi diaktifkan)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Mostra la velocità (se Impostazioni → Posizione è abilitato)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - 速度を表示（設定 → 位置情報が有効になっている場合）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - 속도 표시(설정 → 위치가 활성화된 경우)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Snelheid weergeven (als Instellingen → Locatie is ingeschakeld)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Pokaż prędkość (jeśli włączono Ustawienia → Lokalizacja)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Mostrar velocidade (se Configurações → Localização estiver ativado)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Mostrar velocidade (se Configurações → Localização estiver ativado)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Показать скорость (если включены Настройки → Местоположение)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{speed} – Visa hastighet (om Inställningar → Plats är aktiverat)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Hızı göster (Ayarlar → Konum etkinse)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Показати швидкість (якщо налаштовано → Розташування)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - Hiển thị tốc độ (nếu Cài đặt → Vị trí được bật)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - 显示速度（如果启用了“设置 → 位置”）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{speed} - 顯示速度（如果設定 → 位置已啟用）"
           }
         }
       }
@@ -1660,7 +2020,7 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{समय} - समय को HH:MM:SS के रूप में दिखाएँ"
+            "value" : "{time} - समय को HH:MM:SS के रूप में दिखाएँ"
           }
         },
         "id" : {
@@ -5314,10 +5674,264 @@
       }
     },
     "🥳 Stream likely working 🥳" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Stream funktioniert wahrscheinlich 🥳"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Η ροή πιθανότατα λειτουργεί 🥳"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Es probable que la transmisión funcione 🥳"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Striimi todennäköisesti toimii 🥳"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Le flux fonctionne probablement 🥳"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 स्ट्रीम संभवतः काम कर रही है 🥳"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Streaming sepertinya berfungsi 🥳"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Lo streaming probabilmente funziona 🥳"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 ストリームは動作している可能性があります 🥳"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 스트림이 작동할 것 같습니다 🥳"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Stream werkt waarschijnlijk 🥳"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Stream prawdopodobnie działa 🥳"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Stream provavelmente funcionando 🥳"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Stream provavelmente funcionando 🥳"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Вероятно, стрим работает 🥳"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🥳 Srömmen fungerar troligen 🥳"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Akış muhtemelen çalışıyor 🥳"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Потік, ймовірно, працює 🥳"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Có thể luồng đang hoạt động 🥳"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 Stream 可能正在运行 🥳"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🥳 串流媒體可能正常運作 🥳"
+          }
+        }
+      }
     },
     "😠 Stream likely broken 😠" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Stream wahrscheinlich defekt 😠"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Η ροή πιθανόν να έχει διακοπεί 😠"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Es probable que la transmisión esté interrumpida 😠"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Striimi todennäköisesti katkennut 😠"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Le flux est probablement interrompu 😠"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 स्ट्रीम संभवतः टूट गई है 😠"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Streaming kemungkinan besar rusak 😠"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Lo streaming probabilmente è interrotto 😠"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 ストリームが壊れている可能性があります 😠"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 스트림이 깨졌을 가능성이 높습니다 😠"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Stream waarschijnlijk kapot 😠"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Strumień prawdopodobnie uszkodzony 😠"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Stream provavelmente quebrado 😠"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Stream provavelmente quebrado 😠"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Скорее всего стрим прерван 😠"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😠 Strömmen troligen trasig 😠"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Yayın muhtemelen bozuk 😠"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Потік, ймовірно, зламався 😠"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 Stream có thể bị hỏng 😠"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 直播可能中断了😠"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😠 串流媒體可能已損壞 😠"
+          }
+        }
+      }
     },
     "😢 Failed to connect to %@ 😢" : {
       "localizations" : {
@@ -17416,7 +18030,134 @@
       }
     },
     "BRB scene" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB-Szene"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB σκηνή"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "escena BRB"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB kohtaus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scène BRB"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "बी.आर.बी. दृश्य"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "adegan BRB"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scena BRB"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRBシーン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB 장면"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB-scène"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scena BRB"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena BRB"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena BRB"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "сцена БРБ"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BRB-scen"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB sahnesi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сцена BRB"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "cảnh BRB"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB 场景"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB場景"
+          }
+        }
+      }
     },
     "Browser" : {
       "localizations" : {
@@ -26650,10 +27391,130 @@
     },
     "Distance" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Distanz"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Απόσταση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Distancia"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Etäisyys"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Distance"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "दूरी"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jarak"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Distanza"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "距離"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "거리"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Afstand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Dystans"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Distância"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Distância"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Расстояние"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avstånd"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mesafe"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відстань"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Khoảng cách"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "距离"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "距離"
           }
         }
       }
@@ -46512,7 +47373,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Får endast innehålla små bokstäver."
           }
         },
@@ -48499,7 +49360,134 @@
       }
     },
     "Moblin will periodically try to switch to this OBS scene if the stream is likely broken." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin versucht regelmäßig, zu dieser OBS-Szene zu wechseln, wenn der Stream wahrscheinlich unterbrochen ist."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το Moblin θα προσπαθεί περιοδικά να μεταβεί σε αυτήν τη σκηνή OBS, εάν η ροή είναι πιθανό να διακοπεί."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin intentará periódicamente cambiar a esta escena de OBS si es probable que la transmisión se interrumpa."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin yrittää ajoittain vaihtaa tähän OBS-kohtaukseen, jos stream todennäköisesti katkeaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin tentera périodiquement de passer à cette scène OBS si le flux est probablement interrompu."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यदि स्ट्रीम संभवतः टूट गई है तो मोब्लिन समय-समय पर इस ओबीएस दृश्य पर स्विच करने का प्रयास करेगा।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin secara berkala akan mencoba beralih ke adegan OBS ini jika alirannya kemungkinan besar terputus."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin proverà periodicamente a passare a questa scena OBS se è probabile che lo streaming venga interrotto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリームが中断される可能性がある場合、Moblin は定期的にこの OBS シーンに切り替えようとします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin은 스트림이 끊어질 가능성이 있는 경우 주기적으로 이 OBS 장면으로 전환하려고 시도합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin zal periodiek proberen over te schakelen naar deze OBS-scène als de stream waarschijnlijk kapot is."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin będzie okresowo próbował przełączyć się na tę scenę OBS, jeśli transmisja strumieniowa będzie przerwana."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O Moblin tentará periodicamente mudar para esta cena OBS se a transmissão estiver interrompida."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O Moblin tentará periodicamente mudar para esta cena OBS se a transmissão estiver interrompida."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin будет периодически пытаться переключиться на эту сцену OBS, если поток, вероятно, прерван."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin kommer med jämna mellanrum att försöka byta till denna OBS-scen om strömmen sannolikt är trasig."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akışın kesilmesi muhtemelse Moblin periyodik olarak bu OBS sahnesine geçmeye çalışacaktır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin періодично намагатиметься переключитися на цю сцену OBS, якщо потік, ймовірно, буде порушено."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin sẽ định kỳ cố gắng chuyển sang cảnh OBS này nếu luồng có thể bị hỏng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果流可能中断，Moblin 将定期尝试切换到此 OBS 场景。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果串流可能中斷，Moblin 將定期嘗試切換到此 OBS 場景。"
+          }
+        }
+      }
     },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
       "localizations" : {
@@ -49542,7 +50530,134 @@
       }
     },
     "My BRB scene" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meine BRB-Szene"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η BRB σκηνή μου"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mi escena BRB"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minun BRB-kohtaukseni"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ma scène BRB"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "मेरा BRB दृश्य"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adegan BRB saya"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La mia scena BRB"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "私のBRBシーン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "내 BRB 장면"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mijn BRB-scène"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moja scena BRB"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minha cena BRB"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minha cena BRB"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Моя сцена с BRB"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Min BRB-scen"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Benim BRB sahnem"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Моя сцена BRB"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cảnh BRB của tôi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "我的 BRB 场景"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "我的BRB場景"
+          }
+        }
+      }
     },
     "My icons" : {
       "localizations" : {
@@ -53928,7 +55043,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Endast konfigurerade Twitch- och Kick-kanalnamn och Twitch-mods tillåts att utföra kommandon."
           }
         },
@@ -55488,7 +56603,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Spellista"
           }
         },
@@ -55878,8 +56993,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Opinionsundersökning"
+            "state" : "translated",
+            "value" : "Poll"
           }
         },
         "tr" : {
@@ -64588,7 +65703,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dela logg"
           }
         },
@@ -64755,7 +65870,134 @@
       }
     },
     "Show all settings" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Alle Einstellungen anzeigen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Εμφάνιση όλων των ρυθμίσεων"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar todas las configuraciones"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Näytä kaikki asetukset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Afficher tous les paramètres"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सभी सेटिंग्स दिखाएं"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tampilkan semua pengaturan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostra tutte le impostazioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "すべての設定を表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "모든 설정 표시"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toon alle instellingen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pokaż wszystkie ustawienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar todas as configurações"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar todas as configurações"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Показать все настройки"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa alla inställningar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tüm ayarları göster"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Показати всі налаштування"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hiển thị tất cả cài đặt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "显示所有设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "顯示所有設定"
+          }
+        }
+      }
     },
     "Show name" : {
       "localizations" : {
@@ -65668,7 +66910,134 @@
       }
     },
     "Snapshot" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schnappschuss"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Στιγμιότυπο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantánea"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tilannekuva"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantané"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्नैपशॉट"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Foto"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Istantanea"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "スナップショット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스냅 사진"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Momentopname"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Migawka"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantâneo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Instantâneo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Снимок"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Enstantane fotoğraf"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Знімок"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ảnh chụp nhanh"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "快照"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "快照"
+          }
+        }
+      }
     },
     "Source %@ not found" : {
       "localizations" : {
@@ -73564,7 +74933,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Text"
           }
         },
@@ -74901,7 +76270,134 @@
       }
     },
     "The name of your BRB scene in OBS. Moblin will periodically try to switch to this scene if the stream is likely broken." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der Name Ihrer BRB-Szene in OBS. Moblin wird regelmäßig versuchen, zu dieser Szene zu wechseln, wenn der Stream wahrscheinlich unterbrochen ist."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το όνομα της σκηνής BRB στο OBS. Η Moblin θα προσπαθεί περιοδικά να μεταβεί σε αυτήν τη σκηνή, εάν η ροή είναι πιθανό να διακοπεί."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El nombre de tu escena BRB en OBS. Moblin intentará periódicamente cambiar a esta escena si es probable que la transmisión se interrumpa."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BRB-kohtauksen nimi OBS:ssä. Moblin yrittää ajoittain vaihtaa tähän kohtaukseen, jos stream todennäköisesti katkeaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le nom de votre scène BRB dans OBS. Moblin essaiera périodiquement de passer à cette scène si le flux est probablement interrompu."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS में आपके BRB दृश्य का नाम। यदि स्ट्रीम संभवतः टूटी हुई है, तो Moblin समय-समय पर इस दृश्य पर स्विच करने का प्रयास करेगा।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nama adegan BRB Anda di OBS. Moblin secara berkala akan mencoba beralih ke adegan ini jika alirannya kemungkinan besar terputus."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Il nome della tua scena BRB in OBS. Moblin proverà periodicamente a passare a questa scena se è probabile che lo streaming sia interrotto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS の BRB シーンの名前。ストリームが中断される可能性がある場合、Moblin は定期的にこのシーンに切り替えようとします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS의 BRB 장면 이름입니다. Moblin은 스트림이 끊어질 가능성이 있는 경우 주기적으로 이 장면으로 전환하려고 시도합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De naam van uw BRB-scène in OBS. Moblin zal periodiek proberen naar deze scène over te schakelen als de stream waarschijnlijk kapot is."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nazwa twojej sceny BRB w OBS. Moblin będzie okresowo próbował przełączyć się na tę scenę, jeśli strumień jest prawdopodobnie uszkodzony."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome da sua cena BRB no OBS. O Moblin tentará periodicamente mudar para esta cena se o fluxo for interrompido."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome da sua cena BRB no OBS. O Moblin tentará periodicamente mudar para esta cena se o fluxo for interrompido."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Имя вашей сцены BRB в OBS. Moblin будет периодически пытаться переключиться на эту сцену, если поток, вероятно, прерван."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Namnet på din BRB-scen i OBS. Moblin kommer med jämna mellanrum att försöka byta till den här scenen om strömmen sannolikt är trasig."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS'deki BRB sahnenizin adı. Akışın kesilmesi muhtemelse Moblin periyodik olarak bu sahneye geçmeye çalışacaktır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Назва вашої сцени BRB в OBS. Moblin періодично намагатиметься переключитися на цю сцену, якщо потік, ймовірно, буде порушено."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tên cảnh BRB của bạn trong OBS. Moblin sẽ cố gắng chuyển sang cảnh này theo định kỳ nếu luồng có khả năng bị hỏng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS 中的 BRB 场景的名称。如果流可能中断，Moblin 将定期尝试切换到此场景。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS 中 BRB 場景的名稱。如果串流可能中斷，Moblin 會定期嘗試切換到此場景。"
+          }
+        }
+      }
     },
     "The name of your channel." : {
       "localizations" : {
@@ -76329,137 +77825,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "熱狀態"
-          }
-        }
-      }
-    },
-    "Time" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeit "
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "χρόνος"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tiempo"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aika"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temps"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "समय"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Waktu"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tempo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시계 표시"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tijd"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Czas"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tempo"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tempo"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Время"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tid"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zaman"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "час"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Thời gian"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "时间"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "時間"
           }
         }
       }
@@ -78285,7 +79650,134 @@
       }
     },
     "Trying to switch OBS scene to %@" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ich versuche, die OBS-Szene auf %@ umzustellen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προσπάθεια αλλαγής σκηνής OBS σε %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intentando cambiar la escena OBS a %@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yritetään vaihtaa OBS-näkymään %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "J'essaie de changer la scène OBS sur %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS दृश्य को %@ पर स्विच करने का प्रयास किया जा रहा है"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mencoba mengalihkan adegan OBS ke %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sto cercando di cambiare la scena OBS su %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS シーンを %@ に切り替えようとしています"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS 장면을 %@로 전환하려고 합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Probeert de OBS-scène naar %@ te schakelen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Próbuję przełączyć scenę OBS na %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentando mudar a cena do OBS para %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentando mudar a cena do OBS para %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Пытаюсь переключить сцену OBS на %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Försöker byta OBS-scen till %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS sahnesini %@ olarak değiştirmeye çalışıyorum"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Спроба перемкнути сцену OBS на %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đang cố gắng chuyển cảnh OBS sang %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尝试将 OBS 场景切换至 %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "嘗試將 OBS 場景切換到 %@"
+          }
+        }
+      }
     },
     "Turn off chat text to speech." : {
       "localizations" : {
@@ -78381,8 +79873,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stäng av chatt-text till tal."
+            "state" : "translated",
+            "value" : "Stäng av chatt text till tal."
           }
         },
         "tr" : {
@@ -78511,7 +80003,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktivera chatt text till tal."
           }
         },
@@ -80851,7 +82343,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Använd en mediaspelare som videokälla i scener och som mikrofon för att streama inspelningar eller andra MP4-filer."
           }
         },
@@ -83321,7 +84813,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Videokälla"
           }
         },
