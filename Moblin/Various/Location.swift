@@ -44,7 +44,6 @@ class Location: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        logger.debug("location: New location")
         for location in locations {
             latestLocation = location
             onUpdate?(location)
