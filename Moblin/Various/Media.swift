@@ -185,6 +185,7 @@ final class Media: NSObject {
         self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
+        srtDroppedPacketsTotal = 0
         srtlaClient?.stop()
         srtlaClient = SrtlaClient(
             delegate: self,
@@ -244,11 +245,11 @@ final class Media: NSObject {
     private var belaLinesAndActions: ([String], [String])?
 
     private func updateAdaptiveBitrateSrtBela(overlay: Bool) -> ([String], [String])? {
+        let stats = srtConnection.performanceData
+        srtDroppedPacketsTotal = stats.pktSndDropTotal
         guard let adaptiveBitrate else {
             return nil
         }
-        let stats = srtConnection.performanceData
-        srtDroppedPacketsTotal = stats.pktSndDropTotal
         let sndData = srtConnection.socket?.sndData() ?? 0
         adaptiveBitrate.update(stats: StreamStats(
             rttMs: stats.msRTT,

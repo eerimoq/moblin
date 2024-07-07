@@ -1742,7 +1742,7 @@ final class Model: NSObject, ObservableObject {
         defer {
             previousSrtDroppedPacketsTotal = media.srtDroppedPacketsTotal
         }
-        if isLive && streamState == .disconnected {
+        if streamState == .disconnected {
             return true
         }
         if media.srtDroppedPacketsTotal > previousSrtDroppedPacketsTotal {
@@ -1761,7 +1761,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
-        guard !stream.obsBrbScene!.isEmpty, isObsConnected() else {
+        guard isLive, !stream.obsBrbScene!.isEmpty, isObsConnected() else {
             return
         }
         if isStreamLikelyBroken(now: now) {
