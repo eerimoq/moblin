@@ -1761,17 +1761,21 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
-        guard isLive, !stream.obsBrbScene!.isEmpty, isObsConnected() else {
+        guard isLive, !stream.obsBrbScene!.isEmpty, !obsCurrentScene.isEmpty, isObsConnected() else {
             return
         }
         if isStreamLikelyBroken(now: now) {
             if obsCurrentScene != stream.obsBrbScene! {
                 obsSceneBeforeSwitchToBrbScene = obsCurrentScene
+                makeStreamLikelyBrokenToast(scene: stream.obsBrbScene!)
                 setObsScene(name: stream.obsBrbScene!)
             }
-        } else if obsCurrentScene == stream.obsBrbScene! {
-            if let obsSceneBeforeSwitchToBrbScene {
+        } else if let obsSceneBeforeSwitchToBrbScene {
+            if obsCurrentScene == stream.obsBrbScene! {
+                makeStreamLikelyWorkingToast(scene: obsSceneBeforeSwitchToBrbScene)
                 setObsScene(name: obsSceneBeforeSwitchToBrbScene)
+            } else if obsCurrentScene == obsSceneBeforeSwitchToBrbScene {
+                self.obsSceneBeforeSwitchToBrbScene = nil
             }
         }
     }
@@ -4412,6 +4416,20 @@ final class Model: NSObject, ObservableObject {
             font: .system(size: 64).bold(),
             subTitle: subTitle,
             vibrate: true
+        )
+    }
+
+    private func makeStreamLikelyBrokenToast(scene: String) {
+        makeErrorToast(
+            title: String(localized: "😠 Stream likely broken 😠"),
+            subTitle: String(localized: "Trying to switch OBS scene to \(scene)")
+        )
+    }
+
+    private func makeStreamLikelyWorkingToast(scene: String) {
+        makeToast(
+            title: String(localized: "🥳 Stream likely working 🥳"),
+            subTitle: String(localized: "Trying to switch OBS scene to \(scene)")
         )
     }
 

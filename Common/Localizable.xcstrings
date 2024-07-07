@@ -5313,6 +5313,12 @@
         }
       }
     },
+    "🥳 Stream likely working 🥳" : {
+
+    },
+    "😠 Stream likely broken 😠" : {
+
+    },
     "😢 Failed to connect to %@ 😢" : {
       "localizations" : {
         "de" : {
@@ -78268,6 +78274,9 @@
           }
         }
       }
+    },
+    "Trying to switch OBS scene to %@" : {
+
     },
     "Turn off chat text to speech." : {
       "localizations" : {
