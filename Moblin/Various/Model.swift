@@ -414,6 +414,7 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardObsRemoteControlUrl = ""
     @Published var wizardObsRemoteControlPassword = ""
     @Published var wizardObsRemoteControlSourceName = ""
+    @Published var wizardObsRemoteControlBrbScene = ""
     @Published var wizardDirectIngest = ""
     @Published var wizardDirectStreamKey = ""
     @Published var wizardChatBttv = true
@@ -5453,6 +5454,7 @@ extension Model {
                         stream.obsWebSocketUrl = url
                         stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
                         stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
+                        stream.obsBrbScene = wizardObsRemoteControlBrbScene.trim()
                     }
                 }
             }

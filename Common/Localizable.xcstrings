@@ -49541,6 +49541,9 @@
         }
       }
     },
+    "My BRB scene" : {
+
+    },
     "My icons" : {
       "localizations" : {
         "de" : {
@@ -74893,6 +74896,9 @@
           }
         }
       }
+    },
+    "The name of your BRB scene in OBS. Moblin will periodically try to switch to this scene if the stream is likely broken." : {
+
     },
     "The name of your channel." : {
       "localizations" : {
