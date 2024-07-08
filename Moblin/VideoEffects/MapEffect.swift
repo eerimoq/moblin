@@ -61,11 +61,13 @@ final class MapEffect: VideoEffect {
 
     private func update() {
         let options = MKMapSnapshotter.Options()
-        options.region = .init(
-            center: .init(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
-            latitudinalMeters: 500,
-            longitudinalMeters: 500
-        )
+        let camera = MKMapCamera()
+        if !widget.northUp! {
+            camera.heading = location.course
+        }
+        camera.centerCoordinate = location.coordinate
+        camera.centerCoordinateDistance = 500
+        options.camera = camera
         mapSnapshotter = MKMapSnapshotter(options: options)
         mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {

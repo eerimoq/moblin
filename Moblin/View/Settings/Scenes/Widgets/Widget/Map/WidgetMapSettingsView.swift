@@ -41,5 +41,18 @@ struct WidgetMapSettingsView: View {
                                    onSubmit: submitHeight,
                                    keyboardType: .numbersAndPunctuation)
         }
+        Section {
+            Toggle(isOn: Binding(get: {
+                widget.map!.northUp!
+            }, set: { value in
+                widget.map!.northUp = value
+                model.store()
+                model.resetSelectedScene(changeScene: false)
+            })) {
+                Text("North up")
+            }
+        } footer: {
+            Text("The map will rotate based of movement direction if disabled.")
+        }
     }
 }

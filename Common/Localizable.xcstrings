@@ -53652,6 +53652,9 @@
         }
       }
     },
+    "North up" : {
+
+    },
     "Not configured" : {
       "localizations" : {
         "de" : {
@@ -75751,6 +75754,9 @@
           }
         }
       }
+    },
+    "The map will rotate based of movement direction if disabled." : {
+
     },
     "The maximum allowed RTT spike before decreasing the bitrate" : {
       "localizations" : {

@@ -651,6 +651,7 @@ class SettingsWidgetBrowser: Codable {
 class SettingsWidgetMap: Codable {
     var width: Int = 250
     var height: Int = 250
+    var northUp: Bool? = true
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -2809,6 +2810,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.map == nil {
             widget.map = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.map!.northUp == nil {
+            widget.map!.northUp = true
             store()
         }
     }
