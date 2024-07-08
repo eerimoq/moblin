@@ -2777,9 +2777,5 @@ final class Settings {
             realDatabase.mediaPlayers = .init()
             store()
         }
-        if realDatabase.watch?.remoteControl == nil {
-            realDatabase.watch?.remoteControl = false
-            store()
-        }
     }
 }

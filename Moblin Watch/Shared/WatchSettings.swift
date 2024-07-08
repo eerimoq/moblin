@@ -15,5 +15,4 @@ class WatchSettingsShow: Codable {
 class WatchSettings: Codable {
     var chat: WatchSettingsChat = .init()
     var show: WatchSettingsShow? = .init()
-    var remoteControl: Bool? = false
 }

@@ -1751,7 +1751,6 @@ final class Model: NSObject, ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.updateObsStatus()
-            self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()
             if self.stream.enabled {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
@@ -1763,6 +1762,9 @@ final class Model: NSObject, ObservableObject {
             let (detections, filter) = self.media.getNetStream().getHistograms()
             detections.log()
             filter.log()
+        })
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
+            self.updateRemoteControlAssistantStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             if self.database.show.audioBar {
@@ -1964,7 +1966,7 @@ final class Model: NSObject, ObservableObject {
             .isNaN || newAudioLevel == .infinity || audioLevel.isNaN || audioLevel == .infinity
         {
             audioLevel = newAudioLevel
-            if !database.watch!.remoteControl! {
+            if !isRemoteControlAssistantConnected() {
                 sendAudioLevelToWatch(audioLevel: audioLevel)
             }
         }
@@ -3824,12 +3826,12 @@ final class Model: NSObject, ObservableObject {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
             let size = currentRecording.url().fileSize.formatBytes()
             recordingLength = "\(elapsed) (\(size))"
-            if !database.watch!.remoteControl! {
+            if !isRemoteControlAssistantConnected() {
                 sendRecordingLengthToWatch(recordingLength: recordingLength)
             }
         } else if recordingLength != noValue {
             recordingLength = noValue
-            if !database.watch!.remoteControl! {
+            if !isRemoteControlAssistantConnected() {
                 sendRecordingLengthToWatch(recordingLength: recordingLength)
             }
         }
@@ -3906,12 +3908,12 @@ final class Model: NSObject, ObservableObject {
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speedString) (\(total))")
-            if !database.watch!.remoteControl! {
+            if !isRemoteControlAssistantConnected() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
         } else if speedAndTotal != noValue {
             speedAndTotal = noValue
-            if !database.watch!.remoteControl! {
+            if !isRemoteControlAssistantConnected() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
         }
@@ -3995,7 +3997,7 @@ final class Model: NSObject, ObservableObject {
     private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
-        if !database.watch!.remoteControl! {
+        if !isRemoteControlAssistantConnected() {
             sendThermalStateToWatch(thermalState: thermalState)
         }
         logger.info("Thermal state is \(thermalState.string())")
@@ -4329,7 +4331,7 @@ final class Model: NSObject, ObservableObject {
         }
         DispatchQueue.main.async {
             if frameNumber % self.lowFpsImageFps == 0 {
-                if !self.database.watch!.remoteControl! {
+                if !self.isRemoteControlAssistantConnected() {
                     self.sendPreviewToWatch(image: image)
                 }
             }
@@ -4692,9 +4694,8 @@ extension Model: RemoteControlStreamerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
-                let level = formatAudioLevel(level: self.audioLevel) +
-                    formatAudioLevelChannels(channels: self.numberOfAudioChannels)
-                topRight.audioLevel = RemoteControlStatusItem(message: level)
+                topRight.audioLevel = self.audioLevel
+                topRight.numberOfAudioChannels = self.numberOfAudioChannels
             }
             if self.isShowingStatusServers() {
                 topRight.rtmpServer = RemoteControlStatusItem(message: self.serversSpeedAndTotal)
@@ -4980,7 +4981,7 @@ extension Model {
         remoteControlAssistant?.getSettings { settings in
             self.remoteControlSettings = settings
         }
-        if database.watch!.remoteControl! {
+        if isRemoteControlAssistantConnected() {
             var thermalState = ProcessInfo.processInfo.thermalState
             switch remoteControlGeneral?.flame {
             case .white:
@@ -4992,18 +4993,19 @@ extension Model {
             case .none:
                 thermalState = .critical
             }
-            let audioLevel = parseAudioLevel(remoteControlTopRight?.audioLevel?.message)
             if let recordingMessage = remoteControlTopRight?.recording?.message {
                 sendRecordingLengthToWatch(recordingLength: recordingMessage)
             }
             if let bitrateMessage = remoteControlTopRight?.bitrate?.message {
                 sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
             }
+            if let audioLevel = remoteControlTopRight?.audioLevel {
+                sendAudioLevelToWatch(audioLevel: audioLevel)
+                sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
+            }
             sendThermalStateToWatch(thermalState: thermalState)
-            sendAudioLevelToWatch(audioLevel: audioLevel)
             sendIsLiveToWatch(isLive: remoteControlTopRight?.bitrate?.message != nil)
             sendIsRecordingToWatch(isRecording: remoteControlTopRight?.recording?.message != nil)
-            sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
         }
     }
 
@@ -5098,7 +5100,7 @@ extension Model: RemoteControlAssistantDelegate {
 
     func assistantPreview(preview: Data) {
         remoteControlPreview = UIImage(data: preview)
-        if database.watch!.remoteControl! {
+        if isRemoteControlAssistantConnected() {
             sendPreviewToWatch(image: preview)
         }
     }
@@ -5130,28 +5132,28 @@ extension Model {
         )
     }
 
-    private func sendSpeedAndTotalToWatch(speedAndTotal: Any) {
+    private func sendSpeedAndTotalToWatch(speedAndTotal: String) {
         guard isWatchReachable() else {
             return
         }
         sendMessageToWatch(type: .speedAndTotal, data: speedAndTotal)
     }
 
-    private func sendRecordingLengthToWatch(recordingLength: Any) {
+    private func sendRecordingLengthToWatch(recordingLength: String) {
         guard isWatchReachable() else {
             return
         }
         sendMessageToWatch(type: .recordingLength, data: recordingLength)
     }
 
-    private func sendAudioLevelToWatch(audioLevel: Any) {
+    private func sendAudioLevelToWatch(audioLevel: Float) {
         guard isWatchReachable() else {
             return
         }
         sendMessageToWatch(type: .audioLevel, data: audioLevel)
     }
 
-    private func sendThermalStateToWatch(thermalState: Any) {
+    private func sendThermalStateToWatch(thermalState: ProcessInfo.ThermalState) {
         guard isWatchReachable() else {
             return
         }
@@ -5277,7 +5279,7 @@ extension Model: WCSessionDelegate {
             self.setLowFpsImage()
             self.trySendNextChatPostToWatch()
             self.sendSettingsToWatch()
-            if !self.database.watch!.remoteControl! {
+            if !self.isRemoteControlAssistantConnected() {
                 self.sendAudioLevelToWatch(audioLevel: self.audioLevel)
                 self.sendThermalStateToWatch(thermalState: self.thermalState)
                 self.sendIsLiveToWatch(isLive: self.isLive)
@@ -5330,11 +5332,11 @@ extension Model: WCSessionDelegate {
         guard let value = data as? Bool else {
             return
         }
-        if database.watch!.remoteControl! {
-            remoteControlAssistantSetStream(on: value)
-            sendIsLiveToWatch(isLive: value)
-        } else {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if self.isRemoteControlAssistantConnected() {
+                self.remoteControlAssistantSetStream(on: value)
+                self.sendIsLiveToWatch(isLive: value)
+            } else {
                 if value {
                     self.startStream()
                 } else {
@@ -5348,11 +5350,11 @@ extension Model: WCSessionDelegate {
         guard let value = data as? Bool else {
             return
         }
-        if database.watch!.remoteControl! {
-            remoteControlAssistantSetRecord(on: value)
-            sendIsRecordingToWatch(isRecording: value)
-        } else {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if self.isRemoteControlAssistantConnected() {
+                self.remoteControlAssistantSetRecord(on: value)
+                self.sendIsRecordingToWatch(isRecording: value)
+            } else {
                 if value {
                     self.startRecording()
                 } else {
@@ -5366,11 +5368,11 @@ extension Model: WCSessionDelegate {
         guard let value = data as? Bool else {
             return
         }
-        if database.watch!.remoteControl! {
-            remoteControlAssistantSetMute(on: value)
-            sendIsMutedToWatch(isMuteOn: value)
-        } else {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if self.isRemoteControlAssistantConnected() {
+                self.remoteControlAssistantSetMute(on: value)
+                self.sendIsMutedToWatch(isMuteOn: value)
+            } else {
                 self.setIsMuted(value: value)
             }
         }

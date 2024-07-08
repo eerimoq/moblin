@@ -137,6 +137,13 @@ struct ControlBarRemoteControlAssistantView: View {
         return RemoteControlStatusItem(message: wiFiSsid)
     }
 
+    private func audioStatus(status: RemoteControlStatusTopRight) -> Float {
+        guard let audioLevel = status.audioLevel else {
+            return .nan
+        }
+        return audioLevel
+    }
+
     var body: some View {
         if model.remoteControlAssistantShowPreviewFullScreen {
             if model.isRemoteControlAssistantConnected() {
@@ -233,7 +240,12 @@ struct ControlBarRemoteControlAssistantView: View {
                         Section {
                             if let status = model.remoteControlTopRight {
                                 VStack(alignment: .leading, spacing: 3) {
-                                    StatusItemView(icon: "waveform", status: status.audioLevel)
+                                    AudioLevelView(
+                                        showBar: true,
+                                        level: audioStatus(status: status),
+                                        channels: status.numberOfAudioChannels,
+                                        reversed: true
+                                    )
                                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
                                     StatusItemView(icon: "gamecontroller", status: status.gameController)

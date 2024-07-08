@@ -246,11 +246,6 @@ class Model: NSObject, ObservableObject {
         if self.settings.show == nil {
             self.settings.show = .init()
         }
-        if self.settings.remoteControl == true {
-            previewTimeout = Duration.seconds(5)
-        } else {
-            previewTimeout = Duration.seconds(10)
-        }
     }
 
     private func handleThermalState(_ data: Any) throws {

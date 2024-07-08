@@ -62,7 +62,8 @@ struct RemoteControlStatusTopLeft: Codable {
 }
 
 struct RemoteControlStatusTopRight: Codable {
-    var audioLevel: RemoteControlStatusItem?
+    var audioLevel: Float?
+    var numberOfAudioChannels: Int?
     var rtmpServer: RemoteControlStatusItem?
     var remoteControl: RemoteControlStatusItem?
     var gameController: RemoteControlStatusItem?

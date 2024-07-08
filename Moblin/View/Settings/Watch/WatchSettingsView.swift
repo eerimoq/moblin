@@ -14,18 +14,11 @@ struct WatchSettingsView: View {
                 NavigationLink(destination: WatchDisplaySettingsView()) {
                     Text("Display")
                 }
-            }
-            Section {
-                Toggle("Remote Control Info and Preview", isOn: Binding(get: {
-                    model.database.watch!.remoteControl!
-                }, set: { value in
-                    model.database.watch!.remoteControl = value
-                    model.store()
-                }))
             } footer: {
                 Text("""
-                Display data and preview from the remote control streamer \
-                instead of from the device connected to the watch.
+                The watch acts as a remote control assistant as \
+                soon as a remote control streamer is connected. \
+                Please note that in this case, chat is not (yet) available.
                 """)
             }
         }

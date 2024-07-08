@@ -507,34 +507,8 @@ func formatAudioLevelDb(level: Float) -> String {
     return String(localized: "\(Int(level)) dB,")
 }
 
-func formatAudioLevel(level: Float) -> String {
-    if level.isNaN {
-        return "Muted,"
-    } else if level == .infinity {
-        return "Unknown,"
-    } else {
-        return formatAudioLevelDb(level: level)
-    }
-}
-
 func formatAudioLevelChannels(channels: Int) -> String {
     return String(localized: " \(channels) ch")
-}
-
-func parseAudioLevel(_ string: String?) -> Float {
-    guard let string = string else {
-        return Float.infinity
-    }
-    if string.hasPrefix("Muted,") {
-        return Float.nan
-    } else if string.hasPrefix("Unknown,") {
-        return Float.infinity
-    } else if let range = string.range(of: " dB,") {
-        let levelString = String(string[string.startIndex ..< range.lowerBound])
-        return Float(levelString) ?? Float.nan
-    } else {
-        return Float.nan
-    }
 }
 
 let noValue = ""
