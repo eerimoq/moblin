@@ -38,8 +38,8 @@ struct SceneSettingsView: View {
         let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
         switch widget.type {
         case .text:
-            sceneWidget.x = 91
-            sceneWidget.y = 1
+            sceneWidget.x = 0
+            sceneWidget.y = 0
             sceneWidget.width = 8
             sceneWidget.height = 5
         case .image:
