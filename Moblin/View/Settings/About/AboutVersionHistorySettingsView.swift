@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.325.0", date: "2024-07-08", changes: [
+        "• Map widget.",
+        "  • Settings → Location must be enabled for it to work.",
+        "  • The map region is 500 by 500 meters.",
+        "  • Shows your location as a dot.",
+        "  • Updates at most once a second.",
+    ]),
     Version(version: "0.324.0", date: "2024-07-07", changes: [
         "• Optionally configure BRB scene in stream setup wizard.",
         "• Snapshot quick button. 💡 DJMarkOxford and others",
