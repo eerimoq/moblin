@@ -48,8 +48,21 @@ struct StreamSettingsView: View {
                         stream.portrait = value
                         model.store()
                         model.updateOrientationLock()
+                        model.objectWillChange.send()
                     })) {
                         Text("Portrait")
+                    }
+                    if model.database.showAllSettings! {
+                        Toggle(isOn: Binding(get: {
+                            stream.portraitUI!
+                        }, set: { value in
+                            stream.portraitUI = value
+                            model.store()
+                            model.updateOrientationLock()
+                        })) {
+                            Text("Portrait UI")
+                        }
+                        .disabled(stream.portrait!)
                     }
                 }
                 if model.database.showAllSettings! {

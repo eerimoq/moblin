@@ -399,6 +399,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var realtimeIrlPushKey: String? = ""
     var portrait: Bool? = false
     var backgroundStreaming: Bool? = false
+    var portraitUI: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -2814,6 +2815,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.map!.northUp == nil {
             widget.map!.northUp = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.portraitUI == nil {
+            stream.portraitUI = false
             store()
         }
     }

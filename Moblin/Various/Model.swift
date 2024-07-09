@@ -1511,7 +1511,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateOrientation() {
-        if stream.portrait! {
+        if stream.portrait! || stream.portraitUI! {
             streamPreviewView.videoOrientation = .landscapeRight
         } else {
             switch UIDevice.current.orientation {
@@ -1523,7 +1523,6 @@ final class Model: NSObject, ObservableObject {
                 break
             }
         }
-        updateCameraPreviewRotation()
     }
 
     @objc private func orientationDidChange(animated _: Bool) {
@@ -2345,6 +2344,9 @@ final class Model: NSObject, ObservableObject {
         if stream.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
+        } else if stream.portraitUI! {
+            AppDelegate.orientationLock = .portrait
+            streamPreviewView.isPortrait = false
         } else {
             AppDelegate.orientationLock = .landscape
             streamPreviewView.isPortrait = false
@@ -4063,16 +4065,9 @@ final class Model: NSObject, ObservableObject {
             videoMirrored: getVideoMirroredOnStream()
         ) {
             self.streamPreviewView.isMirrored = isMirrored
-            self.updateCameraPreview()
             self.lastAttachCompletedTime = .now
         }
     }
-
-    private func updateCameraPreview() {
-        updateCameraPreviewRotation()
-    }
-
-    private func updateCameraPreviewRotation() {}
 
     func setGlobalToneMapping(on: Bool) {
         guard let cameraDevice else {
@@ -4182,7 +4177,6 @@ final class Model: NSObject, ObservableObject {
                     self.setIsoAfterCameraAttach(device: device)
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                 }
-                self.updateCameraPreview()
                 self.lastAttachCompletedTime = .now
             }
         )

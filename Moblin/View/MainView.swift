@@ -92,13 +92,21 @@ struct MainView: View {
         )
     }
 
+    private func portraitAspectRatio() -> CGFloat {
+        if model.stream.portraitUI! {
+            return 16 / 9
+        } else {
+            return 9 / 16
+        }
+    }
+
     private var debug: SettingsDebug {
         model.database.debug!
     }
 
     var body: some View {
         ZStack {
-            if model.stream.portrait! {
+            if model.stream.portrait! || model.stream.portraitUI! {
                 VStack(spacing: 0) {
                     ZStack {
                         HStack {
@@ -144,7 +152,7 @@ struct MainView: View {
                                         }
                                     }
                                 }
-                                .aspectRatio(9 / 16, contentMode: .fit)
+                                .aspectRatio(portraitAspectRatio(), contentMode: .fit)
                                 Spacer(minLength: 0)
                             }
                         }

@@ -76,7 +76,7 @@ struct WebBrowserView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if model.stream.portrait! {
+            if model.stream.portrait! || model.stream.portraitUI! {
                 VStack {
                     UrlView()
                     HStack {
