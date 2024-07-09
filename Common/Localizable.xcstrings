@@ -702,7 +702,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs arreglar"
+            "value" : "!moblin obs fix"
           }
         },
         "fi" : {
@@ -714,43 +714,43 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs correctif"
+            "value" : "!moblin obs fix"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन obs फिक्स"
+            "value" : "!moblin obs fix"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs diperbaiki"
+            "value" : "!moblin obs fix"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Correzione !moblin obs"
+            "value" : "!moblin obs fix"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs 修正"
+            "value" : "!moblin obs fix"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs 수정"
+            "value" : "!moblin obs fix"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs-oplossing"
+            "value" : "!moblin obs fix"
           }
         },
         "pl" : {
@@ -762,19 +762,19 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs correção"
+            "value" : "!moblin obs fix"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs correção"
+            "value" : "!moblin obs fix"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs исправление"
+            "value" : "!moblin obs fix"
           }
         },
         "sv" : {
@@ -786,7 +786,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs düzeltmesi"
+            "value" : "!moblin obs fix"
           }
         },
         "uk" : {
@@ -798,19 +798,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin sửa lỗi quan sát"
+            "value" : "!moblin obs fix"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs 修复"
+            "value" : "!moblin obs fix"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin obs 修復"
+            "value" : "!moblin obs fix"
           }
         }
       }
@@ -820,7 +820,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts aus"
+            "value" : "!moblin tts off"
           }
         },
         "el" : {
@@ -832,7 +832,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin se apaga"
+            "value" : "!moblin tts off"
           }
         },
         "fi" : {
@@ -844,67 +844,67 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin s'en va"
+            "value" : "!moblin tts off"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन टीटीएस बंद"
+            "value" : "!moblin tts off"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin mati"
+            "value" : "!moblin tts off"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin si spegne"
+            "value" : "!moblin tts off"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts オフ"
+            "value" : "!moblin tts off"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts 꺼짐"
+            "value" : "!moblin tts off"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin gaat uit"
+            "value" : "!moblin tts off"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin kończy"
+            "value" : "!moblin tts off"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts desligado"
+            "value" : "!moblin tts off"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts desligado"
+            "value" : "!moblin tts off"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!моблин отключайся"
+            "value" : "!moblin tts off"
           }
         },
         "sv" : {
@@ -916,31 +916,31 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts kapalı"
+            "value" : "!moblin tts off"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts вимкнено"
+            "value" : "!moblin tts off"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin đang tắt"
+            "value" : "!moblin tts off"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts 关闭"
+            "value" : "!moblin tts off"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts 關閉"
+            "value" : "!moblin tts off"
           }
         }
       }
@@ -950,7 +950,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts ein"
+            "value" : "!moblin tts on"
           }
         },
         "el" : {
@@ -962,7 +962,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts encendido"
+            "value" : "!moblin tts on"
           }
         },
         "fi" : {
@@ -974,67 +974,67 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts sur"
+            "value" : "!moblin tts on"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइल टीटीएस चालू"
+            "value" : "!moblin tts on"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin aktif"
+            "value" : "!moblin tts on"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin si accende"
+            "value" : "!moblin tts on"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin ttsオン"
+            "value" : "!moblin tts on"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 TTS 켜짐"
+            "value" : "!moblin tts on"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin staat aan"
+            "value" : "!moblin tts on"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin działa"
+            "value" : "!moblin tts on"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts ligado"
+            "value" : "!moblin tts on"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts ligado"
+            "value" : "!moblin tts on"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts на"
+            "value" : "!moblin tts on"
           }
         },
         "sv" : {
@@ -1046,31 +1046,31 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts açık"
+            "value" : "!moblin tts on"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts увімкнено"
+            "value" : "!moblin tts on"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin tts trên"
+            "value" : "!moblin tts on"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts 开启"
+            "value" : "!moblin tts on"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts 開啟"
+            "value" : "!moblin tts on"
           }
         }
       }
@@ -29205,137 +29205,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "空的剪貼簿"
-          }
-        }
-      }
-    },
-    "Enable \"Vibrate\" to vibrate the device when the following toasts appear:" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiviere „Vibrieren“, um das Gerät vibrieren zu lassen, wenn die folgenden Hinweise angezeigt werden:"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ενεργοποιήστε τη λειτουργία \"Δόνηση\" για να δονείται η συσκευή όταν εμφανίζονται οι ακόλουθες φρυγανιές:"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habilita \"Vibrar\" para hacer vibrar el dispositivo cuando aparezcan los siguientes avisos:"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ota \"Värinä\" käyttöön, jos haluat laitteen värisevän, kun seuraavat ilmoitukset tulevat näkyviin:"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Activez « Vibreur » pour faire vibrer l'appareil lorsque les toasts suivants apparaissent :"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "निम्नलिखित टोस्ट दिखाई देने पर डिवाइस को कंपन करने के लिए \"वाइब्रेट\" सक्षम करें:"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktifkan \"Getar\" untuk menggetarkan perangkat saat muncul toast berikut:"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abilita \"Vibrazione\" per far vibrare il dispositivo quando vengono visualizzati i seguenti avvisi:"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「バイブレーション」を有効にすると、次のトーストが表示されたときにデバイスが振動します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "다음 토스트 메시지가 나타날 때 장치를 진동시키려면 \"진동\"을 활성화하십시오."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schakel \"Trillen\" in om het apparaat te laten trillen wanneer de volgende toasts verschijnen:"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Włącz opcję „Wibracja”, aby urządzenie wibrowało, gdy pojawią się następujące komunikaty:"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ative \"Vibrar\" para vibrar o dispositivo quando os seguintes brindes aparecerem:"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ative \"Vibrar\" para vibrar o dispositivo quando os seguintes brindes aparecerem:"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Включите «Вибрацию», чтобы устройство вибрировало при появлении следующих событий:"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktivera \"Vibrera\" för att vibrera enheten när följande toasts visas:"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aşağıdaki tostlar göründüğünde cihazı titretmek için \"Titreşim\"i etkinleştirin:"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Увімкніть «Вібрація», щоб вібрувати пристрій, коли з’являються такі повідомлення:"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bật \"Rung\" để rung thiết bị khi xuất hiện các thông báo sau:"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "启用“振动”以在出现以下提示时振动设备："
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用「震動」以在出現以下提示時震動手機："
           }
         }
       }
