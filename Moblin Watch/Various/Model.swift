@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 import WatchConnectivity
 
-private var previewTimeout = Duration.seconds(5)
+private let previewTimeout = Duration.seconds(5)
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
