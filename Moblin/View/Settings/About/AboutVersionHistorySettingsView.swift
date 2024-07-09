@@ -12,7 +12,7 @@ private let versions = [
         "• \"North up\" setting for map widget.",
         "• Text widget positioned in top left of video when added to a scene.",
         "• Correct chat bot command translations (always in English). 🐛 evitichi",
-        "• Settings to force UI to portrait when streaming landscape. 💡 Morgonbladet",
+        "• Setting to force UI to portrait when streaming landscape. 💡 Morgonbladet",
         "  • Useful when using external camera and portrait phone mount.",
         "• Limit zoom and scene picker width.",
         "  • To always see settings button.",
