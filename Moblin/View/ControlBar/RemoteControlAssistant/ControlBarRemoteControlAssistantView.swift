@@ -96,6 +96,100 @@ private struct RemoteControlSrtConnectionPrioritiesView: View {
     }
 }
 
+private struct RemoteControlAudioLevelView: View {
+    var level: Float
+    var channels: Int?
+    private let barsPerDb: Float = 0.3
+    private let clippingThresholdDb: Float = -1.0
+    private let redThresholdDb: Float = -8.5
+    private let yellowThresholdDb: Float = -20
+    private let zeroThresholdDb: Float = -60
+    let defaultAudioLevel: Float = -160.0
+
+    // Approx 60 * 0.3 = 20
+    private let maxBars = "||||||||||||||||||||"
+
+    private func bars(count: Float) -> Substring {
+        let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
+        return maxBars.prefix(barCount)
+    }
+
+    private func isClipping() -> Bool {
+        return level > clippingThresholdDb
+    }
+
+    private func clippingText() -> Substring {
+        let db = -zeroThresholdDb
+        return bars(count: db * barsPerDb)
+    }
+
+    private func redText() -> Substring {
+        guard level > redThresholdDb else {
+            return ""
+        }
+        let db = level - redThresholdDb
+        return bars(count: db * barsPerDb)
+    }
+
+    private func yellowText() -> Substring {
+        guard level > yellowThresholdDb else {
+            return ""
+        }
+        let db = min(level - yellowThresholdDb, redThresholdDb - yellowThresholdDb)
+        return bars(count: db * barsPerDb)
+    }
+
+    private func greenText() -> Substring {
+        guard level > zeroThresholdDb else {
+            return ""
+        }
+        let db = min(level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
+        return bars(count: db * barsPerDb)
+    }
+
+    var body: some View {
+        HStack {
+            Image(systemName: "waveform")
+                .frame(width: 20)
+            HStack(spacing: 1) {
+                if let channels {
+                    Text(formatAudioLevelChannels(channels: channels))
+                }
+                if level.isNaN {
+                    if channels == nil {
+                        Text("Muted")
+                    } else {
+                        Text("Muted,")
+                    }
+                } else if level == .infinity {
+                    if channels == nil {
+                        Text("Unknown")
+                    } else {
+                        Text("Unknown,")
+                    }
+                } else {
+                    HStack(spacing: 0) {
+                        if isClipping() {
+                            Text(clippingText())
+                                .foregroundColor(.red)
+                        } else {
+                            Text(redText())
+                                .foregroundColor(.red)
+                            Text(yellowText())
+                                .foregroundColor(.yellow)
+                            Text(greenText())
+                                .foregroundColor(.green)
+                        }
+                    }
+                    .padding([.bottom], 3)
+                    .bold()
+                }
+            }
+            .font(smallFont)
+        }
+    }
+}
+
 struct ControlBarRemoteControlAssistantView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -240,12 +334,9 @@ struct ControlBarRemoteControlAssistantView: View {
                         Section {
                             if let status = model.remoteControlTopRight {
                                 VStack(alignment: .leading, spacing: 3) {
-                                    AudioLevelView(
-                                        showBar: true,
+                                    RemoteControlAudioLevelView(
                                         level: audioStatus(status: status),
-                                        channels: status.numberOfAudioChannels,
-                                        reversed: true,
-                                        transparency: true
+                                        channels: status.numberOfAudioChannels
                                     )
                                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
