@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.326.0", date: "2024-07-09", changes: [
+        "• \"North up\" setting for map widget.",
+        "• Text widget positioned in top left of video when added to a scene.",
+        "• Correct chat bot command translations. 🐛 evitichi",
+        "• Settings to force UI to portrait when streaming landscape. 💡 Morgonbladet",
+        "  • Useful when using external camera and portrait phone mount.",
+        "• Limit zoom and scene picker width.",
+        "  • To always see settings button.",
+    ]),
     Version(version: "0.325.0", date: "2024-07-08", changes: [
         "• Map widget.",
         "  • Settings → Location must be enabled for it to work.",
