@@ -4982,7 +4982,7 @@ extension Model {
             self.remoteControlSettings = settings
         }
         if isRemoteControlAssistantConnected() {
-            var thermalState = ProcessInfo.processInfo.thermalState
+            var thermalState: ProcessInfo.ThermalState
             switch remoteControlGeneral?.flame {
             case .white:
                 thermalState = .fair
@@ -5157,7 +5157,7 @@ extension Model {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: .thermalState, data: "\(thermalState)")
+        sendMessageToWatch(type: .thermalState, data: thermalState.rawValue)
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {

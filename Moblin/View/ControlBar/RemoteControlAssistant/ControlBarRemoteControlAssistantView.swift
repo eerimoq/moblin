@@ -244,7 +244,8 @@ struct ControlBarRemoteControlAssistantView: View {
                                         showBar: true,
                                         level: audioStatus(status: status),
                                         channels: status.numberOfAudioChannels,
-                                        reversed: true
+                                        reversed: true,
+                                        transparency: true
                                     )
                                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
