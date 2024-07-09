@@ -5695,8 +5695,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🥳 Striimi todennäköisesti toimii 🥳"
+            "state" : "translated",
+            "value" : "🥳 Lähetys todennäköisesti toimii 🥳"
           }
         },
         "fr" : {
@@ -5825,8 +5825,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😠 Striimi todennäköisesti katkennut 😠"
+            "state" : "translated",
+            "value" : "😠 Lähetys todennäköisesti katkennut 😠"
           }
         },
         "fr" : {
@@ -18051,8 +18051,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BRB kohtaus"
+            "state" : "translated",
+            "value" : "BRB-näkymä"
           }
         },
         "fr" : {
@@ -46760,7 +46760,14 @@
       }
     },
     "Map" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartta"
+          }
+        }
+      }
     },
     "Max bandwidth follows input" : {
       "localizations" : {
@@ -49384,8 +49391,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin yrittää ajoittain vaihtaa tähän OBS-kohtaukseen, jos stream todennäköisesti katkeaa."
+            "state" : "translated",
+            "value" : "Moblin yrittää ajoittain vaihtaa tähän OBS-näkymään, jos lähetys todennäköisesti katkennut."
           }
         },
         "fr" : {
@@ -50554,8 +50561,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minun BRB-kohtaukseni"
+            "state" : "translated",
+            "value" : "Oma BRB-näkymä"
           }
         },
         "fr" : {
@@ -53653,7 +53660,14 @@
       }
     },
     "North up" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pohjoinen ylhäällä"
+          }
+        }
+      }
     },
     "Not configured" : {
       "localizations" : {
@@ -65897,7 +65911,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytä kaikki asetukset"
           }
         },
@@ -66937,8 +66951,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tilannekuva"
+            "state" : "translated",
+            "value" : "Esikatselukuva"
           }
         },
         "fr" : {
@@ -75756,7 +75770,14 @@
       }
     },
     "The map will rotate based of movement direction if disabled." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartta kääntyy kulkusuunnan mukaisesti, jos tämä on pois päältä."
+          }
+        }
+      }
     },
     "The maximum allowed RTT spike before decreasing the bitrate" : {
       "localizations" : {
@@ -76300,8 +76321,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BRB-kohtauksen nimi OBS:ssä. Moblin yrittää ajoittain vaihtaa tähän kohtaukseen, jos stream todennäköisesti katkeaa."
+            "state" : "translated",
+            "value" : "BRB-näkymän nimi OBS:ssä. Moblin yrittää ajoittain vaihtaa tähän näkymään, jos lähetys todennäköisesti katkennut."
           }
         },
         "fr" : {
@@ -79680,7 +79701,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Yritetään vaihtaa OBS-näkymään %@"
           }
         },
