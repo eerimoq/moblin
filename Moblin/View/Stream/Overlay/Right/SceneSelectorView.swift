@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StreamOverlayRightSceneSelectorView: View {
     @EnvironmentObject var model: Model
+    let width: CGFloat
 
     var body: some View {
         SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
@@ -19,7 +20,10 @@ struct StreamOverlayRightSceneSelectorView: View {
         })) {
             Text($0.name)
                 .font(.subheadline)
-                .frame(width: sceneSegmentWidth, height: segmentHeight)
+                .frame(
+                    width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
+                    height: segmentHeight
+                )
         }
         .onChange(of: model.sceneIndex) { tag in
             model.setSceneId(id: model.enabledScenes[tag].id)
@@ -27,7 +31,7 @@ struct StreamOverlayRightSceneSelectorView: View {
         }
         .background(pickerBackgroundColor)
         .foregroundColor(.white)
-        .frame(width: sceneSegmentWidth * Double(model.enabledScenes.count))
+        .frame(width: min(sceneSegmentWidth * Double(model.enabledScenes.count), width - 20))
         .cornerRadius(7)
         .overlay(
             RoundedRectangle(cornerRadius: 7)

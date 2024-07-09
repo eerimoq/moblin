@@ -163,7 +163,7 @@ struct StreamOverlayView: View {
                 .allowsHitTesting(false)
                 HStack {
                     Spacer()
-                    RightOverlayView()
+                    RightOverlayView(width: width)
                 }
                 HStack {
                     StreamOverlayDebugView()

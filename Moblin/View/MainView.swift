@@ -151,8 +151,10 @@ struct MainView: View {
                         .background(.black)
                         .ignoresSafeArea()
                         .edgesIgnoringSafeArea(.all)
-                        StreamOverlayView()
-                            .opacity(model.showLocalOverlays ? 1 : 0)
+                        GeometryReader { metrics in
+                            StreamOverlayView(width: metrics.size.width)
+                                .opacity(model.showLocalOverlays ? 1 : 0)
+                        }
                         if model.showFace && !model.showDrawOnStream {
                             FaceView(
                                 crop: debug.beautyFilter!,
@@ -243,8 +245,10 @@ struct MainView: View {
                         .background(.black)
                         .ignoresSafeArea()
                         .edgesIgnoringSafeArea(.all)
-                        StreamOverlayView()
-                            .opacity(model.showLocalOverlays ? 1 : 0)
+                        GeometryReader { metrics in
+                            StreamOverlayView(width: metrics.size.width)
+                                .opacity(model.showLocalOverlays ? 1 : 0)
+                        }
                         if model.showDrawOnStream {
                             DrawOnStreamView()
                         }
