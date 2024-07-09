@@ -29860,7 +29860,134 @@
       }
     },
     "Enable to vibrate the device when the following toasts appear:" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktivieren Sie diese Option, um das Gerät vibrieren zu lassen, wenn die folgenden Toasts angezeigt werden:"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ενεργοποιήστε τη δόνηση της συσκευής όταν εμφανίζονται οι ακόλουθες φρυγανιές:"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite la vibración del dispositivo cuando aparezcan los siguientes mensajes:"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ota käyttöön laitteen värinä, kun seuraavat paahtoleipäät tulevat näkyviin:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Permet de faire vibrer l'appareil lorsque les toasts suivants apparaissent :"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "निम्नलिखित टोस्ट दिखाई देने पर डिवाइस को कंपन करने में सक्षम करें:"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktifkan untuk menggetarkan perangkat saat roti panggang berikut muncul:"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abilita la vibrazione del dispositivo quando vengono visualizzati i seguenti avvisi:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "次のトーストが表示されたときにデバイスを振動させるには、有効にします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "다음 알림 메시지가 나타날 때 장치를 진동시키려면 활성화하십시오."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hiermee kunt u het apparaat laten trillen wanneer de volgende toasts verschijnen:"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Włącz wibrację urządzenia, gdy pojawią się następujące tosty:"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ative para vibrar o dispositivo quando aparecerem os seguintes brindes:"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ative para vibrar o dispositivo quando aparecerem os seguintes brindes:"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Включите вибрацию устройства при появлении следующих тостов:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera för att vibrera enheten när följande toasts visas:"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aşağıdaki tostlar göründüğünde cihazı titretmeyi etkinleştirin:"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Увімкніть вібрацію пристрою, коли з’являться такі повідомлення:"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bật để rung thiết bị khi xuất hiện các thông báo sau:"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "当出现以下提示时，启用设备振动："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "出現以下提示時啟用震動設備："
+          }
+        }
+      }
     },
     "Enabled" : {
       "localizations" : {
@@ -46634,10 +46761,130 @@
     },
     "Map" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Karte"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χάρτης"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mapa"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kartta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Carte"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "नक्शा"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Peta"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Carta geografica"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "地図"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "지도"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kaart"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mapa"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mapa"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mapa"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "карта"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karta"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Harita"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Карта"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bản đồ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "地图"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "地圖"
           }
         }
       }
@@ -53534,10 +53781,130 @@
     },
     "North up" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Norden oben"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Βορρά πάνω"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hacia el norte"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pohjoinen ylhäällä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vers le nord"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उत्तर की ओर ऊपर"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utara ke atas"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nord in alto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "北を上に"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "북쪽 위로"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Noorden omhoog"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Północ w górę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Norte para cima"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Norte para cima"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Север вверх"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Norr uppåt"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kuzey yukarı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "На північ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hướng bắc lên"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "北向上"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "北上"
           }
         }
       }
@@ -75644,10 +76011,130 @@
     },
     "The map will rotate based of movement direction if disabled." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wenn diese Option deaktiviert ist, dreht sich die Karte basierend auf der Bewegungsrichtung."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ο χάρτης θα περιστραφεί με βάση την κατεύθυνση κίνησης εάν είναι απενεργοποιημένος."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El mapa rotará según la dirección del movimiento si está desactivado."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kartta kääntyy kulkusuunnan mukaisesti, jos tämä on pois päältä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La carte pivotera en fonction de la direction du mouvement si elle est désactivée."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यदि अक्षम किया गया तो मानचित्र गति की दिशा के आधार पर घूमेगा।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Peta akan berputar berdasarkan arah pergerakan jika dinonaktifkan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Se disabilitata, la mappa ruoterà in base alla direzione del movimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "無効にすると、マップは移動方向に基づいて回転します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "비활성화하면 지도가 이동 방향을 기준으로 회전합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Indien uitgeschakeld, draait de kaart op basis van de bewegingsrichting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jeśli opcja jest wyłączona, mapa będzie się obracać w zależności od kierunku ruchu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O mapa irá girar com base na direção do movimento se estiver desativado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O mapa irá girar com base na direção do movimento se estiver desativado."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Если эта функция отключена, карта будет вращаться в зависимости от направления движения."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartan kommer att rotera baserat på rörelseriktningen om inaktiverad."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Devre dışı bırakılırsa harita hareket yönüne göre dönecektir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Якщо вимкнено, карта обертатиметься залежно від напрямку руху."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bản đồ sẽ xoay dựa trên hướng di chuyển nếu bị tắt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果禁用，地图将根据移动方向旋转。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果停用，地圖將根據移動方向旋轉。"
           }
         }
       }
@@ -77993,7 +78480,134 @@
       }
     },
     "To stream in portrait, enable Settings → Streams → %@ → Portrait." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Um im Hochformat zu streamen, aktivieren Sie Einstellungen → Streams → %@ → Hochformat."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Για ροή σε κατακόρυφη ροή, ενεργοποιήστε τις Ρυθμίσεις → Ροές → %@ → Πορτραίτο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Para transmitir en vertical, habilite Configuración → Transmisiones → %@ → Retrato."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jos haluat suoratoistaa muotokuvana, ota käyttöön Asetukset → Virrat → %@ → Muotokuva."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pour diffuser en mode portrait, activez Paramètres → Flux → %@ → Portrait."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "पोर्ट्रेट में स्ट्रीम करने के लिए, सेटिंग्स → स्ट्रीम्स → %@ → पोर्ट्रेट सक्षम करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Untuk melakukan streaming dalam potret, aktifkan Pengaturan → Aliran → %@ → Potret."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Per eseguire lo streaming in verticale, attiva Impostazioni → Stream → %@ → Ritratto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "縦向きでストリーミングするには、「設定」→「ストリーム」→「%@」→「縦向き」を有効にします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "세로로 스트리밍하려면 설정 → 스트림 → %@ → 세로를 활성화하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Als u in portretmodus wilt streamen, schakelt u Instellingen → Streams → %@ → Portret in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aby przesyłać strumieniowo w orientacji pionowej, włącz Ustawienia → Strumienie → %@ → Portret."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Para transmitir em retrato, habilite Configurações → Transmissões → %@ → Retrato."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Para transmitir no modo retrato, ative Configurações → Transmissões → %@ → Retrato."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Для потоковой передачи в книжной ориентации включите «Настройки» → «Потоки» → %@ → «Портрет»."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "För att streama i porträtt, aktivera Inställningar → Strömmar → %@ → Porträtt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Dikey akış için Ayarlar → Akışlar → %@ → Portre'yi etkinleştirin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Щоб транслювати в книжковій орієнтації, увімкніть Параметри → Потоки → %@ → Портрет."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Để phát trực tuyến ở chế độ dọc, hãy bật Cài đặt → Luồng → %@ → Dọc."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "要以纵向方式流式传输，请启用设置 → 流 → %@ → 纵向。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "若要以縱向方式串流，請啟用設定 → 串流 → %@ → 縱向。"
+          }
+        }
+      }
     },
     "Too many recordings. Deleting oldest recording." : {
       "localizations" : {
@@ -83066,7 +83680,134 @@
       }
     },
     "Useful when using an external camera and a portrait phone holder." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nützlich bei Verwendung einer externen Kamera und eines Hochformat-Telefonhalters."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χρήσιμο όταν χρησιμοποιείτε εξωτερική κάμερα και θήκη τηλεφώνου πορτραίτου."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Útil cuando se utiliza una cámara externa y un soporte para teléfono vertical."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hyödyllinen käytettäessä ulkoista kameraa ja muotokuvapuhelintelinettä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utile lorsque vous utilisez un appareil photo externe et un support de téléphone portrait."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "बाहरी कैमरा और पोर्ट्रेट फोन होल्डर का उपयोग करते समय उपयोगी।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Berguna saat menggunakan kamera eksternal dan dudukan telepon potret."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utile quando si utilizza una fotocamera esterna e un supporto per telefono verticale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "外付けカメラや縦型携帯電話ホルダーを使用するときに便利です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "외부 카메라와 휴대폰 인물용 홀더를 사용할 때 유용합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Handig bij gebruik van een externe camera en een staande telefoonhouder."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przydatny w przypadku korzystania z aparatu zewnętrznego i portretowego uchwytu na telefon."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Útil ao usar uma câmera externa e um suporte para telefone retrato."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Útil ao usar uma câmera externa e um suporte para telefone retrato."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Полезно при использовании внешней камеры и держателя для портретного телефона."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Användbar när du använder en extern kamera och en porträtttelefonhållare."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Harici bir kamera ve portre telefon tutucusu kullanırken kullanışlıdır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Корисно під час використання зовнішньої камери та портретного тримача телефону."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hữu ích khi sử dụng camera ngoài và giá đỡ điện thoại dọc."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用外部摄像头和纵向手机支架时很有用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用外部相機和縱向手機支架時非常有用。"
+          }
+        }
+      }
     },
     "Username" : {
       "localizations" : {
