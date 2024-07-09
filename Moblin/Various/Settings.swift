@@ -399,7 +399,6 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var realtimeIrlPushKey: String? = ""
     var portrait: Bool? = false
     var backgroundStreaming: Bool? = false
-    var portraitUI: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -445,6 +444,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.realtimeIrlEnabled = realtimeIrlEnabled
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
+        new.backgroundStreaming = backgroundStreaming
         return new
     }
 
@@ -1656,6 +1656,7 @@ class Database: Codable {
     var srtlaServer: SettingsSrtlaServer? = .init()
     var mediaPlayers: SettingsMediaPlayers? = .init()
     var showAllSettings: Bool? = false
+    var portrait: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2817,8 +2818,8 @@ final class Settings {
             widget.map!.northUp = true
             store()
         }
-        for stream in realDatabase.streams where stream.portraitUI == nil {
-            stream.portraitUI = false
+        if realDatabase.portrait == nil {
+            realDatabase.portrait = false
             store()
         }
     }

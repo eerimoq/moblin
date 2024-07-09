@@ -1511,7 +1511,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateOrientation() {
-        if stream.portrait! || stream.portraitUI! {
+        if stream.portrait! || database.portrait! {
             streamPreviewView.videoOrientation = .landscapeRight
         } else {
             switch UIDevice.current.orientation {
@@ -2344,7 +2344,7 @@ final class Model: NSObject, ObservableObject {
         if stream.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
-        } else if stream.portraitUI! {
+        } else if database.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = false
         } else {

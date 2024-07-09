@@ -53,15 +53,6 @@ struct DisplaySettingsView: View {
                         model.database.lowBitrateWarning = value
                         model.store()
                     }))
-                }
-                Toggle("Vibrate", isOn: Binding(get: {
-                    model.database.vibrate!
-                }, set: { value in
-                    model.database.vibrate = value
-                    model.store()
-                    model.setAllowHapticsAndSystemSoundsDuringRecording()
-                }))
-                if model.database.showAllSettings! {
                     Toggle("Recording confirmations", isOn: Binding(get: {
                         model.database.startStopRecordingConfirmations!
                     }, set: { value in
@@ -69,9 +60,18 @@ struct DisplaySettingsView: View {
                         model.store()
                     }))
                 }
+            }
+            Section {
+                Toggle("Vibrate", isOn: Binding(get: {
+                    model.database.vibrate!
+                }, set: { value in
+                    model.database.vibrate = value
+                    model.store()
+                    model.setAllowHapticsAndSystemSoundsDuringRecording()
+                }))
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Enable \"Vibrate\" to vibrate the device when the following toasts appear:")
+                    Text("Enable to vibrate the device when the following toasts appear:")
                     Text("")
                     Text("• \(fffffMessage)")
                     Text("• \(failedToConnectMessage("Main"))")
@@ -79,6 +79,27 @@ struct DisplaySettingsView: View {
                     Text("• \(formatWarning(lowBatteryMessage))")
                     Text("")
                     Text("Make sure silent mode is off for vibrations to work.")
+                }
+            }
+            if model.database.showAllSettings! {
+                Section {
+                    Toggle(isOn: Binding(get: {
+                        model.database.portrait!
+                    }, set: { value in
+                        model.database.portrait = value
+                        model.store()
+                        model.updateOrientationLock()
+                    })) {
+                        Text("Portrait")
+                    }
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("Useful when using an external camera and a portrait phone holder.")
+                        Text("")
+                        Text(
+                            "To stream in portrait, enable Settings → Streams → \(model.stream.name) → Portrait."
+                        )
+                    }
                 }
             }
         }

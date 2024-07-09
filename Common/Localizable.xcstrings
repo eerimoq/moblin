@@ -29210,6 +29210,7 @@
       }
     },
     "Enable \"Vibrate\" to vibrate the device when the following toasts appear:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29988,6 +29989,9 @@
           }
         }
       }
+    },
+    "Enable to vibrate the device when the following toasts appear:" : {
+
     },
     "Enabled" : {
       "localizations" : {
@@ -57309,9 +57313,6 @@
         }
       }
     },
-    "Portrait UI" : {
-
-    },
     "POSITION" : {
       "localizations" : {
         "de" : {
@@ -78122,6 +78123,9 @@
         }
       }
     },
+    "To stream in portrait, enable Settings → Streams → %@ → Portrait." : {
+
+    },
     "Too many recordings. Deleting oldest recording." : {
       "localizations" : {
         "de" : {
@@ -83191,6 +83195,9 @@
           }
         }
       }
+    },
+    "Useful when using an external camera and a portrait phone holder." : {
+
     },
     "Username" : {
       "localizations" : {

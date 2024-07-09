@@ -812,7 +812,7 @@ struct ButtonsInnerView: View {
                 })
             }
             if model.database.quickButtons!
-                .showName && !(model.stream.portrait! || model.stream.portraitUI!)
+                .showName && !(model.stream.portrait! || model.database.portrait!)
             {
                 Text(state.button.name)
                     .multilineTextAlignment(.center)

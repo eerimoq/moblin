@@ -52,18 +52,6 @@ struct StreamSettingsView: View {
                     })) {
                         Text("Portrait")
                     }
-                    if model.database.showAllSettings! {
-                        Toggle(isOn: Binding(get: {
-                            stream.portraitUI!
-                        }, set: { value in
-                            stream.portraitUI = value
-                            model.store()
-                            model.updateOrientationLock()
-                        })) {
-                            Text("Portrait UI")
-                        }
-                        .disabled(stream.portrait!)
-                    }
                 }
                 if model.database.showAllSettings! {
                     if stream.getProtocol() == .srt {

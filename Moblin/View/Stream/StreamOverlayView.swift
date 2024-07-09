@@ -37,7 +37,7 @@ private struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        if model.stream.portrait! || model.stream.portraitUI! {
+        if model.stream.portrait! || model.database.portrait! {
             VStack {
                 ZStack {
                     StreamOverlayChatView()
@@ -143,7 +143,7 @@ struct StreamOverlayView: View {
 
     private func leadingPadding() -> CGFloat {
         if UIDevice.current
-            .userInterfaceIdiom == .pad || (model.stream.portrait! || model.stream.portraitUI!)
+            .userInterfaceIdiom == .pad || (model.stream.portrait! || model.database.portrait!)
         {
             return 15
         } else {
