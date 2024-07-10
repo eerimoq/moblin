@@ -50,6 +50,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "crop"
     case .map:
         return "map"
+    case .scene:
+        return "photo.on.rectangle"
     }
 }
 

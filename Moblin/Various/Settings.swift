@@ -655,6 +655,10 @@ class SettingsWidgetMap: Codable {
     var northUp: Bool? = true
 }
 
+class SettingsWidgetScene: Codable {
+    var sceneId: UUID = .init()
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -685,6 +689,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case videoEffect = "Video effect"
     case crop = "Crop"
     case map = "Map"
+    case scene = "Scene"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -705,6 +710,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .crop
         case String(localized: "Map"):
             return .map
+        case String(localized: "Scene"):
+            return .scene
         default:
             return .videoEffect
         }
@@ -724,6 +731,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Crop")
         case .map:
             return String(localized: "Map")
+        case .scene:
+            return String(localized: "Scene")
         }
     }
 }
@@ -748,6 +757,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var videoEffect: SettingsWidgetVideoEffect? = .init()
     var crop: SettingsWidgetCrop? = .init()
     var map: SettingsWidgetMap? = .init()
+    var scene: SettingsWidgetScene? = .init()
 
     init(name: String) {
         self.name = name
@@ -2820,6 +2830,10 @@ final class Settings {
         }
         if realDatabase.portrait == nil {
             realDatabase.portrait = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.scene == nil {
+            widget.scene = .init()
             store()
         }
     }

@@ -3743,6 +3743,33 @@ final class Model: NSObject, ObservableObject {
         effects += registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         var usedMapEffects: [MapEffect] = []
+        var addedScenes: [SettingsScene] = []
+        addSceneEffects(scene, &effects, &usedBrowserEffects, &usedMapEffects, &addedScenes)
+        if !drawOnStreamLines.isEmpty {
+            effects.append(drawOnStreamEffect)
+        }
+        effects += registerGlobalVideoEffectsOnTop()
+        media.setPendingAfterAttachEffects(effects: effects)
+        for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
+            browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
+        }
+        for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
+            mapEffect.setSceneWidget(sceneWidget: nil, size: nil)
+        }
+        attachSingleLayout(scene: scene)
+    }
+
+    private func addSceneEffects(
+        _ scene: SettingsScene,
+        _ effects: inout [VideoEffect],
+        _ usedBrowserEffects: inout [BrowserEffect],
+        _ usedMapEffects: inout [MapEffect],
+        _ addedScenes: inout [SettingsScene]
+    ) {
+        guard !addedScenes.contains(scene) else {
+            return
+        }
+        addedScenes.append(scene)
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -3792,20 +3819,18 @@ final class Model: NSObject, ObservableObject {
                     effects.append(mapEffect)
                     usedMapEffects.append(mapEffect)
                 }
+            case .scene:
+                if let sceneWidgetScene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                    addSceneEffects(
+                        sceneWidgetScene,
+                        &effects,
+                        &usedBrowserEffects,
+                        &usedMapEffects,
+                        &addedScenes
+                    )
+                }
             }
         }
-        if !drawOnStreamLines.isEmpty {
-            effects.append(drawOnStreamEffect)
-        }
-        effects += registerGlobalVideoEffectsOnTop()
-        media.setPendingAfterAttachEffects(effects: effects)
-        for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
-            browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
-        }
-        for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
-            mapEffect.setSceneWidget(sceneWidget: nil, size: nil)
-        }
-        attachSingleLayout(scene: scene)
     }
 
     private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
