@@ -42469,6 +42469,9 @@
         }
       }
     },
+    "It is not recommended to export settings from one device and import them in another. Some settings will not work on other devices. Deep links, on the other hand, can be imported on any device." : {
+
+    },
     "jo304F4gr" : {
       "localizations" : {
         "de" : {

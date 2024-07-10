@@ -1660,31 +1660,34 @@ final class Model: NSObject, ObservableObject {
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
         for url in urls {
-            guard url.url.path.isEmpty else {
-                logger.warning("Custom URL path is not empty")
-                continue
-            }
-            guard let query = url.url.query(percentEncoded: false) else {
-                logger.warning("Custom URL query is missing")
-                continue
-            }
-            let settings: MoblinSettingsUrl
-            do {
-                settings = try MoblinSettingsUrl.fromString(query: query)
-            } catch {
-                logger.error("Failed to import URL with error: \(error)")
+            if let message = handleSettingsUrl(url: url.url) {
                 makeErrorToast(
                     title: String(localized: "URL import failed"),
-                    subTitle: error.localizedDescription
+                    subTitle: message
                 )
-                continue
-            }
-            if isPresentingWizard || isPresentingSetupWizard {
-                handleSettingsUrlsInWizard(settings: settings)
-            } else {
-                handleSettingsUrlsDefault(settings: settings)
             }
         }
+    }
+
+    func handleSettingsUrl(url: URL) -> String? {
+        guard url.path.isEmpty else {
+            return "Custom URL path is not empty"
+        }
+        guard let query = url.query(percentEncoded: false) else {
+            return "Custom URL query is missing"
+        }
+        let settings: MoblinSettingsUrl
+        do {
+            settings = try MoblinSettingsUrl.fromString(query: query)
+        } catch {
+            return error.localizedDescription
+        }
+        if isPresentingWizard || isPresentingSetupWizard {
+            handleSettingsUrlsInWizard(settings: settings)
+        } else {
+            handleSettingsUrlsDefault(settings: settings)
+        }
+        return nil
     }
 
     private func setupPeriodicTimers() {

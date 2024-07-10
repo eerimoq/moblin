@@ -13,6 +13,7 @@ private let versions = [
         "  • To easily use the same widgets in multiple scenes.",
         "  • Similar to Scene source in OBS.",
         "• Fix front cam flashlight when using new portrait UI mode.",
+        "• Pixels icons in store. 💡 JohannesLiv",
     ]),
     Version(version: "0.326.0", date: "2024-07-09", changes: [
         "• \"North up\" setting for map widget.",
