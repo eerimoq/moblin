@@ -93,7 +93,7 @@ private struct FrontTorchView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        if model.stream.portrait! {
+        if model.stream.portrait! || model.database.portrait! {
             VStack(spacing: 0) {
                 Rectangle()
                     .foregroundColor(.white)
