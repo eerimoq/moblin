@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.327.0", date: "2024-07-10", changes: [
+        "• Scene widget. 💡 JohannesLiv",
+        "  • To easily use the same widgets in multiple scenes.",
+        "  • Similar to Scene source in OBS.",
+        "• Fix front cam flashlight when using new portrait UI mode.",
+    ]),
     Version(version: "0.326.0", date: "2024-07-09", changes: [
         "• \"North up\" setting for map widget.",
         "• Text widget positioned in top left of video when added to a scene.",
