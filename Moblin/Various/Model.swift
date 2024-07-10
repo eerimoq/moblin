@@ -4970,42 +4970,42 @@ extension Model {
     }
 
     func updateRemoteControlAssistantStatus() {
-        guard remoteControlAssistant?.isConnected() == true else {
+        guard showingRemoteControl, remoteControlAssistant?.isConnected() == true else {
             return
         }
         remoteControlAssistant?.getStatus { general, topLeft, topRight in
             self.remoteControlGeneral = general
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
+            if self.isRemoteControlAssistantConnected() {
+                var thermalState: ProcessInfo.ThermalState
+                switch self.remoteControlGeneral?.flame {
+                case .white:
+                    thermalState = .fair
+                case .yellow:
+                    thermalState = .serious
+                case .red:
+                    thermalState = .critical
+                case .none:
+                    thermalState = .critical
+                }
+                self.sendThermalStateToWatch(thermalState: thermalState)
+                if let recordingMessage = topRight.recording?.message {
+                    self.sendRecordingLengthToWatch(recordingLength: recordingMessage)
+                }
+                if let bitrateMessage = topRight.bitrate?.message {
+                    self.sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
+                }
+                if let audioLevel = topRight.audioLevel {
+                    self.sendAudioLevelToWatch(audioLevel: audioLevel)
+                    self.sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
+                }
+                self.sendIsLiveToWatch(isLive: topRight.bitrate?.message != nil)
+                self.sendIsRecordingToWatch(isRecording: topRight.recording?.message != nil)
+            }
         }
         remoteControlAssistant?.getSettings { settings in
             self.remoteControlSettings = settings
-        }
-        if isRemoteControlAssistantConnected() {
-            var thermalState: ProcessInfo.ThermalState
-            switch remoteControlGeneral?.flame {
-            case .white:
-                thermalState = .fair
-            case .yellow:
-                thermalState = .serious
-            case .red:
-                thermalState = .critical
-            case .none:
-                thermalState = .critical
-            }
-            if let recordingMessage = remoteControlTopRight?.recording?.message {
-                sendRecordingLengthToWatch(recordingLength: recordingMessage)
-            }
-            if let bitrateMessage = remoteControlTopRight?.bitrate?.message {
-                sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
-            }
-            if let audioLevel = remoteControlTopRight?.audioLevel {
-                sendAudioLevelToWatch(audioLevel: audioLevel)
-                sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
-            }
-            sendThermalStateToWatch(thermalState: thermalState)
-            sendIsLiveToWatch(isLive: remoteControlTopRight?.bitrate?.message != nil)
-            sendIsRecordingToWatch(isRecording: remoteControlTopRight?.recording?.message != nil)
         }
     }
 
