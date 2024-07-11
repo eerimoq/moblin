@@ -8403,136 +8403,6 @@
         }
       }
     },
-    "A list of all widgets. A widget can be used in zero or more scenes." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eine Liste aller Widgets. Ein Widget kann in keiner oder mehreren Szenen verwendet werden."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μια λίστα με όλα τα γραφικά στοιχεία. Ένα widget μπορεί να χρησιμοποιηθεί σε μηδέν ή περισσότερες σκηνές."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una lista de todos los widgets. Se puede utilizar un widget en cero o más escenas."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Luettelo kaikista widgeteistä. Widget voi olla käytössä useammassa näkymässä tai ei yhdessäkään. "
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Une liste de tous les widgets. Un widget peut être utilisé dans zéro ou plusieurs scènes."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सभी विजेट्स की एक सूची. एक विजेट का उपयोग शून्य या अधिक दृश्यों में किया जा सकता है।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Daftar semua widget. Widget dapat digunakan dalam nol atau lebih adegan."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Un elenco di tutti i widget. Un widget può essere utilizzato in zero o più scene."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "すべてのウィジェットのリスト。ウィジェットは 複数のシーンで使用できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모든 위젯의 목록입니다. 위젯은 0개 이상의 장면에서 사용될 수 있습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Een lijst met alle widgets. Een widget kan in nul of meer scènes worden gebruikt."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lista wszystkich widżetów. Widget może być używany w zerowej lub większej liczbie scen."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uma lista de todos os widgets. Um widget pode ser usado em zero ou mais cenas."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uma lista de todos os widgets. Um widget pode ser usado em zero ou mais cenas."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Список всех виджетов. Виджеты можно использовать в нуле или более сценах."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En lista över alla widgets. En widget kan användas i noll eller fler scener."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tüm widget'ların listesi. Bir widget sıfır veya daha fazla sahnede kullanılabilir."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Список усіх віджетів. Віджет можна використовувати в нуль або більше сцен."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Một danh sách tất cả các vật dụng. Một widget có thể được sử dụng trong không hoặc nhiều cảnh."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "所有小部件的列表。一个小部件可以在零个或多个场景中使用。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所有小工具的清單。小工具可以在零或多個場景中使用。"
-          }
-        }
-      }
-    },
     "a preset" : {
       "localizations" : {
         "de" : {
@@ -9439,6 +9309,136 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "一個小部件"
+          }
+        }
+      }
+    },
+    "A widget can be used in zero or more scenes." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Widget kann in keiner oder mehreren Szenen verwendet werden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ένα widget μπορεί να χρησιμοποιηθεί σε μηδέν ή περισσότερες σκηνές."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se puede utilizar un widget en cero o más escenas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget voi olla käytössä useammassa näkymässä tai ei yhdessäkään. "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Un widget peut être utilisé dans zéro ou plusieurs scènes."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "एक विजेट का उपयोग शून्य या अधिक दृश्यों में किया जा सकता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget dapat digunakan dalam nol atau lebih adegan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Un widget può essere utilizzato in zero o più scene."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ウィジェットは 複数のシーンで使用できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위젯은 0개 이상의 장면에서 사용될 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een widget kan in nul of meer scènes worden gebruikt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget może być używany w zerowej lub większej liczbie scen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um widget pode ser usado em zero ou mais cenas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um widget pode ser usado em zero ou mais cenas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Виджеты можно использовать в нуле или более сценах."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En widget kan användas i noll eller fler scener."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir widget sıfır veya daha fazla sahnede kullanılabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Віджет можна використовувати в нуль або більше сцен."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Một widget có thể được sử dụng trong không hoặc nhiều cảnh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个小部件可以在零个或多个场景中使用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小工具可以在零或多個場景中使用。"
           }
         }
       }
@@ -60283,6 +60283,7 @@
       }
     },
     "Reload browsers" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

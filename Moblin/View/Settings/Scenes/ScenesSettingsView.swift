@@ -67,11 +67,7 @@ struct ScenesSettingsView: View {
     var body: some View {
         Form {
             ScenesListView()
-            Section {
-                NavigationLink(destination: WidgetsSettingsView()) {
-                    Text("Widgets")
-                }
-            }
+            WidgetsSettingsView()
             // Section {
             //     NavigationLink(destination: InlinePickerView(
             //         title: String(localized: "BRB scene"),

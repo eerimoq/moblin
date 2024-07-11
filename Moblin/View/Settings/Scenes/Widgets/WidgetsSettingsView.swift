@@ -17,65 +17,62 @@ struct WidgetsSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            Text("A list of all widgets. A widget can be used in zero or more scenes.")
-            Section {
-                Button {
-                    model.reloadBrowserWidgets()
-                } label: {
+        Section {
+            ForEach(database.widgets) { widget in
+                NavigationLink(destination: WidgetSettingsView(
+                    widget: widget
+                )) {
                     HStack {
+                        DraggableItemPrefixView()
+                        IconAndTextView(
+                            image: widgetImage(widget: widget),
+                            text: widget.name,
+                            longDivider: true
+                        )
                         Spacer()
-                        Text("Reload browsers")
-                        Spacer()
-                    }
-                }
-            }
-            Section {
-                ForEach(database.widgets) { widget in
-                    NavigationLink(destination: WidgetSettingsView(
-                        widget: widget
-                    )) {
-                        HStack {
-                            DraggableItemPrefixView()
-                            IconAndTextView(
-                                image: widgetImage(widget: widget),
-                                text: widget.name,
-                                longDivider: true
-                            )
-                            Spacer()
-                            if !isWidgetUsed(widget: widget) {
-                                Text("Unused")
-                                    .foregroundColor(.gray)
-                            }
+                        if !isWidgetUsed(widget: widget) {
+                            Text("Unused")
+                                .foregroundColor(.gray)
                         }
                     }
-                    .deleteDisabled(isWidgetUsed(widget: widget))
                 }
-                .onMove(perform: { froms, to in
-                    database.widgets.move(fromOffsets: froms, toOffset: to)
-                    model.store()
-                })
-                .onDelete(perform: { offsets in
-                    database.widgets.remove(atOffsets: offsets)
-                    model.store()
-                    model.resetSelectedScene()
-                })
-                CreateButtonView(action: {
-                    database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
-                    model.store()
-                    model.resetSelectedScene()
-                })
-            } footer: {
-                VStack(alignment: .leading) {
-                    SwipeLeftToDeleteHelpView(kind: String(localized: "a widget"))
-                    Text("")
-                    Text("Only unused widgets can be deleted.")
-                }
+                .deleteDisabled(isWidgetUsed(widget: widget))
+            }
+            .onMove(perform: { froms, to in
+                database.widgets.move(fromOffsets: froms, toOffset: to)
+                model.store()
+            })
+            .onDelete(perform: { offsets in
+                database.widgets.remove(atOffsets: offsets)
+                model.store()
+                model.resetSelectedScene()
+            })
+            CreateButtonView(action: {
+                database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
+                model.store()
+                model.resetSelectedScene()
+            })
+        } header: {
+            Text("Widgets")
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("A widget can be used in zero or more scenes.")
+                Text("")
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a widget"))
+                Text("")
+                Text("Only unused widgets can be deleted.")
             }
         }
-        .navigationTitle("Widgets")
-        .toolbar {
-            SettingsToolbar()
+        Section {
+            Button {
+                model.reloadBrowserWidgets()
+            } label: {
+                HStack {
+                    Spacer()
+                    Text("Reload browser widgets")
+                    Spacer()
+                }
+            }
         }
     }
 }
