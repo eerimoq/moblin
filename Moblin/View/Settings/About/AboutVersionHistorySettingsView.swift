@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.328.0", date: "2024-07-11", changes: [
+        "• Make \"Import from clipboard\" button accept deep links.",
+        "• Widgets setup on scenes page.",
+        "  • For one less tap.",
+        "• Hide battery percentage toggle on Mac.",
+        "  • As the battery meter is hidden.",
+        "• QR code widget.",
+        "  • Does not yet work with MetalPetal.",
+        "• Make \"North up\" map widget setting disabled by default.",
+    ]),
     Version(version: "0.327.0", date: "2024-07-10", changes: [
         "• Scene widget. 💡 JohannesLiv",
         "  • To easily use the same widgets in multiple scenes.",
