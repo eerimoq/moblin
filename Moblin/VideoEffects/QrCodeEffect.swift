@@ -44,7 +44,8 @@ final class QrCodeEffect: VideoEffect {
         //     return
         // }
         // let imageMetalPetal = MTIImage(cgImage: cgImage, isOpaque: false).resized(
-        //     to: .init(width: toPixels(sceneWidget.width, size.width), height: toPixels(sceneWidget.height, size.height)),
+        //     to: .init(width: toPixels(sceneWidget.width, size.width),
+        // height: toPixels(sceneWidget.height, size.height)),
         //     resizingMode: .aspect
         // )
         qrCodeQueue.sync {
