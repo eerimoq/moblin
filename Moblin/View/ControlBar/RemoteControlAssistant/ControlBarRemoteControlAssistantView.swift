@@ -159,13 +159,13 @@ private struct RemoteControlAudioLevelView: View {
                     if channels == nil {
                         Text("Muted")
                     } else {
-                        Text("Muted,")
+                        Text(",Muted")
                     }
                 } else if level == .infinity {
                     if channels == nil {
                         Text("Unknown")
                     } else {
-                        Text("Unknown,")
+                        Text(",Unknown")
                     }
                 } else {
                     HStack(spacing: 0) {

@@ -4694,7 +4694,7 @@ extension Model: RemoteControlStreamerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
-                topRight.audioLevel = self.audioLevel
+                topRight.audioLevel = self.audioLevel.isNaN ? nil : self.audioLevel
                 topRight.numberOfAudioChannels = self.numberOfAudioChannels
             }
             if self.isShowingStatusServers() {
@@ -4992,15 +4992,15 @@ extension Model {
             if let recordingMessage = topRight.recording?.message {
                 self.sendRecordingLengthToWatch(recordingLength: recordingMessage)
             }
+            self.sendIsRecordingToWatch(isRecording: topRight.recording?.message != nil)
             if let bitrateMessage = topRight.bitrate?.message {
                 self.sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
             }
+            self.sendIsLiveToWatch(isLive: topRight.bitrate?.message != nil)
             if let audioLevel = topRight.audioLevel {
                 self.sendAudioLevelToWatch(audioLevel: audioLevel)
-                self.sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
             }
-            self.sendIsLiveToWatch(isLive: topRight.bitrate?.message != nil)
-            self.sendIsRecordingToWatch(isRecording: topRight.recording?.message != nil)
+            self.sendIsMutedToWatch(isMuteOn: topRight.audioLevel == nil)
         }
         remoteControlAssistant?.getSettings { settings in
             self.remoteControlSettings = settings
@@ -5333,7 +5333,6 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             if self.isRemoteControlAssistantConnected() {
                 self.remoteControlAssistantSetStream(on: value)
-                self.sendIsLiveToWatch(isLive: value)
             } else {
                 if value {
                     self.startStream()
@@ -5351,7 +5350,6 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             if self.isRemoteControlAssistantConnected() {
                 self.remoteControlAssistantSetRecord(on: value)
-                self.sendIsRecordingToWatch(isRecording: value)
             } else {
                 if value {
                     self.startRecording()
@@ -5369,7 +5367,6 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             if self.isRemoteControlAssistantConnected() {
                 self.remoteControlAssistantSetMute(on: value)
-                self.sendIsMutedToWatch(isMuteOn: value)
             } else {
                 self.setIsMuted(value: value)
             }
