@@ -104,7 +104,7 @@ struct RtmpServerStreamSettingsView: View {
                     title: String(localized: "Latency"),
                     value: String(stream.latency!),
                     onSubmit: submitLatency,
-                    footer: Text("Zero or more milliseconds."),
+                    footers: [String(localized: "Zero or more milliseconds.")],
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )

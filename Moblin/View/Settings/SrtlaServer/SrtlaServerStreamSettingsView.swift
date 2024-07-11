@@ -75,7 +75,7 @@ struct SrtlaServerStreamSettingsView: View {
                     title: String(localized: "Stream id"),
                     value: stream.streamId,
                     onSubmit: submitStreamId,
-                    footer: Text("May only contain lower case letters.")
+                    footers: [String(localized: "May only contain lower case letters.")]
                 )
                 .disabled(model.srtlaServerEnabled())
             } footer: {

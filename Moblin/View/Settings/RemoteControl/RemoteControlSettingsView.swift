@@ -146,7 +146,11 @@ struct RemoteControlSettingsView: View {
                     title: String(localized: "Assistant URL"),
                     value: model.database.remoteControl!.server.url,
                     onSubmit: submitStreamerUrl,
-                    footer: Text("Enter assistant's address and port. For example ws://132.23.43.43:2345."),
+                    footers: [
+                        String(
+                            localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
+                        ),
+                    ],
                     keyboardType: .URL,
                     placeholder: "ws://32.143.32.12:2345"
                 )
