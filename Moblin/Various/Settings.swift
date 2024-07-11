@@ -659,6 +659,10 @@ class SettingsWidgetScene: Codable {
     var sceneId: UUID = .init()
 }
 
+class SettingsWidgetQrCode: Codable {
+    var message = ""
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -690,6 +694,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case crop = "Crop"
     case map = "Map"
     case scene = "Scene"
+    case qrCode = "QR code"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -712,6 +717,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .map
         case String(localized: "Scene"):
             return .scene
+        case String(localized: "QR code"):
+            return .qrCode
         default:
             return .videoEffect
         }
@@ -733,6 +740,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Map")
         case .scene:
             return String(localized: "Scene")
+        case .qrCode:
+            return String(localized: "QR code")
         }
     }
 }
@@ -758,6 +767,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var crop: SettingsWidgetCrop? = .init()
     var map: SettingsWidgetMap? = .init()
     var scene: SettingsWidgetScene? = .init()
+    var qrCode: SettingsWidgetQrCode? = .init()
 
     init(name: String) {
         self.name = name
@@ -2834,6 +2844,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.scene == nil {
             widget.scene = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.qrCode == nil {
+            widget.qrCode = .init()
             store()
         }
     }

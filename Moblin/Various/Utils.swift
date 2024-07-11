@@ -52,6 +52,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "map"
     case .scene:
         return "photo.on.rectangle"
+    case .qrCode:
+        return "qrcode"
     }
 }
 

@@ -10,6 +10,9 @@
 		0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* ChatSettingsView.swift */; };
+		030499632C4038C9003488F4 /* WidgetQrCodeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499622C4038C9003488F4 /* WidgetQrCodeSettingsView.swift */; };
+		030499652C4039EF003488F4 /* QrCodeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499642C4039EF003488F4 /* QrCodeEffect.swift */; };
+		030499682C404813003488F4 /* EffectUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499672C404812003488F4 /* EffectUtils.swift */; };
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
@@ -452,6 +455,9 @@
 		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* ChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
+		030499622C4038C9003488F4 /* WidgetQrCodeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetQrCodeSettingsView.swift; sourceTree = "<group>"; };
+		030499642C4039EF003488F4 /* QrCodeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeEffect.swift; sourceTree = "<group>"; };
+		030499672C404812003488F4 /* EffectUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectUtils.swift; sourceTree = "<group>"; };
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
@@ -927,6 +933,14 @@
 			path = Chat;
 			sourceTree = "<group>";
 		};
+		030499602C4038B2003488F4 /* QrCode */ = {
+			isa = PBXGroup;
+			children = (
+				030499622C4038C9003488F4 /* WidgetQrCodeSettingsView.swift */,
+			);
+			path = QrCode;
+			sourceTree = "<group>";
+		};
 		0304A5092B45ADA900310842 /* GameControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1070,6 +1084,7 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				030499602C4038B2003488F4 /* QrCode */,
 				03B2189D2C3E4E3D001FDE57 /* Scene */,
 				039A9E262BAEC58F00A23F97 /* Crop */,
 				03403DF32AD05C700079D8E4 /* Browser */,
@@ -2064,6 +2079,7 @@
 				033235442BFBB71C00B897A5 /* MetalPetal */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
+				030499672C404812003488F4 /* EffectUtils.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
@@ -2073,6 +2089,7 @@
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
 				038C0F682C312C3900A258C6 /* PollEffect.swift */,
+				030499642C4039EF003488F4 /* QrCodeEffect.swift */,
 				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
@@ -2667,6 +2684,7 @@
 				03311B8B2C3271B90073F9E2 /* MediaPlayer.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
+				030499632C4038C9003488F4 /* WidgetQrCodeSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
@@ -2682,6 +2700,8 @@
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */,
 				03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */,
+				030499652C4039EF003488F4 /* QrCodeEffect.swift in Sources */,
+				030499682C404813003488F4 /* EffectUtils.swift in Sources */,
 				03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,

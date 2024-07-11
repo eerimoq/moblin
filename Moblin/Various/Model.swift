@@ -307,6 +307,7 @@ final class Model: NSObject, ObservableObject {
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var lutEffects: [UUID: LutEffect] = [:]
     private var mapEffects: [UUID: MapEffect] = [:]
+    private var qrCodeEffects: [UUID: QrCodeEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
@@ -2308,6 +2309,13 @@ final class Model: NSObject, ObservableObject {
         for widget in database.widgets where widget.type == .map {
             mapEffects[widget.id] = MapEffect(widget: widget.map!)
         }
+        for qrCodeEffect in qrCodeEffects.values {
+            media.unregisterEffect(qrCodeEffect)
+        }
+        qrCodeEffects.removeAll()
+        for widget in database.widgets where widget.type == .qrCode {
+            qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode!)
+        }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -3832,6 +3840,11 @@ final class Model: NSObject, ObservableObject {
                         &usedMapEffects,
                         &addedScenes
                     )
+                }
+            case .qrCode:
+                if let qrCodeEffect = qrCodeEffects[widget.id] {
+                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget, size: media.getVideoSize())
+                    effects.append(qrCodeEffect)
                 }
             }
         }

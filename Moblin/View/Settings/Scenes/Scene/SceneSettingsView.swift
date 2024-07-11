@@ -18,7 +18,7 @@ struct SceneSettingsView: View {
     private func widgetHasPosition(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
             return widget.type == .image || widget.type == .browser || widget
-                .type == .text || widget.type == .crop || widget.type == .map
+                .type == .text || widget.type == .crop || widget.type == .map || widget.type == .qrCode
         } else {
             logger.error("Unable to find widget type")
             return false
@@ -27,7 +27,7 @@ struct SceneSettingsView: View {
 
     private func widgetHasSize(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
-            return widget.type == .image
+            return widget.type == .image || widget.type == .qrCode
         } else {
             logger.error("Unable to find widget type")
             return false
