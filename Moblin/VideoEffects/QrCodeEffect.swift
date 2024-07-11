@@ -31,8 +31,8 @@ final class QrCodeEffect: VideoEffect {
         }
         let x = calcX(x: sceneWidget.x, videoWidth: size.width)
         let y = calcY(y: sceneWidget.y, height: sceneWidget.height, videoHeight: size.height)
-        let scaleX = size.width * (sceneWidget.width / 100) / outputImage.extent.size.width
-        let scaleY = size.height * (sceneWidget.height / 100) / outputImage.extent.size.height
+        let scaleX = toPixels(sceneWidget.width, size.width) / outputImage.extent.size.width
+        let scaleY = toPixels(sceneWidget.height, size.height) / outputImage.extent.size.height
         let scale = min(scaleX, scaleY)
         let image = outputImage
             .transformed(by: CGAffineTransform(scaleX: scale, y: scale))

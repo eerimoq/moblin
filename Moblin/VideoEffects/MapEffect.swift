@@ -73,8 +73,8 @@ final class MapEffect: VideoEffect {
             guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
                 return
             }
-            let x = (self.width * self.x) / 100
-            let y = self.height - (self.height * self.y) / 100 - Double(self.widget.height)
+            let x = toPixels(self.x, self.width)
+            let y = self.height - toPixels(self.y, self.height) - Double(self.widget.height)
             let overlay = dot
                 .transformed(by: CGAffineTransform(
                     translationX: CGFloat(self.widget.width - 30) / 2,
@@ -120,8 +120,8 @@ final class MapEffect: VideoEffect {
         guard let overlayMetalPetal else {
             return image
         }
-        let x = (image.extent.size.width * self.x) / 100 + overlayMetalPetal.size.width / 2
-        let y = (image.extent.size.height * self.y) / 100 + overlayMetalPetal.size.height / 2
+        let x = toPixels(self.x, image.extent.size.width) + overlayMetalPetal.size.width / 2
+        let y = toPixels(self.y, image.extent.size.height) + overlayMetalPetal.size.height / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [

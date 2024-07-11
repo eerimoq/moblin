@@ -53,8 +53,8 @@ final class ImageEffect: VideoEffect {
         guard let overlayMetalPetal else {
             return image
         }
-        let x = (extent.size.width * self.x) / 100 + overlayMetalPetal.size.width / 2
-        let y = (extent.size.height * self.y) / 100 + overlayMetalPetal.size.height / 2
+        let x = toPixels(self.x, extent.size.width) + overlayMetalPetal.size.width / 2
+        let y = toPixels(self.y, extent.size.height) + overlayMetalPetal.size.height / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
@@ -65,10 +65,10 @@ final class ImageEffect: VideoEffect {
 
     private func prepare(size: CGSize) {
         UIGraphicsBeginImageContext(size)
-        let x = (size.width * self.x) / 100
-        let y = (size.height * self.y) / 100
-        let width = (size.width * self.width) / 100
-        let height = (size.height * self.height) / 100
+        let x = toPixels(self.x, size.width)
+        let y = toPixels(self.y, size.height)
+        let width = toPixels(self.width, size.width)
+        let height = toPixels(self.height, size.height)
         let image = originalImage.scalePreservingAspectRatio(targetSize: CGSize(
             width: width,
             height: height
@@ -85,8 +85,8 @@ final class ImageEffect: VideoEffect {
         guard let originalImage = originalImage.cgImage else {
             return
         }
-        let width = (size.width * self.width) / 100
-        let height = (size.height * self.height) / 100
+        let width = toPixels(self.width, size.width)
+        let height = toPixels(self.height, size.height)
         overlayMetalPetal = MTIImage(cgImage: originalImage, isOpaque: true).resized(
             to: .init(width: width, height: height),
             resizingMode: .aspect
