@@ -26,13 +26,15 @@ struct DisplaySettingsView: View {
                     )) {
                         Text("Stream button")
                     }
-                    Toggle("Battery percentage", isOn: Binding(get: {
-                        model.database.batteryPercentage!
-                    }, set: { value in
-                        model.database.batteryPercentage = value
-                        model.store()
-                        model.objectWillChange.send()
-                    }))
+                    if !ProcessInfo().isiOSAppOnMac {
+                        Toggle("Battery percentage", isOn: Binding(get: {
+                            model.database.batteryPercentage!
+                        }, set: { value in
+                            model.database.batteryPercentage = value
+                            model.store()
+                            model.objectWillChange.send()
+                        }))
+                    }
                     NavigationLink(destination: LocalOverlaysSettingsView()) {
                         Text("Local overlays")
                     }
