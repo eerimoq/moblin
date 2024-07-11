@@ -55,6 +55,8 @@ private struct ScenesListView: View {
                 model.store()
                 model.resetSelectedScene()
             })
+        } header: {
+            Text("Scenes")
         } footer: {
             SwipeLeftToDeleteHelpView(kind: String(localized: "a scene"))
         }
