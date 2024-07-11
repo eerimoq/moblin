@@ -84,23 +84,25 @@ struct DisplaySettingsView: View {
                 }
             }
             if model.database.showAllSettings! {
-                Section {
-                    Toggle(isOn: Binding(get: {
-                        model.database.portrait!
-                    }, set: { value in
-                        model.database.portrait = value
-                        model.store()
-                        model.updateOrientationLock()
-                    })) {
-                        Text("Portrait")
-                    }
-                } footer: {
-                    VStack(alignment: .leading) {
-                        Text("Useful when using an external camera and a portrait phone holder.")
-                        Text("")
-                        Text(
-                            "To stream in portrait, enable Settings → Streams → \(model.stream.name) → Portrait."
-                        )
+                if !ProcessInfo().isiOSAppOnMac {
+                    Section {
+                        Toggle(isOn: Binding(get: {
+                            model.database.portrait!
+                        }, set: { value in
+                            model.database.portrait = value
+                            model.store()
+                            model.updateOrientationLock()
+                        })) {
+                            Text("Portrait")
+                        }
+                    } footer: {
+                        VStack(alignment: .leading) {
+                            Text("Useful when using an external camera and a portrait phone holder.")
+                            Text("")
+                            Text(
+                                "To stream in portrait, enable Settings → Streams → \(model.stream.name) → Portrait."
+                            )
+                        }
                     }
                 }
             }
