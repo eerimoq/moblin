@@ -652,7 +652,7 @@ class SettingsWidgetBrowser: Codable {
 class SettingsWidgetMap: Codable {
     var width: Int = 250
     var height: Int = 250
-    var northUp: Bool? = true
+    var northUp: Bool? = false
 }
 
 class SettingsWidgetScene: Codable {
@@ -2835,7 +2835,7 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets where widget.map!.northUp == nil {
-            widget.map!.northUp = true
+            widget.map!.northUp = false
             store()
         }
         if realDatabase.portrait == nil {
