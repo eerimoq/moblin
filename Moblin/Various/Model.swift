@@ -3766,7 +3766,7 @@ final class Model: NSObject, ObservableObject {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
         }
         for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
-            mapEffect.setSceneWidget(sceneWidget: nil, size: nil)
+            mapEffect.setSceneWidget(sceneWidget: nil)
         }
         attachSingleLayout(scene: scene)
     }
@@ -3827,7 +3827,7 @@ final class Model: NSObject, ObservableObject {
                 }
             case .map:
                 if let mapEffect = mapEffects[widget.id], !usedMapEffects.contains(mapEffect) {
-                    mapEffect.setSceneWidget(sceneWidget: sceneWidget, size: media.getVideoSize())
+                    mapEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     effects.append(mapEffect)
                     usedMapEffects.append(mapEffect)
                 }
@@ -3843,7 +3843,7 @@ final class Model: NSObject, ObservableObject {
                 }
             case .qrCode:
                 if let qrCodeEffect = qrCodeEffects[widget.id] {
-                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget)
+                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     effects.append(qrCodeEffect)
                 }
             }
