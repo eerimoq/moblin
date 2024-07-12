@@ -51,6 +51,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Distance. Reset manually.
     - Debug information.
   - Browser widget. Show a web page on stream.
+  - Map widget with location.
+  - QR code widget.
+  - Scene widget.
 - Back or front camera.
   - Front camera mirrored on screen for natural experience.
 - Back, front, top, bottom or external mic.
