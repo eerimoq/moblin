@@ -74,14 +74,6 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                     }
                 }
                 Section {
-                    TextField("My source", text: $model.wizardObsRemoteControlSourceName)
-                        .disableAutocorrection(true)
-                } header: {
-                    Text("Source name")
-                } footer: {
-                    Text("The name of the Source in OBS that receives the stream from Moblin.")
-                }
-                Section {
                     TextField("My BRB scene", text: $model.wizardObsRemoteControlBrbScene)
                         .disableAutocorrection(true)
                 } header: {
@@ -91,6 +83,14 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                     The name of your BRB scene in OBS. Moblin will periodically try to switch \
                     to this scene if the stream is likely broken.
                     """)
+                }
+                Section {
+                    TextField("My source", text: $model.wizardObsRemoteControlSourceName)
+                        .disableAutocorrection(true)
+                } header: {
+                    Text("Source name")
+                } footer: {
+                    Text("The name of the Source in OBS that receives the stream from Moblin.")
                 }
             }
             Section {

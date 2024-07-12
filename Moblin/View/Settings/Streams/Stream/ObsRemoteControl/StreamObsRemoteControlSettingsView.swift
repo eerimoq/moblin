@@ -56,16 +56,6 @@ struct StreamObsRemoteControlSettingsView: View {
             }
             Section {
                 TextEditNavigationView(
-                    title: String(localized: "Source name"),
-                    value: stream.obsSourceName!,
-                    onSubmit: submitSourceName,
-                    capitalize: true
-                )
-            } footer: {
-                Text("The name of the Source in OBS that receives the stream from Moblin.")
-            }
-            Section {
-                TextEditNavigationView(
                     title: String(localized: "BRB scene"),
                     value: stream.obsBrbScene!,
                     onSubmit: submitBrbScene,
@@ -76,6 +66,16 @@ struct StreamObsRemoteControlSettingsView: View {
                 Moblin will periodically try to switch to this OBS scene if the stream is \
                 likely broken.
                 """)
+            }
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Source name"),
+                    value: stream.obsSourceName!,
+                    onSubmit: submitSourceName,
+                    capitalize: true
+                )
+            } footer: {
+                Text("The name of the Source in OBS that receives the stream from Moblin.")
             }
         }
         .navigationTitle("OBS remote control")
