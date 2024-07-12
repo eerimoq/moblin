@@ -2,12 +2,14 @@ import SwiftUI
 
 struct StreamOverlayRightZoomPresetSelctorView: View {
     @EnvironmentObject var model: Model
+    let width: CGFloat
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if model.cameraPosition == .front {
-                SegmentedPicker(model.frontZoomPresets(), selectedItem: Binding(get: {
-                    model.frontZoomPresets().first { $0.id == model.frontZoomPresetId }
+                let presets = model.frontZoomPresets()
+                SegmentedPicker(presets, selectedItem: Binding(get: {
+                    presets.first { $0.id == model.frontZoomPresetId }
                 }, set: { value in
                     if let value {
                         model.frontZoomPresetId = value.id
@@ -15,14 +17,17 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                 })) {
                     Text($0.name)
                         .font(.subheadline)
-                        .frame(width: zoomSegmentWidth, height: segmentHeight)
+                        .frame(
+                            width: min(zoomSegmentWidth, (width - 20) / CGFloat(presets.count)),
+                            height: segmentHeight
+                        )
                 }
                 .onChange(of: model.frontZoomPresetId) { id in
                     model.setCameraZoomPreset(id: id)
                 }
                 .background(pickerBackgroundColor)
                 .foregroundColor(.white)
-                .frame(width: zoomSegmentWidth * Double(model.frontZoomPresets().count))
+                .frame(width: min(zoomSegmentWidth * Double(presets.count), width - 20))
                 .cornerRadius(7)
                 .overlay(
                     RoundedRectangle(cornerRadius: 7)
@@ -30,8 +35,9 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                 )
                 .padding([.bottom], 5)
             } else {
-                SegmentedPicker(model.backZoomPresets(), selectedItem: Binding(get: {
-                    model.backZoomPresets().first { $0.id == model.backZoomPresetId }
+                let presets = model.backZoomPresets()
+                SegmentedPicker(presets, selectedItem: Binding(get: {
+                    presets.first { $0.id == model.backZoomPresetId }
                 }, set: { value in
                     if let value {
                         model.backZoomPresetId = value.id
@@ -39,14 +45,17 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
                 })) {
                     Text($0.name)
                         .font(.subheadline)
-                        .frame(width: zoomSegmentWidth, height: segmentHeight)
+                        .frame(
+                            width: min(zoomSegmentWidth, (width - 20) / CGFloat(presets.count)),
+                            height: segmentHeight
+                        )
                 }
                 .onChange(of: model.backZoomPresetId) { id in
                     model.setCameraZoomPreset(id: id)
                 }
                 .background(pickerBackgroundColor)
                 .foregroundColor(.white)
-                .frame(width: zoomSegmentWidth * Double(model.backZoomPresets().count))
+                .frame(width: min(zoomSegmentWidth * Double(presets.count), width - 20))
                 .cornerRadius(7)
                 .overlay(
                     RoundedRectangle(cornerRadius: 7)

@@ -92,13 +92,21 @@ struct MainView: View {
         )
     }
 
+    private func portraitAspectRatio() -> CGFloat {
+        if model.stream.portrait! {
+            return 9 / 16
+        } else {
+            return 16 / 9
+        }
+    }
+
     private var debug: SettingsDebug {
         model.database.debug!
     }
 
     var body: some View {
         ZStack {
-            if model.stream.portrait! {
+            if model.stream.portrait! || model.database.portrait! {
                 VStack(spacing: 0) {
                     ZStack {
                         HStack {
@@ -144,15 +152,17 @@ struct MainView: View {
                                         }
                                     }
                                 }
-                                .aspectRatio(9 / 16, contentMode: .fit)
+                                .aspectRatio(portraitAspectRatio(), contentMode: .fit)
                                 Spacer(minLength: 0)
                             }
                         }
                         .background(.black)
                         .ignoresSafeArea()
                         .edgesIgnoringSafeArea(.all)
-                        StreamOverlayView()
-                            .opacity(model.showLocalOverlays ? 1 : 0)
+                        GeometryReader { metrics in
+                            StreamOverlayView(width: metrics.size.width)
+                                .opacity(model.showLocalOverlays ? 1 : 0)
+                        }
                         if model.showFace && !model.showDrawOnStream {
                             FaceView(
                                 crop: debug.beautyFilter!,
@@ -243,8 +253,10 @@ struct MainView: View {
                         .background(.black)
                         .ignoresSafeArea()
                         .edgesIgnoringSafeArea(.all)
-                        StreamOverlayView()
-                            .opacity(model.showLocalOverlays ? 1 : 0)
+                        GeometryReader { metrics in
+                            StreamOverlayView(width: metrics.size.width)
+                                .opacity(model.showLocalOverlays ? 1 : 0)
+                        }
                         if model.showDrawOnStream {
                             DrawOnStreamView()
                         }

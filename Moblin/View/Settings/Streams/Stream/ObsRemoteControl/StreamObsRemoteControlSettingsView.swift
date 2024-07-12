@@ -42,7 +42,7 @@ struct StreamObsRemoteControlSettingsView: View {
                     title: String(localized: "URL"),
                     value: stream.obsWebSocketUrl!,
                     onSubmit: submitWebSocketUrl,
-                    footer: Text("For example ws://232.32.45.332:4567."),
+                    footers: [String(localized: "For example ws://232.32.45.332:4567.")],
                     keyboardType: .URL
                 )
                 TextEditNavigationView(

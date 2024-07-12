@@ -29,9 +29,9 @@ struct ZoomPresetSettingsView: View {
             title: String(localized: "X"),
             value: String(preset.x!),
             onSubmit: submitX,
-            footer: Text(
-                "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."
-            ),
+            footers: [
+                String(localized: "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."),
+            ],
             keyboardType: .numbersAndPunctuation
         )
     }

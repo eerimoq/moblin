@@ -55,6 +55,8 @@ private struct ScenesListView: View {
                 model.store()
                 model.resetSelectedScene()
             })
+        } header: {
+            Text("Scenes")
         } footer: {
             SwipeLeftToDeleteHelpView(kind: String(localized: "a scene"))
         }
@@ -67,11 +69,7 @@ struct ScenesSettingsView: View {
     var body: some View {
         Form {
             ScenesListView()
-            Section {
-                NavigationLink(destination: WidgetsSettingsView()) {
-                    Text("Widgets")
-                }
-            }
+            WidgetsSettingsView()
             // Section {
             //     NavigationLink(destination: InlinePickerView(
             //         title: String(localized: "BRB scene"),

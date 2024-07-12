@@ -811,7 +811,9 @@ struct ButtonsInnerView: View {
                     ButtonImage(state: state, buttonSize: size)
                 })
             }
-            if model.database.quickButtons!.showName && !model.stream.portrait! {
+            if model.database.quickButtons!
+                .showName && !(model.stream.portrait! || model.database.portrait!)
+            {
                 Text(state.button.name)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)

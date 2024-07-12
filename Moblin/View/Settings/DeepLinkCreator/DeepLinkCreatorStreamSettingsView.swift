@@ -101,7 +101,9 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     title: String(localized: "Key frame interval"),
                     value: String(video.maxKeyFrameInterval!),
                     onSubmit: submitMaxKeyFrameInterval,
-                    footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
+                    footers: [
+                        String(localized: "Maximum key frame interval in seconds. Set to 0 for automatic."),
+                    ],
                     keyboardType: .numbersAndPunctuation
                 )) {
                     TextItemView(
@@ -186,12 +188,12 @@ private struct DeepLinkCreatorStreamSrtView: View {
                     title: String(localized: "Latency"),
                     value: String(srt.latency),
                     onSubmit: submitLatency,
-                    footer: Text(
-                        """
+                    footers: [
+                        String(localized: """
                         Zero or more milliseconds. Any latency parameter given in the URL \
                         overrides this value.
-                        """
-                    ),
+                        """),
+                    ],
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
@@ -236,7 +238,7 @@ private struct DeepLinkCreatorStreamObsView: View {
                     title: String(localized: "URL"),
                     value: obs.webSocketUrl,
                     onSubmit: submitWebSocketUrl,
-                    footer: Text("For example ws://232.32.45.332:4567."),
+                    footers: [String(localized: "For example ws://232.32.45.332:4567.")],
                     keyboardType: .URL
                 )
                 TextEditNavigationView(

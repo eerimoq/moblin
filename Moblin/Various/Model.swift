@@ -88,12 +88,13 @@ private let globalMyIcons = [
 private let iconsProductIds = [
     "AppIconKing",
     "AppIconQueen",
-    "AppIconHeart",
     "AppIconLooking",
+    "AppIconPixels",
+    "AppIconHeart",
+    "AppIconTub",
     "AppIconGoblin",
     "AppIconGoblina",
     "AppIconTetris",
-    "AppIconTub",
     "AppIconMillionaire",
     "AppIconBillionaire",
     "AppIconTrillionaire",
@@ -306,6 +307,7 @@ final class Model: NSObject, ObservableObject {
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var lutEffects: [UUID: LutEffect] = [:]
     private var mapEffects: [UUID: MapEffect] = [:]
+    private var qrCodeEffects: [UUID: QrCodeEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
@@ -1511,7 +1513,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateOrientation() {
-        if stream.portrait! {
+        if stream.portrait! || database.portrait! {
             streamPreviewView.videoOrientation = .landscapeRight
         } else {
             switch UIDevice.current.orientation {
@@ -1523,7 +1525,6 @@ final class Model: NSObject, ObservableObject {
                 break
             }
         }
-        updateCameraPreviewRotation()
     }
 
     @objc private func orientationDidChange(animated _: Bool) {
@@ -1660,31 +1661,34 @@ final class Model: NSObject, ObservableObject {
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
         for url in urls {
-            guard url.url.path.isEmpty else {
-                logger.warning("Custom URL path is not empty")
-                continue
-            }
-            guard let query = url.url.query(percentEncoded: false) else {
-                logger.warning("Custom URL query is missing")
-                continue
-            }
-            let settings: MoblinSettingsUrl
-            do {
-                settings = try MoblinSettingsUrl.fromString(query: query)
-            } catch {
-                logger.error("Failed to import URL with error: \(error)")
+            if let message = handleSettingsUrl(url: url.url) {
                 makeErrorToast(
                     title: String(localized: "URL import failed"),
-                    subTitle: error.localizedDescription
+                    subTitle: message
                 )
-                continue
-            }
-            if isPresentingWizard || isPresentingSetupWizard {
-                handleSettingsUrlsInWizard(settings: settings)
-            } else {
-                handleSettingsUrlsDefault(settings: settings)
             }
         }
+    }
+
+    func handleSettingsUrl(url: URL) -> String? {
+        guard url.path.isEmpty else {
+            return "Custom URL path is not empty"
+        }
+        guard let query = url.query(percentEncoded: false) else {
+            return "Custom URL query is missing"
+        }
+        let settings: MoblinSettingsUrl
+        do {
+            settings = try MoblinSettingsUrl.fromString(query: query)
+        } catch {
+            return error.localizedDescription
+        }
+        if isPresentingWizard || isPresentingSetupWizard {
+            handleSettingsUrlsInWizard(settings: settings)
+        } else {
+            handleSettingsUrlsDefault(settings: settings)
+        }
+        return nil
     }
 
     private func setupPeriodicTimers() {
@@ -2305,6 +2309,13 @@ final class Model: NSObject, ObservableObject {
         for widget in database.widgets where widget.type == .map {
             mapEffects[widget.id] = MapEffect(widget: widget.map!)
         }
+        for qrCodeEffect in qrCodeEffects.values {
+            media.unregisterEffect(qrCodeEffect)
+        }
+        qrCodeEffects.removeAll()
+        for widget in database.widgets where widget.type == .qrCode {
+            qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode!)
+        }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -2345,6 +2356,9 @@ final class Model: NSObject, ObservableObject {
         if stream.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
+        } else if database.portrait! {
+            AppDelegate.orientationLock = .portrait
+            streamPreviewView.isPortrait = false
         } else {
             AppDelegate.orientationLock = .landscape
             streamPreviewView.isPortrait = false
@@ -3741,6 +3755,33 @@ final class Model: NSObject, ObservableObject {
         effects += registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         var usedMapEffects: [MapEffect] = []
+        var addedScenes: [SettingsScene] = []
+        addSceneEffects(scene, &effects, &usedBrowserEffects, &usedMapEffects, &addedScenes)
+        if !drawOnStreamLines.isEmpty {
+            effects.append(drawOnStreamEffect)
+        }
+        effects += registerGlobalVideoEffectsOnTop()
+        media.setPendingAfterAttachEffects(effects: effects)
+        for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
+            browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
+        }
+        for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
+            mapEffect.setSceneWidget(sceneWidget: nil)
+        }
+        attachSingleLayout(scene: scene)
+    }
+
+    private func addSceneEffects(
+        _ scene: SettingsScene,
+        _ effects: inout [VideoEffect],
+        _ usedBrowserEffects: inout [BrowserEffect],
+        _ usedMapEffects: inout [MapEffect],
+        _ addedScenes: inout [SettingsScene]
+    ) {
+        guard !addedScenes.contains(scene) else {
+            return
+        }
+        addedScenes.append(scene)
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
@@ -3786,24 +3827,27 @@ final class Model: NSObject, ObservableObject {
                 }
             case .map:
                 if let mapEffect = mapEffects[widget.id], !usedMapEffects.contains(mapEffect) {
-                    mapEffect.setSceneWidget(sceneWidget: sceneWidget, size: media.getVideoSize())
+                    mapEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     effects.append(mapEffect)
                     usedMapEffects.append(mapEffect)
                 }
+            case .scene:
+                if let sceneWidgetScene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                    addSceneEffects(
+                        sceneWidgetScene,
+                        &effects,
+                        &usedBrowserEffects,
+                        &usedMapEffects,
+                        &addedScenes
+                    )
+                }
+            case .qrCode:
+                if let qrCodeEffect = qrCodeEffects[widget.id] {
+                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    effects.append(qrCodeEffect)
+                }
             }
         }
-        if !drawOnStreamLines.isEmpty {
-            effects.append(drawOnStreamEffect)
-        }
-        effects += registerGlobalVideoEffectsOnTop()
-        media.setPendingAfterAttachEffects(effects: effects)
-        for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
-            browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
-        }
-        for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
-            mapEffect.setSceneWidget(sceneWidget: nil, size: nil)
-        }
-        attachSingleLayout(scene: scene)
     }
 
     private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
@@ -4063,16 +4107,9 @@ final class Model: NSObject, ObservableObject {
             videoMirrored: getVideoMirroredOnStream()
         ) {
             self.streamPreviewView.isMirrored = isMirrored
-            self.updateCameraPreview()
             self.lastAttachCompletedTime = .now
         }
     }
-
-    private func updateCameraPreview() {
-        updateCameraPreviewRotation()
-    }
-
-    private func updateCameraPreviewRotation() {}
 
     func setGlobalToneMapping(on: Bool) {
         guard let cameraDevice else {
@@ -4182,7 +4219,6 @@ final class Model: NSObject, ObservableObject {
                     self.setIsoAfterCameraAttach(device: device)
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                 }
-                self.updateCameraPreview()
                 self.lastAttachCompletedTime = .now
             }
         )

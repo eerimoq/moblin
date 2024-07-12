@@ -16,17 +16,16 @@ struct WidgetTextSettingsView: View {
             TextEditNavigationView(
                 title: "Format",
                 value: widget.text.formatString,
-                onSubmit: submitFormatString
+                onSubmit: submitFormatString,
+                footers: [
+                    String(localized: "{time} - Show time as HH:MM:SS"),
+                    String(localized: "{speed} - Show speed (if Settings → Location is enabled)"),
+                    String(localized: "{altitude} - Show altitude (if Settings → Location is enabled)"),
+                    String(localized: "{distance} - Show distance (if Settings → Location is enabled)"),
+                    String(localized: "{bitrateAndTotal} - Show bitrate and total number of bytes sent"),
+                    String(localized: "{debugOverlay} - Show debug overlay (if enabled)"),
+                ]
             )
-        } footer: {
-            VStack(alignment: .leading) {
-                Text("{time} - Show time as HH:MM:SS")
-                Text("{speed} - Show speed (if Settings → Location is enabled)")
-                Text("{altitude} - Show altitude (if Settings → Location is enabled)")
-                Text("{distance} - Show distance (if Settings → Location is enabled)")
-                Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
-                Text("{debugOverlay} - Show debug overlay (if enabled)")
-            }
         }
     }
 }

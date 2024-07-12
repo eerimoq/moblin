@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RightOverlayView: View {
     @EnvironmentObject var model: Model
+    let width: CGFloat
 
     private var database: Database {
         model.settings.database
@@ -112,10 +113,10 @@ struct RightOverlayView: View {
                         StreamOverlayRightCameraSettingsControlView()
                     }
                     if database.show.zoomPresets && model.hasZoom {
-                        StreamOverlayRightZoomPresetSelctorView()
+                        StreamOverlayRightZoomPresetSelctorView(width: width)
                     }
                 }
-                StreamOverlayRightSceneSelectorView()
+                StreamOverlayRightSceneSelectorView(width: width)
             }
         }
     }

@@ -4,7 +4,7 @@ struct TextEditNavigationView: View {
     var title: String
     var value: String
     var onSubmit: (String) -> Void
-    var footer: Text = .init("")
+    var footers: [String] = []
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
     var placeholder: String = ""
@@ -17,7 +17,7 @@ struct TextEditNavigationView: View {
             title: title,
             value: value,
             onSubmit: onSubmit,
-            footer: footer,
+            footers: footers,
             capitalize: capitalize,
             keyboardType: keyboardType,
             placeholder: placeholder

@@ -444,6 +444,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.realtimeIrlEnabled = realtimeIrlEnabled
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
+        new.backgroundStreaming = backgroundStreaming
         return new
     }
 
@@ -551,6 +552,10 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
         new.height = height
         return new
     }
+
+    func extent() -> CGRect {
+        return .init(x: x, y: y, width: width, height: height)
+    }
 }
 
 // periphery:ignore
@@ -651,7 +656,15 @@ class SettingsWidgetBrowser: Codable {
 class SettingsWidgetMap: Codable {
     var width: Int = 250
     var height: Int = 250
-    var northUp: Bool? = true
+    var northUp: Bool? = false
+}
+
+class SettingsWidgetScene: Codable {
+    var sceneId: UUID = .init()
+}
+
+class SettingsWidgetQrCode: Codable {
+    var message = ""
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -684,6 +697,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case videoEffect = "Video effect"
     case crop = "Crop"
     case map = "Map"
+    case scene = "Scene"
+    case qrCode = "QR code"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -704,6 +719,10 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .crop
         case String(localized: "Map"):
             return .map
+        case String(localized: "Scene"):
+            return .scene
+        case String(localized: "QR code"):
+            return .qrCode
         default:
             return .videoEffect
         }
@@ -723,6 +742,10 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Crop")
         case .map:
             return String(localized: "Map")
+        case .scene:
+            return String(localized: "Scene")
+        case .qrCode:
+            return String(localized: "QR code")
         }
     }
 }
@@ -747,6 +770,8 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var videoEffect: SettingsWidgetVideoEffect? = .init()
     var crop: SettingsWidgetCrop? = .init()
     var map: SettingsWidgetMap? = .init()
+    var scene: SettingsWidgetScene? = .init()
+    var qrCode: SettingsWidgetQrCode? = .init()
 
     init(name: String) {
         self.name = name
@@ -1655,6 +1680,7 @@ class Database: Codable {
     var srtlaServer: SettingsSrtlaServer? = .init()
     var mediaPlayers: SettingsMediaPlayers? = .init()
     var showAllSettings: Bool? = false
+    var portrait: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2813,7 +2839,19 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets where widget.map!.northUp == nil {
-            widget.map!.northUp = true
+            widget.map!.northUp = false
+            store()
+        }
+        if realDatabase.portrait == nil {
+            realDatabase.portrait = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.scene == nil {
+            widget.scene = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.qrCode == nil {
+            widget.qrCode = .init()
             store()
         }
     }

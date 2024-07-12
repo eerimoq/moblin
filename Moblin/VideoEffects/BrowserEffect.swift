@@ -95,8 +95,8 @@ final class BrowserEffect: VideoEffect {
         let enabled = !(sceneWidget == nil && crops.isEmpty)
         if enabled {
             if let sceneWidget {
-                x = (videoSize.width * sceneWidget.x) / 100
-                y = (videoSize.height * sceneWidget.y) / 100
+                x = toPixels(sceneWidget.x, videoSize.width)
+                y = toPixels(sceneWidget.y, videoSize.height)
                 defaultEnabled = sceneWidget.enabled
             } else {
                 x = 0
@@ -104,8 +104,8 @@ final class BrowserEffect: VideoEffect {
                 defaultEnabled = false
             }
             self.crops = crops.map { WidgetCrop(
-                position: .init(x: (videoSize.width * $0.position.x) / 100,
-                                y: (videoSize.height * $0.position.y) / 100),
+                position: .init(x: toPixels($0.position.x, videoSize.width),
+                                y: toPixels($0.position.y, videoSize.height)),
                 crop: .init(
                     x: $0.crop.origin.x,
                     y: height - $0.crop.height - $0.crop.origin.y,
@@ -114,8 +114,8 @@ final class BrowserEffect: VideoEffect {
                 )
             ) }
             cropsMetalPetal = crops.map { WidgetCrop(
-                position: .init(x: (videoSize.width * $0.position.x) / 100 + $0.crop.width / 2,
-                                y: (videoSize.height * $0.position.y) / 100 + $0.crop.height / 2),
+                position: .init(x: toPixels($0.position.x, videoSize.width) + $0.crop.width / 2,
+                                y: toPixels($0.position.y, videoSize.height) + $0.crop.height / 2),
                 crop: .init(
                     x: $0.crop.minX,
                     y: $0.crop.minY,

@@ -48,6 +48,7 @@ struct StreamSettingsView: View {
                         stream.portrait = value
                         model.store()
                         model.updateOrientationLock()
+                        model.objectWillChange.send()
                     })) {
                         Text("Portrait")
                     }

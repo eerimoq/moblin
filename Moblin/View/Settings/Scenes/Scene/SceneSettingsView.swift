@@ -18,7 +18,7 @@ struct SceneSettingsView: View {
     private func widgetHasPosition(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
             return widget.type == .image || widget.type == .browser || widget
-                .type == .text || widget.type == .crop || widget.type == .map
+                .type == .text || widget.type == .crop || widget.type == .map || widget.type == .qrCode
         } else {
             logger.error("Unable to find widget type")
             return false
@@ -27,7 +27,7 @@ struct SceneSettingsView: View {
 
     private func widgetHasSize(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
-            return widget.type == .image
+            return widget.type == .image || widget.type == .qrCode
         } else {
             logger.error("Unable to find widget type")
             return false
@@ -122,7 +122,7 @@ struct SceneSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(scene.widgets) { widget in
+                    let forEach = ForEach(scene.widgets) { widget in
                         if let realWidget = widgets
                             .first(where: { item in item.id == widget.widgetId })
                         {
@@ -167,14 +167,19 @@ struct SceneSettingsView: View {
                             }
                         }
                     }
-                    .onMove(perform: { froms, to in
-                        scene.widgets.move(fromOffsets: froms, toOffset: to)
-                        model.sceneUpdated()
-                    })
-                    .onDelete(perform: { offsets in
-                        scene.widgets.remove(atOffsets: offsets)
-                        model.sceneUpdated()
-                    })
+                    if expandedWidget == nil {
+                        forEach
+                            .onMove(perform: { froms, to in
+                                scene.widgets.move(fromOffsets: froms, toOffset: to)
+                                model.sceneUpdated()
+                            })
+                            .onDelete(perform: { offsets in
+                                scene.widgets.remove(atOffsets: offsets)
+                                model.sceneUpdated()
+                            })
+                    } else {
+                        forEach
+                    }
                 }
                 AddButtonView(action: {
                     showingAddWidget = true

@@ -37,7 +37,7 @@ private struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        if model.stream.portrait! {
+        if model.stream.portrait! || model.database.portrait! {
             VStack {
                 ZStack {
                     StreamOverlayChatView()
@@ -93,7 +93,7 @@ private struct FrontTorchView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        if model.stream.portrait! {
+        if model.stream.portrait! || model.database.portrait! {
             VStack(spacing: 0) {
                 Rectangle()
                     .foregroundColor(.white)
@@ -139,9 +139,12 @@ private struct FrontTorchView: View {
 
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
+    let width: CGFloat
 
     private func leadingPadding() -> CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad || model.stream.portrait! {
+        if UIDevice.current
+            .userInterfaceIdiom == .pad || (model.stream.portrait! || model.database.portrait!)
+        {
             return 15
         } else {
             return 0
@@ -163,7 +166,7 @@ struct StreamOverlayView: View {
                 .allowsHitTesting(false)
                 HStack {
                     Spacer()
-                    RightOverlayView()
+                    RightOverlayView(width: width)
                 }
                 HStack {
                     StreamOverlayDebugView()

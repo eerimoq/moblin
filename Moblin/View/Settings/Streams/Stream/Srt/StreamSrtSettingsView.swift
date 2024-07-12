@@ -33,12 +33,12 @@ struct StreamSrtSettingsView: View {
                     title: String(localized: "Latency"),
                     value: String(stream.srt.latency),
                     onSubmit: submitLatency,
-                    footer: Text(
-                        """
+                    footers: [
+                        String(localized: """
                         Zero or more milliseconds. Any latency parameter given in the URL \
                         overrides this value.
-                        """
-                    ),
+                        """),
+                    ],
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )

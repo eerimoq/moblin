@@ -5,7 +5,7 @@ struct TextEditView: View {
     var title: String
     @State var value: String
     var onSubmit: (String) -> Void
-    var footer: Text = .init("")
+    var footers: [String] = []
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
     var placeholder: String = ""
@@ -39,7 +39,11 @@ struct TextEditView: View {
                         }
                     }
             } footer: {
-                footer
+                VStack(alignment: .leading) {
+                    ForEach(footers, id: \.self) { footer in
+                        Text(footer)
+                    }
+                }
             }
         }
         .navigationTitle(title)

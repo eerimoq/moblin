@@ -206,8 +206,8 @@ final class TextEffect: VideoEffect {
     }
 
     private func update(image: UIImage, size: CGSize) {
-        let x = (size.width * self.x) / 100
-        let y = (size.height * self.y) / 100
+        let x = toPixels(self.x, size.width)
+        let y = toPixels(self.y, size.height)
         overlay = CIImage(image: image)?
             .transformed(by: CGAffineTransform(
                 translationX: x,
@@ -238,8 +238,8 @@ final class TextEffect: VideoEffect {
         guard let overlayMetalPetal else {
             return image
         }
-        let x = (image.size.width * self.x) / 100 + overlayMetalPetal.size.width / 2
-        let y = (image.size.height * self.y) / 100 + overlayMetalPetal.size.height / 2
+        let x = toPixels(self.x, image.size.width) + overlayMetalPetal.size.width / 2
+        let y = toPixels(self.y, image.size.height) + overlayMetalPetal.size.height / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [

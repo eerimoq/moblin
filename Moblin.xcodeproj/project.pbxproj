@@ -10,6 +10,9 @@
 		0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* ChatSettingsView.swift */; };
+		030499632C4038C9003488F4 /* WidgetQrCodeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499622C4038C9003488F4 /* WidgetQrCodeSettingsView.swift */; };
+		030499652C4039EF003488F4 /* QrCodeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499642C4039EF003488F4 /* QrCodeEffect.swift */; };
+		030499682C404813003488F4 /* EffectUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499672C404812003488F4 /* EffectUtils.swift */; };
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
@@ -306,6 +309,7 @@
 		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
 		03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */; };
 		03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */; };
+		03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
@@ -451,6 +455,9 @@
 		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* ChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
+		030499622C4038C9003488F4 /* WidgetQrCodeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetQrCodeSettingsView.swift; sourceTree = "<group>"; };
+		030499642C4039EF003488F4 /* QrCodeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeEffect.swift; sourceTree = "<group>"; };
+		030499672C404812003488F4 /* EffectUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectUtils.swift; sourceTree = "<group>"; };
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
@@ -786,6 +793,7 @@
 		03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsRecordingSettingsView.swift; sourceTree = "<group>"; };
 		03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettingsView.swift; sourceTree = "<group>"; };
 		03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
+		03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSceneSettingsView.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarLandscapeView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
@@ -923,6 +931,14 @@
 				0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */,
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		030499602C4038B2003488F4 /* QrCode */ = {
+			isa = PBXGroup;
+			children = (
+				030499622C4038C9003488F4 /* WidgetQrCodeSettingsView.swift */,
+			);
+			path = QrCode;
 			sourceTree = "<group>";
 		};
 		0304A5092B45ADA900310842 /* GameControllers */ = {
@@ -1068,6 +1084,8 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				030499602C4038B2003488F4 /* QrCode */,
+				03B2189D2C3E4E3D001FDE57 /* Scene */,
 				039A9E262BAEC58F00A23F97 /* Crop */,
 				03403DF32AD05C700079D8E4 /* Browser */,
 				0315A3652AA33C5400295443 /* Image */,
@@ -1989,6 +2007,14 @@
 			path = Display;
 			sourceTree = "<group>";
 		};
+		03B2189D2C3E4E3D001FDE57 /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */,
+			);
+			path = Scene;
+			sourceTree = "<group>";
+		};
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -2053,6 +2079,7 @@
 				033235442BFBB71C00B897A5 /* MetalPetal */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
+				030499672C404812003488F4 /* EffectUtils.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
@@ -2062,6 +2089,7 @@
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
 				038C0F682C312C3900A258C6 /* PollEffect.swift */,
+				030499642C4039EF003488F4 /* QrCodeEffect.swift */,
 				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
@@ -2656,6 +2684,7 @@
 				03311B8B2C3271B90073F9E2 /* MediaPlayer.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
+				030499632C4038C9003488F4 /* WidgetQrCodeSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
@@ -2671,6 +2700,8 @@
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */,
 				03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */,
+				030499652C4039EF003488F4 /* QrCodeEffect.swift in Sources */,
+				030499682C404813003488F4 /* EffectUtils.swift in Sources */,
 				03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
@@ -2704,6 +2735,7 @@
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
 				035BC8B22C17ABC5008FF4D2 /* SrtServerClient.swift in Sources */,
 				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
+				03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
 				034FA1B82C151DFF00695825 /* AdaptiveBitrateSrtFight.swift in Sources */,
@@ -3212,7 +3244,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.325.0;
+				MARKETING_VERSION = 0.328.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3263,7 +3295,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.325.0;
+				MARKETING_VERSION = 0.328.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
