@@ -62,7 +62,7 @@ final class QrCodeEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
-        guard let image, let imageMetalPetal else {
+        guard let image else {
             return image
         }
         let (overlay, sceneWidget) = qrCodeQueue.sync {
