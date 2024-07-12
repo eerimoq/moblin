@@ -620,6 +620,10 @@ class SettingsScene: Codable, Identifiable, Equatable {
 
 class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
+    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
+    var clearBackgroundColor: Bool? = false
+    var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
+    var clearForegroundColor: Bool? = false
 }
 
 // periphery:ignore
@@ -2852,6 +2856,22 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.qrCode == nil {
             widget.qrCode = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.backgroundColor == nil {
+            widget.text.backgroundColor = .init(red: 0, green: 0, blue: 0)
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.clearBackgroundColor == nil {
+            widget.text.clearBackgroundColor = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.foregroundColor == nil {
+            widget.text.foregroundColor = .init(red: 255, green: 255, blue: 255)
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.clearForegroundColor == nil {
+            widget.text.clearForegroundColor = false
             store()
         }
     }

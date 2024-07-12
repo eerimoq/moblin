@@ -118,6 +118,8 @@ private func loadFormat(format: String) -> [FormatPart] {
 
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
+    private let backgroundColor: RgbColor?
+    private let foregroundColor: RgbColor?
     private var fontSize: CGFloat
     var x: Double
     var y: Double
@@ -129,8 +131,16 @@ final class TextEffect: VideoEffect {
     private var stats = TextEffectStats()
     private var formatParts: [FormatPart]
 
-    init(format: String, fontSize: CGFloat, settingName: String) {
+    init(
+        format: String,
+        backgroundColor: RgbColor?,
+        foregroundColor: RgbColor?,
+        fontSize: CGFloat,
+        settingName: String
+    ) {
         formatParts = loadFormat(format: format)
+        self.backgroundColor = backgroundColor
+        self.foregroundColor = foregroundColor
         self.fontSize = fontSize
         self.settingName = settingName
         x = 0
@@ -181,8 +191,8 @@ final class TextEffect: VideoEffect {
         DispatchQueue.main.async {
             let text = Text(self.formatted())
                 .padding([.leading, .trailing], 7)
-                .background(.black)
-                .foregroundColor(.white)
+                .background(self.backgroundColor?.color() ?? .clear)
+                .foregroundColor(self.foregroundColor?.color() ?? .clear)
                 .font(.system(size: self.scaledFontSize(width: size.width)))
                 .cornerRadius(10)
             let renderer = ImageRenderer(content: text)

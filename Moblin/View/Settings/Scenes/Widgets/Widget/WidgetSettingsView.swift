@@ -42,7 +42,9 @@ struct WidgetSettingsView: View {
             case .browser:
                 WidgetBrowserSettingsView(widget: widget)
             case .text:
-                WidgetTextSettingsView(widget: widget)
+                WidgetTextSettingsView(widget: widget,
+                                       backgroundColor: widget.text.backgroundColor!.color(),
+                                       foregroundColor: widget.text.foregroundColor!.color())
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:

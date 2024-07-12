@@ -37012,6 +37012,9 @@
         }
       }
     },
+    "Foreground" : {
+
+    },
     "FPS" : {
       "localizations" : {
         "de" : {

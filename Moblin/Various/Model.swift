@@ -2282,6 +2282,8 @@ final class Model: NSObject, ObservableObject {
         for widget in database.widgets where widget.type == .text {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
+                backgroundColor: widget.text.clearBackgroundColor! ? nil : widget.text.backgroundColor!,
+                foregroundColor: widget.text.clearForegroundColor! ? nil : widget.text.foregroundColor!,
                 fontSize: 40,
                 settingName: widget.name
             )
