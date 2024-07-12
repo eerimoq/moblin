@@ -4670,6 +4670,8 @@ extension Model: RemoteControlStreamerDelegate {
                 general.flame = .red
             }
             general.wiFiSsid = self.currentWiFiSsid
+            general.isLive = self.isLive
+            general.isRecording = self.isRecording
             var topLeft = RemoteControlStatusTopLeft()
             if self.isShowingStatusStream() {
                 topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())
@@ -4694,7 +4696,13 @@ extension Model: RemoteControlStreamerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
-                topRight.audioLevel = self.audioLevel.isNaN ? nil : self.audioLevel
+                if self.audioLevel.isNaN {
+                    topRight.audioLevel = .muted
+                } else if self.audioLevel.isInfinite {
+                    topRight.audioLevel = .unknown
+                } else {
+                    topRight.audioLevel = .value(self.audioLevel)
+                }
                 topRight.numberOfAudioChannels = self.numberOfAudioChannels
             }
             if self.isShowingStatusServers() {
@@ -4977,30 +4985,25 @@ extension Model {
             self.remoteControlGeneral = general
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
-            var thermalState: ProcessInfo.ThermalState
-            switch self.remoteControlGeneral?.flame {
-            case .white:
-                thermalState = .fair
-            case .yellow:
-                thermalState = .serious
-            case .red:
-                thermalState = .critical
-            case .none:
-                thermalState = .critical
+            if let thermalState = general?.flame?.toThermalState() {
+                self.sendThermalStateToWatch(thermalState: thermalState)
             }
-            self.sendThermalStateToWatch(thermalState: thermalState)
+            if let isLive = general?.isLive {
+                self.sendIsLiveToWatch(isLive: isLive)
+            }
+            if let isRecording = general?.isRecording {
+                self.sendIsRecordingToWatch(isRecording: isRecording)
+            }
             if let recordingMessage = topRight.recording?.message {
                 self.sendRecordingLengthToWatch(recordingLength: recordingMessage)
             }
-            self.sendIsRecordingToWatch(isRecording: topRight.recording?.message != nil)
             if let bitrateMessage = topRight.bitrate?.message {
                 self.sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
             }
-            self.sendIsLiveToWatch(isLive: topRight.bitrate?.message != nil)
-            if let audioLevel = topRight.audioLevel {
+            if let audioLevel = topRight.audioLevel?.toFloat() {
                 self.sendAudioLevelToWatch(audioLevel: audioLevel)
+                self.sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
             }
-            self.sendIsMutedToWatch(isMuteOn: topRight.audioLevel == nil)
         }
         remoteControlAssistant?.getSettings { settings in
             self.remoteControlSettings = settings

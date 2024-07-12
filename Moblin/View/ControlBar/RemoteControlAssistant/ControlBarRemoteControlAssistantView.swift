@@ -232,8 +232,8 @@ struct ControlBarRemoteControlAssistantView: View {
     }
 
     private func audioStatus(status: RemoteControlStatusTopRight) -> Float {
-        guard let audioLevel = status.audioLevel else {
-            return .nan
+        guard let audioLevel = status.audioLevel?.toFloat() else {
+            return .infinity
         }
         return audioLevel
     }
