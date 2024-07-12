@@ -33,6 +33,7 @@ private let fallbackStream = SettingsStream(name: "Fallback")
 let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
 let lowBatteryMessage = String(localized: "Low battery")
+let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
 
 func formatWarning(_ message: String) -> String {
     return "⚠️ \(message) ⚠️"
@@ -4087,6 +4088,9 @@ final class Model: NSObject, ObservableObject {
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
         sendThermalStateToWatch()
         logger.info("Thermal state is \(thermalState.string())")
+        if thermalState == .critical {
+            makeFlameRedToast()
+        }
     }
 
     func reattachCamera() {
@@ -4492,7 +4496,7 @@ final class Model: NSObject, ObservableObject {
 
     private func makeFffffToast(subTitle: String) {
         makeErrorToast(
-            title: String(localized: "😢 FFFFF 😢"),
+            title: fffffMessage,
             font: .system(size: 64).bold(),
             subTitle: subTitle,
             vibrate: true
@@ -4511,6 +4515,10 @@ final class Model: NSObject, ObservableObject {
             title: String(localized: "🥳 Stream likely working 🥳"),
             subTitle: String(localized: "Trying to switch OBS scene to \(scene)")
         )
+    }
+
+    private func makeFlameRedToast() {
+        makeWarningToast(title: flameRedMessage, vibrate: true)
     }
 
     private func startMotionDetection() {

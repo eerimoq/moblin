@@ -79,6 +79,7 @@ struct DisplaySettingsView: View {
                     Text("• \(failedToConnectMessage("Main"))")
                     Text("• \(formatWarning(lowBitrateMessage))")
                     Text("• \(formatWarning(lowBatteryMessage))")
+                    Text("• \(formatWarning(flameRedMessage))")
                     Text("")
                     Text("Make sure silent mode is off for vibrations to work.")
                 }
