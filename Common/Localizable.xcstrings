@@ -29881,8 +29881,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ota käyttöön laitteen värinä, kun seuraavat paahtoleipäät tulevat näkyviin:"
+            "state" : "translated",
+            "value" : "Ota käyttöön laitteen värinä, kun seuraavat ilmoitukset tulevat näkyviin:"
           }
         },
         "fr" : {
@@ -42470,7 +42470,14 @@
       }
     },
     "It is not recommended to export settings from one device and import them in another. Some settings will not work on other devices. Deep links, on the other hand, can be imported on any device." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asetusten vienti laitteesta ja tuonti toisessa laitteessa ei ole suositeltua. Jotkin asetukset ei toimi toisilla laitteilla. Syvät linkit sen sijaan voidaan tuoda kaikilla laitteilla."
+          }
+        }
+      }
     },
     "jo304F4gr" : {
       "localizations" : {
@@ -58853,7 +58860,14 @@
       }
     },
     "QR code" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-koodi"
+          }
+        }
+      }
     },
     "Quick buttons" : {
       "localizations" : {
@@ -78508,8 +78522,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jos haluat suoratoistaa muotokuvana, ota käyttöön Asetukset → Virrat → %@ → Muotokuva."
+            "state" : "translated",
+            "value" : "Jos haluat lähettää pystykuvaa, ota käyttöön Asetukset → Lähetykset → %@ → Pystykuva."
           }
         },
         "fr" : {
@@ -83708,8 +83722,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hyödyllinen käytettäessä ulkoista kameraa ja muotokuvapuhelintelinettä."
+            "state" : "translated",
+            "value" : "Hyödyllinen käytettäessä ulkoista kameraa ja pystysuuntaista puhelintelinettä."
           }
         },
         "fr" : {
