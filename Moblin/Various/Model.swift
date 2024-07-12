@@ -2525,6 +2525,12 @@ final class Model: NSObject, ObservableObject {
         if stream.recording!.autoStartRecording! {
             startRecording()
         }
+        if stream.obsAutoStartStream! {
+            obsStartStream()
+        }
+        if stream.obsAutoStartRecording! {
+            obsStartRecording()
+        }
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
         streamingHistoryStream!.updateLowestBatteryLevel(level: batteryLevel)
@@ -2542,6 +2548,12 @@ final class Model: NSObject, ObservableObject {
         streaming = false
         if stream.recording!.autoStopRecording! {
             stopRecording()
+        }
+        if stream.obsAutoStopStream! {
+            obsStopStream()
+        }
+        if stream.obsAutoStopRecording! {
+            obsStopRecording()
         }
         stopNetStream()
         streamState = .disconnected
