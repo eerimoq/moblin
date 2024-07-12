@@ -14,6 +14,12 @@ struct WatchSettingsView: View {
                 NavigationLink(destination: WatchDisplaySettingsView()) {
                     Text("Display")
                 }
+            } footer: {
+                Text("""
+                The watch acts as a remote control assistant as \
+                soon as a remote control streamer is connected. \
+                Please note that in this case, chat is not (yet) available.
+                """)
             }
         }
         .navigationTitle("Watch")

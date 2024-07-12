@@ -42,6 +42,32 @@ enum RemoteControlStatusGeneralFlame: String, Codable {
     case white = "White"
     case yellow = "Yellow"
     case red = "Red"
+    func toThermalState() -> ProcessInfo.ThermalState {
+        switch self {
+        case .white:
+            return .fair
+        case .yellow:
+            return .serious
+        case .red:
+            return .critical
+        }
+    }
+}
+
+enum RemoteControlStatusGeneralAudioLevel: Codable {
+    case muted
+    case unknown
+    case value(Float)
+    func toFloat() -> Float {
+        switch self {
+        case .muted:
+            return .nan
+        case .unknown:
+            return .infinity
+        case let .value(value):
+            return value
+        }
+    }
 }
 
 struct RemoteControlStatusGeneral: Codable {
@@ -49,6 +75,8 @@ struct RemoteControlStatusGeneral: Codable {
     var batteryLevel: Int?
     var flame: RemoteControlStatusGeneralFlame?
     var wiFiSsid: String?
+    var isLive: Bool?
+    var isRecording: Bool?
 }
 
 struct RemoteControlStatusTopLeft: Codable {
@@ -62,7 +90,8 @@ struct RemoteControlStatusTopLeft: Codable {
 }
 
 struct RemoteControlStatusTopRight: Codable {
-    var audioLevel: RemoteControlStatusItem?
+    var audioLevel: RemoteControlStatusGeneralAudioLevel?
+    var numberOfAudioChannels: Int?
     var rtmpServer: RemoteControlStatusItem?
     var remoteControl: RemoteControlStatusItem?
     var gameController: RemoteControlStatusItem?

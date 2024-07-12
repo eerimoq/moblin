@@ -249,7 +249,9 @@ class Model: NSObject, ObservableObject {
     }
 
     private func handleThermalState(_ data: Any) throws {
-        guard let thermalState = data as? ProcessInfo.ThermalState else {
+        guard let value = data as? Int,
+              let thermalState = ProcessInfo.ThermalState(rawValue: value)
+        else {
             logger.info("Invalid thermal state message")
             return
         }
