@@ -92,7 +92,7 @@ struct StreamObsRemoteControlSettingsView: View {
                 }))
             }
             footer: {
-                Text("OBS will automatically start or stop stream according to the Moblin stream status.")
+                Text("OBS will automatically start or stop stream according to the Moblin live status.")
             }
             Section {
                 Toggle("Auto start recording when going live", isOn: Binding(get: {
@@ -109,7 +109,7 @@ struct StreamObsRemoteControlSettingsView: View {
                 }))
             }
             footer: {
-                Text("OBS will automatically start or stop recording according to the Moblin stream status.")
+                Text("OBS will automatically start or stop recording according to the Moblin live status.")
             }
         }
         .navigationTitle("OBS remote control")
