@@ -552,6 +552,10 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
         new.height = height
         return new
     }
+
+    func extent() -> CGRect {
+        return .init(x: x, y: y, width: width, height: height)
+    }
 }
 
 // periphery:ignore

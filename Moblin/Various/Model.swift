@@ -3843,7 +3843,7 @@ final class Model: NSObject, ObservableObject {
                 }
             case .qrCode:
                 if let qrCodeEffect = qrCodeEffects[widget.id] {
-                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget, size: media.getVideoSize())
+                    qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget)
                     effects.append(qrCodeEffect)
                 }
             }
