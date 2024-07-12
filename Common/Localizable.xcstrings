@@ -555,6 +555,12 @@
         }
       }
     },
+    ",Muted" : {
+
+    },
+    ",Unknown" : {
+
+    },
     ": " : {
       "localizations" : {
         "de" : {
@@ -77985,6 +77991,9 @@
           }
         }
       }
+    },
+    "The watch acts as a remote control assistant as soon as a remote control streamer is connected. Please note that in this case, chat is not (yet) available." : {
+
     },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
       "localizations" : {
