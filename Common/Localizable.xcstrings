@@ -13092,6 +13092,9 @@
         }
       }
     },
+    "Auto start streaming when going live" : {
+
+    },
     "Auto stop recording when ending stream" : {
       "localizations" : {
         "de" : {
@@ -13221,6 +13224,9 @@
           }
         }
       }
+    },
+    "Auto stop streaming when ending stream" : {
+
     },
     "Automatically goes live when switching stream." : {
       "localizations" : {
