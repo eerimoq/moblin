@@ -158,13 +158,13 @@ private struct RemoteControlAudioLevelView: View {
                     if channels == nil {
                         Text("Muted")
                     } else {
-                        Text(",Muted")
+                        Text("Muted,")
                     }
                 } else if level == .infinity {
                     if channels == nil {
                         Text("Unknown")
                     } else {
-                        Text(",Unknown")
+                        Text("Unknown,")
                     }
                 } else {
                     HStack(spacing: 0) {
@@ -333,7 +333,7 @@ struct ControlBarRemoteControlAssistantView: View {
                                         )
                                     } else {
                                         // Backwards compatibility. Remove later.
-                                        StatusItemView(icon: "server.rack", status: status.audioLevel)
+                                        StatusItemView(icon: "waveform", status: status.audioLevel)
                                     }
                                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
