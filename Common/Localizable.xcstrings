@@ -44419,6 +44419,16 @@
         }
       }
     },
+    "Length" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Längd"
+          }
+        }
+      }
+    },
     "Let it snow" : {
       "localizations" : {
         "de" : {
@@ -68340,7 +68350,14 @@
       }
     },
     "Size" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Storlek"
+          }
+        }
+      }
     },
     "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH" : {
       "localizations" : {

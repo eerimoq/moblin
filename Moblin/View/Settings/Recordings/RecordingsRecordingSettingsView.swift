@@ -35,32 +35,47 @@ struct RecordingsRecordingSettingsView: View {
                         }
                 }
                 Section {
-                    TextValueView(name: "Start time", value: recording.startTime.formatted())
-                    TextValueView(name: "Length", value: recording.length().formatWithSeconds())
-                    TextValueView(name: "Size", value: recording.sizeString())
+                    TextValueView(
+                        name: String(localized: "Start time"),
+                        value: recording.startTime.formatted()
+                    )
+                    TextValueView(
+                        name: String(localized: "Length"),
+                        value: recording.length().formatWithSeconds()
+                    )
+                    TextValueView(name: String(localized: "Size"), value: recording.sizeString())
                 }
                 Section {
-                    TextValueView(name: "Resolution", value: recording.settings.resolutionString())
-                    TextValueView(name: "FPS", value: "\(recording.settings.fps)")
+                    TextValueView(
+                        name: String(localized: "Resolution"),
+                        value: recording.settings.resolutionString()
+                    )
+                    TextValueView(name: String(localized: "FPS"), value: "\(recording.settings.fps)")
                     if recording.settings.recording == nil {
-                        TextValueView(name: "Video codec", value: recording.settings.codecString())
+                        TextValueView(
+                            name: String(localized: "Video codec"),
+                            value: recording.settings.codecString()
+                        )
                     } else {
                         TextValueView(
-                            name: "Video codec",
+                            name: String(localized: "Video codec"),
                             value: recording.settings.recording!.videoCodecString()
                         )
                         TextValueView(
-                            name: "Video bitrate",
+                            name: String(localized: "Video bitrate"),
                             value: recording.settings.recording!.videoBitrateString()
                         )
                         TextValueView(
-                            name: "Key frame interval",
+                            name: String(localized: "Key frame interval"),
                             value: recording.settings.recording!.maxKeyFrameIntervalString()
                         )
                     }
-                    TextValueView(name: "Audio codec", value: recording.settings.audioCodecString())
                     TextValueView(
-                        name: "Audio bitrate",
+                        name: String(localized: "Audio codec"),
+                        value: recording.settings.audioCodecString()
+                    )
+                    TextValueView(
+                        name: String(localized: "Audio bitrate"),
                         value: recording.settings.recording!.audioBitrateString()
                     )
                 } header: {
