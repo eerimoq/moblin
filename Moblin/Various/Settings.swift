@@ -380,6 +380,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsWebSocketPassword: String? = ""
     var obsSourceName: String? = ""
     var obsBrbScene: String? = ""
+    var obsAutoStartStream: Bool? = false
+    var obsAutoStopStream: Bool? = false
+    var obsAutoStartRecording: Bool? = false
+    var obsAutoStopRecording: Bool? = false
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
     var bitrate: UInt32 = 5_000_000
@@ -426,6 +430,11 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.obsWebSocketUrl = obsWebSocketUrl
         new.obsWebSocketPassword = obsWebSocketPassword
         new.obsSourceName = obsSourceName
+        new.obsBrbScene = obsBrbScene
+        new.obsAutoStartStream = obsAutoStartStream
+        new.obsAutoStopStream = obsAutoStopStream
+        new.obsAutoStartRecording = obsAutoStartRecording
+        new.obsAutoStopRecording = obsAutoStopRecording
         new.resolution = resolution
         new.fps = fps
         new.bitrate = bitrate
@@ -2990,6 +2999,22 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.text.fontWeight == nil {
             widget.text.fontWeight = .regular
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsAutoStartStream == nil {
+            stream.obsAutoStartStream = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsAutoStopStream == nil {
+            stream.obsAutoStopStream = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsAutoStartRecording == nil {
+            stream.obsAutoStartRecording = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsAutoStopRecording == nil {
+            stream.obsAutoStopRecording = false
             store()
         }
     }
