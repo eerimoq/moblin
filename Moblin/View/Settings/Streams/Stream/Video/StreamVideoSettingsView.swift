@@ -38,35 +38,41 @@ struct StreamVideoSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(title: String(localized: "Resolution"),
-                                                             onChange: onResolutionChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(values: resolutions),
-                                                             selectedId: stream.resolution
-                                                                 .rawValue))
-                {
-                    TextItemView(name: String(localized: "Resolution"), value: stream.resolution.rawValue)
+                HStack {
+                    Text("Resolution")
+                    Spacer()
+                    Picker("", selection: Binding(get: {
+                        stream.resolution.rawValue
+                    }, set: onResolutionChange)) {
+                        ForEach(resolutions, id: \.self) {
+                            Text($0)
+                        }
+                    }
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
-                NavigationLink(destination: InlinePickerView(title: String(localized: "FPS"),
-                                                             onChange: onFpsChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(values: fpss),
-                                                             selectedId: String(stream
-                                                                 .fps)))
-                {
-                    TextItemView(name: "FPS", value: String(stream.fps))
+                HStack {
+                    Text("FPS")
+                    Spacer()
+                    Picker("", selection: Binding(get: {
+                        String(stream.fps)
+                    }, set: onFpsChange)) {
+                        ForEach(fpss, id: \.self) {
+                            Text($0)
+                        }
+                    }
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: InlinePickerView(title: String(localized: "Codec"),
-                                                                 onChange: onCodecChange,
-                                                                 items: InlinePickerItem
-                                                                     .fromStrings(values: codecs),
-                                                                 selectedId: stream.codec
-                                                                     .rawValue))
-                    {
-                        TextItemView(name: String(localized: "Codec"), value: stream.codec.rawValue)
+                    HStack {
+                        Text("Codec")
+                        Spacer()
+                        Picker("", selection: Binding(get: {
+                            stream.codec.rawValue
+                        }, set: onCodecChange)) {
+                            ForEach(codecs, id: \.self) {
+                                Text($0)
+                            }
+                        }
                     }
                     .disabled(stream.enabled && model.isLive)
                     NavigationLink(destination: StreamVideoBitrateSettingsView(

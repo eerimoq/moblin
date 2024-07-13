@@ -96,16 +96,16 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Algorithm"),
-                    onChange: handleAlgorithmChange,
-                    items: InlinePickerItem.fromStrings(values: adaptiveBitrateAlgorithms),
-                    selectedId: adaptiveBitrate.algorithm.toString()
-                )) {
-                    TextItemView(
-                        name: String(localized: "Algorithm"),
-                        value: adaptiveBitrate.algorithm.toString()
-                    )
+                HStack {
+                    Text("Algorithm")
+                    Spacer()
+                    Picker("", selection: Binding(get: {
+                        adaptiveBitrate.algorithm.toString()
+                    }, set: handleAlgorithmChange)) {
+                        ForEach(adaptiveBitrateAlgorithms, id: \.self) {
+                            Text($0)
+                        }
+                    }
                 }
             } footer: {
                 Text("Use the Fast IRL algorithm unless you know what you are doing!")

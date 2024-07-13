@@ -85687,6 +85687,7 @@
       }
     },
     "Video stabilization sometimes gives audio-video sync issues." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

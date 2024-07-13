@@ -37,17 +37,16 @@ struct StreamRecordingSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Video codec"),
-                    onChange: onVideoCodecChange,
-                    items: InlinePickerItem
-                        .fromStrings(values: codecs),
-                    selectedId: recording.videoCodec.rawValue
-                )) {
-                    TextItemView(
-                        name: String(localized: "Video codec"),
-                        value: recording.videoCodec.rawValue
-                    )
+                HStack {
+                    Text("Video codec")
+                    Spacer()
+                    Picker("", selection: Binding(get: {
+                        recording.videoCodec.rawValue
+                    }, set: onVideoCodecChange)) {
+                        ForEach(codecs, id: \.self) {
+                            Text($0)
+                        }
+                    }
                 }
                 .disabled(stream.enabled && model.isRecording)
                 NavigationLink(destination: TextEditView(
