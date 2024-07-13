@@ -1732,9 +1732,6 @@ final class Model: NSObject, ObservableObject {
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
-            let (detections, filter) = self.media.getNetStream().getHistograms()
-            detections.log()
-            filter.log()
         })
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             self.updateRemoteControlAssistantStatus()
@@ -1744,7 +1741,9 @@ final class Model: NSObject, ObservableObject {
                 self.updateAudioLevel()
             }
             self.updateChat()
-            self.trySendNextChatPostToWatch()
+            if !self.isRemoteControlAssistantConnected() {
+                self.trySendNextChatPostToWatch()
+            }
             if let lastAttachCompletedTime = self.lastAttachCompletedTime,
                lastAttachCompletedTime.duration(to: .now) > .seconds(0.5)
             {
@@ -2019,7 +2018,9 @@ final class Model: NSObject, ObservableObject {
                 }
             }
             chatPosts.prepend(post)
-            sendChatMessageToWatch(post: post)
+            if !isRemoteControlAssistantConnected() {
+                sendChatMessageToWatch(post: post)
+            }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
             numberOfPostsAppended += 1
@@ -2074,7 +2075,9 @@ final class Model: NSObject, ObservableObject {
                 chatPosts.removeLast()
             }
             chatPosts.prepend(post)
-            sendChatMessageToWatch(post: post)
+            if !isRemoteControlAssistantConnected() {
+                sendChatMessageToWatch(post: post)
+            }
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "")
                 if !message.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -2288,7 +2291,9 @@ final class Model: NSObject, ObservableObject {
                 format: widget.text.formatString,
                 backgroundColor: widget.text.clearBackgroundColor! ? nil : widget.text.backgroundColor!,
                 foregroundColor: widget.text.clearForegroundColor! ? nil : widget.text.foregroundColor!,
-                fontSize: 40,
+                fontSize: CGFloat(widget.text.fontSize!),
+                fontDesign: widget.text.fontDesign!.toSystem(),
+                fontWeight: widget.text.fontWeight!.toSystem(),
                 settingName: widget.name
             )
         }
@@ -2482,14 +2487,18 @@ final class Model: NSObject, ObservableObject {
 
     func setIsLive(value: Bool) {
         isLive = value
-        sendIsLiveToWatch(isLive: isLive)
+        if !isRemoteControlAssistantConnected() {
+            sendIsLiveToWatch(isLive: isLive)
+        }
     }
 
     func setIsRecording(value: Bool) {
         isRecording = value
         setGlobalButtonState(type: .record, isOn: value)
         updateButtonStates()
-        sendIsRecordingToWatch(isRecording: isRecording)
+        if !isRemoteControlAssistantConnected() {
+            sendIsRecordingToWatch(isRecording: isRecording)
+        }
     }
 
     private func setIsMuted(value: Bool) {
@@ -4334,7 +4343,9 @@ final class Model: NSObject, ObservableObject {
 
     private func updateMute() {
         media.setMute(on: isMuteOn)
-        sendIsMutedToWatch(isMuteOn: isMuteOn)
+        if !isRemoteControlAssistantConnected() {
+            sendIsMutedToWatch(isMuteOn: isMuteOn)
+        }
     }
 
     func setCameraZoomPreset(id: UUID) {
@@ -4800,6 +4811,7 @@ extension Model: RemoteControlStreamerDelegate {
             general.wiFiSsid = self.currentWiFiSsid
             general.isLive = self.isLive
             general.isRecording = self.isRecording
+            general.isMuted = self.isMuteOn
             var topLeft = RemoteControlStatusTopLeft()
             if self.isShowingStatusStream() {
                 topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())
@@ -4824,14 +4836,20 @@ extension Model: RemoteControlStreamerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
+                let level = formatAudioLevel(level: self.audioLevel) +
+                    formatAudioLevelChannels(channels: self.numberOfAudioChannels)
+                topRight.audioLevel = RemoteControlStatusItem(message: level)
+                topRight.audioInfo = .init(
+                    audioLevel: .unknown,
+                    numberOfAudioChannels: self.numberOfAudioChannels
+                )
                 if self.audioLevel.isNaN {
-                    topRight.audioLevel = .muted
+                    topRight.audioInfo!.audioLevel = .muted
                 } else if self.audioLevel.isInfinite {
-                    topRight.audioLevel = .unknown
+                    topRight.audioInfo!.audioLevel = .unknown
                 } else {
-                    topRight.audioLevel = .value(self.audioLevel)
+                    topRight.audioInfo!.audioLevel = .value(self.audioLevel)
                 }
-                topRight.numberOfAudioChannels = self.numberOfAudioChannels
             }
             if self.isShowingStatusServers() {
                 topRight.rtmpServer = RemoteControlStatusItem(message: self.serversSpeedAndTotal)
@@ -5106,21 +5124,26 @@ extension Model {
     }
 
     func updateRemoteControlAssistantStatus() {
-        guard showingRemoteControl || isWatchReachable(), remoteControlAssistant?.isConnected() == true else {
+        guard showingRemoteControl || isWatchReachable(), isRemoteControlAssistantConnected() else {
             return
         }
         remoteControlAssistant?.getStatus { general, topLeft, topRight in
             self.remoteControlGeneral = general
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
-            if let thermalState = general?.flame?.toThermalState() {
-                self.sendThermalStateToWatch(thermalState: thermalState)
-            }
-            if let isLive = general?.isLive {
-                self.sendIsLiveToWatch(isLive: isLive)
-            }
-            if let isRecording = general?.isRecording {
-                self.sendIsRecordingToWatch(isRecording: isRecording)
+            if let general {
+                if let thermalState = general.flame?.toThermalState() {
+                    self.sendThermalStateToWatch(thermalState: thermalState)
+                }
+                if let isLive = general.isLive {
+                    self.sendIsLiveToWatch(isLive: isLive)
+                }
+                if let isRecording = general.isRecording {
+                    self.sendIsRecordingToWatch(isRecording: isRecording)
+                }
+                if let isMuted = general.isMuted {
+                    self.sendIsMutedToWatch(isMuteOn: isMuted)
+                }
             }
             if let recordingMessage = topRight.recording?.message {
                 self.sendRecordingLengthToWatch(recordingLength: recordingMessage)
@@ -5128,9 +5151,8 @@ extension Model {
             if let bitrateMessage = topRight.bitrate?.message {
                 self.sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
             }
-            if let audioLevel = topRight.audioLevel?.toFloat() {
-                self.sendAudioLevelToWatch(audioLevel: audioLevel)
-                self.sendIsMutedToWatch(isMuteOn: audioLevel.isNaN)
+            if let audioInfo = topRight.audioInfo {
+                self.sendAudioLevelToWatch(audioLevel: audioInfo.audioLevel.toFloat())
             }
         }
         remoteControlAssistant?.getSettings { settings in
@@ -5143,16 +5165,22 @@ extension Model {
         return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
     }
 
-    func remoteControlAssistantSetStream(on: Bool) {
-        remoteControlAssistant?.setStream(on: on) {}
+    func remoteControlAssistantSetStream(on: Bool, onSuccess: @escaping () -> Void) {
+        remoteControlAssistant?.setStream(on: on) {
+            onSuccess()
+        }
     }
 
-    func remoteControlAssistantSetRecord(on: Bool) {
-        remoteControlAssistant?.setRecord(on: on) {}
+    func remoteControlAssistantSetRecord(on: Bool, onSuccess: @escaping () -> Void) {
+        remoteControlAssistant?.setRecord(on: on) {
+            onSuccess()
+        }
     }
 
-    func remoteControlAssistantSetMute(on: Bool) {
-        remoteControlAssistant?.setMute(on: on) {}
+    func remoteControlAssistantSetMute(on: Bool, onSuccess: @escaping () -> Void) {
+        remoteControlAssistant?.setMute(on: on) {
+            onSuccess()
+        }
     }
 
     func remoteControlAssistantSetScene(id: UUID) {
@@ -5229,9 +5257,7 @@ extension Model: RemoteControlAssistantDelegate {
 
     func assistantPreview(preview: Data) {
         remoteControlPreview = UIImage(data: preview)
-        if isRemoteControlAssistantConnected() {
-            sendPreviewToWatch(image: preview)
-        }
+        sendPreviewToWatch(image: preview)
     }
 
     func assistantLog(entry: String) {
@@ -5406,9 +5432,29 @@ extension Model: WCSessionDelegate {
         logger.debug("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
             self.setLowFpsImage()
-            self.trySendNextChatPostToWatch()
             self.sendSettingsToWatch()
-            if !self.isRemoteControlAssistantConnected() {
+            if self.isRemoteControlAssistantConnected() {
+                if let general = self.remoteControlGeneral {
+                    if let thermalState = general.flame?.toThermalState() {
+                        self.sendThermalStateToWatch(thermalState: thermalState)
+                    }
+                    if let isLive = general.isLive {
+                        self.sendIsLiveToWatch(isLive: isLive)
+                    }
+                    if let isRecording = general.isRecording {
+                        self.sendIsRecordingToWatch(isRecording: isRecording)
+                    }
+                    if let isMuted = general.isMuted {
+                        self.sendIsMutedToWatch(isMuteOn: isMuted)
+                    }
+                }
+                if let topRight = self.remoteControlTopRight {
+                    if let audioInfo = topRight.audioInfo {
+                        self.sendAudioLevelToWatch(audioLevel: audioInfo.audioLevel.toFloat())
+                    }
+                }
+            } else {
+                self.trySendNextChatPostToWatch()
                 self.sendAudioLevelToWatch(audioLevel: self.audioLevel)
                 self.sendThermalStateToWatch(thermalState: self.thermalState)
                 self.sendIsLiveToWatch(isLive: self.isLive)
@@ -5463,7 +5509,11 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isRemoteControlAssistantConnected() {
-                self.remoteControlAssistantSetStream(on: value)
+                self.remoteControlAssistantSetStream(on: value) {
+                    DispatchQueue.main.async {
+                        self.updateRemoteControlAssistantStatus()
+                    }
+                }
             } else {
                 if value {
                     self.startStream()
@@ -5480,7 +5530,11 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isRemoteControlAssistantConnected() {
-                self.remoteControlAssistantSetRecord(on: value)
+                self.remoteControlAssistantSetRecord(on: value) {
+                    DispatchQueue.main.async {
+                        self.updateRemoteControlAssistantStatus()
+                    }
+                }
             } else {
                 if value {
                     self.startRecording()
@@ -5497,7 +5551,11 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isRemoteControlAssistantConnected() {
-                self.remoteControlAssistantSetMute(on: value)
+                self.remoteControlAssistantSetMute(on: value) {
+                    DispatchQueue.main.async {
+                        self.updateRemoteControlAssistantStatus()
+                    }
+                }
             } else {
                 self.setIsMuted(value: value)
             }

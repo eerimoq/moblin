@@ -38,13 +38,16 @@ struct DisplaySettingsView: View {
                     NavigationLink(destination: LocalOverlaysSettingsView()) {
                         Text("Local overlays")
                     }
-                    NavigationLink(destination: InlinePickerView(title: String(localized: "Audio level"),
-                                                                 onChange: onAudioLevelChange,
-                                                                 items: InlinePickerItem
-                                                                     .fromStrings(values: audioLevels),
-                                                                 selectedId: audioLevel()))
-                    {
-                        TextItemView(name: "Audio level", value: audioLevel())
+                    HStack {
+                        Text("Audio level")
+                        Spacer()
+                        Picker("", selection: Binding(get: {
+                            audioLevel()
+                        }, set: onAudioLevelChange)) {
+                            ForEach(audioLevels, id: \.self) {
+                                Text($0)
+                            }
+                        }
                     }
                     NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
                         Text("Network interface names")

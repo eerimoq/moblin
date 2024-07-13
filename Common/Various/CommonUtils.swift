@@ -540,6 +540,16 @@ func formatAudioLevelDb(level: Float) -> String {
     return String(localized: "\(Int(level)) dB,")
 }
 
+func formatAudioLevel(level: Float) -> String {
+    if level.isNaN {
+        return "Muted,"
+    } else if level == .infinity {
+        return "Unknown,"
+    } else {
+        return formatAudioLevelDb(level: level)
+    }
+}
+
 func formatAudioLevelChannels(channels: Int) -> String {
     return String(localized: " \(channels) ch")
 }

@@ -17122,6 +17122,9 @@
         }
       }
     },
+    "Bold" : {
+
+    },
     "Bold message" : {
       "localizations" : {
         "de" : {
@@ -25572,6 +25575,9 @@
         }
       }
     },
+    "Default" : {
+
+    },
     "Delete" : {
       "localizations" : {
         "de" : {
@@ -25961,6 +25967,9 @@
           }
         }
       }
+    },
+    "Design" : {
+
     },
     "Detect language per message" : {
       "localizations" : {
@@ -36622,6 +36631,9 @@
         }
       }
     },
+    "Font" : {
+
+    },
     "Font size" : {
       "localizations" : {
         "de" : {
@@ -43525,6 +43537,9 @@
         }
       }
     },
+    "Light" : {
+
+    },
     "Live" : {
       "localizations" : {
         "de" : {
@@ -49894,6 +49909,9 @@
           }
         }
       }
+    },
+    "Monospaced" : {
+
     },
     "Mouth" : {
       "localizations" : {
@@ -60175,6 +60193,9 @@
         }
       }
     },
+    "Regular" : {
+
+    },
     "Reload browser widgets" : {
       "localizations" : {
         "de" : {
@@ -62385,6 +62406,9 @@
           }
         }
       }
+    },
+    "Rounded" : {
+
     },
     "RTMP" : {
       "localizations" : {
@@ -65115,6 +65139,9 @@
           }
         }
       }
+    },
+    "Serif" : {
+
     },
     "Server port" : {
       "localizations" : {
@@ -77986,6 +78013,9 @@
         }
       }
     },
+    "The watch acts as remote control assistant when the remote control streamer is connected. Please note that in this case, chat, skip current TTS and a few other features are not (yet) supported." : {
+
+    },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
       "localizations" : {
         "de" : {
@@ -85657,6 +85687,7 @@
       }
     },
     "Video stabilization sometimes gives audio-video sync issues." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -86695,6 +86726,9 @@
           }
         }
       }
+    },
+    "Weight" : {
+
     },
     "WHITE BALANCE" : {
       "localizations" : {

@@ -124,8 +124,6 @@ final class VideoUnit: NSObject {
     private let context = CIContext()
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
-    var detectionsHistogram = Histogram(name: "Detections", barWidth: 5)
-    var filterHistogram = Histogram(name: "Filter", barWidth: 5)
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
@@ -228,12 +226,6 @@ final class VideoUnit: NSObject {
     func stopRunning() {
         removeSessionObservers()
         session.stopRunning()
-    }
-
-    func getHistograms() -> (Histogram, Histogram) {
-        return lockQueue.sync {
-            (detectionsHistogram, filterHistogram)
-        }
     }
 
     private func startFrameTimer() {
@@ -783,7 +775,6 @@ final class VideoUnit: NSObject {
         nextFaceDetectionsSequenceNumber += 1
         if anyEffectNeedsFaceDetections() {
             detectionsQueue.async {
-                let startTime = ContinuousClock.now
                 let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
                 let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
                     lockQueue.async {
@@ -801,10 +792,6 @@ final class VideoUnit: NSObject {
                     lockQueue.async {
                         self.faceDetectionsComplete(completion)
                     }
-                }
-                let elapsed = Int(startTime.duration(to: .now).milliseconds)
-                lockQueue.async {
-                    self.detectionsHistogram.add(value: elapsed)
                 }
             }
         } else {
@@ -836,7 +823,6 @@ final class VideoUnit: NSObject {
         _ applyBlur: Bool,
         _ faceDetections: [VNFaceObservation]?
     ) {
-        let startTime = ContinuousClock.now
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
@@ -883,7 +869,6 @@ final class VideoUnit: NSObject {
             }
             self.takeSnapshotComplete = nil
         }
-        filterHistogram.add(value: Int(startTime.duration(to: .now).milliseconds))
     }
 
     private func createLowFpsImage(imageBuffer: CVImageBuffer) {

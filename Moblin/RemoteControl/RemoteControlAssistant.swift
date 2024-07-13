@@ -101,7 +101,6 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .setRecord(on: on), onSuccess: onSuccess)
     }
 
-    // periphery:ignore
     func setStream(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setStream(on: on), onSuccess: onSuccess)
     }
@@ -110,7 +109,6 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .setZoom(x: x), onSuccess: onSuccess)
     }
 
-    // periphery:ignore
     func setMute(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setMute(on: on), onSuccess: onSuccess)
     }

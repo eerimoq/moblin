@@ -1,5 +1,6 @@
 import Foundation
 
+// periphery:ignore
 struct Histogram {
     private let name: String
     private let barWidth: Int

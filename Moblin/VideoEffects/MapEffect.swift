@@ -125,7 +125,7 @@ final class MapEffect: VideoEffect {
         options.camera = camera
         mapSnapshotter = MKMapSnapshotter(options: options)
         mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
-            guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
+            guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
             let overlay = MTIImage(cgImage: image, isOpaque: false).resized(

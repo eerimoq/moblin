@@ -16,7 +16,7 @@ struct WidgetTextSettingsView: View {
     var body: some View {
         Section {
             TextEditNavigationView(
-                title: "Format",
+                title: String(localized: "Text"),
                 value: widget.text.formatString,
                 onSubmit: submitFormatString,
                 footers: [
@@ -28,6 +28,8 @@ struct WidgetTextSettingsView: View {
                     String(localized: "{debugOverlay} - Show debug overlay (if enabled)"),
                 ]
             )
+        }
+        Section {
             Toggle(isOn: Binding(get: {
                 !widget.text.clearBackgroundColor!
             }, set: { value in
@@ -62,6 +64,42 @@ struct WidgetTextSettingsView: View {
                         model.resetSelectedScene(changeScene: false)
                     }
             }
+        } header: {
+            Text("Colors")
+        }
+        Section {
+            HStack {
+                Text("Design")
+                Spacer()
+                Picker("", selection: Binding(get: {
+                    widget.text.fontDesign!.rawValue
+                }, set: { value in
+                    widget.text.fontDesign = SettingsFontDesign.fromString(value: value)
+                    model.store()
+                    model.resetSelectedScene(changeScene: false)
+                })) {
+                    ForEach(textWidgetFontDesigns, id: \.self) {
+                        Text($0)
+                    }
+                }
+            }
+            HStack {
+                Text("Weight")
+                Spacer()
+                Picker("", selection: Binding(get: {
+                    widget.text.fontWeight!.toString()
+                }, set: { value in
+                    widget.text.fontWeight = SettingsFontWeight.fromString(value: value)
+                    model.store()
+                    model.resetSelectedScene(changeScene: false)
+                })) {
+                    ForEach(textWidgetFontWeights, id: \.self) {
+                        Text($0)
+                    }
+                }
+            }
+        } header: {
+            Text("Font")
         }
     }
 }

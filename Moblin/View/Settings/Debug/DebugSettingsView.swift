@@ -31,16 +31,16 @@ struct DebugSettingsView: View {
                 )) {
                     Text("Log")
                 }
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Log level"),
-                    onChange: onLogLevelChange,
-                    items: InlinePickerItem.fromStrings(values: logLevels),
-                    selectedId: model.database.debug!.logLevel.rawValue
-                )) {
-                    TextItemView(
-                        name: String(localized: "Log level"),
-                        value: model.database.debug!.logLevel.rawValue
-                    )
+                HStack {
+                    Text("Log level")
+                    Spacer()
+                    Picker("", selection: Binding(get: {
+                        model.database.debug!.logLevel.rawValue
+                    }, set: onLogLevelChange)) {
+                        ForEach(logLevels, id: \.self) {
+                            Text($0)
+                        }
+                    }
                 }
                 TextEditNavigationView(
                     title: "Maximum log lines",

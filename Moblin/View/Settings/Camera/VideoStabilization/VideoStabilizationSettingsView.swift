@@ -8,22 +8,20 @@ struct VideoStabilizationSettingsView: View {
             .videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: mode)
         model.store()
         model.reattachCamera()
+        model.objectWillChange.send()
     }
 
     var body: some View {
-        NavigationLink(destination: InlinePickerView(
-            title: String(localized: "Video stabilization"),
-            onChange: onChange,
-            footers: [
-                String(localized: "Video stabilization sometimes gives audio-video sync issues."),
-            ],
-            items: InlinePickerItem.fromStrings(values: videoStabilizationModes),
-            selectedId: model.database.videoStabilizationMode.toString()
-        )) {
-            TextItemView(
-                name: String(localized: "Video stabilization"),
-                value: model.database.videoStabilizationMode.toString()
-            )
+        HStack {
+            Text("Video stabilization")
+            Spacer()
+            Picker("", selection: Binding(get: {
+                model.database.videoStabilizationMode.toString()
+            }, set: onChange)) {
+                ForEach(videoStabilizationModes, id: \.self) {
+                    Text($0)
+                }
+            }
         }
     }
 }

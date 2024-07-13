@@ -104,7 +104,6 @@ private struct RemoteControlAudioLevelView: View {
     private let redThresholdDb: Float = -8.5
     private let yellowThresholdDb: Float = -20
     private let zeroThresholdDb: Float = -60
-    let defaultAudioLevel: Float = -160.0
 
     // Approx 60 * 0.3 = 20
     private let maxBars = "||||||||||||||||||||"
@@ -152,20 +151,17 @@ private struct RemoteControlAudioLevelView: View {
             Image(systemName: "waveform")
                 .frame(width: 20)
             HStack(spacing: 1) {
-                if let channels {
-                    Text(formatAudioLevelChannels(channels: channels))
-                }
                 if level.isNaN {
                     if channels == nil {
                         Text("Muted")
                     } else {
-                        Text(",Muted")
+                        Text("Muted,")
                     }
                 } else if level == .infinity {
                     if channels == nil {
                         Text("Unknown")
                     } else {
-                        Text(",Unknown")
+                        Text("Unknown,")
                     }
                 } else {
                     HStack(spacing: 0) {
@@ -183,6 +179,9 @@ private struct RemoteControlAudioLevelView: View {
                     }
                     .padding([.bottom], 3)
                     .bold()
+                }
+                if let channels {
+                    Text(formatAudioLevelChannels(channels: channels))
                 }
             }
             .font(smallFont)
@@ -229,13 +228,6 @@ struct ControlBarRemoteControlAssistantView: View {
             return nil
         }
         return RemoteControlStatusItem(message: wiFiSsid)
-    }
-
-    private func audioStatus(status: RemoteControlStatusTopRight) -> Float {
-        guard let audioLevel = status.audioLevel?.toFloat() else {
-            return .infinity
-        }
-        return audioLevel
     }
 
     var body: some View {
@@ -334,10 +326,15 @@ struct ControlBarRemoteControlAssistantView: View {
                         Section {
                             if let status = model.remoteControlTopRight {
                                 VStack(alignment: .leading, spacing: 3) {
-                                    RemoteControlAudioLevelView(
-                                        level: audioStatus(status: status),
-                                        channels: status.numberOfAudioChannels
-                                    )
+                                    if let audioInfo = status.audioInfo {
+                                        RemoteControlAudioLevelView(
+                                            level: audioInfo.audioLevel.toFloat(),
+                                            channels: audioInfo.numberOfAudioChannels
+                                        )
+                                    } else {
+                                        // Backwards compatibility. Remove later.
+                                        StatusItemView(icon: "waveform", status: status.audioLevel)
+                                    }
                                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
                                     StatusItemView(icon: "gamecontroller", status: status.gameController)
