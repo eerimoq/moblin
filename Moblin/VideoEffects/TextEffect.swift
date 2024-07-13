@@ -125,13 +125,17 @@ final class TextEffect: VideoEffect {
     private let fontWeight: Font.Weight
     var x: Double
     var y: Double
+    private let settingName: String
+    private var stats = TextEffectStats()
+    private var formatParts: [FormatPart]
     private var overlay: CIImage?
     private var overlayMetalPetal: MTIImage?
     private var image: UIImage?
-    private let settingName: String
+    private var imageMetalPetal: UIImage?
     private var nextUpdateTime = ContinuousClock.now
-    private var stats = TextEffectStats()
-    private var formatParts: [FormatPart]
+    private var nextUpdateTimeMetalPetal = ContinuousClock.now
+    private var previousFormattedText: String?
+    private var previousFormattedTextMetalPetal: String?
 
     init(
         format: String,
@@ -195,7 +199,12 @@ final class TextEffect: VideoEffect {
         }
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
-            let text = Text(self.formatted())
+            let formatted = self.formatted()
+            guard formatted != self.previousFormattedText else {
+                return
+            }
+            self.previousFormattedText = formatted
+            let text = Text(formatted)
                 .padding([.leading, .trailing], 7)
                 .background(self.backgroundColor?.color() ?? .clear)
                 .foregroundColor(self.foregroundColor?.color() ?? .clear)
@@ -221,23 +230,51 @@ final class TextEffect: VideoEffect {
         guard let newImage else {
             return
         }
-        update(image: newImage, size: size)
-        updateMetalPetal(image: newImage, size: size)
-    }
-
-    private func update(image: UIImage, size: CGSize) {
         let x = toPixels(self.x, size.width)
         let y = toPixels(self.y, size.height)
-        overlay = CIImage(image: image)?
+        overlay = CIImage(image: newImage)?
             .transformed(by: CGAffineTransform(
                 translationX: x,
-                y: size.height - image.size.height - y
+                y: size.height - newImage.size.height - y
             ))
             .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
     }
 
-    private func updateMetalPetal(image: UIImage, size _: CGSize) {
-        guard let image = image.cgImage else {
+    private func updateOverlayMetalPetal(size: CGSize) {
+        guard nextUpdateTimeMetalPetal < .now else {
+            return
+        }
+        nextUpdateTimeMetalPetal += .seconds(1)
+        DispatchQueue.main.async {
+            let formatted = self.formatted()
+            guard formatted != self.previousFormattedTextMetalPetal else {
+                return
+            }
+            self.previousFormattedTextMetalPetal = formatted
+            let text = Text(formatted)
+                .padding([.leading, .trailing], 7)
+                .background(self.backgroundColor?.color() ?? .clear)
+                .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                .font(.system(
+                    size: self.scaledFontSize(width: size.width),
+                    weight: self.fontWeight,
+                    design: self.fontDesign
+                ))
+                .cornerRadius(10)
+            let renderer = ImageRenderer(content: text)
+            let image = renderer.uiImage
+            textQueue.sync {
+                self.imageMetalPetal = image
+            }
+        }
+        var newImage: UIImage?
+        textQueue.sync {
+            if self.imageMetalPetal != nil {
+                newImage = self.imageMetalPetal
+                self.imageMetalPetal = nil
+            }
+        }
+        guard let image = newImage?.cgImage else {
             return
         }
         overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
@@ -254,7 +291,7 @@ final class TextEffect: VideoEffect {
         guard let image else {
             return image
         }
-        updateOverlay(size: image.size)
+        updateOverlayMetalPetal(size: image.size)
         guard let overlayMetalPetal else {
             return image
         }
