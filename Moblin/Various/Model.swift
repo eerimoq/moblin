@@ -1744,7 +1744,9 @@ final class Model: NSObject, ObservableObject {
                 self.updateAudioLevel()
             }
             self.updateChat()
-            self.trySendNextChatPostToWatch()
+            if !self.isRemoteControlAssistantConnected() {
+                self.trySendNextChatPostToWatch()
+            }
             if let lastAttachCompletedTime = self.lastAttachCompletedTime,
                lastAttachCompletedTime.duration(to: .now) > .seconds(0.5)
             {
@@ -5244,9 +5246,7 @@ extension Model: RemoteControlAssistantDelegate {
 
     func assistantPreview(preview: Data) {
         remoteControlPreview = UIImage(data: preview)
-        if isRemoteControlAssistantConnected() {
-            sendPreviewToWatch(image: preview)
-        }
+        sendPreviewToWatch(image: preview)
     }
 
     func assistantLog(entry: String) {

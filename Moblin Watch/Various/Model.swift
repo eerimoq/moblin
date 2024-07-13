@@ -3,7 +3,8 @@ import Foundation
 import SwiftUI
 import WatchConnectivity
 
-private let previewTimeout = Duration.seconds(5)
+// Remote control assistant polls status every 5 seconds.
+private let previewTimeout = Duration.seconds(6)
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
