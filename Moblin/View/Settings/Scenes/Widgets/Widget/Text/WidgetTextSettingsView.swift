@@ -6,6 +6,7 @@ struct WidgetTextSettingsView: View {
     var widget: SettingsWidget
     @State var backgroundColor: Color
     @State var foregroundColor: Color
+    @State var fontSize: Float
 
     private func submitFormatString(value: String) {
         widget.text.formatString = value
@@ -69,13 +70,29 @@ struct WidgetTextSettingsView: View {
         }
         Section {
             HStack {
+                Text("Size")
+                Slider(
+                    value: $fontSize,
+                    in: 10 ... 200,
+                    step: 5,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        widget.text.fontSize = Int(fontSize)
+                        model.resetSelectedScene(changeScene: false)
+                    }
+                )
+                Text(String(Int(fontSize)))
+                    .frame(width: 35)
+            }
+            HStack {
                 Text("Design")
                 Spacer()
                 Picker("", selection: Binding(get: {
                     widget.text.fontDesign!.rawValue
                 }, set: { value in
                     widget.text.fontDesign = SettingsFontDesign.fromString(value: value)
-                    model.store()
                     model.resetSelectedScene(changeScene: false)
                 })) {
                     ForEach(textWidgetFontDesigns, id: \.self) {
@@ -90,7 +107,6 @@ struct WidgetTextSettingsView: View {
                     widget.text.fontWeight!.toString()
                 }, set: { value in
                     widget.text.fontWeight = SettingsFontWeight.fromString(value: value)
-                    model.store()
                     model.resetSelectedScene(changeScene: false)
                 })) {
                     ForEach(textWidgetFontWeights, id: \.self) {
@@ -100,6 +116,9 @@ struct WidgetTextSettingsView: View {
             }
         } header: {
             Text("Font")
+        }
+        .onDisappear {
+            model.store()
         }
     }
 }

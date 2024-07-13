@@ -44,7 +44,8 @@ struct WidgetSettingsView: View {
             case .text:
                 WidgetTextSettingsView(widget: widget,
                                        backgroundColor: widget.text.backgroundColor!.color(),
-                                       foregroundColor: widget.text.foregroundColor!.color())
+                                       foregroundColor: widget.text.foregroundColor!.color(),
+                                       fontSize: Float(widget.text.fontSize!))
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:
