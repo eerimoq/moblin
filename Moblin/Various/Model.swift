@@ -5113,7 +5113,7 @@ extension Model {
     }
 
     func updateRemoteControlAssistantStatus() {
-        guard showingRemoteControl || isWatchReachable(), remoteControlAssistant?.isConnected() == true else {
+        guard showingRemoteControl || isWatchReachable(), isRemoteControlAssistantConnected() else {
             return
         }
         remoteControlAssistant?.getStatus { general, topLeft, topRight in
