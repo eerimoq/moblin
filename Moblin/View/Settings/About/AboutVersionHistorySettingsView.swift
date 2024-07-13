@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.329.0", date: "2024-07-13", changes: [
+        "• Warning toast when flame turns red. 💡 JohannesLiv",
+        "• Configurable text widget background and foreground colors. Can be fully transparent.",
+        "• Use watch companion app as remote control assistant. 🧑‍🏭 ErAzOr",
+    ]),
     Version(version: "0.328.0", date: "2024-07-11", changes: [
         "• Make \"Import from clipboard\" button accept deep links.",
         "• Widgets setup on scenes page.",
