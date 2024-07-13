@@ -25699,6 +25699,9 @@
         }
       }
     },
+    "Debug logging" : {
+
+    },
     "Debug overlay" : {
       "localizations" : {
         "de" : {
@@ -45600,6 +45603,7 @@
       }
     },
     "Log level" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

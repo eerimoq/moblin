@@ -4,15 +4,6 @@ struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
 
-    private func onLogLevelChange(level: String) {
-        guard let level = SettingsLogLevel(rawValue: level) else {
-            return
-        }
-        logger.debugEnabled = level == .debug
-        model.database.debug!.logLevel = level
-        model.store()
-    }
-
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
             return
@@ -31,16 +22,18 @@ struct DebugSettingsView: View {
                 )) {
                     Text("Log")
                 }
-                HStack {
-                    Text("Log level")
-                    Spacer()
-                    Picker("", selection: Binding(get: {
-                        model.database.debug!.logLevel.rawValue
-                    }, set: onLogLevelChange)) {
-                        ForEach(logLevels, id: \.self) {
-                            Text($0)
-                        }
+                Toggle(isOn: Binding(get: {
+                    model.database.debug!.logLevel == .debug
+                }, set: { value in
+                    logger.debugEnabled = value
+                    if value {
+                        model.database.debug!.logLevel = .debug
+                    } else {
+                        model.database.debug!.logLevel = .error
                     }
+                    model.store()
+                })) {
+                    Text("Debug logging")
                 }
                 TextEditNavigationView(
                     title: "Maximum log lines",

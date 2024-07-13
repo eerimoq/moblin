@@ -1253,8 +1253,6 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     }
 }
 
-let logLevels = SettingsLogLevel.allCases.map { $0.rawValue }
-
 class SettingsDebugAudioOutputToInputChannelsMap: Codable {
     var channel0: Int = 0
     var channel1: Int = 1
