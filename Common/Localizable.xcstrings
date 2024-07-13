@@ -17122,6 +17122,9 @@
         }
       }
     },
+    "Bold" : {
+
+    },
     "Bold message" : {
       "localizations" : {
         "de" : {
@@ -25572,6 +25575,9 @@
         }
       }
     },
+    "Default" : {
+
+    },
     "Delete" : {
       "localizations" : {
         "de" : {
@@ -25961,6 +25967,9 @@
           }
         }
       }
+    },
+    "Design" : {
+
     },
     "Detect language per message" : {
       "localizations" : {
@@ -36622,6 +36631,9 @@
         }
       }
     },
+    "Font" : {
+
+    },
     "Font size" : {
       "localizations" : {
         "de" : {
@@ -43525,6 +43537,9 @@
         }
       }
     },
+    "Light" : {
+
+    },
     "Live" : {
       "localizations" : {
         "de" : {
@@ -49894,6 +49909,9 @@
           }
         }
       }
+    },
+    "Monospaced" : {
+
     },
     "Mouth" : {
       "localizations" : {
@@ -60175,6 +60193,9 @@
         }
       }
     },
+    "Regular" : {
+
+    },
     "Reload browser widgets" : {
       "localizations" : {
         "de" : {
@@ -62385,6 +62406,9 @@
           }
         }
       }
+    },
+    "Rounded" : {
+
     },
     "RTMP" : {
       "localizations" : {
@@ -65115,6 +65139,9 @@
           }
         }
       }
+    },
+    "Serif" : {
+
     },
     "Server port" : {
       "localizations" : {
@@ -86698,6 +86725,9 @@
           }
         }
       }
+    },
+    "Weight" : {
+
     },
     "WHITE BALANCE" : {
       "localizations" : {

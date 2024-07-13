@@ -618,12 +618,118 @@ class SettingsScene: Codable, Identifiable, Equatable {
     }
 }
 
+enum SettingsFontDesign: String, Codable, CaseIterable {
+    case `default` = "Default"
+    case serif = "Serif"
+    case rounded = "Rounded"
+    case monospaced = "Monospaced"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsFontDesign(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .default
+    }
+
+    static func fromString(value: String) -> SettingsFontDesign {
+        switch value {
+        case String(localized: "Default"):
+            return .default
+        case String(localized: "Serif"):
+            return .serif
+        case String(localized: "Rounded"):
+            return .rounded
+        case String(localized: "Monospaced"):
+            return .monospaced
+        default:
+            return .default
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .default:
+            return String(localized: "Default")
+        case .serif:
+            return String(localized: "Serif")
+        case .rounded:
+            return String(localized: "Rounded")
+        case .monospaced:
+            return String(localized: "Monospaced")
+        }
+    }
+
+    func toSystem() -> Font.Design {
+        switch self {
+        case .default:
+            return .default
+        case .serif:
+            return .serif
+        case .rounded:
+            return .rounded
+        case .monospaced:
+            return .monospaced
+        }
+    }
+}
+
+let textWidgetFontDesigns = SettingsFontDesign.allCases.map { $0.toString() }
+
+enum SettingsFontWeight: String, Codable, CaseIterable {
+    case regular = "Regular"
+    case light = "Light"
+    case bold = "Bold"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsFontWeight(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .regular
+    }
+
+    static func fromString(value: String) -> SettingsFontWeight {
+        switch value {
+        case String(localized: "Regular"):
+            return .regular
+        case String(localized: "Light"):
+            return .light
+        case String(localized: "Bold"):
+            return .bold
+        default:
+            return .regular
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .regular:
+            return String(localized: "Regular")
+        case .light:
+            return String(localized: "Light")
+        case .bold:
+            return String(localized: "Bold")
+        }
+    }
+
+    func toSystem() -> Font.Weight {
+        switch self {
+        case .regular:
+            return .regular
+        case .light:
+            return .light
+        case .bold:
+            return .bold
+        }
+    }
+}
+
+let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
+
 class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
     var clearBackgroundColor: Bool? = false
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
     var clearForegroundColor: Bool? = false
+    var fontSize: Int? = 40
+    var fontDesign: SettingsFontDesign? = .default
+    var fontWeight: SettingsFontWeight? = .regular
 }
 
 // periphery:ignore
@@ -2872,6 +2978,18 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.text.clearForegroundColor == nil {
             widget.text.clearForegroundColor = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.fontSize == nil {
+            widget.text.fontSize = 40
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.fontDesign == nil {
+            widget.text.fontDesign = .default
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.fontWeight == nil {
+            widget.text.fontWeight = .regular
             store()
         }
     }

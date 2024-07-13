@@ -2291,7 +2291,9 @@ final class Model: NSObject, ObservableObject {
                 format: widget.text.formatString,
                 backgroundColor: widget.text.clearBackgroundColor! ? nil : widget.text.backgroundColor!,
                 foregroundColor: widget.text.clearForegroundColor! ? nil : widget.text.foregroundColor!,
-                fontSize: 40,
+                fontSize: CGFloat(widget.text.fontSize!),
+                fontDesign: widget.text.fontDesign!.toSystem(),
+                fontWeight: widget.text.fontWeight!.toSystem(),
                 settingName: widget.name
             )
         }
