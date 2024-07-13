@@ -78,38 +78,32 @@ struct StreamObsRemoteControlSettingsView: View {
                 Text("The name of the Source in OBS that receives the stream from Moblin.")
             }
             Section {
-                Toggle("Auto start streaming when going live", isOn: Binding(get: {
-                    stream.obsAutoStartRecording!
-                }, set: { value in
-                    stream.obsAutoStartRecording = value
-                    model.store()
-                }))
-                Toggle("Auto stop streaming when ending stream", isOn: Binding(get: {
-                    stream.obsAutoStopRecording!
-                }, set: { value in
-                    stream.obsAutoStopRecording = value
-                    model.store()
-                }))
-            }
-            footer: {
-                Text("OBS will automatically start or stop stream according to the Moblin live status.")
-            }
-            Section {
-                Toggle("Auto start recording when going live", isOn: Binding(get: {
+                Toggle("Auto start stream when going live", isOn: Binding(get: {
                     stream.obsAutoStartStream!
                 }, set: { value in
                     stream.obsAutoStartStream = value
                     model.store()
                 }))
-                Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
+                Toggle("Auto stop stream when ending stream", isOn: Binding(get: {
                     stream.obsAutoStopStream!
                 }, set: { value in
                     stream.obsAutoStopStream = value
                     model.store()
                 }))
             }
-            footer: {
-                Text("OBS will automatically start or stop recording according to the Moblin live status.")
+            Section {
+                Toggle("Auto start recording when going live", isOn: Binding(get: {
+                    stream.obsAutoStartRecording!
+                }, set: { value in
+                    stream.obsAutoStartRecording = value
+                    model.store()
+                }))
+                Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
+                    stream.obsAutoStopRecording!
+                }, set: { value in
+                    stream.obsAutoStopRecording = value
+                    model.store()
+                }))
             }
         }
         .navigationTitle("OBS remote control")
