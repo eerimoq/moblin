@@ -151,9 +151,6 @@ private struct RemoteControlAudioLevelView: View {
             Image(systemName: "waveform")
                 .frame(width: 20)
             HStack(spacing: 1) {
-                if let channels {
-                    Text(formatAudioLevelChannels(channels: channels))
-                }
                 if level.isNaN {
                     if channels == nil {
                         Text("Muted")
@@ -182,6 +179,9 @@ private struct RemoteControlAudioLevelView: View {
                     }
                     .padding([.bottom], 3)
                     .bold()
+                }
+                if let channels {
+                    Text(formatAudioLevelChannels(channels: channels))
                 }
             }
             .font(smallFont)
