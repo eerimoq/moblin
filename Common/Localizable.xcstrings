@@ -23229,6 +23229,9 @@
         }
       }
     },
+    "Control and monitor DJI devices. WIP!" : {
+
+    },
     "Control and monitor Moblin from another device." : {
       "localizations" : {
         "de" : {
@@ -28301,6 +28304,9 @@
           }
         }
       }
+    },
+    "DJI remote control" : {
+
     },
     "Do not say messages that are likely spam or bot commands." : {
       "localizations" : {
@@ -71613,6 +71619,9 @@
         }
       }
     },
+    "SSID" : {
+
+    },
     "Standard" : {
       "localizations" : {
         "de" : {
@@ -71872,6 +71881,9 @@
           }
         }
       }
+    },
+    "Start live stream" : {
+
     },
     "Start recording" : {
       "localizations" : {
@@ -89812,6 +89824,9 @@
           }
         }
       }
+    },
+    "WiFi" : {
+
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {
