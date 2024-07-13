@@ -63,10 +63,6 @@ open class NetStream: NSObject {
         }
     }
 
-    func getHistograms() -> (Histogram, Histogram) {
-        return mixer.video.getHistograms()
-    }
-
     var audioSettings: AudioCodecOutputSettings {
         get {
             mixer.audio.codec.outputSettings

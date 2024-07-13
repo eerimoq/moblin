@@ -1732,9 +1732,6 @@ final class Model: NSObject, ObservableObject {
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
-            let (detections, filter) = self.media.getNetStream().getHistograms()
-            detections.log()
-            filter.log()
         })
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             self.updateRemoteControlAssistantStatus()
