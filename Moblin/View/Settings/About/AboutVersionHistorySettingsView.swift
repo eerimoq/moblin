@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.330.0", date: "2024-07-13", changes: [
+        "• Configurable text widget font size, design and weight.",
+        "  • Size is 10-200.",
+        "  • Weights are light, regular and bold.",
+        "  • Designs are default, serif, rounded and monospaced.",
+        "• Prefer drop down pickers over segmented inline pickers.",
+        "  • For smoother settings navigation.",
+        "• Toggles to auto start streaming and/or recording in OBS when going live. Stop when ending stream. 🧑‍🏭 ErAzOr",
+        "  • Settings → Streams → My stream → OBS remote control.",
+    ]),
     Version(version: "0.329.0", date: "2024-07-13", changes: [
         "• Warning toast when flame turns red. 💡 JohannesLiv",
         "• Configurable text widget background and foreground colors. Can be fully transparent.",
