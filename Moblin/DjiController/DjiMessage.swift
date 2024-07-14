@@ -12,6 +12,16 @@ private func djiCrc16(data: Data) -> UInt16 {
     )
 }
 
+func djiPackString(value: String) -> Data {
+    let data = value.utf8Data
+    return Data([UInt8(data.count)]) + data
+}
+
+func djiPackUrl(url: String) -> Data {
+    let data = url.utf8Data
+    return Data([UInt8(data.count), 0]) + data
+}
+
 class DjiMessage {
     var target: UInt32
     var id: UInt16

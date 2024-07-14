@@ -73,76 +73,6 @@ let enterStreamingModeData = Data([
     0x1A,
 ])
 
-let setupWiFiData = Data([
-    0x05,
-    0x51,
-    0x76,
-    0x69,
-    0x73,
-    0x74,
-    0x08,
-    0x6D,
-    0x61,
-    0x78,
-    0x69,
-    0x65,
-    0x72,
-    0x69,
-    0x6B,
-])
-
-let startStreamingData = Data([
-    0x00,
-    0x2E,
-    0x00,
-    0x0A,
-    0xB8,
-    0x0B,
-    0x02,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x23,
-    0x00,
-    0x72,
-    0x74,
-    0x6D,
-    0x70,
-    0x3A,
-    0x2F,
-    0x2F,
-    0x31,
-    0x39,
-    0x32,
-    0x2E,
-    0x31,
-    0x36,
-    0x38,
-    0x2E,
-    0x35,
-    0x30,
-    0x2E,
-    0x32,
-    0x31,
-    0x34,
-    0x3A,
-    0x31,
-    0x39,
-    0x33,
-    0x35,
-    0x2F,
-    0x6C,
-    0x69,
-    0x76,
-    0x65,
-    0x2F,
-    0x6F,
-    0x61,
-    0x34,
-])
-
 private let pairId: UInt16 = 0x8092
 private let preparingToLivestreamId: UInt16 = 0x8C12
 private let setupWiFiId: UInt16 = 0x8C19
@@ -152,12 +82,19 @@ class DjiController: NSObject {
     private var centralManager: CBCentralManager?
     private var oa4Peripheral: CBPeripheral?
     private var oa4Characteristic: CBCharacteristic?
+    private let wiFiSsid: String
+    private let wiFiPassword: String
+    private let rtmpUrl: String
 
-    func start() {
-        // centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+    init(wiFiSsid: String, wiFiPassword: String, rtmpUrl: String) {
+        self.wiFiSsid = wiFiSsid
+        self.wiFiPassword = wiFiPassword
+        self.rtmpUrl = rtmpUrl
     }
 
-    func stop() {}
+    func start() {
+        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+    }
 }
 
 extension DjiController: CBCentralManagerDelegate {
@@ -223,45 +160,57 @@ extension DjiController: CBPeripheralDelegate {
         guard let value = characteristic.value else {
             return
         }
-        guard let message = try? DjiMessage(data: value) else {
-            return
-        }
-        guard let oa4Characteristic, let oa4Peripheral else {
-            return
-        }
-        switch message.id {
+        switch try? DjiMessage(data: value).id {
         case pairId:
-            logger.info("dji-controller: Preparing to livestream")
-            let request = DjiMessage(
-                target: 0x080266,
-                id: preparingToLivestreamId,
-                type: 0xE10240,
-                payload: enterStreamingModeData
-            )
-            oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+            handlePairResponse()
         case preparingToLivestreamId:
-            logger.info("dji-controller: Setuping up WiFi")
-            let request = DjiMessage(
-                target: 0x07021B,
-                id: setupWiFiId,
-                type: 0x470740,
-                payload: setupWiFiData
-            )
-            oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+            handlePreparingToLivestreamResponse()
         case setupWiFiId:
-            logger.info("dji-controller: Starting to stream")
-            let request = DjiMessage(
-                target: 0x08024B,
-                id: startStreamingId,
-                type: 0x780840,
-                payload: startStreamingData
-            )
-            oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+            handleSetupWiFiResponse()
         case startStreamingId:
             logger.info("dji-controller: Streaming, hopefully")
         default:
             break
         }
+    }
+
+    private func handlePairResponse() {
+        guard let oa4Characteristic, let oa4Peripheral else {
+            return
+        }
+        logger.info("dji-controller: Preparing to livestream")
+        let request = DjiMessage(target: 0x080266,
+                                 id: preparingToLivestreamId,
+                                 type: 0xE10240,
+                                 payload: enterStreamingModeData)
+        oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+    }
+
+    private func handlePreparingToLivestreamResponse() {
+        guard let oa4Characteristic, let oa4Peripheral else {
+            return
+        }
+        logger.info("dji-controller: Setuping up WiFi")
+        let payload = djiPackString(value: wiFiSsid) + djiPackString(value: wiFiPassword)
+        let request = DjiMessage(target: 0x07021B,
+                                 id: setupWiFiId,
+                                 type: 0x470740,
+                                 payload: payload)
+        oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+    }
+
+    private func handleSetupWiFiResponse() {
+        guard let oa4Characteristic, let oa4Peripheral else {
+            return
+        }
+        logger.info("dji-controller: Starting to stream")
+        var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
+        payload += djiPackUrl(url: rtmpUrl)
+        let request = DjiMessage(target: 0x08024B,
+                                 id: startStreamingId,
+                                 type: 0x780840,
+                                 payload: payload)
+        oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
     }
 
     func peripheral(

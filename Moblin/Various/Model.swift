@@ -961,7 +961,11 @@ final class Model: NSObject, ObservableObject {
         setupSampleBufferReceiver()
         initMediaPlayers()
         removeUnusedLogs()
-        djiController = DjiController()
+        djiController = DjiController(
+            wiFiSsid: "Qvist",
+            wiFiPassword: "maxierik",
+            rtmpUrl: "rtmp://192.168.50.214:1935/live/oa4"
+        )
         djiController?.start()
     }
 
