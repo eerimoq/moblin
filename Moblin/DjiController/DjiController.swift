@@ -93,7 +93,7 @@ class DjiController: NSObject {
     }
 
     func start() {
-        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        // centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 }
 
