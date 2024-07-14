@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DjiRemoteControlSettingsView: View {
+struct DjiControllerSettingsView: View {
     var body: some View {
         Form {
             Section {
@@ -39,7 +39,7 @@ struct DjiRemoteControlSettingsView: View {
                 })
             }
         }
-        .navigationTitle("DJI remote control")
+        .navigationTitle("DJI controller")
         .toolbar {
             SettingsToolbar()
         }

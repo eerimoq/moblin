@@ -365,7 +365,7 @@
 		03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */; };
 		03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */; };
 		03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DEA1F82BFA66DC00154631 /* MetalPetal.swift */; };
-		03E3E3922C431E0900932B00 /* DjiRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiRemoteControlSettingsView.swift */; };
+		03E3E3922C431E0900932B00 /* DjiControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiControllerSettingsView.swift */; };
 		03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
@@ -850,7 +850,7 @@
 		03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupObsSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupDirectSettingsView.swift; sourceTree = "<group>"; };
 		03DEA1F82BFA66DC00154631 /* MetalPetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPetal.swift; sourceTree = "<group>"; };
-		03E3E3912C431E0900932B00 /* DjiRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiRemoteControlSettingsView.swift; sourceTree = "<group>"; };
+		03E3E3912C431E0900932B00 /* DjiControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiControllerSettingsView.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E92AD42B248D3C00EBAC77 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
@@ -2045,7 +2045,7 @@
 				0379BB992AAD80AF00B718B6 /* Debug */,
 				032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */,
 				03B16A2B2B35D71500E5AB07 /* Display */,
-				03E3E38F2C431DD800932B00 /* DjiRemoteControl */,
+				03E3E38F2C431DD800932B00 /* DjiController */,
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
@@ -2286,12 +2286,12 @@
 			path = NetworkSetup;
 			sourceTree = "<group>";
 		};
-		03E3E38F2C431DD800932B00 /* DjiRemoteControl */ = {
+		03E3E38F2C431DD800932B00 /* DjiController */ = {
 			isa = PBXGroup;
 			children = (
-				03E3E3912C431E0900932B00 /* DjiRemoteControlSettingsView.swift */,
+				03E3E3912C431E0900932B00 /* DjiControllerSettingsView.swift */,
 			);
-			path = DjiRemoteControl;
+			path = DjiController;
 			sourceTree = "<group>";
 		};
 		03E877F52B2DB26100086355 /* GlobalButtons */ = {
@@ -2700,7 +2700,7 @@
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
 				038E7BE32C32F391008994BA /* MediaPlayerSettingsView.swift in Sources */,
-				03E3E3922C431E0900932B00 /* DjiRemoteControlSettingsView.swift in Sources */,
+				03E3E3922C431E0900932B00 /* DjiControllerSettingsView.swift in Sources */,
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */,
