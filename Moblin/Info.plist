@@ -40,6 +40,8 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Moblin communicates with DJI cameras using Bluetooth.</string>
 	<key>IRLTOOLKIT_URL</key>
 	<string>$(IRLTOOLKIT_URL)</string>
 </dict>

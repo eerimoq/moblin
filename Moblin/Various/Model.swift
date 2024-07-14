@@ -486,6 +486,7 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
+    private var djiController: DjiController?
 
     override init() {
         super.init()
@@ -960,6 +961,8 @@ final class Model: NSObject, ObservableObject {
         setupSampleBufferReceiver()
         initMediaPlayers()
         removeUnusedLogs()
+        djiController = DjiController()
+        djiController?.start()
     }
 
     private func removeUnusedLogs() {

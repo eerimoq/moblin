@@ -77,6 +77,16 @@ open class ByteArray {
         writeBytes(value.bigEndian.data)
     }
 
+    func readUInt16Le() throws -> UInt16 {
+        return try UInt16(readUInt8()) | (UInt16(readUInt8()) << 8)
+    }
+
+    @discardableResult
+    func writeUInt16Le(_ value: UInt16) -> Self {
+        writeUInt8(UInt8(value & 0xFF))
+        return writeUInt8(UInt8((value >> 8) & 0xFF))
+    }
+
     func readUInt24() throws -> UInt32 {
         guard ByteArray.sizeOfInt24 <= bytesAvailable else {
             throw ByteArray.Error.eof
@@ -84,6 +94,17 @@ open class ByteArray {
         position += ByteArray.sizeOfInt24
         return UInt32(data: ByteArray.fillZero + data[position - ByteArray.sizeOfInt24 ..< position])
             .bigEndian
+    }
+
+    func readUInt24Le() throws -> UInt32 {
+        return try UInt32(readUInt8()) | (UInt32(readUInt8()) << 8) | (UInt32(readUInt8()) << 16)
+    }
+
+    @discardableResult
+    func writeUInt24Le(_ value: UInt32) -> Self {
+        writeUInt8(UInt8(value & 0xFF))
+        writeUInt8(UInt8((value >> 8) & 0xFF))
+        return writeUInt8(UInt8((value >> 16) & 0xFF))
     }
 
     func readUInt32() throws -> UInt32 {

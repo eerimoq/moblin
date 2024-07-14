@@ -50942,7 +50942,7 @@
         }
       }
     },
-    "Moblin will switch to the BRB scene configured above when the current scene's video source is broken. Typically enable when using Moblin as SRT(LA) server at home, streaming to OBS on the same computer." : {
+    "Moblin will switch to the BRB scene configured above when the current scene's SRT(LA) or RTMP video source is disconnected. Typically enable when using Moblin as SRT(LA) server at home, streaming to OBS on the same computer." : {
 
     },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
