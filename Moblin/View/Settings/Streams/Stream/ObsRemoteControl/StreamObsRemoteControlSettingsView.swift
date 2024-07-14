@@ -67,6 +67,22 @@ struct StreamObsRemoteControlSettingsView: View {
                 likely broken.
                 """)
             }
+            if model.database.showAllSettings! {
+                Section {
+                    Toggle("BRB scene when video source is broken", isOn: Binding(get: {
+                        stream.obsBrbSceneVideoSourceBroken!
+                    }, set: { value in
+                        stream.obsBrbSceneVideoSourceBroken = value
+                    }))
+                    .disabled(stream.obsBrbScene!.isEmpty)
+                } footer: {
+                    Text("""
+                    Moblin will switch to the BRB scene configured above when the current scene's \
+                    SRT(LA) or RTMP video source is disconnected. Typically enable when using Moblin \
+                    as SRT(LA) server at home, streaming to OBS on the same computer.
+                    """)
+                }
+            }
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Source name"),

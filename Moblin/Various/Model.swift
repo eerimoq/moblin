@@ -1774,6 +1774,26 @@ final class Model: NSObject, ObservableObject {
                 return true
             }
         }
+        if stream.obsBrbSceneVideoSourceBroken!, let scene = getSelectedScene() {
+            switch scene.cameraPosition {
+            case .srtla:
+                if let srtlaStream = getSrtlaStream(id: scene.srtlaCameraId!) {
+                    if srtlaServer?.isStreamConnected(streamId: srtlaStream.streamId) == false {
+                        streamBecameBrokenTime = now
+                        return true
+                    }
+                }
+            case .rtmp:
+                if let rtmpStream = getRtmpStream(id: scene.rtmpCameraId!) {
+                    if rtmpServer?.isStreamConnected(streamKey: rtmpStream.streamKey) == false {
+                        streamBecameBrokenTime = now
+                        return true
+                    }
+                }
+            default:
+                break
+            }
+        }
         streamBecameBrokenTime = nil
         return false
     }

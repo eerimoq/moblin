@@ -70,24 +70,6 @@ struct ScenesSettingsView: View {
         Form {
             ScenesListView()
             WidgetsSettingsView()
-            // Section {
-            //     NavigationLink(destination: InlinePickerView(
-            //         title: String(localized: "BRB scene"),
-            //         onChange: onBrbScene,
-            //         items: InlinePickerItem.fromStrings(values: ["todo", "1", "2"]),
-            //         selectedId: "todo"
-            //     )) {
-            //         TextItemView(
-            //             name: String(localized: "BRB scene"),
-            //             value: "todo"
-            //         )
-            //     }
-            // } footer: {
-            //     Text("""
-            //     The scene Moblin will switch to if the video source of the current \
-            //     scene gets disconnected.
-            //     """)
-            // }
         }
         .navigationTitle("Scenes")
         .toolbar {

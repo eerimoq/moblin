@@ -380,6 +380,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsWebSocketPassword: String? = ""
     var obsSourceName: String? = ""
     var obsBrbScene: String? = ""
+    var obsBrbSceneVideoSourceBroken: Bool? = false
     var obsAutoStartStream: Bool? = false
     var obsAutoStopStream: Bool? = false
     var obsAutoStartRecording: Bool? = false
@@ -431,6 +432,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.obsWebSocketPassword = obsWebSocketPassword
         new.obsSourceName = obsSourceName
         new.obsBrbScene = obsBrbScene
+        new.obsBrbSceneVideoSourceBroken = obsBrbSceneVideoSourceBroken
         new.obsAutoStartStream = obsAutoStartStream
         new.obsAutoStopStream = obsAutoStopStream
         new.obsAutoStartRecording = obsAutoStartRecording
@@ -3013,6 +3015,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsAutoStopRecording == nil {
             stream.obsAutoStopRecording = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsBrbSceneVideoSourceBroken == nil {
+            stream.obsBrbSceneVideoSourceBroken = false
             store()
         }
     }
