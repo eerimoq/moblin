@@ -1,10 +1,7 @@
 import CoreBluetooth
 import Foundation
 
-private let djiOsmoAction4ManufacturerData = Data([
-    0xAA, 0x08, 0x14, 0x00, 0xFA, 0xE4, 0x7A, 0x2C,
-    0x13, 0x04, 0x2D,
-])
+private let djiTechnologyCoLtd = Data([0xAA, 0x08])
 
 // The actual values do not matter.
 private let pairTransactionId: UInt16 = 0x8092
@@ -73,7 +70,7 @@ extension DjiController: CBCentralManagerDelegate {
         guard let data = advertisementData[CBAdvertisementDataManufacturerDataKey] as? NSData else {
             return
         }
-        guard Data(bytes: data.bytes, count: data.count) == djiOsmoAction4ManufacturerData else {
+        guard Data(bytes: data.bytes, count: min(2, data.count)) == djiTechnologyCoLtd else {
             return
         }
         central.stopScan()
