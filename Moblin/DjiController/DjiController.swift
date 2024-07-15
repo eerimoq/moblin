@@ -2,85 +2,40 @@ import CoreBluetooth
 import Foundation
 
 private let djiOsmoAction4ManufacturerData = Data([
-    0xAA,
-    0x08,
-    0x14,
-    0x00,
-    0xFA,
-    0xE4,
-    0x7A,
-    0x2C,
-    0x13,
-    0x04,
-    0x2D,
-])
-
-private let pair = Data([
-    0x55,
-    0x33,
-    0x04,
-    0xC2,
-    0x02,
-    0x07,
-    0x92,
-    0x80,
-    0x40,
-    0x07,
-    0x45,
-    0x20,
-    0x32,
-    0x38,
-    0x34,
-    0x61,
-    0x65,
-    0x35,
-    0x62,
-    0x38,
-    0x64,
-    0x37,
-    0x36,
-    0x62,
-    0x33,
-    0x33,
-    0x37,
-    0x35,
-    0x61,
-    0x30,
-    0x34,
-    0x61,
-    0x36,
-    0x34,
-    0x31,
-    0x37,
-    0x61,
-    0x64,
-    0x37,
-    0x31,
-    0x62,
-    0x65,
-    0x61,
-    0x33,
-    0x04,
-    0x31,
-    0x38,
-    0x33,
-    0x32,
-    0xA3,
-    0x20,
+    0xAA, 0x08, 0x14, 0x00, 0xFA, 0xE4, 0x7A, 0x2C,
+    0x13, 0x04, 0x2D,
 ])
 
 private let pairId: UInt16 = 0x8092
 private let preparingToLivestreamId: UInt16 = 0x8C12
-private let setupWiFiId: UInt16 = 0x8C19
+private let setupWifiId: UInt16 = 0x8C19
 private let startStreamingId: UInt16 = 0x8C2C
 
+private let fff4Id = CBUUID(string: "FFF4")
+private let fff5Id = CBUUID(string: "FFF5")
+
+private let pairPinCode = "1234"
+
+private enum State {
+    case idle
+    case discovering
+    case connecting
+    case checkingIfPaired
+    case pairing
+    case preparingStream
+    case settingUpWifi
+    case startingStream
+    case streaming
+}
+
 class DjiController: NSObject {
-    private var centralManager: CBCentralManager?
-    private var oa4Peripheral: CBPeripheral?
-    private var oa4Characteristic: CBCharacteristic?
     private let wifiSsid: String
     private let wifiPassword: String
     private let rtmpUrl: String
+    private var centralManager: CBCentralManager?
+    private var cameraPeripheral: CBPeripheral?
+    private var fff5Characteristic: CBCharacteristic?
+    private var state: State = .idle
 
     init(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
         self.wifiSsid = wifiSsid
@@ -89,7 +44,13 @@ class DjiController: NSObject {
     }
 
     func start() {
-        // centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        setState(state: .discovering)
+        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+    }
+
+    private func setState(state: State) {
+        logger.info("dji-controller: State change \(self.state) -> \(state)")
+        self.state = state
     }
 }
 
@@ -113,9 +74,10 @@ extension DjiController: CBCentralManagerDelegate {
             return
         }
         central.stopScan()
-        oa4Peripheral = peripheral
+        cameraPeripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
+        setState(state: .connecting)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
@@ -128,8 +90,6 @@ extension DjiController: CBCentralManagerDelegate {
 }
 
 extension DjiController: CBPeripheralDelegate {
-    func peripheral(_: CBPeripheral, didModifyServices _: [CBService]) {}
-
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
         guard let peripheralServices = peripheral.services else {
             return
@@ -145,8 +105,8 @@ extension DjiController: CBPeripheralDelegate {
         error _: Error?
     ) {
         for characteristic in service.characteristics ?? [] {
-            if characteristic.uuid == CBUUID(string: "FFF5") {
-                oa4Characteristic = characteristic
+            if characteristic.uuid == fff5Id {
+                fff5Characteristic = characteristic
             }
             peripheral.setNotifyValue(true, for: characteristic)
         }
@@ -156,57 +116,88 @@ extension DjiController: CBPeripheralDelegate {
         guard let value = characteristic.value else {
             return
         }
-        switch try? DjiMessage(data: value).id {
-        case pairId:
-            handlePairResponse()
-        case preparingToLivestreamId:
-            handlePreparingToLivestreamResponse()
-        case setupWiFiId:
-            handleSetupWiFiResponse()
-        case startStreamingId:
-            logger.info("dji-controller: Streaming, hopefully")
-        default:
+        guard let message = try? DjiMessage(data: value) else {
+            return
+        }
+        switch state {
+        case .checkingIfPaired:
+            handlePairResponse(response: message)
+        case .pairing:
+            prepareToLivestream()
+        case .preparingStream:
+            handlePreparingToLivestreamResponse(response: message)
+        case .settingUpWifi:
+            handleSetupWifiResponse(response: message)
+        case .startingStream:
+            handleStartStreamingResponse(response: message)
+        case .streaming:
             break
+        default:
+            logger.info("dji-controller: Received message in unexpected state '\(state)'")
         }
     }
 
-    private func handlePairResponse() {
-        guard let oa4Characteristic, let oa4Peripheral else {
-            return
-        }
-        logger.info("dji-controller: Preparing to livestream")
-        let request = DjiMessage(target: 0x080266,
-                                 id: preparingToLivestreamId,
-                                 type: 0xE10240,
-                                 payload: Data([0x1A]))
-        oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+    private func prepareToLivestream() {
+        writeMessage(message: DjiMessage(target: 0x080266,
+                                         id: preparingToLivestreamId,
+                                         type: 0xE10240,
+                                         payload: Data([0x1A])))
+        setState(state: .preparingStream)
     }
 
-    private func handlePreparingToLivestreamResponse() {
-        guard let oa4Characteristic, let oa4Peripheral else {
+    private func handlePairResponse(response: DjiMessage) {
+        guard response.id == pairId else {
             return
         }
-        logger.info("dji-controller: Setuping up WiFi")
+        if response.payload == Data([0, 1]) {
+            prepareToLivestream()
+        } else {
+            setState(state: .pairing)
+        }
+    }
+
+    private func handlePreparingToLivestreamResponse(response: DjiMessage) {
+        guard response.id == preparingToLivestreamId else {
+            return
+        }
         let payload = djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
-        let request = DjiMessage(target: 0x07021B,
-                                 id: setupWiFiId,
-                                 type: 0x470740,
-                                 payload: payload)
-        oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+        writeMessage(message: DjiMessage(target: 0x07021B,
+                                         id: setupWifiId,
+                                         type: 0x470740,
+                                         payload: payload))
+        setState(state: .settingUpWifi)
     }
 
-    private func handleSetupWiFiResponse() {
-        guard let oa4Characteristic, let oa4Peripheral else {
+    private func handleSetupWifiResponse(response: DjiMessage) {
+        guard response.id == setupWifiId else {
             return
         }
-        logger.info("dji-controller: Starting to stream")
-        var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
+        var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,
+                            0x00, 0x00, 0x00, 0x00])
         payload += djiPackUrl(url: rtmpUrl)
-        let request = DjiMessage(target: 0x08024B,
-                                 id: startStreamingId,
-                                 type: 0x780840,
-                                 payload: payload)
-        oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
+        writeMessage(message: DjiMessage(target: 0x08024B,
+                                         id: startStreamingId,
+                                         type: 0x780840,
+                                         payload: payload))
+        setState(state: .startingStream)
+    }
+
+    private func handleStartStreamingResponse(response: DjiMessage) {
+        guard response.id == startStreamingId else {
+            return
+        }
+        setState(state: .streaming)
+    }
+
+    private func writeMessage(message: DjiMessage) {
+        writeValue(value: message.encode())
+    }
+
+    private func writeValue(value: Data) {
+        guard let fff5Characteristic else {
+            return
+        }
+        cameraPeripheral?.writeValue(value, for: fff5Characteristic, type: .withoutResponse)
     }
 
     func peripheral(
@@ -214,14 +205,20 @@ extension DjiController: CBPeripheralDelegate {
         didUpdateNotificationStateFor characteristic: CBCharacteristic,
         error _: Error?
     ) {
-        guard characteristic.uuid == CBUUID(string: "FFF4") else {
+        guard characteristic.uuid == fff4Id else {
             return
         }
-        guard let oa4Characteristic, let oa4Peripheral else {
-            return
-        }
-        logger.info("dji-controller: Pairing")
-        oa4Peripheral.writeValue(pair, for: oa4Characteristic, type: .withoutResponse)
+        var payload = Data([
+            0x20, 0x32, 0x38, 0x34, 0x61, 0x65, 0x35, 0x62,
+            0x38, 0x64, 0x37, 0x36, 0x62, 0x33, 0x33, 0x37,
+            0x35, 0x61, 0x30, 0x34, 0x61, 0x36, 0x34, 0x31,
+            0x37, 0x61, 0x64, 0x37, 0x31, 0x62, 0x65, 0x61,
+            0x33,
+        ])
+        payload += djiPackString(value: pairPinCode)
+        let request = DjiMessage(target: 0x0702C2, id: pairId, type: 0x450740, payload: payload)
+        writeMessage(message: request)
+        setState(state: .checkingIfPaired)
     }
 
     func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {}

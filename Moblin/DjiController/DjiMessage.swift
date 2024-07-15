@@ -71,4 +71,9 @@ class DjiMessage {
         let crc = djiCrc16(data: writer.data)
         return writer.writeUInt16Le(crc).data
     }
+
+    // periphery:ignore
+    func format() -> String {
+        return "target: \(target), id: \(id), type: \(type) \(payload.hexString())"
+    }
 }
