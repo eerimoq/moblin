@@ -141,7 +141,7 @@ extension DjiController: CBPeripheralDelegate {
     }
 
     private func stopStream() {
-        writeMessage(message: DjiMessage(target: 0x080203,
+        writeMessage(message: DjiMessage(target: 0x0802,
                                          id: stopStreamingTransactionId,
                                          type: 0x8E0240,
                                          payload: Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])))
@@ -167,7 +167,7 @@ extension DjiController: CBPeripheralDelegate {
         guard response.id == stopStreamingTransactionId else {
             return
         }
-        writeMessage(message: DjiMessage(target: 0x080266,
+        writeMessage(message: DjiMessage(target: 0x0802,
                                          id: preparingToLivestreamTransactionId,
                                          type: 0xE10240,
                                          payload: Data([0x1A])))
@@ -179,7 +179,7 @@ extension DjiController: CBPeripheralDelegate {
             return
         }
         let payload = djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
-        writeMessage(message: DjiMessage(target: 0x07021B,
+        writeMessage(message: DjiMessage(target: 0x0702,
                                          id: setupWifiTransactionId,
                                          type: 0x470740,
                                          payload: payload))
@@ -193,7 +193,7 @@ extension DjiController: CBPeripheralDelegate {
         var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,
                             0x00, 0x00, 0x00, 0x00])
         payload += djiPackUrl(url: rtmpUrl)
-        writeMessage(message: DjiMessage(target: 0x08024B,
+        writeMessage(message: DjiMessage(target: 0x0802,
                                          id: startStreamingTransactionId,
                                          type: 0x780840,
                                          payload: payload))
@@ -234,7 +234,7 @@ extension DjiController: CBPeripheralDelegate {
             0x33,
         ])
         payload += djiPackString(value: pairPinCode)
-        let request = DjiMessage(target: 0x0702C2, id: pairTransactionId, type: 0x450740, payload: payload)
+        let request = DjiMessage(target: 0x0702, id: pairTransactionId, type: 0x450740, payload: payload)
         writeMessage(message: request)
         setState(state: .checkingIfPaired)
     }
