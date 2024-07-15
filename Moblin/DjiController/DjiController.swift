@@ -14,7 +14,7 @@ private let startStreamingId: UInt16 = 0x8C2C
 private let fff4Id = CBUUID(string: "FFF4")
 private let fff5Id = CBUUID(string: "FFF5")
 
-private let pairPinCode = "1234"
+private let pairPinCode = "mbln"
 
 private enum State {
     case idle
