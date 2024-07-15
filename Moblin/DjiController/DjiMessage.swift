@@ -1,6 +1,17 @@
 import CrcSwift
 import Foundation
 
+private func djiCrc8(data: Data) -> UInt8 {
+    return CrcSwift.computeCrc8(
+        data,
+        initialCrc: 0xEE,
+        polynom: 0x31,
+        xor: 0x00,
+        refIn: true,
+        refOut: true
+    )
+}
+
 private func djiCrc16(data: Data) -> UInt16 {
     return CrcSwift.computeCrc16(
         data,
