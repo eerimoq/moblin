@@ -8,15 +8,6 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.331.0", date: "2024-07-15", changes: [
-        "• Optional server side disconnect protection using OBS.",
-        "  • Automatically switch to configured OBS BRB scene when the current scene's SRT(LA) or RTMP video source is broken.",
-        "  • Enable in Settings → Streams → My stream → OBS remote control.",
-        "  • Will change mic when client disconnects, so not perfect yet.",
-        "• Start DJI OA4 streaming directly from Moblin. 💡 ErAzOr 🧑‍🏭 Spillmaker",
-        "  • Behind experimental toggle as it will likely not work perfectly.",
-        "  • Probably only works with OA4. And maybe only mine?",
-    ]),
     Version(version: "0.330.0", date: "2024-07-13", changes: [
         "• Configurable text widget font size, design and weight.",
         "  • Size is 10-200.",

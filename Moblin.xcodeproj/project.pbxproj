@@ -246,7 +246,6 @@
 		038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F622C2D7C6400A258C6 /* LogsStorage.swift */; };
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
 		038C912D2C44693B003CAD5F /* DjiMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912C2C44693B003CAD5F /* DjiMessage.swift */; };
-		038C91302C458EB4003CAD5F /* DjiDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */; };
 		038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */; };
 		038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */; };
 		038E7BE02C32F381008994BA /* MediaPlayersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E7BDF2C32F381008994BA /* MediaPlayersSettingsView.swift */; };
@@ -366,7 +365,7 @@
 		03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */; };
 		03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */; };
 		03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DEA1F82BFA66DC00154631 /* MetalPetal.swift */; };
-		03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */; };
+		03E3E3922C431E0900932B00 /* DjiControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiControllerSettingsView.swift */; };
 		03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
@@ -741,7 +740,6 @@
 		038C0F622C2D7C6400A258C6 /* LogsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsStorage.swift; sourceTree = "<group>"; };
 		038C0F682C312C3900A258C6 /* PollEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollEffect.swift; sourceTree = "<group>"; };
 		038C912C2C44693B003CAD5F /* DjiMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiMessage.swift; sourceTree = "<group>"; };
-		038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDevicesSettingsView.swift; sourceTree = "<group>"; };
 		038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
 		038E7BDF2C32F381008994BA /* MediaPlayersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayersSettingsView.swift; sourceTree = "<group>"; };
@@ -852,7 +850,7 @@
 		03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupObsSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupDirectSettingsView.swift; sourceTree = "<group>"; };
 		03DEA1F82BFA66DC00154631 /* MetalPetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPetal.swift; sourceTree = "<group>"; };
-		03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceSettingsView.swift; sourceTree = "<group>"; };
+		03E3E3912C431E0900932B00 /* DjiControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiControllerSettingsView.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E92AD42B248D3C00EBAC77 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
@@ -2047,7 +2045,7 @@
 				0379BB992AAD80AF00B718B6 /* Debug */,
 				032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */,
 				03B16A2B2B35D71500E5AB07 /* Display */,
-				03E3E38F2C431DD800932B00 /* DjiDevice */,
+				03E3E38F2C431DD800932B00 /* DjiController */,
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
@@ -2288,13 +2286,12 @@
 			path = NetworkSetup;
 			sourceTree = "<group>";
 		};
-		03E3E38F2C431DD800932B00 /* DjiDevice */ = {
+		03E3E38F2C431DD800932B00 /* DjiController */ = {
 			isa = PBXGroup;
 			children = (
-				03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */,
-				038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */,
+				03E3E3912C431E0900932B00 /* DjiControllerSettingsView.swift */,
 			);
-			path = DjiDevice;
+			path = DjiController;
 			sourceTree = "<group>";
 		};
 		03E877F52B2DB26100086355 /* GlobalButtons */ = {
@@ -2703,7 +2700,7 @@
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */,
 				038E7BE32C32F391008994BA /* MediaPlayerSettingsView.swift in Sources */,
-				03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */,
+				03E3E3922C431E0900932B00 /* DjiControllerSettingsView.swift in Sources */,
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */,
@@ -2712,7 +2709,6 @@
 				03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */,
 				031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */,
 				03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */,
-				038C91302C458EB4003CAD5F /* DjiDevicesSettingsView.swift in Sources */,
 				0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */,
 				0359F8D52BD3DA61005BFDA8 /* VideoEffect.swift in Sources */,
 				03311B8B2C3271B90073F9E2 /* MediaPlayer.swift in Sources */,
@@ -3280,7 +3276,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.331.0;
+				MARKETING_VERSION = 0.330.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3331,7 +3327,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.331.0;
+				MARKETING_VERSION = 0.330.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

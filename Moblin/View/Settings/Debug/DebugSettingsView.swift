@@ -111,12 +111,6 @@ struct DebugSettingsView: View {
                     model.store()
                     model.setUseAudioForTimestamps()
                 }))
-                Toggle("DJI devices", isOn: Binding(get: {
-                    model.database.debug!.djiDevices!
-                }, set: { value in
-                    model.database.debug!.djiDevices = value
-                    model.store()
-                }))
             } header: {
                 Text("Experimental")
             }
