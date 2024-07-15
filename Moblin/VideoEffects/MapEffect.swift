@@ -71,7 +71,7 @@ final class MapEffect: VideoEffect {
             camera.heading = newLocation.course
         }
         camera.centerCoordinate = newLocation.coordinate
-        camera.centerCoordinateDistance = 500
+        camera.centerCoordinateDistance = 750
         options.camera = camera
         mapSnapshotter = MKMapSnapshotter(options: options)
         mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
