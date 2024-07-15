@@ -8,6 +8,7 @@ private let djiOsmoAction4ManufacturerData = Data([
 
 // The actual values do not matter.
 private let pairTransactionId: UInt16 = 0x8092
+private let stopStreamingTransactionId: UInt16 = 0xEAC8
 private let preparingToLivestreamTransactionId: UInt16 = 0x8C12
 private let setupWifiTransactionId: UInt16 = 0x8C19
 private let startStreamingTransactionId: UInt16 = 0x8C2C
@@ -23,6 +24,7 @@ private enum State {
     case connecting
     case checkingIfPaired
     case pairing
+    case stoppingStream
     case preparingStream
     case settingUpWifi
     case startingStream
@@ -126,6 +128,8 @@ extension DjiController: CBPeripheralDelegate {
             processCheckingIfPaired(response: message)
         case .pairing:
             processPairing()
+        case .stoppingStream:
+            processStoppingStream(response: message)
         case .preparingStream:
             processPreparingStream(response: message)
         case .settingUpWifi:
@@ -139,12 +143,12 @@ extension DjiController: CBPeripheralDelegate {
         }
     }
 
-    private func prepareToLivestream() {
-        writeMessage(message: DjiMessage(target: 0x080266,
-                                         id: preparingToLivestreamTransactionId,
-                                         type: 0xE10240,
-                                         payload: Data([0x1A])))
-        setState(state: .preparingStream)
+    private func stopStream() {
+        writeMessage(message: DjiMessage(target: 0x080203,
+                                         id: stopStreamingTransactionId,
+                                         type: 0x8E0240,
+                                         payload: Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])))
+        setState(state: .stoppingStream)
     }
 
     private func processCheckingIfPaired(response: DjiMessage) {
@@ -152,14 +156,25 @@ extension DjiController: CBPeripheralDelegate {
             return
         }
         if response.payload == Data([0, 1]) {
-            prepareToLivestream()
+            stopStream()
         } else {
             setState(state: .pairing)
         }
     }
 
     private func processPairing() {
-        prepareToLivestream()
+        stopStream()
+    }
+
+    private func processStoppingStream(response: DjiMessage) {
+        guard response.id == stopStreamingTransactionId else {
+            return
+        }
+        writeMessage(message: DjiMessage(target: 0x080266,
+                                         id: preparingToLivestreamTransactionId,
+                                         type: 0xE10240,
+                                         payload: Data([0x1A])))
+        setState(state: .preparingStream)
     }
 
     private func processPreparingStream(response: DjiMessage) {
