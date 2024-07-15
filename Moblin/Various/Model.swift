@@ -962,8 +962,8 @@ final class Model: NSObject, ObservableObject {
         initMediaPlayers()
         removeUnusedLogs()
         djiController = DjiController(
-            wiFiSsid: "Qvist",
-            wiFiPassword: "maxierik",
+            wifiSsid: "Qvist",
+            wifiPassword: "maxierik",
             rtmpUrl: "rtmp://192.168.50.214:1935/live/oa4"
         )
         djiController?.start()

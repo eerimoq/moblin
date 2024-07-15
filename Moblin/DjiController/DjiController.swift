@@ -69,10 +69,6 @@ private let pair = Data([
     0x20,
 ])
 
-let enterStreamingModeData = Data([
-    0x1A,
-])
-
 private let pairId: UInt16 = 0x8092
 private let preparingToLivestreamId: UInt16 = 0x8C12
 private let setupWiFiId: UInt16 = 0x8C19
@@ -82,13 +78,13 @@ class DjiController: NSObject {
     private var centralManager: CBCentralManager?
     private var oa4Peripheral: CBPeripheral?
     private var oa4Characteristic: CBCharacteristic?
-    private let wiFiSsid: String
-    private let wiFiPassword: String
+    private let wifiSsid: String
+    private let wifiPassword: String
     private let rtmpUrl: String
 
-    init(wiFiSsid: String, wiFiPassword: String, rtmpUrl: String) {
-        self.wiFiSsid = wiFiSsid
-        self.wiFiPassword = wiFiPassword
+    init(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
+        self.wifiSsid = wifiSsid
+        self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
     }
 
@@ -182,7 +178,7 @@ extension DjiController: CBPeripheralDelegate {
         let request = DjiMessage(target: 0x080266,
                                  id: preparingToLivestreamId,
                                  type: 0xE10240,
-                                 payload: enterStreamingModeData)
+                                 payload: Data([0x1A]))
         oa4Peripheral.writeValue(request.encode(), for: oa4Characteristic, type: .withoutResponse)
     }
 
@@ -191,7 +187,7 @@ extension DjiController: CBPeripheralDelegate {
             return
         }
         logger.info("dji-controller: Setuping up WiFi")
-        let payload = djiPackString(value: wiFiSsid) + djiPackString(value: wiFiPassword)
+        let payload = djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
         let request = DjiMessage(target: 0x07021B,
                                  id: setupWiFiId,
                                  type: 0x470740,
