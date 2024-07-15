@@ -1316,6 +1316,7 @@ class SettingsDebug: Codable {
     var higherDataRateLimit: Bool? = true
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
+    var djiDevices: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1434,6 +1435,18 @@ class SettingsMediaPlayer: Codable, Identifiable {
 
 class SettingsMediaPlayers: Codable {
     var players: [SettingsMediaPlayer] = []
+}
+
+class SettingsDjiDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var wifiSsid: String = ""
+    var wifiPassword: String = ""
+    var rtmpUrl: String = ""
+}
+
+class SettingsDjiDevices: Codable {
+    var devices: [SettingsDjiDevice] = []
 }
 
 class SettingsQuickButtons: Codable {
@@ -1800,6 +1813,7 @@ class Database: Codable {
     var mediaPlayers: SettingsMediaPlayers? = .init()
     var showAllSettings: Bool? = false
     var portrait: Bool? = false
+    var djiDevices: SettingsDjiDevices? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3019,6 +3033,14 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsBrbSceneVideoSourceBroken == nil {
             stream.obsBrbSceneVideoSourceBroken = false
+            store()
+        }
+        if realDatabase.djiDevices == nil {
+            realDatabase.djiDevices = .init()
+            store()
+        }
+        if realDatabase.debug!.djiDevices == nil {
+            realDatabase.debug!.djiDevices = false
             store()
         }
     }

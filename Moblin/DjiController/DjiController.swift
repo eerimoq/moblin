@@ -47,8 +47,8 @@ class DjiController: NSObject {
     }
 
     func start() {
-        // setState(state: .discovering)
-        // centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        setState(state: .discovering)
+        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 
     private func setState(state: State) {

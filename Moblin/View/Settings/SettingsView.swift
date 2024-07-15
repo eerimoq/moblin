@@ -152,11 +152,11 @@ struct SettingsView: View {
                             text: String(localized: "Remote control")
                         )
                     }
-                    if false {
-                        NavigationLink(destination: DjiControllerSettingsView()) {
+                    if model.database.debug!.djiDevices! {
+                        NavigationLink(destination: DjiDevicesSettingsView()) {
                             IconAndTextView(
                                 image: "appletvremote.gen1",
-                                text: String(localized: "DJI controller")
+                                text: String(localized: "DJI devices")
                             )
                         }
                     }

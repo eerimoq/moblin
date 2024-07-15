@@ -961,10 +961,13 @@ final class Model: NSObject, ObservableObject {
         setupSampleBufferReceiver()
         initMediaPlayers()
         removeUnusedLogs()
+    }
+
+    func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
         djiController = DjiController(
-            wifiSsid: "Qvist",
-            wifiPassword: "maxierik",
-            rtmpUrl: "rtmp://192.168.50.214:1935/live/oa4"
+            wifiSsid: device.wifiSsid,
+            wifiPassword: device.wifiPassword,
+            rtmpUrl: device.rtmpUrl
         )
         djiController?.start()
     }
