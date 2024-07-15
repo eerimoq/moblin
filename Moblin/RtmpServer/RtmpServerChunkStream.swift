@@ -512,8 +512,16 @@ class RtmpServerChunkStream {
             if !isAudioReceived {
                 return nil
             }
-            duration = Int64(1000 / client.fps)
-            videoTimestamp = Double(numberOfFrames) / client.fps * 1000
+            var timeBase: Double
+            if client.fps == 29.97 {
+                timeBase = 1001 / 30000
+            } else if client.fps == 59.94 {
+                timeBase = 1001 / 60000
+            } else {
+                timeBase = 1 / client.fps
+            }
+            duration = Int64(timeBase * 1000)
+            videoTimestamp = Double(numberOfFrames) * timeBase * 1000
             numberOfFrames += 1
         } else {
             duration = Int64(messageTimestamp)

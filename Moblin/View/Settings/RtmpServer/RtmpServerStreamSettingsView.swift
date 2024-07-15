@@ -75,9 +75,6 @@ struct RtmpServerStreamSettingsView: View {
         guard let fps = Double(value) else {
             return
         }
-        guard fps >= 1 && fps <= 100 else {
-            return
-        }
         stream.fps = fps
         model.store()
         model.reloadRtmpServer()
@@ -136,12 +133,13 @@ struct RtmpServerStreamSettingsView: View {
                 }))
                 .disabled(model.rtmpServerEnabled())
                 if stream.manualFps! {
-                    TextEditNavigationView(
-                        title: String(localized: "FPS"),
-                        value: String(stream.fps!),
-                        onSubmit: submitFps,
-                        keyboardType: .numbersAndPunctuation
-                    )
+                    Picker(String(localized: "FPS"), selection: Binding(get: {
+                        String(stream.fps!)
+                    }, set: submitFps)) {
+                        ForEach(netStreamFps, id: \.self) {
+                            Text($0)
+                        }
+                    }
                     .disabled(model.rtmpServerEnabled())
                 }
             } footer: {

@@ -1318,13 +1318,15 @@ class SettingsDebug: Codable {
     var preferStereoMic: Bool? = false
 }
 
+let netStreamFps = ["25.0", "29.97", "30.0", "50.0", "59.94", "60.0"]
+
 class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
     var manualFps: Bool? = false
-    var fps: Double? = 30
+    var fps: Double? = 30.0
     var autoSelectMic: Bool? = true
 
     func camera() -> String {
