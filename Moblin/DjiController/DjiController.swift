@@ -117,19 +117,20 @@ extension DjiController: CBPeripheralDelegate {
             return
         }
         guard let message = try? DjiMessage(data: value) else {
+            logger.info("dji-controller: Discarding corrupt message \(value.hexString())")
             return
         }
         switch state {
         case .checkingIfPaired:
-            handlePairResponse(response: message)
+            handleCheckingIfPaired(response: message)
         case .pairing:
-            prepareToLivestream()
+            handlePairing()
         case .preparingStream:
-            handlePreparingToLivestreamResponse(response: message)
+            handlePreparingStream(response: message)
         case .settingUpWifi:
-            handleSetupWifiResponse(response: message)
+            handleSettingUpWifi(response: message)
         case .startingStream:
-            handleStartStreamingResponse(response: message)
+            handleStartingStream(response: message)
         case .streaming:
             break
         default:
@@ -145,7 +146,7 @@ extension DjiController: CBPeripheralDelegate {
         setState(state: .preparingStream)
     }
 
-    private func handlePairResponse(response: DjiMessage) {
+    private func handleCheckingIfPaired(response: DjiMessage) {
         guard response.id == pairId else {
             return
         }
@@ -155,8 +156,12 @@ extension DjiController: CBPeripheralDelegate {
             setState(state: .pairing)
         }
     }
+    
+    private func handlePairing() {
+        prepareToLivestream()
+    }
 
-    private func handlePreparingToLivestreamResponse(response: DjiMessage) {
+    private func handlePreparingStream(response: DjiMessage) {
         guard response.id == preparingToLivestreamId else {
             return
         }
@@ -168,7 +173,7 @@ extension DjiController: CBPeripheralDelegate {
         setState(state: .settingUpWifi)
     }
 
-    private func handleSetupWifiResponse(response: DjiMessage) {
+    private func handleSettingUpWifi(response: DjiMessage) {
         guard response.id == setupWifiId else {
             return
         }
@@ -182,7 +187,7 @@ extension DjiController: CBPeripheralDelegate {
         setState(state: .startingStream)
     }
 
-    private func handleStartStreamingResponse(response: DjiMessage) {
+    private func handleStartingStream(response: DjiMessage) {
         guard response.id == startStreamingId else {
             return
         }
