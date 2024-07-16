@@ -451,6 +451,7 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlAssistantShowPreviewFullScreen = false
 
     private var currentWiFiSsid: String?
+    @Published var djiDeviceStreamingState: DjiDeviceState?
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -486,7 +487,7 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
-    private var djiController: DjiController?
+    private var djiDevice: DjiDevice?
 
     override init() {
         super.init()
@@ -964,12 +965,17 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        djiController = DjiController(
+        djiDevice = DjiDevice(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
             rtmpUrl: device.rtmpUrl
         )
-        djiController?.start()
+        djiDevice?.delegate = self
+        djiDevice?.start()
+    }
+
+    func stopDjiDeviceLiveStream(device _: SettingsDjiDevice) {
+        djiDevice?.stop()
     }
 
     private func removeUnusedLogs() {
@@ -6781,5 +6787,11 @@ extension Model: MediaPlayerDelegate {
 
     func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+    }
+}
+
+extension Model: DjiDeviceDelegate {
+    func djiDeviceStreamingState(state: DjiDeviceState) {
+        djiDeviceStreamingState = state
     }
 }

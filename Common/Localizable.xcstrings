@@ -22715,6 +22715,9 @@
         }
       }
     },
+    "Connecting..." : {
+
+    },
     "Connection priorities" : {
       "localizations" : {
         "de" : {
@@ -27917,6 +27920,9 @@
           }
         }
       }
+    },
+    "Discovering..." : {
+
     },
     "Display" : {
       "localizations" : {
@@ -57708,6 +57714,9 @@
         }
       }
     },
+    "Pairing..." : {
+
+    },
     "Password" : {
       "localizations" : {
         "de" : {
@@ -59267,6 +59276,9 @@
           }
         }
       }
+    },
+    "Preparing to stream..." : {
+
     },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
       "localizations" : {
@@ -67068,6 +67080,9 @@
         }
       }
     },
+    "Setting up WiFi..." : {
+
+    },
     "Settings" : {
       "localizations" : {
         "de" : {
@@ -72284,6 +72299,9 @@
         }
       }
     },
+    "Starting stream..." : {
+
+    },
     "Starting..." : {
       "localizations" : {
         "de" : {
@@ -72544,6 +72562,9 @@
         }
       }
     },
+    "Stop live stream" : {
+
+    },
     "Stop recording" : {
       "localizations" : {
         "de" : {
@@ -72803,6 +72824,9 @@
           }
         }
       }
+    },
+    "Stopping stream..." : {
+
     },
     "Stopping..." : {
       "localizations" : {
@@ -83333,6 +83357,9 @@
           }
         }
       }
+    },
+    "Unknown device state" : {
+
     },
     "Unknown recording state." : {
       "localizations" : {
