@@ -90,7 +90,7 @@ struct WidgetTextSettingsView: View {
                 Text("Design")
                 Spacer()
                 Picker("", selection: Binding(get: {
-                    widget.text.fontDesign!.rawValue
+                    widget.text.fontDesign!.toString()
                 }, set: { value in
                     widget.text.fontDesign = SettingsFontDesign.fromString(value: value)
                     model.resetSelectedScene(changeScene: false)
