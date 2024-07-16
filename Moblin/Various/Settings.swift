@@ -1478,6 +1478,7 @@ class SettingsDjiDevice: Codable, Identifiable {
     var serverRtmpStreamId: UUID? = .init()
     var serverRtmpUrl: String? = ""
     var customRtmpUrl: String? = ""
+    var autoRestartStream: Bool? = false
 }
 
 class SettingsDjiDevices: Codable {
@@ -3092,6 +3093,10 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.customRtmpUrl == nil {
             device.customRtmpUrl = ""
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.autoRestartStream == nil {
+            device.autoRestartStream = false
             store()
         }
     }

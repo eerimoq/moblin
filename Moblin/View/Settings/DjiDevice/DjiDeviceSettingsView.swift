@@ -107,6 +107,19 @@ struct DjiDeviceSettingsView: View {
             } header: {
                 Text("RTMP")
             }
+            if device.rtmpUrlType == .server, false {
+                Section {
+                    Toggle(isOn: Binding(get: {
+                        device.autoRestartStream!
+                    }, set: { value in
+                        device.autoRestartStream = value
+                        model.store()
+                        model.objectWillChange.send()
+                    })) {
+                        Text("Auto-restart live stream when broken")
+                    }
+                }
+            }
             if model.djiDeviceStreamingState == nil || model.djiDeviceStreamingState == .idle {
                 Section {
                     Button(action: {

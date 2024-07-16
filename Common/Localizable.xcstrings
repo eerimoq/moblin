@@ -13612,6 +13612,9 @@
         }
       }
     },
+    "Auto-restart live stream when broken" : {
+
+    },
     "Automatically goes live when switching stream." : {
       "localizations" : {
         "de" : {
