@@ -93,17 +93,17 @@ class DjiDevice: NSObject {
     }
 
     private func startStopStreamingTimer() {
-        startStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
-        startStreamingTimer!.schedule(deadline: .now() + 60)
-        startStreamingTimer!.setEventHandler { [weak self] in
+        stopStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
+        stopStreamingTimer!.schedule(deadline: .now() + 60)
+        stopStreamingTimer!.setEventHandler { [weak self] in
             self?.stopStreamingTimerExpired()
         }
-        startStreamingTimer!.activate()
+        stopStreamingTimer!.activate()
     }
 
     private func stopStopStreamingTimer() {
-        startStreamingTimer?.cancel()
-        startStreamingTimer = nil
+        stopStreamingTimer?.cancel()
+        stopStreamingTimer = nil
     }
 
     private func stopStreamingTimerExpired() {
@@ -130,10 +130,10 @@ extension DjiDevice: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String: Any], rssi _: NSNumber)
     {
-        guard let data = advertisementData[CBAdvertisementDataManufacturerDataKey] as? NSData else {
+        guard let data = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
             return
         }
-        guard Data(bytes: data.bytes, count: min(2, data.count)) == djiTechnologyCoLtd else {
+        guard data.prefix(2) == djiTechnologyCoLtd else {
             return
         }
         central.stopScan()
