@@ -1,8 +1,32 @@
 import SwiftUI
 
+private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
+    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
+}
+
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     var device: SettingsDjiDevice
+
+    private func serverUrls() -> [String] {
+        guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId!) else {
+            return []
+        }
+        var serverUrls: [String] = []
+        for status in model.ipStatuses {
+            serverUrls.append(rtmpStreamUrl(
+                address: status.ip,
+                port: model.database.rtmpServer!.port,
+                streamKey: stream.streamKey
+            ))
+        }
+        serverUrls.append(rtmpStreamUrl(
+            address: personalHotspotLocalAddress,
+            port: model.database.rtmpServer!.port,
+            streamKey: stream.streamKey
+        ))
+        return serverUrls
+    }
 
     var body: some View {
         Form {
@@ -33,14 +57,53 @@ struct DjiDeviceSettingsView: View {
                 Text("WiFi")
             }
             Section {
-                TextEditNavigationView(
-                    title: String(localized: "URL"),
-                    value: device.rtmpUrl,
-                    onSubmit: { value in
-                        device.rtmpUrl = value
-                        model.store()
+                Picker("Type", selection: Binding(get: {
+                    device.rtmpUrlType!.toString()
+                }, set: { value in
+                    device.rtmpUrlType = SettingsDjiDeviceUrlType.fromString(value: value)
+                    model.store()
+                    model.objectWillChange.send()
+                })) {
+                    ForEach(djiDeviceUrlTypes, id: \.self) {
+                        Text($0)
                     }
-                )
+                }
+                if device.rtmpUrlType == .server {
+                    Picker("Stream", selection: Binding(get: {
+                        device.serverRtmpStreamId!
+                    }, set: { value in
+                        device.serverRtmpStreamId = value
+                        device.serverRtmpUrl = serverUrls().first ?? ""
+                        model.store()
+                        model.objectWillChange.send()
+                    })) {
+                        ForEach(model.database.rtmpServer!.streams) { stream in
+                            Text(stream.name)
+                                .tag(stream.id)
+                        }
+                    }
+                    Picker("URL", selection: Binding(get: {
+                        device.serverRtmpUrl!
+                    }, set: { value in
+                        device.serverRtmpUrl = value
+                        model.store()
+                        model.objectWillChange.send()
+                    })) {
+                        ForEach(serverUrls(), id: \.self) { serverUrl in
+                            Text(serverUrl)
+                                .tag(serverUrl)
+                        }
+                    }
+                } else if device.rtmpUrlType == .custom {
+                    TextEditNavigationView(
+                        title: String(localized: "URL"),
+                        value: device.customRtmpUrl!,
+                        onSubmit: { value in
+                            device.customRtmpUrl = value
+                            model.store()
+                        }
+                    )
+                }
             } header: {
                 Text("RTMP")
             }

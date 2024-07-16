@@ -1437,12 +1437,47 @@ class SettingsMediaPlayers: Codable {
     var players: [SettingsMediaPlayer] = []
 }
 
+enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
+    case server = "Server"
+    case custom = "Custom"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDjiDeviceUrlType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .server
+    }
+
+    static func fromString(value: String) -> SettingsDjiDeviceUrlType {
+        switch value {
+        case String(localized: "Server"):
+            return .server
+        case String(localized: "Custom"):
+            return .custom
+        default:
+            return .server
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .server:
+            return String(localized: "Server")
+        case .custom:
+            return String(localized: "Custom")
+        }
+    }
+}
+
+var djiDeviceUrlTypes = SettingsDjiDeviceUrlType.allCases.map { $0.toString() }
+
 class SettingsDjiDevice: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
     var wifiSsid: String = ""
     var wifiPassword: String = ""
-    var rtmpUrl: String = ""
+    var rtmpUrlType: SettingsDjiDeviceUrlType? = .server
+    var serverRtmpStreamId: UUID? = .init()
+    var serverRtmpUrl: String? = ""
+    var customRtmpUrl: String? = ""
 }
 
 class SettingsDjiDevices: Codable {
@@ -3041,6 +3076,22 @@ final class Settings {
         }
         if realDatabase.debug!.djiDevices == nil {
             realDatabase.debug!.djiDevices = false
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.rtmpUrlType == nil {
+            device.rtmpUrlType = .server
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.serverRtmpStreamId == nil {
+            device.serverRtmpStreamId = .init()
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.serverRtmpUrl == nil {
+            device.serverRtmpUrl = ""
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.customRtmpUrl == nil {
+            device.customRtmpUrl = ""
             store()
         }
     }

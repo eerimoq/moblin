@@ -973,10 +973,20 @@ final class Model: NSObject, ObservableObject {
         guard let djiDevice = djiDevices[device.id] else {
             return
         }
+        var rtmpUrl: String?
+        switch device.rtmpUrlType! {
+        case .server:
+            rtmpUrl = device.serverRtmpUrl
+        case .custom:
+            rtmpUrl = device.customRtmpUrl!
+        }
+        guard let rtmpUrl else {
+            return
+        }
         djiDevice.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
-            rtmpUrl: device.rtmpUrl
+            rtmpUrl: rtmpUrl
         )
     }
 
