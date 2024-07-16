@@ -34,9 +34,9 @@ protocol DjiDeviceDelegate: AnyObject {
 }
 
 class DjiDevice: NSObject {
-    private let wifiSsid: String
-    private let wifiPassword: String
-    private let rtmpUrl: String
+    private var wifiSsid: String?
+    private var wifiPassword: String?
+    private var rtmpUrl: String?
     private var centralManager: CBCentralManager?
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
@@ -45,20 +45,17 @@ class DjiDevice: NSObject {
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
 
-    init(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
+    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
-    }
-
-    func start() {
         reset()
         startStartStreamingTimer()
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 
-    func stop() {
+    func stopLiveStream() {
         stopStartStreamingTimer()
         startStopStreamingTimer()
         stopStream()
@@ -245,7 +242,7 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func processPreparingStream(response: DjiMessage) {
-        guard response.id == preparingToLivestreamTransactionId else {
+        guard response.id == preparingToLivestreamTransactionId, let wifiSsid, let wifiPassword else {
             return
         }
         let payload = djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
@@ -257,7 +254,7 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func processSettingUpWifi(response: DjiMessage) {
-        guard response.id == setupWifiTransactionId else {
+        guard response.id == setupWifiTransactionId, let rtmpUrl else {
             return
         }
         var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,

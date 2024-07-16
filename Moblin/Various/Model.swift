@@ -487,7 +487,7 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
-    private var djiDevice: DjiDevice?
+    private var djiDevices: [UUID: DjiDevice] = [:]
 
     override init() {
         super.init()
@@ -965,17 +965,23 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        djiDevice = DjiDevice(
+        if !djiDevices.keys.contains(device.id) {
+            let djiDevice = DjiDevice()
+            djiDevice.delegate = self
+            djiDevices[device.id] = djiDevice
+        }
+        guard let djiDevice = djiDevices[device.id] else {
+            return
+        }
+        djiDevice.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
             rtmpUrl: device.rtmpUrl
         )
-        djiDevice?.delegate = self
-        djiDevice?.start()
     }
 
-    func stopDjiDeviceLiveStream(device _: SettingsDjiDevice) {
-        djiDevice?.stop()
+    func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
+        djiDevices[device.id]?.stopLiveStream()
     }
 
     private func removeUnusedLogs() {
