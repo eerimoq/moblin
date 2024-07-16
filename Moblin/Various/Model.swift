@@ -451,6 +451,7 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlAssistantShowPreviewFullScreen = false
 
     private var currentWiFiSsid: String?
+    @Published var djiDeviceStreamingState: DjiDeviceState?
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -486,7 +487,7 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
-    private var djiController: DjiController?
+    private var djiDevices: [UUID: DjiDevice] = [:]
 
     override init() {
         super.init()
@@ -964,12 +965,33 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        djiController = DjiController(
+        if !djiDevices.keys.contains(device.id) {
+            let djiDevice = DjiDevice()
+            djiDevice.delegate = self
+            djiDevices[device.id] = djiDevice
+        }
+        guard let djiDevice = djiDevices[device.id] else {
+            return
+        }
+        var rtmpUrl: String?
+        switch device.rtmpUrlType! {
+        case .server:
+            rtmpUrl = device.serverRtmpUrl
+        case .custom:
+            rtmpUrl = device.customRtmpUrl!
+        }
+        guard let rtmpUrl else {
+            return
+        }
+        djiDevice.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
-            rtmpUrl: device.rtmpUrl
+            rtmpUrl: rtmpUrl
         )
-        djiController?.start()
+    }
+
+    func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
+        djiDevices[device.id]?.stopLiveStream()
     }
 
     private func removeUnusedLogs() {
@@ -6781,5 +6803,11 @@ extension Model: MediaPlayerDelegate {
 
     func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
+    }
+}
+
+extension Model: DjiDeviceDelegate {
+    func djiDeviceStreamingState(state: DjiDeviceState) {
+        djiDeviceStreamingState = state
     }
 }

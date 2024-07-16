@@ -15,46 +15,106 @@ private let fff5Id = CBUUID(string: "FFF5")
 
 private let pairPinCode = "mbln"
 
-private enum State {
+enum DjiDeviceState {
     case idle
     case discovering
     case connecting
     case checkingIfPaired
     case pairing
-    case stoppingStream
+    case cleaningUp
     case preparingStream
     case settingUpWifi
     case startingStream
     case streaming
+    case stoppingStream
 }
 
-class DjiController: NSObject {
-    private let wifiSsid: String
-    private let wifiPassword: String
-    private let rtmpUrl: String
+protocol DjiDeviceDelegate: AnyObject {
+    func djiDeviceStreamingState(state: DjiDeviceState)
+}
+
+class DjiDevice: NSObject {
+    private var wifiSsid: String?
+    private var wifiPassword: String?
+    private var rtmpUrl: String?
     private var centralManager: CBCentralManager?
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
-    private var state: State = .idle
+    private var state: DjiDeviceState = .idle
+    weak var delegate: (any DjiDeviceDelegate)?
+    private var startStreamingTimer: DispatchSourceTimer?
+    private var stopStreamingTimer: DispatchSourceTimer?
 
-    init(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
+    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
-    }
-
-    func start() {
+        reset()
+        startStartStreamingTimer()
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 
-    private func setState(state: State) {
-        logger.info("dji-controller: State change \(self.state) -> \(state)")
+    func stopLiveStream() {
+        stopStartStreamingTimer()
+        startStopStreamingTimer()
+        stopStream()
+        setState(state: .stoppingStream)
+    }
+
+    private func reset() {
+        stopStartStreamingTimer()
+        stopStopStreamingTimer()
+        centralManager = nil
+        cameraPeripheral = nil
+        fff5Characteristic = nil
+        setState(state: .idle)
+    }
+
+    private func startStartStreamingTimer() {
+        startStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
+        startStreamingTimer!.schedule(deadline: .now() + 60)
+        startStreamingTimer!.setEventHandler { [weak self] in
+            self?.startStreamingTimerExpired()
+        }
+        startStreamingTimer!.activate()
+    }
+
+    private func stopStartStreamingTimer() {
+        startStreamingTimer?.cancel()
+        startStreamingTimer = nil
+    }
+
+    private func startStreamingTimerExpired() {
+        reset()
+    }
+
+    private func startStopStreamingTimer() {
+        stopStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
+        stopStreamingTimer!.schedule(deadline: .now() + 60)
+        stopStreamingTimer!.setEventHandler { [weak self] in
+            self?.stopStreamingTimerExpired()
+        }
+        stopStreamingTimer!.activate()
+    }
+
+    private func stopStopStreamingTimer() {
+        stopStreamingTimer?.cancel()
+        stopStreamingTimer = nil
+    }
+
+    private func stopStreamingTimerExpired() {
+        reset()
+    }
+
+    private func setState(state: DjiDeviceState) {
+        logger.info("dji-device: State change \(self.state) -> \(state)")
         self.state = state
+        delegate?.djiDeviceStreamingState(state: state)
     }
 }
 
-extension DjiController: CBCentralManagerDelegate {
+extension DjiDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
@@ -67,10 +127,10 @@ extension DjiController: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String: Any], rssi _: NSNumber)
     {
-        guard let data = advertisementData[CBAdvertisementDataManufacturerDataKey] as? NSData else {
+        guard let data = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
             return
         }
-        guard Data(bytes: data.bytes, count: min(2, data.count)) == djiTechnologyCoLtd else {
+        guard data.prefix(2) == djiTechnologyCoLtd else {
             return
         }
         central.stopScan()
@@ -83,13 +143,17 @@ extension DjiController: CBCentralManagerDelegate {
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        logger.info("dji-device: Connected")
         peripheral.discoverServices(nil)
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {}
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
+        logger.info("dji-device: Disconnected")
+        reset()
+    }
 }
 
-extension DjiController: CBPeripheralDelegate {
+extension DjiDevice: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
         guard let peripheralServices = peripheral.services else {
             return
@@ -117,7 +181,7 @@ extension DjiController: CBPeripheralDelegate {
             return
         }
         guard let message = try? DjiMessage(data: value) else {
-            logger.info("dji-controller: Discarding corrupt message \(value.hexString())")
+            logger.info("dji-device: Discarding corrupt message \(value.hexString())")
             return
         }
         switch state {
@@ -125,8 +189,8 @@ extension DjiController: CBPeripheralDelegate {
             processCheckingIfPaired(response: message)
         case .pairing:
             processPairing()
-        case .stoppingStream:
-            processStoppingStream(response: message)
+        case .cleaningUp:
+            processCleaningUp(response: message)
         case .preparingStream:
             processPreparingStream(response: message)
         case .settingUpWifi:
@@ -135,8 +199,10 @@ extension DjiController: CBPeripheralDelegate {
             processStartingStream(response: message)
         case .streaming:
             break
+        case .stoppingStream:
+            processStoppingStream(response: message)
         default:
-            logger.info("dji-controller: Received message in unexpected state '\(state)'")
+            logger.info("dji-device: Received message in unexpected state '\(state)'")
         }
     }
 
@@ -145,7 +211,6 @@ extension DjiController: CBPeripheralDelegate {
                                          id: stopStreamingTransactionId,
                                          type: 0x8E0240,
                                          payload: Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])))
-        setState(state: .stoppingStream)
     }
 
     private func processCheckingIfPaired(response: DjiMessage) {
@@ -154,6 +219,7 @@ extension DjiController: CBPeripheralDelegate {
         }
         if response.payload == Data([0, 1]) {
             stopStream()
+            setState(state: .cleaningUp)
         } else {
             setState(state: .pairing)
         }
@@ -161,9 +227,10 @@ extension DjiController: CBPeripheralDelegate {
 
     private func processPairing() {
         stopStream()
+        setState(state: .cleaningUp)
     }
 
-    private func processStoppingStream(response: DjiMessage) {
+    private func processCleaningUp(response: DjiMessage) {
         guard response.id == stopStreamingTransactionId else {
             return
         }
@@ -175,7 +242,7 @@ extension DjiController: CBPeripheralDelegate {
     }
 
     private func processPreparingStream(response: DjiMessage) {
-        guard response.id == preparingToLivestreamTransactionId else {
+        guard response.id == preparingToLivestreamTransactionId, let wifiSsid, let wifiPassword else {
             return
         }
         let payload = djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
@@ -187,7 +254,7 @@ extension DjiController: CBPeripheralDelegate {
     }
 
     private func processSettingUpWifi(response: DjiMessage) {
-        guard response.id == setupWifiTransactionId else {
+        guard response.id == setupWifiTransactionId, let rtmpUrl else {
             return
         }
         var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,
@@ -205,6 +272,14 @@ extension DjiController: CBPeripheralDelegate {
             return
         }
         setState(state: .streaming)
+        stopStartStreamingTimer()
+    }
+
+    private func processStoppingStream(response: DjiMessage) {
+        guard response.id == stopStreamingTransactionId else {
+            return
+        }
+        reset()
     }
 
     private func writeMessage(message: DjiMessage) {

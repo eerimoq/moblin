@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.332.0", date: "2024-07-16", changes: [
+        "• Increase map size from 500 by 500 meters to 750 by 750 meters. 💡 JohannesLiv",
+        "• Show DJI device streaming state.",
+        "• Improved DJI device handling in general.",
+    ]),
     Version(version: "0.331.0", date: "2024-07-15", changes: [
         "• Optional server side disconnect protection using OBS.",
         "  • Automatically switch to configured OBS BRB scene when the current scene's SRT(LA) or RTMP video source is broken.",
