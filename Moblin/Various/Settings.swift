@@ -3133,6 +3133,7 @@ final class Settings {
             default:
                 stream.selectedFps = .fps30_00
             }
+            store()
         }
     }
 }
