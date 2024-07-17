@@ -49,7 +49,7 @@ class RtmpServerClient {
     private var totalBytesReceivedAcked: UInt64 = 0
 
     var manualFps = false
-    var fps: Double = 0
+    var fpsTimeBase: Double = 0
     var latency: Int32 = 2000
 
     init(server: RtmpServer, connection: NWConnection) {

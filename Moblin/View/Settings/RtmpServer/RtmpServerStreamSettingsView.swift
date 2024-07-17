@@ -71,8 +71,8 @@ struct RtmpServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
-    private func submitFps(fps: netStreamFps) {
-        stream.selectedFps = fps
+    private func submitFps(value: String) {
+        stream.fps = Double(value) ?? 29.97
         model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
@@ -131,12 +131,10 @@ struct RtmpServerStreamSettingsView: View {
                 .disabled(model.rtmpServerEnabled())
                 if stream.manualFps! {
                     Picker("FPS", selection: Binding(get: {
-                        stream.selectedFps!
-                    }, set: { fps in
-                        submitFps(fps: fps)
-                    })) {
-                        ForEach(netStreamFpss, id: \.self) { fps in
-                            Text(String(format: "%.2f", fps.rawValue))
+                        String(stream.fps!)
+                    }, set: submitFps)) {
+                        ForEach(rtmpServerFpss, id: \.self) { fps in
+                            Text(fps)
                         }
                     }
                     .disabled(model.rtmpServerEnabled())

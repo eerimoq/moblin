@@ -1319,16 +1319,7 @@ class SettingsDebug: Codable {
     var djiDevices: Bool? = false
 }
 
-enum netStreamFps: Double, Codable, CaseIterable {
-    case fps25_00 = 25.0
-    case fps29_97 = 29.97
-    case fps30_00 = 30.0
-    case fps50_00 = 50.0
-    case fps59_94 = 59.94
-    case fps60_00 = 60.0
-}
-
-let netStreamFpss = netStreamFps.allCases.map { $0 }
+let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
 
 class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
@@ -1336,13 +1327,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
     var manualFps: Bool? = false
-    var fps: Double? = 30
-    var selectedFps: netStreamFps? = .fps30_00 {
-        didSet {
-            fps = selectedFps!.rawValue
-        }
-    }
-
+    var fps: Double? = 29.97
     var autoSelectMic: Bool? = true
 
     func camera() -> String {
@@ -3116,23 +3101,17 @@ final class Settings {
             device.autoRestartStream = false
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where stream.selectedFps == nil {
-            switch stream.fps {
-            case 25.0:
-                stream.selectedFps = .fps25_00
-            case 29.97:
-                stream.selectedFps = .fps29_97
-            case 30.0:
-                stream.selectedFps = .fps30_00
-            case 50.0:
-                stream.selectedFps = .fps50_00
-            case 59.94:
-                stream.selectedFps = .fps59_94
-            case 60.0:
-                stream.selectedFps = .fps60_00
-            default:
-                stream.selectedFps = .fps30_00
+        for stream in realDatabase.rtmpServer!.streams where !rtmpServerFpss.contains(String(stream.fps!)) {
+            var newFps = 29.97
+            for fps in rtmpServerFpss {
+                guard let fps = Double(fps) else {
+                    continue
+                }
+                if abs(fps - stream.fps!) < 0.01 {
+                    newFps = fps
+                }
             }
+            stream.fps = newFps
             store()
         }
     }
