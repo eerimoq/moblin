@@ -6,7 +6,9 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
 
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
+    let djiScanner: DjiDeviceScanner = DjiDeviceScanner.shared
     var device: SettingsDjiDevice
+    @State private var isDevicePickerVisible = false
 
     private func serverUrls() -> [String] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId!) else {
@@ -37,6 +39,44 @@ struct DjiDeviceSettingsView: View {
                 })
             }
             Section {
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "Select device"),
+                    onChange: { value in
+                        print(device.peripheralId.debugDescription)
+                        print(value);
+                        device.peripheralId = UUID(uuidString: value)
+                        print(device.peripheralId?.uuidString ?? "Not set")
+                    },
+                    footers: [
+                        String(localized: """
+                        Make sure your device is connected and that other apps are not currently connected to the device. \
+                        Make sure your phone is relatively near the device. \
+                        If you still dont see your device, turn your device off and then on again.
+                        """),
+                    ],
+                    items: djiScanner.discoveredDevices.map {device in
+                        InlinePickerItem(id: device.identifier.uuidString, text: device.name ?? "Unknown")
+                    },
+                    selectedId: device.peripheralId?.uuidString ?? "Select device"
+                ), isActive: $isDevicePickerVisible) {
+                    HStack {
+                        Text(String(localized: "Target device"))
+                        Spacer()
+                        Text(device.peripheralId?.uuidString ?? "Select device")
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
+                    }
+                }
+            } header: {
+                Text("Device")
+            }.onChange(of: isDevicePickerVisible){ isVisible in
+                if isVisible {
+                    djiScanner.startScanningForDevices()
+                } else {
+                    djiScanner.stopScanningForDevices()
+                }
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "SSID"),
                     value: device.wifiSsid,
@@ -51,7 +91,8 @@ struct DjiDeviceSettingsView: View {
                     onSubmit: { value in
                         device.wifiPassword = value
                         model.store()
-                    }
+                    },
+                    sensitive: true
                 )
             } header: {
                 Text("WiFi")

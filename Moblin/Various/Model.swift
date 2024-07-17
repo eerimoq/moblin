@@ -986,7 +986,8 @@ final class Model: NSObject, ObservableObject {
         djiDevice.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
-            rtmpUrl: rtmpUrl
+            rtmpUrl: rtmpUrl,
+            deviceUUID: device.peripheralId!
         )
     }
 
