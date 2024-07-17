@@ -47,6 +47,7 @@ class DjiDevice: NSObject {
     private var stopStreamingTimer: DispatchSourceTimer?
 
     func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String, deviceUUID: UUID) {
+        logger.info("dji-device: Start live stream")
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
@@ -58,6 +59,7 @@ class DjiDevice: NSObject {
     }
 
     func stopLiveStream() {
+        logger.info("dji-device: Stop live stream")
         stopStartStreamingTimer()
         startStopStreamingTimer()
         stopStream()
@@ -93,7 +95,7 @@ class DjiDevice: NSObject {
 
     private func startStopStreamingTimer() {
         stopStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
-        stopStreamingTimer!.schedule(deadline: .now() + 60)
+        stopStreamingTimer!.schedule(deadline: .now() + 10)
         stopStreamingTimer!.setEventHandler { [weak self] in
             self?.stopStreamingTimerExpired()
         }
@@ -304,6 +306,9 @@ extension DjiDevice: CBPeripheralDelegate {
         didUpdateNotificationStateFor characteristic: CBCharacteristic,
         error _: Error?
     ) {
+        guard state == .connecting else {
+            return
+        }
         guard characteristic.uuid == fff4Id else {
             return
         }

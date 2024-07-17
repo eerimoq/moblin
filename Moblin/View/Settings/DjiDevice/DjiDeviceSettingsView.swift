@@ -30,6 +30,34 @@ struct DjiDeviceSettingsView: View {
         return serverUrls
     }
 
+    func state() -> String {
+        if model.djiDeviceStreamingState == nil || model.djiDeviceStreamingState == .idle {
+            return String(localized: "Not started")
+        } else if model.djiDeviceStreamingState == .discovering {
+            return String(localized: "Discovering...")
+        } else if model.djiDeviceStreamingState == .connecting {
+            return String(localized: "Connecting...")
+        } else if model.djiDeviceStreamingState == .checkingIfPaired || model
+            .djiDeviceStreamingState == .pairing
+        {
+            return String(localized: "Pairing...")
+        } else if model.djiDeviceStreamingState == .stoppingStream || model
+            .djiDeviceStreamingState == .cleaningUp
+        {
+            return String(localized: "Stopping stream...")
+        } else if model.djiDeviceStreamingState == .preparingStream {
+            return String(localized: "Preparing to stream...")
+        } else if model.djiDeviceStreamingState == .settingUpWifi {
+            return String(localized: "Setting up WiFi...")
+        } else if model.djiDeviceStreamingState == .startingStream {
+            return String(localized: "Starting stream...")
+        } else if model.djiDeviceStreamingState == .streaming {
+            return String(localized: "Streaming")
+        } else {
+            return String(localized: "Unknown")
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -148,7 +176,7 @@ struct DjiDeviceSettingsView: View {
             } header: {
                 Text("RTMP")
             }
-            if device.rtmpUrlType == .server, false {
+            if device.rtmpUrlType == .server {
                 Section {
                     Toggle(isOn: Binding(get: {
                         device.autoRestartStream!
@@ -161,7 +189,14 @@ struct DjiDeviceSettingsView: View {
                     }
                 }
             }
-            if model.djiDeviceStreamingState == nil || model.djiDeviceStreamingState == .idle {
+            Section {
+                HStack {
+                    Spacer()
+                    Text(state())
+                    Spacer()
+                }
+            }
+            if !model.isDjiDeviceStarted(device: device) {
                 Section {
                     Button(action: {
                         model.startDjiDeviceLiveStream(device: device)
@@ -177,81 +212,7 @@ struct DjiDeviceSettingsView: View {
                     .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
                     .overlay(RoundedRectangle(cornerRadius: 10)
                         .stroke(.blue, lineWidth: 2)))
-            } else if model.djiDeviceStreamingState == .discovering {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Discovering...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .connecting {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Connecting...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .checkingIfPaired || model
-                .djiDeviceStreamingState == .pairing
-            {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Pairing...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .stoppingStream || model
-                .djiDeviceStreamingState == .cleaningUp
-            {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Stopping stream...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .preparingStream {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Preparing to stream...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .settingUpWifi {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Setting up WiFi...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .startingStream {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Starting stream...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.djiDeviceStreamingState == .streaming {
+            } else {
                 Section {
                     HStack {
                         Spacer()
@@ -265,14 +226,6 @@ struct DjiDeviceSettingsView: View {
                 }
                 .foregroundColor(.white)
                 .listRowBackground(Color.blue)
-            } else {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Unknown device state")
-                        Spacer()
-                    }
-                }
             }
         }
         .navigationTitle("DJI device")

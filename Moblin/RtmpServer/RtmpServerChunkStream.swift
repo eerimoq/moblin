@@ -257,7 +257,13 @@ class RtmpServerChunkStream {
                 .first(where: { $0.streamKey == streamKey })
             {
                 client.manualFps = stream.manualFps!
-                client.fps = stream.fps!
+                if stream.fps! == 29.97 {
+                    client.fpsTimeBase = 1001 / 30000
+                } else if stream.fps! == 59.94 {
+                    client.fpsTimeBase = 1001 / 60000
+                } else {
+                    client.fpsTimeBase = 1 / stream.fps!
+                }
                 client.latency = stream.latency!
                 return true
             } else {
@@ -512,8 +518,8 @@ class RtmpServerChunkStream {
             if !isAudioReceived {
                 return nil
             }
-            duration = Int64(1000 / client.fps)
-            videoTimestamp = Double(numberOfFrames) / client.fps * 1000
+            duration = Int64(client.fpsTimeBase * 1000)
+            videoTimestamp = Double(numberOfFrames) * client.fpsTimeBase * 1000
             numberOfFrames += 1
         } else {
             duration = Int64(messageTimestamp)

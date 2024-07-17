@@ -1319,13 +1319,15 @@ class SettingsDebug: Codable {
     var djiDevices: Bool? = false
 }
 
+let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
+
 class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
     var manualFps: Bool? = false
-    var fps: Double? = 30
+    var fps: Double? = 29.97
     var autoSelectMic: Bool? = true
 
     func camera() -> String {
@@ -3098,6 +3100,19 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.autoRestartStream == nil {
             device.autoRestartStream = false
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where !rtmpServerFpss.contains(String(stream.fps!)) {
+            var newFps = 29.97
+            for fps in rtmpServerFpss {
+                guard let fps = Double(fps) else {
+                    continue
+                }
+                if abs(fps - stream.fps!) < 0.01 {
+                    newFps = fps
+                }
+            }
+            stream.fps = newFps
             store()
         }
     }

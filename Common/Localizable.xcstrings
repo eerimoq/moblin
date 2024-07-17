@@ -55513,6 +55513,9 @@
         }
       }
     },
+    "Not started" : {
+
+    },
     "Not supported for this camera" : {
       "localizations" : {
         "de" : {
@@ -74403,6 +74406,9 @@
         }
       }
     },
+    "Streaming" : {
+
+    },
     "Streaming history" : {
       "localizations" : {
         "de" : {
@@ -83375,9 +83381,6 @@
           }
         }
       }
-    },
-    "Unknown device state" : {
-
     },
     "Unknown recording state." : {
       "localizations" : {
