@@ -6832,7 +6832,7 @@ extension Model {
         guard let rtmpUrl else {
             return
         }
-        guard let deviceId = device.peripheralId else {
+        guard let deviceId = device.bluetoothPeripheralId else {
             return
         }
         djiDeviceWrapper.device.startLiveStream(

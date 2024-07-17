@@ -1473,8 +1473,9 @@ var djiDeviceUrlTypes = SettingsDjiDeviceUrlType.allCases.map { $0.toString() }
 
 class SettingsDjiDevice: Codable, Identifiable {
     var id: UUID = .init()
-    var peripheralId: UUID?
     var name: String = ""
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
     var wifiSsid: String = ""
     var wifiPassword: String = ""
     var rtmpUrlType: SettingsDjiDeviceUrlType? = .server

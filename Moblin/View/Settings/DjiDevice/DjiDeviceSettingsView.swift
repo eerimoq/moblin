@@ -68,29 +68,34 @@ struct DjiDeviceSettingsView: View {
             }
             Section {
                 NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Select device"),
+                    title: String(localized: "Device"),
                     onChange: { value in
-                        device.peripheralId = UUID(uuidString: value)
+                        guard let deviceId = UUID(uuidString: value) else {
+                            return
+                        }
+                        guard let djiDevice = djiScanner.discoveredDevices
+                            .first(where: { $0.identifier == deviceId })
+                        else {
+                            return
+                        }
+                        device.bluetoothPeripheralName = djiDevice.name
+                        device.bluetoothPeripheralId = deviceId
                     },
                     footers: [
                         String(localized: """
-                        Make sure your device is connected and that other apps are not currently \
-                        connected to the device. Make sure your phone is relatively near the device. \
-                        If you still dont see your device, turn your device off and then on again.
+                        Make sure your DJI device is powered on and that no other apps are connected to \
+                        it via Bluetooth. Make sure the Moblin device is relatively near the DJI device. \
+                        If you still dont see your DJI device, turn your DJI device off and then on again.
                         """),
                     ],
                     items: djiScanner.discoveredDevices.map { device in
-                        InlinePickerItem(id: device.identifier.uuidString, text: device.name ?? "Unknown")
+                        InlinePickerItem(id: device.identifier.uuidString, text: device.name ?? String(localized: "Unknown"))
                     },
-                    selectedId: device.peripheralId?.uuidString ?? "Select device"
+                    selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
                 ), isActive: $isDevicePickerVisible) {
-                    HStack {
-                        Text(String(localized: "Target device"))
-                        Spacer()
-                        Text(device.peripheralId?.uuidString ?? "Select device")
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
-                    }
+                    Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
                 }
             } header: {
                 Text("Device")

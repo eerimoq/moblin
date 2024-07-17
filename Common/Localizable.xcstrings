@@ -46667,7 +46667,7 @@
         }
       }
     },
-    "Make sure your device is connected and that other apps are not currently connected to the device. Make sure your phone is relatively near the device. If you still dont see your device, turn your device off and then on again." : {
+    "Make sure your DJI device is powered on and that no other apps are connected to it via Bluetooth. Make sure the Moblin device is relatively near the DJI device. If you still dont see your DJI device, turn your DJI device off and then on again." : {
 
     },
     "Malformed IRLToolkit URL" : {
@@ -66312,9 +66312,6 @@
         }
       }
     },
-    "Select device" : {
-
-    },
     "Select image" : {
       "localizations" : {
         "de" : {
@@ -76098,9 +76095,6 @@
           }
         }
       }
-    },
-    "Target device" : {
-
     },
     "Telephoto" : {
       "localizations" : {
