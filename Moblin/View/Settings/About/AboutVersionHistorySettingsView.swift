@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.334.0", date: "2024-07-17", changes: [
+        "• Do not show locations in privacy regions on map widget. 🐛 Tican",
+        "• DJI device picker. 🧑‍🏭 Spillmaker",
+        "  • List contains all found DJI Bluetooth devices.",
+    ]),
     Version(version: "0.333.0", date: "2024-07-17", changes: [
         "• Fix text widget font design for non-English app language.",
         "• Manual FPS picker instead of text field in RTMP server streams. 🧑‍🏭 ErAzOr",
