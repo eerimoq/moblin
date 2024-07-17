@@ -6832,11 +6832,14 @@ extension Model {
         guard let rtmpUrl else {
             return
         }
+        guard let deviceId = device.peripheralId else {
+            return
+        }
         djiDeviceWrapper.device.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
             rtmpUrl: rtmpUrl,
-            deviceUUID: device.peripheralId!
+            deviceId: deviceId
         )
         djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
             .makeTimerSource(queue: DispatchQueue.main)

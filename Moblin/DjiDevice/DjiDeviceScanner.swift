@@ -3,29 +3,21 @@
 //
 
 import CoreBluetooth
-import Foundation
 
 class DjiDeviceScanner: NSObject {
     static let shared = DjiDeviceScanner()
     @Published var discoveredDevices: [CBPeripheral] = []
     private var centralManager: CBCentralManager?
 
-    private override init() {
-        super.init()
-    }
-
     func startScanningForDevices() {
-        print("Starting to scan for devices...")
         discoveredDevices = []
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 
     func stopScanningForDevices() {
-        print("Stopping to scan for devices...")
         centralManager?.stopScan()
         centralManager = nil
     }
-
 }
 
 extension DjiDeviceScanner: CBCentralManagerDelegate {
@@ -35,22 +27,21 @@ extension DjiDeviceScanner: CBCentralManagerDelegate {
         }
     }
 
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
-        if let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data {
-
-            let manufacturerDataString = manufacturerData.map { String(format: "%02hhx", $0) }.joined()
-            let manufacturerIdData = manufacturerData.prefix(2)
-
-            let desiredManufacturerIdData = Data([0xAA, 0x08])
-            if manufacturerIdData == desiredManufacturerIdData {
-
-                // Check if device is already in list, if its not, add it.
-                if !discoveredDevices.contains(peripheral) {
-                    discoveredDevices.append(peripheral)
-                }
-            }
-
+    func centralManager(
+        _: CBCentralManager,
+        didDiscover peripheral: CBPeripheral,
+        advertisementData: [String: Any],
+        rssi _: NSNumber
+    ) {
+        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
+            return
         }
-
+        guard manufacturerData.prefix(2) == djiTechnologyCoLtd else {
+            return
+        }
+        guard !discoveredDevices.contains(peripheral) else {
+            return
+        }
+        discoveredDevices.append(peripheral)
     }
 }

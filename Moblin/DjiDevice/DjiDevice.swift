@@ -1,7 +1,7 @@
 import CoreBluetooth
 import Foundation
 
-private let djiTechnologyCoLtd = Data([0xAA, 0x08])
+let djiTechnologyCoLtd = Data([0xAA, 0x08])
 
 // The actual values do not matter.
 private let pairTransactionId: UInt16 = 0x8092
@@ -37,7 +37,7 @@ class DjiDevice: NSObject {
     private var wifiSsid: String?
     private var wifiPassword: String?
     private var rtmpUrl: String?
-    private var deviceUUID: UUID?
+    private var deviceId: UUID?
     private var centralManager: CBCentralManager?
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
@@ -46,12 +46,12 @@ class DjiDevice: NSObject {
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
 
-    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String, deviceUUID: UUID) {
+    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String, deviceId: UUID) {
         logger.info("dji-device: Start live stream")
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
-        self.deviceUUID = deviceUUID
+        self.deviceId = deviceId
         reset()
         startStartStreamingTimer()
         setState(state: .discovering)
@@ -129,16 +129,9 @@ extension DjiDevice: CBCentralManagerDelegate {
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
-                        advertisementData: [String: Any], rssi _: NSNumber)
+                        advertisementData _: [String: Any], rssi _: NSNumber)
     {
-        guard let data = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
-            return
-        }
-        guard data.prefix(2) == djiTechnologyCoLtd else {
-            return
-        }
-        guard peripheral.identifier == deviceUUID else {
-            print("Peripheral identifier mismatch: \(peripheral.identifier.uuidString) | \(deviceUUID!.uuidString)")
+        guard peripheral.identifier == deviceId else {
             return
         }
         central.stopScan()
