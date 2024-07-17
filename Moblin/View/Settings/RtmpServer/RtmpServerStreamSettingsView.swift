@@ -71,14 +71,8 @@ struct RtmpServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
-    func submitFps(value: String) {
-        guard let fps = Double(value) else {
-            return
-        }
-        guard fps >= 1 && fps <= 100 else {
-            return
-        }
-        stream.fps = fps
+    private func submitFps(fps: netStreamFps) {
+        stream.selectedFps = fps
         model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
@@ -136,12 +130,15 @@ struct RtmpServerStreamSettingsView: View {
                 }))
                 .disabled(model.rtmpServerEnabled())
                 if stream.manualFps! {
-                    TextEditNavigationView(
-                        title: String(localized: "FPS"),
-                        value: String(stream.fps!),
-                        onSubmit: submitFps,
-                        keyboardType: .numbersAndPunctuation
-                    )
+                    Picker("FPS", selection: Binding(get: {
+                        stream.selectedFps!
+                    }, set: { fps in
+                        submitFps(fps: fps)
+                    })) {
+                        ForEach(netStreamFpss, id: \.self) { fps in
+                            Text(String(format: "%.2f", fps.rawValue))
+                        }
+                    }
                     .disabled(model.rtmpServerEnabled())
                 }
             } footer: {
