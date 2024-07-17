@@ -89,7 +89,10 @@ struct DjiDeviceSettingsView: View {
                         """),
                     ],
                     items: djiScanner.discoveredDevices.map { device in
-                        InlinePickerItem(id: device.identifier.uuidString, text: device.name ?? String(localized: "Unknown"))
+                        InlinePickerItem(
+                            id: device.identifier.uuidString,
+                            text: device.name ?? String(localized: "Unknown")
+                        )
                     },
                     selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
                 ), isActive: $isDevicePickerVisible) {
