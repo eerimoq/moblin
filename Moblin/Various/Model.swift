@@ -2266,8 +2266,11 @@ final class Model: NSObject, ObservableObject {
         guard !mapEffects.isEmpty else {
             return
         }
-        guard let location = locationManager.getLatestKnownLocation() else {
+        guard var location = locationManager.getLatestKnownLocation() else {
             return
+        }
+        if isLocationInPrivacyRegion(location: location) {
+            location = .init()
         }
         for mapEffect in mapEffects.values {
             mapEffect.updateLocation(location: location)
