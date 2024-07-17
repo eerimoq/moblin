@@ -9,10 +9,10 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.333.0", date: "2024-07-17", changes: [
-        "• Fix text widget font design for non-english app language.",
+        "• Fix text widget font design for non-English app language.",
         "• Manual FPS picker instead of text field in RTMP server streams. 🧑‍🏭 ErAzOr",
         "  • Just to make it easier to get right.",
-        "• Improve manua FPS RTMP server stream video/audio sync by making FPS more accurate. 🧑‍🏭 ErAzOr",
+        "• Improve manual FPS RTMP server stream video/audio sync by making FPS more accurate. 🧑‍🏭 ErAzOr",
         "  • 29.97 is now actually 30000 / 1001.",
         "• Optionally auto-restart DJI device streams when broken.",
     ]),
