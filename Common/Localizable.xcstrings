@@ -26884,6 +26884,9 @@
         }
       }
     },
+    "Device" : {
+
+    },
     "Device health" : {
       "localizations" : {
         "de" : {
@@ -46664,6 +46667,9 @@
         }
       }
     },
+    "Make sure your device is connected and that other apps are not currently connected to the device. Make sure your phone is relatively near the device. If you still dont see your device, turn your device off and then on again." : {
+
+    },
     "Malformed IRLToolkit URL" : {
       "localizations" : {
         "de" : {
@@ -66306,6 +66312,9 @@
         }
       }
     },
+    "Select device" : {
+
+    },
     "Select image" : {
       "localizations" : {
         "de" : {
@@ -76089,6 +76098,9 @@
           }
         }
       }
+    },
+    "Target device" : {
+
     },
     "Telephoto" : {
       "localizations" : {

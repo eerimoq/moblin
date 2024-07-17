@@ -37,6 +37,7 @@ class DjiDevice: NSObject {
     private var wifiSsid: String?
     private var wifiPassword: String?
     private var rtmpUrl: String?
+    private var deviceUUID: UUID?
     private var centralManager: CBCentralManager?
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
@@ -45,11 +46,12 @@ class DjiDevice: NSObject {
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
 
-    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String) {
+    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String, deviceUUID: UUID) {
         logger.info("dji-device: Start live stream")
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
+        self.deviceUUID = deviceUUID
         reset()
         startStartStreamingTimer()
         setState(state: .discovering)
@@ -133,6 +135,10 @@ extension DjiDevice: CBCentralManagerDelegate {
             return
         }
         guard data.prefix(2) == djiTechnologyCoLtd else {
+            return
+        }
+        guard peripheral.identifier == deviceUUID else {
+            print("Peripheral identifier mismatch: \(peripheral.identifier.uuidString) | \(deviceUUID!.uuidString)")
             return
         }
         central.stopScan()

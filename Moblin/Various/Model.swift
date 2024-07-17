@@ -6835,7 +6835,8 @@ extension Model {
         djiDeviceWrapper.device.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
-            rtmpUrl: rtmpUrl
+            rtmpUrl: rtmpUrl,
+            deviceUUID: device.peripheralId!
         )
         djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
             .makeTimerSource(queue: DispatchQueue.main)
