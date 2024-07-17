@@ -208,10 +208,11 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func stopStream() {
+        let payload = DjiStopStreamingMessagePayload()
         writeMessage(message: DjiMessage(target: 0x0802,
                                          id: stopStreamingTransactionId,
                                          type: 0x8E0240,
-                                         payload: Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])))
+                                         payload: payload.encode()))
     }
 
     private func processCheckingIfPaired(response: DjiMessage) {
@@ -235,10 +236,11 @@ extension DjiDevice: CBPeripheralDelegate {
         guard response.id == stopStreamingTransactionId else {
             return
         }
+        let payload = DjiPreparingToLivestreamMessagePayload()
         writeMessage(message: DjiMessage(target: 0x0802,
                                          id: preparingToLivestreamTransactionId,
                                          type: 0xE10240,
-                                         payload: Data([0x1A])))
+                                         payload: payload.encode()))
         setState(state: .preparingStream)
     }
 
@@ -246,11 +248,11 @@ extension DjiDevice: CBPeripheralDelegate {
         guard response.id == preparingToLivestreamTransactionId, let wifiSsid, let wifiPassword else {
             return
         }
-        let payload = djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
+        let payload = DjiSetupWifiMessagePayload(wifiSsid: wifiSsid, wifiPassword: wifiPassword)
         writeMessage(message: DjiMessage(target: 0x0702,
                                          id: setupWifiTransactionId,
                                          type: 0x470740,
-                                         payload: payload))
+                                         payload: payload.encode()))
         setState(state: .settingUpWifi)
     }
 
@@ -258,13 +260,11 @@ extension DjiDevice: CBPeripheralDelegate {
         guard response.id == setupWifiTransactionId, let rtmpUrl else {
             return
         }
-        var payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,
-                            0x00, 0x00, 0x00, 0x00])
-        payload += djiPackUrl(url: rtmpUrl)
+        let payload = DjiStartStreamingMessagePayload(rtmpUrl: rtmpUrl)
         writeMessage(message: DjiMessage(target: 0x0802,
                                          id: startStreamingTransactionId,
                                          type: 0x780840,
-                                         payload: payload))
+                                         payload: payload.encode()))
         setState(state: .startingStream)
     }
 
@@ -305,15 +305,13 @@ extension DjiDevice: CBPeripheralDelegate {
         guard characteristic.uuid == fff4Id else {
             return
         }
-        var payload = Data([
-            0x20, 0x32, 0x38, 0x34, 0x61, 0x65, 0x35, 0x62,
-            0x38, 0x64, 0x37, 0x36, 0x62, 0x33, 0x33, 0x37,
-            0x35, 0x61, 0x30, 0x34, 0x61, 0x36, 0x34, 0x31,
-            0x37, 0x61, 0x64, 0x37, 0x31, 0x62, 0x65, 0x61,
-            0x33,
-        ])
-        payload += djiPackString(value: pairPinCode)
-        let request = DjiMessage(target: 0x0702, id: pairTransactionId, type: 0x450740, payload: payload)
+        let payload = DjiPairMessagePayload(pairPinCode: pairPinCode)
+        let request = DjiMessage(
+            target: 0x0702,
+            id: pairTransactionId,
+            type: 0x450740,
+            payload: payload.encode()
+        )
         writeMessage(message: request)
         setState(state: .checkingIfPaired)
     }

@@ -94,3 +94,66 @@ class DjiMessage {
         return "target: \(target), id: \(id), type: \(type) \(payload.hexString())"
     }
 }
+
+class DjiPairMessagePayload {
+    static let payload = Data([
+        0x20, 0x32, 0x38, 0x34, 0x61, 0x65, 0x35, 0x62,
+        0x38, 0x64, 0x37, 0x36, 0x62, 0x33, 0x33, 0x37,
+        0x35, 0x61, 0x30, 0x34, 0x61, 0x36, 0x34, 0x31,
+        0x37, 0x61, 0x64, 0x37, 0x31, 0x62, 0x65, 0x61,
+        0x33,
+    ])
+    var pairPinCode: String
+
+    init(pairPinCode: String) {
+        self.pairPinCode = pairPinCode
+    }
+
+    func encode() -> Data {
+        return DjiPairMessagePayload.payload + djiPackString(value: pairPinCode)
+    }
+}
+
+class DjiPreparingToLivestreamMessagePayload {
+    static let payload = Data([0x1A])
+
+    func encode() -> Data {
+        return DjiPreparingToLivestreamMessagePayload.payload
+    }
+}
+
+class DjiSetupWifiMessagePayload {
+    var wifiSsid: String
+    var wifiPassword: String
+
+    init(wifiSsid: String, wifiPassword: String) {
+        self.wifiSsid = wifiSsid
+        self.wifiPassword = wifiPassword
+    }
+
+    func encode() -> Data {
+        return djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
+    }
+}
+
+class DjiStartStreamingMessagePayload {
+    static let payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,
+                               0x00, 0x00, 0x00, 0x00])
+    var rtmpUrl: String
+
+    init(rtmpUrl: String) {
+        self.rtmpUrl = rtmpUrl
+    }
+
+    func encode() -> Data {
+        return DjiStartStreamingMessagePayload.payload + djiPackUrl(url: rtmpUrl)
+    }
+}
+
+class DjiStopStreamingMessagePayload {
+    static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
+
+    func encode() -> Data {
+        return DjiStopStreamingMessagePayload.payload
+    }
+}
