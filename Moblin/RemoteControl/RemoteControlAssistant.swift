@@ -242,6 +242,8 @@ class RemoteControlAssistant {
             handleStateEvent(state: state)
         case let .log(entry: entry):
             handleLogEvent(entry: entry)
+        case .mediaShareSegmentReceived:
+            break
         }
     }
 

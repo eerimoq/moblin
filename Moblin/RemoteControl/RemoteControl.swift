@@ -17,6 +17,8 @@ enum RemoteControlRequest: Codable {
     case setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
     case setSrtConnectionPrioritiesEnabled(enabled: Bool)
     case reloadBrowserWidgets
+    case newSubscriber(name: String, message: String)
+    case playMediaShare(fileId: UUID, fileSize: UInt64, message: String)
 }
 
 enum RemoteControlResponse: Codable {
@@ -31,6 +33,7 @@ enum RemoteControlResponse: Codable {
 enum RemoteControlEvent: Codable {
     case state(data: RemoteControlState)
     case log(entry: String)
+    case mediaShareSegmentReceived(fileId: UUID)
 }
 
 struct RemoteControlStatusItem: Codable {

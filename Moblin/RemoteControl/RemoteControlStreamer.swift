@@ -195,6 +195,10 @@ class RemoteControlStreamer {
             delegate.setSrtConnectionPrioritiesEnabled(enabled: enabled) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
+        case .newSubscriber:
+            break
+        case .playMediaShare:
+            break
         }
     }
 }
