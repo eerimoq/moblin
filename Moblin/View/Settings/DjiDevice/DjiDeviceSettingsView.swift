@@ -68,6 +68,26 @@ struct DjiDeviceSettingsView: View {
         device.bluetoothPeripheralId = deviceId
     }
 
+    private func canStartLive() -> Bool {
+        if device.bluetoothPeripheralId == nil {
+            return false
+        }
+        if device.wifiSsid.isEmpty {
+            return false
+        }
+        switch device.rtmpUrlType! {
+        case .server:
+            if device.serverRtmpUrl!.isEmpty {
+                return false
+            }
+        case .custom:
+            if device.customRtmpUrl!.isEmpty {
+                return false
+            }
+        }
+        return true
+    }
+
     var body: some View {
         Form {
             Section {
@@ -188,6 +208,7 @@ struct DjiDeviceSettingsView: View {
                     .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
                     .overlay(RoundedRectangle(cornerRadius: 10)
                         .stroke(.blue, lineWidth: 2)))
+                .disabled(!canStartLive())
             } else {
                 Section {
                     HStack {
