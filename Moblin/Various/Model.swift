@@ -1281,7 +1281,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleWillTerminate() {
-        store()
+        if !showLoadSettingsFailed {
+            store()
+        }
     }
 
     private func shouldStreamInBackground() -> Bool {
