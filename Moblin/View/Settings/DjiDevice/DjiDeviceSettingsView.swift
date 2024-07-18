@@ -63,7 +63,6 @@ struct DjiDeviceSettingsView: View {
             Section {
                 TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
                     device.name = value
-                    model.store()
                 })
             }
             Section {
@@ -115,7 +114,6 @@ struct DjiDeviceSettingsView: View {
                     value: device.wifiSsid,
                     onSubmit: { value in
                         device.wifiSsid = value
-                        model.store()
                     }
                 )
                 TextEditNavigationView(
@@ -123,7 +121,6 @@ struct DjiDeviceSettingsView: View {
                     value: device.wifiPassword,
                     onSubmit: { value in
                         device.wifiPassword = value
-                        model.store()
                     },
                     sensitive: true
                 )
@@ -135,7 +132,6 @@ struct DjiDeviceSettingsView: View {
                     device.rtmpUrlType!.toString()
                 }, set: { value in
                     device.rtmpUrlType = SettingsDjiDeviceUrlType.fromString(value: value)
-                    model.store()
                     model.objectWillChange.send()
                 })) {
                     ForEach(djiDeviceUrlTypes, id: \.self) {
@@ -148,7 +144,6 @@ struct DjiDeviceSettingsView: View {
                     }, set: { value in
                         device.serverRtmpStreamId = value
                         device.serverRtmpUrl = serverUrls().first ?? ""
-                        model.store()
                         model.objectWillChange.send()
                     })) {
                         ForEach(model.database.rtmpServer!.streams) { stream in
@@ -160,7 +155,6 @@ struct DjiDeviceSettingsView: View {
                         device.serverRtmpUrl!
                     }, set: { value in
                         device.serverRtmpUrl = value
-                        model.store()
                         model.objectWillChange.send()
                     })) {
                         ForEach(serverUrls(), id: \.self) { serverUrl in
@@ -174,7 +168,6 @@ struct DjiDeviceSettingsView: View {
                         value: device.customRtmpUrl!,
                         onSubmit: { value in
                             device.customRtmpUrl = value
-                            model.store()
                         }
                     )
                 }
@@ -187,7 +180,6 @@ struct DjiDeviceSettingsView: View {
                         device.autoRestartStream!
                     }, set: { value in
                         device.autoRestartStream = value
-                        model.store()
                         model.objectWillChange.send()
                     })) {
                         Text("Auto-restart live stream when broken")
