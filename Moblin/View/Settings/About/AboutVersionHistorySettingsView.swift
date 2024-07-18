@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.335.0", date: "2024-07-18", changes: [
+        "• Disable DJI device \"Start live stream\" button if incomplete settings.",
+        "• Location updates in background. 💡 plantbaked",
+        "• Do not store settings when app terminates if settings failed to load.",
+    ]),
     Version(version: "0.334.0", date: "2024-07-17", changes: [
         "• Do not show locations in privacy regions on map widget. 🐛 Tican",
         "• DJI device picker. 🧑‍🏭 Spillmaker",
