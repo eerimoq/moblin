@@ -9,10 +9,10 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.336.0", date: "2024-07-18", changes: [
-        "- Improved DJI device selection UI.",
-        "- Automatically start DJI device live stream when entering foreground if \"Start live stream\" button is \"active\" from before entering background.",
-        "- Fix Kick chat. 🐛 banj",
-        "  - Not sure for how long it will work this time.",
+        "• Improved DJI device selection UI.",
+        "• Automatically start DJI device live stream when entering foreground if \"Start live stream\" button is \"active\" from before entering background.",
+        "• Fix Kick chat. 🐛 H1tla and banj",
+        "  • Not sure for how long it will work this time.",
     ]),
     Version(version: "0.335.0", date: "2024-07-18", changes: [
         "• Disable DJI device \"Start live stream\" button if incomplete settings.",
