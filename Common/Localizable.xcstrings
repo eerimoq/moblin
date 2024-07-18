@@ -54733,6 +54733,9 @@
         }
       }
     },
+    "No RTMP server streams exists" : {
+
+    },
     "No settings received yet." : {
       "localizations" : {
         "de" : {

@@ -138,27 +138,31 @@ struct DjiDeviceSettingsView: View {
                     }
                 }
                 if device.rtmpUrlType == .server {
-                    Picker("Stream", selection: Binding(get: {
-                        device.serverRtmpStreamId!
-                    }, set: { value in
-                        device.serverRtmpStreamId = value
-                        device.serverRtmpUrl = serverUrls().first ?? ""
-                        model.objectWillChange.send()
-                    })) {
-                        ForEach(model.database.rtmpServer!.streams) { stream in
-                            Text(stream.name)
-                                .tag(stream.id)
+                    if model.database.rtmpServer!.streams.isEmpty {
+                        Text("No RTMP server streams exists")
+                    } else {
+                        Picker("Stream", selection: Binding(get: {
+                            device.serverRtmpStreamId!
+                        }, set: { value in
+                            device.serverRtmpStreamId = value
+                            device.serverRtmpUrl = serverUrls().first ?? ""
+                            model.objectWillChange.send()
+                        })) {
+                            ForEach(model.database.rtmpServer!.streams) { stream in
+                                Text(stream.name)
+                                    .tag(stream.id)
+                            }
                         }
-                    }
-                    Picker("URL", selection: Binding(get: {
-                        device.serverRtmpUrl!
-                    }, set: { value in
-                        device.serverRtmpUrl = value
-                        model.objectWillChange.send()
-                    })) {
-                        ForEach(serverUrls(), id: \.self) { serverUrl in
-                            Text(serverUrl)
-                                .tag(serverUrl)
+                        Picker("URL", selection: Binding(get: {
+                            device.serverRtmpUrl!
+                        }, set: { value in
+                            device.serverRtmpUrl = value
+                            model.objectWillChange.send()
+                        })) {
+                            ForEach(serverUrls(), id: \.self) { serverUrl in
+                                Text(serverUrl)
+                                    .tag(serverUrl)
+                            }
                         }
                     }
                 } else if device.rtmpUrlType == .custom {
@@ -223,6 +227,17 @@ struct DjiDeviceSettingsView: View {
                 }
                 .foregroundColor(.white)
                 .listRowBackground(Color.blue)
+            }
+        }
+        .onAppear {
+            let streams = model.database.rtmpServer!.streams
+            if !streams.isEmpty {
+                if !streams.contains(where: { $0.id == device.serverRtmpStreamId! }) {
+                    device.serverRtmpStreamId = streams.first!.id
+                }
+                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl! }) {
+                    device.serverRtmpUrl = serverUrls().first ?? ""
+                }
             }
         }
         .navigationTitle("DJI device")
