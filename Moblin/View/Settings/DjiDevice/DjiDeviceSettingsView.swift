@@ -6,9 +6,8 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
 
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    let djiScanner: DjiDeviceScanner = .shared
+    private let djiScanner: DjiDeviceScanner = .shared
     var device: SettingsDjiDevice
-    @State private var isDevicePickerVisible = false
 
     private func serverUrls() -> [String] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId!) else {
@@ -58,6 +57,17 @@ struct DjiDeviceSettingsView: View {
         }
     }
 
+    private func onDeviceChange(value: String) {
+        guard let deviceId = UUID(uuidString: value) else {
+            return
+        }
+        guard let djiDevice = djiScanner.discoveredDevices.first(where: { $0.identifier == deviceId }) else {
+            return
+        }
+        device.bluetoothPeripheralName = djiDevice.name
+        device.bluetoothPeripheralId = deviceId
+    }
+
     var body: some View {
         Form {
             Section {
@@ -66,47 +76,16 @@ struct DjiDeviceSettingsView: View {
                 })
             }
             Section {
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Device"),
-                    onChange: { value in
-                        guard let deviceId = UUID(uuidString: value) else {
-                            return
-                        }
-                        guard let djiDevice = djiScanner.discoveredDevices
-                            .first(where: { $0.identifier == deviceId })
-                        else {
-                            return
-                        }
-                        device.bluetoothPeripheralName = djiDevice.name
-                        device.bluetoothPeripheralId = deviceId
-                    },
-                    footers: [
-                        String(localized: """
-                        Make sure your DJI device is powered on and that no other apps are connected to \
-                        it via Bluetooth. Make sure the Moblin device is relatively near the DJI device. \
-                        If you still dont see your DJI device, turn your DJI device off and then on again.
-                        """),
-                    ],
-                    items: djiScanner.discoveredDevices.map { device in
-                        InlinePickerItem(
-                            id: device.identifier.uuidString,
-                            text: device.name ?? String(localized: "Unknown")
-                        )
-                    },
+                NavigationLink(destination: DjiDeviceScannerSettingsView(
+                    onChange: onDeviceChange,
                     selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
-                ), isActive: $isDevicePickerVisible) {
+                )) {
                     Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
                         .foregroundColor(.gray)
                         .lineLimit(1)
                 }
             } header: {
                 Text("Device")
-            }.onChange(of: isDevicePickerVisible) { isVisible in
-                if isVisible {
-                    djiScanner.startScanningForDevices()
-                } else {
-                    djiScanner.stopScanningForDevices()
-                }
             }
             Section {
                 TextEditNavigationView(
