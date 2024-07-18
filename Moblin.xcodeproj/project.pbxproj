@@ -3265,6 +3265,7 @@
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on screen and stream.";
@@ -3316,6 +3317,7 @@
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on screen and stream.";
