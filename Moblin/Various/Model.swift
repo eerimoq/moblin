@@ -1272,6 +1272,7 @@ final class Model: NSObject, ObservableObject {
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadConnections()
             reloadRtmpServer()
+            reloadDjiDevices()
             reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
         }
@@ -1309,6 +1310,19 @@ final class Model: NSObject, ObservableObject {
                                     onFrame: handleRtmpServerFrame,
                                     onAudioBuffer: handleRtmpServerAudioBuffer)
             rtmpServer!.start()
+        }
+    }
+
+    func reloadDjiDevices() {
+        for (deviceId, djiDeviceWrapper) in djiDeviceWrappers where djiDeviceWrapper.isStarted {
+            guard let device = database.djiDevices!.devices.first(where: { $0.id == deviceId }) else {
+                continue
+            }
+            if device.autoRestartStream! {
+                startDjiDeviceLiveStream(device: device)
+            } else {
+                stopDjiDeviceLiveStream(device: device)
+            }
         }
     }
 
