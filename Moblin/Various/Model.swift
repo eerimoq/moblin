@@ -2914,11 +2914,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchEnabled! && stream.twitchChannelId != ""
+        return stream.twitchChannelId != ""
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.twitchEnabled! && stream.twitchChannelName != ""
+        return database.chat.enabled! && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -2934,8 +2934,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return database.chat.enabled! && stream
-            .kickEnabled! && (stream.kickChatroomId != "" || stream.kickChannelName != "")
+        return database.chat.enabled! && (stream.kickChatroomId != "" || stream.kickChannelName != "")
     }
 
     func isKickPusherConnected() -> Bool {
@@ -2947,11 +2946,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isKickViewersConfigured() -> Bool {
-        return stream.kickEnabled! && stream.kickChannelName != ""
+        return stream.kickChannelName != ""
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeVideoId! != ""
+        return database.chat.enabled! && stream.youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -2963,9 +2962,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.afreecaTvEnabled! && stream
-            .afreecaTvChannelName! != "" && stream
-            .afreecaTvStreamId! != ""
+        return database.chat.enabled! && stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
     }
 
     func isAfreecaTvChatConnected() -> Bool {
@@ -2977,8 +2974,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.openStreamingPlatformEnabled! && stream
-            .openStreamingPlatformUrl! != "" && stream
+        return database.chat.enabled! && stream.openStreamingPlatformUrl! != "" && stream
             .openStreamingPlatformChannelId! != ""
     }
 
@@ -3141,12 +3137,6 @@ final class Model: NSObject, ObservableObject {
         obsWebSocket!.start()
     }
 
-    func twitchEnabledUpdated() {
-        reloadTwitchPubSub()
-        reloadTwitchChat()
-        resetChat()
-    }
-
     func twitchChannelNameUpdated() {
         reloadTwitchChat()
         resetChat()
@@ -3158,29 +3148,14 @@ final class Model: NSObject, ObservableObject {
         resetChat()
     }
 
-    func kickEnabledUpdated() {
-        reloadKickPusher()
-        resetChat()
-    }
-
     func kickChannelNameUpdated() {
         reloadKickPusher()
         reloadKickViewers()
         resetChat()
     }
 
-    func youTubeEnabledUpdated() {
-        reloadYouTubeLiveChat()
-        resetChat()
-    }
-
     func youTubeVideoIdUpdated() {
         reloadYouTubeLiveChat()
-        resetChat()
-    }
-
-    func afreecaTvEnabledUpdated() {
-        reloadAfreecaTvChat()
         resetChat()
     }
 
@@ -3191,11 +3166,6 @@ final class Model: NSObject, ObservableObject {
 
     func afreecaTvStreamIdUpdated() {
         reloadAfreecaTvChat()
-        resetChat()
-    }
-
-    func openStreamingPlatformEnabledUpdated() {
-        reloadOpenStreamingPlatformChat()
         resetChat()
     }
 

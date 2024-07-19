@@ -82,59 +82,19 @@ struct StreamSettingsView: View {
             }
             Section {
                 NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
-                    Toggle("Twitch", isOn: Binding(get: {
-                        stream.twitchEnabled!
-                    }, set: { value in
-                        stream.twitchEnabled = value
-                        model.store()
-                        if stream.enabled {
-                            model.twitchEnabledUpdated()
-                        }
-                    }))
+                    Text("Twitch")
                 }
                 NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
-                    Toggle("Kick", isOn: Binding(get: {
-                        stream.kickEnabled!
-                    }, set: { value in
-                        stream.kickEnabled = value
-                        model.store()
-                        if stream.enabled {
-                            model.kickEnabledUpdated()
-                        }
-                    }))
+                    Text("Kick")
                 }
                 NavigationLink(destination: StreamYouTubeSettingsView(stream: stream)) {
-                    Toggle("YouTube", isOn: Binding(get: {
-                        stream.youTubeEnabled!
-                    }, set: { value in
-                        stream.youTubeEnabled = value
-                        model.store()
-                        if stream.enabled {
-                            model.youTubeEnabledUpdated()
-                        }
-                    }))
+                    Text("YouTube")
                 }
                 NavigationLink(destination: StreamAfreecaTvSettingsView(stream: stream)) {
-                    Toggle("AfreecaTV", isOn: Binding(get: {
-                        stream.afreecaTvEnabled!
-                    }, set: { value in
-                        stream.afreecaTvEnabled = value
-                        model.store()
-                        if stream.enabled {
-                            model.afreecaTvEnabledUpdated()
-                        }
-                    }))
+                    Text("AfreecaTV")
                 }
                 NavigationLink(destination: StreamOpenStreamingPlatformSettingsView(stream: stream)) {
-                    Toggle("Open Streaming Platform", isOn: Binding(get: {
-                        stream.openStreamingPlatformEnabled!
-                    }, set: { value in
-                        stream.openStreamingPlatformEnabled = value
-                        model.store()
-                        if stream.enabled {
-                            model.openStreamingPlatformEnabledUpdated()
-                        }
-                    }))
+                    Text("Open Streaming Platform")
                 }
                 NavigationLink(destination: StreamEmotesSettingsView(stream: stream)) {
                     Text("Emotes")
