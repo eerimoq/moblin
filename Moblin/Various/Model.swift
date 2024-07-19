@@ -1435,17 +1435,21 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.makeToast(title: "\(stream.camera()) disconnected")
-            self.media.removeReplaceCamera(cameraId: stream.id)
-            self.media.removeReplaceAudio(cameraId: stream.id)
-            if self.currentMic.id == "\(stream.id) 0" {
-                self.setMicFromSettings()
-            }
-            if let device = self.database.djiDevices!.devices.first(where: { device in
-                device.rtmpUrlType == .server && device.serverRtmpStreamId! == stream.id
-            }) {
-                self.restartDjiLiveStreamIfNeededAfterDelay(device: device)
-            }
+            self.stopRtmpServerStream(stream: stream)
+        }
+    }
+
+    private func stopRtmpServerStream(stream: SettingsRtmpServerStream) {
+        makeToast(title: "\(stream.camera()) disconnected")
+        media.removeReplaceCamera(cameraId: stream.id)
+        media.removeReplaceAudio(cameraId: stream.id)
+        if currentMic.id == "\(stream.id) 0" {
+            setMicFromSettings()
+        }
+        if let device = database.djiDevices!.devices.first(where: { device in
+            device.rtmpUrlType == .server && device.serverRtmpStreamId! == stream.id
+        }) {
+            restartDjiLiveStreamIfNeededAfterDelay(device: device)
         }
     }
 
@@ -3779,10 +3783,9 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func stopAllRtmpStreams() {
+    private func stopAllRtmpStreams() {
         for stream in database.rtmpServer!.streams {
-            media.removeReplaceCamera(cameraId: stream.id)
-            media.removeReplaceAudio(cameraId: stream.id)
+            stopRtmpServerStream(stream: stream)
         }
     }
 
