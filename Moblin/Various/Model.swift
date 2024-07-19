@@ -1260,6 +1260,7 @@ final class Model: NSObject, ObservableObject {
             stopSrtlaServer()
             teardownAudioSession()
             chatTextToSpeech.reset(running: false)
+            locationManager.stop()
         }
     }
 
@@ -1275,6 +1276,7 @@ final class Model: NSObject, ObservableObject {
             reloadDjiDevices()
             reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
+            reloadLocation()
         }
         if isRecording {
             resumeRecording()

@@ -1,10 +1,29 @@
 import CoreLocation
 import Foundation
 
+private class BackgroundActivity {
+    private var backgroundSession: Any?
+
+    func start() {
+        if #available(iOS 17.0, *) {
+            backgroundSession = CLBackgroundActivitySession()
+        }
+    }
+
+    func stop() {
+        if #available(iOS 17.0, *) {
+            if let session = backgroundSession as? CLBackgroundActivitySession {
+                session.invalidate()
+            }
+        }
+    }
+}
+
 class Location: NSObject, CLLocationManagerDelegate {
     private var manager: CLLocationManager = .init()
     private var onUpdate: ((CLLocation) -> Void)?
     private var latestLocation: CLLocation?
+    private var backgroundActivity = BackgroundActivity()
 
     func start(onUpdate: @escaping (CLLocation) -> Void) {
         logger.debug("location: Start")
@@ -12,12 +31,14 @@ class Location: NSObject, CLLocationManagerDelegate {
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
+        backgroundActivity.start()
     }
 
     func stop() {
         logger.debug("location: Stop")
         onUpdate = nil
         manager.stopUpdatingLocation()
+        backgroundActivity.stop()
     }
 
     func status() -> String {
