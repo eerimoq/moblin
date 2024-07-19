@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.337.0", date: "2024-07-19", changes: [
+        "• Fix location updates in background. 🐛 plantbaked",
+    ]),
     Version(version: "0.336.0", date: "2024-07-18", changes: [
         "• Improved DJI device selection UI.",
         "• Automatically start DJI device live stream when entering foreground if \"Start live stream\" button is \"active\" from before entering background.",
