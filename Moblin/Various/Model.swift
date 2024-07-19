@@ -966,6 +966,7 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech
             .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
+        chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()

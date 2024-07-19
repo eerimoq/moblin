@@ -36,9 +36,20 @@ class ChatTextToSpeech: NSObject {
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
     private var filterEnabled: Bool = true
+    private var filterMentionsEnabled: Bool = true
     private var running = true
 
     private func isFilteredOut(message: String) -> Bool {
+        if isFilteredOutFilter(message: message) {
+            return true
+        }
+        if isFilteredOutFilterMentions(message: message) {
+            return true
+        }
+        return false
+    }
+
+    private func isFilteredOutFilter(message: String) -> Bool {
         if !filterEnabled {
             return false
         }
@@ -53,6 +64,13 @@ class ChatTextToSpeech: NSObject {
             return true
         }
         return false
+    }
+
+    private func isFilteredOutFilterMentions(message: String) -> Bool {
+        if !filterMentionsEnabled {
+            return false
+        }
+        return message.starts(with: "@") || message.contains(" @")
     }
 
     private func getSays(_ language: String) -> String {
@@ -148,6 +166,12 @@ class ChatTextToSpeech: NSObject {
     func setFilter(value: Bool) {
         textToSpeechDispatchQueue.async {
             self.filterEnabled = value
+        }
+    }
+
+    func setFilterMentions(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.filterMentionsEnabled = value
         }
     }
 

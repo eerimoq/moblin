@@ -191,6 +191,19 @@ struct ChatTextToSpeechSettingsView: View {
             } footer: {
                 Text("Do not say messages that are likely spam or bot commands.")
             }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechFilterMentions!
+                }, set: { value in
+                    model.database.chat.textToSpeechFilterMentions = value
+                    model.store()
+                    model.chatTextToSpeech.setFilterMentions(value: value)
+                })) {
+                    Text("Filter mentions")
+                }
+            } footer: {
+                Text("Do not say messages that contains mentions.")
+            }
         }
         .onAppear {
             if #available(iOS 17.0, *) {

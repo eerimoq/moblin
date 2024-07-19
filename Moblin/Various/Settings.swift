@@ -1229,6 +1229,7 @@ class SettingsChat: Codable {
     var textToSpeechLanguageVoices: [String: String]? = .init()
     var textToSpeechSubscribersOnly: Bool? = false
     var textToSpeechFilter: Bool? = true
+    var textToSpeechFilterMentions: Bool? = true
     var mirrored: Bool? = false
     var botEnabled: Bool? = false
 }
@@ -3114,6 +3115,10 @@ final class Settings {
                 }
             }
             stream.fps = newFps
+            store()
+        }
+        if realDatabase.chat.textToSpeechFilterMentions == nil {
+            realDatabase.chat.textToSpeechFilterMentions = true
             store()
         }
     }

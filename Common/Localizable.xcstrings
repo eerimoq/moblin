@@ -28459,6 +28459,9 @@
         }
       }
     },
+    "Do not say messages that contains mentions." : {
+
+    },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
       "localizations" : {
         "de" : {
@@ -36258,6 +36261,9 @@
           }
         }
       }
+    },
+    "Filter mentions" : {
+
     },
     "Find a face" : {
       "localizations" : {
