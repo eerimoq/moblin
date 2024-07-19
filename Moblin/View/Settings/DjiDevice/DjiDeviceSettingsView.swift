@@ -164,6 +164,9 @@ struct DjiDeviceSettingsView: View {
                                     .tag(serverUrl)
                             }
                         }
+                        if !model.database.rtmpServer!.enabled {
+                            Text("⚠️ The RTMP server is not enabled")
+                        }
                     }
                 } else if device.rtmpUrlType == .custom {
                     TextEditNavigationView(
