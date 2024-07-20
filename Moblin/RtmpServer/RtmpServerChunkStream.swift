@@ -529,15 +529,16 @@ class RtmpServerChunkStream {
             duration = Int64(mediaTimestamp - videoTimestamp)
             videoTimestamp = mediaTimestamp
         } else {
-            duration = Int64(messageTimestamp)
+            var delta = mediaTimestamp - videoTimestamp
+            duration = Int64(delta)
             if isMessageType0 {
                 if mediaTimestampZero == -1 {
-                    mediaTimestampZero = Double(messageTimestamp)
+                    mediaTimestampZero = delta
                 }
                 duration -= Int64(videoTimestamp)
-                videoTimestamp = Double(messageTimestamp) - mediaTimestampZero
+                videoTimestamp = delta - mediaTimestampZero
             } else {
-                videoTimestamp += Double(messageTimestamp)
+                videoTimestamp += delta
             }
         }
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) +
@@ -593,13 +594,14 @@ class RtmpServerChunkStream {
         } else if client.newTimeStampHandling {
             audioTimestamp = mediaTimestamp
         } else {
+            var delta = mediaTimestamp - audioTimestamp
             if isMessageType0 {
                 if mediaTimestampZero == -1 {
-                    mediaTimestampZero = Double(messageTimestamp)
+                    mediaTimestampZero = delta
                 }
-                audioTimestamp = Double(messageTimestamp) - mediaTimestampZero
+                audioTimestamp = delta - mediaTimestampZero
             } else {
-                audioTimestamp += Double(messageTimestamp)
+                audioTimestamp += delta
             }
         }
         let presentationTimeStamp = CMTimeMake(
