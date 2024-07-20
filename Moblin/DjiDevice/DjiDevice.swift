@@ -1,8 +1,6 @@
 import CoreBluetooth
 import Foundation
 
-let djiTechnologyCoLtd = Data([0xAA, 0x08])
-
 // The actual values do not matter.
 private let pairTransactionId: UInt16 = 0x8092
 private let stopStreamingTransactionId: UInt16 = 0xEAC8
@@ -64,6 +62,7 @@ class DjiDevice: NSObject {
     weak var delegate: (any DjiDeviceDelegate)?
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
+    private var model: DjiDeviceModel?
 
     func startLiveStream(
         wifiSsid: String,
@@ -159,12 +158,21 @@ extension DjiDevice: CBCentralManagerDelegate {
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
-                        advertisementData _: [String: Any], rssi _: NSNumber)
+                        advertisementData: [String: Any], rssi _: NSNumber)
     {
         guard peripheral.identifier == deviceId else {
             return
         }
         central.stopScan()
+        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
+            return
+        }
+        model = DjiDeviceModel.fromManufacturerData(data: manufacturerData)
+        guard let model else {
+            logger.info("dji-device: Unsupported DJI device \(manufacturerData.hexString())")
+            return
+        }
+        logger.info("dji-device: Model is \(model)")
         cameraPeripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
@@ -289,19 +297,34 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func processSettingUpWifi(response: DjiMessage) {
-        guard response.id == setupWifiTransactionId, let imageStabilization else {
+        guard response.id == setupWifiTransactionId, let model else {
             return
         }
-        let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization)
-        writeMessage(message: DjiMessage(target: configureTarget,
-                                         id: configureTransactionId,
-                                         type: configureType,
-                                         payload: payload.encode()))
-        setState(state: .configuring)
+        switch model {
+        case .osmoAction4:
+            guard let imageStabilization else {
+                return
+            }
+            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization)
+            writeMessage(message: DjiMessage(target: configureTarget,
+                                             id: configureTransactionId,
+                                             type: configureType,
+                                             payload: payload.encode()))
+            setState(state: .configuring)
+        case .osmoPocket3:
+            sendStartStreaming()
+        }
     }
 
     private func processConfiguring(response: DjiMessage) {
-        guard response.id == configureTransactionId, let rtmpUrl, let resolution else {
+        guard response.id == configureTransactionId else {
+            return
+        }
+        sendStartStreaming()
+    }
+
+    private func sendStartStreaming() {
+        guard let rtmpUrl, let resolution else {
             return
         }
         let payload = DjiStartStreamingMessagePayload(
