@@ -28462,7 +28462,7 @@
         }
       }
     },
-    "Do not say messages that contains mentions." : {
+    "Do not say messages that contains mentions, except when you are mentioned." : {
 
     },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
