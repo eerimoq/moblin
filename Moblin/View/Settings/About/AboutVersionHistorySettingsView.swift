@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.338.0", date: "2024-07-20", changes: [
+        "• Remove Twitch, Kick, YouTube, AfreecaTv and Open streaming platform toggles.",
+        "  • More confusing than useful.",
+        "• Show a warning in DJI device settings if an RTMP server URL is selected and the RTMP server is disabled.",
+        "• Toggle to skip text to speech for messages that contains mentions. 💡 MrPol",
+        "• Resolution and image stabilization settings in DJI device settings. 🧑‍🏭 Spillmaker",
+    ]),
     Version(version: "0.337.0", date: "2024-07-19", changes: [
         "• Fix location updates in background. 🐛 plantbaked",
     ]),
