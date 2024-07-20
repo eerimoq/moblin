@@ -163,10 +163,10 @@ extension DjiDevice: CBCentralManagerDelegate {
         guard peripheral.identifier == deviceId else {
             return
         }
-        central.stopScan()
         guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
             return
         }
+        central.stopScan()
         model = DjiDeviceModel.fromManufacturerData(data: manufacturerData)
         guard let model else {
             logger.info("dji-device: Unsupported DJI device \(manufacturerData.hexString())")
