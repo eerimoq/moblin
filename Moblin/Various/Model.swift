@@ -1308,6 +1308,7 @@ final class Model: NSObject, ObservableObject {
         stopRtmpServer()
         if database.rtmpServer!.enabled {
             rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
+                                    newTimeStampHandling: database.debug!.newTimeStampHandling!,
                                     onPublishStart: handleRtmpServerPublishStart,
                                     onPublishStop: handleRtmpServerPublishStop,
                                     onFrame: handleRtmpServerFrame,

@@ -24,17 +24,20 @@ class RtmpServer {
     var onFrame: (String, CMSampleBuffer) -> Void
     var onAudioBuffer: (String, CMSampleBuffer) -> Void
     var settings: SettingsRtmpServer
+    var newTimeStampHandling: Bool
     private var periodicTimer: DispatchSourceTimer?
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
 
     init(settings: SettingsRtmpServer,
+         newTimeStampHandling: Bool,
          onPublishStart: @escaping (String) -> Void,
          onPublishStop: @escaping (String) -> Void,
          onFrame: @escaping (String, CMSampleBuffer) -> Void,
          onAudioBuffer: @escaping (String, CMSampleBuffer) -> Void)
     {
         self.settings = settings
+        self.newTimeStampHandling = newTimeStampHandling
         self.onPublishStart = onPublishStart
         self.onPublishStop = onPublishStop
         self.onFrame = onFrame

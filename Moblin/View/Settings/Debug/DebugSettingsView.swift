@@ -117,6 +117,13 @@ struct DebugSettingsView: View {
                     model.database.debug!.djiDevices = value
                     model.store()
                 }))
+                Toggle("New TimeStamp Handling", isOn: Binding(get: {
+                    model.database.debug!.newTimeStampHandling!
+                }, set: { value in
+                    model.database.debug!.newTimeStampHandling = value
+                    model.store()
+                    model.reloadRtmpServer()
+                }))
             } header: {
                 Text("Experimental")
             }

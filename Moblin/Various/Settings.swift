@@ -1318,6 +1318,7 @@ class SettingsDebug: Codable {
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
     var djiDevices: Bool? = false
+    var newTimeStampHandling: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3196,6 +3197,10 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.bitrate == nil {
             device.bitrate = 6_000_000
+            store()
+        }
+        if realDatabase.debug!.newTimeStampHandling == nil {
+            realDatabase.debug!.newTimeStampHandling = false
             store()
         }
     }
