@@ -137,16 +137,29 @@ class DjiSetupWifiMessagePayload {
 }
 
 class DjiStartStreamingMessagePayload {
-    static let payload = Data([0x00, 0x2E, 0x00, 0x0A, 0xB8, 0x0B, 0x02, 0x00,
-                               0x00, 0x00, 0x00, 0x00])
+    static let payload1 = Data([0x00, 0x2E, 0x00])
+    static let payload2 = Data([0xB8, 0x0B, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
     var rtmpUrl: String
+    var resolution: SettingsDjiDeviceResolution
 
-    init(rtmpUrl: String) {
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution) {
         self.rtmpUrl = rtmpUrl
+        self.resolution = resolution
     }
 
     func encode() -> Data {
-        return DjiStartStreamingMessagePayload.payload + djiPackUrl(url: rtmpUrl)
+        var resolutionByte: UInt8
+        switch resolution {
+        case .r480p:
+            resolutionByte = 0x47
+        case .r720p:
+            resolutionByte = 0x04
+        case .r1080p:
+            resolutionByte = 0x0A
+        }
+        return DjiStartStreamingMessagePayload
+            .payload1 + Data([resolutionByte]) + DjiStartStreamingMessagePayload
+            .payload2 + djiPackUrl(url: rtmpUrl)
     }
 }
 
@@ -155,5 +168,32 @@ class DjiStopStreamingMessagePayload {
 
     func encode() -> Data {
         return DjiStopStreamingMessagePayload.payload
+    }
+}
+
+class DjiConfigureMessagePayload {
+    static let payload = Data([0x01, 0x01, 0x08, 0x00, 0x01])
+
+    var imageStabilization: SettingsDjiDeviceImageStabilization
+
+    init(imageStabilization: SettingsDjiDeviceImageStabilization) {
+        self.imageStabilization = imageStabilization
+    }
+
+    func encode() -> Data {
+        var imageStabilizationByte: UInt8
+        switch imageStabilization {
+        case .off:
+            imageStabilizationByte = 0
+        case .rockSteady:
+            imageStabilizationByte = 1
+        case .rockSteadyPlus:
+            imageStabilizationByte = 3
+        case .horizonBalancing:
+            imageStabilizationByte = 4
+        case .horizonSteady:
+            imageStabilizationByte = 2
+        }
+        return DjiConfigureMessagePayload.payload + Data([imageStabilizationByte])
     }
 }

@@ -1472,6 +1472,66 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
 
 var djiDeviceUrlTypes = SettingsDjiDeviceUrlType.allCases.map { $0.toString() }
 
+enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
+    case off
+    case rockSteady
+    case rockSteadyPlus
+    case horizonBalancing
+    case horizonSteady
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDjiDeviceImageStabilization(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .rockSteady
+    }
+
+    static func fromString(value: String) -> SettingsDjiDeviceImageStabilization {
+        switch value {
+        case String(localized: "Off"):
+            return .off
+        case String(localized: "RockSteady"):
+            return .rockSteady
+        case String(localized: "RockSteady+"):
+            return .rockSteadyPlus
+        case String(localized: "HorizonBalancing"):
+            return .horizonBalancing
+        case String(localized: "HorizonSteady"):
+            return .horizonSteady
+        default:
+            return .rockSteady
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .off:
+            return String(localized: "Off")
+        case .rockSteady:
+            return String(localized: "RockSteady")
+        case .rockSteadyPlus:
+            return String(localized: "RockSteady+")
+        case .horizonBalancing:
+            return String(localized: "HorizonBalancing")
+        case .horizonSteady:
+            return String(localized: "HorizonSteady")
+        }
+    }
+}
+
+var djiDeviceImageStabilizations = SettingsDjiDeviceImageStabilization.allCases.map { $0.toString() }
+
+enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
+    case r480p = "480p"
+    case r720p = "720p"
+    case r1080p = "1080p"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDjiDeviceResolution(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .r1080p
+    }
+}
+
+var djiDeviceResolutions = SettingsDjiDeviceResolution.allCases.map { $0.rawValue }
+
 class SettingsDjiDevice: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
@@ -1484,6 +1544,8 @@ class SettingsDjiDevice: Codable, Identifiable {
     var serverRtmpUrl: String? = ""
     var customRtmpUrl: String? = ""
     var autoRestartStream: Bool? = false
+    var imageStabilization: SettingsDjiDeviceImageStabilization? = .rockSteady
+    var resolution: SettingsDjiDeviceResolution? = .r1080p
 }
 
 class SettingsDjiDevices: Codable {
@@ -3119,6 +3181,14 @@ final class Settings {
         }
         if realDatabase.chat.textToSpeechFilterMentions == nil {
             realDatabase.chat.textToSpeechFilterMentions = true
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.imageStabilization == nil {
+            device.imageStabilization = .rockSteady
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.resolution == nil {
+            device.resolution = .r1080p
             store()
         }
     }

@@ -9,6 +9,7 @@ private let stopStreamingTransactionId: UInt16 = 0xEAC8
 private let preparingToLivestreamTransactionId: UInt16 = 0x8C12
 private let setupWifiTransactionId: UInt16 = 0x8C19
 private let startStreamingTransactionId: UInt16 = 0x8C2C
+private let configureTransactionId: UInt16 = 0x8C2D
 
 private let fff4Id = CBUUID(string: "FFF4")
 private let fff5Id = CBUUID(string: "FFF5")
@@ -24,6 +25,7 @@ enum DjiDeviceState {
     case cleaningUp
     case preparingStream
     case settingUpWifi
+    case configuring
     case startingStream
     case streaming
     case stoppingStream
@@ -37,6 +39,8 @@ class DjiDevice: NSObject {
     private var wifiSsid: String?
     private var wifiPassword: String?
     private var rtmpUrl: String?
+    private var resolution: SettingsDjiDeviceResolution?
+    private var imageStabilization: SettingsDjiDeviceImageStabilization?
     private var deviceId: UUID?
     private var centralManager: CBCentralManager?
     private var cameraPeripheral: CBPeripheral?
@@ -46,11 +50,20 @@ class DjiDevice: NSObject {
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
 
-    func startLiveStream(wifiSsid: String, wifiPassword: String, rtmpUrl: String, deviceId: UUID) {
+    func startLiveStream(
+        wifiSsid: String,
+        wifiPassword: String,
+        rtmpUrl: String,
+        resolution: SettingsDjiDeviceResolution,
+        imageStabilization: SettingsDjiDeviceImageStabilization,
+        deviceId: UUID
+    ) {
         logger.info("dji-device: Start live stream")
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
+        self.resolution = resolution
+        self.imageStabilization = imageStabilization
         self.deviceId = deviceId
         reset()
         startStartStreamingTimer()
@@ -196,6 +209,8 @@ extension DjiDevice: CBPeripheralDelegate {
             processPreparingStream(response: message)
         case .settingUpWifi:
             processSettingUpWifi(response: message)
+        case .configuring:
+            processConfiguring(response: message)
         case .startingStream:
             processStartingStream(response: message)
         case .streaming:
@@ -257,10 +272,22 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func processSettingUpWifi(response: DjiMessage) {
-        guard response.id == setupWifiTransactionId, let rtmpUrl else {
+        guard response.id == setupWifiTransactionId, let imageStabilization else {
             return
         }
-        let payload = DjiStartStreamingMessagePayload(rtmpUrl: rtmpUrl)
+        let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization)
+        writeMessage(message: DjiMessage(target: 0x0102,
+                                         id: configureTransactionId,
+                                         type: 0x8E0240,
+                                         payload: payload.encode()))
+        setState(state: .configuring)
+    }
+
+    private func processConfiguring(response: DjiMessage) {
+        guard response.id == configureTransactionId, let rtmpUrl, let resolution else {
+            return
+        }
+        let payload = DjiStartStreamingMessagePayload(rtmpUrl: rtmpUrl, resolution: resolution)
         writeMessage(message: DjiMessage(target: 0x0802,
                                          id: startStreamingTransactionId,
                                          type: 0x780840,

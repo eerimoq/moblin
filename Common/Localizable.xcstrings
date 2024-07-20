@@ -22721,6 +22721,9 @@
         }
       }
     },
+    "Configuring..." : {
+
+    },
     "Connecting..." : {
 
     },
@@ -41465,6 +41468,12 @@
         }
       }
     },
+    "HorizonBalancing" : {
+
+    },
+    "HorizonSteady" : {
+
+    },
     "Host missing" : {
       "localizations" : {
         "de" : {
@@ -42244,6 +42253,9 @@
           }
         }
       }
+    },
+    "Image stabilization" : {
+
     },
     "Immediately install the old version of the app to keep your old settings." : {
       "localizations" : {
@@ -63983,6 +63995,12 @@
           }
         }
       }
+    },
+    "RockSteady" : {
+
+    },
+    "RockSteady+" : {
+
     },
     "Rounded" : {
       "localizations" : {

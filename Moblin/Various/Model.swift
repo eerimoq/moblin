@@ -1436,12 +1436,14 @@ final class Model: NSObject, ObservableObject {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.stopRtmpServerStream(stream: stream)
+            self.stopRtmpServerStream(stream: stream, showToast: true)
         }
     }
 
-    private func stopRtmpServerStream(stream: SettingsRtmpServerStream) {
-        makeToast(title: "\(stream.camera()) disconnected")
+    private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool) {
+        if showToast {
+            makeToast(title: "\(stream.camera()) disconnected")
+        }
         media.removeReplaceCamera(cameraId: stream.id)
         media.removeReplaceAudio(cameraId: stream.id)
         if currentMic.id == "\(stream.id) 0" {
@@ -3786,7 +3788,7 @@ final class Model: NSObject, ObservableObject {
 
     private func stopAllRtmpStreams() {
         for stream in database.rtmpServer!.streams {
-            stopRtmpServerStream(stream: stream)
+            stopRtmpServerStream(stream: stream, showToast: false)
         }
     }
 
@@ -6831,6 +6833,8 @@ extension Model {
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
             rtmpUrl: rtmpUrl,
+            resolution: device.resolution!,
+            imageStabilization: device.imageStabilization!,
             deviceId: deviceId
         )
         djiDeviceWrapper.autoRestartStreamTimer = DispatchSource

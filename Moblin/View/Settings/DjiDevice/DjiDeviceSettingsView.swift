@@ -48,6 +48,8 @@ struct DjiDeviceSettingsView: View {
             return String(localized: "Preparing to stream...")
         } else if model.djiDeviceStreamingState == .settingUpWifi {
             return String(localized: "Setting up WiFi...")
+        } else if model.djiDeviceStreamingState == .configuring {
+            return String(localized: "Configuring...")
         } else if model.djiDeviceStreamingState == .startingStream {
             return String(localized: "Starting stream...")
         } else if model.djiDeviceStreamingState == .streaming {
@@ -179,6 +181,28 @@ struct DjiDeviceSettingsView: View {
                 }
             } header: {
                 Text("RTMP")
+            }
+            Section {
+                Picker("Resolution", selection: Binding(get: {
+                    device.resolution!.rawValue
+                }, set: { value in
+                    device.resolution = SettingsDjiDeviceResolution(rawValue: value) ?? .r1080p
+                    model.objectWillChange.send()
+                })) {
+                    ForEach(djiDeviceResolutions, id: \.self) { resolution in
+                        Text(resolution)
+                    }
+                }
+                Picker("Image stabilization", selection: Binding(get: {
+                    device.imageStabilization!.toString()
+                }, set: { value in
+                    device.imageStabilization = SettingsDjiDeviceImageStabilization.fromString(value: value)
+                    model.objectWillChange.send()
+                })) {
+                    ForEach(djiDeviceImageStabilizations, id: \.self) { imageStabilization in
+                        Text(imageStabilization)
+                    }
+                }
             }
             if device.rtmpUrlType == .server {
                 Section {
