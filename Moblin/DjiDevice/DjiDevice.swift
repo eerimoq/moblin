@@ -11,6 +11,20 @@ private let setupWifiTransactionId: UInt16 = 0x8C19
 private let startStreamingTransactionId: UInt16 = 0x8C2C
 private let configureTransactionId: UInt16 = 0x8C2D
 
+private let pairTarget: UInt16 = 0x0702
+private let stopStreamingTarget: UInt16 = 0x0802
+private let preparingToLivestreamTarget: UInt16 = 0x0802
+private let setupWifiTarget: UInt16 = 0x0702
+private let configureTarget: UInt16 = 0x0102
+private let startStreamingTarget: UInt16 = 0x0802
+
+private let pairType: UInt32 = 0x450740
+private let stopStreamingType: UInt32 = 0x8E0240
+private let preparingToLivestreamType: UInt32 = 0xE10240
+private let setupWifiType: UInt32 = 0x470740
+private let configureType: UInt32 = 0x8E0240
+private let startStreamingType: UInt32 = 0x780840
+
 private let fff4Id = CBUUID(string: "FFF4")
 private let fff5Id = CBUUID(string: "FFF5")
 
@@ -227,9 +241,9 @@ extension DjiDevice: CBPeripheralDelegate {
 
     private func stopStream() {
         let payload = DjiStopStreamingMessagePayload()
-        writeMessage(message: DjiMessage(target: 0x0802,
+        writeMessage(message: DjiMessage(target: stopStreamingTarget,
                                          id: stopStreamingTransactionId,
-                                         type: 0x8E0240,
+                                         type: stopStreamingType,
                                          payload: payload.encode()))
     }
 
@@ -255,9 +269,9 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         let payload = DjiPreparingToLivestreamMessagePayload()
-        writeMessage(message: DjiMessage(target: 0x0802,
+        writeMessage(message: DjiMessage(target: preparingToLivestreamTarget,
                                          id: preparingToLivestreamTransactionId,
-                                         type: 0xE10240,
+                                         type: preparingToLivestreamType,
                                          payload: payload.encode()))
         setState(state: .preparingStream)
     }
@@ -267,9 +281,9 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         let payload = DjiSetupWifiMessagePayload(wifiSsid: wifiSsid, wifiPassword: wifiPassword)
-        writeMessage(message: DjiMessage(target: 0x0702,
+        writeMessage(message: DjiMessage(target: setupWifiTarget,
                                          id: setupWifiTransactionId,
-                                         type: 0x470740,
+                                         type: setupWifiType,
                                          payload: payload.encode()))
         setState(state: .settingUpWifi)
     }
@@ -279,9 +293,9 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization)
-        writeMessage(message: DjiMessage(target: 0x0102,
+        writeMessage(message: DjiMessage(target: configureTarget,
                                          id: configureTransactionId,
-                                         type: 0x8E0240,
+                                         type: configureType,
                                          payload: payload.encode()))
         setState(state: .configuring)
     }
@@ -295,9 +309,9 @@ extension DjiDevice: CBPeripheralDelegate {
             resolution: resolution,
             bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF)
         )
-        writeMessage(message: DjiMessage(target: 0x0802,
+        writeMessage(message: DjiMessage(target: startStreamingTarget,
                                          id: startStreamingTransactionId,
-                                         type: 0x780840,
+                                         type: startStreamingType,
                                          payload: payload.encode()))
         setState(state: .startingStream)
     }
@@ -341,9 +355,9 @@ extension DjiDevice: CBPeripheralDelegate {
         }
         let payload = DjiPairMessagePayload(pairPinCode: pairPinCode)
         let request = DjiMessage(
-            target: 0x0702,
+            target: pairTarget,
             id: pairTransactionId,
-            type: 0x450740,
+            type: pairType,
             payload: payload.encode()
         )
         writeMessage(message: request)
