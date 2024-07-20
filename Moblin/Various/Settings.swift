@@ -1317,6 +1317,7 @@ class SettingsDebug: Codable {
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
     var djiDevices: Bool? = false
+    var newTimeStampHandling: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3114,6 +3115,10 @@ final class Settings {
                 }
             }
             stream.fps = newFps
+            store()
+        }
+        if realDatabase.debug!.newTimeStampHandling == nil {
+            realDatabase.debug!.newTimeStampHandling = false
             store()
         }
     }
