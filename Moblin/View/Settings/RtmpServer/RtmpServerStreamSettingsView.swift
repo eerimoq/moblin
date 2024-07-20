@@ -143,7 +143,7 @@ struct RtmpServerStreamSettingsView: View {
                 Text("""
                 Enable manual FPS to force given FPS. This is needed when the publisher \
                 does not provide accurate timestamps. B-frames does not work with manual \
-                FPS. Manual FPS is typically needed for DJI devices.
+                FPS.
                 """)
             }
             Section {
