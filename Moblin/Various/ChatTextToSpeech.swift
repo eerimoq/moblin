@@ -37,6 +37,7 @@ class ChatTextToSpeech: NSObject {
     private var latestUserThatSaidSomething: String?
     private var filterEnabled: Bool = true
     private var filterMentionsEnabled: Bool = true
+    private var streamerMentions: [String] = []
     private var running = true
 
     private func isFilteredOut(message: String) -> Bool {
@@ -70,7 +71,41 @@ class ChatTextToSpeech: NSObject {
         if !filterMentionsEnabled {
             return false
         }
-        return message.starts(with: "@") || message.contains(" @")
+        if message.starts(with: "@") || message.contains(" @") {
+            for streamerMention in streamerMentions {
+                if let range = message.range(of: streamerMention) {
+                    if isStreamerMention(
+                        message: message,
+                        mentionLowerBound: range.lowerBound,
+                        mentionUpperBound: range.upperBound
+                    ) {
+                        return false
+                    }
+                }
+            }
+            return true
+        }
+        return false
+    }
+
+    private func isStreamerMention(
+        message: String,
+        mentionLowerBound: String.Index,
+        mentionUpperBound: String.Index
+    ) -> Bool {
+        // There is always a space at the end of the message, so this should never happen.
+        guard mentionUpperBound < message.endIndex else {
+            return false
+        }
+        if mentionLowerBound > message.startIndex {
+            if message[message.index(before: mentionLowerBound)] != " " {
+                return false
+            }
+        }
+        if message[mentionUpperBound] != " " {
+            return false
+        }
+        return true
     }
 
     private func getSays(_ language: String) -> String {
@@ -172,6 +207,12 @@ class ChatTextToSpeech: NSObject {
     func setFilterMentions(value: Bool) {
         textToSpeechDispatchQueue.async {
             self.filterMentionsEnabled = value
+        }
+    }
+
+    func setStreamerMentions(streamerMentions: [String]) {
+        textToSpeechDispatchQueue.async {
+            self.streamerMentions = streamerMentions
         }
     }
 

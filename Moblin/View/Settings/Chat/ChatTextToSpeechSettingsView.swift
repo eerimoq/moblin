@@ -202,7 +202,7 @@ struct ChatTextToSpeechSettingsView: View {
                     Text("Filter mentions")
                 }
             } footer: {
-                Text("Do not say messages that contains mentions.")
+                Text("Do not say messages that contains mentions, except when you are mentioned.")
             }
         }
         .onAppear {

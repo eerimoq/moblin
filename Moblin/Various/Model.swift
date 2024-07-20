@@ -967,6 +967,7 @@ final class Model: NSObject, ObservableObject {
             .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
         chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions!)
+        setTextToSpeechStreamerMentions()
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
@@ -2164,6 +2165,20 @@ final class Model: NSObject, ObservableObject {
         return true
     }
 
+    private func setTextToSpeechStreamerMentions() {
+        var streamerMentions: [String] = []
+        if isTwitchChatConfigured() {
+            streamerMentions.append("@\(stream.twitchChannelName)")
+        }
+        if isKickPusherConfigured() {
+            streamerMentions.append("@\(stream.kickChannelName!)")
+        }
+        if isAfreecaTvChatConfigured() {
+            streamerMentions.append("@\(stream.afreecaTvChannelName!)")
+        }
+        chatTextToSpeech.setStreamerMentions(streamerMentions: streamerMentions)
+    }
+
     private func reloadImageEffects() {
         imageEffects.removeAll()
         for scene in database.scenes {
@@ -3042,6 +3057,7 @@ final class Model: NSObject, ObservableObject {
 
     private func reloadTwitchChat() {
         twitchChat.stop()
+        setTextToSpeechStreamerMentions()
         if isTwitchChatConfigured() {
             twitchChat.start(
                 channelName: stream.twitchChannelName,
@@ -3070,6 +3086,7 @@ final class Model: NSObject, ObservableObject {
     private func reloadKickPusher() {
         kickPusher?.stop()
         kickPusher = nil
+        setTextToSpeechStreamerMentions()
         if isKickPusherConfigured() {
             kickPusher = KickPusher(model: self,
                                     channelId: stream.kickChatroomId,
@@ -3095,6 +3112,7 @@ final class Model: NSObject, ObservableObject {
     private func reloadAfreecaTvChat() {
         afreecaTvChat?.stop()
         afreecaTvChat = nil
+        setTextToSpeechStreamerMentions()
         if isAfreecaTvChatConfigured() {
             afreecaTvChat = AfreecaTvChat(
                 model: self,
