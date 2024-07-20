@@ -13,9 +13,8 @@ class RtmpServerChunkStream {
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
     private var mediaTimestamp: Double = 0
-    private var audioTimestampZero: Double
+    private var mediaTimestampZero: Double
     private var audioTimestamp: Double
-    private var videoTimestampZero: Double
     private var basePresentationTimeStamp: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
@@ -41,9 +40,8 @@ class RtmpServerChunkStream {
         messageTypeId = 0
         messageTimestamp = 0
         messageStreamId = 0
-        audioTimestampZero = -1
+        mediaTimestampZero = -1
         audioTimestamp = 0
-        videoTimestampZero = -1
         basePresentationTimeStamp = -1
         videoTimestamp = 0
         isMessageType0 = true
@@ -99,7 +97,11 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
             return
         }
-        mediaTimestamp += Double(messageTimestamp)
+        if isMessageType0 {
+            mediaTimestamp = Double(messageTimestamp)
+        } else {
+            mediaTimestamp += Double(messageTimestamp)
+        }
         // logger.info("rtmp-server: client: Processing message \(messageType)")
         switch messageType {
         case .amf0Command:
@@ -529,11 +531,11 @@ class RtmpServerChunkStream {
         } else {
             duration = Int64(messageTimestamp)
             if isMessageType0 {
-                if videoTimestampZero == -1 {
-                    videoTimestampZero = Double(messageTimestamp)
+                if mediaTimestampZero == -1 {
+                    mediaTimestampZero = Double(messageTimestamp)
                 }
                 duration -= Int64(videoTimestamp)
-                videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+                videoTimestamp = Double(messageTimestamp) - mediaTimestampZero
             } else {
                 videoTimestamp += Double(messageTimestamp)
             }
@@ -592,10 +594,10 @@ class RtmpServerChunkStream {
             audioTimestamp = mediaTimestamp
         } else {
             if isMessageType0 {
-                if audioTimestampZero == -1 {
-                    audioTimestampZero = Double(messageTimestamp)
+                if mediaTimestampZero == -1 {
+                    mediaTimestampZero = Double(messageTimestamp)
                 }
-                audioTimestamp = Double(messageTimestamp) - audioTimestampZero
+                audioTimestamp = Double(messageTimestamp) - mediaTimestampZero
             } else {
                 audioTimestamp += Double(messageTimestamp)
             }
