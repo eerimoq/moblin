@@ -12,9 +12,9 @@ class RtmpServerChunkStream {
     var extendedTimestampPresentInType3: Bool
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
-    private var audioTimestampZero: Double
+    private var mediaTimestamp: Double = 0
+    private var mediaTimestampZero: Double
     private var audioTimestamp: Double
-    private var videoTimestampZero: Double
     private var basePresentationTimeStamp: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
@@ -40,9 +40,8 @@ class RtmpServerChunkStream {
         messageTypeId = 0
         messageTimestamp = 0
         messageStreamId = 0
-        audioTimestampZero = -1
+        mediaTimestampZero = -1
         audioTimestamp = 0
-        videoTimestampZero = -1
         basePresentationTimeStamp = -1
         videoTimestamp = 0
         isMessageType0 = true
@@ -97,6 +96,11 @@ class RtmpServerChunkStream {
         guard let messageType = RTMPMessageType(rawValue: messageTypeId) else {
             logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
             return
+        }
+        if isMessageType0 {
+            mediaTimestamp = Double(messageTimestamp)
+        } else {
+            mediaTimestamp += Double(messageTimestamp)
         }
         // logger.info("rtmp-server: client: Processing message \(messageType)")
         switch messageType {
@@ -522,15 +526,16 @@ class RtmpServerChunkStream {
             videoTimestamp = Double(numberOfFrames) * client.fpsTimeBase * 1000
             numberOfFrames += 1
         } else {
-            duration = Int64(messageTimestamp)
+            var delta = mediaTimestamp - videoTimestamp
+            duration = Int64(delta)
             if isMessageType0 {
-                if videoTimestampZero == -1 {
-                    videoTimestampZero = Double(messageTimestamp)
+                if mediaTimestampZero == -1 {
+                    mediaTimestampZero = delta
                 }
                 duration -= Int64(videoTimestamp)
-                videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+                videoTimestamp = delta - mediaTimestampZero
             } else {
-                videoTimestamp += Double(messageTimestamp)
+                videoTimestamp += delta
             }
         }
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) +
@@ -584,13 +589,14 @@ class RtmpServerChunkStream {
                 (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
             numberOfAudioBuffers += 1
         } else {
+            var delta = mediaTimestamp - audioTimestamp
             if isMessageType0 {
-                if audioTimestampZero == -1 {
-                    audioTimestampZero = Double(messageTimestamp)
+                if mediaTimestampZero == -1 {
+                    mediaTimestampZero = delta
                 }
-                audioTimestamp = Double(messageTimestamp) - audioTimestampZero
+                audioTimestamp = delta - mediaTimestampZero
             } else {
-                audioTimestamp += Double(messageTimestamp)
+                audioTimestamp += delta
             }
         }
         let presentationTimeStamp = CMTimeMake(
