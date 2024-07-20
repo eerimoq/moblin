@@ -1532,6 +1532,8 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
 
 var djiDeviceResolutions = SettingsDjiDeviceResolution.allCases.map { $0.rawValue }
 
+var djiDeviceBitrates: [UInt32] = [12_000_000, 8_000_000, 6_000_000, 4_000_000, 2_000_000]
+
 class SettingsDjiDevice: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
@@ -1546,6 +1548,7 @@ class SettingsDjiDevice: Codable, Identifiable {
     var autoRestartStream: Bool? = false
     var imageStabilization: SettingsDjiDeviceImageStabilization? = .rockSteady
     var resolution: SettingsDjiDeviceResolution? = .r1080p
+    var bitrate: UInt32? = 6_000_000
 }
 
 class SettingsDjiDevices: Codable {
@@ -3189,6 +3192,10 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.resolution == nil {
             device.resolution = .r1080p
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.bitrate == nil {
+            device.bitrate = 6_000_000
             store()
         }
     }

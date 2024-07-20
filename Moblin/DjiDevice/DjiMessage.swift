@@ -138,13 +138,15 @@ class DjiSetupWifiMessagePayload {
 
 class DjiStartStreamingMessagePayload {
     static let payload1 = Data([0x00, 0x2E, 0x00])
-    static let payload2 = Data([0xB8, 0x0B, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
+    static let payload2 = Data([0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
     var rtmpUrl: String
     var resolution: SettingsDjiDeviceResolution
+    var bitrateKbps: UInt16
 
-    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution) {
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, bitrateKbps: UInt16) {
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
+        self.bitrateKbps = bitrateKbps
     }
 
     func encode() -> Data {
@@ -157,8 +159,8 @@ class DjiStartStreamingMessagePayload {
         case .r1080p:
             resolutionByte = 0x0A
         }
-        return DjiStartStreamingMessagePayload
-            .payload1 + Data([resolutionByte]) + DjiStartStreamingMessagePayload
+        let settings = Data([resolutionByte, UInt8(bitrateKbps & 0xFF), UInt8((bitrateKbps >> 8) & 0xFF)])
+        return DjiStartStreamingMessagePayload.payload1 + settings + DjiStartStreamingMessagePayload
             .payload2 + djiPackUrl(url: rtmpUrl)
     }
 }

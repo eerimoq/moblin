@@ -1449,9 +1449,10 @@ final class Model: NSObject, ObservableObject {
         if currentMic.id == "\(stream.id) 0" {
             setMicFromSettings()
         }
-        if let device = database.djiDevices!.devices.first(where: { device in
-            device.rtmpUrlType == .server && device.serverRtmpStreamId! == stream.id
-        }) {
+        for device in database.djiDevices!.devices {
+            guard device.rtmpUrlType == .server && device.serverRtmpStreamId! == stream.id else {
+                continue
+            }
             restartDjiLiveStreamIfNeededAfterDelay(device: device)
         }
     }
@@ -6834,6 +6835,7 @@ extension Model {
             wifiPassword: device.wifiPassword,
             rtmpUrl: rtmpUrl,
             resolution: device.resolution!,
+            bitrate: device.bitrate!,
             imageStabilization: device.imageStabilization!,
             deviceId: deviceId
         )
@@ -6884,15 +6886,15 @@ extension Model {
     }
 
     private func markDjiIsStreamingIfNeeded(rtmpServerStreamId: UUID) {
-        guard let device = database.djiDevices!.devices.first(where: { device in
-            device.rtmpUrlType == .server && device.serverRtmpStreamId! == rtmpServerStreamId
-        }) else {
-            return
+        for device in database.djiDevices!.devices {
+            guard device.rtmpUrlType == .server, device.serverRtmpStreamId! == rtmpServerStreamId else {
+                continue
+            }
+            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+                continue
+            }
+            djiDeviceWrapper.autoRestartStreamTimer?.cancel()
+            djiDeviceWrapper.autoRestartStreamTimer = nil
         }
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-            return
-        }
-        djiDeviceWrapper.autoRestartStreamTimer?.cancel()
-        djiDeviceWrapper.autoRestartStreamTimer = nil
     }
 }

@@ -40,6 +40,7 @@ class DjiDevice: NSObject {
     private var wifiPassword: String?
     private var rtmpUrl: String?
     private var resolution: SettingsDjiDeviceResolution?
+    private var bitrate: UInt32 = 6_000_000
     private var imageStabilization: SettingsDjiDeviceImageStabilization?
     private var deviceId: UUID?
     private var centralManager: CBCentralManager?
@@ -55,6 +56,7 @@ class DjiDevice: NSObject {
         wifiPassword: String,
         rtmpUrl: String,
         resolution: SettingsDjiDeviceResolution,
+        bitrate: UInt32,
         imageStabilization: SettingsDjiDeviceImageStabilization,
         deviceId: UUID
     ) {
@@ -63,6 +65,7 @@ class DjiDevice: NSObject {
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
+        self.bitrate = bitrate
         self.imageStabilization = imageStabilization
         self.deviceId = deviceId
         reset()
@@ -287,7 +290,11 @@ extension DjiDevice: CBPeripheralDelegate {
         guard response.id == configureTransactionId, let rtmpUrl, let resolution else {
             return
         }
-        let payload = DjiStartStreamingMessagePayload(rtmpUrl: rtmpUrl, resolution: resolution)
+        let payload = DjiStartStreamingMessagePayload(
+            rtmpUrl: rtmpUrl,
+            resolution: resolution,
+            bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF)
+        )
         writeMessage(message: DjiMessage(target: 0x0802,
                                          id: startStreamingTransactionId,
                                          type: 0x780840,

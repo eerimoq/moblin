@@ -106,6 +106,7 @@ struct DjiDeviceSettingsView: View {
                         .foregroundColor(.gray)
                         .lineLimit(1)
                 }
+                .disabled(model.isDjiDeviceStarted(device: device))
             } header: {
                 Text("Device")
             }
@@ -117,6 +118,7 @@ struct DjiDeviceSettingsView: View {
                         device.wifiSsid = value
                     }
                 )
+                .disabled(model.isDjiDeviceStarted(device: device))
                 TextEditNavigationView(
                     title: String(localized: "Password"),
                     value: device.wifiPassword,
@@ -125,6 +127,7 @@ struct DjiDeviceSettingsView: View {
                     },
                     sensitive: true
                 )
+                .disabled(model.isDjiDeviceStarted(device: device))
             } header: {
                 Text("WiFi")
             }
@@ -139,6 +142,7 @@ struct DjiDeviceSettingsView: View {
                         Text($0)
                     }
                 }
+                .disabled(model.isDjiDeviceStarted(device: device))
                 if device.rtmpUrlType == .server {
                     if model.database.rtmpServer!.streams.isEmpty {
                         Text("No RTMP server streams exists")
@@ -155,6 +159,7 @@ struct DjiDeviceSettingsView: View {
                                     .tag(stream.id)
                             }
                         }
+                        .disabled(model.isDjiDeviceStarted(device: device))
                         Picker("URL", selection: Binding(get: {
                             device.serverRtmpUrl!
                         }, set: { value in
@@ -166,6 +171,7 @@ struct DjiDeviceSettingsView: View {
                                     .tag(serverUrl)
                             }
                         }
+                        .disabled(model.isDjiDeviceStarted(device: device))
                         if !model.database.rtmpServer!.enabled {
                             Text("⚠️ The RTMP server is not enabled")
                         }
@@ -178,6 +184,7 @@ struct DjiDeviceSettingsView: View {
                             device.customRtmpUrl = value
                         }
                     )
+                    .disabled(model.isDjiDeviceStarted(device: device))
                 }
             } header: {
                 Text("RTMP")
@@ -193,6 +200,19 @@ struct DjiDeviceSettingsView: View {
                         Text(resolution)
                     }
                 }
+                .disabled(model.isDjiDeviceStarted(device: device))
+                Picker("Bitrate", selection: Binding(get: {
+                    device.bitrate!
+                }, set: { value in
+                    device.bitrate = value
+                    model.objectWillChange.send()
+                })) {
+                    ForEach(djiDeviceBitrates, id: \.self) { bitrate in
+                        Text(formatBytesPerSecond(speed: Int64(bitrate)))
+                            .tag(bitrate)
+                    }
+                }
+                .disabled(model.isDjiDeviceStarted(device: device))
                 Picker("Image stabilization", selection: Binding(get: {
                     device.imageStabilization!.toString()
                 }, set: { value in
@@ -203,6 +223,7 @@ struct DjiDeviceSettingsView: View {
                         Text(imageStabilization)
                     }
                 }
+                .disabled(model.isDjiDeviceStarted(device: device))
             }
             if device.rtmpUrlType == .server {
                 Section {
