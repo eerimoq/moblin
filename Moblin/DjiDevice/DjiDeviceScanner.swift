@@ -42,6 +42,10 @@ extension DjiDeviceScanner: CBCentralManagerDelegate {
         guard !discoveredDevices.contains(peripheral) else {
             return
         }
+        logger.info("""
+        dji-scanner: Manufacturer data \(manufacturerData.hexString()) for \
+        peripheral id \(peripheral.identifier)
+        """)
         discoveredDevices.append(peripheral)
     }
 }

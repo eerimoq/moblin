@@ -526,7 +526,7 @@ class RtmpServerChunkStream {
             videoTimestamp = Double(numberOfFrames) * client.fpsTimeBase * 1000
             numberOfFrames += 1
         } else {
-            var delta = mediaTimestamp - videoTimestamp
+            let delta = mediaTimestamp - videoTimestamp
             duration = Int64(delta)
             if isMessageType0 {
                 if mediaTimestampZero == -1 {
@@ -589,7 +589,7 @@ class RtmpServerChunkStream {
                 (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
             numberOfAudioBuffers += 1
         } else {
-            var delta = mediaTimestamp - audioTimestamp
+            let delta = mediaTimestamp - audioTimestamp
             if isMessageType0 {
                 if mediaTimestampZero == -1 {
                     mediaTimestampZero = delta
