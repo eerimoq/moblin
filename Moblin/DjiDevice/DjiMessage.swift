@@ -110,7 +110,10 @@ class DjiPairMessagePayload {
     }
 
     func encode() -> Data {
-        return DjiPairMessagePayload.payload + djiPackString(value: pairPinCode)
+        let writer = ByteArray()
+        writer.writeBytes(DjiPairMessagePayload.payload)
+        writer.writeBytes(djiPackString(value: pairPinCode))
+        return writer.data
     }
 }
 
@@ -132,7 +135,10 @@ class DjiSetupWifiMessagePayload {
     }
 
     func encode() -> Data {
-        return djiPackString(value: wifiSsid) + djiPackString(value: wifiPassword)
+        let writer = ByteArray()
+        writer.writeBytes(djiPackString(value: wifiSsid))
+        writer.writeBytes(djiPackString(value: wifiPassword))
+        return writer.data
     }
 }
 
@@ -159,9 +165,13 @@ class DjiStartStreamingMessagePayload {
         case .r1080p:
             resolutionByte = 0x0A
         }
-        let settings = Data([resolutionByte, UInt8(bitrateKbps & 0xFF), UInt8((bitrateKbps >> 8) & 0xFF)])
-        return DjiStartStreamingMessagePayload.payload1 + settings + DjiStartStreamingMessagePayload
-            .payload2 + djiPackUrl(url: rtmpUrl)
+        let writer = ByteArray()
+        writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
+        writer.writeUInt8(resolutionByte)
+        writer.writeUInt16Le(bitrateKbps)
+        writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
+        writer.writeBytes(djiPackUrl(url: rtmpUrl))
+        return writer.data
     }
 }
 
@@ -196,6 +206,9 @@ class DjiConfigureMessagePayload {
         case .horizonSteady:
             imageStabilizationByte = 2
         }
-        return DjiConfigureMessagePayload.payload + Data([imageStabilizationByte])
+        let writer = ByteArray()
+        writer.writeBytes(DjiConfigureMessagePayload.payload)
+        writer.writeUInt8(imageStabilizationByte)
+        return writer.data
     }
 }
