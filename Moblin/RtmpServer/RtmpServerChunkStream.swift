@@ -12,7 +12,7 @@ class RtmpServerChunkStream {
     var extendedTimestampPresentInType3: Bool
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
-    private var totalTimestamp: Double = 0
+    private var mediaTimestamp: Double = 0
     private var audioTimestampZero: Double
     private var audioTimestamp: Double
     private var videoTimestampZero: Double
@@ -99,7 +99,7 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
             return
         }
-        totalTimestamp += Double(messageTimestamp)
+        mediaTimestamp += Double(messageTimestamp)
         // logger.info("rtmp-server: client: Processing message \(messageType)")
         switch messageType {
         case .amf0Command:
@@ -510,8 +510,6 @@ class RtmpServerChunkStream {
         }
     }
 
-    var counter = 0
-
     private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
@@ -526,10 +524,8 @@ class RtmpServerChunkStream {
             videoTimestamp = Double(numberOfFrames) * client.fpsTimeBase * 1000
             numberOfFrames += 1
         } else if client.newTimeStampHandling {
-            duration = Int64(totalTimestamp - videoTimestamp)
-            videoTimestamp = totalTimestamp
-            logger.info("counter: \(counter) pts: \(videoTimestamp)")
-            counter += 1
+            duration = Int64(mediaTimestamp - videoTimestamp)
+            videoTimestamp = mediaTimestamp
         } else {
             duration = Int64(messageTimestamp)
             if isMessageType0 {
@@ -593,7 +589,7 @@ class RtmpServerChunkStream {
                 (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
             numberOfAudioBuffers += 1
         } else if client.newTimeStampHandling {
-            audioTimestamp = totalTimestamp
+            audioTimestamp = mediaTimestamp
         } else {
             if isMessageType0 {
                 if audioTimestampZero == -1 {
