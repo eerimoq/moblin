@@ -510,6 +510,8 @@ class RtmpServerChunkStream {
         }
     }
 
+    var counter = 0
+
     private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
@@ -526,6 +528,8 @@ class RtmpServerChunkStream {
         } else if client.newTimeStampHandling {
             duration = Int64(totalTimestamp - videoTimestamp)
             videoTimestamp = totalTimestamp
+            logger.info("counter: \(counter) pts: \(videoTimestamp)")
+            counter += 1
         } else {
             duration = Int64(messageTimestamp)
             if isMessageType0 {
