@@ -52,12 +52,9 @@ class RtmpServerClient {
     var fpsTimeBase: Double = 0
     var latency: Int32 = 2000
 
-    var newTimeStampHandling = false
-
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
         self.connection = connection
-        newTimeStampHandling = server.newTimeStampHandling
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         chunkStreams = [:]
