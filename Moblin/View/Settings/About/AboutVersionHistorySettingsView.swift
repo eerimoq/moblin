@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.340.0", date: "2024-07-20", changes: [
+        "• Support for DJI OP3.",
+    ]),
     Version(version: "0.339.0", date: "2024-07-20", changes: [
         "• Text to speech will say messages where you are mentioned.",
         "• Make RTMP server work without manual FPS! 🧑‍🏭 ErAzOr",
