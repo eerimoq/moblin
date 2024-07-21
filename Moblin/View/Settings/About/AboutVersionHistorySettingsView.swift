@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.342.0", date: "2024-07-21", changes: [
+        "- Support for DJI OA3 as DJI device. 💡 Marlow",
+        "- Slightly optimized RTMP server video handling.",
+        "- FPS settings (25 or 30) for OP3. 🧑‍🏭 Spillmaker and ErAzOr",
+        "- Only allow image stabilization settings for OA4.",
+    ]),
     Version(version: "0.341.0", date: "2024-07-21", changes: [
         "• Improved DJI device stream start robustness.",
         "• Show correct DJI device state.",
