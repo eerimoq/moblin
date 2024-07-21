@@ -1,8 +1,8 @@
 import Foundation
 
-let djiTechnologyCoLtd = Data([0xAA, 0x08])
-let djiDeviceModelOsmoAction4 = Data([0x14, 0x00])
-let djiDeviceModelOsmoPocket3 = Data([0x20, 0x00])
+private let djiTechnologyCoLtd = Data([0xAA, 0x08])
+private let djiDeviceModelOsmoAction4 = Data([0x14, 0x00])
+private let djiDeviceModelOsmoPocket3 = Data([0x20, 0x00])
 
 enum DjiDeviceModel {
     case osmoAction4
@@ -21,4 +21,8 @@ enum DjiDeviceModel {
             return nil
         }
     }
+}
+
+func isDjiDevice(manufacturerData: Data) -> Bool {
+    return manufacturerData.prefix(2) == djiTechnologyCoLtd
 }

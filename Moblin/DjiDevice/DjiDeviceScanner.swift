@@ -36,7 +36,7 @@ extension DjiDeviceScanner: CBCentralManagerDelegate {
         guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
             return
         }
-        guard manufacturerData.prefix(2) == djiTechnologyCoLtd else {
+        guard isDjiDevice(manufacturerData: manufacturerData) else {
             return
         }
         guard !discoveredDevices.contains(peripheral) else {
