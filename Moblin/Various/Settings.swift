@@ -1546,7 +1546,7 @@ enum SettingsDjiDeviceModel: String, Codable {
 
 var djiDeviceBitrates: [UInt32] = [12_000_000, 8_000_000, 6_000_000, 4_000_000, 2_000_000]
 
-var djiDeviceFpss: [UInt32] = [25, 30]
+var djiDeviceFpss: [Int] = [25, 30]
 
 class SettingsDjiDevice: Codable, Identifiable {
     var id: UUID = .init()
