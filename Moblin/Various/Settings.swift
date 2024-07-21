@@ -1549,6 +1549,7 @@ class SettingsDjiDevice: Codable, Identifiable {
     var imageStabilization: SettingsDjiDeviceImageStabilization? = .rockSteady
     var resolution: SettingsDjiDeviceResolution? = .r1080p
     var bitrate: UInt32? = 6_000_000
+    var isStarted: Bool? = false
 }
 
 class SettingsDjiDevices: Codable {
@@ -3196,6 +3197,10 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.bitrate == nil {
             device.bitrate = 6_000_000
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.isStarted == nil {
+            device.isStarted = false
             store()
         }
     }

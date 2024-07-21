@@ -29,7 +29,6 @@ class Browser: Identifiable {
 
 class DjiDeviceWrapper {
     let device: DjiDevice
-    var isStarted = false
     var autoRestartStreamTimer: DispatchSourceTimer?
 
     init(device: DjiDevice) {
@@ -752,7 +751,7 @@ final class Model: NSObject, ObservableObject {
         media.takeSnapshot { image in
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                self.makeToast(title: "Snapshot saved to Photos")
+                self.makeToast(title: String(localized: "Snapshot saved to Photos"))
             }
         }
     }
@@ -975,6 +974,7 @@ final class Model: NSObject, ObservableObject {
         setupSampleBufferReceiver()
         initMediaPlayers()
         removeUnusedLogs()
+        autoStartDjiDevices()
     }
 
     private func removeUnusedLogs() {
@@ -1232,7 +1232,7 @@ final class Model: NSObject, ObservableObject {
             gameControllers.append(gameController)
         }
         if let number = gameControllerNumber(gameController: gameController) {
-            makeToast(title: "Game controller \(number) connected")
+            makeToast(title: String(localized: "Game controller \(number) connected"))
         }
         updateGameControllers()
     }
@@ -1242,7 +1242,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if let number = gameControllerNumber(gameController: gameController) {
-            makeToast(title: "Game controller \(number) disconnected")
+            makeToast(title: String(localized: "Game controller \(number) disconnected"))
         }
         if let index = gameControllers.firstIndex(of: gameController) {
             gameControllers[index] = nil
@@ -1315,19 +1315,6 @@ final class Model: NSObject, ObservableObject {
                                     onFrame: handleRtmpServerFrame,
                                     onAudioBuffer: handleRtmpServerAudioBuffer)
             rtmpServer!.start()
-        }
-    }
-
-    func reloadDjiDevices() {
-        for (deviceId, djiDeviceWrapper) in djiDeviceWrappers where djiDeviceWrapper.isStarted {
-            guard let device = database.djiDevices!.devices.first(where: { $0.id == deviceId }) else {
-                continue
-            }
-            if device.autoRestartStream! {
-                startDjiDeviceLiveStream(device: device)
-            } else {
-                stopDjiDeviceLiveStream(device: device)
-            }
         }
     }
 
@@ -1417,7 +1404,7 @@ final class Model: NSObject, ObservableObject {
     func handleRtmpServerPublishStart(streamKey: String) {
         DispatchQueue.main.async {
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
-            self.makeToast(title: "\(camera) connected")
+            self.makeToast(title: String(localized: "\(camera) connected"))
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
@@ -1444,7 +1431,7 @@ final class Model: NSObject, ObservableObject {
 
     private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool) {
         if showToast {
-            makeToast(title: "\(stream.camera()) disconnected")
+            makeToast(title: String(localized: "\(stream.camera()) disconnected"))
         }
         media.removeReplaceCamera(cameraId: stream.id)
         media.removeReplaceAudio(cameraId: stream.id)
@@ -1701,7 +1688,7 @@ final class Model: NSObject, ObservableObject {
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         store()
-        makeToast(title: "URL import successful")
+        makeToast(title: String(localized: "URL import successful"))
         updateButtonStates()
     }
 
@@ -3333,7 +3320,7 @@ final class Model: NSObject, ObservableObject {
         let newFailedVideoEffect = media.getFailedVideoEffect()
         if newFailedVideoEffect != failedVideoEffect {
             if let newFailedVideoEffect {
-                makeErrorToast(title: "Failed to render \(newFailedVideoEffect)")
+                makeErrorToast(title: String(localized: "Failed to render \(newFailedVideoEffect)"))
             }
             failedVideoEffect = newFailedVideoEffect
         }
@@ -3509,18 +3496,27 @@ final class Model: NSObject, ObservableObject {
         case "!moblin obs fix":
             handleChatBotMessageObsFix()
         default:
-            makeErrorToast(title: "Chat bot", subTitle: "Unknown command \(command)")
+            makeErrorToast(
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Unknown command \(command)")
+            )
         }
     }
 
     private func handleChatBotMessageTtsOn() {
-        makeToast(title: "Chat bot", subTitle: "Turning on chat text to speech")
+        makeToast(
+            title: String(localized: "Chat bot"),
+            subTitle: String(localized: "Turning on chat text to speech")
+        )
         database.chat.textToSpeechEnabled = true
         store()
     }
 
     private func handleChatBotMessageTtsOff() {
-        makeToast(title: "Chat bot", subTitle: "Turning off chat text to speech")
+        makeToast(
+            title: String(localized: "Chat bot"),
+            subTitle: String(localized: "Turning off chat text to speech")
+        )
         database.chat.textToSpeechEnabled = false
         store()
         chatTextToSpeech.reset(running: true)
@@ -3528,12 +3524,12 @@ final class Model: NSObject, ObservableObject {
 
     private func handleChatBotMessageObsFix() {
         if obsWebSocket != nil {
-            makeToast(title: "Chat bot", subTitle: "Fixing OBS input")
+            makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Fixing OBS input"))
             obsFixStream()
         } else {
             makeErrorToast(
-                title: "Chat bot",
-                subTitle: "Cannot fix OBS input. OBS remote control is not configured."
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Cannot fix OBS input. OBS remote control is not configured.")
             )
         }
     }
@@ -4817,7 +4813,7 @@ final class Model: NSObject, ObservableObject {
 extension Model: RemoteControlStreamerDelegate {
     func connected() {
         DispatchQueue.main.async {
-            self.makeToast(title: "Remote control assistant connected")
+            self.makeToast(title: String(localized: "Remote control assistant connected"))
             self.setLowFpsImage()
             self.updateRemoteControlStatus()
             var state = RemoteControlState()
@@ -4835,7 +4831,7 @@ extension Model: RemoteControlStreamerDelegate {
 
     func disconnected() {
         DispatchQueue.main.async {
-            self.makeToast(title: "Remote control assistant disconnected")
+            self.makeToast(title: String(localized: "Remote control assistant disconnected"))
             self.setLowFpsImage()
             self.updateRemoteControlStatus()
         }
@@ -5256,7 +5252,7 @@ extension Model {
     func remoteControlAssistantReloadBrowserWidgets() {
         remoteControlAssistant?.reloadBrowserWidgets {
             DispatchQueue.main.async {
-                self.makeToast(title: "Browser widgets reloaded")
+                self.makeToast(title: String(localized: "Browser widgets reloaded"))
             }
         }
     }
@@ -5278,13 +5274,13 @@ extension Model {
 
 extension Model: RemoteControlAssistantDelegate {
     func assistantConnected() {
-        makeToast(title: "Remote control streamer connected")
+        makeToast(title: String(localized: "Remote control streamer connected"))
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
     }
 
     func assistantDisconnected() {
-        makeToast(title: "Remote control streamer disconnected")
+        makeToast(title: String(localized: "Remote control streamer disconnected"))
         remoteControlTopLeft = nil
         remoteControlTopRight = nil
         updateRemoteControlStatus()
@@ -5667,7 +5663,10 @@ extension Model {
         var cleanedUrl = cleanUrl(url: url)
         if isValidUrl(url: cleanedUrl) != nil {
             cleanedUrl = defaultStreamUrl
-            makeErrorToast(title: "Malformed stream URL", subTitle: "Using default")
+            makeErrorToast(
+                title: String(localized: "Malformed stream URL"),
+                subTitle: String(localized: "Using default")
+            )
         }
         return cleanedUrl
     }
@@ -6652,7 +6651,7 @@ extension Model: SrtlaServerDelegate {
     func srtlaServerOnClientStart(streamId: String) {
         DispatchQueue.main.async {
             let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
-            self.makeToast(title: "\(camera) connected")
+            self.makeToast(title: String(localized: "\(camera) connected"))
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
@@ -6670,7 +6669,7 @@ extension Model: SrtlaServerDelegate {
     func srtlaServerOnClientStop(streamId: String) {
         DispatchQueue.main.async {
             let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
-            self.makeToast(title: "\(camera) disconnected")
+            self.makeToast(title: String(localized: "\(camera) disconnected"))
             guard let stream = self.getSrtlaStream(streamId: streamId) else {
                 return
             }
@@ -6822,6 +6821,7 @@ extension Model: DjiDeviceDelegate {
         switch state {
         case .connecting:
             startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+            makeToast(title: String(localized: "Connecting to DJI device \(device.name)"))
         default:
             break
         }
@@ -6830,7 +6830,7 @@ extension Model: DjiDeviceDelegate {
 
 extension Model {
     func isDjiDeviceStarted(device: SettingsDjiDevice) -> Bool {
-        return djiDeviceWrappers[device.id]?.isStarted ?? false
+        return device.isStarted!
     }
 
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
@@ -6842,7 +6842,7 @@ extension Model {
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
-        djiDeviceWrapper.isStarted = true
+        device.isStarted = true
         startDjiDeviceLiveStreamInternal(djiDeviceWrapper: djiDeviceWrapper, device: device)
     }
 
@@ -6880,17 +6880,21 @@ extension Model {
             .makeTimerSource(queue: DispatchQueue.main)
         djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 30)
         djiDeviceWrapper.autoRestartStreamTimer!.setEventHandler { [weak self] in
+            self?
+                .makeErrorToast(
+                    title: String(localized: "Failed to start live stream from DJI device \(device.name)")
+                )
             self?.restartDjiLiveStreamIfNeeded(device: device)
         }
         djiDeviceWrapper.autoRestartStreamTimer!.activate()
     }
 
     func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
+        device.isStarted = false
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
         djiDeviceWrapper.device.stopLiveStream()
-        djiDeviceWrapper.isStarted = false
         djiDeviceWrapper.autoRestartStreamTimer?.cancel()
         djiDeviceWrapper.autoRestartStreamTimer = nil
     }
@@ -6916,7 +6920,7 @@ extension Model {
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
-        guard djiDeviceWrapper.isStarted else {
+        guard device.isStarted! else {
             return
         }
         startDjiDeviceLiveStreamInternal(djiDeviceWrapper: djiDeviceWrapper, device: device)
@@ -6942,5 +6946,27 @@ extension Model {
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
         currentDjiDeviceSettings = device
         djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
+    }
+
+    func reloadDjiDevices() {
+        for (deviceId, djiDeviceWrapper) in djiDeviceWrappers {
+            guard let device = database.djiDevices!.devices.first(where: { $0.id == deviceId }) else {
+                continue
+            }
+            guard device.isStarted! else {
+                continue
+            }
+            if device.autoRestartStream! {
+                startDjiDeviceLiveStream(device: device)
+            } else {
+                stopDjiDeviceLiveStream(device: device)
+            }
+        }
+    }
+
+    func autoStartDjiDevices() {
+        for device in database.djiDevices!.devices where device.isStarted! {
+            startDjiDeviceLiveStream(device: device)
+        }
     }
 }
