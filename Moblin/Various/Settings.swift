@@ -1532,7 +1532,21 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
 
 var djiDeviceResolutions = SettingsDjiDeviceResolution.allCases.map { $0.rawValue }
 
+enum SettingsDjiDeviceModel: String, Codable {
+    case osmoAction3
+    case osmoAction4
+    case osmoPocket3
+    case unknown
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDjiDeviceModel(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .unknown
+    }
+}
+
 var djiDeviceBitrates: [UInt32] = [12_000_000, 8_000_000, 6_000_000, 4_000_000, 2_000_000]
+
+var djiDeviceFpss: [UInt32] = [25, 30]
 
 class SettingsDjiDevice: Codable, Identifiable {
     var id: UUID = .init()
@@ -1548,8 +1562,10 @@ class SettingsDjiDevice: Codable, Identifiable {
     var autoRestartStream: Bool? = false
     var imageStabilization: SettingsDjiDeviceImageStabilization? = .rockSteady
     var resolution: SettingsDjiDeviceResolution? = .r1080p
+    var fps: Int? = 30
     var bitrate: UInt32? = 6_000_000
     var isStarted: Bool? = false
+    var model: SettingsDjiDeviceModel? = .unknown
 }
 
 class SettingsDjiDevices: Codable {
@@ -3201,6 +3217,14 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.isStarted == nil {
             device.isStarted = false
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.fps == nil {
+            device.fps = 30
+            store()
+        }
+        for device in realDatabase.djiDevices!.devices where device.model == nil {
+            device.model = .unknown
             store()
         }
     }

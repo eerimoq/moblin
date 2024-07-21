@@ -52,7 +52,7 @@ class DjiDevice: NSObject {
     private var wifiPassword: String?
     private var rtmpUrl: String?
     private var resolution: SettingsDjiDeviceResolution?
-    private var fps: Int?
+    private var fps: Int = 30
     private var bitrate: UInt32 = 6_000_000
     private var imageStabilization: SettingsDjiDeviceImageStabilization?
     private var deviceId: UUID?
@@ -63,19 +63,20 @@ class DjiDevice: NSObject {
     weak var delegate: (any DjiDeviceDelegate)?
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
-    private var model: DjiDeviceModel?
+    private var model: SettingsDjiDeviceModel = .unknown
 
     func startLiveStream(
         wifiSsid: String,
         wifiPassword: String,
         rtmpUrl: String,
         resolution: SettingsDjiDeviceResolution,
-        fps: Int?,
+        fps: Int,
         bitrate: UInt32,
         imageStabilization: SettingsDjiDeviceImageStabilization,
-        deviceId: UUID
+        deviceId: UUID,
+        model: SettingsDjiDeviceModel
     ) {
-        logger.info("dji-device: Start live stream")
+        logger.info("dji-device: Start live stream for \(model)")
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
@@ -84,6 +85,7 @@ class DjiDevice: NSObject {
         self.bitrate = bitrate
         self.imageStabilization = imageStabilization
         self.deviceId = deviceId
+        self.model = model
         reset()
         startStartStreamingTimer()
         setState(state: .discovering)
@@ -165,21 +167,12 @@ extension DjiDevice: CBCentralManagerDelegate {
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
-                        advertisementData: [String: Any], rssi _: NSNumber)
+                        advertisementData _: [String: Any], rssi _: NSNumber)
     {
         guard peripheral.identifier == deviceId else {
             return
         }
-        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
-            return
-        }
         central.stopScan()
-        model = DjiDeviceModel.fromManufacturerData(data: manufacturerData)
-        guard let model else {
-            logger.info("dji-device: Unsupported DJI device \(manufacturerData.hexString())")
-            return
-        }
-        logger.info("dji-device: Model is \(model)")
         cameraPeripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
@@ -305,7 +298,7 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func processSettingUpWifi(response: DjiMessage) {
-        guard response.id == setupWifiTransactionId, let model else {
+        guard response.id == setupWifiTransactionId else {
             return
         }
         switch model {
@@ -322,6 +315,8 @@ extension DjiDevice: CBPeripheralDelegate {
                                              payload: payload.encode()))
             setState(state: .configuring)
         case .osmoPocket3:
+            sendStartStreaming()
+        case .unknown:
             sendStartStreaming()
         }
     }
@@ -340,7 +335,7 @@ extension DjiDevice: CBPeripheralDelegate {
         let payload = DjiStartStreamingMessagePayload(
             rtmpUrl: rtmpUrl,
             resolution: resolution,
-            fps: fps ?? 0,
+            fps: fps,
             bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF)
         )
         writeMessage(message: DjiMessage(target: startStreamingTarget,

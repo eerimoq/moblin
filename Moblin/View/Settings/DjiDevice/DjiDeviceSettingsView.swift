@@ -63,11 +63,14 @@ struct DjiDeviceSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let djiDevice = djiScanner.discoveredDevices.first(where: { $0.identifier == deviceId }) else {
+        guard let djiDevice = djiScanner.discoveredDevices
+            .first(where: { $0.peripheral.identifier == deviceId })
+        else {
             return
         }
-        device.bluetoothPeripheralName = djiDevice.name
+        device.bluetoothPeripheralName = djiDevice.peripheral.name
         device.bluetoothPeripheralId = deviceId
+        device.model = djiDevice.model
     }
 
     private func canStartLive() -> Bool {
@@ -213,17 +216,34 @@ struct DjiDeviceSettingsView: View {
                     }
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))
-                Picker("Image stabilization", selection: Binding(get: {
-                    device.imageStabilization!.toString()
-                }, set: { value in
-                    device.imageStabilization = SettingsDjiDeviceImageStabilization.fromString(value: value)
-                    model.objectWillChange.send()
-                })) {
-                    ForEach(djiDeviceImageStabilizations, id: \.self) { imageStabilization in
-                        Text(imageStabilization)
+                if device.model == .osmoAction4 {
+                    Picker("Image stabilization", selection: Binding(get: {
+                        device.imageStabilization!.toString()
+                    }, set: { value in
+                        device.imageStabilization = SettingsDjiDeviceImageStabilization
+                            .fromString(value: value)
+                        model.objectWillChange.send()
+                    })) {
+                        ForEach(djiDeviceImageStabilizations, id: \.self) { imageStabilization in
+                            Text(imageStabilization)
+                        }
                     }
+                    .disabled(model.isDjiDeviceStarted(device: device))
                 }
-                .disabled(model.isDjiDeviceStarted(device: device))
+                if device.model == .osmoPocket3 {
+                    Picker("FPS", selection: Binding(get: {
+                        device.fps!
+                    }, set: { value in
+                        device.fps = value
+                        model.objectWillChange.send()
+                    })) {
+                        ForEach(djiDeviceFpss, id: \.self) { fps in
+                            Text(String(fps))
+                                .tag(fps)
+                        }
+                    }
+                    .disabled(model.isDjiDeviceStarted(device: device))
+                }
             }
             if device.rtmpUrlType == .server {
                 Section {

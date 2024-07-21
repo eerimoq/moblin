@@ -4,9 +4,14 @@
 
 import CoreBluetooth
 
+struct DjiDiscoveredDevice {
+    let peripheral: CBPeripheral
+    let model: SettingsDjiDeviceModel
+}
+
 class DjiDeviceScanner: NSObject {
     static let shared = DjiDeviceScanner()
-    @Published var discoveredDevices: [CBPeripheral] = []
+    @Published var discoveredDevices: [DjiDiscoveredDevice] = []
     private var centralManager: CBCentralManager?
 
     func startScanningForDevices() {
@@ -39,13 +44,14 @@ extension DjiDeviceScanner: CBCentralManagerDelegate {
         guard isDjiDevice(manufacturerData: manufacturerData) else {
             return
         }
-        guard !discoveredDevices.contains(peripheral) else {
+        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
             return
         }
+        let model = djiModelFromManufacturerData(data: manufacturerData)
         logger.info("""
         dji-scanner: Manufacturer data \(manufacturerData.hexString()) for \
-        peripheral id \(peripheral.identifier)
+        peripheral id \(peripheral.identifier) and model \(model)
         """)
-        discoveredDevices.append(peripheral)
+        discoveredDevices.append(.init(peripheral: peripheral, model: model))
     }
 }

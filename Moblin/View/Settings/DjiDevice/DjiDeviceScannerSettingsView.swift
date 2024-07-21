@@ -17,10 +17,10 @@ struct DjiDeviceScannerSettingsView: View {
                     }
                 } else {
                     Picker("", selection: $selectedId) {
-                        ForEach(djiScanner.discoveredDevices.map { device in
+                        ForEach(djiScanner.discoveredDevices.map { discoveredDevice in
                             InlinePickerItem(
-                                id: device.identifier.uuidString,
-                                text: device.name ?? String(localized: "Unknown")
+                                id: discoveredDevice.peripheral.identifier.uuidString,
+                                text: discoveredDevice.peripheral.name ?? String(localized: "Unknown")
                             )
                         }) { item in
                             Text(item.text)

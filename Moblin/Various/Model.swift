@@ -6873,10 +6873,11 @@ extension Model {
             wifiPassword: device.wifiPassword,
             rtmpUrl: rtmpUrl,
             resolution: device.resolution!,
-            fps: nil,
+            fps: device.fps!,
             bitrate: device.bitrate!,
             imageStabilization: device.imageStabilization!,
-            deviceId: deviceId
+            deviceId: deviceId,
+            model: device.model!
         )
         startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
     }
