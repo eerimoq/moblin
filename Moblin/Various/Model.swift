@@ -6873,6 +6873,7 @@ extension Model {
             wifiPassword: device.wifiPassword,
             rtmpUrl: rtmpUrl,
             resolution: device.resolution!,
+            fps: nil,
             bitrate: device.bitrate!,
             imageStabilization: device.imageStabilization!,
             deviceId: deviceId

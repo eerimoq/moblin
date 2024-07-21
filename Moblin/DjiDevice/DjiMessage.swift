@@ -149,10 +149,12 @@ class DjiStartStreamingMessagePayload {
     var rtmpUrl: String
     var resolution: SettingsDjiDeviceResolution
     var bitrateKbps: UInt16
+    var fps: Int
 
-    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, bitrateKbps: UInt16) {
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
+        self.fps = fps
         self.bitrateKbps = bitrateKbps
     }
 
@@ -166,15 +168,21 @@ class DjiStartStreamingMessagePayload {
         case .r1080p:
             resolutionByte = 0x0A
         }
+        var fpsByte: UInt8
+        switch fps {
+        case 25:
+            fpsByte = 2
+        case 30:
+            fpsByte = 3
+        default:
+            fpsByte = 0
+        }
         let writer = ByteArray()
         writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
         writer.writeUInt8(resolutionByte)
         writer.writeUInt16Le(bitrateKbps)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
-        let fps: UInt8 = 0 // Default FPS?
-        // let fps: UInt8 = 2 // 25 FPS?
-        // let fps: UInt8 = 3 // 30 FPS?
-        writer.writeUInt8(fps)
+        writer.writeUInt8(fpsByte)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload3)
         writer.writeBytes(djiPackUrl(url: rtmpUrl))
         return writer.data
