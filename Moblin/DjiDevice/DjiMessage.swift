@@ -144,7 +144,8 @@ class DjiSetupWifiMessagePayload {
 
 class DjiStartStreamingMessagePayload {
     static let payload1 = Data([0x00, 0x2E, 0x00])
-    static let payload2 = Data([0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
+    static let payload2 = Data([0x02, 0x00])
+    static let payload3 = Data([0x00, 0x00, 0x00])
     var rtmpUrl: String
     var resolution: SettingsDjiDeviceResolution
     var bitrateKbps: UInt16
@@ -170,6 +171,11 @@ class DjiStartStreamingMessagePayload {
         writer.writeUInt8(resolutionByte)
         writer.writeUInt16Le(bitrateKbps)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
+        let fps: UInt8 = 0 // Default FPS?
+        // let fps: UInt8 = 2 // 25 FPS?
+        // let fps: UInt8 = 3 // 30 FPS?
+        writer.writeUInt8(fps)
+        writer.writeBytes(DjiStartStreamingMessagePayload.payload3)
         writer.writeBytes(djiPackUrl(url: rtmpUrl))
         return writer.data
     }
