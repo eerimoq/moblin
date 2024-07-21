@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.341.0", date: "2024-07-21", changes: [
+        "• Improved DJI device stream start robustness.",
+        "• Show correct DJI device state.",
+        "• Save DJI device start live stream button state persistently.",
+        "• DJI device connecting and failed to start live stream toasts.",
+        "• Make it possible to start a DJI device live stream to another device. 💡 Martisz",
+        "  • Will not stop the stream after about 20 seconds like before.",
+    ]),
     Version(version: "0.340.0", date: "2024-07-20", changes: [
         "• Support for DJI OP3.",
     ]),
