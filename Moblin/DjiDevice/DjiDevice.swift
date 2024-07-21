@@ -306,6 +306,8 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         switch model {
+        case .osmoAction3:
+            sendStartStreaming()
         case .osmoAction4:
             guard let imageStabilization else {
                 return
