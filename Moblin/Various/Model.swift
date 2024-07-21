@@ -6963,7 +6963,7 @@ extension Model {
     }
 
     func reloadDjiDevices() {
-        for (deviceId, djiDeviceWrapper) in djiDeviceWrappers {
+        for deviceId in djiDeviceWrappers.keys {
             guard let device = database.djiDevices!.devices.first(where: { $0.id == deviceId }) else {
                 continue
             }
