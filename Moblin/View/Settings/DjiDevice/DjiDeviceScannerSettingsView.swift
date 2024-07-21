@@ -16,23 +16,21 @@ struct DjiDeviceScannerSettingsView: View {
                         Spacer()
                     }
                 } else {
-                    Picker("", selection: $selectedId) {
+                    List {
                         ForEach(djiScanner.discoveredDevices.map { discoveredDevice in
                             InlinePickerItem(
                                 id: discoveredDevice.peripheral.identifier.uuidString,
                                 text: discoveredDevice.peripheral.name ?? String(localized: "Unknown")
                             )
                         }) { item in
-                            Text(item.text)
-                                .tag(item.id)
+                            Button {
+                                onChange(item.id)
+                                dismiss()
+                            } label: {
+                                Text(item.text)
+                            }
                         }
                     }
-                    .onChange(of: selectedId) { item in
-                        onChange(item)
-                        dismiss()
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
                 }
             } footer: {
                 Text("""
