@@ -287,6 +287,7 @@ struct DjiDeviceSettingsView: View {
                     device.serverRtmpUrl = serverUrls().first ?? ""
                 }
             }
+            model.setCurrentDjiDevice(device: device)
         }
         .navigationTitle("DJI device")
         .toolbar {

@@ -44,7 +44,7 @@ enum DjiDeviceState {
 }
 
 protocol DjiDeviceDelegate: AnyObject {
-    func djiDeviceStreamingState(state: DjiDeviceState)
+    func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState)
 }
 
 class DjiDevice: NSObject {
@@ -143,7 +143,11 @@ class DjiDevice: NSObject {
     private func setState(state: DjiDeviceState) {
         logger.info("dji-device: State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.djiDeviceStreamingState(state: state)
+        delegate?.djiDeviceStreamingState(self, state: state)
+    }
+
+    func getState() -> DjiDeviceState {
+        return state
     }
 }
 
@@ -176,6 +180,7 @@ extension DjiDevice: CBCentralManagerDelegate {
         cameraPeripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
+        startStartStreamingTimer()
         setState(state: .connecting)
     }
 

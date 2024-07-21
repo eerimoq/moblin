@@ -462,6 +462,7 @@ final class Model: NSObject, ObservableObject {
 
     private var currentWiFiSsid: String?
     @Published var djiDeviceStreamingState: DjiDeviceState?
+    private var currentDjiDeviceSettings: SettingsDjiDevice?
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -6808,8 +6809,22 @@ extension Model: MediaPlayerDelegate {
 }
 
 extension Model: DjiDeviceDelegate {
-    func djiDeviceStreamingState(state: DjiDeviceState) {
-        djiDeviceStreamingState = state
+    func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState) {
+        guard let device = getDjiDeviceSettings(djiDevice: device) else {
+            return
+        }
+        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+            return
+        }
+        if device === currentDjiDeviceSettings {
+            djiDeviceStreamingState = state
+        }
+        switch state {
+        case .connecting:
+            startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+        default:
+            break
+        }
     }
 }
 
@@ -6857,6 +6872,10 @@ extension Model {
             imageStabilization: device.imageStabilization!,
             deviceId: deviceId
         )
+        startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+    }
+
+    private func startDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper, device: SettingsDjiDevice) {
         djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
             .makeTimerSource(queue: DispatchQueue.main)
         djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 30)
@@ -6914,5 +6933,14 @@ extension Model {
             djiDeviceWrapper.autoRestartStreamTimer?.cancel()
             djiDeviceWrapper.autoRestartStreamTimer = nil
         }
+    }
+
+    private func getDjiDeviceSettings(djiDevice: DjiDevice) -> SettingsDjiDevice? {
+        return database.djiDevices!.devices.first(where: { djiDeviceWrappers[$0.id]?.device === djiDevice })
+    }
+
+    func setCurrentDjiDevice(device: SettingsDjiDevice) {
+        currentDjiDeviceSettings = device
+        djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
     }
 }
