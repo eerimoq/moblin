@@ -6822,6 +6822,11 @@ extension Model: DjiDeviceDelegate {
         case .connecting:
             startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
             makeToast(title: String(localized: "Connecting to DJI device \(device.name)"))
+        case .streaming:
+            if device.rtmpUrlType == .custom {
+                stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
+                makeToast(title: String(localized: "DJI device \(device.name) streaming to custom URL"))
+            }
         default:
             break
         }
@@ -6889,14 +6894,18 @@ extension Model {
         djiDeviceWrapper.autoRestartStreamTimer!.activate()
     }
 
+    private func stopDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper) {
+        djiDeviceWrapper.autoRestartStreamTimer?.cancel()
+        djiDeviceWrapper.autoRestartStreamTimer = nil
+    }
+
     func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
         device.isStarted = false
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
         djiDeviceWrapper.device.stopLiveStream()
-        djiDeviceWrapper.autoRestartStreamTimer?.cancel()
-        djiDeviceWrapper.autoRestartStreamTimer = nil
+        stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
     }
 
     private func restartDjiLiveStreamIfNeededAfterDelay(device: SettingsDjiDevice) {
@@ -6913,8 +6922,13 @@ extension Model {
     }
 
     private func restartDjiLiveStreamIfNeeded(device: SettingsDjiDevice) {
-        guard device.rtmpUrlType == .server, device.autoRestartStream! else {
-            stopDjiDeviceLiveStream(device: device)
+        switch device.rtmpUrlType! {
+        case .server:
+            guard device.autoRestartStream! else {
+                stopDjiDeviceLiveStream(device: device)
+                return
+            }
+        case .custom:
             return
         }
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
