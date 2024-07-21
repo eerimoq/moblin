@@ -12,6 +12,8 @@ struct DjiDevicesSettingsView: View {
                             HStack {
                                 Text(device.name)
                                 Spacer()
+                                Text(formatDjiDeviceState(state: model.getDjiDeviceState(device: device)))
+                                    .foregroundColor(.gray)
                             }
                         }
                     }

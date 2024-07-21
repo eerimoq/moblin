@@ -6945,7 +6945,7 @@ extension Model {
 
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
         currentDjiDeviceSettings = device
-        djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
+        djiDeviceStreamingState = getDjiDeviceState(device: device)
     }
 
     func reloadDjiDevices() {
@@ -6968,5 +6968,9 @@ extension Model {
         for device in database.djiDevices!.devices where device.isStarted! {
             startDjiDeviceLiveStream(device: device)
         }
+    }
+
+    func getDjiDeviceState(device: SettingsDjiDevice) -> DjiDeviceState? {
+        return djiDeviceWrappers[device.id]?.device.getState()
     }
 }

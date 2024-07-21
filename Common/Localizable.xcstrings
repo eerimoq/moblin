@@ -3717,6 +3717,9 @@
         }
       }
     },
+    "%@ connected" : {
+
+    },
     "%@ dB" : {
       "localizations" : {
         "de" : {
@@ -3846,6 +3849,9 @@
           }
         }
       }
+    },
+    "%@ disconnected" : {
+
     },
     "%@ s" : {
       "localizations" : {
@@ -18951,6 +18957,9 @@
         }
       }
     },
+    "Browser widgets reloaded" : {
+
+    },
     "BTTV" : {
       "localizations" : {
         "de" : {
@@ -19731,6 +19740,9 @@
         }
       }
     },
+    "Cannot fix OBS input. OBS remote control is not configured." : {
+
+    },
     "Change camera and restart stream for these to work properly." : {
       "localizations" : {
         "de" : {
@@ -20510,6 +20522,9 @@
           }
         }
       }
+    },
+    "Chat bot" : {
+
     },
     "Chat is empty." : {
       "localizations" : {
@@ -22721,10 +22736,13 @@
         }
       }
     },
-    "Configuring..." : {
+    "Configuring" : {
 
     },
-    "Connecting..." : {
+    "Connecting" : {
+
+    },
+    "Connecting to DJI device %@" : {
 
     },
     "Connection priorities" : {
@@ -27933,7 +27951,7 @@
         }
       }
     },
-    "Discovering..." : {
+    "Discovering" : {
 
     },
     "Display" : {
@@ -34579,6 +34597,9 @@
         }
       }
     },
+    "Failed to render %@" : {
+
+    },
     "Failed to select mic" : {
       "localizations" : {
         "de" : {
@@ -34838,6 +34859,9 @@
           }
         }
       }
+    },
+    "Failed to start live stream from DJI device %@" : {
+
     },
     "Failed to start OBS recording" : {
       "localizations" : {
@@ -37052,6 +37076,9 @@
         }
       }
     },
+    "Fixing OBS input" : {
+
+    },
     "Fixing..." : {
       "localizations" : {
         "de" : {
@@ -39001,6 +39028,12 @@
           }
         }
       }
+    },
+    "Game controller %lld connected" : {
+
+    },
+    "Game controller %lld disconnected" : {
+
     },
     "Game controller button" : {
       "localizations" : {
@@ -47344,6 +47377,9 @@
           }
         }
       }
+    },
+    "Malformed stream URL" : {
+
     },
     "Malformed URL" : {
       "localizations" : {
@@ -57754,7 +57790,7 @@
         }
       }
     },
-    "Pairing..." : {
+    "Pairing" : {
 
     },
     "Password" : {
@@ -59317,7 +59353,7 @@
         }
       }
     },
-    "Preparing to stream..." : {
+    "Preparing to stream" : {
 
     },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
@@ -62440,6 +62476,12 @@
         }
       }
     },
+    "Remote control assistant connected" : {
+
+    },
+    "Remote control assistant disconnected" : {
+
+    },
     "Remote control assistant is not configured" : {
       "localizations" : {
         "de" : {
@@ -62569,6 +62611,12 @@
           }
         }
       }
+    },
+    "Remote control streamer connected" : {
+
+    },
+    "Remote control streamer disconnected" : {
+
     },
     "Reset" : {
       "localizations" : {
@@ -67132,7 +67180,7 @@
         }
       }
     },
-    "Setting up WiFi..." : {
+    "Setting up WiFi" : {
 
     },
     "Settings" : {
@@ -69224,6 +69272,9 @@
           }
         }
       }
+    },
+    "Snapshot saved to Photos" : {
+
     },
     "Source %@ not found" : {
       "localizations" : {
@@ -72351,7 +72402,7 @@
         }
       }
     },
-    "Starting stream..." : {
+    "Starting stream" : {
 
     },
     "Starting..." : {
@@ -72877,7 +72928,7 @@
         }
       }
     },
-    "Stopping stream..." : {
+    "Stopping stream" : {
 
     },
     "Stopping..." : {
@@ -82633,6 +82684,12 @@
         }
       }
     },
+    "Turning off chat text to speech" : {
+
+    },
+    "Turning on chat text to speech" : {
+
+    },
     "Twitch" : {
       "localizations" : {
         "de" : {
@@ -83412,6 +83469,9 @@
           }
         }
       }
+    },
+    "Unknown command %@" : {
+
     },
     "Unknown recording state." : {
       "localizations" : {
@@ -84843,6 +84903,9 @@
         }
       }
     },
+    "URL import successful" : {
+
+    },
     "Use a media player as video source in scenes and as mic to stream recordings or other MP4-files." : {
       "localizations" : {
         "de" : {
@@ -86142,6 +86205,9 @@
           }
         }
       }
+    },
+    "Using default" : {
+
     },
     "Version" : {
       "localizations" : {

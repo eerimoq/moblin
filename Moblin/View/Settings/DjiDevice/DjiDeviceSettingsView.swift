@@ -4,6 +4,32 @@ private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> 
     return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
+func formatDjiDeviceState(state: DjiDeviceState?) -> String {
+    if state == nil || state == .idle {
+        return String(localized: "Not started")
+    } else if state == .discovering {
+        return String(localized: "Discovering")
+    } else if state == .connecting {
+        return String(localized: "Connecting")
+    } else if state == .checkingIfPaired || state == .pairing {
+        return String(localized: "Pairing")
+    } else if state == .stoppingStream || state == .cleaningUp {
+        return String(localized: "Stopping stream")
+    } else if state == .preparingStream {
+        return String(localized: "Preparing to stream")
+    } else if state == .settingUpWifi {
+        return String(localized: "Setting up WiFi")
+    } else if state == .configuring {
+        return String(localized: "Configuring")
+    } else if state == .startingStream {
+        return String(localized: "Starting stream")
+    } else if state == .streaming {
+        return String(localized: "Streaming")
+    } else {
+        return String(localized: "Unknown")
+    }
+}
+
 struct DjiDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     private let djiScanner: DjiDeviceScanner = .shared
@@ -30,33 +56,7 @@ struct DjiDeviceSettingsView: View {
     }
 
     func state() -> String {
-        if model.djiDeviceStreamingState == nil || model.djiDeviceStreamingState == .idle {
-            return String(localized: "Not started")
-        } else if model.djiDeviceStreamingState == .discovering {
-            return String(localized: "Discovering...")
-        } else if model.djiDeviceStreamingState == .connecting {
-            return String(localized: "Connecting...")
-        } else if model.djiDeviceStreamingState == .checkingIfPaired || model
-            .djiDeviceStreamingState == .pairing
-        {
-            return String(localized: "Pairing...")
-        } else if model.djiDeviceStreamingState == .stoppingStream || model
-            .djiDeviceStreamingState == .cleaningUp
-        {
-            return String(localized: "Stopping stream...")
-        } else if model.djiDeviceStreamingState == .preparingStream {
-            return String(localized: "Preparing to stream...")
-        } else if model.djiDeviceStreamingState == .settingUpWifi {
-            return String(localized: "Setting up WiFi...")
-        } else if model.djiDeviceStreamingState == .configuring {
-            return String(localized: "Configuring...")
-        } else if model.djiDeviceStreamingState == .startingStream {
-            return String(localized: "Starting stream...")
-        } else if model.djiDeviceStreamingState == .streaming {
-            return String(localized: "Streaming")
-        } else {
-            return String(localized: "Unknown")
-        }
+        return formatDjiDeviceState(state: model.djiDeviceStreamingState)
     }
 
     private func onDeviceChange(value: String) {
