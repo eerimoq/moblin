@@ -52,8 +52,13 @@ private class ReplaceVideo {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        sampleBuffers.append(sampleBuffer)
-        sampleBuffers.sort { $0.presentationTimeStamp < $1.presentationTimeStamp }
+        if let index = sampleBuffers
+            .lastIndex(where: { $0.presentationTimeStamp < sampleBuffer.presentationTimeStamp })
+        {
+            sampleBuffers.insert(sampleBuffer, at: sampleBuffers.index(after: index))
+        } else {
+            sampleBuffers.append(sampleBuffer)
+        }
     }
 
     func updateSampleBuffer(_ outputPresentationTimeStamp: Double) {
