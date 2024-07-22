@@ -1328,7 +1328,6 @@ class SettingsDebug: Codable {
     var higherDataRateLimit: Bool? = true
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
-    var djiDevices: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3171,10 +3170,6 @@ final class Settings {
         }
         if realDatabase.djiDevices == nil {
             realDatabase.djiDevices = .init()
-            store()
-        }
-        if realDatabase.debug!.djiDevices == nil {
-            realDatabase.debug!.djiDevices = false
             store()
         }
         for device in realDatabase.djiDevices!.devices where device.rtmpUrlType == nil {
