@@ -1,4 +1,5 @@
 import AVFoundation
+import Collections
 import MapKit
 import MetalPetal
 import UIKit
@@ -18,13 +19,13 @@ final class MapEffect: VideoEffect {
     private var locationMetalPetal: CLLocation = .init()
     private var sizeMetalPetal: CGSize = .zero
     private var newSceneWidget: SettingsSceneWidget?
-    private var newLocation: CLLocation = .init()
+    private var newLocations: Deque<CLLocation> = [.init()]
     private var mapSnapshotter: MKMapSnapshotter?
     private let dot: CIImage?
     private let dotImageMetalPetal: MTIImage?
 
     init(widget: SettingsWidgetMap) {
-        self.widget = widget
+        self.widget = widget.clone()
         if let image = UIImage(named: "MapDot"), let image = image.cgImage {
             dot = CIImage(cgImage: image)
             dotImageMetalPetal = MTIImage(cgImage: image, isOpaque: true)
@@ -47,13 +48,22 @@ final class MapEffect: VideoEffect {
 
     func updateLocation(location: CLLocation) {
         mapQueue.sync {
-            self.newLocation = location
+            self.newLocations.append(location)
+            if self.newLocations.count > 10 {
+                self.newLocations.removeFirst()
+            }
         }
+    }
+
+    private func nextNewLocation() -> CLLocation {
+        let now = Date()
+        let delay = widget.delay!
+        return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first!
     }
 
     private func update(size: CGSize) {
         let (newSceneWidget, newLocation) = mapQueue.sync {
-            (self.newSceneWidget, self.newLocation)
+            (self.newSceneWidget, self.nextNewLocation())
         }
         guard let newSceneWidget else {
             return
@@ -103,7 +113,7 @@ final class MapEffect: VideoEffect {
 
     private func updateMetalPetal(size: CGSize) {
         let (newSceneWidget, newLocation) = mapQueue.sync {
-            (self.newSceneWidget, self.newLocation)
+            (self.newSceneWidget, self.nextNewLocation())
         }
         guard let newSceneWidget else {
             return

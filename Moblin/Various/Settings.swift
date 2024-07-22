@@ -741,6 +741,7 @@ class SettingsWidgetText: Codable {
     var fontSize: Int? = 40
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
+    var delay: Double? = 0.0
 }
 
 // periphery:ignore
@@ -778,6 +779,16 @@ class SettingsWidgetMap: Codable {
     var width: Int = 250
     var height: Int = 250
     var northUp: Bool? = false
+    var delay: Double? = 0.0
+
+    func clone() -> SettingsWidgetMap {
+        let new = SettingsWidgetMap()
+        new.width = width
+        new.height = height
+        new.northUp = northUp
+        new.delay = delay
+        return new
+    }
 }
 
 class SettingsWidgetScene: Codable {
@@ -3225,6 +3236,14 @@ final class Settings {
         }
         for device in realDatabase.djiDevices!.devices where device.model == nil {
             device.model = .unknown
+            store()
+        }
+        for widget in database.widgets where widget.text.delay == nil {
+            widget.text.delay = 0.0
+            store()
+        }
+        for widget in database.widgets where widget.map!.delay == nil {
+            widget.map!.delay = 0.0
             store()
         }
     }

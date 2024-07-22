@@ -1747,7 +1747,7 @@ final class Model: NSObject, ObservableObject {
             self.logStatus()
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
-            self.updateTextEffects(now: now)
+            self.updateTextEffects(now: now, timestamp: monotonicNow)
             self.updateMapEffects()
             self.updatePoll()
             self.updateObsSceneSwitcher(now: monotonicNow)
@@ -2270,22 +2270,24 @@ final class Model: NSObject, ObservableObject {
         return effects
     }
 
-    private func updateTextEffects(now: Date) {
+    private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
         guard !textEffects.isEmpty else {
             return
         }
-        var stats = TextEffectStats()
-        stats.bitrateAndTotal = speedAndTotal
-        stats.date = now
-        stats.debugOverlayLines = debugLines
         let location = locationManager.getLatestKnownLocation()
         if let latestKnownLocation {
             distance += location?.distance(from: latestKnownLocation) ?? 0
         }
-        stats.speed = format(speed: max(location?.speed ?? 0, 0))
-        stats.altitude = format(altitude: location?.altitude ?? 0)
-        stats.distance = getDistance()
         latestKnownLocation = location
+        let stats = TextEffectStats(
+            timestamp: timestamp,
+            bitrateAndTotal: speedAndTotal,
+            date: now,
+            debugOverlayLines: debugLines,
+            speed: format(speed: max(location?.speed ?? 0, 0)),
+            altitude: format(altitude: location?.altitude ?? 0),
+            distance: getDistance()
+        )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
         }
@@ -2363,7 +2365,8 @@ final class Model: NSObject, ObservableObject {
                 fontSize: CGFloat(widget.text.fontSize!),
                 fontDesign: widget.text.fontDesign!.toSystem(),
                 fontWeight: widget.text.fontWeight!.toSystem(),
-                settingName: widget.name
+                settingName: widget.name,
+                delay: widget.text.delay!
             )
         }
         for browserEffect in browserEffects.values {

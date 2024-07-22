@@ -27909,6 +27909,9 @@
         }
       }
     },
+    "Delay" : {
+
+    },
     "Delete" : {
       "localizations" : {
         "de" : {
@@ -87450,6 +87453,9 @@
           }
         }
       }
+    },
+    "To show the widget in sync with high latency cameras." : {
+
     },
     "To stream in portrait, enable Settings → Streams → %@ → Portrait." : {
       "localizations" : {

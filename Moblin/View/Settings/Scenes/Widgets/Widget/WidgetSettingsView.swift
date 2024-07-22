@@ -45,11 +45,11 @@ struct WidgetSettingsView: View {
                 WidgetTextSettingsView(widget: widget,
                                        backgroundColor: widget.text.backgroundColor!.color(),
                                        foregroundColor: widget.text.foregroundColor!.color(),
-                                       fontSize: Float(widget.text.fontSize!))
+                                       fontSize: Float(widget.text.fontSize!), delay: widget.text.delay!)
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:
-                WidgetMapSettingsView(widget: widget)
+                WidgetMapSettingsView(widget: widget, delay: widget.map!.delay!)
             case .scene:
                 WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene!.sceneId)
             case .qrCode:

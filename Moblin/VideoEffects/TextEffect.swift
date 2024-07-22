@@ -1,4 +1,5 @@
 import AVFoundation
+import Collections
 import MetalPetal
 import SwiftUI
 import UIKit
@@ -7,12 +8,13 @@ import Vision
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
 struct TextEffectStats {
-    var bitrateAndTotal: String = ""
-    var date = Date()
-    var debugOverlayLines: [String] = []
-    var speed: String = ""
-    var altitude: String = ""
-    var distance: String = ""
+    var timestamp: ContinuousClock.Instant
+    var bitrateAndTotal: String
+    var date: Date
+    var debugOverlayLines: [String]
+    var speed: String
+    var altitude: String
+    var distance: String
 }
 
 private enum FormatPart {
@@ -126,7 +128,7 @@ final class TextEffect: VideoEffect {
     var x: Double
     var y: Double
     private let settingName: String
-    private var stats = TextEffectStats()
+    private var stats: Deque<TextEffectStats> = []
     private var formatParts: [FormatPart]
     private var overlay: CIImage?
     private var overlayMetalPetal: MTIImage?
@@ -136,6 +138,7 @@ final class TextEffect: VideoEffect {
     private var nextUpdateTimeMetalPetal = ContinuousClock.now
     private var previousFormattedText: String?
     private var previousFormattedTextMetalPetal: String?
+    private var delay: Double
 
     init(
         format: String,
@@ -144,7 +147,8 @@ final class TextEffect: VideoEffect {
         fontSize: CGFloat,
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
-        settingName: String
+        settingName: String,
+        delay: Double
     ) {
         formatParts = loadFormat(format: format)
         self.backgroundColor = backgroundColor
@@ -153,20 +157,30 @@ final class TextEffect: VideoEffect {
         self.fontDesign = fontDesign
         self.fontWeight = fontWeight
         self.settingName = settingName
+        self.delay = delay
         x = 0
         y = 0
         super.init()
     }
 
     func updateStats(stats: TextEffectStats) {
-        self.stats = stats
+        self.stats.append(stats)
+        if self.stats.count > 10 {
+            self.stats.removeFirst()
+        }
     }
 
     override func getName() -> String {
         return "\(settingName) text widget"
     }
 
-    private func formatted() -> String {
+    private func formatted(now: ContinuousClock.Instant) -> String {
+        guard let stats = stats
+            .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? stats
+            .first
+        else {
+            return ""
+        }
         var parts: [String] = []
         for formatPart in formatParts {
             switch formatPart {
@@ -194,12 +208,30 @@ final class TextEffect: VideoEffect {
     }
 
     private func updateOverlay(size: CGSize) {
-        guard nextUpdateTime < .now else {
+        let now = ContinuousClock.now
+        var newImage: UIImage?
+        textQueue.sync {
+            if self.image != nil {
+                newImage = self.image
+                self.image = nil
+            }
+        }
+        if let newImage {
+            let x = toPixels(self.x, size.width)
+            let y = toPixels(self.y, size.height)
+            overlay = CIImage(image: newImage)?
+                .transformed(by: CGAffineTransform(
+                    translationX: x,
+                    y: size.height - newImage.size.height - y
+                ))
+                .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        }
+        guard nextUpdateTime <= now else {
             return
         }
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
-            let formatted = self.formatted()
+            let formatted = self.formatted(now: now)
             guard formatted != self.previousFormattedText else {
                 return
             }
@@ -220,33 +252,26 @@ final class TextEffect: VideoEffect {
                 self.image = image
             }
         }
-        var newImage: UIImage?
-        textQueue.sync {
-            if self.image != nil {
-                newImage = self.image
-                self.image = nil
-            }
-        }
-        guard let newImage else {
-            return
-        }
-        let x = toPixels(self.x, size.width)
-        let y = toPixels(self.y, size.height)
-        overlay = CIImage(image: newImage)?
-            .transformed(by: CGAffineTransform(
-                translationX: x,
-                y: size.height - newImage.size.height - y
-            ))
-            .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
     }
 
     private func updateOverlayMetalPetal(size: CGSize) {
-        guard nextUpdateTimeMetalPetal < .now else {
+        let now = ContinuousClock.now
+        var newImage: UIImage?
+        textQueue.sync {
+            if self.imageMetalPetal != nil {
+                newImage = self.imageMetalPetal
+                self.imageMetalPetal = nil
+            }
+        }
+        if let image = newImage?.cgImage {
+            overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
+        }
+        guard nextUpdateTimeMetalPetal <= now else {
             return
         }
         nextUpdateTimeMetalPetal += .seconds(1)
         DispatchQueue.main.async {
-            let formatted = self.formatted()
+            let formatted = self.formatted(now: now)
             guard formatted != self.previousFormattedTextMetalPetal else {
                 return
             }
@@ -267,17 +292,6 @@ final class TextEffect: VideoEffect {
                 self.imageMetalPetal = image
             }
         }
-        var newImage: UIImage?
-        textQueue.sync {
-            if self.imageMetalPetal != nil {
-                newImage = self.imageMetalPetal
-                self.imageMetalPetal = nil
-            }
-        }
-        guard let image = newImage?.cgImage else {
-            return
-        }
-        overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {

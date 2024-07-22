@@ -3,6 +3,7 @@ import SwiftUI
 struct WidgetMapSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
+    @State var delay: Double
 
     private func submitWidth(value: String) {
         guard let width = Int(value) else {
@@ -53,6 +54,29 @@ struct WidgetMapSettingsView: View {
             }
         } footer: {
             Text("The map will rotate based of movement direction if disabled.")
+        }
+        Section {
+            HStack {
+                Slider(
+                    value: $delay,
+                    in: 0 ... 10,
+                    step: 0.5,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        widget.map!.delay = delay
+                        model.store()
+                        model.resetSelectedScene(changeScene: false)
+                    }
+                )
+                Text(String(String(delay)))
+                    .frame(width: 35)
+            }
+        } header: {
+            Text("Delay")
+        } footer: {
+            Text("To show the widget in sync with high latency cameras.")
         }
     }
 }

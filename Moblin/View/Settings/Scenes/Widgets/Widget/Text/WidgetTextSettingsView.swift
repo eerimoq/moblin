@@ -7,6 +7,7 @@ struct WidgetTextSettingsView: View {
     @State var backgroundColor: Color
     @State var foregroundColor: Color
     @State var fontSize: Float
+    @State var delay: Double
 
     private func submitFormatString(value: String) {
         widget.text.formatString = value
@@ -116,6 +117,28 @@ struct WidgetTextSettingsView: View {
             }
         } header: {
             Text("Font")
+        }
+        Section {
+            HStack {
+                Slider(
+                    value: $delay,
+                    in: 0 ... 10,
+                    step: 0.5,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        widget.text.delay = delay
+                        model.resetSelectedScene(changeScene: false)
+                    }
+                )
+                Text(String(String(delay)))
+                    .frame(width: 35)
+            }
+        } header: {
+            Text("Delay")
+        } footer: {
+            Text("To show the widget in sync with high latency cameras.")
         }
         .onDisappear {
             model.store()
