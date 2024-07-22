@@ -64,6 +64,8 @@ class DjiDevice: NSObject {
     private var startStreamingTimer: DispatchSourceTimer?
     private var stopStreamingTimer: DispatchSourceTimer?
     private var model: SettingsDjiDeviceModel = .unknown
+    // periphery:ignore
+    private var batteryPercentage: UInt8?
 
     func startLiveStream(
         wifiSsid: String,
@@ -106,6 +108,7 @@ class DjiDevice: NSObject {
         centralManager = nil
         cameraPeripheral = nil
         fff5Characteristic = nil
+        batteryPercentage = nil
         setState(state: .idle)
     }
 
@@ -242,7 +245,7 @@ extension DjiDevice: CBPeripheralDelegate {
         case .startingStream:
             processStartingStream(response: message)
         case .streaming:
-            break
+            processStreaming(message: message)
         case .stoppingStream:
             processStoppingStream(response: message)
         default:
@@ -352,6 +355,18 @@ extension DjiDevice: CBPeripheralDelegate {
         }
         setState(state: .streaming)
         stopStartStreamingTimer()
+    }
+
+    private func processStreaming(message: DjiMessage) {
+        switch message.type {
+        case 0x020D00:
+            guard message.payload.count >= 21 else {
+                return
+            }
+            batteryPercentage = message.payload[20]
+        default:
+            break
+        }
     }
 
     private func processStoppingStream(response: DjiMessage) {
