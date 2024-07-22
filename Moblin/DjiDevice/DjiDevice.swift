@@ -96,7 +96,7 @@ class DjiDevice: NSObject {
         logger.info("dji-device: Stop live stream")
         stopStartStreamingTimer()
         startStopStreamingTimer()
-        stopStream()
+        sendStopStream()
         setState(state: .stoppingStream)
     }
 
@@ -166,8 +166,10 @@ extension DjiDevice: CBCentralManagerDelegate {
         }
     }
 
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
-                        advertisementData _: [String: Any], rssi _: NSNumber)
+    func centralManager(_ central: CBCentralManager,
+                        didDiscover peripheral: CBPeripheral,
+                        advertisementData _: [String: Any],
+                        rssi _: NSNumber)
     {
         guard peripheral.identifier == deviceId else {
             return
@@ -248,7 +250,7 @@ extension DjiDevice: CBPeripheralDelegate {
         }
     }
 
-    private func stopStream() {
+    private func sendStopStream() {
         let payload = DjiStopStreamingMessagePayload()
         writeMessage(message: DjiMessage(target: stopStreamingTarget,
                                          id: stopStreamingTransactionId,
@@ -261,15 +263,14 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         if response.payload == Data([0, 1]) {
-            stopStream()
-            setState(state: .cleaningUp)
+            processPairing()
         } else {
             setState(state: .pairing)
         }
     }
 
     private func processPairing() {
-        stopStream()
+        sendStopStream()
         setState(state: .cleaningUp)
     }
 
