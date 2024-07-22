@@ -62,7 +62,12 @@ private class ReplaceAudio {
         var numberOfBuffersConsumed = 0
         while let inputSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
-                logger.info("replace-audio: \(name): Over 300 buffers buffered. Dropping oldest buffer.")
+                logger.info(
+                    """
+                    replace-audio: \(name): Over 300 buffers (\(sampleBuffers.count)) buffered. Dropping \
+                    oldest buffer.
+                    """
+                )
                 sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1

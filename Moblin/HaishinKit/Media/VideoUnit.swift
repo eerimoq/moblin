@@ -68,7 +68,10 @@ private class ReplaceVideo {
                 currentSampleBuffer = inputSampleBuffer
             }
             if sampleBuffers.count > 200 {
-                logger.info("replace-video: \(name): Over 200 frames buffered. Dropping oldest frame.")
+                logger.info("""
+                replace-video: \(name): Over 200 frames (\(sampleBuffers.count)) buffered. Dropping \
+                oldest frame.
+                """)
                 currentSampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
