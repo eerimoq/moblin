@@ -71,13 +71,6 @@ struct RtmpServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
-    private func submitFps(value: String) {
-        stream.fps = Double(value) ?? 29.97
-        model.store()
-        model.reloadRtmpServer()
-        model.objectWillChange.send()
-    }
-
     var body: some View {
         Form {
             Section {
@@ -118,33 +111,6 @@ struct RtmpServerStreamSettingsView: View {
                 .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("Automatically select the stream's audio as mic when connected.")
-            }
-            Section {
-                Toggle("Manual FPS", isOn: Binding(get: {
-                    stream.manualFps!
-                }, set: { value in
-                    stream.manualFps = value
-                    model.store()
-                    model.reloadRtmpServer()
-                    model.objectWillChange.send()
-                }))
-                .disabled(model.rtmpServerEnabled())
-                if stream.manualFps! {
-                    Picker("FPS", selection: Binding(get: {
-                        String(stream.fps!)
-                    }, set: submitFps)) {
-                        ForEach(rtmpServerFpss, id: \.self) { fps in
-                            Text(fps)
-                        }
-                    }
-                    .disabled(model.rtmpServerEnabled())
-                }
-            } footer: {
-                Text("""
-                Enable manual FPS to force given FPS. This is needed when the publisher \
-                does not provide accurate timestamps. B-frames does not work with manual \
-                FPS.
-                """)
             }
             Section {
                 if model.rtmpServerEnabled() {

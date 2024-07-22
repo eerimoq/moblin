@@ -19,8 +19,6 @@ class RtmpServerChunkStream {
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoCodec?
-    private var numberOfFrames: UInt64 = 0
-    private var numberOfAudioBuffers: UInt64 = 0
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
@@ -29,8 +27,6 @@ class RtmpServerChunkStream {
     private var totalNumberOfAudioSamples: UInt64 = 0
     private var firstVideoFrameTimestamp: ContinuousClock.Instant?
     private var totalNumberOfVideoFrames: UInt64 = 0
-    private var isVideoReceived = false
-    private var isAudioReceived = false
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -260,14 +256,6 @@ class RtmpServerChunkStream {
                 .filter({ !$0.streamKey.isEmpty })
                 .first(where: { $0.streamKey == streamKey })
             {
-                client.manualFps = stream.manualFps!
-                if stream.fps! == 29.97 {
-                    client.fpsTimeBase = 1001 / 30000
-                } else if stream.fps! == 59.94 {
-                    client.fpsTimeBase = 1001 / 60000
-                } else {
-                    client.fpsTimeBase = 1 / stream.fps!
-                }
                 client.latency = stream.latency!
                 return true
             } else {
@@ -517,26 +505,16 @@ class RtmpServerChunkStream {
         compositionTime <<= 8
         compositionTime /= 256
         var duration: Int64
-        if client.manualFps {
-            isVideoReceived = true
-            if !isAudioReceived {
-                return nil
+        let delta = mediaTimestamp - videoTimestamp
+        duration = Int64(delta)
+        if isMessageType0 {
+            if mediaTimestampZero == -1 {
+                mediaTimestampZero = delta
             }
-            duration = Int64(client.fpsTimeBase * 1000)
-            videoTimestamp = Double(numberOfFrames) * client.fpsTimeBase * 1000
-            numberOfFrames += 1
+            duration -= Int64(videoTimestamp)
+            videoTimestamp = delta - mediaTimestampZero
         } else {
-            let delta = mediaTimestamp - videoTimestamp
-            duration = Int64(delta)
-            if isMessageType0 {
-                if mediaTimestampZero == -1 {
-                    mediaTimestampZero = delta
-                }
-                duration -= Int64(videoTimestamp)
-                videoTimestamp = delta - mediaTimestampZero
-            } else {
-                videoTimestamp += delta
-            }
+            videoTimestamp += delta
         }
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) +
             Int64(compositionTime + client.latency)
@@ -580,24 +558,14 @@ class RtmpServerChunkStream {
     private func makeAudioSampleBuffer(client: RtmpServerClient,
                                        audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
     {
-        if client.manualFps {
-            isAudioReceived = true
-            if !isVideoReceived {
-                return nil
+        let delta = mediaTimestamp - audioTimestamp
+        if isMessageType0 {
+            if mediaTimestampZero == -1 {
+                mediaTimestampZero = delta
             }
-            audioTimestamp = Double(numberOfAudioBuffers) /
-                (audioBuffer.format.sampleRate / Double(audioBuffer.frameLength)) * 1000
-            numberOfAudioBuffers += 1
+            audioTimestamp = delta - mediaTimestampZero
         } else {
-            let delta = mediaTimestamp - audioTimestamp
-            if isMessageType0 {
-                if mediaTimestampZero == -1 {
-                    mediaTimestampZero = delta
-                }
-                audioTimestamp = delta - mediaTimestampZero
-            } else {
-                audioTimestamp += delta
-            }
+            audioTimestamp += delta
         }
         let presentationTimeStamp = CMTimeMake(
             value: Int64(audioTimestamp + getBasePresentationTimeStamp()) + Int64(client.latency),
