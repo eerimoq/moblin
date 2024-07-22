@@ -72,18 +72,11 @@ final class MapEffect: VideoEffect {
             || size != self.size
             || newLocation.coordinate.latitude != location.coordinate.latitude
             || newLocation.coordinate.longitude != location.coordinate.longitude
+            || newLocation.speed != location.speed
         else {
             return
         }
-        let options = MKMapSnapshotter.Options()
-        let camera = MKMapCamera()
-        if !widget.northUp! {
-            camera.heading = newLocation.course
-        }
-        camera.centerCoordinate = newLocation.coordinate
-        camera.centerCoordinateDistance = 750
-        options.camera = camera
-        mapSnapshotter = MKMapSnapshotter(options: options)
+        mapSnapshotter = createSnapshotter(newLocation: newLocation)
         mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
                 return
@@ -122,18 +115,11 @@ final class MapEffect: VideoEffect {
             || size != sizeMetalPetal
             || newLocation.coordinate.latitude != locationMetalPetal.coordinate.latitude
             || newLocation.coordinate.longitude != locationMetalPetal.coordinate.longitude
+            || newLocation.speed != locationMetalPetal.speed
         else {
             return
         }
-        let options = MKMapSnapshotter.Options()
-        let camera = MKMapCamera()
-        if !widget.northUp! {
-            camera.heading = newLocation.course
-        }
-        camera.centerCoordinate = newLocation.coordinate
-        camera.centerCoordinateDistance = 500
-        options.camera = camera
-        mapSnapshotter = MKMapSnapshotter(options: options)
+        mapSnapshotter = createSnapshotter(newLocation: newLocation)
         mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
@@ -149,6 +135,22 @@ final class MapEffect: VideoEffect {
         sizeMetalPetal = size
         sceneWidgetMetalPetal = newSceneWidget
         locationMetalPetal = newLocation
+    }
+
+    private func createSnapshotter(newLocation: CLLocation) -> MKMapSnapshotter {
+        let camera = MKMapCamera()
+        if !widget.northUp! {
+            camera.heading = newLocation.course
+        }
+        camera.centerCoordinate = newLocation.coordinate
+        if location.speed <= 4 {
+            camera.centerCoordinateDistance = 750
+        } else {
+            camera.centerCoordinateDistance = 750 + 75 * (location.speed - 4)
+        }
+        let options = MKMapSnapshotter.Options()
+        options.camera = camera
+        return MKMapSnapshotter(options: options)
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {

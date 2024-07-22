@@ -39,9 +39,16 @@ struct StreamTwitchSettingsView: View {
                     onSubmit: submitChannelId
                 )
             } footer: {
-                Text(
-                    "A large number. Use developer tools (F11) in your browser. Look at websocket messages."
-                )
+                VStack(alignment: .leading) {
+                    Text("Needed for channel chat emotes and number of viewers.")
+                    Text("")
+                    Text(
+                        """
+                        Use https://streamscharts.com/tools/convert-username to convert your \
+                        channel name to your channel id.
+                        """
+                    )
+                }
             }
         }
         .navigationTitle("Twitch")

@@ -8924,6 +8924,7 @@
       }
     },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32463,6 +32464,7 @@
       }
     },
     "Enable manual FPS to force given FPS. This is needed when the publisher does not provide accurate timestamps. B-frames does not work with manual FPS." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -51835,6 +51837,7 @@
       }
     },
     "Manual FPS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
