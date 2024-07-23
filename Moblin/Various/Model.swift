@@ -1640,9 +1640,6 @@ final class Model: NSObject, ObservableObject {
         }
         if let newSelectedStream, !isLive, !isRecording {
             setCurrentStream(stream: newSelectedStream)
-            reloadStream()
-            sceneUpdated(store: false)
-            resetSelectedScene(changeScene: false)
         }
     }
 
