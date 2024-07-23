@@ -1,5 +1,7 @@
 import AVFoundation
+import CoreFoundation
 import ReplayKit
+import VideoToolbox
 
 private func connect(fd: Int32, addr: sockaddr_un) throws {
     var addr = addr
@@ -135,4 +137,92 @@ extension SampleBufferSender: VideoEncoderDelegate {
             try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
         } catch {}
     }
+}
+
+protocol VideoEncoderDelegate: AnyObject {
+    func videoEncoderOutputFormat(_ formatDescription: CMFormatDescription)
+    func videoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
+}
+
+class VideoEncoder {
+    weak var delegate: (any VideoEncoderDelegate)?
+    private var session: VTCompressionSession?
+    var formatDescription: CMFormatDescription? {
+        didSet {
+            guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
+                return
+            }
+            guard let formatDescription else {
+                return
+            }
+            delegate?.videoEncoderOutputFormat(formatDescription)
+        }
+    }
+
+    init(width: Int32, height: Int32) {
+        session = makeCompressionSession(width: width, height: height)
+    }
+
+    func appendImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration _: CMTime) {
+        guard let session else {
+            return
+        }
+        _ = VTCompressionSessionEncodeFrame(
+            session,
+            imageBuffer: imageBuffer,
+            presentationTimeStamp: presentationTimeStamp,
+            duration: .invalid,
+            frameProperties: nil,
+            infoFlagsOut: nil,
+            outputHandler: { [unowned self] status, _, sampleBuffer in
+                guard let sampleBuffer, status == noErr else {
+                    return
+                }
+                formatDescription = sampleBuffer.formatDescription
+                delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
+            }
+        )
+    }
+}
+
+private func makeCompressionSession(width: Int32, height: Int32) -> VTCompressionSession? {
+    var session: VTCompressionSession?
+    let attributes: [NSString: AnyObject] = [
+        kCVPixelBufferPixelFormatTypeKey: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange),
+        kCVPixelBufferWidthKey: NSNumber(value: width),
+        kCVPixelBufferHeightKey: NSNumber(value: height),
+    ]
+    var status = VTCompressionSessionCreate(
+        allocator: kCFAllocatorDefault,
+        width: width,
+        height: height,
+        codecType: kCMVideoCodecType_HEVC,
+        encoderSpecification: nil,
+        imageBufferAttributes: attributes as CFDictionary?,
+        compressedDataAllocator: nil,
+        outputCallback: nil,
+        refcon: nil,
+        compressionSessionOut: &session
+    )
+    guard status == noErr, let session else {
+        return nil
+    }
+    let options: [NSString: AnyObject] = [
+        kVTCompressionPropertyKey_RealTime: kCFBooleanTrue,
+        kVTCompressionPropertyKey_ProfileLevel: kVTProfileLevel_HEVC_Main_AutoLevel as NSObject,
+        kVTCompressionPropertyKey_AverageBitRate: 10_000_000 as CFNumber,
+        kVTCompressionPropertyKey_ExpectedFrameRate: 30 as CFNumber,
+        kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration: 2 as NSNumber,
+        kVTCompressionPropertyKey_AllowFrameReordering: kCFBooleanFalse,
+        kVTCompressionPropertyKey_PixelTransferProperties: ["ScalingMode": "Trim"] as NSObject,
+    ]
+    status = VTSessionSetProperties(session, propertyDictionary: options as CFDictionary)
+    guard status == noErr else {
+        return nil
+    }
+    status = VTCompressionSessionPrepareToEncodeFrames(session)
+    guard status == noErr else {
+        return nil
+    }
+    return session
 }

@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 
 extension AVCaptureSession.Preset {
-    var width: Int32? {
+    var width: Int32 {
         switch self {
         case .hd4K3840x2160:
             return 3840
@@ -15,11 +15,11 @@ extension AVCaptureSession.Preset {
         case .cif352x288:
             return 352
         default:
-            return nil
+            return 1280
         }
     }
 
-    var height: Int32? {
+    var height: Int32 {
         switch self {
         case .hd4K3840x2160:
             return 2160
@@ -32,7 +32,7 @@ extension AVCaptureSession.Preset {
         case .cif352x288:
             return 288
         default:
-            return nil
+            return 720
         }
     }
 }

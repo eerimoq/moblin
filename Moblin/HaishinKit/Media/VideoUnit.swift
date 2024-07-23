@@ -199,8 +199,6 @@ final class VideoUnit: NSObject {
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotComplete: ((UIImage) -> Void)?
     private var pool: CVPixelBufferPool?
-    private var poolWidth: Int32 = 0
-    private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
 
@@ -306,7 +304,7 @@ final class VideoUnit: NSObject {
         }
         _ = appendSampleBuffer(
             sampleBuffer,
-            rotateDegrees: 0,
+            rotateDegrees: sampleBuffer.isPortrait() ? 90 : 0,
             isFirstAfterAttach: false,
             applyBlur: ioVideoBlurSceneSwitch
         )
@@ -359,19 +357,15 @@ final class VideoUnit: NSObject {
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
         let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         let formatDescriptionExtension = CMFormatDescriptionGetExtensions(formatDescription)
-        guard dimensions.width != poolWidth || dimensions
-            .height != poolHeight || formatDescriptionExtension != poolFormatDescriptionExtension
-        else {
+        if let pool, formatDescriptionExtension == poolFormatDescriptionExtension {
             return pool
         }
-        poolWidth = dimensions.width
-        poolHeight = dimensions.height
         var pixelBufferAttributes: [NSString: AnyObject] = [
             kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-            kCVPixelBufferWidthKey: NSNumber(value: dimensions.width),
-            kCVPixelBufferHeightKey: NSNumber(value: dimensions.height),
+            kCVPixelBufferWidthKey: NSNumber(value: preset.width),
+            kCVPixelBufferHeightKey: NSNumber(value: preset.height),
         ]
         poolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
@@ -514,19 +508,22 @@ final class VideoUnit: NSObject {
 
     // periphery:ignore
     private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
-        guard let image else {
+        guard let image = image?.resized(
+            to: CGSize(width: Double(preset.width), height: Double(preset.height)),
+            resizingMode: .aspect
+        ) else {
             return image
         }
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(
             color: .black,
             sRGB: false,
-            size: .init(width: CGFloat(preset.width!), height: CGFloat(preset.height!))
+            size: .init(width: CGFloat(preset.width), height: CGFloat(preset.height))
         )
         filter.layers = [
             .init(
                 content: image,
-                position: .init(x: CGFloat(preset.width! / 2), y: CGFloat(preset.height! / 2))
+                position: .init(x: CGFloat(preset.width / 2), y: CGFloat(preset.height / 2))
             ),
         ]
         return filter.outputImage
@@ -555,11 +552,11 @@ final class VideoUnit: NSObject {
         if rotateDegrees != 0 {
             image = rotateImageMetalPetal(image, rotateDegrees)
         }
-        // if let image2 = image,
-        //    Int32(image2.size.width) != preset.width! || Int32(image2.size.height) != preset.height!
-        // {
-        //    image = scaleImageMetalPetal(image)
-        // }
+        if let imageToScale = image,
+           Int32(imageToScale.size.width) != preset.width || Int32(imageToScale.size.height) != preset.height
+        {
+            image = scaleImageMetalPetal(image)
+        }
         for effect in effects {
             let effectOutputImage = effect.executeMetalPetal(image, faceDetections, isFirstAfterAttach)
             if effectOutputImage != nil {
@@ -714,8 +711,8 @@ final class VideoUnit: NSObject {
         decodeTimeStamp: CMTime
     ) -> CMSampleBuffer? {
         if blackImageBuffer == nil || blackFormatDescription == nil {
-            let width = 1280
-            let height = 720
+            let width = preset.width
+            let height = preset.height
             let pixelBufferAttributes: [NSString: AnyObject] = [
                 kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
                 kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
@@ -1022,8 +1019,8 @@ final class VideoUnit: NSObject {
         }
         let (format, error) = findVideoFormat(
             device: device,
-            width: preset.width!,
-            height: preset.height!,
+            width: preset.width,
+            height: preset.height,
             frameRate: frameRate,
             colorSpace: colorSpace
         )
@@ -1107,7 +1104,7 @@ final class VideoUnit: NSObject {
     }
 
     private func appendSampleBuffer(sampleBuffer: CMSampleBuffer) {
-        let rotateDegrees = 0
+        let rotateDegrees = sampleBuffer.isPortrait() ? 90 : 0
         let now = ContinuousClock.now
         if firstFrameTime == nil {
             firstFrameTime = now

@@ -156,4 +156,11 @@ extension CMSampleBuffer {
         newSampleBuffer.isSync = isSync
         return newSampleBuffer
     }
+
+    func isPortrait() -> Bool {
+        guard let formatDescription else {
+            return false
+        }
+        return formatDescription.dimensions.height > formatDescription.dimensions.width
+    }
 }
