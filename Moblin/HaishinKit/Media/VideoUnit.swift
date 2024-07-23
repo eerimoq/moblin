@@ -448,14 +448,58 @@ final class VideoUnit: NSObject {
         }
     }
 
+    private func rotateImage(_ image: CIImage, _ rotateDegrees: Int) -> CIImage {
+        if rotateDegrees == 90 {
+            return image.oriented(.left)
+        } else {
+            return image
+        }
+    }
+
+    private var blackImage: CIImage?
+
+    private func getBlackImage(width: Double, height: Double) -> CIImage {
+        if blackImage == nil {
+            blackImage = createBlackImage(width: width, height: height)
+        }
+        return blackImage!
+    }
+
+    private func scaleImage(_ image: CIImage) -> CIImage {
+        let imageRatio = image.extent.height / image.extent.width
+        let presetRatio = Double(preset.height) / Double(preset.width)
+        var scaleFactor: Double
+        var x: Double
+        var y: Double
+        if presetRatio > imageRatio {
+            scaleFactor = Double(preset.width) / image.extent.width
+            x = 0
+            y = (Double(preset.height) - image.extent.height) / 2
+        } else {
+            scaleFactor = Double(preset.height) / image.extent.height
+            x = (Double(preset.width) - image.extent.width) / 2
+            y = 0
+        }
+        return image
+            .transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
+            .transformed(by: CGAffineTransform(translationX: x, y: y))
+            .composited(over: getBlackImage(width: Double(preset.width), height: Double(preset.height)))
+    }
+
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
-                                       _: Int,
+                                       _ rotateDegrees: Int,
                                        _ faceDetections: [VNFaceObservation]?,
                                        _ applyBlur: Bool,
                                        _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
+        if rotateDegrees != 0 {
+            image = rotateImage(image, rotateDegrees)
+        }
+        if Int32(image.extent.width) != preset.width || Int32(image.extent.height) != preset.height {
+            image = scaleImage(image)
+        }
         let extent = image.extent
         var failedEffect: String?
         for effect in effects {
@@ -469,11 +513,6 @@ final class VideoUnit: NSObject {
         mixer?.delegate?.mixerVideo(failedEffect: failedEffect)
         if applyBlur {
             image = blurImage(image)
-        }
-        guard imageBuffer.width == Int(image.extent.width) && imageBuffer
-            .height == Int(image.extent.height)
-        else {
-            return (nil, nil)
         }
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
@@ -506,7 +545,6 @@ final class VideoUnit: NSObject {
         }
     }
 
-    // periphery:ignore
     private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image = image?.resized(
             to: CGSize(width: Double(preset.width), height: Double(preset.height)),
