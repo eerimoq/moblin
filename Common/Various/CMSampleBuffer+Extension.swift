@@ -23,7 +23,6 @@ extension CMSampleBuffer {
             sampleBufferOut: &sampleBuffer
         )
         guard status == noErr else {
-            logger.info("Failed to create sample buffer with error \(status)")
             return nil
         }
         return sampleBuffer

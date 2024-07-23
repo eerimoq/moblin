@@ -131,7 +131,6 @@
 		0359F8B82BD3DA61005BFDA8 /* AVCaptureSession.Preset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81B2BD3DA5F005BFDA8 /* AVCaptureSession.Preset+Extension.swift */; };
 		0359F8B92BD3DA61005BFDA8 /* AVFrameRateRange+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */; };
 		0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */; };
-		0359F8BB2BD3DA61005BFDA8 /* CMBlockBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81E2BD3DA5F005BFDA8 /* CMBlockBuffer+Extension.swift */; };
 		0359F8BD2BD3DA61005BFDA8 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */; };
 		0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */; };
 		0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8232BD3DA5F005BFDA8 /* Data+Extension.swift */; };
@@ -244,6 +243,7 @@
 		03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
 		03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
 		0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384C0372C10E14900B82216 /* WebSocketClient.swift */; };
+		03859D7B2C4FF569000EFE43 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */; };
 		038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F622C2D7C6400A258C6 /* LogsStorage.swift */; };
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
 		038C912D2C44693B003CAD5F /* DjiMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912C2C44693B003CAD5F /* DjiMessage.swift */; };
@@ -367,6 +367,9 @@
 		03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */; };
 		03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */; };
 		03DC9DA92C4C3BB5005E2104 /* DjiDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC9DA82C4C3BB5005E2104 /* DjiDeviceModel.swift */; };
+		03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */; };
+		03DC9DB02C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */; };
+		03DC9DB12C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */; };
 		03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DEA1F82BFA66DC00154631 /* MetalPetal.swift */; };
 		03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */; };
 		03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */; };
@@ -579,7 +582,6 @@
 		0359F81B2BD3DA5F005BFDA8 /* AVCaptureSession.Preset+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureSession.Preset+Extension.swift"; sourceTree = "<group>"; };
 		0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVFrameRateRange+Extension.swift"; sourceTree = "<group>"; };
 		0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CMAudioFormatDescription+Extension.swift"; sourceTree = "<group>"; };
-		0359F81E2BD3DA5F005BFDA8 /* CMBlockBuffer+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CMBlockBuffer+Extension.swift"; sourceTree = "<group>"; };
 		0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CMSampleBuffer+Extension.swift"; sourceTree = "<group>"; };
 		0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Extension.swift"; sourceTree = "<group>"; };
 		0359F8232BD3DA5F005BFDA8 /* Data+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
@@ -856,6 +858,7 @@
 		03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupObsSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupDirectSettingsView.swift; sourceTree = "<group>"; };
 		03DC9DA82C4C3BB5005E2104 /* DjiDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceModel.swift; sourceTree = "<group>"; };
+		03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMBlockBuffer+Extension.swift"; sourceTree = "<group>"; };
 		03DEA1F82BFA66DC00154631 /* MetalPetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPetal.swift; sourceTree = "<group>"; };
 		03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceSettingsView.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
@@ -1380,8 +1383,6 @@
 				0359F81B2BD3DA5F005BFDA8 /* AVCaptureSession.Preset+Extension.swift */,
 				0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */,
 				0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */,
-				0359F81E2BD3DA5F005BFDA8 /* CMBlockBuffer+Extension.swift */,
-				0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */,
 				03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */,
 				0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */,
 				0359F8232BD3DA5F005BFDA8 /* Data+Extension.swift */,
@@ -2130,6 +2131,8 @@
 			isa = PBXGroup;
 			children = (
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
+				03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */,
+				0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -2637,9 +2640,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */,
+				03DC9DB12C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				0312E43D2C00F62400C6F878 /* SampleBufferCommon.swift in Sources */,
 				0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */,
 				0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */,
+				03859D7B2C4FF569000EFE43 /* CMSampleBuffer+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2696,7 +2701,6 @@
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */,
 				03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */,
-				0359F8BB2BD3DA61005BFDA8 /* CMBlockBuffer+Extension.swift in Sources */,
 				033BEACA2C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift in Sources */,
 				0359F8FD2BD3DA61005BFDA8 /* SRTSocketOption.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
@@ -2801,6 +2805,7 @@
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* AMF0Serializer.swift in Sources */,
+				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
@@ -3000,6 +3005,7 @@
 				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */,
 				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
+				03DC9DB02C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				0361EA772B96D476005923ED /* DebugLogSettingsView.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
 				03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */,

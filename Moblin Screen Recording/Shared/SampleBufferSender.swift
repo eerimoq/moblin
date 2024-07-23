@@ -13,11 +13,13 @@ private func connect(fd: Int32, addr: sockaddr_un) throws {
     }
 }
 
-class SampleBufferSender {
+class SampleBufferSender: NSObject {
     private var fd: Int32
+    private var videoEncoder: VideoEncoder?
 
-    init() {
+    override init() {
         fd = -1
+        super.init()
     }
 
     func start(appGroup: String) {
@@ -43,56 +45,25 @@ class SampleBufferSender {
         }
     }
 
-    private func sendVideo(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) throws {
-        guard let formatDescription = sampleBuffer.formatDescription,
-              let imageBuffer = sampleBuffer.imageBuffer
-        else {
+    private func sendVideo(_ sampleBuffer: CMSampleBuffer, _: RPSampleBufferType) throws {
+        guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
-        let bufferSize = CVPixelBufferGetDataSize(imageBuffer)
-        let header = SampleBufferHeader(
-            bufferType: type.rawValue,
-            bufferSize: bufferSize,
-            mediaSubType: formatDescription.mediaSubType.rawValue,
-            width: formatDescription.dimensions.width,
-            height: formatDescription.dimensions.height,
-            presentationTimeStamp: .init(cmTime: sampleBuffer.presentationTimeStamp),
-            debug: "\(formatDescription)"
+        if videoEncoder == nil, let formatDescription = sampleBuffer.formatDescription {
+            videoEncoder = VideoEncoder(
+                width: formatDescription.dimensions.width,
+                height: formatDescription.dimensions.height
+            )
+            videoEncoder?.delegate = self
+        }
+        videoEncoder?.appendImageBuffer(
+            imageBuffer,
+            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
+            duration: sampleBuffer.duration
         )
-        guard (try? sendHeader(header)) != nil else {
-            return
-        }
-        CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
-        defer {
-            CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly)
-        }
-        guard let pointer = CVPixelBufferGetBaseAddress(imageBuffer) else {
-            return
-        }
-        try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(pointer), count: bufferSize))
     }
 
-    private func sendAudio(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) throws {
-        guard let dataBuffer = sampleBuffer.dataBuffer else {
-            return
-        }
-        guard let data = try? dataBuffer.dataBytes() else {
-            return
-        }
-        let header = SampleBufferHeader(
-            bufferType: type.rawValue,
-            bufferSize: data.count,
-            mediaSubType: 0,
-            width: 0,
-            height: 0,
-            presentationTimeStamp: .init(cmTime: sampleBuffer.presentationTimeStamp),
-            debug: ""
-        )
-        guard (try? sendHeader(header)) != nil else {
-            return
-        }
-        try send(data: data)
-    }
+    private func sendAudio(_: CMSampleBuffer, _: RPSampleBufferType) throws {}
 
     private func sendHeader(_ header: SampleBufferHeader) throws {
         let data = try PropertyListEncoder().encode(header)
@@ -120,5 +91,48 @@ class SampleBufferSender {
             }
             offset += res
         }
+    }
+}
+
+extension SampleBufferSender: VideoEncoderDelegate {
+    func videoEncoderOutputFormat(_ formatDescription: CMFormatDescription) {
+        guard let atoms = CMFormatDescriptionGetExtension(
+            formatDescription,
+            extensionKey: "SampleDescriptionExtensionAtoms" as CFString
+        ) as? NSDictionary else {
+            return
+        }
+        guard let hvcC = atoms["hvcC"] as? Data else {
+            return
+        }
+        let header = SampleBufferHeader(
+            type: .videoFormat,
+            size: hvcC.count,
+            presentationTimeStamp: 0.0,
+            isSync: false
+        )
+        do {
+            try sendHeader(header)
+            try send(data: hvcC)
+        } catch {}
+    }
+
+    func videoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        guard let dataBuffer = sampleBuffer.dataBuffer else {
+            return
+        }
+        guard let (buffer, size) = dataBuffer.getDataPointer() else {
+            return
+        }
+        let header = SampleBufferHeader(
+            type: .videoBuffer,
+            size: size,
+            presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+            isSync: sampleBuffer.isSync
+        )
+        do {
+            try sendHeader(header)
+            try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
+        } catch {}
     }
 }

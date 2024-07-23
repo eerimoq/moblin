@@ -1,4 +1,5 @@
 import CoreMedia
+import Foundation
 
 extension CMBlockBuffer {
     var data: Data? {

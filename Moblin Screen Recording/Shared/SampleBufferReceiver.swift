@@ -33,10 +33,13 @@ protocol SampleBufferReceiverDelegate: AnyObject {
     func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer)
 }
 
+private var lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.SampleBufferReceiver")
+
 class SampleBufferReceiver {
     private var listenerFd: Int32
     weak var delegate: (any SampleBufferReceiverDelegate)?
-    private var videoBufferPool: CVPixelBufferPool?
+    private var formatDescription: CMVideoFormatDescription?
+    private var videoDecoder: VideoCodec?
 
     init() {
         listenerFd = -1
@@ -71,63 +74,64 @@ class SampleBufferReceiver {
     }
 
     private func readLoop(senderFd: Int32) throws {
-        videoBufferPool = nil
         while true {
             let header = try readHeader(senderFd)
-            guard let type = RPSampleBufferType(rawValue: header.bufferType) else {
+            switch header.type {
+            case .videoFormat:
+                try handleVideoFormat(senderFd, header)
+            case .videoBuffer:
+                try handleVideoBuffer(senderFd, header)
+            case .audioFormat:
+                break
+            case .audioBuffer:
                 break
             }
-            let sampleBuffer: CMSampleBuffer?
-            switch type {
-            case .video:
-                sampleBuffer = try handleVideo(senderFd, header)
-            case .audioApp:
-                sampleBuffer = try handleAudio(senderFd, header)
-            default:
-                continue
-            }
-            guard let sampleBuffer else {
-                continue
-            }
-            delegate?.handleSampleBuffer(type: type, sampleBuffer: sampleBuffer)
         }
     }
 
-    private func handleVideo(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer {
-        let pixelBufferPool = try getVideoBufferPool(header)
-        let pixelBuffer = try createPixelBuffer(pool: pixelBufferPool)
-        CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
-        defer {
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
+    private func handleVideoFormat(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
+        let hvcC = try read(senderFd, header.size)
+        let config = MpegTsVideoConfigHevc(data: hvcC)
+        let status = config.makeFormatDescription(&formatDescription)
+        if status == noErr, let formatDescription {
+            videoDecoder = VideoCodec(lockQueue: lockQueue)
+            videoDecoder!.formatDescription = formatDescription
+            videoDecoder!.delegate = self
+            videoDecoder!.startRunning()
         }
-        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
-            throw "Failed to get base address"
-        }
-        let size = CVPixelBufferGetDataSize(pixelBuffer)
-        try readPointer(senderFd, baseAddress, size)
-        // To do: Figure out why not all frame data fits in the buffer.
-        if header.bufferSize > size {
-            _ = try read(senderFd, header.bufferSize - size)
-        }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: pixelBuffer)
-        else {
-            throw "Failed to create format description"
-        }
-        guard let sampleBuffer = CMSampleBuffer.create(
-            pixelBuffer,
-            formatDescription,
-            .invalid,
-            header.presentationTimeStamp.toCMTime(),
-            .invalid
-        ) else {
-            throw "Failed to create sample buffer"
-        }
-        return sampleBuffer
     }
 
-    private func handleAudio(_ senderFd: Int32, _ header: SampleBufferHeader) throws -> CMSampleBuffer? {
-        _ = try read(senderFd, header.bufferSize)
-        return nil
+    private func handleVideoBuffer(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
+        let data = try read(senderFd, header.size)
+        var timing = CMSampleTimingInfo(
+            duration: CMTimeMake(value: 30, timescale: 1000),
+            presentationTimeStamp: CMTime(
+                seconds: header.presentationTimeStamp + 0.2,
+                preferredTimescale: 1000
+            ),
+            decodeTimeStamp: CMTime(seconds: header.presentationTimeStamp + 0.2, preferredTimescale: 1000)
+        )
+        let blockBuffer = data.makeBlockBuffer()
+        var sampleBuffer: CMSampleBuffer?
+        var sampleSize = blockBuffer?.dataLength ?? 0
+        guard CMSampleBufferCreate(
+            allocator: kCFAllocatorDefault,
+            dataBuffer: blockBuffer,
+            dataReady: true,
+            makeDataReadyCallback: nil,
+            refcon: nil,
+            formatDescription: formatDescription,
+            sampleCount: 1,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timing,
+            sampleSizeEntryCount: 1,
+            sampleSizeArray: &sampleSize,
+            sampleBufferOut: &sampleBuffer
+        ) == noErr, let sampleBuffer else {
+            return
+        }
+        sampleBuffer.isSync = header.isSync
+        videoDecoder?.appendSampleBuffer(sampleBuffer)
     }
 
     private func readHeader(_ senderFd: Int32) throws -> SampleBufferHeader {
@@ -155,37 +159,12 @@ class SampleBufferReceiver {
             offset += readCount
         }
     }
-
-    private func getVideoBufferPool(_ header: SampleBufferHeader) throws -> CVPixelBufferPool {
-        if let videoBufferPool {
-            return videoBufferPool
-        }
-        let pixelBufferAttributes: [NSString: AnyObject] = [
-            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: header.mediaSubType),
-            kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
-            kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-            kCVPixelBufferWidthKey: NSNumber(value: header.width),
-            kCVPixelBufferHeightKey: NSNumber(value: header.height),
-        ]
-        CVPixelBufferPoolCreate(
-            nil,
-            nil,
-            pixelBufferAttributes as NSDictionary?,
-            &videoBufferPool
-        )
-        guard let videoBufferPool else {
-            throw "Failed to create pool"
-        }
-        return videoBufferPool
-    }
 }
 
-private func createPixelBuffer(pool: CVPixelBufferPool) throws -> CVPixelBuffer {
-    var outputImageBuffer: CVPixelBuffer?
-    guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) ==
-        kCVReturnSuccess, let outputImageBuffer
-    else {
-        throw "Failed to create pixel buffer"
+extension SampleBufferReceiver: VideoCodecDelegate {
+    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
+
+    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        delegate?.handleSampleBuffer(type: .video, sampleBuffer: sampleBuffer)
     }
-    return outputImageBuffer
 }
