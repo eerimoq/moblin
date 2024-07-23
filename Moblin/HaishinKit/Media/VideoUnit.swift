@@ -474,10 +474,10 @@ final class VideoUnit: NSObject {
         if presetRatio > imageRatio {
             scaleFactor = Double(preset.width) / image.extent.width
             x = 0
-            y = (Double(preset.height) - image.extent.height) / 2
+            y = (Double(preset.height) - image.extent.height * scaleFactor) / 2
         } else {
             scaleFactor = Double(preset.height) / image.extent.height
-            x = (Double(preset.width) - image.extent.width) / 2
+            x = (Double(preset.width) - image.extent.width * scaleFactor) / 2
             y = 0
         }
         return image
