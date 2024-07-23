@@ -8,6 +8,19 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.343.0", date: "2024-07-23", changes: [
+        "• Configurable text and map widgets delay.",
+        "  • To show the widget in sync with high latency cameras.",
+        "• Removed manual FPS setting from RTMP server.",
+        "  • As it is no longer needed after bug fix.",
+        "• Always show DJI devices in settings.",
+        "  • Removed debug toggle.",
+        "• Map widget zoom based on speed.",
+        "  • The higher speed, the bigger area.",
+        "• Map widget dot position based on speed.",
+        "  • The higher speed, the lower.",
+        "• Fix video freezing when importing settings. 🐛 tt2468",
+    ]),
     Version(version: "0.342.0", date: "2024-07-21", changes: [
         "• Support for DJI OA3 as DJI device. 💡 Marlow",
         "• Slightly optimized RTMP server video handling.",
