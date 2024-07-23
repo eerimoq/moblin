@@ -23,6 +23,7 @@ final class MapEffect: VideoEffect {
     private var mapSnapshotter: MKMapSnapshotter?
     private let dot: CIImage?
     private let dotImageMetalPetal: MTIImage?
+    private var dotOffsetRatioMetalPetal: Double = 0.0
 
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
@@ -76,8 +77,9 @@ final class MapEffect: VideoEffect {
         else {
             return
         }
-        mapSnapshotter = createSnapshotter(newLocation: newLocation)
-        mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
+        let (mapSnapshotter, dotOffsetRatio) = createSnapshotter(newLocation: newLocation)
+        self.mapSnapshotter = mapSnapshotter
+        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
                 return
             }
@@ -86,7 +88,8 @@ final class MapEffect: VideoEffect {
             let overlay = dot
                 .transformed(by: CGAffineTransform(
                     translationX: CGFloat(self.widget.width - 30) / 2,
-                    y: CGFloat(self.widget.height - 30) / 2
+                    y: CGFloat(self.widget.height - 30) / 2 -
+                        CGFloat(dotOffsetRatio * CGFloat(self.widget.height) / 2)
                 ))
                 .composited(over: CIImage(cgImage: image)
                     .transformed(by: CGAffineTransform(
@@ -119,8 +122,9 @@ final class MapEffect: VideoEffect {
         else {
             return
         }
-        mapSnapshotter = createSnapshotter(newLocation: newLocation)
-        mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
+        let (mapSnapshotter, dotOffsetRatio) = createSnapshotter(newLocation: newLocation)
+        self.mapSnapshotter = mapSnapshotter
+        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
@@ -130,6 +134,7 @@ final class MapEffect: VideoEffect {
             )
             mapQueue.sync {
                 self.overlayMetalPetal = overlay
+                self.dotOffsetRatioMetalPetal = dotOffsetRatio
             }
         })
         sizeMetalPetal = size
@@ -137,20 +142,38 @@ final class MapEffect: VideoEffect {
         locationMetalPetal = newLocation
     }
 
-    private func createSnapshotter(newLocation: CLLocation) -> MKMapSnapshotter {
+    private func createSnapshotter(newLocation: CLLocation) -> (MKMapSnapshotter, Double) {
         let camera = MKMapCamera()
         if !widget.northUp! {
             camera.heading = newLocation.course
         }
         camera.centerCoordinate = newLocation.coordinate
-        if location.speed <= 4 {
-            camera.centerCoordinateDistance = 750
-        } else {
-            camera.centerCoordinateDistance = 750 + 75 * (location.speed - 4)
+        camera.centerCoordinateDistance = 750
+        var dotOffsetRatio = 0.0
+        if newLocation.speed > 4 {
+            camera.centerCoordinateDistance += 75 * (newLocation.speed - 4)
+            if !widget.northUp! {
+                let halfMapSideLength = tan(.pi / 12) * camera.centerCoordinateDistance
+                let maxDotOffsetFromCenter = halfMapSideLength / 2
+                let maxDotSpeed = 20.0
+                let k = maxDotOffsetFromCenter / (maxDotSpeed - 4)
+                var dotOffsetInMeters = k * (newLocation.speed - 4)
+                if dotOffsetInMeters > maxDotOffsetFromCenter {
+                    dotOffsetInMeters = maxDotOffsetFromCenter
+                }
+                let course = toRadians(degrees: max(newLocation.course, 0))
+                let latitudeOffsetInMeters = cos(course) * dotOffsetInMeters
+                let longitudeOffsetInMeters = sin(course) * dotOffsetInMeters
+                camera.centerCoordinate = newLocation.coordinate.translateMeters(
+                    x: longitudeOffsetInMeters,
+                    y: latitudeOffsetInMeters
+                )
+                dotOffsetRatio = dotOffsetInMeters / halfMapSideLength
+            }
         }
         let options = MKMapSnapshotter.Options()
         options.camera = camera
-        return MKMapSnapshotter(options: options)
+        return (MKMapSnapshotter(options: options), dotOffsetRatio)
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
@@ -165,19 +188,21 @@ final class MapEffect: VideoEffect {
             return image
         }
         updateMetalPetal(size: image.size)
-        let (overlayMetalPetal, sceneWidget) = mapQueue.sync {
-            (self.overlayMetalPetal, self.sceneWidgetMetalPetal)
+        let (overlayMetalPetal, sceneWidget, dotOffsetRatioMetalPetal) = mapQueue.sync {
+            (self.overlayMetalPetal, self.sceneWidgetMetalPetal, self.dotOffsetRatioMetalPetal)
         }
         guard let overlayMetalPetal, let sceneWidget else {
             return image
         }
         let x = toPixels(sceneWidget.x, image.extent.size.width) + overlayMetalPetal.size.width / 2
         let y = toPixels(sceneWidget.y, image.extent.size.height) + overlayMetalPetal.size.height / 2
+        let yDot = toPixels(sceneWidget.y, image.extent.size.height) + overlayMetalPetal.size
+            .height / 2 + dotOffsetRatioMetalPetal * overlayMetalPetal.size.height / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
             .init(content: overlayMetalPetal, position: .init(x: x, y: y)),
-            .init(content: dotImageMetalPetal, position: .init(x: x, y: y)),
+            .init(content: dotImageMetalPetal, position: .init(x: x, y: yDot)),
         ]
         return filter.outputImage ?? image
     }

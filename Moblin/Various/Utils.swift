@@ -271,10 +271,42 @@ func createThumbnail(path: URL) -> UIImage? {
 
 extension SettingsPrivacyRegion {
     func contains(coordinate: CLLocationCoordinate2D) -> Bool {
-        cos((latitude - coordinate.latitude) * Double.pi / 180) >
-            cos(latitudeDelta / 2.0 * Double.pi / 180) &&
-            cos((longitude - coordinate.longitude) * Double.pi / 180) >
-            cos(longitudeDelta / 2.0 * Double.pi / 180)
+        cos(toRadians(degrees: latitude - coordinate.latitude)) >
+            cos(toRadians(degrees: latitudeDelta / 2.0)) &&
+            cos(toRadians(degrees: longitude - coordinate.longitude)) >
+            cos(toRadians(degrees: longitudeDelta / 2.0))
+    }
+}
+
+func toRadians(degrees: Double) -> Double {
+    return degrees * .pi / 180
+}
+
+func toLatitudeDeltaDegrees(meters: Double) -> Double {
+    return 360 * meters / 40_075_000
+}
+
+func toLongitudeDeltaDegrees(meters: Double, latitudeDegrees: Double) -> Double {
+    return 360 * meters / (40_075_000 * cos(toRadians(degrees: latitudeDegrees)))
+}
+
+extension CLLocationCoordinate2D {
+    func translateMeters(x: Double, y: Double) -> CLLocationCoordinate2D {
+        let latitudeDelta = toLatitudeDeltaDegrees(meters: y)
+        var newLatitude = (latitude < 0 ? 360 + latitude : latitude) + latitudeDelta
+        newLatitude -= Double(360 * (Int(newLatitude) / 360))
+        if newLatitude > 270 {
+            newLatitude -= 360
+        } else if newLatitude > 90 {
+            newLatitude = 180 - newLatitude
+        }
+        let longitudeDelta = toLongitudeDeltaDegrees(meters: x, latitudeDegrees: latitude)
+        var newLongitude = (longitude < 0 ? 360 + longitude : longitude) + longitudeDelta
+        newLongitude -= Double(360 * (Int(newLongitude) / 360))
+        if newLongitude > 180 {
+            newLongitude = newLongitude - 360
+        }
+        return .init(latitude: newLatitude, longitude: newLongitude)
     }
 }
 
