@@ -66,7 +66,6 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Record to disk (MP4-file).
   - Configurable bitrate, video codec and key frame interval.
 - RTMP server/ingest as video source.
-  - Optionally fixed FPS.
 - SRT(LA) server/ingest as video source.
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
@@ -149,6 +148,10 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Chat bot.
   - Turn chat text to speech on an off.
   - Fix OBS.
+- Screen capture as video source.
+- Basic video player.
+- DJI camera Bluetooth controller.
+  - Automatically start DJI camera live stream.
 
 ## Apple Watch companion app
 
