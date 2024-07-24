@@ -152,6 +152,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Basic video player.
 - DJI camera Bluetooth controller.
   - Automatically start DJI camera live stream.
+  - Tested with OA4, OA3 and OP3.
 
 ## Apple Watch companion app
 
