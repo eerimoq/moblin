@@ -125,8 +125,8 @@ final class TextEffect: VideoEffect {
     private let fontSize: CGFloat
     private let fontDesign: Font.Design
     private let fontWeight: Font.Weight
-    var x: Double
-    var y: Double
+    private var x: Double
+    private var y: Double
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var formatParts: [FormatPart]
@@ -161,6 +161,12 @@ final class TextEffect: VideoEffect {
         x = 0
         y = 0
         super.init()
+    }
+
+    func setPosition(x: Double, y: Double) {
+        self.x = x
+        self.y = y
+        previousFormattedText = nil
     }
 
     func updateStats(stats: TextEffectStats) {

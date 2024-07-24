@@ -3888,8 +3888,7 @@ final class Model: NSObject, ObservableObject {
                 }
             case .text:
                 if let textEffect = textEffects[widget.id] {
-                    textEffect.x = sceneWidget.x
-                    textEffect.y = sceneWidget.y
+                    textEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     effects.append(textEffect)
                 }
             case .videoEffect:
