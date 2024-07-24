@@ -47673,6 +47673,7 @@
       }
     },
     "Keep live streams running when the app is in background mode." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -48971,6 +48972,9 @@
           }
         }
       }
+    },
+    "Live stream and record when the app is in background mode." : {
+
     },
     "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv" : {
       "localizations" : {

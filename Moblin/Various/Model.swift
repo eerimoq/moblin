@@ -1257,10 +1257,10 @@ final class Model: NSObject, ObservableObject {
         guard !ProcessInfo().isiOSAppOnMac else {
             return
         }
-        if isRecording {
-            suspendRecording()
-        }
         if !shouldStreamInBackground() {
+            if isRecording {
+                suspendRecording()
+            }
             stopStream()
             stopRtmpServer()
             stopSrtlaServer()
@@ -1283,20 +1283,23 @@ final class Model: NSObject, ObservableObject {
             reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
             reloadLocation()
-        }
-        if isRecording {
-            resumeRecording()
+            if isRecording {
+                resumeRecording()
+            }
         }
     }
 
     @objc func handleWillTerminate() {
+        if isRecording {
+            suspendRecording()
+        }
         if !showLoadSettingsFailed {
             store()
         }
     }
 
     private func shouldStreamInBackground() -> Bool {
-        return isLive && stream.backgroundStreaming!
+        return (isLive || isRecording) && stream.backgroundStreaming!
     }
 
     @objc func handleBatteryStateDidChangeNotification() {

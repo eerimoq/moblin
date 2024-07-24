@@ -138,7 +138,7 @@ struct StreamSettingsView: View {
                             model.store()
                         }))
                     } footer: {
-                        Text("Keep live streams running when the app is in background mode.")
+                        Text("Live stream and record when the app is in background mode.")
                     }
                 }
             }

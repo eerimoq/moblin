@@ -11,6 +11,7 @@ private let versions = [
     Version(version: "0.344.0", date: "2024-07-24", changes: [
         "• Screen capture experiment.",
         "  • Select \"Screen capture\" as \"Video source\" in a scene to see it.",
+        "  • Start screen capture to Moblin in the Control Center by long pressing the record button.",
     ]),
     Version(version: "0.343.0", date: "2024-07-23", changes: [
         "• Configurable text and map widgets delay.",
