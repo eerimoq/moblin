@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.344.0", date: "2024-07-24", changes: [
+        "• Screen capture experiment.",
+        "  • Select \"Screen capture\" as \"Video source\" in a scene to see it.",
+    ]),
     Version(version: "0.343.0", date: "2024-07-23", changes: [
         "• Configurable text and map widgets delay.",
         "  • To show the widget in sync with high latency cameras.",
