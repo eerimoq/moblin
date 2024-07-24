@@ -24,6 +24,11 @@ struct ChatBotSettingsView: View {
             } footer: {
                 Text("Fix OBS input.")
             }
+            Section {
+                Text("!moblin map zoom out")
+            } footer: {
+                Text("Zoom out map widget temporarily.")
+            }
         }
         .navigationTitle("Bot")
         .toolbar {

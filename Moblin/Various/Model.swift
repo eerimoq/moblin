@@ -3501,6 +3501,8 @@ final class Model: NSObject, ObservableObject {
             handleChatBotMessageTtsOff()
         case "!moblin obs fix":
             handleChatBotMessageObsFix()
+        case "!moblin map zoom out":
+            handleChatBotMessageMapZoomOut()
         default:
             makeErrorToast(
                 title: String(localized: "Chat bot"),
@@ -3537,6 +3539,13 @@ final class Model: NSObject, ObservableObject {
                 title: String(localized: "Chat bot"),
                 subTitle: String(localized: "Cannot fix OBS input. OBS remote control is not configured.")
             )
+        }
+    }
+
+    private func handleChatBotMessageMapZoomOut() {
+        makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Zooming out map"))
+        for mapEffect in mapEffects.values {
+            mapEffect.zoomOutTemporarily()
         }
     }
 

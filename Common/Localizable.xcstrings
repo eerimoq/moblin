@@ -685,6 +685,9 @@
         }
       }
     },
+    "!moblin map zoom out" : {
+
+    },
     "!moblin obs fix" : {
       "localizations" : {
         "de" : {
@@ -99946,6 +99949,9 @@
         }
       }
     },
+    "Zoom out map widget temporarily." : {
+
+    },
     "Zoom presets" : {
       "localizations" : {
         "de" : {
@@ -100075,6 +100081,9 @@
           }
         }
       }
+    },
+    "Zooming out map" : {
+
     }
   },
   "version" : "1.0"

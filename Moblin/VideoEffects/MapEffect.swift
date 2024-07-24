@@ -24,6 +24,8 @@ final class MapEffect: VideoEffect {
     private let dot: CIImage?
     private let dotImageMetalPetal: MTIImage?
     private var dotOffsetRatioMetalPetal: Double = 0.0
+    private var zoomOutFactor: Int?
+    private var isLocationUpdated: Bool = true
 
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
@@ -41,6 +43,14 @@ final class MapEffect: VideoEffect {
         return "map widget"
     }
 
+    func zoomOutTemporarily() {
+        mapQueue.sync {
+            if self.zoomOutFactor == nil {
+                self.zoomOutFactor = 2
+            }
+        }
+    }
+
     func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
         mapQueue.sync {
             self.newSceneWidget = sceneWidget
@@ -49,6 +59,7 @@ final class MapEffect: VideoEffect {
 
     func updateLocation(location: CLLocation) {
         mapQueue.sync {
+            self.isLocationUpdated = true
             self.newLocations.append(location)
             if self.newLocations.count > 10 {
                 self.newLocations.removeFirst()
@@ -63,8 +74,11 @@ final class MapEffect: VideoEffect {
     }
 
     private func update(size: CGSize) {
-        let (newSceneWidget, newLocation) = mapQueue.sync {
-            (self.newSceneWidget, self.nextNewLocation())
+        let (newSceneWidget, newLocation, zoomOutStep, isLocationUpdated) = mapQueue.sync {
+            defer {
+                self.isLocationUpdated = false
+            }
+            return (self.newSceneWidget, self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
         }
         guard let newSceneWidget else {
             return
@@ -74,10 +88,14 @@ final class MapEffect: VideoEffect {
             || newLocation.coordinate.latitude != location.coordinate.latitude
             || newLocation.coordinate.longitude != location.coordinate.longitude
             || newLocation.speed != location.speed
+            || (zoomOutFactor != nil && isLocationUpdated)
         else {
             return
         }
-        let (mapSnapshotter, dotOffsetRatio) = createSnapshotter(newLocation: newLocation)
+        let (mapSnapshotter, dotOffsetRatio, forceUpdate) = createSnapshotter(
+            newLocation: newLocation,
+            zoomOutFactor: zoomOutFactor
+        )
         self.mapSnapshotter = mapSnapshotter
         self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
@@ -102,14 +120,21 @@ final class MapEffect: VideoEffect {
                 self.overlay = overlay
             }
         })
+        if forceUpdate {
+            sceneWidget = nil
+        } else {
+            sceneWidget = newSceneWidget
+        }
         self.size = size
-        sceneWidget = newSceneWidget
         location = newLocation
     }
 
     private func updateMetalPetal(size: CGSize) {
-        let (newSceneWidget, newLocation) = mapQueue.sync {
-            (self.newSceneWidget, self.nextNewLocation())
+        let (newSceneWidget, newLocation, zoomOutStep, isLocationUpdated) = mapQueue.sync {
+            defer {
+                self.isLocationUpdated = false
+            }
+            return (self.newSceneWidget, self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
         }
         guard let newSceneWidget else {
             return
@@ -119,10 +144,14 @@ final class MapEffect: VideoEffect {
             || newLocation.coordinate.latitude != locationMetalPetal.coordinate.latitude
             || newLocation.coordinate.longitude != locationMetalPetal.coordinate.longitude
             || newLocation.speed != locationMetalPetal.speed
+            || (zoomOutStep != nil && isLocationUpdated)
         else {
             return
         }
-        let (mapSnapshotter, dotOffsetRatio) = createSnapshotter(newLocation: newLocation)
+        let (mapSnapshotter, dotOffsetRatio, forceUpdate) = createSnapshotter(
+            newLocation: newLocation,
+            zoomOutFactor: zoomOutFactor
+        )
         self.mapSnapshotter = mapSnapshotter
         self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
@@ -137,12 +166,18 @@ final class MapEffect: VideoEffect {
                 self.dotOffsetRatioMetalPetal = dotOffsetRatio
             }
         })
+        if forceUpdate {
+            sceneWidgetMetalPetal = nil
+        } else {
+            sceneWidgetMetalPetal = newSceneWidget
+        }
         sizeMetalPetal = size
-        sceneWidgetMetalPetal = newSceneWidget
         locationMetalPetal = newLocation
     }
 
-    private func createSnapshotter(newLocation: CLLocation) -> (MKMapSnapshotter, Double) {
+    private func createSnapshotter(newLocation: CLLocation,
+                                   zoomOutFactor: Int?) -> (MKMapSnapshotter, Double, Bool)
+    {
         let camera = MKMapCamera()
         if !widget.northUp! {
             camera.heading = newLocation.course
@@ -150,7 +185,7 @@ final class MapEffect: VideoEffect {
         camera.centerCoordinate = newLocation.coordinate
         camera.centerCoordinateDistance = 750
         var dotOffsetRatio = 0.0
-        if newLocation.speed > 4 {
+        if newLocation.speed > 4, zoomOutFactor == nil {
             camera.centerCoordinateDistance += 75 * (newLocation.speed - 4)
             if !widget.northUp! {
                 let halfMapSideLength = tan(.pi / 12) * camera.centerCoordinateDistance
@@ -171,9 +206,23 @@ final class MapEffect: VideoEffect {
                 dotOffsetRatio = dotOffsetInMeters / halfMapSideLength
             }
         }
+        var forceUpdate = false
+        if let zoomOutFactor {
+            camera.centerCoordinateDistance *= pow(5, Double(zoomOutFactor))
+            if zoomOutFactor > 9 {
+                mapQueue.sync {
+                    self.zoomOutFactor = nil
+                }
+                forceUpdate = true
+            } else {
+                mapQueue.sync {
+                    self.zoomOutFactor = zoomOutFactor + 1
+                }
+            }
+        }
         let options = MKMapSnapshotter.Options()
         options.camera = camera
-        return (MKMapSnapshotter(options: options), dotOffsetRatio)
+        return (MKMapSnapshotter(options: options), dotOffsetRatio, forceUpdate)
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
