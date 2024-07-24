@@ -42,8 +42,6 @@ class SampleBufferSender: NSObject {
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
         if type == .video {
             try? sendVideo(sampleBuffer, type)
-        } else {
-            try? sendAudio(sampleBuffer, type)
         }
     }
 
@@ -64,8 +62,6 @@ class SampleBufferSender: NSObject {
             duration: sampleBuffer.duration
         )
     }
-
-    private func sendAudio(_: CMSampleBuffer, _: RPSampleBufferType) throws {}
 
     private func sendHeader(_ header: SampleBufferHeader) throws {
         let data = try PropertyListEncoder().encode(header)

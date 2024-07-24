@@ -82,6 +82,9 @@ struct Icon: Identifiable {
     }
 }
 
+private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+private let screenCaptureCamera = "Screen capture"
+
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 private let noMic = Mic(name: "", inputUid: "")
 
@@ -3682,6 +3685,8 @@ final class Model: NSObject, ObservableObject {
             attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
             attachExternalCamera(cameraId: scene.externalCameraId!)
+        case .screenCapture:
+            attachReplaceCamera(cameraId: screenCaptureCameraId)
         }
     }
 
@@ -3705,6 +3710,7 @@ final class Model: NSObject, ObservableObject {
         cameras += playerCameras().map {
             ($0, $0)
         }
+        cameras.append((screenCaptureCamera, screenCaptureCamera))
         return cameras
     }
 
@@ -3714,6 +3720,10 @@ final class Model: NSObject, ObservableObject {
 
     func isFrontCamera(cameraId: String) -> Bool {
         return frontCameras.contains(where: { $0.id == cameraId })
+    }
+
+    func isScreenCaptureCamera(cameraId: String) -> Bool {
+        return cameraId == screenCaptureCamera
     }
 
     func getCameraPositionId(scene: SettingsScene?) -> String {
@@ -3733,6 +3743,8 @@ final class Model: NSObject, ObservableObject {
             return scene.backCameraId!
         case .front:
             return scene.frontCameraId!
+        case .screenCapture:
+            return screenCaptureCamera
         }
     }
 
@@ -3765,6 +3777,8 @@ final class Model: NSObject, ObservableObject {
             } else {
                 return "Unknown"
             }
+        case .screenCapture:
+            return screenCaptureCamera
         }
     }
 
@@ -6602,24 +6616,21 @@ extension Model: SampleBufferReceiverDelegate {
     }
 }
 
-private let sampleBufferCameraId = UUID()
-
 extension Model {
     private func handleSampleBufferSenderConnected() {
-        makeToast(title: String(localized: "Screen recording started"))
-        media.addReplaceCamera(cameraId: sampleBufferCameraId, name: "Screen recording")
-        attachReplaceCamera(cameraId: sampleBufferCameraId)
+        makeToast(title: String(localized: "Screen capture started"))
+        media.addReplaceCamera(cameraId: screenCaptureCameraId, name: "Screen capture")
     }
 
     private func handleSampleBufferSenderDisconnected() {
-        makeToast(title: String(localized: "Screen recording stopped"))
-        media.removeReplaceCamera(cameraId: sampleBufferCameraId)
+        makeToast(title: String(localized: "Screen capture stopped"))
+        media.removeReplaceCamera(cameraId: screenCaptureCameraId)
     }
 
     private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
         switch type {
         case .video:
-            media.addReplaceSampleBuffer(cameraId: sampleBufferCameraId, sampleBuffer: sampleBuffer)
+            media.addReplaceSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
         default:
             break
         }

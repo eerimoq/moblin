@@ -579,6 +579,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case external = "External"
     case srtla = "SRT(LA)"
     case mediaPlayer = "Media player"
+    case screenCapture = "Screen capture"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()

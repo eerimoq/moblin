@@ -71337,7 +71337,14 @@
         }
       }
     },
+    "Screen capture started" : {
+
+    },
+    "Screen capture stopped" : {
+
+    },
     "Screen recording started" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -71468,6 +71475,7 @@
       }
     },
     "Screen recording stopped" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

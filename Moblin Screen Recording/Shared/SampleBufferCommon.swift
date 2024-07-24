@@ -8,8 +8,6 @@ import VideoToolbox
 enum SampleBufferType: Codable {
     case videoFormat
     case videoBuffer
-    case audioFormat
-    case audioBuffer
 }
 
 struct SampleBufferHeader: Codable {

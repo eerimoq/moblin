@@ -67,6 +67,8 @@ struct SceneSettingsView: View {
         } else if model.isFrontCamera(cameraId: cameraId) {
             scene.cameraPosition = .front
             scene.frontCameraId = cameraId
+        } else if model.isScreenCaptureCamera(cameraId: cameraId) {
+            scene.cameraPosition = .screenCapture
         } else {
             scene.cameraPosition = .external
             scene.externalCameraId = cameraId

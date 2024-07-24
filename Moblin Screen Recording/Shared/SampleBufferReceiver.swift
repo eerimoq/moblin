@@ -81,10 +81,6 @@ class SampleBufferReceiver {
                 try handleVideoFormat(senderFd, header)
             case .videoBuffer:
                 try handleVideoBuffer(senderFd, header)
-            case .audioFormat:
-                break
-            case .audioBuffer:
-                break
             }
         }
     }
@@ -103,13 +99,11 @@ class SampleBufferReceiver {
 
     private func handleVideoBuffer(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
         let data = try read(senderFd, header.size)
+        let timestamp = CMTime(seconds: header.presentationTimeStamp + 0.2, preferredTimescale: 1000)
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: 30, timescale: 1000),
-            presentationTimeStamp: CMTime(
-                seconds: header.presentationTimeStamp + 0.2,
-                preferredTimescale: 1000
-            ),
-            decodeTimeStamp: CMTime(seconds: header.presentationTimeStamp + 0.2, preferredTimescale: 1000)
+            presentationTimeStamp: timestamp,
+            decodeTimeStamp: timestamp
         )
         let blockBuffer = data.makeBlockBuffer()
         var sampleBuffer: CMSampleBuffer?
