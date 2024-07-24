@@ -149,7 +149,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Turn chat text to speech on an off.
   - Fix OBS.
 - Screen capture as video source.
-- Basic video player.
+- Basic video player as video source and mic.
 - DJI camera Bluetooth controller.
   - Automatically start DJI camera live stream.
   - Tested with OA4, OA3 and OP3.
