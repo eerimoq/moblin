@@ -3,7 +3,10 @@ import CoreFoundation
 import UIKit
 import VideoToolbox
 
+// Protocol overview
+// +----------------+-------------+-------------+
 // | 4b header size | <m>b header | <n>b buffer |
+// +----------------+-------------+-------------+
 
 enum SampleBufferType: Codable {
     case videoFormat

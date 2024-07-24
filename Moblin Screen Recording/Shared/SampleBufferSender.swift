@@ -143,7 +143,7 @@ protocol VideoEncoderDelegate: AnyObject {
 class VideoEncoder {
     weak var delegate: (any VideoEncoderDelegate)?
     private var session: VTCompressionSession?
-    var formatDescription: CMFormatDescription? {
+    private var formatDescription: CMFormatDescription? {
         didSet {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
                 return
