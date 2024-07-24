@@ -129,6 +129,8 @@ private class ReplaceAudio {
         }
     }
 
+    var replaceCounter = 0
+
     private func startOutput() {
         logger.info("""
         replace-audio: \(name): Start output with sample rate \(sampleRate) and \
@@ -137,6 +139,7 @@ private class ReplaceAudio {
         outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
         outputTimer?.setEventHandler { [weak self] in
+            self?.replaceCounter += 1
             self?.output()
         }
         outputTimer?.activate()
@@ -148,8 +151,16 @@ private class ReplaceAudio {
         outputTimer = nil
     }
 
+    var startPresentationTimeStamp: CMTime = .zero
+
     private func output() {
-        let presentationTimeStamp = currentPresentationTimeStamp()
+        if startPresentationTimeStamp == .zero {
+            startPresentationTimeStamp = currentPresentationTimeStamp()
+        }
+        let presentationTimeStamp = CMTime(
+            value: Int64(frameLength * Double(replaceCounter)),
+            timescale: CMTimeScale(sampleRate)
+        ) + startPresentationTimeStamp
         guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
             return
         }

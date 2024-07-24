@@ -236,11 +236,14 @@ final class VideoUnit: NSObject {
         session.stopRunning()
     }
 
+    var replaceCounter = 0
+
     private func startFrameTimer() {
         let frameInterval = 1 / frameRate
         frameTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         frameTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
         frameTimer!.setEventHandler { [weak self] in
+            self?.replaceCounter += 1
             self?.handleFrameTimer()
         }
         frameTimer!.activate()
@@ -256,8 +259,14 @@ final class VideoUnit: NSObject {
         handleGapFillerTimer()
     }
 
+    var startPresentationTimeStamp: CMTime = .zero
+
     private func handleReplaceVideo() {
-        let presentationTimeStamp = currentPresentationTimeStamp()
+        if startPresentationTimeStamp == .zero {
+            startPresentationTimeStamp = currentPresentationTimeStamp()
+        }
+        let presentationTimeStamp = CMTime(value: Int64(replaceCounter), timescale: CMTimeScale(frameRate)) +
+            startPresentationTimeStamp
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(presentationTimeStamp.seconds)
         }
