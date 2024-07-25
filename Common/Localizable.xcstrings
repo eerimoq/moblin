@@ -97605,6 +97605,7 @@
       }
     },
     "Widgets are stacked from back to front." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

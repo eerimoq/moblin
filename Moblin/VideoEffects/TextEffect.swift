@@ -139,6 +139,10 @@ final class TextEffect: VideoEffect {
     private var previousFormattedText: String?
     private var previousFormattedTextMetalPetal: String?
     private var delay: Double
+    private var previousX: Double = .nan
+    private var previousXMetalPetal: Double = .nan
+    private var previousY: Double = .nan
+    private var previousYMetalPetal: Double = .nan
 
     init(
         format: String,
@@ -164,8 +168,10 @@ final class TextEffect: VideoEffect {
     }
 
     func setPosition(x: Double, y: Double) {
-        self.x = x
-        self.y = y
+        textQueue.sync {
+            self.x = x
+            self.y = y
+        }
         previousFormattedText = nil
     }
 
@@ -216,15 +222,16 @@ final class TextEffect: VideoEffect {
     private func updateOverlay(size: CGSize) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        textQueue.sync {
+        let (x, y) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
             }
+            return (self.x, self.y)
         }
         if let newImage {
-            let x = toPixels(self.x, size.width)
-            let y = toPixels(self.y, size.height)
+            let x = toPixels(x, size.width)
+            let y = toPixels(y, size.height)
             overlay = CIImage(image: newImage)?
                 .transformed(by: CGAffineTransform(
                     translationX: x,
@@ -232,9 +239,11 @@ final class TextEffect: VideoEffect {
                 ))
                 .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         }
-        guard nextUpdateTime <= now else {
+        guard now >= nextUpdateTime || x != previousX || y != previousY else {
             return
         }
+        previousX = x
+        previousY = y
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
             let formatted = self.formatted(now: now)
@@ -260,21 +269,24 @@ final class TextEffect: VideoEffect {
         }
     }
 
-    private func updateOverlayMetalPetal(size: CGSize) {
+    private func updateOverlayMetalPetal(size: CGSize) -> (Double, Double) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        textQueue.sync {
+        let (x, y) = textQueue.sync {
             if self.imageMetalPetal != nil {
                 newImage = self.imageMetalPetal
                 self.imageMetalPetal = nil
             }
+            return (self.x, self.y)
         }
         if let image = newImage?.cgImage {
             overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
         }
-        guard nextUpdateTimeMetalPetal <= now else {
-            return
+        guard now >= nextUpdateTimeMetalPetal || x != previousXMetalPetal || y != previousYMetalPetal else {
+            return (x, y)
         }
+        previousXMetalPetal = x
+        previousYMetalPetal = y
         nextUpdateTimeMetalPetal += .seconds(1)
         DispatchQueue.main.async {
             let formatted = self.formatted(now: now)
@@ -298,6 +310,7 @@ final class TextEffect: VideoEffect {
                 self.imageMetalPetal = image
             }
         }
+        return (x, y)
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
@@ -311,12 +324,12 @@ final class TextEffect: VideoEffect {
         guard let image else {
             return image
         }
-        updateOverlayMetalPetal(size: image.size)
+        var (x, y) = updateOverlayMetalPetal(size: image.size)
         guard let overlayMetalPetal else {
             return image
         }
-        let x = toPixels(self.x, image.size.width) + overlayMetalPetal.size.width / 2
-        let y = toPixels(self.y, image.size.height) + overlayMetalPetal.size.height / 2
+        x = toPixels(x, image.size.width) + overlayMetalPetal.size.width / 2
+        y = toPixels(y, image.size.height) + overlayMetalPetal.size.height / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
