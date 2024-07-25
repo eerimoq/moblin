@@ -173,6 +173,7 @@ final class TextEffect: VideoEffect {
             self.y = y
         }
         previousFormattedText = nil
+        previousFormattedTextMetalPetal = nil
     }
 
     func updateStats(stats: TextEffectStats) {
