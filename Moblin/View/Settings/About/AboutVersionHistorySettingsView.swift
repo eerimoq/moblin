@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.345.0", date: "2024-07-25", changes: [
+        "• Do not stop recording if background streaming is enabled.",
+        "• Stop recording when app is terminating.",
+        "• Fix text widget not moving. 🐛 JohannesLiv",
+        "• Chat bot command to zoom out map widget. 💡 JohannesLiv",
+        "  • !moblin map zoom out",
+        "  • 1 FPS for now.",
+        "• Fix screen capture cropping. 🐛 Martisz",
+    ]),
     Version(version: "0.344.0", date: "2024-07-24", changes: [
         "• Screen capture experiment.",
         "  • Select \"Screen capture\" as \"Video source\" in a scene to see it.",
