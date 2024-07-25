@@ -61592,6 +61592,7 @@
       }
     },
     "Only unused widgets can be deleted." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

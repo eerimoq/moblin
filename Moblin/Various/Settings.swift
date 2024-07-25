@@ -905,6 +905,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var map: SettingsWidgetMap? = .init()
     var scene: SettingsWidgetScene? = .init()
     var qrCode: SettingsWidgetQrCode? = .init()
+    var enabled: Bool? = true
 
     init(name: String) {
         self.name = name
@@ -990,6 +991,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case fourThree = "4:3"
     case poll = "Poll"
     case snapshot = "Snapshot"
+    case widgets = "Widgets"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2176,6 +2178,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "appletvremote.gen1"
     updateGlobalButton(database: database, button: button)
 
+    button = SettingsButton(name: String(localized: "Widgets"))
+    button.id = UUID()
+    button.type = .widgets
+    button.imageType = "System name"
+    button.systemImageNameOn = "photo.on.rectangle"
+    button.systemImageNameOff = "photo.on.rectangle"
+    updateGlobalButton(database: database, button: button)
+
     button = SettingsButton(name: String(localized: "Draw"))
     button.id = UUID()
     button.type = .draw
@@ -3240,6 +3250,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.map!.delay == nil {
             widget.map!.delay = 0.0
+            store()
+        }
+        for widget in database.widgets where widget.enabled == nil {
+            widget.enabled = true
             store()
         }
     }

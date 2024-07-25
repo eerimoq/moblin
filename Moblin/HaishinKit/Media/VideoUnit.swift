@@ -353,7 +353,6 @@ final class VideoUnit: NSObject {
     }
 
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
-        let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         let formatDescriptionExtension = CMFormatDescriptionGetExtensions(formatDescription)
         if let pool, formatDescriptionExtension == poolFormatDescriptionExtension {
             return pool

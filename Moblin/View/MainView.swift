@@ -363,6 +363,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingWidgets {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        WidgetsView {
+                            model.showingWidgets = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.showingRemoteControl {
                 NavigationStack {
                     ControlBarRemoteControlAssistantView {

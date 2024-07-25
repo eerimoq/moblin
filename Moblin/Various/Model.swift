@@ -356,6 +356,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showingBitrate = false
     @Published var showingMic = false
     @Published var showingRecordings = false
+    @Published var showingWidgets = false
     @Published var showingCamera = false
     @Published var showingCameraBias = false
     @Published var showingCameraWhiteBalance = false
@@ -2350,6 +2351,12 @@ final class Model: NSObject, ObservableObject {
         pollEffect.updateText(text: votes.joined(separator: ", "))
     }
 
+    func removeDeadWidgetsFromScenes() {
+        for scene in database.scenes {
+            scene.widgets = scene.widgets.filter { findWidget(id: $0.widgetId) != nil }
+        }
+    }
+
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty && changeScene {
             setSceneId(id: enabledScenes[0].id)
@@ -3888,6 +3895,9 @@ final class Model: NSObject, ObservableObject {
         addedScenes.append(scene)
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
+                continue
+            }
+            guard widget.enabled! else {
                 continue
             }
             switch widget.type {

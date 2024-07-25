@@ -7,36 +7,29 @@ struct WidgetsSettingsView: View {
         model.database
     }
 
-    func isWidgetUsed(widget: SettingsWidget) -> Bool {
-        for scene in database.scenes {
-            for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
-                return true
-            }
-        }
-        return false
-    }
-
     var body: some View {
         Section {
             ForEach(database.widgets) { widget in
                 NavigationLink(destination: WidgetSettingsView(
                     widget: widget
                 )) {
-                    HStack {
-                        DraggableItemPrefixView()
-                        IconAndTextView(
-                            image: widgetImage(widget: widget),
-                            text: widget.name,
-                            longDivider: true
-                        )
-                        Spacer()
-                        if !isWidgetUsed(widget: widget) {
-                            Text("Unused")
-                                .foregroundColor(.gray)
+                    Toggle(isOn: Binding(get: {
+                        widget.enabled!
+                    }, set: { value in
+                        widget.enabled = value
+                        model.sceneUpdated()
+                    })) {
+                        HStack {
+                            DraggableItemPrefixView()
+                            IconAndTextView(
+                                image: widgetImage(widget: widget),
+                                text: widget.name,
+                                longDivider: true
+                            )
+                            Spacer()
                         }
                     }
                 }
-                .deleteDisabled(isWidgetUsed(widget: widget))
             }
             .onMove(perform: { froms, to in
                 database.widgets.move(fromOffsets: froms, toOffset: to)
@@ -44,13 +37,13 @@ struct WidgetsSettingsView: View {
             })
             .onDelete(perform: { offsets in
                 database.widgets.remove(atOffsets: offsets)
+                model.removeDeadWidgetsFromScenes()
                 model.store()
                 model.resetSelectedScene()
             })
             CreateButtonView(action: {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                 model.store()
-                model.resetSelectedScene()
             })
         } header: {
             Text("Widgets")
@@ -59,8 +52,6 @@ struct WidgetsSettingsView: View {
                 Text("A widget can be used in zero or more scenes.")
                 Text("")
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a widget"))
-                Text("")
-                Text("Only unused widgets can be deleted.")
             }
         }
         Section {

@@ -237,8 +237,6 @@ struct SceneSettingsView: View {
             } footer: {
                 VStack(alignment: .leading) {
                     SwipeLeftToRemoveHelpView(kind: String(localized: "a widget"))
-                    Text("")
-                    Text("Widgets are stacked from back to front.")
                 }
             }
         }

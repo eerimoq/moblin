@@ -430,6 +430,63 @@ struct ObsView: View {
     }
 }
 
+// struct TimerWidgetView: View {
+//     @EnvironmentObject var model: Model
+//
+//     var body: some View {
+//         HStack {
+//             Text("Timer")
+//             Spacer()
+//             Text("2:37")
+//             Divider()
+//             Button(action: {}, label: {
+//                 Text("-")
+//                     .frame(width: 40)
+//                     .font(.system(size: 25))
+//             })
+//             Divider()
+//             Button(action: {}, label: {
+//                 Text("+")
+//                     .frame(width: 40)
+//                     .font(.system(size: 25))
+//             })
+//             Divider()
+//         }
+//     }
+// }
+
+struct WidgetsView: View {
+    @EnvironmentObject var model: Model
+    var done: () -> Void
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(model.database.widgets) { widget in
+                        Toggle(isOn: Binding(get: {
+                            widget.enabled!
+                        }, set: { value in
+                            widget.enabled = value
+                            model.sceneUpdated()
+                        })) {
+                            IconAndTextView(
+                                image: widgetImage(widget: widget),
+                                text: widget.name,
+                                longDivider: true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Widgets")
+        .toolbar {
+            SettingsToolbar(quickDone: done)
+        }
+    }
+}
+
 private func startStopText(button: ButtonState) -> String {
     return button.isOn ? "Stop" : "Start"
 }
@@ -807,6 +864,12 @@ struct ButtonsInnerView: View {
             case .snapshot:
                 Button(action: {
                     snapshotAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .widgets:
+                Button(action: {
+                    model.showingWidgets = true
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
