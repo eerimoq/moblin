@@ -448,7 +448,8 @@ private struct TimerWidgetView: View {
     }
 
     private func formatTimer() -> String {
-        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0).formatWithSeconds()
+        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0)
+            .formatWithSeconds()
     }
 
     private func updateTextEffect() {
