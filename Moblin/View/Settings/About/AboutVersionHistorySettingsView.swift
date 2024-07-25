@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.347.0", date: "2024-07-25", changes: [
+        "• Timer as part of text widget. 💡 Martisz",
+        "  • Format is {timer}.",
+    ]),
     Version(version: "0.346.0", date: "2024-07-25", changes: [
         "• Allow removing any widget.",
         "• Toggles to enable/disable widgets across all scenes.",
