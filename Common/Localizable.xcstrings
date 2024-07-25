@@ -2118,6 +2118,9 @@
         }
       }
     },
+    "{timer} - Show a timer" : {
+
+    },
     "/" : {
       "localizations" : {
         "de" : {
@@ -4765,6 +4768,9 @@
           }
         }
       }
+    },
+    "%lld min" : {
+
     },
     "%llu" : {
       "localizations" : {

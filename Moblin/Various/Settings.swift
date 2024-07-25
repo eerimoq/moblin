@@ -733,6 +733,12 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
 
 let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
 
+class SettingsWidgetTextTimer: Codable, Identifiable {
+    var id: UUID = .init()
+    var delta: Int = 5
+    var endTime: Double = 0
+}
+
 class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
@@ -743,6 +749,7 @@ class SettingsWidgetText: Codable {
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
     var delay: Double? = 0.0
+    var timers: [SettingsWidgetTextTimer]? = []
 }
 
 // periphery:ignore
@@ -3254,6 +3261,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.enabled == nil {
             widget.enabled = true
+            store()
+        }
+        for widget in database.widgets where widget.text.timers == nil {
+            widget.text.timers = []
             store()
         }
     }

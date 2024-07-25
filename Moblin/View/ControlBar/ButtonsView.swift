@@ -430,30 +430,79 @@ struct ObsView: View {
     }
 }
 
-// struct TimerWidgetView: View {
-//     @EnvironmentObject var model: Model
-//
-//     var body: some View {
-//         HStack {
-//             Text("Timer")
-//             Spacer()
-//             Text("2:37")
-//             Divider()
-//             Button(action: {}, label: {
-//                 Text("-")
-//                     .frame(width: 40)
-//                     .font(.system(size: 25))
-//             })
-//             Divider()
-//             Button(action: {}, label: {
-//                 Text("+")
-//                     .frame(width: 40)
-//                     .font(.system(size: 25))
-//             })
-//             Divider()
-//         }
-//     }
-// }
+private struct TimerWidgetView: View {
+    private let name: String
+    private let timer: SettingsWidgetTextTimer
+    private let index: Int
+    private let textEffect: TextEffect
+    @State private var delta: Int
+    @State private var endTime: Double
+
+    init(name: String, timer: SettingsWidgetTextTimer, index: Int, textEffect: TextEffect) {
+        self.name = name
+        self.timer = timer
+        self.index = index
+        self.textEffect = textEffect
+        delta = timer.delta
+        endTime = timer.endTime
+    }
+
+    private func formatTimer() -> String {
+        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0).formatWithSeconds()
+    }
+
+    private func updateTextEffect() {
+        textEffect.setEndTime(index: index, endTime: .now.advanced(by: .seconds(max(timeLeft(), 0))))
+    }
+
+    private func timeLeft() -> Double {
+        return utcTimeDeltaFromNow(to: endTime)
+    }
+
+    var body: some View {
+        HStack {
+            Text("")
+            Text("").frame(width: iconWidth)
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(name)
+                    Spacer()
+                    Text(formatTimer())
+                }
+                HStack {
+                    Picker("", selection: $delta) {
+                        ForEach([1, 2, 5, 15, 60], id: \.self) { delta in
+                            Text("\(delta) min")
+                                .tag(delta)
+                        }
+                    }
+                    Button {
+                        endTime -= 60 * Double(delta)
+                        updateTextEffect()
+                    } label: {
+                        Image(systemName: "minus.circle")
+                            .font(.title)
+                    }
+                    Button {
+                        if timeLeft() < 0 {
+                            endTime = Date().timeIntervalSince1970
+                        }
+                        endTime += 60 * Double(delta)
+                        updateTextEffect()
+                    } label: {
+                        Image(systemName: "plus.circle")
+                            .font(.title)
+                    }
+                }
+                .buttonStyle(BorderlessButtonStyle())
+            }
+        }
+        .onDisappear {
+            timer.delta = delta
+            timer.endTime = endTime
+        }
+    }
+}
 
 struct WidgetsView: View {
     @EnvironmentObject var model: Model
@@ -475,6 +524,19 @@ struct WidgetsView: View {
                                 text: widget.name,
                                 longDivider: true
                             )
+                        }
+                        if widget.type == .text {
+                            if let textEffect = model.getTextEffect(id: widget.id) {
+                                ForEach(widget.text.timers!) { timer in
+                                    let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
+                                    TimerWidgetView(
+                                        name: "Timer \(index + 1)",
+                                        timer: timer,
+                                        index: index,
+                                        textEffect: textEffect
+                                    )
+                                }
+                            }
                         }
                     }
                 }

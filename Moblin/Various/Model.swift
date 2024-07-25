@@ -2274,6 +2274,13 @@ final class Model: NSObject, ObservableObject {
         return effects
     }
 
+    func getTextEffect(id: UUID) -> TextEffect? {
+        for (textEffectId, textEffect) in textEffects where id == textEffectId {
+            return textEffect
+        }
+        return nil
+    }
+
     private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
         guard !textEffects.isEmpty else {
             return
@@ -2376,7 +2383,9 @@ final class Model: NSObject, ObservableObject {
                 fontDesign: widget.text.fontDesign!.toSystem(),
                 fontWeight: widget.text.fontWeight!.toSystem(),
                 settingName: widget.name,
-                delay: widget.text.delay!
+                delay: widget.text.delay!,
+                timersEndTime: widget.text.timers!
+                    .map { .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime))) }
             )
         }
         for browserEffect in browserEffects.values {

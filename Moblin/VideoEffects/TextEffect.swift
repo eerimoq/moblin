@@ -17,107 +17,6 @@ struct TextEffectStats {
     var distance: String
 }
 
-private enum FormatPart {
-    case text(String)
-    case clock
-    case bitrateAndTotal
-    case debugOverlay
-    case speed
-    case altitude
-    case distance
-}
-
-private class FormatLoader {
-    private var format: String = ""
-    private var parts: [FormatPart] = []
-    private var index: String.Index!
-    private var textStartIndex: String.Index!
-
-    func load(format inputFormat: String) -> [FormatPart] {
-        format = inputFormat.replacing("\\n", with: "\n")
-        parts = []
-        index = format.startIndex
-        textStartIndex = format.startIndex
-        while index < format.endIndex {
-            switch format[index] {
-            case "{":
-                let formatFromIndex = format[index ..< format.endIndex].lowercased()
-                if formatFromIndex.hasPrefix("{time}") {
-                    loadTime()
-                } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
-                    loadBitrateAndTotal()
-                } else if formatFromIndex.hasPrefix("{debugoverlay}") {
-                    loadDebugOverlay()
-                } else if formatFromIndex.hasPrefix("{speed}") {
-                    loadSpeed()
-                } else if formatFromIndex.hasPrefix("{altitude}") {
-                    loadAltitude()
-                } else if formatFromIndex.hasPrefix("{distance}") {
-                    loadDistance()
-                } else {
-                    index = format.index(after: index)
-                }
-            default:
-                index = format.index(after: index)
-            }
-        }
-        appendTextIfPresent()
-        return parts
-    }
-
-    private func appendTextIfPresent() {
-        if textStartIndex < index {
-            parts.append(.text(String(format[textStartIndex ..< index])))
-        }
-    }
-
-    private func loadTime() {
-        appendTextIfPresent()
-        parts.append(.clock)
-        index = format.index(index, offsetBy: 6)
-        textStartIndex = index
-    }
-
-    private func loadBitrateAndTotal() {
-        appendTextIfPresent()
-        parts.append(.bitrateAndTotal)
-        index = format.index(index, offsetBy: 17)
-        textStartIndex = index
-    }
-
-    private func loadDebugOverlay() {
-        appendTextIfPresent()
-        parts.append(.debugOverlay)
-        index = format.index(index, offsetBy: 14)
-        textStartIndex = index
-    }
-
-    private func loadSpeed() {
-        appendTextIfPresent()
-        parts.append(.speed)
-        index = format.index(index, offsetBy: 7)
-        textStartIndex = index
-    }
-
-    private func loadAltitude() {
-        appendTextIfPresent()
-        parts.append(.altitude)
-        index = format.index(index, offsetBy: 10)
-        textStartIndex = index
-    }
-
-    private func loadDistance() {
-        appendTextIfPresent()
-        parts.append(.distance)
-        index = format.index(index, offsetBy: 10)
-        textStartIndex = index
-    }
-}
-
-private func loadFormat(format: String) -> [FormatPart] {
-    return FormatLoader().load(format: format)
-}
-
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private let backgroundColor: RgbColor?
@@ -129,7 +28,7 @@ final class TextEffect: VideoEffect {
     private var y: Double
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
-    private var formatParts: [FormatPart]
+    private var formatParts: [TextFormatPart]
     private var overlay: CIImage?
     private var overlayMetalPetal: MTIImage?
     private var image: UIImage?
@@ -143,6 +42,7 @@ final class TextEffect: VideoEffect {
     private var previousXMetalPetal: Double = .nan
     private var previousY: Double = .nan
     private var previousYMetalPetal: Double = .nan
+    private var timersEndTime: [ContinuousClock.Instant]
 
     init(
         format: String,
@@ -152,9 +52,10 @@ final class TextEffect: VideoEffect {
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
         settingName: String,
-        delay: Double
+        delay: Double,
+        timersEndTime: [ContinuousClock.Instant]
     ) {
-        formatParts = loadFormat(format: format)
+        formatParts = loadTextFormat(format: format)
         self.backgroundColor = backgroundColor
         self.foregroundColor = foregroundColor
         self.fontSize = fontSize
@@ -164,7 +65,15 @@ final class TextEffect: VideoEffect {
         self.delay = delay
         x = 0
         y = 0
+        self.timersEndTime = timersEndTime
         super.init()
+    }
+
+    func setEndTime(index: Int, endTime: ContinuousClock.Instant) {
+        guard index < timersEndTime.count else {
+            return
+        }
+        timersEndTime[index] = endTime
     }
 
     func setPosition(x: Double, y: Double) {
@@ -194,6 +103,7 @@ final class TextEffect: VideoEffect {
         else {
             return ""
         }
+        var timerIndex = 0
         var parts: [String] = []
         for formatPart in formatParts {
             switch formatPart {
@@ -211,6 +121,12 @@ final class TextEffect: VideoEffect {
                 parts.append(stats.altitude)
             case .distance:
                 parts.append(stats.distance)
+            case .timer:
+                if timerIndex < timersEndTime.count {
+                    let timeLeft = max(now.duration(to: timersEndTime[timerIndex]).seconds, 0)
+                    parts.append(uptimeFormatter.string(from: Double(timeLeft)) ?? "")
+                }
+                timerIndex += 1
             }
         }
         return parts.joined()

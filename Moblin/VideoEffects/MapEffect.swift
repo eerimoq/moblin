@@ -74,7 +74,7 @@ final class MapEffect: VideoEffect {
     }
 
     private func update(size: CGSize) {
-        let (newSceneWidget, newLocation, zoomOutStep, isLocationUpdated) = mapQueue.sync {
+        let (newSceneWidget, newLocation, zoomOutFactor, isLocationUpdated) = mapQueue.sync {
             defer {
                 self.isLocationUpdated = false
             }

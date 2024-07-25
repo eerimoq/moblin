@@ -11,6 +11,20 @@ struct WidgetTextSettingsView: View {
 
     private func submitFormatString(value: String) {
         widget.text.formatString = value
+        let numberOfTimers = loadTextFormat(format: value).filter { value in
+            switch value {
+            case .timer:
+                return true
+            default:
+                return false
+            }
+        }.count
+        for index in 0 ..< numberOfTimers where index >= widget.text.timers!.count {
+            widget.text.timers!.append(.init())
+        }
+        while widget.text.timers!.count > numberOfTimers {
+            widget.text.timers!.removeLast()
+        }
         model.store()
         model.resetSelectedScene(changeScene: false)
     }
@@ -23,6 +37,7 @@ struct WidgetTextSettingsView: View {
                 onSubmit: submitFormatString,
                 footers: [
                     String(localized: "{time} - Show time as HH:MM:SS"),
+                    String(localized: "{timer} - Show a timer"),
                     String(localized: "{speed} - Show speed (if Settings → Location is enabled)"),
                     String(localized: "{altitude} - Show altitude (if Settings → Location is enabled)"),
                     String(localized: "{distance} - Show distance (if Settings → Location is enabled)"),

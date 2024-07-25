@@ -445,3 +445,7 @@ func isValidAudioBitrate(bitrate: Int) -> Bool {
 func currentPresentationTimeStamp() -> CMTime {
     return CMClockGetTime(CMClockGetHostTimeClock())
 }
+
+func utcTimeDeltaFromNow(to: Double) -> Double {
+    return Date(timeIntervalSince1970: to).timeIntervalSinceNow
+}
