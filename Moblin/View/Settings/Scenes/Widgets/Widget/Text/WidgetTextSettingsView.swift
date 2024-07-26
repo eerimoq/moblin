@@ -11,7 +11,8 @@ struct WidgetTextSettingsView: View {
 
     private func submitFormatString(value: String) {
         widget.text.formatString = value
-        let numberOfTimers = loadTextFormat(format: value).filter { value in
+        let parts = loadTextFormat(format: value)
+        let numberOfTimers = parts.filter { value in
             switch value {
             case .timer:
                 return true
@@ -25,6 +26,16 @@ struct WidgetTextSettingsView: View {
         while widget.text.timers!.count > numberOfTimers {
             widget.text.timers!.removeLast()
         }
+        widget.text.needsWeather = !parts.filter { value in
+            switch value {
+            case .conditions:
+                return true
+            case .temperature:
+                return true
+            default:
+                return false
+            }
+        }.isEmpty
         model.store()
         model.resetSelectedScene(changeScene: false)
     }
@@ -36,13 +47,22 @@ struct WidgetTextSettingsView: View {
                 value: widget.text.formatString,
                 onSubmit: submitFormatString,
                 footers: [
-                    String(localized: "{time} - Show time as HH:MM:SS"),
-                    String(localized: "{timer} - Show a timer"),
-                    String(localized: "{speed} - Show speed (if Settings → Location is enabled)"),
-                    String(localized: "{altitude} - Show altitude (if Settings → Location is enabled)"),
-                    String(localized: "{distance} - Show distance (if Settings → Location is enabled)"),
-                    String(localized: "{bitrateAndTotal} - Show bitrate and total number of bytes sent"),
-                    String(localized: "{debugOverlay} - Show debug overlay (if enabled)"),
+                    String(localized: "General"),
+                    String(localized: "  {time} - Show time as HH:MM:SS"),
+                    String(localized: "  {timer} - Show a timer"),
+                    "",
+                    String(localized: "Location (if Settings -> Location is enabled)"),
+                    String(localized: "  {speed} - Show speed"),
+                    String(localized: "  {altitude} - Show altitude"),
+                    String(localized: "  {distance} - Show distance"),
+                    "",
+                    String(localized: "Weather (if Settings -> Location is enabled)"),
+                    String(localized: "  {conditions} - Show conditions"),
+                    String(localized: "  {temperature} - Show temperature"),
+                    "",
+                    String(localized: "Debug"),
+                    String(localized: "  {bitrateAndTotal} - Show bitrate and total number of bytes sent"),
+                    String(localized: "  {debugOverlay} - Show debug overlay (if enabled)"),
                 ]
             )
         }

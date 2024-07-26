@@ -165,6 +165,33 @@
         }
       }
     },
+    "  {altitude} - Show altitude" : {
+
+    },
+    "  {bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
+
+    },
+    "  {conditions} - Show conditions" : {
+
+    },
+    "  {debugOverlay} - Show debug overlay (if enabled)" : {
+
+    },
+    "  {distance} - Show distance" : {
+
+    },
+    "  {speed} - Show speed" : {
+
+    },
+    "  {temperature} - Show temperature" : {
+
+    },
+    "  {time} - Show time as HH:MM:SS" : {
+
+    },
+    "  {timer} - Show a timer" : {
+
+    },
     " (requires login)." : {
       "localizations" : {
         "de" : {
@@ -1339,6 +1366,7 @@
       }
     },
     "{altitude} - Show altitude (if Settings → Location is enabled)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1469,6 +1497,7 @@
       }
     },
     "{bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1599,6 +1628,7 @@
       }
     },
     "{debugOverlay} - Show debug overlay (if enabled)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1729,6 +1759,7 @@
       }
     },
     "{distance} - Show distance (if Settings → Location is enabled)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1859,6 +1890,7 @@
       }
     },
     "{speed} - Show speed (if Settings → Location is enabled)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1989,6 +2021,7 @@
       }
     },
     "{time} - Show time as HH:MM:SS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2117,9 +2150,6 @@
           }
         }
       }
-    },
-    "{timer} - Show a timer" : {
-
     },
     "/" : {
       "localizations" : {
@@ -49505,6 +49535,9 @@
         }
       }
     },
+    "Location (if Settings -> Location is enabled)" : {
+
+    },
     "Log" : {
       "localizations" : {
         "de" : {
@@ -96439,6 +96472,9 @@
           }
         }
       }
+    },
+    "Weather (if Settings -> Location is enabled)" : {
+
     },
     "Web browser" : {
       "localizations" : {

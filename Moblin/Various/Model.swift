@@ -847,6 +847,8 @@ final class Model: NSObject, ObservableObject {
         listObsScenes()
     }
 
+    private let weatherManager = WeatherManager()
+
     func setup() {
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
@@ -979,6 +981,28 @@ final class Model: NSObject, ObservableObject {
         initMediaPlayers()
         removeUnusedLogs()
         autoStartDjiDevices()
+        startWeatherManager()
+    }
+
+    private func isWeatherNeeded() -> Bool {
+        for widget in database.widgets {
+            guard widget.type == .text else {
+                continue
+            }
+            guard widget.enabled! else {
+                continue
+            }
+            guard widget.text.needsWeather! else {
+                continue
+            }
+            return true
+        }
+        return false
+    }
+
+    func startWeatherManager() {
+        weatherManager.setEnabled(value: isWeatherNeeded())
+        weatherManager.start()
     }
 
     private func removeUnusedLogs() {
@@ -1268,6 +1292,7 @@ final class Model: NSObject, ObservableObject {
             teardownAudioSession()
             chatTextToSpeech.reset(running: false)
             locationManager.stop()
+            weatherManager.stop()
         }
     }
 
@@ -1284,6 +1309,7 @@ final class Model: NSObject, ObservableObject {
             reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
             reloadLocation()
+            startWeatherManager()
             if isRecording {
                 resumeRecording()
             }
@@ -1755,6 +1781,7 @@ final class Model: NSObject, ObservableObject {
             self.updateMapEffects()
             self.updatePoll()
             self.updateObsSceneSwitcher(now: monotonicNow)
+            self.weatherManager.setLocation(location: self.latestKnownLocation)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2290,6 +2317,7 @@ final class Model: NSObject, ObservableObject {
             distance += location?.distance(from: latestKnownLocation) ?? 0
         }
         latestKnownLocation = location
+        let weather = weatherManager.getLatestWeather()
         let stats = TextEffectStats(
             timestamp: timestamp,
             bitrateAndTotal: speedAndTotal,
@@ -2297,7 +2325,9 @@ final class Model: NSObject, ObservableObject {
             debugOverlayLines: debugLines,
             speed: format(speed: max(location?.speed ?? 0, 0)),
             altitude: format(altitude: location?.altitude ?? 0),
-            distance: getDistance()
+            distance: getDistance(),
+            conditions: weather?.currentWeather.condition,
+            temperature: weather?.currentWeather.temperature
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -4028,6 +4058,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         sceneUpdatedOn(scene: scene)
+        startWeatherManager()
     }
 
     private func updateUptime(now: ContinuousClock.Instant) {

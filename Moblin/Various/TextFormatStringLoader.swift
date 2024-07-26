@@ -9,6 +9,8 @@ enum TextFormatPart {
     case altitude
     case distance
     case timer
+    case conditions
+    case temperature
 }
 
 class TextFormatLoader {
@@ -40,6 +42,10 @@ class TextFormatLoader {
                     loadDistance()
                 } else if formatFromIndex.hasPrefix("{timer}") {
                     loadTimer()
+                } else if formatFromIndex.hasPrefix("{conditions}") {
+                    loadConditions()
+                } else if formatFromIndex.hasPrefix("{temperature}") {
+                    loadTemperature()
                 } else {
                     index = format.index(after: index)
                 }
@@ -103,6 +109,20 @@ class TextFormatLoader {
         appendTextIfPresent()
         parts.append(.timer)
         index = format.index(index, offsetBy: 7)
+        textStartIndex = index
+    }
+
+    private func loadConditions() {
+        appendTextIfPresent()
+        parts.append(.conditions)
+        index = format.index(index, offsetBy: 12)
+        textStartIndex = index
+    }
+
+    private func loadTemperature() {
+        appendTextIfPresent()
+        parts.append(.temperature)
+        index = format.index(index, offsetBy: 13)
         textStartIndex = index
     }
 }

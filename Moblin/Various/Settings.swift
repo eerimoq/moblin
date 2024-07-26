@@ -750,6 +750,7 @@ class SettingsWidgetText: Codable {
     var fontWeight: SettingsFontWeight? = .regular
     var delay: Double? = 0.0
     var timers: [SettingsWidgetTextTimer]? = []
+    var needsWeather: Bool? = false
 }
 
 // periphery:ignore
@@ -3265,6 +3266,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.timers == nil {
             widget.text.timers = []
+            store()
+        }
+        for widget in database.widgets where widget.text.needsWeather == nil {
+            widget.text.needsWeather = false
             store()
         }
     }

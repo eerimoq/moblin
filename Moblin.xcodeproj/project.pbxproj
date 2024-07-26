@@ -347,6 +347,7 @@
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
+		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656102C02E13000E017B2 /* SampleBufferSender.swift */; };
 		03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
@@ -839,6 +840,7 @@
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
+		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C656102C02E13000E017B2 /* SampleBufferSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferSender.swift; sourceTree = "<group>"; };
 		03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferReceiver.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
@@ -2238,6 +2240,7 @@
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
+				03C5AE412C536FE10056B6C7 /* WeatherManager.swift */,
 				0384C0372C10E14900B82216 /* WebSocketClient.swift */,
 			);
 			path = Various;
@@ -2849,6 +2852,7 @@
 				03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */,
 				0359F8EB2BD3DA61005BFDA8 /* RTMPChunk.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
+				03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */,
 				03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0359F8F22BD3DA61005BFDA8 /* RTMPSocket.swift in Sources */,

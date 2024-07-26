@@ -4,6 +4,7 @@ import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
+import WeatherKit
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
@@ -15,6 +16,8 @@ struct TextEffectStats {
     var speed: String
     var altitude: String
     var distance: String
+    var conditions: WeatherCondition?
+    var temperature: Measurement<UnitTemperature>?
 }
 
 final class TextEffect: VideoEffect {
@@ -43,6 +46,7 @@ final class TextEffect: VideoEffect {
     private var previousY: Double = .nan
     private var previousYMetalPetal: Double = .nan
     private var timersEndTime: [ContinuousClock.Instant]
+    private let temperatureFormatter = MeasurementFormatter()
 
     init(
         format: String,
@@ -66,6 +70,7 @@ final class TextEffect: VideoEffect {
         x = 0
         y = 0
         self.timersEndTime = timersEndTime
+        temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
     }
 
@@ -127,6 +132,18 @@ final class TextEffect: VideoEffect {
                     parts.append(uptimeFormatter.string(from: Double(timeLeft)) ?? "")
                 }
                 timerIndex += 1
+            case .conditions:
+                if let conditions = stats.conditions {
+                    parts.append("\(conditions.emoji()) \(conditions.description)")
+                } else {
+                    parts.append("🤔 -")
+                }
+            case .temperature:
+                if let temperature = stats.temperature {
+                    parts.append(temperatureFormatter.string(from: temperature))
+                } else {
+                    parts.append("-")
+                }
             }
         }
         return parts.joined()
