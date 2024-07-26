@@ -1,10 +1,3 @@
-//
-//  WeatherManager.swift
-//  Moblin
-//
-//  Created by Erik Moqvist on 2024-07-26.
-//
-
 import CoreLocation
 import Foundation
 import WeatherKit

@@ -16,8 +16,18 @@ struct TextEffectStats {
     var speed: String
     var altitude: String
     var distance: String
-    var conditions: WeatherCondition?
+    var conditions: String?
     var temperature: Measurement<UnitTemperature>?
+}
+
+private enum PartData: Equatable {
+    case text(String)
+    case imageSystemName(String)
+}
+
+private struct Part: Equatable, Identifiable {
+    var id: Int
+    var data: PartData
 }
 
 final class TextEffect: VideoEffect {
@@ -38,8 +48,8 @@ final class TextEffect: VideoEffect {
     private var imageMetalPetal: UIImage?
     private var nextUpdateTime = ContinuousClock.now
     private var nextUpdateTimeMetalPetal = ContinuousClock.now
-    private var previousFormattedText: String?
-    private var previousFormattedTextMetalPetal: String?
+    private var previousParts: [Part]?
+    private var previousPartsMetalPetal: [Part]?
     private var delay: Double
     private var previousX: Double = .nan
     private var previousXMetalPetal: Double = .nan
@@ -86,8 +96,8 @@ final class TextEffect: VideoEffect {
             self.x = x
             self.y = y
         }
-        previousFormattedText = nil
-        previousFormattedTextMetalPetal = nil
+        previousParts = nil
+        previousPartsMetalPetal = nil
     }
 
     func updateStats(stats: TextEffectStats) {
@@ -101,52 +111,66 @@ final class TextEffect: VideoEffect {
         return "\(settingName) text widget"
     }
 
-    private func formatted(now: ContinuousClock.Instant) -> String {
+    private func formatted(now: ContinuousClock.Instant) -> [Part] {
         guard let stats = stats
             .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? stats
             .first
         else {
-            return ""
+            return []
         }
         var timerIndex = 0
-        var parts: [String] = []
+        var parts: [Part] = []
+        var partIndex = 0
         for formatPart in formatParts {
             switch formatPart {
             case let .text(text):
-                parts.append(text)
+                parts.append(.init(id: partIndex, data: .text(text)))
             case .clock:
-                parts.append(stats.date.formatted(.dateTime.hour().minute().second()))
+                parts.append(.init(
+                    id: partIndex,
+                    data: .text(stats.date.formatted(.dateTime.hour().minute().second()))
+                ))
             case .bitrateAndTotal:
-                parts.append(stats.bitrateAndTotal)
+                parts.append(.init(id: partIndex, data: .text(stats.bitrateAndTotal)))
             case .debugOverlay:
-                parts.append(stats.debugOverlayLines.joined(separator: "\n"))
+                parts.append(.init(
+                    id: partIndex,
+                    data: .text(stats.debugOverlayLines.joined(separator: "\n"))
+                ))
             case .speed:
-                parts.append(stats.speed)
+                parts.append(.init(id: partIndex, data: .text(stats.speed)))
             case .altitude:
-                parts.append(stats.altitude)
+                parts.append(.init(id: partIndex, data: .text(stats.altitude)))
             case .distance:
-                parts.append(stats.distance)
+                parts.append(.init(id: partIndex, data: .text(stats.distance)))
             case .timer:
                 if timerIndex < timersEndTime.count {
                     let timeLeft = max(now.duration(to: timersEndTime[timerIndex]).seconds, 0)
-                    parts.append(uptimeFormatter.string(from: Double(timeLeft)) ?? "")
+                    parts.append(.init(
+                        id: partIndex,
+                        data: .text(uptimeFormatter.string(from: Double(timeLeft)) ?? "")
+                    ))
                 }
                 timerIndex += 1
             case .conditions:
                 if let conditions = stats.conditions {
-                    parts.append("\(conditions.emoji()) \(conditions.description)")
+                    parts.append(.init(id: partIndex, data: .imageSystemName("\(conditions).fill")))
                 } else {
-                    parts.append("🤔 -")
+                    parts.append(.init(id: partIndex, data: .text("-")))
                 }
             case .temperature:
                 if let temperature = stats.temperature {
-                    parts.append(temperatureFormatter.string(from: temperature))
+                    parts.append(.init(
+                        id: partIndex,
+                        data: .text(temperatureFormatter.string(from: temperature))
+                    ))
                 } else {
-                    parts.append("-")
+                    parts.append(.init(id: partIndex, data: .text("-")))
                 }
             }
+            partIndex += 1
         }
-        return parts.joined()
+        return parts
     }
 
     private func scaledFontSize(width: Double) -> CGFloat {
@@ -181,20 +205,32 @@ final class TextEffect: VideoEffect {
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
             let formatted = self.formatted(now: now)
-            guard formatted != self.previousFormattedText else {
+            guard formatted != self.previousParts else {
                 return
             }
-            self.previousFormattedText = formatted
-            let text = Text(formatted)
-                .padding([.leading, .trailing], 7)
+            self.previousParts = formatted
+            let text = HStack {
+                HStack {
+                    ForEach(formatted) { part in
+                        switch part.data {
+                        case let .text(text):
+                            Text(text)
+                                .padding([.leading, .trailing], 7)
+                                .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                        case let .imageSystemName(name):
+                            Image(systemName: name)
+                                .symbolRenderingMode(.multicolor)
+                        }
+                    }
+                }
                 .background(self.backgroundColor?.color() ?? .clear)
-                .foregroundColor(self.foregroundColor?.color() ?? .clear)
                 .font(.system(
                     size: self.scaledFontSize(width: size.width),
                     weight: self.fontWeight,
                     design: self.fontDesign
                 ))
                 .cornerRadius(10)
+            }
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {
@@ -224,20 +260,32 @@ final class TextEffect: VideoEffect {
         nextUpdateTimeMetalPetal += .seconds(1)
         DispatchQueue.main.async {
             let formatted = self.formatted(now: now)
-            guard formatted != self.previousFormattedTextMetalPetal else {
+            guard formatted != self.previousPartsMetalPetal else {
                 return
             }
-            self.previousFormattedTextMetalPetal = formatted
-            let text = Text(formatted)
-                .padding([.leading, .trailing], 7)
+            self.previousPartsMetalPetal = formatted
+            let text = HStack {
+                HStack {
+                    ForEach(formatted) { part in
+                        switch part.data {
+                        case let .text(text):
+                            Text(text)
+                                .padding([.leading, .trailing], 7)
+                                .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                        case let .imageSystemName(name):
+                            Image(systemName: name)
+                                .symbolRenderingMode(.multicolor)
+                        }
+                    }
+                }
                 .background(self.backgroundColor?.color() ?? .clear)
-                .foregroundColor(self.foregroundColor?.color() ?? .clear)
                 .font(.system(
                     size: self.scaledFontSize(width: size.width),
                     weight: self.fontWeight,
                     design: self.fontDesign
                 ))
                 .cornerRadius(10)
+            }
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {

@@ -2326,7 +2326,7 @@ final class Model: NSObject, ObservableObject {
             speed: format(speed: max(location?.speed ?? 0, 0)),
             altitude: format(altitude: location?.altitude ?? 0),
             distance: getDistance(),
-            conditions: weather?.currentWeather.condition,
+            conditions: weather?.currentWeather.symbolName,
             temperature: weather?.currentWeather.temperature
         )
         for textEffect in textEffects.values {
