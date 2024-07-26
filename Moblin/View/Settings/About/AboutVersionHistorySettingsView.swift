@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.348.0", date: "2024-07-26", changes: [
-        "• Temprature and weather conditions in text widget. 💡 JohannesLiv",
+        "• Temprature and weather conditions in text widget. 💡 Gohgo, JohannesLiv",
         "  • {temperature} for temperature.",
         "  • {conditions} for conditions.",
     ]),
