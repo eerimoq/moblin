@@ -751,6 +751,7 @@ class SettingsWidgetText: Codable {
     var delay: Double? = 0.0
     var timers: [SettingsWidgetTextTimer]? = []
     var needsWeather: Bool? = false
+    var needsGeography: Bool? = false
 }
 
 // periphery:ignore
@@ -3291,6 +3292,10 @@ final class Settings {
                 widget.text.backgroundColor!.opacity = 0.0
                 store()
             }
+        }
+        for widget in database.widgets where widget.text.needsGeography == nil {
+            widget.text.needsGeography = false
+            store()
         }
     }
 }

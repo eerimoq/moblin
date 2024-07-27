@@ -543,6 +543,9 @@ final class Model: NSObject, ObservableObject {
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
 
+    private let weatherManager = WeatherManager()
+    private let geographyManager = GeographyManager()
+
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
@@ -847,8 +850,6 @@ final class Model: NSObject, ObservableObject {
         listObsScenes()
     }
 
-    private let weatherManager = WeatherManager()
-
     func setup() {
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
@@ -982,6 +983,7 @@ final class Model: NSObject, ObservableObject {
         removeUnusedLogs()
         autoStartDjiDevices()
         startWeatherManager()
+        startGeographyManager()
     }
 
     private func isWeatherNeeded() -> Bool {
@@ -1003,6 +1005,27 @@ final class Model: NSObject, ObservableObject {
     func startWeatherManager() {
         weatherManager.setEnabled(value: isWeatherNeeded())
         weatherManager.start()
+    }
+
+    private func isGeographyNeeded() -> Bool {
+        for widget in database.widgets {
+            guard widget.type == .text else {
+                continue
+            }
+            guard widget.enabled! else {
+                continue
+            }
+            guard widget.text.needsGeography! else {
+                continue
+            }
+            return true
+        }
+        return false
+    }
+
+    func startGeographyManager() {
+        geographyManager.setEnabled(value: isGeographyNeeded())
+        geographyManager.start()
     }
 
     private func removeUnusedLogs() {
@@ -1293,6 +1316,7 @@ final class Model: NSObject, ObservableObject {
             chatTextToSpeech.reset(running: false)
             locationManager.stop()
             weatherManager.stop()
+            geographyManager.stop()
         }
     }
 
@@ -1310,6 +1334,7 @@ final class Model: NSObject, ObservableObject {
             chatTextToSpeech.reset(running: true)
             reloadLocation()
             startWeatherManager()
+            startGeographyManager()
             if isRecording {
                 resumeRecording()
             }
@@ -1782,6 +1807,7 @@ final class Model: NSObject, ObservableObject {
             self.updatePoll()
             self.updateObsSceneSwitcher(now: monotonicNow)
             self.weatherManager.setLocation(location: self.latestKnownLocation)
+            self.geographyManager.setLocation(location: self.latestKnownLocation)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2318,6 +2344,7 @@ final class Model: NSObject, ObservableObject {
         }
         latestKnownLocation = location
         let weather = weatherManager.getLatestWeather()
+        let placemark = geographyManager.getLatestPlacemark()
         let stats = TextEffectStats(
             timestamp: timestamp,
             bitrateAndTotal: speedAndTotal,
@@ -2327,7 +2354,9 @@ final class Model: NSObject, ObservableObject {
             altitude: format(altitude: location?.altitude ?? 0),
             distance: getDistance(),
             conditions: weather?.currentWeather.symbolName,
-            temperature: weather?.currentWeather.temperature
+            temperature: weather?.currentWeather.temperature,
+            countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
+            city: placemark?.locality
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -4059,6 +4088,7 @@ final class Model: NSObject, ObservableObject {
         }
         sceneUpdatedOn(scene: scene)
         startWeatherManager()
+        startGeographyManager()
     }
 
     private func updateUptime(now: ContinuousClock.Instant) {

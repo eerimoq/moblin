@@ -5,16 +5,6 @@ private func localize(_ languageCode: String) -> String {
     return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
 }
 
-private func flag(country: String) -> String {
-    let base: UInt32 = 127_397
-    var emote = ""
-    for ch in country.unicodeScalars {
-        emote.unicodeScalars.append(UnicodeScalar(base + ch.value)!)
-    }
-
-    return emote
-}
-
 private struct LanguageView: View {
     @EnvironmentObject var model: Model
     var languageCode: String
@@ -28,7 +18,8 @@ private struct LanguageView: View {
         Form {
             Picker("", selection: $voice) {
                 ForEach(voices(language: languageCode), id: \.identifier) { voice in
-                    let emote = flag(country: Locale(identifier: voice.language).region?.identifier ?? "")
+                    let emote = emojiFlag(country: Locale(identifier: voice.language).region?
+                        .identifier ?? "")
                     Text("\(emote) \(voice.name)")
                         .tag(voice.identifier)
                 }

@@ -348,6 +348,7 @@
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
+		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
 		03C656112C02E13000E017B2 /* SampleBufferSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656102C02E13000E017B2 /* SampleBufferSender.swift */; };
 		03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
@@ -841,6 +842,7 @@
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
+		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
 		03C656102C02E13000E017B2 /* SampleBufferSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferSender.swift; sourceTree = "<group>"; };
 		03C656132C02E14600E017B2 /* SampleBufferReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferReceiver.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
@@ -2223,6 +2225,7 @@
 			children = (
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */,
+				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
 				03EF41AD2BE8A58200C72415 /* Histogram.swift */,
 				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
@@ -2823,6 +2826,7 @@
 				03828C312C3B0A1600F5A8AC /* WidgetMapSettingsView.swift in Sources */,
 				03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */,
 				03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */,
+				03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */,
 				03DC9DA92C4C3BB5005E2104 /* DjiDeviceModel.swift in Sources */,
 				03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */,
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,

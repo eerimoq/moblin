@@ -18,6 +18,8 @@ struct TextEffectStats {
     var distance: String
     var conditions: String?
     var temperature: Measurement<UnitTemperature>?
+    var countryFlag: String?
+    var city: String?
 }
 
 private enum PartData: Equatable {
@@ -198,6 +200,10 @@ final class TextEffect: VideoEffect {
                 } else {
                     parts.append(.init(id: partId, data: .text("-")))
                 }
+            case .countryFlag:
+                parts.append(.init(id: partId, data: .text(stats.countryFlag ?? "-")))
+            case .city:
+                parts.append(.init(id: partId, data: .text(stats.city ?? "-")))
             }
             partId += 1
         }

@@ -22477,6 +22477,9 @@
         }
       }
     },
+    "City" : {
+
+    },
     "Close" : {
       "localizations" : {
         "de" : {
@@ -44838,6 +44841,9 @@
           }
         }
       }
+    },
+    "Hiking" : {
+
     },
     "Home" : {
       "localizations" : {

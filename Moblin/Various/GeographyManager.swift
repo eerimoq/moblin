@@ -1,13 +1,13 @@
 import CoreLocation
 import Foundation
-import WeatherKit
 
-class WeatherManager {
-    let weatherService = WeatherService()
+class GeographyManager {
     private var task: Task<Void, Error>?
+    private var newLocation: CLLocation?
     private var location: CLLocation?
-    private var weather: Weather?
+    private var placemark: CLPlacemark?
     private var enabled = true
+    private let geocoder = CLGeocoder()
 
     func start() {
         guard task == nil else {
@@ -18,16 +18,17 @@ class WeatherManager {
             while true {
                 do {
                     try await sleep(seconds: delay)
-                    if let location, enabled {
-                        logger.debug("weather-manager: Updating weather data")
-                        weather = try await weatherService.weather(for: location)
+                    if let newLocation, enabled, (location?.distance(from: newLocation) ?? 1001) > 1000 {
+                        logger.debug("geography-manager: Updating geography data")
+                        placemark = try await geocoder.reverseGeocodeLocation(newLocation).first
+                        self.location = newLocation
                     }
                 } catch {}
                 if Task.isCancelled {
                     break
                 }
-                if weather != nil {
-                    delay = 10 * 60
+                if placemark != nil {
+                    delay = 5 * 60
                 }
             }
         }
@@ -38,17 +39,17 @@ class WeatherManager {
     }
 
     func setLocation(location: CLLocation?) {
-        self.location = location
+        newLocation = location
     }
 
-    func getLatestWeather() -> Weather? {
-        return weather
+    func getLatestPlacemark() -> CLPlacemark? {
+        return placemark
     }
 
     func stop() {
         task?.cancel()
         task = nil
         location = nil
-        weather = nil
+        placemark = nil
     }
 }

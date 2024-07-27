@@ -452,3 +452,12 @@ func currentPresentationTimeStamp() -> CMTime {
 func utcTimeDeltaFromNow(to: Double) -> Double {
     return Date(timeIntervalSince1970: to).timeIntervalSinceNow
 }
+
+func emojiFlag(country: String) -> String {
+    let base: UInt32 = 127_397
+    var emote = ""
+    for ch in country.unicodeScalars {
+        emote.unicodeScalars.append(UnicodeScalar(base + ch.value)!)
+    }
+    return emote
+}

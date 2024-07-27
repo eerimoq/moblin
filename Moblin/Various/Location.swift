@@ -19,7 +19,7 @@ private class BackgroundActivity {
     }
 }
 
-class Location: NSObject, CLLocationManagerDelegate {
+class Location: NSObject {
     private var manager: CLLocationManager = .init()
     private var onUpdate: ((CLLocation) -> Void)?
     private var latestLocation: CLLocation?
@@ -56,6 +56,12 @@ class Location: NSObject, CLLocationManagerDelegate {
         return "\(latitude) N \(longitude) W, \(speed)"
     }
 
+    func getLatestKnownLocation() -> CLLocation? {
+        return latestLocation
+    }
+}
+
+extension Location: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_: CLLocationManager) {
         logger.debug("location: Auth did change \(manager.authorizationStatus)")
     }
@@ -69,9 +75,5 @@ class Location: NSObject, CLLocationManagerDelegate {
             latestLocation = location
             onUpdate?(location)
         }
-    }
-
-    func getLatestKnownLocation() -> CLLocation? {
-        return latestLocation
     }
 }
