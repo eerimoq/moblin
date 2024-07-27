@@ -3280,14 +3280,16 @@ final class Settings {
             store()
         }
         for widget in database.widgets where widget.text.clearForegroundColor! {
-            widget.text.foregroundColor!.opacity = 0.0
-            widget.text.clearForegroundColor = false
-            store()
+            if widget.text.foregroundColor!.opacity != 0.0 {
+                widget.text.foregroundColor!.opacity = 0.0
+                store()
+            }
         }
         for widget in database.widgets where widget.text.clearBackgroundColor! {
-            widget.text.backgroundColor!.opacity = 0.0
-            widget.text.clearBackgroundColor = false
-            store()
+            if widget.text.backgroundColor!.opacity != 0.0 {
+                widget.text.backgroundColor!.opacity = 0.0
+                store()
+            }
         }
     }
 }
