@@ -8,11 +8,11 @@ private struct Suggestion: Identifiable {
 }
 
 private let suggestions = [
-    Suggestion(id: 0, name: "Select one", text: ""),
-    Suggestion(id: 1, name: "Time", text: "{time}"),
-    Suggestion(id: 2, name: "Weather", text: "{conditions} {temperature}"),
-    Suggestion(id: 3, name: "Timer", text: "⏳ {timer}"),
-    Suggestion(id: 4, name: "Biking", text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
+    Suggestion(id: 0, name: String(localized: "Select one"), text: ""),
+    Suggestion(id: 1, name: String(localized: "Time"), text: "{time}"),
+    Suggestion(id: 2, name: String(localized: "Weather"), text: "{conditions} {temperature}"),
+    Suggestion(id: 3, name: String(localized: "Timer"), text: "⏳ {timer}"),
+    Suggestion(id: 4, name: String(localized: "Biking"), text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
 ]
 
 private struct TextSelectionView: View {
