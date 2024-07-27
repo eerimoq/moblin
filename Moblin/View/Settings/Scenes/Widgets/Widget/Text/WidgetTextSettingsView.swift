@@ -90,22 +90,22 @@ private struct TextSelectionView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("General")
-                    Text("  {time} - Show time as HH:MM:SS")
-                    Text("  {timer} - Show a timer")
+                    Text("General").bold()
+                    Text("{time} - Show time as HH:MM:SS")
+                    Text("{timer} - Show a timer")
                     Text("")
-                    Text("Location (if Settings -> Location is enabled)")
-                    Text("  {speed} - Show speed")
-                    Text("  {altitude} - Show altitude")
-                    Text("  {distance} - Show distance")
+                    Text("Location (if Settings -> Location is enabled)").bold()
+                    Text("{speed} - Show speed")
+                    Text("{altitude} - Show altitude")
+                    Text("{distance} - Show distance")
                     Text("")
-                    Text("Weather (if Settings -> Location is enabled)")
-                    Text("  {conditions} - Show conditions")
-                    Text("  {temperature} - Show temperature")
+                    Text("Weather (if Settings -> Location is enabled)").bold()
+                    Text("{conditions} - Show conditions")
+                    Text("{temperature} - Show temperature")
                     Text("")
-                    Text("Debug")
-                    Text("  {bitrateAndTotal} - Show bitrate and total number of bytes sent")
-                    Text("  {debugOverlay} - Show debug overlay (if enabled)")
+                    Text("Debug").bold()
+                    Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
+                    Text("{debugOverlay} - Show debug overlay (if enabled)")
                 }
             }
         }
