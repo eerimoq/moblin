@@ -85,7 +85,8 @@ extension RgbColor {
         return Color(
             red: colorScale(red),
             green: colorScale(green),
-            blue: colorScale(blue)
+            blue: colorScale(blue),
+            opacity: opacity ?? 1.0
         )
     }
 }
@@ -101,7 +102,8 @@ extension Color {
         return RgbColor(
             red: Int(255 * components[0]),
             green: Int(255 * components[1]),
-            blue: Int(255 * components[2])
+            blue: Int(255 * components[2]),
+            opacity: components.count == 4 ? components[3] : 1.0
         )
     }
 }

@@ -85,40 +85,28 @@ struct WidgetTextSettingsView: View {
             }
         }
         Section {
-            Toggle(isOn: Binding(get: {
-                !widget.text.clearBackgroundColor!
-            }, set: { value in
-                widget.text.clearBackgroundColor = !value
-                model.store()
-                model.resetSelectedScene(changeScene: false)
-            })) {
-                ColorPicker("Background", selection: $backgroundColor, supportsOpacity: false)
-                    .onChange(of: backgroundColor) { _ in
-                        guard let color = backgroundColor.toRgb() else {
-                            return
-                        }
-                        widget.text.backgroundColor = color
-                        model.store()
-                        model.resetSelectedScene(changeScene: false)
+            ColorPicker("Background", selection: $backgroundColor, supportsOpacity: true)
+                .onChange(of: backgroundColor) { _ in
+                    guard let color = backgroundColor.toRgb() else {
+                        return
                     }
-            }
-            Toggle(isOn: Binding(get: {
-                !widget.text.clearForegroundColor!
-            }, set: { value in
-                widget.text.clearForegroundColor = !value
-                model.store()
-                model.resetSelectedScene(changeScene: false)
-            })) {
-                ColorPicker("Foreground", selection: $foregroundColor, supportsOpacity: false)
-                    .onChange(of: foregroundColor) { _ in
-                        guard let color = foregroundColor.toRgb() else {
-                            return
-                        }
-                        widget.text.foregroundColor = color
-                        model.store()
-                        model.resetSelectedScene(changeScene: false)
+                    widget.text.backgroundColor = color
+                    guard let textEffect = model.getTextEffect(id: widget.id) else {
+                        return
                     }
-            }
+                    textEffect.setBackgroundColor(color: color)
+                }
+            ColorPicker("Foreground", selection: $foregroundColor, supportsOpacity: true)
+                .onChange(of: foregroundColor) { _ in
+                    guard let color = foregroundColor.toRgb() else {
+                        return
+                    }
+                    widget.text.foregroundColor = color
+                    guard let textEffect = model.getTextEffect(id: widget.id) else {
+                        return
+                    }
+                    textEffect.setForegroundColor(color: color)
+                }
         } header: {
             Text("Colors")
         }

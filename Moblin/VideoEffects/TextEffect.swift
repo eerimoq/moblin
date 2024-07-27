@@ -37,8 +37,8 @@ private struct Line: Equatable, Identifiable {
 
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
-    private let backgroundColor: RgbColor?
-    private let foregroundColor: RgbColor?
+    private var backgroundColor: RgbColor?
+    private var foregroundColor: RgbColor?
     private let fontSize: CGFloat
     private let fontDesign: Font.Design
     private let fontWeight: Font.Weight
@@ -60,13 +60,17 @@ final class TextEffect: VideoEffect {
     private var previousXMetalPetal: Double = .nan
     private var previousY: Double = .nan
     private var previousYMetalPetal: Double = .nan
+    private var previousForegroundColor: RgbColor?
+    private var previousForegroundColorMetalPetal: RgbColor?
+    private var previousBackgroundColor: RgbColor?
+    private var previousBackgroundColorMetalPetal: RgbColor?
     private var timersEndTime: [ContinuousClock.Instant]
     private let temperatureFormatter = MeasurementFormatter()
 
     init(
         format: String,
-        backgroundColor: RgbColor?,
-        foregroundColor: RgbColor?,
+        backgroundColor: RgbColor,
+        foregroundColor: RgbColor,
         fontSize: CGFloat,
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
@@ -87,6 +91,22 @@ final class TextEffect: VideoEffect {
         self.timersEndTime = timersEndTime
         temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
+    }
+
+    func setBackgroundColor(color: RgbColor) {
+        textQueue.sync {
+            backgroundColor = color
+        }
+        previousLines = nil
+        previousLinesMetalPetal = nil
+    }
+
+    func setForegroundColor(color: RgbColor) {
+        textQueue.sync {
+            foregroundColor = color
+        }
+        previousLines = nil
+        previousLinesMetalPetal = nil
     }
 
     func setEndTime(index: Int, endTime: ContinuousClock.Instant) {
@@ -194,12 +214,12 @@ final class TextEffect: VideoEffect {
     private func updateOverlay(size: CGSize) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y) = textQueue.sync {
+        let (x, y, foregroundColor, backgroundColor) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
             }
-            return (self.x, self.y)
+            return (self.x, self.y, self.foregroundColor, self.backgroundColor)
         }
         if let newImage {
             let x = toPixels(x, size.width)
@@ -211,11 +231,15 @@ final class TextEffect: VideoEffect {
                 ))
                 .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         }
-        guard now >= nextUpdateTime || x != previousX || y != previousY else {
+        guard now >= nextUpdateTime || x != previousX || y != previousY || previousForegroundColor !=
+            foregroundColor || previousBackgroundColor != backgroundColor
+        else {
             return
         }
         previousX = x
         previousY = y
+        previousForegroundColor = foregroundColor
+        previousBackgroundColor = backgroundColor
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
             let lines = self.formatted(now: now)
@@ -263,21 +287,26 @@ final class TextEffect: VideoEffect {
     private func updateOverlayMetalPetal(size: CGSize) -> (Double, Double) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y) = textQueue.sync {
+        let (x, y, foregroundColor, backgroundColor) = textQueue.sync {
             if self.imageMetalPetal != nil {
                 newImage = self.imageMetalPetal
                 self.imageMetalPetal = nil
             }
-            return (self.x, self.y)
+            return (self.x, self.y, self.foregroundColor, self.backgroundColor)
         }
         if let image = newImage?.cgImage {
             overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
         }
-        guard now >= nextUpdateTimeMetalPetal || x != previousXMetalPetal || y != previousYMetalPetal else {
+        guard now >= nextUpdateTimeMetalPetal || x != previousXMetalPetal || y != previousYMetalPetal ||
+            previousForegroundColorMetalPetal != foregroundColor || previousBackgroundColorMetalPetal !=
+            backgroundColor
+        else {
             return (x, y)
         }
         previousXMetalPetal = x
         previousYMetalPetal = y
+        previousForegroundColorMetalPetal = foregroundColor
+        previousBackgroundColorMetalPetal = backgroundColor
         nextUpdateTimeMetalPetal += .seconds(1)
         DispatchQueue.main.async {
             let lines = self.formatted(now: now)

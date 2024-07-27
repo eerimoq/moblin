@@ -1204,15 +1204,22 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
 
 var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.toString() }
 
-class RgbColor: Codable {
+class RgbColor: Codable, Equatable {
+    static func == (lhs: RgbColor, rhs: RgbColor) -> Bool {
+        return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue && lhs.opacity == rhs
+            .opacity
+    }
+
     var red: Int = 0
     var green: Int = 0
     var blue: Int = 0
+    var opacity: Double? = 1.0
 
-    init(red: Int, green: Int, blue: Int) {
+    init(red: Int, green: Int, blue: Int, opacity: Double = 1.0) {
         self.red = red
         self.green = green
         self.blue = blue
+        self.opacity = opacity
     }
 }
 
@@ -3270,6 +3277,16 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.needsWeather == nil {
             widget.text.needsWeather = false
+            store()
+        }
+        for widget in database.widgets where widget.text.clearForegroundColor! {
+            widget.text.foregroundColor!.opacity = 0.0
+            widget.text.clearForegroundColor = false
+            store()
+        }
+        for widget in database.widgets where widget.text.clearBackgroundColor! {
+            widget.text.backgroundColor!.opacity = 0.0
+            widget.text.clearBackgroundColor = false
             store()
         }
     }
