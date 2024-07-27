@@ -17147,6 +17147,9 @@
         }
       }
     },
+    "Biking" : {
+
+    },
     "Bitrate" : {
       "localizations" : {
         "de" : {
@@ -72541,6 +72544,9 @@
         }
       }
     },
+    "Select one" : {
+
+    },
     "Selected" : {
       "localizations" : {
         "de" : {
@@ -87624,6 +87630,12 @@
         }
       }
     },
+    "Time" : {
+
+    },
+    "Timer" : {
+
+    },
     "Timers" : {
 
     },
@@ -96466,6 +96478,9 @@
           }
         }
       }
+    },
+    "Weather" : {
+
     },
     "Weather (if Settings -> Location is enabled)" : {
 
