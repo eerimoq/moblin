@@ -8,12 +8,42 @@ private struct Suggestion: Identifiable {
 }
 
 private let suggestions = [
-    Suggestion(id: 0, name: String(localized: "Select one"), text: ""),
-    Suggestion(id: 1, name: String(localized: "Time"), text: "{time}"),
-    Suggestion(id: 2, name: String(localized: "Weather"), text: "{conditions} {temperature}"),
-    Suggestion(id: 3, name: String(localized: "Timer"), text: "⏳ {timer}"),
-    Suggestion(id: 4, name: String(localized: "Biking"), text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
+    Suggestion(id: 0, name: String(localized: "Location"), text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
+    Suggestion(id: 1, name: String(localized: "Time"), text: "🕑 {time}"),
+    Suggestion(id: 2, name: String(localized: "Timer"), text: "⏳ {timer}"),
+    Suggestion(id: 3, name: String(localized: "Weather"), text: "{conditions} {temperature}"),
 ]
+
+private struct SuggestionsView: View {
+    @Environment(\.dismiss) var dismiss
+    @State var suggestion: Int = 0
+    var onSubmit: (String) -> Void
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(suggestions) { suggestion in
+                        VStack(alignment: .leading) {
+                            Button {
+                                onSubmit(suggestion.text)
+                                dismiss()
+                            } label: {
+                                Text(suggestion.name).font(.title3)
+                            }
+                            Text(suggestion.text)
+                        }
+                        .tag(suggestion.id)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Suggestions")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
 
 private struct TextSelectionView: View {
     @EnvironmentObject var model: Model
@@ -76,17 +106,11 @@ private struct TextSelectionView: View {
                             submit()
                         }
                     }
-                Picker("Suggestions", selection: $suggestion) {
-                    ForEach(suggestions) { suggestion in
-                        Text(suggestion.name).tag(suggestion.id)
-                    }
-                }
-                .onChange(of: suggestion) { _ in
-                    if suggestion != 0 {
-                        value = suggestions[suggestion].text
-                        changed = true
-                    }
-                    dismiss()
+                NavigationLink(destination: SuggestionsView(onSubmit: { value in
+                    self.value = value
+                    submit()
+                })) {
+                    Text("Suggestions")
                 }
             } footer: {
                 VStack(alignment: .leading) {
