@@ -165,7 +165,7 @@ final class TextEffect: VideoEffect {
                 timerIndex += 1
             case .conditions:
                 if let conditions = stats.conditions {
-                    parts.append(.init(id: partId, data: .imageSystemName("\(conditions).fill")))
+                    parts.append(.init(id: partId, data: .imageSystemName(conditions)))
                 } else {
                     parts.append(.init(id: partId, data: .text("-")))
                 }
@@ -232,8 +232,13 @@ final class TextEffect: VideoEffect {
                                 Text(text)
                                     .foregroundColor(self.foregroundColor?.color() ?? .clear)
                             case let .imageSystemName(name):
-                                Image(systemName: name)
-                                    .symbolRenderingMode(.multicolor)
+                                if UIImage(systemName: "\(name).fill") != nil {
+                                    Image(systemName: "\(name).fill")
+                                        .symbolRenderingMode(.multicolor)
+                                } else {
+                                    Image(systemName: name)
+                                        .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                }
                             }
                         }
                     }
@@ -289,8 +294,13 @@ final class TextEffect: VideoEffect {
                                 Text(text)
                                     .foregroundColor(self.foregroundColor?.color() ?? .clear)
                             case let .imageSystemName(name):
-                                Image(systemName: name)
-                                    .symbolRenderingMode(.multicolor)
+                                if UIImage(systemName: "\(name).fill") != nil {
+                                    Image(systemName: "\(name).fill")
+                                        .symbolRenderingMode(.multicolor)
+                                } else {
+                                    Image(systemName: name)
+                                        .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                }
                             }
                         }
                     }
