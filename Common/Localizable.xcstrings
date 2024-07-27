@@ -44842,9 +44842,6 @@
         }
       }
     },
-    "Hiking" : {
-
-    },
     "Home" : {
       "localizations" : {
         "de" : {
@@ -52654,6 +52651,9 @@
         }
       }
     },
+    "Max map pitch" : {
+
+    },
     "Maximum age" : {
       "localizations" : {
         "de" : {
@@ -55903,6 +55903,9 @@
           }
         }
       }
+    },
+    "Movement" : {
+
     },
     "Movie" : {
       "localizations" : {

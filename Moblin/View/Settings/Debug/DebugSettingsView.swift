@@ -3,6 +3,7 @@ import SwiftUI
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
+    @State var maxMapPitch: Double
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -111,6 +112,23 @@ struct DebugSettingsView: View {
                     model.store()
                     model.setUseAudioForTimestamps()
                 }))
+                HStack {
+                    Text("Max map pitch")
+                    Slider(
+                        value: $maxMapPitch,
+                        in: 0.0 ... 85.0,
+                        step: 1.0,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.debug!.maxMapPitch = maxMapPitch
+                            model.setMapPitch()
+                        }
+                    )
+                    Text(String(Int(maxMapPitch)))
+                        .frame(width: 40)
+                }
             } header: {
                 Text("Experimental")
             }

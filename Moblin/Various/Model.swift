@@ -851,6 +851,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
         supportsAppleLog = hasAppleLog()
@@ -1050,6 +1051,10 @@ final class Model: NSObject, ObservableObject {
         } else {
             mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
         }
+    }
+
+    func setMapPitch() {
+        maxMapPitch = database.debug!.maxMapPitch!
     }
 
     private func setupSampleBufferReceiver() {

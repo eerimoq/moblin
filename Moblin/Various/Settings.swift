@@ -1348,6 +1348,7 @@ class SettingsDebug: Codable {
     var higherDataRateLimit: Bool? = true
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
+    var maxMapPitch: Double? = 0.0
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3295,6 +3296,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.needsGeography == nil {
             widget.text.needsGeography = false
+            store()
+        }
+        if realDatabase.debug!.maxMapPitch == nil {
+            realDatabase.debug!.maxMapPitch = 0.0
             store()
         }
     }

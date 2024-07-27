@@ -205,8 +205,10 @@ struct SettingsView: View {
                         IconAndTextView(image: "info.circle", text: String(localized: "About"))
                     }
                     NavigationLink(
-                        destination: DebugSettingsView(cameraSwitchRemoveBlackish: model.database.debug!
-                            .cameraSwitchRemoveBlackish!)
+                        destination: DebugSettingsView(
+                            cameraSwitchRemoveBlackish: model.database.debug!.cameraSwitchRemoveBlackish!,
+                            maxMapPitch: model.database.debug!.maxMapPitch!
+                        )
                     ) {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
                     }

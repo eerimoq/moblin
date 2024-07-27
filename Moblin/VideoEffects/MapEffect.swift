@@ -6,6 +6,7 @@ import UIKit
 import Vision
 
 private let mapQueue = DispatchQueue(label: "com.eerimoq.widget.map")
+var maxMapPitch: Double = 0.0
 
 final class MapEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
@@ -26,6 +27,7 @@ final class MapEffect: VideoEffect {
     private var dotOffsetRatioMetalPetal: Double = 0.0
     private var zoomOutFactor: Int?
     private var isLocationUpdated: Bool = true
+    private var pitch: Double = 0.0
 
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
@@ -206,6 +208,12 @@ final class MapEffect: VideoEffect {
                 dotOffsetRatio = dotOffsetInMeters / halfMapSideLength
             }
         }
+        if newLocation.speed > 4 {
+            pitch = -maxMapPitch
+        } else if newLocation.speed < 1 {
+            pitch = 0
+        }
+        camera.pitch = pitch
         var forceUpdate = false
         if let zoomOutFactor {
             camera.centerCoordinateDistance *= pow(5, Double(zoomOutFactor))

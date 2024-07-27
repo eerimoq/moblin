@@ -9,7 +9,7 @@ private struct Suggestion: Identifiable {
 
 private let suggestions = [
     Suggestion(id: 0, name: String(localized: "City"), text: "{countryFlag} {city}"),
-    Suggestion(id: 1, name: String(localized: "Hiking"), text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
+    Suggestion(id: 1, name: String(localized: "Movement"), text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
     Suggestion(id: 2, name: String(localized: "Time"), text: "🕑 {time}"),
     Suggestion(id: 3, name: String(localized: "Timer"), text: "⏳ {timer}"),
     Suggestion(id: 4, name: String(localized: "Weather"), text: "{conditions} {temperature}"),
