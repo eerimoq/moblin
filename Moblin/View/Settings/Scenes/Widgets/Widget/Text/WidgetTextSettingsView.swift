@@ -1,15 +1,31 @@
 import PhotosUI
 import SwiftUI
 
-struct WidgetTextSettingsView: View {
-    @EnvironmentObject var model: Model
-    var widget: SettingsWidget
-    @State var backgroundColor: Color
-    @State var foregroundColor: Color
-    @State var fontSize: Float
-    @State var delay: Double
+private struct Suggestion: Identifiable {
+    var id: Int
+    var name: String
+    var text: String
+}
 
-    private func submitFormatString(value: String) {
+private let suggestions = [
+    Suggestion(id: 0, name: "Select one", text: ""),
+    Suggestion(id: 1, name: "Clock", text: "{time}"),
+    Suggestion(id: 2, name: "Weather", text: "{conditions} {temperature}"),
+    Suggestion(id: 3, name: "Timer", text: "⏳ {timer}"),
+    Suggestion(id: 4, name: "Biking", text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
+]
+
+private struct TextSelectionView: View {
+    @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
+    var widget: SettingsWidget
+    @State var value: String
+    @State var suggestion: Int = 0
+    @State private var changed = false
+    @State private var submitted = false
+
+    private func submit() {
+        submitted = true
         widget.text.formatString = value
         let parts = loadTextFormat(format: value)
         let numberOfTimers = parts.filter { value in
@@ -41,30 +57,78 @@ struct WidgetTextSettingsView: View {
     }
 
     var body: some View {
+        Form {
+            Section {
+                TextField("", text: $value)
+                    .keyboardType(.default)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .onChange(of: value) { _ in
+                        changed = true
+                    }
+                    .onSubmit {
+                        submit()
+                        dismiss()
+                    }
+                    .submitLabel(.done)
+                    .onDisappear {
+                        if changed && !submitted {
+                            submit()
+                        }
+                    }
+                Picker("Suggestions", selection: $suggestion) {
+                    ForEach(suggestions) { suggestion in
+                        Text(suggestion.name).tag(suggestion.id)
+                    }
+                }
+                .onChange(of: suggestion) { _ in
+                    if suggestion != 0 {
+                        value = suggestions[suggestion].text
+                        changed = true
+                    }
+                    dismiss()
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("General")
+                    Text("  {time} - Show time as HH:MM:SS")
+                    Text("  {timer} - Show a timer")
+                    Text("")
+                    Text("Location (if Settings -> Location is enabled)")
+                    Text("  {speed} - Show speed")
+                    Text("  {altitude} - Show altitude")
+                    Text("  {distance} - Show distance")
+                    Text("")
+                    Text("Weather (if Settings -> Location is enabled)")
+                    Text("  {conditions} - Show conditions")
+                    Text("  {temperature} - Show temperature")
+                    Text("")
+                    Text("Debug")
+                    Text("  {bitrateAndTotal} - Show bitrate and total number of bytes sent")
+                    Text("  {debugOverlay} - Show debug overlay (if enabled)")
+                }
+            }
+        }
+        .navigationTitle("Text")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+struct WidgetTextSettingsView: View {
+    @EnvironmentObject var model: Model
+    var widget: SettingsWidget
+    @State var backgroundColor: Color
+    @State var foregroundColor: Color
+    @State var fontSize: Float
+    @State var delay: Double
+
+    var body: some View {
         Section {
-            TextEditNavigationView(
-                title: String(localized: "Text"),
-                value: widget.text.formatString,
-                onSubmit: submitFormatString,
-                footers: [
-                    String(localized: "General"),
-                    String(localized: "  {time} - Show time as HH:MM:SS"),
-                    String(localized: "  {timer} - Show a timer"),
-                    "",
-                    String(localized: "Location (if Settings -> Location is enabled)"),
-                    String(localized: "  {speed} - Show speed"),
-                    String(localized: "  {altitude} - Show altitude"),
-                    String(localized: "  {distance} - Show distance"),
-                    "",
-                    String(localized: "Weather (if Settings -> Location is enabled)"),
-                    String(localized: "  {conditions} - Show conditions"),
-                    String(localized: "  {temperature} - Show temperature"),
-                    "",
-                    String(localized: "Debug"),
-                    String(localized: "  {bitrateAndTotal} - Show bitrate and total number of bytes sent"),
-                    String(localized: "  {debugOverlay} - Show debug overlay (if enabled)"),
-                ]
-            )
+            NavigationLink(destination: TextSelectionView(widget: widget, value: widget.text.formatString)) {
+                TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
+            }
         }
         if !widget.text.timers!.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {

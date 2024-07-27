@@ -1213,9 +1213,10 @@ class RgbColor: Codable, Equatable {
     var red: Int = 0
     var green: Int = 0
     var blue: Int = 0
-    var opacity: Double? = 1.0
+    // May be nil
+    var opacity: Double?
 
-    init(red: Int, green: Int, blue: Int, opacity: Double = 1.0) {
+    init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
         self.red = red
         self.green = green
         self.blue = blue
