@@ -8,6 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.350.0", date: "2024-07-27", changes: [
+        "• Text widget background and foreground opacity settings.",
+        "• Text widget text suggestions.",
+        "  • Time - {time}",
+        "  • Weather - {conditions} {temperature}",
+        "  • Timer - ⏳ {timer}",
+        "  • Movement - 📏 {distance} 💨 {speed} 🏔️ {altitude}",
+        "• 75% text widget background opacity by default.",
+        "• Experimental maximum map pitch.",
+        "  • Debug slider from 0 to 85 degrees.",
+    ]),
     Version(version: "0.349.0", date: "2024-07-27", changes: [
         "• Text widget timer setting in Settings → Scenes → My widget.",
         "  • Along with the Widgets quick button page.",
