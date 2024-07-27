@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.349.0", date: "2024-07-27", changes: [
+        "• Text widget timer setting in Settings → Scenes → My widget.",
+        "  • Along with the Widgets quick button page.",
+        "• Weather conditions as image only.",
+    ]),
     Version(version: "0.348.0", date: "2024-07-26", changes: [
         "• Temprature and weather conditions in text widget. 💡 Gohgo, JohannesLiv",
         "  • {temperature} for temperature.",
