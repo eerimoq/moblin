@@ -741,7 +741,7 @@ class SettingsWidgetTextTimer: Codable, Identifiable {
 
 class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
-    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
+    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
     var clearBackgroundColor: Bool? = false
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
     var clearForegroundColor: Bool? = false
@@ -3148,7 +3148,7 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets where widget.text.backgroundColor == nil {
-            widget.text.backgroundColor = .init(red: 0, green: 0, blue: 0)
+            widget.text.backgroundColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
             store()
         }
         for widget in realDatabase.widgets where widget.text.clearBackgroundColor == nil {
