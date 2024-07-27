@@ -430,19 +430,21 @@ struct ObsView: View {
     }
 }
 
-private struct TimerWidgetView: View {
+struct TimerWidgetView: View {
     private let name: String
     private let timer: SettingsWidgetTextTimer
     private let index: Int
     private let textEffect: TextEffect
+    private var indented: Bool
     @State private var delta: Int
     @State private var endTime: Double
 
-    init(name: String, timer: SettingsWidgetTextTimer, index: Int, textEffect: TextEffect) {
+    init(name: String, timer: SettingsWidgetTextTimer, index: Int, textEffect: TextEffect, indented: Bool) {
         self.name = name
         self.timer = timer
         self.index = index
         self.textEffect = textEffect
+        self.indented = indented
         delta = timer.delta
         endTime = timer.endTime
     }
@@ -462,8 +464,10 @@ private struct TimerWidgetView: View {
 
     var body: some View {
         HStack {
-            Text("")
-            Text("").frame(width: iconWidth)
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
             VStack(alignment: .leading) {
                 HStack {
                     Text(name)
@@ -534,7 +538,8 @@ struct WidgetsView: View {
                                         name: "Timer \(index + 1)",
                                         timer: timer,
                                         index: index,
-                                        textEffect: textEffect
+                                        textEffect: textEffect,
+                                        indented: true
                                     )
                                 }
                             }

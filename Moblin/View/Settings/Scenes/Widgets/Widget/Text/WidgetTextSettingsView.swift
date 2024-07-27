@@ -66,6 +66,24 @@ struct WidgetTextSettingsView: View {
                 ]
             )
         }
+        if !widget.text.timers!.isEmpty {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                Section {
+                    ForEach(widget.text.timers!) { timer in
+                        let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
+                        TimerWidgetView(
+                            name: "Timer \(index + 1)",
+                            timer: timer,
+                            index: index,
+                            textEffect: textEffect,
+                            indented: false
+                        )
+                    }
+                } header: {
+                    Text("Timers")
+                }
+            }
+        }
         Section {
             Toggle(isOn: Binding(get: {
                 !widget.text.clearBackgroundColor!
