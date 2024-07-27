@@ -9,7 +9,7 @@ private struct Suggestion: Identifiable {
 
 private let suggestions = [
     Suggestion(id: 0, name: "Select one", text: ""),
-    Suggestion(id: 1, name: "Clock", text: "{time}"),
+    Suggestion(id: 1, name: "Time", text: "{time}"),
     Suggestion(id: 2, name: "Weather", text: "{conditions} {temperature}"),
     Suggestion(id: 3, name: "Timer", text: "⏳ {timer}"),
     Suggestion(id: 4, name: "Biking", text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
