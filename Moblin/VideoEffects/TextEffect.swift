@@ -30,6 +30,11 @@ private struct Part: Equatable, Identifiable {
     var data: PartData
 }
 
+private struct Line: Equatable, Identifiable {
+    var id: Int
+    var parts: [Part]
+}
+
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private let backgroundColor: RgbColor?
@@ -48,8 +53,8 @@ final class TextEffect: VideoEffect {
     private var imageMetalPetal: UIImage?
     private var nextUpdateTime = ContinuousClock.now
     private var nextUpdateTimeMetalPetal = ContinuousClock.now
-    private var previousParts: [Part]?
-    private var previousPartsMetalPetal: [Part]?
+    private var previousLines: [Line]?
+    private var previousLinesMetalPetal: [Line]?
     private var delay: Double
     private var previousX: Double = .nan
     private var previousXMetalPetal: Double = .nan
@@ -96,8 +101,8 @@ final class TextEffect: VideoEffect {
             self.x = x
             self.y = y
         }
-        previousParts = nil
-        previousPartsMetalPetal = nil
+        previousLines = nil
+        previousLinesMetalPetal = nil
     }
 
     func updateStats(stats: TextEffectStats) {
@@ -111,7 +116,7 @@ final class TextEffect: VideoEffect {
         return "\(settingName) text widget"
     }
 
-    private func formatted(now: ContinuousClock.Instant) -> [Part] {
+    private func formatted(now: ContinuousClock.Instant) -> [Line] {
         guard let stats = stats
             .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? stats
             .first
@@ -119,58 +124,67 @@ final class TextEffect: VideoEffect {
             return []
         }
         var timerIndex = 0
+        var lines: [Line] = []
         var parts: [Part] = []
-        var partIndex = 0
+        var lineId = 0
+        var partId = 0
         for formatPart in formatParts {
             switch formatPart {
             case let .text(text):
-                parts.append(.init(id: partIndex, data: .text(text)))
+                parts.append(.init(id: partId, data: .text(text)))
+            case .newLine:
+                lines.append(.init(id: lineId, parts: parts))
+                lineId += 1
+                parts = []
             case .clock:
                 parts.append(.init(
-                    id: partIndex,
+                    id: partId,
                     data: .text(stats.date.formatted(.dateTime.hour().minute().second()))
                 ))
             case .bitrateAndTotal:
-                parts.append(.init(id: partIndex, data: .text(stats.bitrateAndTotal)))
+                parts.append(.init(id: partId, data: .text(stats.bitrateAndTotal)))
             case .debugOverlay:
                 parts.append(.init(
-                    id: partIndex,
+                    id: partId,
                     data: .text(stats.debugOverlayLines.joined(separator: "\n"))
                 ))
             case .speed:
-                parts.append(.init(id: partIndex, data: .text(stats.speed)))
+                parts.append(.init(id: partId, data: .text(stats.speed)))
             case .altitude:
-                parts.append(.init(id: partIndex, data: .text(stats.altitude)))
+                parts.append(.init(id: partId, data: .text(stats.altitude)))
             case .distance:
-                parts.append(.init(id: partIndex, data: .text(stats.distance)))
+                parts.append(.init(id: partId, data: .text(stats.distance)))
             case .timer:
                 if timerIndex < timersEndTime.count {
                     let timeLeft = max(now.duration(to: timersEndTime[timerIndex]).seconds, 0)
                     parts.append(.init(
-                        id: partIndex,
+                        id: partId,
                         data: .text(uptimeFormatter.string(from: Double(timeLeft)) ?? "")
                     ))
                 }
                 timerIndex += 1
             case .conditions:
                 if let conditions = stats.conditions {
-                    parts.append(.init(id: partIndex, data: .imageSystemName("\(conditions).fill")))
+                    parts.append(.init(id: partId, data: .imageSystemName("\(conditions).fill")))
                 } else {
-                    parts.append(.init(id: partIndex, data: .text("-")))
+                    parts.append(.init(id: partId, data: .text("-")))
                 }
             case .temperature:
                 if let temperature = stats.temperature {
                     parts.append(.init(
-                        id: partIndex,
+                        id: partId,
                         data: .text(temperatureFormatter.string(from: temperature))
                     ))
                 } else {
-                    parts.append(.init(id: partIndex, data: .text("-")))
+                    parts.append(.init(id: partId, data: .text("-")))
                 }
             }
-            partIndex += 1
+            partId += 1
         }
-        return parts
+        if !parts.isEmpty {
+            lines.append(.init(id: lineId, parts: parts))
+        }
+        return lines
     }
 
     private func scaledFontSize(width: Double) -> CGFloat {
@@ -204,25 +218,27 @@ final class TextEffect: VideoEffect {
         previousY = y
         nextUpdateTime += .seconds(1)
         DispatchQueue.main.async {
-            let formatted = self.formatted(now: now)
-            guard formatted != self.previousParts else {
+            let lines = self.formatted(now: now)
+            guard lines != self.previousLines else {
                 return
             }
-            self.previousParts = formatted
-            let text = HStack {
-                HStack {
-                    ForEach(formatted) { part in
-                        switch part.data {
-                        case let .text(text):
-                            Text(text)
-                                .padding([.leading, .trailing], 7)
-                                .foregroundColor(self.foregroundColor?.color() ?? .clear)
-                        case let .imageSystemName(name):
-                            Image(systemName: name)
-                                .symbolRenderingMode(.multicolor)
+            self.previousLines = lines
+            let text = VStack(alignment: .leading) {
+                ForEach(lines) { line in
+                    HStack(spacing: 0) {
+                        ForEach(line.parts) { part in
+                            switch part.data {
+                            case let .text(text):
+                                Text(text)
+                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                            case let .imageSystemName(name):
+                                Image(systemName: name)
+                                    .symbolRenderingMode(.multicolor)
+                            }
                         }
                     }
                 }
+                .padding([.leading, .trailing], 7)
                 .background(self.backgroundColor?.color() ?? .clear)
                 .font(.system(
                     size: self.scaledFontSize(width: size.width),
@@ -259,25 +275,27 @@ final class TextEffect: VideoEffect {
         previousYMetalPetal = y
         nextUpdateTimeMetalPetal += .seconds(1)
         DispatchQueue.main.async {
-            let formatted = self.formatted(now: now)
-            guard formatted != self.previousPartsMetalPetal else {
+            let lines = self.formatted(now: now)
+            guard lines != self.previousLinesMetalPetal else {
                 return
             }
-            self.previousPartsMetalPetal = formatted
-            let text = HStack {
-                HStack {
-                    ForEach(formatted) { part in
-                        switch part.data {
-                        case let .text(text):
-                            Text(text)
-                                .padding([.leading, .trailing], 7)
-                                .foregroundColor(self.foregroundColor?.color() ?? .clear)
-                        case let .imageSystemName(name):
-                            Image(systemName: name)
-                                .symbolRenderingMode(.multicolor)
+            self.previousLinesMetalPetal = lines
+            let text = VStack(alignment: .leading) {
+                ForEach(lines) { line in
+                    HStack {
+                        ForEach(line.parts) { part in
+                            switch part.data {
+                            case let .text(text):
+                                Text(text)
+                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                            case let .imageSystemName(name):
+                                Image(systemName: name)
+                                    .symbolRenderingMode(.multicolor)
+                            }
                         }
                     }
                 }
+                .padding([.leading, .trailing], 7)
                 .background(self.backgroundColor?.color() ?? .clear)
                 .font(.system(
                     size: self.scaledFontSize(width: size.width),

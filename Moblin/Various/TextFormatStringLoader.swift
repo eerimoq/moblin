@@ -2,6 +2,7 @@ import Foundation
 
 enum TextFormatPart {
     case text(String)
+    case newLine
     case clock
     case bitrateAndTotal
     case debugOverlay
@@ -49,6 +50,8 @@ class TextFormatLoader {
                 } else {
                     index = format.index(after: index)
                 }
+            case "\n":
+                loadNewLine()
             default:
                 index = format.index(after: index)
             }
@@ -123,6 +126,13 @@ class TextFormatLoader {
         appendTextIfPresent()
         parts.append(.temperature)
         index = format.index(index, offsetBy: 13)
+        textStartIndex = index
+    }
+
+    private func loadNewLine() {
+        appendTextIfPresent()
+        parts.append(.newLine)
+        index = format.index(index, offsetBy: 1)
         textStartIndex = index
     }
 }
