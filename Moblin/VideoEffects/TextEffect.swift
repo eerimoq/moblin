@@ -243,15 +243,15 @@ final class TextEffect: VideoEffect {
                         }
                     }
                 }
-                .padding([.leading, .trailing], 7)
-                .background(self.backgroundColor?.color() ?? .clear)
-                .font(.system(
-                    size: self.scaledFontSize(width: size.width),
-                    weight: self.fontWeight,
-                    design: self.fontDesign
-                ))
-                .cornerRadius(10)
             }
+            .padding([.leading, .trailing], 7)
+            .background(self.backgroundColor?.color() ?? .clear)
+            .font(.system(
+                size: self.scaledFontSize(width: size.width),
+                weight: self.fontWeight,
+                design: self.fontDesign
+            ))
+            .cornerRadius(10)
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {
@@ -305,15 +305,15 @@ final class TextEffect: VideoEffect {
                         }
                     }
                 }
-                .padding([.leading, .trailing], 7)
-                .background(self.backgroundColor?.color() ?? .clear)
-                .font(.system(
-                    size: self.scaledFontSize(width: size.width),
-                    weight: self.fontWeight,
-                    design: self.fontDesign
-                ))
-                .cornerRadius(10)
             }
+            .padding([.leading, .trailing], 7)
+            .background(self.backgroundColor?.color() ?? .clear)
+            .font(.system(
+                size: self.scaledFontSize(width: size.width),
+                weight: self.fontWeight,
+                design: self.fontDesign
+            ))
+            .cornerRadius(10)
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {
