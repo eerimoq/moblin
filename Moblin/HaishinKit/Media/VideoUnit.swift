@@ -258,7 +258,7 @@ final class VideoUnit: NSObject {
         let presentationTimeStamp = CMTime(value: Int64(frameCounter), timescale: CMTimeScale(frameRate)) +
             startPresentationTimeStamp
         handleReplaceVideo(presentationTimeStamp)
-        handleGapFillerTimer(presentationTimeStamp)
+        handleGapFillerTimer()
     }
 
     private func handleReplaceVideo(_ presentationTimeStamp: CMTime) {
@@ -283,7 +283,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func handleGapFillerTimer(_ presentationTimeStamp: CMTime) {
+    private func handleGapFillerTimer() {
         guard isFirstAfterAttach else {
             return
         }
@@ -294,11 +294,12 @@ final class VideoUnit: NSObject {
         guard delta > .seconds(0.05) else {
             return
         }
+        let timeDelta = CMTime(seconds: delta.seconds, preferredTimescale: 1000)
         guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
                                                        latestSampleBuffer.formatDescription!,
                                                        latestSampleBuffer.duration,
-                                                       presentationTimeStamp,
-                                                       presentationTimeStamp)
+                                                       latestSampleBuffer.presentationTimeStamp + timeDelta,
+                                                       latestSampleBuffer.decodeTimeStamp + timeDelta)
         else {
             return
         }
