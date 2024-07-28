@@ -22,7 +22,7 @@ final class Media: NSObject {
     private var srtStream: SRTStream?
     private var ristStream: RistStream?
     private var srtlaClient: SrtlaClient?
-    private var netStream: NetStream!
+    private var netStream: NetStream?
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
@@ -70,6 +70,17 @@ final class Media: NSObject {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
+    func stopAllNetStreams() {
+        rtmpConnection = RTMPConnection()
+        srtStopStream()
+        rtmpStopStream()
+        ristStopStream()
+        rtmpStream = nil
+        srtStream = nil
+        ristStream = nil
+        netStream = nil
+    }
+
     func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()
@@ -94,8 +105,8 @@ final class Media: NSObject {
             rtmpStream = nil
             netStream = ristStream
         }
-        netStream.delegate = self
-        netStream.setVideoOrientation(value: .landscapeRight)
+        netStream!.delegate = self
+        netStream!.setVideoOrientation(value: .landscapeRight)
         attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
@@ -128,8 +139,8 @@ final class Media: NSObject {
         CapturePts: audio: \(CMClock.hostTimeClock.time.seconds - audioPts), \
         video: \(CMClock.hostTimeClock.time.seconds - videoPts)
         """)
-        if let audioClock = netStream.mixer.audio.session.synchronizationClock,
-           let videoClock = netStream.mixer.video.session.synchronizationClock
+        if let audioClock = netStream?.mixer.audio.session.synchronizationClock,
+           let videoClock = netStream?.mixer.video.session.synchronizationClock
         {
             let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
             let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
@@ -596,56 +607,58 @@ final class Media: NSObject {
     }
 
     func setTorch(on: Bool) {
-        netStream.setTorch(value: on)
+        netStream?.setTorch(value: on)
     }
 
     func setMute(on: Bool) {
-        netStream.setHasAudio(value: !on)
+        netStream?.setHasAudio(value: !on)
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        netStream.registerVideoEffect(effect)
+        netStream?.registerVideoEffect(effect)
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
-        netStream.unregisterVideoEffect(effect)
+        netStream?.unregisterVideoEffect(effect)
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect]) {
-        netStream.setPendingAfterAttachEffects(effects: effects)
+        netStream?.setPendingAfterAttachEffects(effects: effects)
     }
 
     func usePendingAfterAttachEffects() {
-        netStream.usePendingAfterAttachEffects()
+        netStream?.usePendingAfterAttachEffects()
     }
 
     func setLowFpsImage(fps: Float) {
-        netStream.setLowFpsImage(fps: fps)
+        netStream?.setLowFpsImage(fps: fps)
     }
 
     func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
-        netStream.takeSnapshot(onComplete: onComplete)
+        netStream?.takeSnapshot(onComplete: onComplete)
     }
 
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
-        netStream.setSessionPreset(preset: preset)
+        netStream?.setSessionPreset(preset: preset)
     }
 
     func setVideoSize(width: Int32, height: Int32) {
-        netStream.videoSettings.videoSize = .init(width: width, height: height)
+        netStream?.videoSettings.videoSize = .init(width: width, height: height)
     }
 
     func getVideoSize() -> CGSize {
-        let size = netStream.videoSettings.videoSize
+        guard let size = netStream?.videoSettings.videoSize else {
+            return .init(width: 1920, height: 1080)
+        }
         return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
     }
 
     func setStreamFPS(fps: Int) {
-        netStream.setFrameRate(value: Double(fps))
+        netStream?.setFrameRate(value: Double(fps))
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
-        netStream.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
+        netStream?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
     private var multiplier: UInt32 = 0
@@ -653,7 +666,7 @@ final class Media: NSObject {
     func updateVideoStreamBitrate(bitrate: UInt32) {
         multiplier ^= 1
         let bitRate = getVideoStreamBitrate(bitrate: bitrate)
-        netStream.videoSettings.bitRate = bitRate + multiplier * (bitRate / 10)
+        netStream?.videoSettings.bitRate = bitRate + multiplier * (bitRate / 10)
     }
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
@@ -668,35 +681,35 @@ final class Media: NSObject {
 
     func setVideoStreamBitrate(bitrate: UInt32) {
         adaptiveBitrate?.setTargetBitrate(bitrate: bitrate)
-        netStream.videoSettings.bitRate = bitrate
+        netStream?.videoSettings.bitRate = bitrate
     }
 
     func setVideoProfile(profile: CFString) {
-        netStream.videoSettings.profileLevel = profile as String
+        netStream?.videoSettings.profileLevel = profile as String
     }
 
     func setAllowFrameReordering(value: Bool) {
-        netStream.videoSettings.allowFrameReordering = value
+        netStream?.videoSettings.allowFrameReordering = value
     }
 
     func setStreamKeyFrameInterval(seconds: Int32) {
-        netStream.videoSettings.maxKeyFrameIntervalDuration = seconds
+        netStream?.videoSettings.maxKeyFrameIntervalDuration = seconds
     }
 
     func setAudioStreamBitrate(bitrate: Int) {
-        netStream.audioSettings.bitRate = bitrate
+        netStream?.audioSettings.bitRate = bitrate
     }
 
     func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
-        netStream.audioSettings.format = format
+        netStream?.audioSettings.format = format
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
-        netStream.setAudioChannelsMap(map: channelsMap)
+        netStream?.setAudioChannelsMap(map: channelsMap)
     }
 
     func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
-        guard let device = netStream.videoCapture()?.device else {
+        guard let device = netStream?.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
@@ -716,7 +729,7 @@ final class Media: NSObject {
     }
 
     func stopCameraZoomLevel() -> Float? {
-        guard let device = netStream.videoCapture()?.device else {
+        guard let device = netStream?.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
@@ -736,9 +749,9 @@ final class Media: NSObject {
         videoMirrored: Bool,
         onSuccess: (() -> Void)? = nil
     ) {
-        netStream.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
-        netStream.videoCapture()?.isVideoMirrored = videoMirrored
-        netStream.attachCamera(device, onError: { error in
+        netStream?.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
+        netStream?.videoCapture()?.isVideoMirrored = videoMirrored
+        netStream?.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
         }, onSuccess: {
             DispatchQueue.main.async {
@@ -748,35 +761,35 @@ final class Media: NSObject {
     }
 
     func attachReplaceCamera(cameraId: UUID) {
-        netStream.attachCamera(nil, replaceVideoCameraId: cameraId)
+        netStream?.attachCamera(nil, replaceVideoCameraId: cameraId)
     }
 
     func attachReplaceAudio(cameraId: UUID?) {
-        netStream.attachAudio(nil, replaceAudioId: cameraId)
+        netStream?.attachAudio(nil, replaceAudioId: cameraId)
     }
 
     func addReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
+        netStream?.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
     func addReplaceAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream.addAudioSampleBuffer(id: cameraId, sampleBuffer)
+        netStream?.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
     func addReplaceCamera(cameraId: UUID, name: String) {
-        netStream.addReplaceVideo(cameraId: cameraId, name: name)
+        netStream?.addReplaceVideo(cameraId: cameraId, name: name)
     }
 
     func addReplaceAudio(cameraId: UUID, name: String) {
-        netStream.addReplaceAudio(cameraId: cameraId, name: name)
+        netStream?.addReplaceAudio(cameraId: cameraId, name: name)
     }
 
     func removeReplaceCamera(cameraId: UUID) {
-        netStream.removeReplaceVideo(cameraId: cameraId)
+        netStream?.removeReplaceVideo(cameraId: cameraId)
     }
 
     func removeReplaceAudio(cameraId: UUID) {
-        netStream.removeReplaceAudio(cameraId: cameraId)
+        netStream?.removeReplaceAudio(cameraId: cameraId)
     }
 
     func attachAudio(device: AVCaptureDevice?) {
@@ -785,7 +798,7 @@ final class Media: NSObject {
         }
     }
 
-    func getNetStream() -> NetStream {
+    func getNetStream() -> NetStream? {
         return netStream
     }
 
@@ -826,13 +839,13 @@ final class Media: NSObject {
         if let audioBitrate {
             audioSettings[AVEncoderBitRateKey] = audioBitrate
         }
-        netStream.startRecording(url: url,
-                                 audioSettings: audioSettings,
-                                 videoSettings: videoSettings)
+        netStream?.startRecording(url: url,
+                                  audioSettings: audioSettings,
+                                  videoSettings: videoSettings)
     }
 
     func stopRecording() {
-        netStream.stopRecording()
+        netStream?.stopRecording()
     }
 
     func getFailedVideoEffect() -> String? {
@@ -927,7 +940,7 @@ extension Media: SrtlaDelegate {
 
 extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
-        netStream.videoSettings.bitRate = bitrate
+        netStream?.videoSettings.bitRate = bitrate
     }
 }
 

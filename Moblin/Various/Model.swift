@@ -1314,7 +1314,6 @@ final class Model: NSObject, ObservableObject {
             if isRecording {
                 suspendRecording()
             }
-            stopStream()
             stopRtmpServer()
             stopSrtlaServer()
             teardownAudioSession()
@@ -1322,6 +1321,7 @@ final class Model: NSObject, ObservableObject {
             locationManager.stop()
             weatherManager.stop()
             geographyManager.stop()
+            media.stopAllNetStreams()
         }
     }
 
@@ -1330,14 +1330,13 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if !shouldStreamInBackground() {
+            reloadStream()
+            sceneUpdated()
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-            reloadConnections()
-            reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
-            reloadLocation()
             startWeatherManager()
             startGeographyManager()
             if isRecording {
