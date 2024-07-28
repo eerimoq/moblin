@@ -55,17 +55,6 @@ class Mixer {
         try audio.attach(device, replaceAudio)
     }
 
-    func useSampleBuffer(_ presentationTimeStamp: CMTime, mediaType: AVMediaType) -> Bool {
-        if mediaType == .audio {
-            return !videoTimeStamp.seconds.isZero && videoTimeStamp.seconds <= presentationTimeStamp
-                .seconds
-        }
-        if videoTimeStamp == CMTime.zero {
-            videoTimeStamp = presentationTimeStamp
-        }
-        return true
-    }
-
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
         guard !isEncoding else {
             return

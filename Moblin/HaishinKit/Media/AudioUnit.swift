@@ -37,6 +37,8 @@ private class ReplaceAudio {
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?
     private let name: String
+    private var outputCounter: Int64 = 0
+    private var startPresentationTimeStamp: CMTime = .zero
 
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
@@ -149,7 +151,14 @@ private class ReplaceAudio {
     }
 
     private func output() {
-        let presentationTimeStamp = currentPresentationTimeStamp()
+        outputCounter += 1
+        if startPresentationTimeStamp == .zero {
+            startPresentationTimeStamp = currentPresentationTimeStamp()
+        }
+        let presentationTimeStamp = CMTime(
+            value: Int64(frameLength * Double(outputCounter)),
+            timescale: CMTimeScale(sampleRate)
+        ) + startPresentationTimeStamp
         guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
             return
         }
@@ -290,9 +299,6 @@ final class AudioUnit: NSObject {
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
-        guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
-            return
-        }
         mixer.delegate?.mixer(
             audioLevel: audioLevel,
             numberOfAudioChannels: numberOfAudioChannels,

@@ -200,6 +200,8 @@ final class VideoUnit: NSObject {
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
+    private var frameCounter: Int64 = 0
+    private var startPresentationTimeStamp: CMTime = .zero
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -249,12 +251,17 @@ final class VideoUnit: NSObject {
     }
 
     private func handleFrameTimer() {
-        handleReplaceVideo()
-        handleGapFillerTimer()
+        frameCounter += 1
+        if startPresentationTimeStamp == .zero {
+            startPresentationTimeStamp = currentPresentationTimeStamp()
+        }
+        let presentationTimeStamp = CMTime(value: Int64(frameCounter), timescale: CMTimeScale(frameRate)) +
+            startPresentationTimeStamp
+        handleReplaceVideo(presentationTimeStamp)
+        handleGapFillerTimer(presentationTimeStamp)
     }
 
-    private func handleReplaceVideo() {
-        let presentationTimeStamp = currentPresentationTimeStamp()
+    private func handleReplaceVideo(_ presentationTimeStamp: CMTime) {
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(presentationTimeStamp.seconds)
         }
@@ -264,19 +271,19 @@ final class VideoUnit: NSObject {
         if let sampleBuffer = replaceVideos[selectedReplaceVideoCameraId]?
             .getSampleBuffer(presentationTimeStamp)
         {
-            appendSampleBuffer(sampleBuffer: sampleBuffer)
+            appendNewSampleBuffer(sampleBuffer: sampleBuffer)
         } else if let sampleBuffer = makeBlackSampleBuffer(
             duration: .invalid,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: .invalid
         ) {
-            appendSampleBuffer(sampleBuffer: sampleBuffer)
+            appendNewSampleBuffer(sampleBuffer: sampleBuffer)
         } else {
             logger.info("replace-video: Failed to output frame")
         }
     }
 
-    private func handleGapFillerTimer() {
+    private func handleGapFillerTimer(_ presentationTimeStamp: CMTime) {
         guard isFirstAfterAttach else {
             return
         }
@@ -287,17 +294,11 @@ final class VideoUnit: NSObject {
         guard delta > .seconds(0.05) else {
             return
         }
-        let timeDelta = CMTime(seconds: delta.seconds, preferredTimescale: 1000)
         guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
                                                        latestSampleBuffer.formatDescription!,
                                                        latestSampleBuffer.duration,
-                                                       latestSampleBuffer.presentationTimeStamp + timeDelta,
-                                                       latestSampleBuffer.decodeTimeStamp + timeDelta)
-        else {
-            return
-        }
-        guard mixer?
-            .useSampleBuffer(sampleBuffer.presentationTimeStamp, mediaType: AVMediaType.video) == true
+                                                       presentationTimeStamp,
+                                                       presentationTimeStamp)
         else {
             return
         }
@@ -771,14 +772,12 @@ final class VideoUnit: NSObject {
         if sampleBuffer.presentationTimeStamp < latestSampleBufferAppendTime {
             logger.info(
                 """
-                Discarding frame: \(sampleBuffer.presentationTimeStamp.seconds) \
+                Discarding video frame: \(sampleBuffer.presentationTimeStamp.seconds) \
                 \(latestSampleBufferAppendTime.seconds)
                 """
             )
             return false
         }
-        // logger.info("Appending frame with PTS \(sampleBuffer.presentationTimeStamp.seconds)
-        // isFirstAfterAttach \(isFirstAfterAttach)")
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         mixer?.delegate?.mixerVideo(
             presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
@@ -1114,7 +1113,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func appendSampleBuffer(sampleBuffer: CMSampleBuffer) {
+    private func appendNewSampleBuffer(sampleBuffer: CMSampleBuffer) {
         let now = ContinuousClock.now
         if firstFrameTime == nil {
             firstFrameTime = now
@@ -1124,15 +1123,7 @@ final class VideoUnit: NSObject {
         }
         latestSampleBuffer = sampleBuffer
         latestSampleBufferTime = now
-        guard mixer?.useSampleBuffer(sampleBuffer.presentationTimeStamp, mediaType: AVMediaType.video) == true
-        else {
-            return
-        }
-        if appendSampleBuffer(
-            sampleBuffer,
-            isFirstAfterAttach: isFirstAfterAttach,
-            applyBlur: false
-        ) {
+        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, applyBlur: false) {
             isFirstAfterAttach = false
         }
     }
@@ -1147,7 +1138,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard selectedReplaceVideoCameraId == nil else {
             return
         }
-        appendSampleBuffer(sampleBuffer: sampleBuffer)
+        appendNewSampleBuffer(sampleBuffer: sampleBuffer)
     }
 }
 
