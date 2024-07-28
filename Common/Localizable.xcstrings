@@ -26250,6 +26250,9 @@
         }
       }
     },
+    "Country" : {
+
+    },
     "Create" : {
       "localizations" : {
         "de" : {
@@ -31319,6 +31322,9 @@
           }
         }
       }
+    },
+    "Done" : {
+
     },
     "Double tap to return to main view" : {
       "localizations" : {
@@ -89331,6 +89337,9 @@
           }
         }
       }
+    },
+    "Travel" : {
+
     },
     "Triangle" : {
       "localizations" : {

@@ -7,12 +7,23 @@ private struct Suggestion: Identifiable {
     var text: String
 }
 
+private let suggestionCountry = "{countryFlag} {country}"
+private let suggestionCity = "{countryFlag} {city}"
+private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude}"
+private let suggestionTime = "🕑 {time}"
+private let suggestionTimer = "⏳ {timer}"
+private let suggestionWeather = "{conditions} {temperature}"
+private let suggestionTravel =
+    "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
+
 private let suggestions = [
-    Suggestion(id: 0, name: String(localized: "City"), text: "{countryFlag} {city}"),
-    Suggestion(id: 1, name: String(localized: "Movement"), text: "📏 {distance} 💨 {speed} 🏔️ {altitude}"),
-    Suggestion(id: 2, name: String(localized: "Time"), text: "🕑 {time}"),
-    Suggestion(id: 3, name: String(localized: "Timer"), text: "⏳ {timer}"),
-    Suggestion(id: 4, name: String(localized: "Weather"), text: "{conditions} {temperature}"),
+    Suggestion(id: 0, name: String(localized: "City"), text: suggestionCity),
+    Suggestion(id: 1, name: String(localized: "Country"), text: suggestionCountry),
+    Suggestion(id: 2, name: String(localized: "Movement"), text: suggestionMovement),
+    Suggestion(id: 3, name: String(localized: "Time"), text: suggestionTime),
+    Suggestion(id: 4, name: String(localized: "Timer"), text: suggestionTimer),
+    Suggestion(id: 5, name: String(localized: "Travel"), text: suggestionTravel),
+    Suggestion(id: 6, name: String(localized: "Weather"), text: suggestionWeather),
 ]
 
 private struct SuggestionsView: View {
@@ -52,12 +63,12 @@ private struct TextSelectionView: View {
     var widget: SettingsWidget
     @State var value: String
     @State var suggestion: Int = 0
-    @State private var changed = false
-    @State private var submitted = false
+    @FocusState private var isFocused: Bool
 
-    private func submit() {
-        submitted = true
+    private func update() {
         widget.text.formatString = value
+        let textEffect = model.getTextEffect(id: widget.id)
+        textEffect?.setFormat(format: value)
         let parts = loadTextFormat(format: value)
         let numberOfTimers = parts.filter { value in
             switch value {
@@ -73,6 +84,9 @@ private struct TextSelectionView: View {
         while widget.text.timers!.count > numberOfTimers {
             widget.text.timers!.removeLast()
         }
+        textEffect?.setTimersEndTime(endTimes: widget.text.timers!.map {
+            .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
+        })
         widget.text.needsWeather = !parts.filter { value in
             switch value {
             case .conditions:
@@ -83,8 +97,11 @@ private struct TextSelectionView: View {
                 return false
             }
         }.isEmpty
+        model.startWeatherManager()
         widget.text.needsGeography = !parts.filter { value in
             switch value {
+            case .country:
+                return true
             case .countryFlag:
                 return true
             case .city:
@@ -93,37 +110,41 @@ private struct TextSelectionView: View {
                 return false
             }
         }.isEmpty
-        model.resetSelectedScene(changeScene: false)
+        model.startGeographyManager()
     }
 
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value)
+                TextField("", text: $value, axis: .vertical)
                     .keyboardType(.default)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: value) { _ in
-                        changed = true
+                        update()
                     }
-                    .onSubmit {
-                        submit()
-                        dismiss()
-                    }
-                    .submitLabel(.done)
-                    .onDisappear {
-                        if changed && !submitted {
-                            submit()
+                    .focused($isFocused)
+                if isFocused {
+                    Button {
+                        isFocused = false
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("Done")
                         }
                     }
+                }
+            }
+            Section {
                 NavigationLink(destination: SuggestionsView(onSubmit: { value in
                     self.value = value
-                    submit()
+                    update()
                 })) {
                     Text("Suggestions")
                 }
             } footer: {
                 VStack(alignment: .leading) {
+                    Text("")
                     Text("General").bold()
                     Text("{time} - Show time as HH:MM:SS")
                     Text("{timer} - Show a timer")

@@ -12,6 +12,7 @@ enum TextFormatPart {
     case timer
     case conditions
     case temperature
+    case country
     case countryFlag
     case city
 }
@@ -49,6 +50,8 @@ class TextFormatLoader {
                     loadConditions()
                 } else if formatFromIndex.hasPrefix("{temperature}") {
                     loadTemperature()
+                } else if formatFromIndex.hasPrefix("{country}") {
+                    loadCountry()
                 } else if formatFromIndex.hasPrefix("{countryflag}") {
                     loadCountryFlag()
                 } else if formatFromIndex.hasPrefix("{city}") {
@@ -139,6 +142,13 @@ class TextFormatLoader {
         appendTextIfPresent()
         parts.append(.newLine)
         index = format.index(index, offsetBy: 1)
+        textStartIndex = index
+    }
+
+    private func loadCountry() {
+        appendTextIfPresent()
+        parts.append(.country)
+        index = format.index(index, offsetBy: 9)
         textStartIndex = index
     }
 

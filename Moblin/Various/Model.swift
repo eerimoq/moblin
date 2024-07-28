@@ -2360,6 +2360,7 @@ final class Model: NSObject, ObservableObject {
             distance: getDistance(),
             conditions: weather?.currentWeather.symbolName,
             temperature: weather?.currentWeather.temperature,
+            country: placemark?.country ?? "",
             countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
             city: placemark?.locality
         )
@@ -2448,8 +2449,9 @@ final class Model: NSObject, ObservableObject {
                 fontWeight: widget.text.fontWeight!.toSystem(),
                 settingName: widget.name,
                 delay: widget.text.delay!,
-                timersEndTime: widget.text.timers!
-                    .map { .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime))) }
+                timersEndTime: widget.text.timers!.map {
+                    .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
+                }
             )
         }
         for browserEffect in browserEffects.values {
