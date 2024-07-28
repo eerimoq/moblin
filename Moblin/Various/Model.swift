@@ -1861,7 +1861,7 @@ final class Model: NSObject, ObservableObject {
             return true
         }
         if let streamBecameBrokenTime {
-            if streamBecameBrokenTime.duration(to: now) < .seconds(5) {
+            if streamBecameBrokenTime.duration(to: now) < .seconds(15) {
                 return true
             } else if obsCurrentScene != stream.obsBrbScene! {
                 return true
