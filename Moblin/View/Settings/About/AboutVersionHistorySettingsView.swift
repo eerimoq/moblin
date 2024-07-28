@@ -18,6 +18,10 @@ private let versions = [
         "• 75% text widget background opacity by default.",
         "• Experimental maximum map pitch.",
         "  • Debug slider from 0 to 85 degrees.",
+        "• Multi line text widget input.",
+        "  • No more need for \n.",
+        "• Faster text widget update when changing its text.",
+        "• Text widget background rectangle per line instead of one big rectangle.",
     ]),
     Version(version: "0.349.0", date: "2024-07-27", changes: [
         "• Text widget timer setting in Settings → Scenes → My widget.",
