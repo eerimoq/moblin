@@ -15,15 +15,17 @@ private let suggestionTimer = "⏳ {timer}"
 private let suggestionWeather = "{conditions} {temperature}"
 private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
+private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 
 private let suggestions = [
-    Suggestion(id: 0, name: String(localized: "City"), text: suggestionCity),
-    Suggestion(id: 1, name: String(localized: "Country"), text: suggestionCountry),
-    Suggestion(id: 2, name: String(localized: "Movement"), text: suggestionMovement),
-    Suggestion(id: 3, name: String(localized: "Time"), text: suggestionTime),
-    Suggestion(id: 4, name: String(localized: "Timer"), text: suggestionTimer),
-    Suggestion(id: 5, name: String(localized: "Travel"), text: suggestionTravel),
-    Suggestion(id: 6, name: String(localized: "Weather"), text: suggestionWeather),
+    Suggestion(id: 0, name: String(localized: "Travel"), text: suggestionTravel),
+    Suggestion(id: 1, name: String(localized: "Weather"), text: suggestionWeather),
+    Suggestion(id: 2, name: String(localized: "Time"), text: suggestionTime),
+    Suggestion(id: 3, name: String(localized: "Timer"), text: suggestionTimer),
+    Suggestion(id: 4, name: String(localized: "City"), text: suggestionCity),
+    Suggestion(id: 5, name: String(localized: "Country"), text: suggestionCountry),
+    Suggestion(id: 6, name: String(localized: "Movement"), text: suggestionMovement),
+    Suggestion(id: 7, name: String(localized: "Debug"), text: suggestionDebug),
 ]
 
 private struct SuggestionsView: View {
