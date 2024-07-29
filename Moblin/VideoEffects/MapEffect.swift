@@ -185,10 +185,10 @@ final class MapEffect: VideoEffect {
             camera.heading = newLocation.course
         }
         camera.centerCoordinate = newLocation.coordinate
-        camera.centerCoordinateDistance = 750
+        camera.centerCoordinateDistance = 1000
         var dotOffsetRatio = 0.0
         if newLocation.speed > 4, zoomOutFactor == nil {
-            camera.centerCoordinateDistance += 75 * (newLocation.speed - 4)
+            camera.centerCoordinateDistance += 150 * (newLocation.speed - 4)
             if !widget.northUp! {
                 let halfMapSideLength = tan(.pi / 12) * camera.centerCoordinateDistance
                 let maxDotOffsetFromCenter = halfMapSideLength / 2
