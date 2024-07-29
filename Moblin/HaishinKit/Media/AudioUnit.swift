@@ -167,7 +167,6 @@ private class ReplaceAudio {
         }
         var presentationTimeStamp = calcPresentationTimeStamp()
         let deltaFromCalculatedToClock = presentationTimeStamp - currentPresentationTimeStamp
-        logger.info("replace-audio: Delta is \(deltaFromCalculatedToClock.seconds)")
         if abs(deltaFromCalculatedToClock.seconds) > deltaLimit {
             if deltaFromCalculatedToClock > .zero {
                 logger.info("""
