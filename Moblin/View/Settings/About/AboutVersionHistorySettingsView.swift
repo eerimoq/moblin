@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.351.0", date: "2024-07-29", changes: [
+        "• Try to fix RTMP server audio issues when in background. 🐛 🧑‍🏭 ErAzOr",
+        "• Reattach camera when entering foreground.",
+        "  • Should make it more robust.",
+        "• Increase time from 5 to 15 seconds before switching from BRB to main scene.",
+        "  • I think BELABOX cloud or OBS changed something in their reconnect logic. This fix might not even work.",
+        "• Make map widget show a bigger area. 💡 JohannesLiv",
+    ]),
     Version(version: "0.350.0", date: "2024-07-27", changes: [
         "• Text widget background and foreground opacity settings.",
         "• Text widget text suggestions.",
