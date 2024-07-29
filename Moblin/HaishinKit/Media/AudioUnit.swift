@@ -6,6 +6,8 @@ private let lockQueue = DispatchQueue(
     qos: .userInteractive
 )
 
+private let deltaLimit = 0.03
+
 func makeChannelMap(
     numberOfInputChannels: Int,
     numberOfOutputChannels: Int,
@@ -152,13 +154,41 @@ private class ReplaceAudio {
 
     private func output() {
         outputCounter += 1
+        let currentPresentationTimeStamp = currentPresentationTimeStamp()
         if startPresentationTimeStamp == .zero {
-            startPresentationTimeStamp = currentPresentationTimeStamp()
+            startPresentationTimeStamp = currentPresentationTimeStamp
         }
-        let presentationTimeStamp = CMTime(
+        var presentationTimeStamp = CMTime(
             value: Int64(frameLength * Double(outputCounter)),
             timescale: CMTimeScale(sampleRate)
         ) + startPresentationTimeStamp
+        let deltaFromCalculatedToClock = presentationTimeStamp - currentPresentationTimeStamp
+        logger.info("replace-audio: Delta is \(deltaFromCalculatedToClock.seconds)")
+        if abs(deltaFromCalculatedToClock.seconds) > deltaLimit {
+            if deltaFromCalculatedToClock > .zero {
+                logger.info("""
+                replace-audio: Adjust PTS back in time. Calculated is \(presentationTimeStamp
+                    .seconds) \
+                and clock is \(currentPresentationTimeStamp.seconds)
+                """)
+                outputCounter -= 1
+                presentationTimeStamp = CMTime(
+                    value: Int64(frameLength * Double(outputCounter)),
+                    timescale: CMTimeScale(sampleRate)
+                ) + startPresentationTimeStamp
+            } else {
+                logger.info("""
+                replace-audio: Adjust PTS forward in time. Calculated is \(presentationTimeStamp
+                    .seconds) \
+                and clock is \(currentPresentationTimeStamp.seconds)
+                """)
+                outputCounter += 1
+                presentationTimeStamp = CMTime(
+                    value: Int64(frameLength * Double(outputCounter)),
+                    timescale: CMTimeScale(sampleRate)
+                ) + startPresentationTimeStamp
+            }
+        }
         guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
             return
         }

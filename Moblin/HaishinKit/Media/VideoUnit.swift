@@ -200,8 +200,6 @@ final class VideoUnit: NSObject {
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
-    private var frameCounter: Int64 = 0
-    private var startPresentationTimeStamp: CMTime = .zero
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -251,12 +249,7 @@ final class VideoUnit: NSObject {
     }
 
     private func handleFrameTimer() {
-        frameCounter += 1
-        if startPresentationTimeStamp == .zero {
-            startPresentationTimeStamp = currentPresentationTimeStamp()
-        }
-        let presentationTimeStamp = CMTime(value: Int64(frameCounter), timescale: CMTimeScale(frameRate)) +
-            startPresentationTimeStamp
+        let presentationTimeStamp = currentPresentationTimeStamp()
         handleReplaceVideo(presentationTimeStamp)
         handleGapFillerTimer()
     }
