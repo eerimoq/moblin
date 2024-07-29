@@ -152,16 +152,20 @@ private class ReplaceAudio {
         outputTimer = nil
     }
 
+    private func calcPresentationTimeStamp() -> CMTime {
+        return CMTime(
+            value: Int64(frameLength * Double(outputCounter)),
+            timescale: CMTimeScale(sampleRate)
+        ) + startPresentationTimeStamp
+    }
+
     private func output() {
         outputCounter += 1
         let currentPresentationTimeStamp = currentPresentationTimeStamp()
         if startPresentationTimeStamp == .zero {
             startPresentationTimeStamp = currentPresentationTimeStamp
         }
-        var presentationTimeStamp = CMTime(
-            value: Int64(frameLength * Double(outputCounter)),
-            timescale: CMTimeScale(sampleRate)
-        ) + startPresentationTimeStamp
+        var presentationTimeStamp = calcPresentationTimeStamp()
         let deltaFromCalculatedToClock = presentationTimeStamp - currentPresentationTimeStamp
         logger.info("replace-audio: Delta is \(deltaFromCalculatedToClock.seconds)")
         if abs(deltaFromCalculatedToClock.seconds) > deltaLimit {
@@ -172,10 +176,7 @@ private class ReplaceAudio {
                 and clock is \(currentPresentationTimeStamp.seconds)
                 """)
                 outputCounter -= 1
-                presentationTimeStamp = CMTime(
-                    value: Int64(frameLength * Double(outputCounter)),
-                    timescale: CMTimeScale(sampleRate)
-                ) + startPresentationTimeStamp
+                presentationTimeStamp = calcPresentationTimeStamp()
             } else {
                 logger.info("""
                 replace-audio: Adjust PTS forward in time. Calculated is \(presentationTimeStamp
@@ -183,10 +184,7 @@ private class ReplaceAudio {
                 and clock is \(currentPresentationTimeStamp.seconds)
                 """)
                 outputCounter += 1
-                presentationTimeStamp = CMTime(
-                    value: Int64(frameLength * Double(outputCounter)),
-                    timescale: CMTimeScale(sampleRate)
-                ) + startPresentationTimeStamp
+                presentationTimeStamp = calcPresentationTimeStamp()
             }
         }
         guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
