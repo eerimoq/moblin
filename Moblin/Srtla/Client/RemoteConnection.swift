@@ -492,10 +492,10 @@ class RemoteConnection {
         numberOfNullPacketsSent = 0
         numberOfNonNullPacketsSent = 0
         if type == nil {
-            logger.info("srtla: \(typeString): Overhead: \(overhead) %")
+            logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
         } else {
             logger
-                .info(
+                .debug(
                     """
                     srtla: \(typeString): Score: \(score()), In flight: \
                     \(packetsInFlight.count), Window size: \(windowSize), \

@@ -79,7 +79,7 @@ private class ReplaceVideo {
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp + timeOffset
             if abs(inputOutputDelta) < 0.002 {
-                logger.info("replace-video: \(name): Small delta. Swap offset from \(timeOffset).")
+                logger.debug("replace-video: \(name): Small delta. Swap offset from \(timeOffset).")
                 if timeOffset == 0.0 {
                     timeOffset = 0.01
                 } else {
