@@ -33,34 +33,34 @@ class TextFormatLoader {
             case "{":
                 let formatFromIndex = format[index ..< format.endIndex].lowercased()
                 if formatFromIndex.hasPrefix("{time}") {
-                    loadTime()
+                    loadItem(part: .clock, offsetBy: 6)
                 } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
-                    loadBitrateAndTotal()
+                    loadItem(part: .bitrateAndTotal, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{debugoverlay}") {
-                    loadDebugOverlay()
+                    loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{speed}") {
-                    loadSpeed()
+                    loadItem(part: .speed, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{altitude}") {
-                    loadAltitude()
+                    loadItem(part: .altitude, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{distance}") {
-                    loadDistance()
+                    loadItem(part: .distance, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{timer}") {
-                    loadTimer()
+                    loadItem(part: .timer, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{conditions}") {
-                    loadConditions()
+                    loadItem(part: .conditions, offsetBy: 12)
                 } else if formatFromIndex.hasPrefix("{temperature}") {
-                    loadTemperature()
+                    loadItem(part: .temperature, offsetBy: 13)
                 } else if formatFromIndex.hasPrefix("{country}") {
-                    loadCountry()
+                    loadItem(part: .country, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{countryflag}") {
-                    loadCountryFlag()
+                    loadItem(part: .countryFlag, offsetBy: 13)
                 } else if formatFromIndex.hasPrefix("{city}") {
-                    loadCity()
+                    loadItem(part: .city, offsetBy: 6)
                 } else {
                     index = format.index(after: index)
                 }
             case "\n":
-                loadNewLine()
+                loadItem(part: .newLine, offsetBy: 1)
             default:
                 index = format.index(after: index)
             }
@@ -75,94 +75,10 @@ class TextFormatLoader {
         }
     }
 
-    private func loadTime() {
+    private func loadItem(part: TextFormatPart, offsetBy: Int) {
         appendTextIfPresent()
-        parts.append(.clock)
-        index = format.index(index, offsetBy: 6)
-        textStartIndex = index
-    }
-
-    private func loadBitrateAndTotal() {
-        appendTextIfPresent()
-        parts.append(.bitrateAndTotal)
-        index = format.index(index, offsetBy: 17)
-        textStartIndex = index
-    }
-
-    private func loadDebugOverlay() {
-        appendTextIfPresent()
-        parts.append(.debugOverlay)
-        index = format.index(index, offsetBy: 14)
-        textStartIndex = index
-    }
-
-    private func loadSpeed() {
-        appendTextIfPresent()
-        parts.append(.speed)
-        index = format.index(index, offsetBy: 7)
-        textStartIndex = index
-    }
-
-    private func loadAltitude() {
-        appendTextIfPresent()
-        parts.append(.altitude)
-        index = format.index(index, offsetBy: 10)
-        textStartIndex = index
-    }
-
-    private func loadDistance() {
-        appendTextIfPresent()
-        parts.append(.distance)
-        index = format.index(index, offsetBy: 10)
-        textStartIndex = index
-    }
-
-    private func loadTimer() {
-        appendTextIfPresent()
-        parts.append(.timer)
-        index = format.index(index, offsetBy: 7)
-        textStartIndex = index
-    }
-
-    private func loadConditions() {
-        appendTextIfPresent()
-        parts.append(.conditions)
-        index = format.index(index, offsetBy: 12)
-        textStartIndex = index
-    }
-
-    private func loadTemperature() {
-        appendTextIfPresent()
-        parts.append(.temperature)
-        index = format.index(index, offsetBy: 13)
-        textStartIndex = index
-    }
-
-    private func loadNewLine() {
-        appendTextIfPresent()
-        parts.append(.newLine)
-        index = format.index(index, offsetBy: 1)
-        textStartIndex = index
-    }
-
-    private func loadCountry() {
-        appendTextIfPresent()
-        parts.append(.country)
-        index = format.index(index, offsetBy: 9)
-        textStartIndex = index
-    }
-
-    private func loadCountryFlag() {
-        appendTextIfPresent()
-        parts.append(.countryFlag)
-        index = format.index(index, offsetBy: 13)
-        textStartIndex = index
-    }
-
-    private func loadCity() {
-        appendTextIfPresent()
-        parts.append(.city)
-        index = format.index(index, offsetBy: 6)
+        parts.append(part)
+        index = format.index(index, offsetBy: offsetBy)
         textStartIndex = index
     }
 }
