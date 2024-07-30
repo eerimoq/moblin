@@ -12,9 +12,18 @@ private let versions = [
         "• Try to fix RTMP server audio issues when in background. 🐛 🧑‍🏭 ErAzOr",
         "• Reattach camera when entering foreground.",
         "  • Should make it more robust.",
+        "  • Does not apply when streaming in background.",
         "• Increase time from 5 to 15 seconds before switching from BRB to main scene.",
         "  • I think BELABOX cloud or OBS changed something in their reconnect logic. This fix might not even work.",
         "• Make map widget show a bigger area. 💡 JohannesLiv",
+        "• Text widget checkbox specifier `{checkbox}`.",
+        "• Slightly smaller text widget font size by default.",
+        "  • 30 instead of 40.",
+        "• Remove Settings → Scenes → My scene → Widgets visibility toggles.",
+        "  • Control visibility with widget toggles (globally, across ass scenes).",
+        "• Slightly smaller poll font size.",
+        "  • 30 instead of 40.",
+        "• Make poll background transparent.",
     ]),
     Version(version: "0.350.0", date: "2024-07-27", changes: [
         "• Text widget background and foreground opacity settings.",
@@ -455,7 +464,7 @@ private let versions = [
     ]),
     Version(version: "0.282.0", date: "2024-05-22", changes: [
         "• Toggle to mirror front camera on stream. 💡 Sahrani and others",
-        "  • Settings -> Camera -> Mirror front camera on stream.",
+        "  • Settings → Camera → Mirror front camera on stream.",
     ]),
     Version(version: "0.281.0", date: "2024-05-21", changes: [
         "• New filter framework.",
