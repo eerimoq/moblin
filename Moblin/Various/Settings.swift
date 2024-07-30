@@ -750,7 +750,7 @@ class SettingsWidgetText: Codable {
     var clearBackgroundColor: Bool? = false
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
     var clearForegroundColor: Bool? = false
-    var fontSize: Int? = 40
+    var fontSize: Int? = 30
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
     var delay: Double? = 0.0
@@ -3172,7 +3172,7 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets where widget.text.fontSize == nil {
-            widget.text.fontSize = 40
+            widget.text.fontSize = 30
             store()
         }
         for widget in realDatabase.widgets where widget.text.fontDesign == nil {
