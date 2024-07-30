@@ -140,11 +140,7 @@ struct SceneSettingsView: View {
                                     DraggableItemPrefixView()
                                     HStack {
                                         Text("")
-                                        Image(
-                                            systemName: widgetImage(
-                                                widget: realWidget
-                                            )
-                                        )
+                                        Image(systemName: widgetImage(widget: realWidget))
                                         Text(realWidget.name)
                                     }
                                     Spacer()

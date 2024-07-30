@@ -43,9 +43,9 @@ final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var backgroundColor: RgbColor?
     private var foregroundColor: RgbColor?
-    private let fontSize: CGFloat
-    private let fontDesign: Font.Design
-    private let fontWeight: Font.Weight
+    private var fontSize: CGFloat
+    private var fontDesign: Font.Design
+    private var fontWeight: Font.Weight
     private var x: Double
     private var y: Double
     private let settingName: String
@@ -94,80 +94,69 @@ final class TextEffect: VideoEffect {
         super.init()
     }
 
-    func setFormat(format: String) {
+    private func forceImageUpdate() {
         textQueue.sync {
             forceUpdate = true
             forceUpdateMetalPetal = true
         }
-        formatParts = loadTextFormat(format: format)
         previousLines = nil
         previousLinesMetalPetal = nil
+    }
+
+    func setFormat(format: String) {
+        formatParts = loadTextFormat(format: format)
+        forceImageUpdate()
     }
 
     func setBackgroundColor(color: RgbColor) {
-        textQueue.sync {
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
         backgroundColor = color
-        previousLines = nil
-        previousLinesMetalPetal = nil
+        forceImageUpdate()
     }
 
     func setForegroundColor(color: RgbColor) {
-        textQueue.sync {
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
         foregroundColor = color
-        previousLines = nil
-        previousLinesMetalPetal = nil
+        forceImageUpdate()
+    }
+
+    func setFontSize(size: CGFloat) {
+        fontSize = size
+        forceImageUpdate()
+    }
+
+    func setFontDesign(design: Font.Design) {
+        fontDesign = design
+        forceImageUpdate()
+    }
+
+    func setFontWeight(weight: Font.Weight) {
+        fontWeight = weight
+        forceImageUpdate()
     }
 
     func setTimersEndTime(endTimes: [ContinuousClock.Instant]) {
-        textQueue.sync {
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
         timersEndTime = endTimes
-        previousLines = nil
-        previousLinesMetalPetal = nil
+        forceImageUpdate()
     }
 
     func setEndTime(index: Int, endTime: ContinuousClock.Instant) {
         guard index < timersEndTime.count else {
             return
         }
-        textQueue.sync {
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
         timersEndTime[index] = endTime
-        previousLines = nil
-        previousLinesMetalPetal = nil
+        forceImageUpdate()
     }
 
     func setCheckboxes(checkboxes: [Bool]) {
-        textQueue.sync {
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
         self.checkboxes = checkboxes
-        previousLines = nil
-        previousLinesMetalPetal = nil
+        forceImageUpdate()
     }
 
     func setCheckbox(index: Int, checked: Bool) {
         guard index < checkboxes.count else {
             return
         }
-        textQueue.sync {
-            forceUpdate = true
-            forceUpdateMetalPetal = true
-        }
         checkboxes[index] = checked
-        previousLines = nil
-        previousLinesMetalPetal = nil
+        forceImageUpdate()
     }
 
     func setPosition(x: Double, y: Double) {

@@ -262,10 +262,7 @@ struct WidgetTextSettingsView: View {
                         return
                     }
                     widget.text.backgroundColor = color
-                    guard let textEffect = model.getTextEffect(id: widget.id) else {
-                        return
-                    }
-                    textEffect.setBackgroundColor(color: color)
+                    model.getTextEffect(id: widget.id)?.setBackgroundColor(color: color)
                 }
             ColorPicker("Foreground", selection: $foregroundColor, supportsOpacity: true)
                 .onChange(of: foregroundColor) { _ in
@@ -273,10 +270,7 @@ struct WidgetTextSettingsView: View {
                         return
                     }
                     widget.text.foregroundColor = color
-                    guard let textEffect = model.getTextEffect(id: widget.id) else {
-                        return
-                    }
-                    textEffect.setForegroundColor(color: color)
+                    model.getTextEffect(id: widget.id)?.setForegroundColor(color: color)
                 }
         } header: {
             Text("Colors")
@@ -293,7 +287,7 @@ struct WidgetTextSettingsView: View {
                             return
                         }
                         widget.text.fontSize = Int(fontSize)
-                        model.resetSelectedScene(changeScene: false)
+                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(fontSize))
                     }
                 )
                 Text(String(Int(fontSize)))
@@ -306,7 +300,8 @@ struct WidgetTextSettingsView: View {
                     widget.text.fontDesign!.toString()
                 }, set: { value in
                     widget.text.fontDesign = SettingsFontDesign.fromString(value: value)
-                    model.resetSelectedScene(changeScene: false)
+                    model.getTextEffect(id: widget.id)?
+                        .setFontDesign(design: widget.text.fontDesign!.toSystem())
                 })) {
                     ForEach(textWidgetFontDesigns, id: \.self) {
                         Text($0)
@@ -320,7 +315,8 @@ struct WidgetTextSettingsView: View {
                     widget.text.fontWeight!.toString()
                 }, set: { value in
                     widget.text.fontWeight = SettingsFontWeight.fromString(value: value)
-                    model.resetSelectedScene(changeScene: false)
+                    model.getTextEffect(id: widget.id)?
+                        .setFontWeight(weight: widget.text.fontWeight!.toSystem())
                 })) {
                     ForEach(textWidgetFontWeights, id: \.self) {
                         Text($0)
