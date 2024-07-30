@@ -3968,7 +3968,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         addedScenes.append(scene)
-        for sceneWidget in scene.widgets.filter({ $0.enabled }) {
+        for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
             }

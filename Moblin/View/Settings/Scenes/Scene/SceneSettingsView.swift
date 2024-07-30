@@ -138,22 +138,16 @@ struct SceneSettingsView: View {
                             }, label: {
                                 HStack {
                                     DraggableItemPrefixView()
-                                    Toggle(isOn: Binding(get: {
-                                        widget.enabled
-                                    }, set: { value in
-                                        widget.enabled = value
-                                        model.sceneUpdated()
-                                    })) {
-                                        HStack {
-                                            Text("")
-                                            Image(
-                                                systemName: widgetImage(
-                                                    widget: realWidget
-                                                )
+                                    HStack {
+                                        Text("")
+                                        Image(
+                                            systemName: widgetImage(
+                                                widget: realWidget
                                             )
-                                            Text(realWidget.name)
-                                        }
+                                        )
+                                        Text(realWidget.name)
                                     }
+                                    Spacer()
                                     if canWidgetExpand(widget: realWidget) {
                                         Image(systemName: expanded ? "chevron.down" : "chevron.right")
                                     }
