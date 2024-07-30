@@ -23,7 +23,7 @@ final class PollEffect: VideoEffect {
     }
 
     private func scaledFontSize(width: Double) -> CGFloat {
-        return 40 * (width / 1920)
+        return 30 * (width / 1920)
     }
 
     private func updateOverlay(size: CGSize) {
@@ -37,7 +37,7 @@ final class PollEffect: VideoEffect {
                 Text(self.text)
             }
             .padding([.trailing], 7)
-            .background(.black)
+            .background(.black.opacity(0.75))
             .foregroundColor(.white)
             .font(.system(size: self.scaledFontSize(width: size.width)))
             .cornerRadius(10)
