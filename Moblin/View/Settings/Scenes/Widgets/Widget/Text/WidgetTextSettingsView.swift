@@ -67,11 +67,7 @@ private struct TextSelectionView: View {
     @State var suggestion: Int = 0
     @FocusState private var isFocused: Bool
 
-    private func update() {
-        widget.text.formatString = value
-        let textEffect = model.getTextEffect(id: widget.id)
-        textEffect?.setFormat(format: value)
-        let parts = loadTextFormat(format: value)
+    private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
         let numberOfTimers = parts.filter { value in
             switch value {
             case .timer:
@@ -89,6 +85,27 @@ private struct TextSelectionView: View {
         textEffect?.setTimersEndTime(endTimes: widget.text.timers!.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
         })
+    }
+
+    private func updateCheckboxes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfCheckboxes = parts.filter { value in
+            switch value {
+            case .checkbox:
+                return true
+            default:
+                return false
+            }
+        }.count
+        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes!.count {
+            widget.text.checkboxes!.append(.init())
+        }
+        while widget.text.checkboxes!.count > numberOfCheckboxes {
+            widget.text.checkboxes!.removeLast()
+        }
+        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes!.map { $0.checked })
+    }
+
+    private func updateNeedsWeather(_ parts: [TextFormatPart]) {
         widget.text.needsWeather = !parts.filter { value in
             switch value {
             case .conditions:
@@ -100,6 +117,9 @@ private struct TextSelectionView: View {
             }
         }.isEmpty
         model.startWeatherManager()
+    }
+
+    private func updateNeedsGeography(_ parts: [TextFormatPart]) {
         widget.text.needsGeography = !parts.filter { value in
             switch value {
             case .country:
@@ -113,6 +133,17 @@ private struct TextSelectionView: View {
             }
         }.isEmpty
         model.startGeographyManager()
+    }
+
+    private func update() {
+        widget.text.formatString = value
+        let textEffect = model.getTextEffect(id: widget.id)
+        textEffect?.setFormat(format: value)
+        let parts = loadTextFormat(format: value)
+        updateTimers(textEffect, parts)
+        updateCheckboxes(textEffect, parts)
+        updateNeedsWeather(parts)
+        updateNeedsGeography(parts)
     }
 
     var body: some View {
@@ -150,6 +181,7 @@ private struct TextSelectionView: View {
                     Text("General").bold()
                     Text("{time} - Show time as HH:MM:SS")
                     Text("{timer} - Show a timer")
+                    Text("{checkbox} - Show a checkbox")
                     Text("")
                     Text("Location (if Settings -> Location is enabled)").bold()
                     Text("{speed} - Show speed")
@@ -202,6 +234,24 @@ struct WidgetTextSettingsView: View {
                     }
                 } header: {
                     Text("Timers")
+                }
+            }
+        }
+        if !widget.text.checkboxes!.isEmpty {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                Section {
+                    ForEach(widget.text.checkboxes!) { checkbox in
+                        let index = widget.text.checkboxes!.firstIndex(where: { $0 === checkbox }) ?? 0
+                        CheckboxWidgetView(
+                            name: "Checkbox \(index + 1)",
+                            checkbox: checkbox,
+                            index: index,
+                            textEffect: textEffect,
+                            indented: false
+                        )
+                    }
+                } header: {
+                    Text("Checkboxes")
                 }
             }
         }

@@ -2450,7 +2450,8 @@ final class Model: NSObject, ObservableObject {
                 delay: widget.text.delay!,
                 timersEndTime: widget.text.timers!.map {
                     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
-                }
+                },
+                checkboxes: widget.text.checkboxes!.map { $0.checked }
             )
         }
         for browserEffect in browserEffects.values {

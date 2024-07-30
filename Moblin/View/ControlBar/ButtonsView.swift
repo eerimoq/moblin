@@ -481,8 +481,12 @@ struct TimerWidgetView: View {
                                 .tag(delta)
                         }
                     }
+                    .onChange(of: delta) { value in
+                        timer.delta = value
+                    }
                     Button {
                         endTime -= 60 * Double(delta)
+                        timer.endTime = endTime
                         updateTextEffect()
                     } label: {
                         Image(systemName: "minus.circle")
@@ -493,6 +497,7 @@ struct TimerWidgetView: View {
                             endTime = Date().timeIntervalSince1970
                         }
                         endTime += 60 * Double(delta)
+                        timer.endTime = endTime
                         updateTextEffect()
                     } label: {
                         Image(systemName: "plus.circle")
@@ -502,9 +507,48 @@ struct TimerWidgetView: View {
                 .buttonStyle(BorderlessButtonStyle())
             }
         }
-        .onDisappear {
-            timer.delta = delta
-            timer.endTime = endTime
+    }
+}
+
+struct CheckboxWidgetView: View {
+    private let name: String
+    private let checkbox: SettingsWidgetTextCheckbox
+    private let index: Int
+    private let textEffect: TextEffect
+    private var indented: Bool
+
+    init(
+        name: String,
+        checkbox: SettingsWidgetTextCheckbox,
+        index: Int,
+        textEffect: TextEffect,
+        indented: Bool
+    ) {
+        self.name = name
+        self.checkbox = checkbox
+        self.index = index
+        self.textEffect = textEffect
+        self.indented = indented
+    }
+
+    private func updateTextEffect() {
+        textEffect.setCheckbox(index: index, checked: checkbox.checked)
+    }
+
+    var body: some View {
+        HStack {
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
+            Toggle(isOn: Binding(get: {
+                checkbox.checked
+            }, set: { value in
+                checkbox.checked = value
+                updateTextEffect()
+            })) {
+                Text(name)
+            }
         }
     }
 }
@@ -537,6 +581,17 @@ struct WidgetsView: View {
                                     TimerWidgetView(
                                         name: "Timer \(index + 1)",
                                         timer: timer,
+                                        index: index,
+                                        textEffect: textEffect,
+                                        indented: true
+                                    )
+                                }
+                                ForEach(widget.text.checkboxes!) { checkbox in
+                                    let index = widget.text.checkboxes!
+                                        .firstIndex(where: { $0 === checkbox }) ?? 0
+                                    CheckboxWidgetView(
+                                        name: "Checkbox \(index + 1)",
+                                        checkbox: checkbox,
                                         index: index,
                                         textEffect: textEffect,
                                         indented: true

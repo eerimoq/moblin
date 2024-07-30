@@ -15,6 +15,7 @@ enum TextFormatPart {
     case country
     case countryFlag
     case city
+    case checkbox
 }
 
 class TextFormatLoader {
@@ -56,6 +57,8 @@ class TextFormatLoader {
                     loadItem(part: .countryFlag, offsetBy: 13)
                 } else if formatFromIndex.hasPrefix("{city}") {
                     loadItem(part: .city, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{checkbox}") {
+                    loadItem(part: .checkbox, offsetBy: 10)
                 } else {
                     index = format.index(after: index)
                 }

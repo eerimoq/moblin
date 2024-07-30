@@ -739,6 +739,11 @@ class SettingsWidgetTextTimer: Codable, Identifiable {
     var endTime: Double = 0
 }
 
+class SettingsWidgetTextCheckbox: Codable, Identifiable {
+    var id: UUID = .init()
+    var checked: Bool = false
+}
+
 class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
@@ -752,6 +757,7 @@ class SettingsWidgetText: Codable {
     var timers: [SettingsWidgetTextTimer]? = []
     var needsWeather: Bool? = false
     var needsGeography: Bool? = false
+    var checkboxes: [SettingsWidgetTextCheckbox]? = []
 }
 
 // periphery:ignore
@@ -3298,6 +3304,10 @@ final class Settings {
         }
         if realDatabase.debug!.maxMapPitch == nil {
             realDatabase.debug!.maxMapPitch = 0.0
+            store()
+        }
+        for widget in database.widgets where widget.text.checkboxes == nil {
+            widget.text.checkboxes = []
             store()
         }
     }

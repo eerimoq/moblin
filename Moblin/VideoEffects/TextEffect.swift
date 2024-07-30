@@ -26,6 +26,7 @@ struct TextEffectStats {
 private enum PartData: Equatable {
     case text(String)
     case imageSystemName(String)
+    case imageSystemNameTryFill(String)
 }
 
 private struct Part: Equatable, Identifiable {
@@ -62,6 +63,7 @@ final class TextEffect: VideoEffect {
     private var forceUpdate = true
     private var forceUpdateMetalPetal = true
     private var timersEndTime: [ContinuousClock.Instant]
+    private var checkboxes: [Bool]
     private let temperatureFormatter = MeasurementFormatter()
 
     init(
@@ -73,7 +75,8 @@ final class TextEffect: VideoEffect {
         fontWeight: Font.Weight,
         settingName: String,
         delay: Double,
-        timersEndTime: [ContinuousClock.Instant]
+        timersEndTime: [ContinuousClock.Instant],
+        checkboxes: [Bool]
     ) {
         formatParts = loadTextFormat(format: format)
         self.backgroundColor = backgroundColor
@@ -86,6 +89,7 @@ final class TextEffect: VideoEffect {
         x = 0
         y = 0
         self.timersEndTime = timersEndTime
+        self.checkboxes = checkboxes
         temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
     }
@@ -121,14 +125,49 @@ final class TextEffect: VideoEffect {
     }
 
     func setTimersEndTime(endTimes: [ContinuousClock.Instant]) {
+        textQueue.sync {
+            forceUpdate = true
+            forceUpdateMetalPetal = true
+        }
         timersEndTime = endTimes
+        previousLines = nil
+        previousLinesMetalPetal = nil
     }
 
     func setEndTime(index: Int, endTime: ContinuousClock.Instant) {
         guard index < timersEndTime.count else {
             return
         }
+        textQueue.sync {
+            forceUpdate = true
+            forceUpdateMetalPetal = true
+        }
         timersEndTime[index] = endTime
+        previousLines = nil
+        previousLinesMetalPetal = nil
+    }
+
+    func setCheckboxes(checkboxes: [Bool]) {
+        textQueue.sync {
+            forceUpdate = true
+            forceUpdateMetalPetal = true
+        }
+        self.checkboxes = checkboxes
+        previousLines = nil
+        previousLinesMetalPetal = nil
+    }
+
+    func setCheckbox(index: Int, checked: Bool) {
+        guard index < checkboxes.count else {
+            return
+        }
+        textQueue.sync {
+            forceUpdate = true
+            forceUpdateMetalPetal = true
+        }
+        checkboxes[index] = checked
+        previousLines = nil
+        previousLinesMetalPetal = nil
     }
 
     func setPosition(x: Double, y: Double) {
@@ -161,6 +200,7 @@ final class TextEffect: VideoEffect {
             return []
         }
         var timerIndex = 0
+        var checkboxIndex = 0
         var lines: [Line] = []
         var parts: [Part] = []
         var lineId = 0
@@ -202,7 +242,7 @@ final class TextEffect: VideoEffect {
                 timerIndex += 1
             case .conditions:
                 if let conditions = stats.conditions {
-                    parts.append(.init(id: partId, data: .imageSystemName(conditions)))
+                    parts.append(.init(id: partId, data: .imageSystemNameTryFill(conditions)))
                 } else {
                     parts.append(.init(id: partId, data: .text("-")))
                 }
@@ -221,6 +261,14 @@ final class TextEffect: VideoEffect {
                 parts.append(.init(id: partId, data: .text(stats.countryFlag ?? "-")))
             case .city:
                 parts.append(.init(id: partId, data: .text(stats.city ?? "-")))
+            case .checkbox:
+                if checkboxIndex < checkboxes.count {
+                    parts.append(.init(
+                        id: partId,
+                        data: .imageSystemName(checkboxes[checkboxIndex] ? "checkmark.square" : "square")
+                    ))
+                }
+                checkboxIndex += 1
             }
             partId += 1
         }
@@ -260,7 +308,9 @@ final class TextEffect: VideoEffect {
         guard now >= nextUpdateTime || forceUpdate else {
             return
         }
-        nextUpdateTime += .seconds(1)
+        if !forceUpdate {
+            nextUpdateTime += .seconds(1)
+        }
         DispatchQueue.main.async {
             let lines = self.formatted(now: now)
             guard lines != self.previousLines else {
@@ -276,6 +326,9 @@ final class TextEffect: VideoEffect {
                                 Text(text)
                                     .foregroundColor(self.foregroundColor?.color() ?? .clear)
                             case let .imageSystemName(name):
+                                Image(systemName: name)
+                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                            case let .imageSystemNameTryFill(name):
                                 if UIImage(systemName: "\(name).fill") != nil {
                                     Image(systemName: "\(name).fill")
                                         .symbolRenderingMode(.multicolor)
@@ -323,7 +376,9 @@ final class TextEffect: VideoEffect {
         guard now >= nextUpdateTimeMetalPetal || forceUpdate else {
             return (x, y)
         }
-        nextUpdateTimeMetalPetal += .seconds(1)
+        if !forceUpdate {
+            nextUpdateTimeMetalPetal += .seconds(1)
+        }
         DispatchQueue.main.async {
             let lines = self.formatted(now: now)
             guard lines != self.previousLinesMetalPetal else {
@@ -339,6 +394,9 @@ final class TextEffect: VideoEffect {
                                 Text(text)
                                     .foregroundColor(self.foregroundColor?.color() ?? .clear)
                             case let .imageSystemName(name):
+                                Image(systemName: name)
+                                    .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                            case let .imageSystemNameTryFill(name):
                                 if UIImage(systemName: "\(name).fill") != nil {
                                     Image(systemName: "\(name).fill")
                                         .symbolRenderingMode(.multicolor)

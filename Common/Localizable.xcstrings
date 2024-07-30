@@ -1602,6 +1602,9 @@
         }
       }
     },
+    "{checkbox} - Show a checkbox" : {
+
+    },
     "{conditions} - Show conditions" : {
 
     },
@@ -22216,6 +22219,9 @@
           }
         }
       }
+    },
+    "Checkboxes" : {
+
     },
     "Cinematic" : {
       "localizations" : {
