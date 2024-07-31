@@ -55,6 +55,7 @@
 		031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15C32B9340FB00BA967D /* AudioLevelView.swift */; };
 		031C15C62B9341F400BA967D /* StreamOverlayIconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */; };
 		031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */; };
+		031E9FBB2C5ABCC9009FF4D8 /* TwitchAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
@@ -235,7 +236,8 @@
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */; };
 		037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037EBE762B666F66004D5774 /* DrawOnStreamView.swift */; };
-		037FE0302C594CE40067B5AC /* GifEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037FE02F2C594CE40067B5AC /* GifEffect.swift */; };
+		037FE0302C594CE40067B5AC /* AlertEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037FE02F2C594CE40067B5AC /* AlertEffect.swift */; };
+		037FE03A2C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037FE0392C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift */; };
 		0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */; };
 		03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */; };
 		03828C312C3B0A1600F5A8AC /* WidgetMapSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */; };
@@ -512,6 +514,7 @@
 		031C15B82B93339C00BA967D /* WatchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettingsView.swift; sourceTree = "<group>"; };
 		031C15BE2B9336D200BA967D /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
 		031C15C32B9340FB00BA967D /* AudioLevelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLevelView.swift; sourceTree = "<group>"; };
+		031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchAuth.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
@@ -742,7 +745,8 @@
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
-		037FE02F2C594CE40067B5AC /* GifEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifEffect.swift; sourceTree = "<group>"; };
+		037FE02F2C594CE40067B5AC /* AlertEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertEffect.swift; sourceTree = "<group>"; };
+		037FE0392C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAlertsSettingsView.swift; sourceTree = "<group>"; };
 		0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotSettingsView.swift; sourceTree = "<group>"; };
 		03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEffect.swift; sourceTree = "<group>"; };
 		03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetMapSettingsView.swift; sourceTree = "<group>"; };
@@ -1113,6 +1117,7 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				037FE0382C5A04BF0067B5AC /* Alerts */,
 				030499602C4038B2003488F4 /* QrCode */,
 				03B2189D2C3E4E3D001FDE57 /* Scene */,
 				039A9E262BAEC58F00A23F97 /* Crop */,
@@ -1749,6 +1754,7 @@
 			children = (
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */,
+				031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */,
 			);
 			path = Twitch;
 			sourceTree = "<group>";
@@ -1853,6 +1859,14 @@
 				037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */,
 			);
 			path = Audio;
+			sourceTree = "<group>";
+		};
+		037FE0382C5A04BF0067B5AC /* Alerts */ = {
+			isa = PBXGroup;
+			children = (
+				037FE0392C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift */,
+			);
+			path = Alerts;
 			sourceTree = "<group>";
 		};
 		03828C2E2C3B09FF00F5A8AC /* Map */ = {
@@ -2118,12 +2132,12 @@
 			isa = PBXGroup;
 			children = (
 				033235442BFBB71C00B897A5 /* MetalPetal */,
+				037FE02F2C594CE40067B5AC /* AlertEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
 				030499672C404812003488F4 /* EffectUtils.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
-				037FE02F2C594CE40067B5AC /* GifEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				038F42EC2B6849D400E68752 /* LutEffect.swift */,
@@ -2824,7 +2838,7 @@
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
-				037FE0302C594CE40067B5AC /* GifEffect.swift in Sources */,
+				037FE0302C594CE40067B5AC /* AlertEffect.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				0359F8FC2BD3DA61005BFDA8 /* SRTSocket.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */,
@@ -2879,6 +2893,7 @@
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				038E7BE72C331272008994BA /* MediaPlayerFileSettingsView.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
+				037FE03A2C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift in Sources */,
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
@@ -2945,6 +2960,7 @@
 				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0359F8D72BD3DA61005BFDA8 /* MpegTsAudioConfig.swift in Sources */,
 				0359F8B42BD3DA61005BFDA8 /* AVAudioPCMBuffer+Extension.swift in Sources */,
+				031E9FBB2C5ABCC9009FF4D8 /* TwitchAuth.swift in Sources */,
 				03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
 				038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */,

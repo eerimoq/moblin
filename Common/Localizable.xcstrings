@@ -10774,6 +10774,9 @@
         }
       }
     },
+    "Alerts" : {
+
+    },
     "Algorithm" : {
       "localizations" : {
         "de" : {
@@ -63070,6 +63073,9 @@
         }
       }
     },
+    "Play alert" : {
+
+    },
     "Playlist" : {
       "localizations" : {
         "de" : {
@@ -88174,6 +88180,9 @@
         }
       }
     },
+    "Todo" : {
+
+    },
     "Too many recordings. Deleting oldest recording." : {
       "localizations" : {
         "de" : {
@@ -90516,6 +90525,9 @@
           }
         }
       }
+    },
+    "Twitch login" : {
+
     },
     "Two columns" : {
       "localizations" : {

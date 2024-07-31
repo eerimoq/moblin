@@ -1,9 +1,11 @@
 import SwiftUI
+import WebKit
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
     @State var maxMapPitch: Double
+    @State var showingTwitchAuth = false
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -11,6 +13,11 @@ struct DebugSettingsView: View {
         }
         model.database.debug!.maximumLogLines = min(max(1, lines), 100_000)
         model.store()
+    }
+
+    private func onAccessToken(accessToken: String) {
+        model.setTwitchAccessToken(accessToken: accessToken)
+        showingTwitchAuth = false
     }
 
     var body: some View {
@@ -128,6 +135,37 @@ struct DebugSettingsView: View {
                     )
                     Text(String(Int(maxMapPitch)))
                         .frame(width: 40)
+                }
+                Button {
+                    model.playAlert()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Play alert")
+                        Spacer()
+                    }
+                }
+                Button {
+                    showingTwitchAuth = true
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Twitch login")
+                        Spacer()
+                    }
+                }
+                .sheet(isPresented: $showingTwitchAuth) {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showingTwitchAuth = false
+                            }, label: {
+                                Text("Close")
+                            })
+                        }
+                        TwitchAuthView(twitchAuth: TwitchAuth(onAccessToken: onAccessToken))
+                    }
                 }
             } header: {
                 Text("Experimental")

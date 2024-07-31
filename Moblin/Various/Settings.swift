@@ -815,6 +815,21 @@ class SettingsWidgetQrCode: Codable {
     var message = ""
 }
 
+// periphery:ignore
+class SettingsWidgetAlerts: Codable {
+    var followVideoId: UUID?
+    var followAudioId: UUID?
+    var followFormatString: String?
+    var subscribeVideoId: UUID?
+    var subscribeAudioId: UUID?
+    var subscribeFormatString: String?
+    var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
+    var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
+    var fontSize: Int? = 50
+    var fontDesign: SettingsFontDesign? = .default
+    var fontWeight: SettingsFontWeight? = .regular
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -847,6 +862,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case map = "Map"
     case scene = "Scene"
     case qrCode = "QR code"
+    case alerts = "Alerts"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -871,6 +887,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .scene
         case String(localized: "QR code"):
             return .qrCode
+        case String(localized: "Alerts"):
+            return .alerts
         default:
             return .videoEffect
         }
@@ -894,11 +912,14 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Scene")
         case .qrCode:
             return String(localized: "QR code")
+        case .alerts:
+            return String(localized: "Alerts")
         }
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }.map { $0.toString() }
+let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect && $0 != .alerts }
+    .map { $0.toString() }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
@@ -920,6 +941,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var map: SettingsWidgetMap? = .init()
     var scene: SettingsWidgetScene? = .init()
     var qrCode: SettingsWidgetQrCode? = .init()
+    var alerts: SettingsWidgetAlerts? = .init()
     var enabled: Bool? = true
 
     init(name: String) {
@@ -3308,6 +3330,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.checkboxes == nil {
             widget.text.checkboxes = []
+            store()
+        }
+        for widget in realDatabase.widgets where widget.alerts == nil {
+            widget.alerts = .init()
             store()
         }
     }

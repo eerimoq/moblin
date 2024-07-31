@@ -321,8 +321,9 @@ final class Model: NSObject, ObservableObject {
     private var lutEffects: [UUID: LutEffect] = [:]
     private var mapEffects: [UUID: MapEffect] = [:]
     private var qrCodeEffects: [UUID: QrCodeEffect] = [:]
+    private var alertsEffects: [UUID: AlertEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
-    private var gifEffect: GifEffect?
+    private var alertEffect: AlertEffect?
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
@@ -851,23 +852,57 @@ final class Model: NSObject, ObservableObject {
         listObsScenes()
     }
 
-    // periphery:ignore
-    func playGif() {
-        if let gifEffect {
-            media.unregisterEffect(gifEffect)
+    private var alertImages: [CIImage] = []
+
+    private func loadAlertMedia() {
+        var fpsTime = 0.0
+        var gifTime = 0.0
+        if let url = Bundle.main.url(forResource: "LUTs.bundle/alert", withExtension: "gif"),
+           let data = try? Data(contentsOf: url),
+           let animatedImage = SDAnimatedImage(data: data)
+        {
+            for index in 0 ..< animatedImage.animatedImageFrameCount {
+                if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
+                    gifTime += animatedImage.animatedImageDuration(at: index)
+                    let image = CIImage(cgImage: cgImage)
+                    while fpsTime < gifTime {
+                        alertImages.append(image)
+                        fpsTime += 1 / Double(stream.fps)
+                    }
+                }
+            }
         }
-        gifEffect = GifEffect(fps: Double(stream.fps))
-        media.registerEffect(gifEffect!)
     }
 
+    func playAlert() {
+        if let alertEffect {
+            media.unregisterEffect(alertEffect)
+        }
+        guard let url = Bundle.main.url(forResource: "LUTs.bundle/alert", withExtension: "mp3") else {
+            return
+        }
+        let audioPlayer = try? AVAudioPlayer(contentsOf: url)
+        alertEffect = AlertEffect(images: alertImages,
+                                  audioPlayer: audioPlayer,
+                                  onRemoved: {
+                                      DispatchQueue.main.async {
+                                          self.alertEffect = nil
+                                      }
+                                  })
+        media.registerEffect(alertEffect!)
+    }
+
+    func setTwitchAccessToken(accessToken _: String) {}
+
     func setup() {
+        loadAlertMedia()
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
         supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
-        let WebPCoder = SDImageWebPCoder.shared
-        SDImageCodersManager.shared.addCoder(WebPCoder)
+        let webPCoder = SDImageWebPCoder.shared
+        SDImageCodersManager.shared.addCoder(webPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         logger.handler = debugLog(message:)
         logger.debugEnabled = database.debug!.logLevel == .debug
@@ -3767,8 +3802,8 @@ final class Model: NSObject, ObservableObject {
         }
         media.unregisterEffect(drawOnStreamEffect)
         media.unregisterEffect(lutEffect)
-        if let gifEffect {
-            media.unregisterEffect(gifEffect)
+        if let alertEffect {
+            media.unregisterEffect(alertEffect)
         }
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
@@ -3961,8 +3996,8 @@ final class Model: NSObject, ObservableObject {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
-        if let gifEffect {
-            effects.append(gifEffect)
+        if let alertEffect {
+            effects.append(alertEffect)
         }
         media.setPendingAfterAttachEffects(effects: effects)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
@@ -4050,6 +4085,10 @@ final class Model: NSObject, ObservableObject {
                 if let qrCodeEffect = qrCodeEffects[widget.id] {
                     qrCodeEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     effects.append(qrCodeEffect)
+                }
+            case .alerts:
+                if let alertEffect = alertsEffects[sceneWidget.id] {
+                    effects.append(alertEffect)
                 }
             }
         }

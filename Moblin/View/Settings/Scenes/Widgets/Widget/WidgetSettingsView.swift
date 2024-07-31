@@ -54,6 +54,8 @@ struct WidgetSettingsView: View {
                 WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene!.sceneId)
             case .qrCode:
                 WidgetQrCodeSettingsView(widget: widget)
+            case .alerts:
+                WidgetAlertsSettingsView(widget: widget)
             }
         }
         .navigationTitle("Widget")
