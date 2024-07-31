@@ -322,6 +322,7 @@ final class Model: NSObject, ObservableObject {
     private var mapEffects: [UUID: MapEffect] = [:]
     private var qrCodeEffects: [UUID: QrCodeEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
+    private var gifEffect: GifEffect?
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
@@ -850,6 +851,15 @@ final class Model: NSObject, ObservableObject {
         listObsScenes()
     }
 
+    // periphery:ignore
+    func playGif() {
+        if let gifEffect {
+            media.unregisterEffect(gifEffect)
+        }
+        gifEffect = GifEffect(fps: Double(stream.fps))
+        media.registerEffect(gifEffect!)
+    }
+
     func setup() {
         setMapPitch()
         setAllowVideoRangePixelFormat()
@@ -1334,6 +1344,7 @@ final class Model: NSObject, ObservableObject {
             sceneUpdated()
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+            reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
             chatTextToSpeech.reset(running: true)
@@ -3756,6 +3767,9 @@ final class Model: NSObject, ObservableObject {
         }
         media.unregisterEffect(drawOnStreamEffect)
         media.unregisterEffect(lutEffect)
+        if let gifEffect {
+            media.unregisterEffect(gifEffect)
+        }
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
         }
@@ -3947,6 +3961,9 @@ final class Model: NSObject, ObservableObject {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
+        if let gifEffect {
+            effects.append(gifEffect)
+        }
         media.setPendingAfterAttachEffects(effects: effects)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])

@@ -21,4 +21,8 @@ open class VideoEffect: NSObject {
     }
 
     open func removed() {}
+
+    open func shouldRemove() -> Bool {
+        return false
+    }
 }

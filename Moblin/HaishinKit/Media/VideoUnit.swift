@@ -437,6 +437,16 @@ final class VideoUnit: NSObject {
         }
     }
 
+    private func removeEffects() {
+        var effectsToRemove: [VideoEffect] = []
+        for effect in effects where effect.shouldRemove() {
+            effectsToRemove.append(effect)
+        }
+        for effect in effectsToRemove {
+            unregisterEffectInner(effect)
+        }
+    }
+
     private var blackImage: CIImage?
 
     private func getBlackImage(width: Double, height: Double) -> CIImage {
@@ -849,6 +859,7 @@ final class VideoUnit: NSObject {
                 applyBlur,
                 isFirstAfterAttach
             )
+            removeEffects()
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer

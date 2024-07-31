@@ -235,6 +235,7 @@
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */; };
 		037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037EBE762B666F66004D5774 /* DrawOnStreamView.swift */; };
+		037FE0302C594CE40067B5AC /* GifEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037FE02F2C594CE40067B5AC /* GifEffect.swift */; };
 		0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */; };
 		03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */; };
 		03828C312C3B0A1600F5A8AC /* WidgetMapSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */; };
@@ -741,6 +742,7 @@
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
+		037FE02F2C594CE40067B5AC /* GifEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifEffect.swift; sourceTree = "<group>"; };
 		0380D5E42C2CB2C80071C12B /* ChatBotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotSettingsView.swift; sourceTree = "<group>"; };
 		03828C2B2C3AEF6D00F5A8AC /* MapEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEffect.swift; sourceTree = "<group>"; };
 		03828C302C3B0A1600F5A8AC /* WidgetMapSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetMapSettingsView.swift; sourceTree = "<group>"; };
@@ -2121,6 +2123,7 @@
 				030499672C404812003488F4 /* EffectUtils.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
+				037FE02F2C594CE40067B5AC /* GifEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				038F42EC2B6849D400E68752 /* LutEffect.swift */,
@@ -2821,6 +2824,7 @@
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
+				037FE0302C594CE40067B5AC /* GifEffect.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				0359F8FC2BD3DA61005BFDA8 /* SRTSocket.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */,
