@@ -866,7 +866,7 @@ final class Model: NSObject, ObservableObject {
     private func loadAlertMedia() {
         var fpsTime = 0.0
         var gifTime = 0.0
-        if let url = Bundle.main.url(forResource: "LUTs.bundle/alert", withExtension: "gif"),
+        if let url = Bundle.main.url(forResource: "Alerts.bundle/pixels", withExtension: "gif"),
            let data = try? Data(contentsOf: url),
            let animatedImage = SDAnimatedImage(data: data)
         {
@@ -887,7 +887,7 @@ final class Model: NSObject, ObservableObject {
         if let alertEffect {
             media.unregisterEffect(alertEffect)
         }
-        guard let url = Bundle.main.url(forResource: "LUTs.bundle/alert", withExtension: "mp3") else {
+        guard let url = Bundle.main.url(forResource: "Alerts.bundle/sparkle", withExtension: "mp3") else {
             return
         }
         let audioPlayer = try? AVAudioPlayer(contentsOf: url)

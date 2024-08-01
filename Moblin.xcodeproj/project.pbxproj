@@ -266,6 +266,7 @@
 		03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */; };
 		03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */; };
 		03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */; };
+		0397C3612C5C195D00F93E58 /* Alerts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0397C3602C5C195D00F93E58 /* Alerts.bundle */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */; };
@@ -775,6 +776,7 @@
 		03941A1E2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorWebBrowserSettingsView.swift; sourceTree = "<group>"; };
 		03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamsSettingsView.swift; sourceTree = "<group>"; };
 		03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
+		0397C3602C5C195D00F93E58 /* Alerts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Alerts.bundle; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsoTypeBufferUtil.swift; sourceTree = "<group>"; };
@@ -1652,6 +1654,7 @@
 				03A173F92B38312E00ACC4F8 /* Snow.sks */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
+				0397C3602C5C195D00F93E58 /* Alerts.bundle */,
 				038F42F32B685ACF00E68752 /* LUTs.bundle */,
 			);
 			path = Moblin;
@@ -2634,6 +2637,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0397C3612C5C195D00F93E58 /* Alerts.bundle in Resources */,
 				03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */,
 				038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */,
 				031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */,
