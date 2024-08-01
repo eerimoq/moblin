@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.353.0", date: "2024-08-01", changes: [
+        "• Optional twitch login in stream setup wizard.",
+        "  • To autofill channel name, channel id and stream key.",
+        "• Experimental support for new follower and new subscriber events from Twitch.",
+        "  • Shows a toast on new follower and new subscriber.",
+        "  • Enable in Settings → Debug → Twitch EventSub.",
+    ]),
     Version(version: "0.352.0", date: "2024-08-01", changes: [
         "• Optional twitch login. 🧑‍🏭 NoFuture",
         "  • Login per stream.",
