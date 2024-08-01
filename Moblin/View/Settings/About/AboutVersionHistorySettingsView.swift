@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.352.0", date: "2024-08-01", changes: [
-        "• Twitch login. 🧑‍🏭 NoFuture",
+        "• Optional twitch login. 🧑‍🏭 NoFuture",
         "  • Login per stream.",
         "  • Automatically fetches channel name and channel id.",
         "  • Not part of the stream setup wizard yet.",
