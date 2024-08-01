@@ -286,6 +286,7 @@ final class Model: NSObject, ObservableObject {
     private var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
+    private var twitchEventSub: TwitchEventSub?
     private var kickPusher: KickPusher?
     private var kickViewers: KickViewers?
     private var youTubeLiveChat: YouTubeLiveChat?
@@ -403,6 +404,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showTwitchAuth = false
     var twitchAuth = TwitchAuth()
     private var twitchAuthStream: SettingsStream?
+    private var twitchAuthOnComplete: (() -> Void)?
 
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -424,9 +426,12 @@ final class Model: NSObject, ObservableObject {
     var wizardPlatform: WizardPlatform = .custom
     var wizardNetworkSetup: WizardNetworkSetup = .none
     var wizardCustomProtocol: WizardCustomProtocol = .none
+    let wizardTwitchStream = SettingsStream(name: "")
+    @Published var wizardShowTwitchAuth = false
     @Published var wizardName = ""
     @Published var wizardTwitchChannelName = ""
     @Published var wizardTwitchChannelId = ""
+    var wizardTwitchAccessToken = ""
     @Published var wizardKickChannelName = ""
     @Published var wizardYouTubeVideoId = ""
     @Published var wizardAfreecaTvChannelName = ""
@@ -2913,6 +2918,7 @@ final class Model: NSObject, ObservableObject {
     private func reloadConnections() {
         reloadChats()
         reloadTwitchPubSub()
+        reloadTwitchEventSub()
         reloadObsWebSocket()
         reloadRemoteControlStreamer()
         reloadRemoteControlAssistant()
@@ -3069,6 +3075,10 @@ final class Model: NSObject, ObservableObject {
         return database.chat.enabled! && stream.twitchChannelName != ""
     }
 
+    func isTwitchAccessTokenConfigured() -> Bool {
+        return stream.twitchAccessToken != ""
+    }
+
     func isTwitchChatConnected() -> Bool {
         return twitchChat?.isConnected() ?? false
     }
@@ -3200,6 +3210,18 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func reloadTwitchEventSub() {
+        twitchEventSub?.stop()
+        if isTwitchAccessTokenConfigured() && database.debug!.twitchEventSub! {
+            twitchEventSub = TwitchEventSub(
+                userId: stream.twitchChannelId,
+                accessToken: stream.twitchAccessToken!,
+                delegate: self
+            )
+            twitchEventSub!.start()
+        }
+    }
+
     private func reloadKickViewers() {
         kickViewers?.stop()
         if isKickViewersConfigured() {
@@ -3289,11 +3311,13 @@ final class Model: NSObject, ObservableObject {
     }
 
     func twitchChannelNameUpdated() {
+        reloadTwitchEventSub()
         reloadTwitchChat()
         resetChat()
     }
 
     func twitchChannelIdUpdated() {
+        reloadTwitchEventSub()
         reloadTwitchPubSub()
         reloadTwitchChat()
         resetChat()
@@ -5918,6 +5942,7 @@ extension Model {
             stream.twitchEnabled = true
             stream.twitchChannelName = wizardTwitchChannelName.trim()
             stream.twitchChannelId = wizardTwitchChannelId.trim()
+            stream.twitchAccessToken = wizardTwitchAccessToken
         case .kick:
             stream.kickEnabled = true
             stream.kickChannelName = wizardKickChannelName.trim()
@@ -5966,6 +5991,7 @@ extension Model {
         wizardName = ""
         wizardTwitchChannelName = ""
         wizardTwitchChannelId = ""
+        wizardTwitchAccessToken = ""
         wizardKickChannelName = ""
         wizardYouTubeVideoId = ""
         wizardAfreecaTvChannelName = ""
@@ -7156,6 +7182,7 @@ extension Model {
     private func handleTwitchAccessToken(accessToken: String) {
         twitchAuthStream?.twitchAccessToken = accessToken
         showTwitchAuth = false
+        wizardShowTwitchAuth = false
         TwitchApi(accessToken: accessToken).getUserInfo { info, unauthorized in
             DispatchQueue.main.async {
                 if let info {
@@ -7166,6 +7193,10 @@ extension Model {
                     twitchAuthStream.twitchChannelId = info.id
                     if twitchAuthStream.enabled {
                         self.twitchChannelIdUpdated()
+                    }
+                    if let twitchAuthOnComplete = self.twitchAuthOnComplete {
+                        twitchAuthOnComplete()
+                        self.twitchAuthOnComplete = nil
                     }
                 } else if unauthorized {
                     self.twitchAuthStream?.twitchAccessToken = ""
@@ -7178,12 +7209,27 @@ extension Model {
         }
     }
 
-    func twitchLogin(stream: SettingsStream) {
-        showTwitchAuth = true
+    func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
         twitchAuthStream = stream
+        twitchAuthOnComplete = onComplete
     }
 
     func twitchLogout(stream: SettingsStream) {
         stream.twitchAccessToken = ""
+        reloadTwitchEventSub()
+    }
+}
+
+extension Model: TwitchEventSubDelegate {
+    func twitchEventSubChannelFollow(event: NotificationChannelFollowEvent) {
+        DispatchQueue.main.async {
+            self.makeToast(title: "New follower \(event.user_name)!")
+        }
+    }
+
+    func twitchEventSubChannelSubscribe(event: NotificationChannelSubscribeEvent) {
+        DispatchQueue.main.async {
+            self.makeToast(title: "New subscriber \(event.user_name)!")
+        }
     }
 }

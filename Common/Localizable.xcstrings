@@ -61912,6 +61912,9 @@
         }
       }
     },
+    "Optional, but simplifies the setup." : {
+
+    },
     "Output channel 1" : {
       "localizations" : {
         "de" : {
@@ -90537,6 +90540,9 @@
           }
         }
       }
+    },
+    "Twitch EventSub" : {
+
     },
     "Two columns" : {
       "localizations" : {

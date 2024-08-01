@@ -57,6 +57,7 @@
 		031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */; };
 		031E9FBB2C5ABCC9009FF4D8 /* TwitchAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */; };
 		031E9FC12C5B1D87009FF4D8 /* TwitchApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031E9FC02C5B1D87009FF4D8 /* TwitchApi.swift */; };
+		031E9FC52C5B3EFC009FF4D8 /* TwitchEventSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031E9FC42C5B3EFC009FF4D8 /* TwitchEventSub.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
@@ -517,6 +518,7 @@
 		031C15C32B9340FB00BA967D /* AudioLevelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLevelView.swift; sourceTree = "<group>"; };
 		031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchAuth.swift; sourceTree = "<group>"; };
 		031E9FC02C5B1D87009FF4D8 /* TwitchApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchApi.swift; sourceTree = "<group>"; };
+		031E9FC42C5B3EFC009FF4D8 /* TwitchEventSub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchEventSub.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
@@ -1757,6 +1759,7 @@
 				031E9FC02C5B1D87009FF4D8 /* TwitchApi.swift */,
 				031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */,
+				031E9FC42C5B3EFC009FF4D8 /* TwitchEventSub.swift */,
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 			);
 			path = Twitch;
@@ -2986,6 +2989,7 @@
 				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,
 				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
+				031E9FC52C5B3EFC009FF4D8 /* TwitchEventSub.swift in Sources */,
 				03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
 				03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */,

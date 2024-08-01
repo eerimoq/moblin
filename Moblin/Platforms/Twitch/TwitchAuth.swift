@@ -5,6 +5,9 @@ private let authorizeUrl = "https://id.twitch.tv/oauth2/authorize"
 let twitchMoblinAppClientId = "qv6bnocuwapqigeqjoamfhif0cv2xn"
 private let scopes = [
     "user:read:chat",
+    "moderator:read:followers",
+    "channel:read:subscriptions",
+    "channel:read:stream_key",
 ]
 private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"

@@ -25,6 +25,7 @@ struct StreamTwitchSettingsView: View {
             Section {
                 if stream.twitchAccessToken!.isEmpty {
                     Button {
+                        model.showTwitchAuth = true
                         model.twitchLogin(stream: stream)
                     } label: {
                         HStack {
