@@ -7159,8 +7159,14 @@ extension Model {
         TwitchApi(accessToken: accessToken).getUserInfo { info, unauthorized in
             DispatchQueue.main.async {
                 if let info {
-                    self.twitchAuthStream?.twitchChannelName = info.login
-                    self.twitchAuthStream?.twitchChannelId = info.id
+                    guard let twitchAuthStream = self.twitchAuthStream else {
+                        return
+                    }
+                    twitchAuthStream.twitchChannelName = info.login
+                    twitchAuthStream.twitchChannelId = info.id
+                    if twitchAuthStream.enabled {
+                        self.twitchChannelIdUpdated()
+                    }
                 } else if unauthorized {
                     self.twitchAuthStream?.twitchAccessToken = ""
                     self.makeErrorToast(
