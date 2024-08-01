@@ -400,6 +400,10 @@ final class Model: NSObject, ObservableObject {
         settings.database
     }
 
+    @Published var showTwitchAuth = false
+    var twitchAuth = TwitchAuth()
+    private var twitchAuthStream: SettingsStream?
+
     @Published var showDrawOnStream = false
     @Published var showFace = false
     @Published var showFaceBeauty = false
@@ -892,8 +896,6 @@ final class Model: NSObject, ObservableObject {
         media.registerEffect(alertEffect!)
     }
 
-    func setTwitchAccessToken(accessToken _: String) {}
-
     func setup() {
         loadAlertMedia()
         setMapPitch()
@@ -1030,6 +1032,7 @@ final class Model: NSObject, ObservableObject {
         autoStartDjiDevices()
         startWeatherManager()
         startGeographyManager()
+        twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
     }
 
     private func isWeatherNeeded() -> Bool {
@@ -7146,5 +7149,35 @@ extension Model {
 
     func getDjiDeviceState(device: SettingsDjiDevice) -> DjiDeviceState? {
         return djiDeviceWrappers[device.id]?.device.getState()
+    }
+}
+
+extension Model {
+    private func handleTwitchAccessToken(accessToken: String) {
+        twitchAuthStream?.twitchAccessToken = accessToken
+        showTwitchAuth = false
+        TwitchApi(accessToken: accessToken).getUserInfo { info, unauthorized in
+            DispatchQueue.main.async {
+                if let info {
+                    self.twitchAuthStream?.twitchChannelName = info.login
+                    self.twitchAuthStream?.twitchChannelId = info.id
+                } else if unauthorized {
+                    self.twitchAuthStream?.twitchAccessToken = ""
+                    self.makeErrorToast(
+                        title: String(localized: "Logged out from Twitch"),
+                        subTitle: String(localized: "Please login again")
+                    )
+                }
+            }
+        }
+    }
+
+    func twitchLogin(stream: SettingsStream) {
+        showTwitchAuth = true
+        twitchAuthStream = stream
+    }
+
+    func twitchLogout(stream: SettingsStream) {
+        stream.twitchAccessToken = ""
     }
 }

@@ -55,7 +55,7 @@ struct WidgetSettingsView: View {
             case .qrCode:
                 WidgetQrCodeSettingsView(widget: widget)
             case .alerts:
-                WidgetAlertsSettingsView(widget: widget)
+                WidgetAlertsSettingsView()
             }
         }
         .navigationTitle("Widget")

@@ -49805,6 +49805,15 @@
         }
       }
     },
+    "Logged out from Twitch" : {
+
+    },
+    "Login" : {
+
+    },
+    "Logout" : {
+
+    },
     "Low battery" : {
       "localizations" : {
         "de" : {
@@ -63335,6 +63344,9 @@
           }
         }
       }
+    },
+    "Please login again" : {
+
     },
     "po3Gg4pflp3s" : {
       "localizations" : {
@@ -90525,9 +90537,6 @@
           }
         }
       }
-    },
-    "Twitch login" : {
-
     },
     "Two columns" : {
       "localizations" : {

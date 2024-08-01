@@ -23,6 +23,29 @@ struct StreamTwitchSettingsView: View {
     var body: some View {
         Form {
             Section {
+                if stream.twitchAccessToken!.isEmpty {
+                    Button {
+                        model.twitchLogin(stream: stream)
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("Login")
+                            Spacer()
+                        }
+                    }
+                } else {
+                    Button {
+                        model.twitchLogout(stream: stream)
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("Logout")
+                            Spacer()
+                        }
+                    }
+                }
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: stream.twitchChannelName,

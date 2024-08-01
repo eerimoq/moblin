@@ -2,7 +2,7 @@ import SwiftUI
 import WebKit
 
 private let authorizeUrl = "https://id.twitch.tv/oauth2/authorize"
-private let moblinAppClientId = "qv6bnocuwapqigeqjoamfhif0cv2xn"
+let twitchMoblinAppClientId = "qv6bnocuwapqigeqjoamfhif0cv2xn"
 private let scopes = [
     "user:read:chat",
 ]
@@ -10,27 +10,30 @@ private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"
 
 struct TwitchAuthView: UIViewRepresentable {
-    let twitchAuth: TwitchAuth
+    @EnvironmentObject var model: Model
 
     func makeUIView(context _: Context) -> WKWebView {
-        return twitchAuth.webBrowser
+        return model.twitchAuth.getWebBrowser()
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
 }
 
 class TwitchAuth: NSObject {
-    var webBrowser: WKWebView
-    private let onAccessToken: (String) -> Void
+    private var webBrowser: WKWebView?
+    private var onAccessToken: ((String) -> Void)?
 
-    init(onAccessToken: @escaping (String) -> Void) {
-        self.onAccessToken = onAccessToken
+    func getWebBrowser() -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         webBrowser = WKWebView(frame: .zero, configuration: configuration)
-        super.init()
-        webBrowser.navigationDelegate = self
-        webBrowser.load(URLRequest(url: buildAuthUrl()!))
+        webBrowser!.navigationDelegate = self
+        webBrowser!.load(URLRequest(url: buildAuthUrl()!))
+        return webBrowser!
+    }
+
+    func setOnAccessToken(onAccessToken: @escaping ((String) -> Void)) {
+        self.onAccessToken = onAccessToken
     }
 
     private func buildAuthUrl() -> URL? {
@@ -38,7 +41,7 @@ class TwitchAuth: NSObject {
             return nil
         }
         urlComponents.queryItems = [
-            .init(name: "client_id", value: moblinAppClientId),
+            .init(name: "client_id", value: twitchMoblinAppClientId),
             .init(name: "redirect_uri", value: redirectUri),
             .init(name: "response_type", value: "token"),
             .init(name: "scope", value: scopes.joined(separator: "+")),
@@ -69,6 +72,6 @@ extension TwitchAuth: WKNavigationDelegate {
         guard let accessToken = token.value else {
             return
         }
-        onAccessToken(accessToken)
+        onAccessToken?(accessToken)
     }
 }

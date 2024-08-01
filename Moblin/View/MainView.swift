@@ -426,6 +426,19 @@ struct MainView: View {
         .onAppear {
             model.setup()
         }
+        .sheet(isPresented: $model.showTwitchAuth) {
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        model.showTwitchAuth = false
+                    }, label: {
+                        Text("Close").padding()
+                    })
+                }
+                TwitchAuthView()
+            }
+        }
         .toast(isPresenting: $model.showingToast, duration: 5) {
             model.toast
         }

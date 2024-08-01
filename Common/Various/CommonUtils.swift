@@ -365,6 +365,10 @@ extension HTTPURLResponse {
     var isNotFound: Bool {
         return statusCode == 404
     }
+
+    var isUnauthorized: Bool {
+        return statusCode == 401
+    }
 }
 
 func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
