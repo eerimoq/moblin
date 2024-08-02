@@ -862,6 +862,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private var alertImages: [CIImage] = []
+    private var synthesizer = AVSpeechSynthesizer()
 
     private func loadAlertMedia() {
         var fpsTime = 0.0
@@ -899,6 +900,12 @@ final class Model: NSObject, ObservableObject {
                                       }
                                   })
         media.registerEffect(alertEffect!)
+        let utterance = AVSpeechUtterance(string: "mikeful just followed!")
+        utterance.rate = 0.4
+        utterance.pitchMultiplier = 0.8
+        utterance.preUtteranceDelay = 1.5
+        utterance.volume = 0.6
+        synthesizer.speak(utterance)
     }
 
     func setup() {

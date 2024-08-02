@@ -10254,6 +10254,9 @@
         }
       }
     },
+    "Accent" : {
+
+    },
     "Adaptive bitrate" : {
       "localizations" : {
         "de" : {
@@ -40696,6 +40699,9 @@
           }
         }
       }
+    },
+    "Follows" : {
+
     },
     "Font" : {
       "localizations" : {
@@ -75833,6 +75839,9 @@
         }
       }
     },
+    "Sound" : {
+
+    },
     "Source %@ not found" : {
       "localizations" : {
         "de" : {
@@ -82463,6 +82472,9 @@
         }
       }
     },
+    "Subscriptions" : {
+
+    },
     "Suggestions" : {
 
     },
@@ -88194,9 +88206,6 @@
           }
         }
       }
-    },
-    "Todo" : {
-
     },
     "Too many recordings. Deleting oldest recording." : {
       "localizations" : {

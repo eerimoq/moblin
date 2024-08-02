@@ -816,19 +816,45 @@ class SettingsWidgetQrCode: Codable {
     var message = ""
 }
 
-// periphery:ignore
+class SettingsWidgetAlertsTwitchAlert: Codable {
+    var imageId: UUID = .init()
+    var soundId: UUID = .init()
+    var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    var accentColor: RgbColor = .init(red: 0, green: 0x80, blue: 0)
+    var fontSize: Int = 50
+    var fontDesign: SettingsFontDesign = .default
+    var fontWeight: SettingsFontWeight = .bold
+}
+
+class SettingsWidgetAlertsTwitch: Codable {
+    var follows: SettingsWidgetAlertsTwitchAlert = .init()
+    var subscriptions: SettingsWidgetAlertsTwitchAlert = .init()
+}
+
 class SettingsWidgetAlerts: Codable {
+    // To be removed
+    // periphery:ignore
     var followVideoId: UUID?
+    // periphery:ignore
     var followAudioId: UUID?
+    // periphery:ignore
     var followFormatString: String?
+    // periphery:ignore
     var subscribeVideoId: UUID?
+    // periphery:ignore
     var subscribeAudioId: UUID?
+    // periphery:ignore
     var subscribeFormatString: String?
+    // periphery:ignore
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
+    // periphery:ignore
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
     var fontSize: Int? = 50
+    // periphery:ignore
     var fontDesign: SettingsFontDesign? = .default
+    // periphery:ignore
     var fontWeight: SettingsFontWeight? = .regular
+    var twitch: SettingsWidgetAlertsTwitch? = .init()
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -3344,6 +3370,10 @@ final class Settings {
         }
         if realDatabase.debug!.twitchEventSub == nil {
             realDatabase.debug!.twitchEventSub = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.alerts!.twitch == nil {
+            widget.alerts!.twitch = .init()
             store()
         }
     }
