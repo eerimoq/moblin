@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.354.0", date: "2024-08-02", changes: [
+        "• Alerts widget works.",
+        "  • Cannot change image nor sound.",
+        "  • Cannot change position.",
+        "  • Does not work with MetalPetal.",
+    ]),
     Version(version: "0.353.0", date: "2024-08-01", changes: [
         "• Optional twitch login in stream setup wizard.",
         "  • To autofill channel name, channel id and stream key.",
