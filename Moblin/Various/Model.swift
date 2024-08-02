@@ -1319,6 +1319,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
+        store()
         guard !ProcessInfo().isiOSAppOnMac else {
             return
         }
@@ -1343,7 +1344,7 @@ final class Model: NSObject, ObservableObject {
         }
         if !shouldStreamInBackground() {
             reloadStream()
-            sceneUpdated()
+            sceneUpdated(store: false)
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadRtmpServer()
