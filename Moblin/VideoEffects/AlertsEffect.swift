@@ -217,7 +217,16 @@ final class AlertsEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
-        return image
+        return lockQueue.sync {
+            guard imageIndex < images.count else {
+                return image
+            }
+            defer {
+                self.imageIndex += 1
+                self.toBeRemoved = imageIndex == images.count
+            }
+            return image
+        }
     }
 
     override func shouldRemove() -> Bool {
