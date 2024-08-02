@@ -1,6 +1,7 @@
 import SwiftUI
 
 private struct TwitchFollowsView: View {
+    @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
     @State var textColor: Color
     @State var accentColor: Color
@@ -8,6 +9,13 @@ private struct TwitchFollowsView: View {
 
     var body: some View {
         Form {
+            Toggle(isOn: Binding(get: {
+                alert.enabled
+            }, set: { value in
+                alert.enabled = value
+            })) {
+                Text("Enabled")
+            }
             Section {
                 Text("Image")
             }
@@ -73,6 +81,7 @@ private struct TwitchFollowsView: View {
 }
 
 private struct TwitchSubscriptionsView: View {
+    @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
     @State var textColor: Color
     @State var accentColor: Color
@@ -80,6 +89,13 @@ private struct TwitchSubscriptionsView: View {
 
     var body: some View {
         Form {
+            Toggle(isOn: Binding(get: {
+                alert.enabled
+            }, set: { value in
+                alert.enabled = value
+            })) {
+                Text("Enabled")
+            }
             Section {
                 Text("Image")
             }
@@ -179,6 +195,9 @@ struct WidgetAlertsSettingsView: View {
     var widget: SettingsWidget
 
     var body: some View {
+        Section {
+            Text("⚠️ Alerts does not yet work!")
+        }
         Section {
             NavigationLink(destination: WidgetAlertsSettingsTwitchView(twitch: widget.alerts!.twitch!)) {
                 Text("Twitch")

@@ -5313,6 +5313,9 @@
         }
       }
     },
+    "⚠️ Alerts does not yet work!" : {
+
+    },
     "⚠️ Audio is not yet fully supported, but might work." : {
       "localizations" : {
         "de" : {

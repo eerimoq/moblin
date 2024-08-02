@@ -817,6 +817,7 @@ class SettingsWidgetQrCode: Codable {
 }
 
 class SettingsWidgetAlertsTwitchAlert: Codable {
+    var enabled: Bool = true
     var imageId: UUID = .init()
     var soundId: UUID = .init()
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
@@ -945,7 +946,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect && $0 != .alerts }
+let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }
     .map { $0.toString() }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
