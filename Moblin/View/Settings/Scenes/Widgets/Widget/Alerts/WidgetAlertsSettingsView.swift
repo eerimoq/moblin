@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let testNames: [String] = ["Mark", "Natasha", "Pedro", "Anna"]
+
 private struct TwitchFollowsView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
@@ -13,21 +15,26 @@ private struct TwitchFollowsView: View {
                 alert.enabled
             }, set: { value in
                 alert.enabled = value
+                model.updateAlertsSettings()
             })) {
                 Text("Enabled")
             }
             Section {
-                Text("Image")
-            }
-            Section {
-                Text("Sound")
-            }
-            Section {
                 ColorPicker("Text", selection: $textColor, supportsOpacity: false)
-                    .onChange(of: textColor) { _ in
+                    .onChange(of: textColor) { color in
+                        guard let color = color.toRgb() else {
+                            return
+                        }
+                        alert.textColor = color
+                        model.updateAlertsSettings()
                     }
                 ColorPicker("Accent", selection: $accentColor, supportsOpacity: false)
-                    .onChange(of: accentColor) { _ in
+                    .onChange(of: accentColor) { color in
+                        guard let color = color.toRgb() else {
+                            return
+                        }
+                        alert.accentColor = color
+                        model.updateAlertsSettings()
                     }
             } header: {
                 Text("Colors")
@@ -38,10 +45,12 @@ private struct TwitchFollowsView: View {
                     Slider(
                         value: $fontSize,
                         in: 10 ... 80,
-                        step: 5,
-                        onEditingChanged: { _ in
-                        }
+                        step: 5
                     )
+                    .onChange(of: fontSize) { value in
+                        alert.fontSize = Int(value)
+                        model.updateAlertsSettings()
+                    }
                     Text(String(Int(fontSize)))
                         .frame(width: 35)
                 }
@@ -50,7 +59,9 @@ private struct TwitchFollowsView: View {
                     Spacer()
                     Picker("", selection: Binding(get: {
                         alert.fontDesign.toString()
-                    }, set: { _ in
+                    }, set: { value in
+                        alert.fontDesign = SettingsFontDesign.fromString(value: value)
+                        model.updateAlertsSettings()
                     })) {
                         ForEach(textWidgetFontDesigns, id: \.self) {
                             Text($0)
@@ -62,7 +73,9 @@ private struct TwitchFollowsView: View {
                     Spacer()
                     Picker("", selection: Binding(get: {
                         alert.fontWeight.toString()
-                    }, set: { _ in
+                    }, set: { value in
+                        alert.fontWeight = SettingsFontWeight.fromString(value: value)
+                        model.updateAlertsSettings()
                     })) {
                         ForEach(textWidgetFontWeights, id: \.self) {
                             Text($0)
@@ -71,6 +84,26 @@ private struct TwitchFollowsView: View {
                 }
             } header: {
                 Text("Font")
+            }
+            Section {
+                Button(action: {
+                    let event = TwitchEventSubNotificationChannelFollowEvent(
+                        user_id: "",
+                        user_login: "",
+                        user_name: testNames.randomElement()!,
+                        broadcaster_user_id: "",
+                        broadcaster_user_login: "",
+                        broadcaster_user_name: "",
+                        followed_at: ""
+                    )
+                    model.testAlert(alert: .twitchFollow(event))
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Test")
+                        Spacer()
+                    }
+                })
             }
         }
         .navigationTitle("Follows")
@@ -93,21 +126,26 @@ private struct TwitchSubscriptionsView: View {
                 alert.enabled
             }, set: { value in
                 alert.enabled = value
+                model.updateAlertsSettings()
             })) {
                 Text("Enabled")
             }
             Section {
-                Text("Image")
-            }
-            Section {
-                Text("Sound")
-            }
-            Section {
                 ColorPicker("Text", selection: $textColor, supportsOpacity: false)
-                    .onChange(of: textColor) { _ in
+                    .onChange(of: textColor) { color in
+                        guard let color = color.toRgb() else {
+                            return
+                        }
+                        alert.textColor = color
+                        model.updateAlertsSettings()
                     }
                 ColorPicker("Accent", selection: $accentColor, supportsOpacity: false)
-                    .onChange(of: accentColor) { _ in
+                    .onChange(of: accentColor) { color in
+                        guard let color = color.toRgb() else {
+                            return
+                        }
+                        alert.accentColor = color
+                        model.updateAlertsSettings()
                     }
             } header: {
                 Text("Colors")
@@ -118,10 +156,12 @@ private struct TwitchSubscriptionsView: View {
                     Slider(
                         value: $fontSize,
                         in: 10 ... 80,
-                        step: 5,
-                        onEditingChanged: { _ in
-                        }
+                        step: 5
                     )
+                    .onChange(of: fontSize) { value in
+                        alert.fontSize = Int(value)
+                        model.updateAlertsSettings()
+                    }
                     Text(String(Int(fontSize)))
                         .frame(width: 35)
                 }
@@ -130,7 +170,9 @@ private struct TwitchSubscriptionsView: View {
                     Spacer()
                     Picker("", selection: Binding(get: {
                         alert.fontDesign.toString()
-                    }, set: { _ in
+                    }, set: { value in
+                        alert.fontDesign = SettingsFontDesign.fromString(value: value)
+                        model.updateAlertsSettings()
                     })) {
                         ForEach(textWidgetFontDesigns, id: \.self) {
                             Text($0)
@@ -142,7 +184,9 @@ private struct TwitchSubscriptionsView: View {
                     Spacer()
                     Picker("", selection: Binding(get: {
                         alert.fontWeight.toString()
-                    }, set: { _ in
+                    }, set: { value in
+                        alert.fontWeight = SettingsFontWeight.fromString(value: value)
+                        model.updateAlertsSettings()
                     })) {
                         ForEach(textWidgetFontWeights, id: \.self) {
                             Text($0)
@@ -151,6 +195,27 @@ private struct TwitchSubscriptionsView: View {
                 }
             } header: {
                 Text("Font")
+            }
+            Section {
+                Button(action: {
+                    let event = TwitchEventSubNotificationChannelSubscribeEvent(
+                        user_id: "",
+                        user_login: "",
+                        user_name: testNames.randomElement()!,
+                        broadcaster_user_id: "",
+                        broadcaster_user_login: "",
+                        broadcaster_user_name: "",
+                        tier: "",
+                        is_gift: false
+                    )
+                    model.testAlert(alert: .twitchSubscribe(event))
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Test")
+                        Spacer()
+                    }
+                })
             }
         }
         .navigationTitle("Subscriptions")

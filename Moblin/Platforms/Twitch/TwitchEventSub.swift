@@ -31,7 +31,7 @@ private struct WelcomeMessage: Decodable {
     var payload: WelcomePayload
 }
 
-struct NotificationChannelSubscribeEvent: Decodable {
+struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     // periphery:ignore
     var user_id: String
     // periphery:ignore
@@ -50,14 +50,14 @@ struct NotificationChannelSubscribeEvent: Decodable {
 }
 
 private struct NotificationChannelSubscribePayload: Decodable {
-    var event: NotificationChannelSubscribeEvent
+    var event: TwitchEventSubNotificationChannelSubscribeEvent
 }
 
 private struct NotificationChannelSubscribeMessage: Decodable {
     var payload: NotificationChannelSubscribePayload
 }
 
-struct NotificationChannelFollowEvent: Decodable {
+struct TwitchEventSubNotificationChannelFollowEvent: Decodable {
     // periphery:ignore
     var user_id: String
     // periphery:ignore
@@ -74,7 +74,7 @@ struct NotificationChannelFollowEvent: Decodable {
 }
 
 private struct NotificationChannelFollowPayload: Decodable {
-    var event: NotificationChannelFollowEvent
+    var event: TwitchEventSubNotificationChannelFollowEvent
 }
 
 private struct NotificationChannelFollowMessage: Decodable {
@@ -84,8 +84,8 @@ private struct NotificationChannelFollowMessage: Decodable {
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
-    func twitchEventSubChannelFollow(event: NotificationChannelFollowEvent)
-    func twitchEventSubChannelSubscribe(event: NotificationChannelSubscribeEvent)
+    func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)
+    func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent)
 }
 
 final class TwitchEventSub: NSObject {

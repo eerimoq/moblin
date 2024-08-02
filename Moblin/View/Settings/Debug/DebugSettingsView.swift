@@ -136,15 +136,6 @@ struct DebugSettingsView: View {
                     model.database.debug!.twitchEventSub = value
                     model.reloadTwitchEventSub()
                 }))
-                Button {
-                    model.playAlert()
-                } label: {
-                    HStack {
-                        Spacer()
-                        Text("Play alert")
-                        Spacer()
-                    }
-                }
             } header: {
                 Text("Experimental")
             }

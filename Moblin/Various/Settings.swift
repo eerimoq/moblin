@@ -821,15 +821,35 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
     var imageId: UUID = .init()
     var soundId: UUID = .init()
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
-    var accentColor: RgbColor = .init(red: 0, green: 0x80, blue: 0)
-    var fontSize: Int = 50
-    var fontDesign: SettingsFontDesign = .default
+    var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
+    var fontSize: Int = 55
+    var fontDesign: SettingsFontDesign = .monospaced
     var fontWeight: SettingsFontWeight = .bold
+
+    func clone() -> SettingsWidgetAlertsTwitchAlert {
+        let new = SettingsWidgetAlertsTwitchAlert()
+        new.enabled = enabled
+        new.imageId = imageId
+        new.soundId = soundId
+        new.textColor = textColor
+        new.accentColor = accentColor
+        new.fontSize = fontSize
+        new.fontDesign = fontDesign
+        new.fontWeight = fontWeight
+        return new
+    }
 }
 
 class SettingsWidgetAlertsTwitch: Codable {
     var follows: SettingsWidgetAlertsTwitchAlert = .init()
     var subscriptions: SettingsWidgetAlertsTwitchAlert = .init()
+
+    func clone() -> SettingsWidgetAlertsTwitch {
+        let new = SettingsWidgetAlertsTwitch()
+        new.follows = follows.clone()
+        new.subscriptions = subscriptions.clone()
+        return new
+    }
 }
 
 class SettingsWidgetAlerts: Codable {
@@ -850,12 +870,19 @@ class SettingsWidgetAlerts: Codable {
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
     // periphery:ignore
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)
+    // periphery:ignore
     var fontSize: Int? = 50
     // periphery:ignore
     var fontDesign: SettingsFontDesign? = .default
     // periphery:ignore
     var fontWeight: SettingsFontWeight? = .regular
     var twitch: SettingsWidgetAlertsTwitch? = .init()
+
+    func clone() -> SettingsWidgetAlerts {
+        let new = SettingsWidgetAlerts()
+        new.twitch = twitch!.clone()
+        return new
+    }
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
