@@ -2526,7 +2526,9 @@ final class Settings {
 
     func store() {
         do {
+            let database = extractSensitiveData(fromDatabase: realDatabase)
             storage = try realDatabase.toString()
+            insertSensitiveData(toDatabase: realDatabase, fromDatabase: database)
         } catch {
             logger.error("settings: Failed to store.")
         }
@@ -2568,6 +2570,23 @@ final class Settings {
     private func removeSensitiveData(database: Database) {
         for stream in database.streams {
             stream.twitchAccessToken = ""
+        }
+    }
+
+    private func extractSensitiveData(fromDatabase: Database) -> Database {
+        let toDatabase = Database()
+        for fromStream in fromDatabase.streams {
+            let toStream = SettingsStream(name: "")
+            toStream.twitchAccessToken = fromStream.twitchAccessToken
+            fromStream.twitchAccessToken = ""
+            toDatabase.streams.append(toStream)
+        }
+        return toDatabase
+    }
+
+    private func insertSensitiveData(toDatabase: Database, fromDatabase: Database) {
+        for (index, fromStream) in fromDatabase.streams.enumerated() where index < toDatabase.streams.count {
+            toDatabase.streams[index].twitchAccessToken = fromStream.twitchAccessToken
         }
     }
 
