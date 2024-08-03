@@ -822,7 +822,7 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
     var soundId: UUID = .init()
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
-    var fontSize: Int = 55
+    var fontSize: Int = 45
     var fontDesign: SettingsFontDesign = .monospaced
     var fontWeight: SettingsFontWeight = .bold
 
