@@ -268,6 +268,7 @@
 		03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */; };
 		0397C3612C5C195D00F93E58 /* Alerts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0397C3602C5C195D00F93E58 /* Alerts.bundle */; };
 		0397C36A2C5E16FA00F93E58 /* AlertMediaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */; };
+		03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03980C542C5E74A9000ED476 /* VoicesView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */; };
@@ -779,6 +780,7 @@
 		03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		0397C3602C5C195D00F93E58 /* Alerts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Alerts.bundle; sourceTree = "<group>"; };
 		0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertMediaStorage.swift; sourceTree = "<group>"; };
+		03980C542C5E74A9000ED476 /* VoicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicesView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsoTypeBufferUtil.swift; sourceTree = "<group>"; };
@@ -1118,6 +1120,7 @@
 				030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */,
 				030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */,
 				03D10E792B64099500B1E436 /* TextEditNavigationView.swift */,
+				03980C542C5E74A9000ED476 /* VoicesView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -2782,6 +2785,7 @@
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
+				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */,
 				0359F8B12BD3DA61005BFDA8 /* VTSessionConvertible.swift in Sources */,

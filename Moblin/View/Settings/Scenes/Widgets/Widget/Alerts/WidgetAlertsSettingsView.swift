@@ -109,12 +109,17 @@ private struct AlertTextToSpeechView: View {
     var alert: SettingsWidgetAlertsTwitchAlert
     @State var ttsDelay: Double
 
+    private func onVoiceChange(languageCode: String, voice: String) {
+        alert.textToSpeechLanguageVoices![languageCode] = voice
+        model.updateAlertsSettings()
+    }
+
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                alert.ttsEnabled!
+                alert.textToSpeechEnabled!
             }, set: { value in
-                alert.ttsEnabled = value
+                alert.textToSpeechEnabled = value
                 model.updateAlertsSettings()
             })) {
                 Text("Enabled")
@@ -127,11 +132,17 @@ private struct AlertTextToSpeechView: View {
                     step: 0.5
                 )
                 .onChange(of: ttsDelay) { _ in
-                    alert.ttsDelay = ttsDelay
+                    alert.textToSpeechDelay = ttsDelay
                     model.updateAlertsSettings()
                 }
                 Text(String(formatOneDecimal(value: Float(ttsDelay))))
                     .frame(width: 35)
+            }
+            NavigationLink(destination: VoicesView(
+                textToSpeechLanguageVoices: alert.textToSpeechLanguageVoices!,
+                onVoiceChange: onVoiceChange
+            )) {
+                Text("Voices")
             }
         } header: {
             Text("Text to speech")
@@ -216,7 +227,7 @@ private struct TwitchFollowsView: View {
                 accentColor: alert.accentColor.color()
             )
             AlertFontView(alert: alert, fontSize: Float(alert.fontSize))
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.ttsDelay!)
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
                 Button(action: {
                     let event = TwitchEventSubNotificationChannelFollowEvent(
@@ -268,7 +279,7 @@ private struct TwitchSubscriptionsView: View {
                 accentColor: alert.accentColor.color()
             )
             AlertFontView(alert: alert, fontSize: Float(alert.fontSize))
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.ttsDelay!)
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
                 Button(action: {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
@@ -323,9 +334,6 @@ struct WidgetAlertsSettingsView: View {
     var widget: SettingsWidget
 
     var body: some View {
-        Section {
-            Text("⚠️ Alerts does not yet work!")
-        }
         Section {
             NavigationLink(destination: WidgetAlertsSettingsTwitchView(twitch: widget.alerts!.twitch!)) {
                 Text("Twitch")

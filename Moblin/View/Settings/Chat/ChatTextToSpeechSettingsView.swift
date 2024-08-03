@@ -1,107 +1,24 @@
 import AVFAudio
 import SwiftUI
 
-private func localize(_ languageCode: String) -> String {
-    return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
-}
-
-private struct LanguageView: View {
-    @EnvironmentObject var model: Model
-    var languageCode: String
-    @State var voice: String
-
-    private func voices(language: String) -> [AVSpeechSynthesisVoice] {
-        return AVSpeechSynthesisVoice.speechVoices().filter { $0.language.prefix(2) == language }
-    }
-
-    var body: some View {
-        Form {
-            Picker("", selection: $voice) {
-                ForEach(voices(language: languageCode), id: \.identifier) { voice in
-                    let emote = emojiFlag(country: Locale(identifier: voice.language).region?
-                        .identifier ?? "")
-                    Text("\(emote) \(voice.name)")
-                        .tag(voice.identifier)
-                }
-            }
-            .pickerStyle(.inline)
-            .labelsHidden()
-            .onChange(of: voice) { _ in
-                model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
-                model.store()
-                model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
-            }
-        }
-        .navigationTitle(localize(languageCode))
-        .toolbar {
-            SettingsToolbar()
-        }
-    }
-}
-
-private struct Language {
-    let name: String
-    let code: String
-    let selectedVoiceIdentifier: String
-    let selectedVoiceName: String
-}
-
-private struct VoicesView: View {
-    @EnvironmentObject var model: Model
-
-    private func languages() -> [Language] {
-        var languages: [Language] = []
-        var seen: Set<String> = []
-        let voices = AVSpeechSynthesisVoice.speechVoices()
-        for voice in voices {
-            let code = String(voice.language.prefix(2))
-            guard !seen.contains(code) else {
-                continue
-            }
-            let selectedVoiceIdentifier = model.database.chat
-                .textToSpeechLanguageVoices![code] ?? ""
-            let selectedVoiceName = voices.first(where: { $0.identifier == selectedVoiceIdentifier })?
-                .name ?? ""
-            languages.append(.init(name: localize(voice.language),
-                                   code: code,
-                                   selectedVoiceIdentifier: selectedVoiceIdentifier,
-                                   selectedVoiceName: selectedVoiceName))
-            seen.insert(code)
-        }
-        return languages
-    }
-
-    var body: some View {
-        Form {
-            ForEach(languages(), id: \.code) { language in
-                NavigationLink(destination: LanguageView(
-                    languageCode: language.code,
-                    voice: language.selectedVoiceIdentifier
-                )) {
-                    HStack {
-                        Text(language.name)
-                        Spacer()
-                        Text(language.selectedVoiceName)
-                    }
-                }
-            }
-        }
-        .navigationTitle("Voices")
-        .toolbar {
-            SettingsToolbar()
-        }
-    }
-}
-
 struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
     @State var rate: Float
     @State var volume: Float
 
+    private func onVoiceChange(languageCode: String, voice: String) {
+        model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
+        model.store()
+        model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
+    }
+
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: VoicesView()) {
+                NavigationLink(destination: VoicesView(
+                    textToSpeechLanguageVoices: model.database.chat.textToSpeechLanguageVoices!,
+                    onVoiceChange: onVoiceChange
+                )) {
                     Text("Voices")
                 }
                 HStack {

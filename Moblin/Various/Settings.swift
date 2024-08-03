@@ -825,8 +825,9 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
     var fontSize: Int = 45
     var fontDesign: SettingsFontDesign = .monospaced
     var fontWeight: SettingsFontWeight = .bold
-    var ttsEnabled: Bool? = true
-    var ttsDelay: Double? = 1.5
+    var textToSpeechEnabled: Bool? = true
+    var textToSpeechDelay: Double? = 1.5
+    var textToSpeechLanguageVoices: [String: String]? = .init()
 
     func clone() -> SettingsWidgetAlertsTwitchAlert {
         let new = SettingsWidgetAlertsTwitchAlert()
@@ -838,6 +839,9 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
         new.fontSize = fontSize
         new.fontDesign = fontDesign
         new.fontWeight = fontWeight
+        new.textToSpeechEnabled = textToSpeechEnabled
+        new.textToSpeechDelay = textToSpeechDelay
+        new.textToSpeechLanguageVoices = textToSpeechLanguageVoices
         return new
     }
 }
@@ -3435,20 +3439,28 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets {
-            if widget.alerts!.twitch!.follows.ttsEnabled == nil {
-                widget.alerts!.twitch!.follows.ttsEnabled = true
+            if widget.alerts!.twitch!.follows.textToSpeechEnabled == nil {
+                widget.alerts!.twitch!.follows.textToSpeechEnabled = true
                 store()
             }
-            if widget.alerts!.twitch!.follows.ttsDelay == nil {
-                widget.alerts!.twitch!.follows.ttsDelay = 1.5
+            if widget.alerts!.twitch!.follows.textToSpeechDelay == nil {
+                widget.alerts!.twitch!.follows.textToSpeechDelay = 1.5
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.ttsEnabled == nil {
-                widget.alerts!.twitch!.subscriptions.ttsEnabled = true
+            if widget.alerts!.twitch!.follows.textToSpeechLanguageVoices == nil {
+                widget.alerts!.twitch!.follows.textToSpeechLanguageVoices = .init()
                 store()
             }
-            if widget.alerts!.twitch!.subscriptions.ttsDelay == nil {
-                widget.alerts!.twitch!.subscriptions.ttsDelay = 1.5
+            if widget.alerts!.twitch!.subscriptions.textToSpeechEnabled == nil {
+                widget.alerts!.twitch!.subscriptions.textToSpeechEnabled = true
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.textToSpeechDelay == nil {
+                widget.alerts!.twitch!.subscriptions.textToSpeechDelay = 1.5
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices == nil {
+                widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
                 store()
             }
         }

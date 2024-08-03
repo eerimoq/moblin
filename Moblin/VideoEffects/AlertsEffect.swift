@@ -195,14 +195,37 @@ final class AlertsEffect: VideoEffect {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
-        if settings.ttsEnabled! {
-            let utterance = AVSpeechUtterance(string: "\(username) \(message)")
-            utterance.rate = rate
-            utterance.pitchMultiplier = 0.8
-            utterance.preUtteranceDelay = settings.ttsDelay!
-            utterance.volume = volume
-            synthesizer.speak(utterance)
+        if settings.textToSpeechEnabled! {
+            say(username: username, message: message, settings: settings)
         }
+    }
+
+    private func say(username: String, message: String, settings: SettingsWidgetAlertsTwitchAlert) {
+        guard let voice = getVoice(settings: settings) else {
+            return
+        }
+        let utterance = AVSpeechUtterance(string: "\(username) \(message)")
+        utterance.rate = rate
+        utterance.pitchMultiplier = 0.8
+        utterance.volume = volume
+        utterance.voice = voice
+        DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay!) {
+            self.synthesizer.speak(utterance)
+        }
+    }
+
+    private func getVoice(settings: SettingsWidgetAlertsTwitchAlert) -> AVSpeechSynthesisVoice? {
+        guard let language = Locale.current.language.languageCode?.identifier else {
+            return nil
+        }
+        if let voiceIdentifier = settings.textToSpeechLanguageVoices![language] {
+            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
+        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
+            .filter({ $0.language.starts(with: language) }).first
+        {
+            return AVSpeechSynthesisVoice(identifier: voice.identifier)
+        }
+        return nil
     }
 
     @MainActor
