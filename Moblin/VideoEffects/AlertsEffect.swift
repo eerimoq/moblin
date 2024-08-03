@@ -157,7 +157,7 @@ final class AlertsEffect: VideoEffect {
         play(
             medias: twitchFollow,
             username: event.user_name,
-            message: "just followed!",
+            message: String(localized: "just followed!"),
             settings: settings.twitch!.follows
         )
     }
@@ -170,7 +170,7 @@ final class AlertsEffect: VideoEffect {
         play(
             medias: twitchSubscribe,
             username: event.user_name,
-            message: "just subscribed!",
+            message: String(localized: "just subscribed!"),
             settings: settings.twitch!.subscriptions
         )
     }

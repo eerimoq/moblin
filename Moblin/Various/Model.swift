@@ -7237,14 +7237,14 @@ extension Model {
 extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
-            self.makeToast(title: "\(event.user_name) just followed!")
+            self.makeToast(title: String(localized: "\(event.user_name) just followed!"))
             self.playAlert(alert: .twitchFollow(event))
         }
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
         DispatchQueue.main.async {
-            self.makeToast(title: "\(event.user_name) just subscribed!")
+            self.makeToast(title: String(localized: "\(event.user_name) just subscribed!"))
             self.playAlert(alert: .twitchSubscribe(event))
         }
     }
