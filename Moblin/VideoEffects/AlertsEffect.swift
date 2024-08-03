@@ -101,10 +101,7 @@ final class AlertsEffect: VideoEffect {
         twitchSubscribe.fps = Double(fps)
         audioPlayer = nil
         super.init()
-        twitchFollow.updateImages(url: mediaStorage.makePath(id: settings.twitch!.follows.imageId))
-        twitchFollow.updateSoundUrl(url: mediaStorage.makePath(id: settings.twitch!.follows.soundId))
-        twitchSubscribe.updateImages(url: mediaStorage.makePath(id: settings.twitch!.subscriptions.imageId))
-        twitchSubscribe.updateSoundUrl(url: mediaStorage.makePath(id: settings.twitch!.subscriptions.soundId))
+        setSettings(settings: settings)
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
