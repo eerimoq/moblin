@@ -195,12 +195,14 @@ final class AlertsEffect: VideoEffect {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
-        let utterance = AVSpeechUtterance(string: "\(username) \(message)")
-        utterance.rate = rate
-        utterance.pitchMultiplier = 0.8
-        utterance.preUtteranceDelay = 1.5
-        utterance.volume = volume
-        synthesizer.speak(utterance)
+        if settings.ttsEnabled! {
+            let utterance = AVSpeechUtterance(string: "\(username) \(message)")
+            utterance.rate = rate
+            utterance.pitchMultiplier = 0.8
+            utterance.preUtteranceDelay = settings.ttsDelay!
+            utterance.volume = volume
+            synthesizer.speak(utterance)
+        }
     }
 
     @MainActor

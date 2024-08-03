@@ -825,6 +825,8 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
     var fontSize: Int = 45
     var fontDesign: SettingsFontDesign = .monospaced
     var fontWeight: SettingsFontWeight = .bold
+    var ttsEnabled: Bool? = true
+    var ttsDelay: Double? = 1.5
 
     func clone() -> SettingsWidgetAlertsTwitchAlert {
         let new = SettingsWidgetAlertsTwitchAlert()
@@ -3431,6 +3433,24 @@ final class Settings {
         for widget in realDatabase.widgets where widget.alerts!.twitch == nil {
             widget.alerts!.twitch = .init()
             store()
+        }
+        for widget in realDatabase.widgets {
+            if widget.alerts!.twitch!.follows.ttsEnabled == nil {
+                widget.alerts!.twitch!.follows.ttsEnabled = true
+                store()
+            }
+            if widget.alerts!.twitch!.follows.ttsDelay == nil {
+                widget.alerts!.twitch!.follows.ttsDelay = 1.5
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.ttsEnabled == nil {
+                widget.alerts!.twitch!.subscriptions.ttsEnabled = true
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.ttsDelay == nil {
+                widget.alerts!.twitch!.subscriptions.ttsDelay = 1.5
+                store()
+            }
         }
     }
 }
