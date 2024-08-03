@@ -1,6 +1,23 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 private let testNames: [String] = ["Mark", "Natasha", "Pedro", "Anna"]
+
+private struct AlertPickerView: UIViewControllerRepresentable {
+    @EnvironmentObject var model: Model
+    let type: UTType
+
+    func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
+        let documentPicker = UIDocumentPickerViewController(
+            forOpeningContentTypes: [type],
+            asCopy: true
+        )
+        documentPicker.delegate = model
+        return documentPicker
+    }
+
+    func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
+}
 
 private struct TwitchFollowsView: View {
     @EnvironmentObject var model: Model
@@ -8,16 +25,64 @@ private struct TwitchFollowsView: View {
     @State var textColor: Color
     @State var accentColor: Color
     @State var fontSize: Float
+    @State var showImagePicker = false
+    @State var showSoundPicker = false
+
+    private func onImageUrl(url: URL) {
+        model.alertMediaStorage.add(id: alert.imageId, url: url)
+        model.updateAlertsSettings()
+    }
+
+    private func onSoundUrl(url: URL) {
+        model.alertMediaStorage.add(id: alert.soundId, url: url)
+        model.updateAlertsSettings()
+    }
 
     var body: some View {
         Form {
-            Toggle(isOn: Binding(get: {
-                alert.enabled
-            }, set: { value in
-                alert.enabled = value
-                model.updateAlertsSettings()
-            })) {
-                Text("Enabled")
+            Section {
+                Toggle(isOn: Binding(get: {
+                    alert.enabled
+                }, set: { value in
+                    alert.enabled = value
+                    model.updateAlertsSettings()
+                })) {
+                    Text("Enabled")
+                }
+            }
+            Section {
+                Button {
+                    showImagePicker = true
+                    model.onDocumentPickerUrl = onImageUrl
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Select image")
+                        Spacer()
+                    }
+                }
+                .sheet(isPresented: $showImagePicker) {
+                    AlertPickerView(type: .gif)
+                }
+            } footer: {
+                Text("Only GIF:s are supported.")
+            }
+            Section {
+                Button {
+                    showSoundPicker = true
+                    model.onDocumentPickerUrl = onSoundUrl
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Select sound")
+                        Spacer()
+                    }
+                }
+                .sheet(isPresented: $showSoundPicker) {
+                    AlertPickerView(type: .audio)
+                }
+            } footer: {
+                Text("Only MP3 and WAV are supported.")
             }
             Section {
                 ColorPicker("Text", selection: $textColor, supportsOpacity: false)
@@ -119,16 +184,64 @@ private struct TwitchSubscriptionsView: View {
     @State var textColor: Color
     @State var accentColor: Color
     @State var fontSize: Float
+    @State var showImagePicker = false
+    @State var showSoundPicker = false
+
+    private func onImageUrl(url: URL) {
+        model.alertMediaStorage.add(id: alert.imageId, url: url)
+        model.updateAlertsSettings()
+    }
+
+    private func onSoundUrl(url: URL) {
+        model.alertMediaStorage.add(id: alert.soundId, url: url)
+        model.updateAlertsSettings()
+    }
 
     var body: some View {
         Form {
-            Toggle(isOn: Binding(get: {
-                alert.enabled
-            }, set: { value in
-                alert.enabled = value
-                model.updateAlertsSettings()
-            })) {
-                Text("Enabled")
+            Section {
+                Toggle(isOn: Binding(get: {
+                    alert.enabled
+                }, set: { value in
+                    alert.enabled = value
+                    model.updateAlertsSettings()
+                })) {
+                    Text("Enabled")
+                }
+            }
+            Section {
+                Button {
+                    showImagePicker = true
+                    model.onDocumentPickerUrl = onImageUrl
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Select image")
+                        Spacer()
+                    }
+                }
+                .sheet(isPresented: $showImagePicker) {
+                    AlertPickerView(type: .gif)
+                }
+            } footer: {
+                Text("Only GIF:s are supported.")
+            }
+            Section {
+                Button {
+                    showSoundPicker = true
+                    model.onDocumentPickerUrl = onSoundUrl
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Select sound")
+                        Spacer()
+                    }
+                }
+                .sheet(isPresented: $showSoundPicker) {
+                    AlertPickerView(type: .audio)
+                }
+            } footer: {
+                Text("Only MP3 and WAV are supported.")
             }
             Section {
                 ColorPicker("Text", selection: $textColor, supportsOpacity: false)

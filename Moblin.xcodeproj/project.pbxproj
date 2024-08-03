@@ -267,6 +267,7 @@
 		03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */; };
 		03941A252C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */; };
 		0397C3612C5C195D00F93E58 /* Alerts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0397C3602C5C195D00F93E58 /* Alerts.bundle */; };
+		0397C36A2C5E16FA00F93E58 /* AlertMediaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */; };
@@ -777,6 +778,7 @@
 		03941A212C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorStreamsSettingsView.swift; sourceTree = "<group>"; };
 		03941A242C0CE18C0061DA81 /* DeepLinkCreatorQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		0397C3602C5C195D00F93E58 /* Alerts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Alerts.bundle; sourceTree = "<group>"; };
+		0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertMediaStorage.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsoTypeBufferUtil.swift; sourceTree = "<group>"; };
@@ -2252,6 +2254,7 @@
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */,
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */,
 				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
@@ -2930,6 +2933,7 @@
 				0359F8E02BD3DA61005BFDA8 /* MpegTsAdaptationField.swift in Sources */,
 				03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */,
 				03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */,
+				0397C36A2C5E16FA00F93E58 /* AlertMediaStorage.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				0359F8B32BD3DA61005BFDA8 /* AudioStreamBasicDescription+Extension.swift in Sources */,

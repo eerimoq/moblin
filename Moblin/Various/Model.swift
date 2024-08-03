@@ -336,6 +336,7 @@ final class Model: NSObject, ObservableObject {
     var imageStorage = ImageStorage()
     var logsStorage = LogsStorage()
     var mediaStorage = MediaStorage()
+    var alertMediaStorage = AlertMediaStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
     private var logId = 1
@@ -556,6 +557,8 @@ final class Model: NSObject, ObservableObject {
 
     private let weatherManager = WeatherManager()
     private let geographyManager = GeographyManager()
+
+    var onDocumentPickerUrl: ((URL) -> Void)?
 
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
@@ -2514,7 +2517,8 @@ final class Model: NSObject, ObservableObject {
             alertsEffects[widget.id] = AlertsEffect(
                 settings: widget.alerts!.clone(),
                 fps: stream.fps,
-                delegate: self
+                delegate: self,
+                mediaStorage: alertMediaStorage
             )
         }
         browsers = browserEffects.map { _, browser in
@@ -7249,5 +7253,16 @@ extension Model: TwitchEventSubDelegate {
 extension Model: AlertsEffectDelegate {
     func alertsPlayerRegisterVideoEffect(effect: VideoEffect) {
         media.registerEffect(effect)
+    }
+}
+
+extension Model: UIDocumentPickerDelegate {
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.onDocumentPickerUrl?(url)
+        }
     }
 }

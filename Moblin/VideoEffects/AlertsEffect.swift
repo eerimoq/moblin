@@ -22,6 +22,53 @@ protocol AlertsEffectDelegate: AnyObject {
     func alertsPlayerRegisterVideoEffect(effect: VideoEffect)
 }
 
+private class Medias {
+    var images: [CIImage] = []
+    var soundUrl: URL?
+    var fps: Double = 1.0
+
+    func updateSoundUrl(url: URL) {
+        if (try? url.checkResourceIsReachable()) == true {
+            soundUrl = url
+        } else {
+            soundUrl = Bundle.main.url(forResource: "Alerts.bundle/sparkle", withExtension: "mp3")
+        }
+    }
+
+    func updateImages(url: URL) {
+        DispatchQueue.global().async {
+            var images = self.loadImages(url: url)
+            if images.isEmpty {
+                if let url = Bundle.main.url(forResource: "Alerts.bundle/pixels", withExtension: "gif") {
+                    images = self.loadImages(url: url)
+                }
+            }
+            lockQueue.sync {
+                self.images = images
+            }
+        }
+    }
+
+    private func loadImages(url: URL) -> [CIImage] {
+        var fpsTime = 0.0
+        var gifTime = 0.0
+        var images: [CIImage] = []
+        if let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) {
+            for index in 0 ..< animatedImage.animatedImageFrameCount {
+                if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
+                    gifTime += animatedImage.animatedImageDuration(at: index)
+                    let image = CIImage(cgImage: cgImage)
+                    while fpsTime < gifTime {
+                        images.append(image)
+                        fpsTime += 1 / fps
+                    }
+                }
+            }
+        }
+        return images
+    }
+}
+
 final class AlertsEffect: VideoEffect {
     private var images: [CIImage] = []
     private var imageIndex: Int = 0
@@ -31,25 +78,41 @@ final class AlertsEffect: VideoEffect {
     private var volume: Float = 1.0
     private var synthesizer = AVSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
-    private var fps: Double
     private weak var delegate: (any AlertsEffectDelegate)?
     private var toBeRemoved: Bool = true
     private var isPlaying: Bool = false
-    private var alertImages: [CIImage] = []
     private var settings: SettingsWidgetAlerts
-    private var x: Double = 200
-    private var y: Double = 200
+    private var x: Double = 0
+    private var y: Double = 0
+    private let mediaStorage: AlertMediaStorage
+    private var twitchFollow = Medias()
+    private var twitchSubscribe = Medias()
 
-    init(settings: SettingsWidgetAlerts, fps: Int, delegate: AlertsEffectDelegate) {
+    init(
+        settings: SettingsWidgetAlerts,
+        fps: Int,
+        delegate: AlertsEffectDelegate,
+        mediaStorage: AlertMediaStorage
+    ) {
         self.settings = settings
-        self.fps = Double(fps)
         self.delegate = delegate
+        self.mediaStorage = mediaStorage
+        twitchFollow.fps = Double(fps)
+        twitchSubscribe.fps = Double(fps)
         audioPlayer = nil
         super.init()
-        alertImages = loadImages()
+        twitchFollow.updateImages(url: mediaStorage.makePath(id: settings.twitch!.follows.imageId))
+        twitchFollow.updateSoundUrl(url: mediaStorage.makePath(id: settings.twitch!.follows.soundId))
+        twitchSubscribe.updateImages(url: mediaStorage.makePath(id: settings.twitch!.subscriptions.imageId))
+        twitchSubscribe.updateSoundUrl(url: mediaStorage.makePath(id: settings.twitch!.subscriptions.soundId))
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
+        let twitch = settings.twitch!
+        twitchFollow.updateImages(url: mediaStorage.makePath(id: twitch.follows.imageId))
+        twitchFollow.updateSoundUrl(url: mediaStorage.makePath(id: twitch.follows.soundId))
+        twitchSubscribe.updateImages(url: mediaStorage.makePath(id: twitch.subscriptions.imageId))
+        twitchSubscribe.updateSoundUrl(url: mediaStorage.makePath(id: twitch.subscriptions.soundId))
         self.settings = settings
     }
 
@@ -91,9 +154,8 @@ final class AlertsEffect: VideoEffect {
         guard settings.twitch!.follows.enabled else {
             return
         }
-        let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/sparkle", withExtension: "mp3")
         play(
-            soundUrl: soundUrl,
+            medias: twitchFollow,
             username: event.user_name,
             message: "just followed!",
             settings: settings.twitch!.follows
@@ -105,9 +167,8 @@ final class AlertsEffect: VideoEffect {
         guard settings.twitch!.subscriptions.enabled else {
             return
         }
-        let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/sparkle", withExtension: "mp3")
         play(
-            soundUrl: soundUrl,
+            medias: twitchSubscribe,
             username: event.user_name,
             message: "just subscribed!",
             settings: settings.twitch!.subscriptions
@@ -116,7 +177,7 @@ final class AlertsEffect: VideoEffect {
 
     @MainActor
     private func play(
-        soundUrl: URL?,
+        medias: Medias,
         username: String,
         message: String,
         settings: SettingsWidgetAlertsTwitchAlert
@@ -124,13 +185,13 @@ final class AlertsEffect: VideoEffect {
         isPlaying = true
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         lockQueue.sync {
-            images = alertImages
+            self.images = medias.images
             imageIndex = 0
             self.messageImage = messageImage
             toBeRemoved = false
         }
         delegate?.alertsPlayerRegisterVideoEffect(effect: self)
-        if let soundUrl {
+        if let soundUrl = medias.soundUrl {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
@@ -176,28 +237,6 @@ final class AlertsEffect: VideoEffect {
             return nil
         }
         return CIImage(image: image)
-    }
-
-    private func loadImages() -> [CIImage] {
-        var fpsTime = 0.0
-        var gifTime = 0.0
-        var images: [CIImage] = []
-        if let url = Bundle.main.url(forResource: "Alerts.bundle/pixels", withExtension: "gif"),
-           let data = try? Data(contentsOf: url),
-           let animatedImage = SDAnimatedImage(data: data)
-        {
-            for index in 0 ..< animatedImage.animatedImageFrameCount {
-                if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
-                    gifTime += animatedImage.animatedImageDuration(at: index)
-                    let image = CIImage(cgImage: cgImage)
-                    while fpsTime < gifTime {
-                        images.append(image)
-                        fpsTime += 1 / fps
-                    }
-                }
-            }
-        }
-        return images
     }
 
     override func getName() -> String {

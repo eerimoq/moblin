@@ -61530,6 +61530,12 @@
         }
       }
     },
+    "Only GIF:s are supported." : {
+
+    },
+    "Only MP3 and WAV are supported." : {
+
+    },
     "Only needed for chat." : {
       "localizations" : {
         "de" : {
@@ -72588,6 +72594,9 @@
           }
         }
       }
+    },
+    "Select sound" : {
+
     },
     "Selected" : {
       "localizations" : {
