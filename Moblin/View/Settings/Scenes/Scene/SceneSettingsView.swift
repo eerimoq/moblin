@@ -19,7 +19,7 @@ struct SceneSettingsView: View {
         if let widget = model.findWidget(id: id) {
             return widget.type == .image || widget.type == .browser || widget
                 .type == .text || widget.type == .crop || widget.type == .map || widget
-                .type == .qrCode
+                .type == .qrCode || widget.type == .alerts
         } else {
             logger.error("Unable to find widget type")
             return false

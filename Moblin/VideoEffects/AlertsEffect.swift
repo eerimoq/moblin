@@ -37,6 +37,8 @@ final class AlertsEffect: VideoEffect {
     private var isPlaying: Bool = false
     private var alertImages: [CIImage] = []
     private var settings: SettingsWidgetAlerts
+    private var x: Double = 200
+    private var y: Double = 200
 
     init(settings: SettingsWidgetAlerts, fps: Int, delegate: AlertsEffectDelegate) {
         self.settings = settings
@@ -49,6 +51,13 @@ final class AlertsEffect: VideoEffect {
 
     func setSettings(settings: SettingsWidgetAlerts) {
         self.settings = settings
+    }
+
+    func setPosition(x: Double, y: Double) {
+        lockQueue.sync {
+            self.x = x
+            self.y = y
+        }
     }
 
     @MainActor
@@ -161,7 +170,7 @@ final class AlertsEffect: VideoEffect {
         .shadow(color: .black, radius: 0, x: 0, y: 1)
         .shadow(color: .black, radius: 0, x: 0, y: -1)
         .shadow(color: .black, radius: 0, x: -2, y: -2)
-        .frame(width: 800)
+        .frame(width: 1000)
         let renderer = ImageRenderer(content: message)
         guard let image = renderer.uiImage else {
             return nil
@@ -196,24 +205,30 @@ final class AlertsEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
-        let alertImage = lockQueue.sync {
+        let (alertImage, messageImage, x, y) = lockQueue.sync {
             guard imageIndex < images.count else {
-                return image
+                return (image, self.messageImage, self.x, self.y)
             }
             defer {
                 self.imageIndex += 1
                 self.toBeRemoved = imageIndex == images.count
             }
-            return images[imageIndex]
+            return (images[imageIndex], self.messageImage, self.x, self.y)
         }
         guard let messageImage else {
             return image
         }
+        let xPos = toPixels(x, image.extent.width)
+        let yPos = image.extent.height - toPixels(y, image.extent.height) - alertImage.extent.height
         return messageImage
-            .transformed(by: CGAffineTransform(translationX: -100, y: -50))
+            .transformed(by: CGAffineTransform(
+                translationX: -(messageImage.extent.width - alertImage.extent.width) / 2,
+                y: -messageImage.extent.height
+            ))
             .composited(over: alertImage)
-            .transformed(by: CGAffineTransform(translationX: 200, y: 200))
+            .transformed(by: CGAffineTransform(translationX: xPos, y: yPos))
             .composited(over: image)
+            .cropped(to: image.extent)
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {

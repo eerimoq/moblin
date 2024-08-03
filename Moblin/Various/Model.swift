@@ -4118,6 +4118,7 @@ final class Model: NSObject, ObservableObject {
                     if alertsEffect.shoudRegisterEffect() {
                         effects.append(alertsEffect)
                     }
+                    alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     enabledAlertsEffects.append(alertsEffect)
                 }
             }
