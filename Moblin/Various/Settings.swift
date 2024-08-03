@@ -2520,6 +2520,7 @@ final class Settings {
 
     private func tryLoadAndMigrate(settings: String) throws {
         realDatabase = try Database.fromString(settings: settings)
+        addSensitiveData(database: realDatabase)
         migrateFromOlderVersions()
     }
 
@@ -2549,8 +2550,25 @@ final class Settings {
         return nil
     }
 
-    func exportToClipboard() {
-        UIPasteboard.general.string = storage
+    func exportToClipboard() throws {
+        store()
+        let database = try Database.fromString(settings: storage)
+        removeSensitiveData(database: database)
+        UIPasteboard.general.string = try database.toString()
+    }
+
+    private func addSensitiveData(database: Database) {
+        for stream in database.streams {
+            if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
+                stream.twitchAccessToken = accessToken
+            }
+        }
+    }
+
+    private func removeSensitiveData(database: Database) {
+        for stream in database.streams {
+            stream.twitchAccessToken = ""
+        }
     }
 
     private func migrateFromOlderVersions() {

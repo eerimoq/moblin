@@ -7,8 +7,12 @@ struct ExportSettingsView: View {
         HStack {
             Spacer()
             Button("Export to clipboard") {
-                model.settings.exportToClipboard()
-                model.makeToast(title: "Settings exported")
+                do {
+                    try model.settings.exportToClipboard()
+                    model.makeToast(title: "Settings exported")
+                } catch {
+                    model.makeErrorToast(title: "Failed to export settings")
+                }
             }
             Spacer()
         }

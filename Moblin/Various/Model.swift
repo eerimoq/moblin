@@ -7182,7 +7182,23 @@ extension Model {
 }
 
 extension Model {
+    func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
+        twitchAuthStream = stream
+        twitchAuthOnComplete = onComplete
+    }
+
+    func twitchLogout(stream: SettingsStream) {
+        stream.twitchAccessToken = ""
+        removeTwitchAccessTokenInKeychain(streamId: stream.id)
+        if stream.enabled {
+            reloadTwitchEventSub()
+        }
+    }
+
     private func handleTwitchAccessToken(accessToken: String) {
+        if let streamId = twitchAuthStream?.id {
+            storeTwitchAccessTokenInKeychain(streamId: streamId, accessToken: accessToken)
+        }
         twitchAuthStream?.twitchAccessToken = accessToken
         showTwitchAuth = false
         wizardShowTwitchAuth = false
@@ -7210,16 +7226,6 @@ extension Model {
                 }
             }
         }
-    }
-
-    func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
-        twitchAuthStream = stream
-        twitchAuthOnComplete = onComplete
-    }
-
-    func twitchLogout(stream: SettingsStream) {
-        stream.twitchAccessToken = ""
-        reloadTwitchEventSub()
     }
 }
 
