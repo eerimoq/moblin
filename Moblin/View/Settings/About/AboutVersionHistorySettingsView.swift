@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.356.0", date: "2024-08-03", changes: [
+        "• Configurable alerts widget positioning.",
+        "• Slightly smaller alert GIF.",
+        "• Select alerts image (GIF) and sound (MP3 or WAV).",
+    ]),
     Version(version: "0.355.0", date: "2024-08-03", changes: [
         "• Store settings when entering background.",
         "• Store Twitch access token (your credentials with requested permissions) in keychain.",
