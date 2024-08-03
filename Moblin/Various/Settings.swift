@@ -2552,11 +2552,8 @@ final class Settings {
         return nil
     }
 
-    func exportToClipboard() throws {
-        store()
-        let database = try Database.fromString(settings: storage)
-        removeSensitiveData(database: database)
-        UIPasteboard.general.string = try database.toString()
+    func exportToClipboard() {
+        UIPasteboard.general.string = storage
     }
 
     private func addSensitiveData(database: Database) {
@@ -2564,12 +2561,6 @@ final class Settings {
             if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
                 stream.twitchAccessToken = accessToken
             }
-        }
-    }
-
-    private func removeSensitiveData(database: Database) {
-        for stream in database.streams {
-            stream.twitchAccessToken = ""
         }
     }
 
