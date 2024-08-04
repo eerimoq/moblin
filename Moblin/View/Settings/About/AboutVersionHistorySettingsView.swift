@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.357.0", date: "2024-08-04", changes: [
+        "• Alert widget Text to speech settings.",
+        "  • Delay 0 - 5 seconds.",
+        "  • Enable/disable toggle.",
+        "  • Select voice.",
+        "• Text widget rating. 💡 Martisz",
+        "  • {rating} - Shows 0-5 stars.",
+    ]),
     Version(version: "0.356.0", date: "2024-08-03", changes: [
         "• Configurable alerts widget positioning.",
         "• Slightly smaller alert GIF.",
