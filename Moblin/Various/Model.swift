@@ -1337,6 +1337,7 @@ final class Model: NSObject, ObservableObject {
             locationManager.stop()
             weatherManager.stop()
             geographyManager.stop()
+            obsWebSocket?.stop()
             media.stopAllNetStreams()
         }
     }
