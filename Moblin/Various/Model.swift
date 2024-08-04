@@ -2528,7 +2528,8 @@ final class Model: NSObject, ObservableObject {
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines
+            lines: drawOnStreamLines,
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
         )
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
@@ -4037,6 +4038,15 @@ final class Model: NSObject, ObservableObject {
             mapEffect.setSceneWidget(sceneWidget: nil)
         }
         attachSingleLayout(scene: scene)
+        // To do: Should update on first frame in draw effect instead.
+        if !drawOnStreamLines.isEmpty {
+            drawOnStreamEffect.updateOverlay(
+                videoSize: media.getVideoSize(),
+                size: drawOnStreamSize,
+                lines: drawOnStreamLines,
+                mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
+            )
+        }
     }
 
     private func addSceneEffects(
@@ -6421,7 +6431,8 @@ extension Model {
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines
+            lines: drawOnStreamLines,
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
         )
         media.registerEffect(drawOnStreamEffect)
     }
@@ -6431,7 +6442,8 @@ extension Model {
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines
+            lines: drawOnStreamLines,
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
         )
         media.unregisterEffect(drawOnStreamEffect)
     }
@@ -6444,7 +6456,8 @@ extension Model {
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
-            lines: drawOnStreamLines
+            lines: drawOnStreamLines,
+            mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
         )
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)
