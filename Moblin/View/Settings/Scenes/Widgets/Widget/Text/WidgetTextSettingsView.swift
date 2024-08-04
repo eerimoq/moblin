@@ -105,6 +105,24 @@ private struct TextSelectionView: View {
         textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes!.map { $0.checked })
     }
 
+    private func updateRatings(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfRatings = parts.filter { value in
+            switch value {
+            case .rating:
+                return true
+            default:
+                return false
+            }
+        }.count
+        for index in 0 ..< numberOfRatings where index >= widget.text.ratings!.count {
+            widget.text.ratings!.append(.init())
+        }
+        while widget.text.ratings!.count > numberOfRatings {
+            widget.text.ratings!.removeLast()
+        }
+        textEffect?.setRatings(ratings: widget.text.ratings!.map { $0.rating })
+    }
+
     private func updateNeedsWeather(_ parts: [TextFormatPart]) {
         widget.text.needsWeather = !parts.filter { value in
             switch value {
@@ -142,6 +160,7 @@ private struct TextSelectionView: View {
         let parts = loadTextFormat(format: value)
         updateTimers(textEffect, parts)
         updateCheckboxes(textEffect, parts)
+        updateRatings(textEffect, parts)
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
     }
@@ -182,6 +201,7 @@ private struct TextSelectionView: View {
                     Text("{time} - Show time as HH:MM:SS")
                     Text("{timer} - Show a timer")
                     Text("{checkbox} - Show a checkbox")
+                    Text("{rating} - Show a 0-5 rating")
                     Text("")
                     Text("Location (if Settings -> Location is enabled)").bold()
                     Text("{speed} - Show speed")
@@ -252,6 +272,24 @@ struct WidgetTextSettingsView: View {
                     }
                 } header: {
                     Text("Checkboxes")
+                }
+            }
+        }
+        if !widget.text.ratings!.isEmpty {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                Section {
+                    ForEach(widget.text.ratings!) { rating in
+                        let index = widget.text.ratings!.firstIndex(where: { $0 === rating }) ?? 0
+                        RatingWidgetView(
+                            name: "Rating \(index + 1)",
+                            rating: rating,
+                            index: index,
+                            textEffect: textEffect,
+                            indented: false
+                        )
+                    }
+                } header: {
+                    Text("Ratings")
                 }
             }
         }

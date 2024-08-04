@@ -553,6 +553,54 @@ struct CheckboxWidgetView: View {
     }
 }
 
+struct RatingWidgetView: View {
+    private let name: String
+    private let rating: SettingsWidgetTextRating
+    private let index: Int
+    private let textEffect: TextEffect
+    private var indented: Bool
+    @State private var ratingSelection: Int
+
+    init(
+        name: String,
+        rating: SettingsWidgetTextRating,
+        index: Int,
+        textEffect: TextEffect,
+        indented: Bool
+    ) {
+        self.name = name
+        self.rating = rating
+        self.index = index
+        self.textEffect = textEffect
+        self.indented = indented
+        ratingSelection = rating.rating
+    }
+
+    private func updateTextEffect() {
+        textEffect.setRating(index: index, rating: rating.rating)
+    }
+
+    var body: some View {
+        HStack {
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
+            Picker(selection: $ratingSelection) {
+                ForEach(0 ..< 6) { rating in
+                    Text(String(rating))
+                }
+            } label: {
+                Text(name)
+            }
+            .onChange(of: ratingSelection) { value in
+                rating.rating = value
+                updateTextEffect()
+            }
+        }
+    }
+}
+
 struct WidgetsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -592,6 +640,17 @@ struct WidgetsView: View {
                                     CheckboxWidgetView(
                                         name: "Checkbox \(index + 1)",
                                         checkbox: checkbox,
+                                        index: index,
+                                        textEffect: textEffect,
+                                        indented: true
+                                    )
+                                }
+                                ForEach(widget.text.ratings!) { rating in
+                                    let index = widget.text.ratings!
+                                        .firstIndex(where: { $0 === rating }) ?? 0
+                                    RatingWidgetView(
+                                        name: "Rating \(index + 1)",
+                                        rating: rating,
                                         index: index,
                                         textEffect: textEffect,
                                         indented: true

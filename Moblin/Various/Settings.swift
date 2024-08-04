@@ -745,6 +745,11 @@ class SettingsWidgetTextCheckbox: Codable, Identifiable {
     var checked: Bool = false
 }
 
+class SettingsWidgetTextRating: Codable, Identifiable {
+    var id: UUID = .init()
+    var rating: Int = 0
+}
+
 class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
@@ -759,6 +764,7 @@ class SettingsWidgetText: Codable {
     var needsWeather: Bool? = false
     var needsGeography: Bool? = false
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
+    var ratings: [SettingsWidgetTextRating]? = []
 }
 
 // periphery:ignore
@@ -3461,6 +3467,10 @@ final class Settings {
             }
             if widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices == nil {
                 widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
+                store()
+            }
+            for widget in database.widgets where widget.text.ratings == nil {
+                widget.text.ratings = []
                 store()
             }
         }

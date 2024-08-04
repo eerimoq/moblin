@@ -2507,6 +2507,9 @@
         }
       }
     },
+    "{rating} - Show a 0-5 rating" : {
+
+    },
     "{speed} - Show speed" : {
       "localizations" : {
         "de" : {
@@ -6585,6 +6588,12 @@
           }
         }
       }
+    },
+    "★" : {
+
+    },
+    "☆" : {
+
     },
     "⚠️" : {
       "localizations" : {
@@ -69779,6 +69788,9 @@
           }
         }
       }
+    },
+    "Ratings" : {
+
     },
     "RealtimeIRL" : {
       "localizations" : {

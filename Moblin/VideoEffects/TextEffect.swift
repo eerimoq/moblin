@@ -27,6 +27,7 @@ private enum PartData: Equatable {
     case text(String)
     case imageSystemName(String)
     case imageSystemNameTryFill(String)
+    case rating(Int)
 }
 
 private struct Part: Equatable, Identifiable {
@@ -64,6 +65,7 @@ final class TextEffect: VideoEffect {
     private var forceUpdateMetalPetal = true
     private var timersEndTime: [ContinuousClock.Instant]
     private var checkboxes: [Bool]
+    private var ratings: [Int]
     private let temperatureFormatter = MeasurementFormatter()
 
     init(
@@ -76,7 +78,8 @@ final class TextEffect: VideoEffect {
         settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
-        checkboxes: [Bool]
+        checkboxes: [Bool],
+        ratings: [Int]
     ) {
         formatParts = loadTextFormat(format: format)
         self.backgroundColor = backgroundColor
@@ -90,6 +93,7 @@ final class TextEffect: VideoEffect {
         y = 0
         self.timersEndTime = timersEndTime
         self.checkboxes = checkboxes
+        self.ratings = ratings
         temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
     }
@@ -159,6 +163,19 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
+    func setRatings(ratings: [Int]) {
+        self.ratings = ratings
+        forceImageUpdate()
+    }
+
+    func setRating(index: Int, rating: Int) {
+        guard index < ratings.count else {
+            return
+        }
+        ratings[index] = rating
+        forceImageUpdate()
+    }
+
     func setPosition(x: Double, y: Double) {
         textQueue.sync {
             self.x = x
@@ -190,6 +207,7 @@ final class TextEffect: VideoEffect {
         }
         var timerIndex = 0
         var checkboxIndex = 0
+        var ratingIndex = 0
         var lines: [Line] = []
         var parts: [Part] = []
         var lineId = 0
@@ -258,6 +276,11 @@ final class TextEffect: VideoEffect {
                     ))
                 }
                 checkboxIndex += 1
+            case .rating:
+                if ratingIndex < ratings.count {
+                    parts.append(.init(id: partId, data: .rating(ratings[ratingIndex])))
+                }
+                ratingIndex += 1
             }
             partId += 1
         }
@@ -324,6 +347,16 @@ final class TextEffect: VideoEffect {
                                 } else {
                                     Image(systemName: name)
                                         .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                }
+                            case let .rating(rating):
+                                ForEach(0 ..< 5) { index in
+                                    if index < rating {
+                                        Text("★")
+                                            .foregroundColor(.yellow)
+                                    } else {
+                                        Text("☆")
+                                            .foregroundColor(self.foregroundColor?.color() ?? .white)
+                                    }
                                 }
                             }
                         }
@@ -392,6 +425,16 @@ final class TextEffect: VideoEffect {
                                 } else {
                                     Image(systemName: name)
                                         .foregroundColor(self.foregroundColor?.color() ?? .clear)
+                                }
+                            case let .rating(rating):
+                                ForEach(0 ..< 5) { index in
+                                    if index < rating {
+                                        Text("★")
+                                            .foregroundColor(.yellow)
+                                    } else {
+                                        Text("☆")
+                                            .foregroundColor(self.foregroundColor?.color() ?? .white)
+                                    }
                                 }
                             }
                         }
