@@ -3469,10 +3469,10 @@ final class Settings {
                 widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
                 store()
             }
-            for widget in database.widgets where widget.text.ratings == nil {
-                widget.text.ratings = []
-                store()
-            }
+        }
+        for widget in database.widgets where widget.text.ratings == nil {
+            widget.text.ratings = []
+            store()
         }
     }
 }
