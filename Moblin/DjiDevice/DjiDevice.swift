@@ -37,6 +37,7 @@ enum DjiDeviceState {
     case cleaningUp
     case preparingStream
     case settingUpWifi
+    case wifiSetupFailed
     case configuring
     case startingStream
     case streaming
@@ -303,6 +304,11 @@ extension DjiDevice: CBPeripheralDelegate {
 
     private func processSettingUpWifi(response: DjiMessage) {
         guard response.id == setupWifiTransactionId else {
+            return
+        }
+        guard response.payload == Data([0x00, 0x00]) else {
+            reset()
+            setState(state: .wifiSetupFailed)
             return
         }
         switch model {

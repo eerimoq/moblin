@@ -19,6 +19,8 @@ func formatDjiDeviceState(state: DjiDeviceState?) -> String {
         return String(localized: "Preparing to stream")
     } else if state == .settingUpWifi {
         return String(localized: "Setting up WiFi")
+    } else if state == .wifiSetupFailed {
+        return String(localized: "WiFi setup failed")
     } else if state == .configuring {
         return String(localized: "Configuring")
     } else if state == .startingStream {

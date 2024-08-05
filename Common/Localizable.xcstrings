@@ -67189,6 +67189,9 @@
         }
       }
     },
+    "Please check the WiFi settings" : {
+
+    },
     "Please enter your stream URL in stream settings before going live." : {
       "localizations" : {
         "de" : {
@@ -103724,6 +103727,12 @@
           }
         }
       }
+    },
+    "WiFi setup failed" : {
+
+    },
+    "WiFi setup failed for DJI device %@" : {
+
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {

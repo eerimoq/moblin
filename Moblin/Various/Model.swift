@@ -7037,6 +7037,9 @@ extension Model: DjiDeviceDelegate {
                 stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
                 makeToast(title: String(localized: "DJI device \(device.name) streaming to custom URL"))
             }
+        case .wifiSetupFailed:
+            makeErrorToast(title: String(localized: "WiFi setup failed for DJI device \(device.name)"),
+                           subTitle: String(localized: "Please check the WiFi settings"))
         default:
             break
         }
@@ -7095,7 +7098,7 @@ extension Model {
     private func startDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper, device: SettingsDjiDevice) {
         djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
             .makeTimerSource(queue: DispatchQueue.main)
-        djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 30)
+        djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 45)
         djiDeviceWrapper.autoRestartStreamTimer!.setEventHandler { [weak self] in
             self?
                 .makeErrorToast(
