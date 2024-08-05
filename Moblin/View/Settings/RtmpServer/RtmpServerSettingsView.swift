@@ -79,7 +79,14 @@ struct RtmpServerSettingsView: View {
                     }
                 }
                 CreateButtonView(action: {
-                    model.database.rtmpServer!.streams.append(SettingsRtmpServerStream())
+                    let stream = SettingsRtmpServerStream()
+                    while true {
+                        stream.streamKey = randomHumanString()
+                        if model.getRtmpStream(streamKey: stream.streamKey) == nil {
+                            break
+                        }
+                    }
+                    model.database.rtmpServer!.streams.append(stream)
                     model.store()
                     model.objectWillChange.send()
                 })
