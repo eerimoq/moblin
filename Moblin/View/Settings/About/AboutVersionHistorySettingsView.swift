@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.358.0", date: "2024-08-05", changes: [
+        "• Do not show duplicated drawings on screen when using front camera. 🐛 cliffcreates",
+        "• Generate a random stream key when creating an RTMP server stream. 💡 JohannesLiv",
+        "• Show an error toast if the DJI device WiFi setup fails. 💡 ErAzOr",
+    ]),
     Version(version: "0.357.0", date: "2024-08-04", changes: [
         "• Alert widget Text to speech settings.",
         "  • Delay 0 - 5 seconds.",
