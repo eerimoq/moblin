@@ -1,9 +1,12 @@
 import Foundation
 
-// - Fixed latency.
+// Goals:
 // - Bonding.
 // - Prioritize audio over video.
 // - Adaptive bitrate friendly.
+// - Efficient. Low CPU usage.
+// - Simple.
+// - Fixed latency?
 //
 // Types
 // (1) Video
