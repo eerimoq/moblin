@@ -96,6 +96,9 @@
 		033BEACA2C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */; };
 		033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
+		0342F1A12C627A70004DD3EA /* IrlClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A02C627A70004DD3EA /* IrlClient.swift */; };
+		0342F1A32C627A87004DD3EA /* IrlServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A22C627A87004DD3EA /* IrlServer.swift */; };
+		0342F1A52C627A8F004DD3EA /* IrlCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A42C627A8F004DD3EA /* IrlCommon.swift */; };
 		0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
 		0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */; };
@@ -558,6 +561,9 @@
 		033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceTypeSelector.swift; sourceTree = "<group>"; };
 		033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupIrlToolkitSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
+		0342F1A02C627A70004DD3EA /* IrlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlClient.swift; sourceTree = "<group>"; };
+		0342F1A22C627A87004DD3EA /* IrlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlServer.swift; sourceTree = "<group>"; };
+		0342F1A42C627A8F004DD3EA /* IrlCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlCommon.swift; sourceTree = "<group>"; };
 		0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = "MoblinWatch-InfoPlist.xcstrings"; sourceTree = "<group>"; };
 		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -1304,6 +1310,16 @@
 			path = Browser;
 			sourceTree = "<group>";
 		};
+		0342F19F2C627A3D004DD3EA /* Irl */ = {
+			isa = PBXGroup;
+			children = (
+				0342F1A02C627A70004DD3EA /* IrlClient.swift */,
+				0342F1A42C627A8F004DD3EA /* IrlCommon.swift */,
+				0342F1A22C627A87004DD3EA /* IrlServer.swift */,
+			);
+			path = Irl;
+			sourceTree = "<group>";
+		};
 		0346B5F22B9AF4D300999109 /* RemoteControlAssistant */ = {
 			isa = PBXGroup;
 			children = (
@@ -1639,6 +1655,7 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
+				0342F19F2C627A3D004DD3EA /* Irl */,
 				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
 				038C912A2C44691F003CAD5F /* DjiDevice */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
@@ -2783,6 +2800,7 @@
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
+				0342F1A52C627A8F004DD3EA /* IrlCommon.swift in Sources */,
 				032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
@@ -2967,6 +2985,7 @@
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				0359F8C62BD3DA61005BFDA8 /* FLVAudioCodec.swift in Sources */,
+				0342F1A12C627A70004DD3EA /* IrlClient.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				0359F8D42BD3DA61005BFDA8 /* PreviewView.swift in Sources */,
 				032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */,
@@ -2996,6 +3015,7 @@
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				0359F8CF2BD3DA61005BFDA8 /* FLVVideoPacketType.swift in Sources */,
 				034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */,
+				0342F1A32C627A87004DD3EA /* IrlServer.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
 				0359F8EC2BD3DA61005BFDA8 /* RTMPConnection.swift in Sources */,
 				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,
