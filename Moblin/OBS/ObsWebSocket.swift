@@ -384,6 +384,7 @@ class ObsWebSocket {
     var onRecordStatusChanged: ((Bool, ObsOutputState?) -> Void)?
     var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
+    private var connected = false
 
     init(url: URL, password: String, onConnected: @escaping () -> Void) {
         self.url = url
@@ -411,10 +412,11 @@ class ObsWebSocket {
 
     func stopInternal() {
         webSocket.stop()
+        connected = false
     }
 
     func isConnected() -> Bool {
-        return webSocket.isConnected()
+        return connected
     }
 
     func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping (String) -> Void) {
@@ -709,6 +711,7 @@ class ObsWebSocket {
     private func handleIdentified(data: Data) throws {
         let identified = try JSONDecoder().decode(Identified.self, from: data)
         logger.debug("obs-websocket: \(identified)")
+        connected = true
         onConnected()
     }
 
@@ -833,6 +836,7 @@ extension ObsWebSocket: WebSocketClientDelegate {
     func webSocketClientConnected() {}
 
     func webSocketClientDisconnected() {
+        connected = false
         connectionErrorMessage = String(localized: "Disconnected")
     }
 
