@@ -188,6 +188,7 @@ struct GetSourceScreenshot: Codable {
     let sourceName: String
     let imageFormat: String
     let imageWidth: Int
+    let imageCompressionQuality: Int
 }
 
 struct GetSourceScreenshotResponse: Codable {
@@ -540,8 +541,9 @@ class ObsWebSocket {
         do {
             request = try JSONEncoder().encode(GetSourceScreenshot(
                 sourceName: name,
-                imageFormat: "png",
-                imageWidth: 640
+                imageFormat: "jpg",
+                imageWidth: 640,
+                imageCompressionQuality: 30
             ))
         } catch {
             onError("JSON encode failed")
