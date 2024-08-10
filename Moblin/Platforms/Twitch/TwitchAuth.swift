@@ -8,6 +8,7 @@ private let scopes = [
     "user:read:chat",
     "moderator:read:followers",
     "channel:read:subscriptions",
+    "channel:read:redemptions",
     "channel:read:stream_key",
 ]
 private let redirectHost = "localhost"

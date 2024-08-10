@@ -81,6 +81,50 @@ private struct NotificationChannelFollowMessage: Decodable {
     var payload: NotificationChannelFollowPayload
 }
 
+struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventReward: Decodable {
+    // periphery:ignore
+    var id: String
+    // periphery:ignore
+    var title: String
+    // periphery:ignore
+    var cost: Int
+    // periphery:ignore
+    var prompt: String
+}
+
+struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent: Decodable {
+    // periphery:ignore
+    var id: String
+    // periphery:ignore
+    var user_id: String
+    // periphery:ignore
+    var user_login: String
+    // periphery:ignore
+    var user_name: String
+    // periphery:ignore
+    var broadcaster_user_id: String
+    // periphery:ignore
+    var broadcaster_user_login: String
+    // periphery:ignore
+    var broadcaster_user_name: String
+    // periphery:ignore
+    var status: String
+    // periphery:ignore
+    var reward: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventReward
+    // periphery:ignore
+    var redeemed_at: String
+}
+
+private struct NotificationChannelPointsCustomRewardRedemptionAddPayload: Decodable {
+    // periphery:ignore
+    var event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
+}
+
+private struct NotificationChannelPointsCustomRewardRedemptionAddMessage: Decodable {
+    // periphery:ignore
+    var payload: NotificationChannelPointsCustomRewardRedemptionAddPayload
+}
+
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
@@ -157,6 +201,12 @@ final class TwitchEventSub: NSObject {
             self.twitchApi
                 .createEventSubSubscription(body: self.createChannelSubscribeBody()) { ok, unauthorized in
                     logger.info("twitch: event-sub: Subscribe result \(ok) \(unauthorized)")
+                    self.twitchApi
+                        .createEventSubSubscription(body: self
+                            .createChannelPointsCustomRewardRedemptionAddSubscribeBody(
+                            )) { ok, unauthorized in
+                                logger.info("twitch: event-sub: Subscribe result \(ok) \(unauthorized)")
+                        }
                 }
         }
     }
@@ -171,6 +221,12 @@ final class TwitchEventSub: NSObject {
 
     private func createChannelSubscribeBody() -> String {
         return createBody(type: "channel.subscribe",
+                          version: 1,
+                          condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+    }
+
+    private func createChannelPointsCustomRewardRedemptionAddSubscribeBody() -> String {
+        return createBody(type: "channel.channel_points_custom_reward_redemption.add",
                           version: 1,
                           condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
     }
@@ -195,6 +251,8 @@ final class TwitchEventSub: NSObject {
             handleNotificationChannelFollow(messageData: messageData)
         case "channel.subscribe":
             handleNotificationChannelSubscribe(messageData: messageData)
+        case "channel.channel_points_custom_reward_redemption.add":
+            handleChannelPointsCustomRewardRedemptionAdd(messageData: messageData)
         default:
             if let type = message.metadata.subscription_type {
                 logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -223,6 +281,21 @@ final class TwitchEventSub: NSObject {
             return
         }
         delegate.twitchEventSubChannelSubscribe(event: message.payload.event)
+    }
+
+    private func handleChannelPointsCustomRewardRedemptionAdd(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelPointsCustomRewardRedemptionAddMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("""
+            twitch: event-sub: Failed to decode channel.channel_points_custom_reward_redemption.add \
+            (\(data ?? "")).
+            """)
+            return
+        }
+        logger.info("twitch event-sub: Got reward redemption \(message)")
     }
 }
 
