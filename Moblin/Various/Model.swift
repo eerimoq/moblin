@@ -824,25 +824,19 @@ final class Model: NSObject, ObservableObject {
 
     func listObsScenes() {
         obsWebSocket?.getSceneList(onSuccess: { list in
-            DispatchQueue.main.async {
-                self.obsCurrentScenePicker = list.current
-                self.obsCurrentScene = list.current
-                self.obsScenes = list.scenes
-            }
+            self.obsCurrentScenePicker = list.current
+            self.obsCurrentScene = list.current
+            self.obsScenes = list.scenes
         }, onError: { _ in
         })
     }
 
     func setObsScene(name: String) {
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
-            DispatchQueue.main.async {
-                self.obsCurrentScene = name
-            }
+            self.obsCurrentScene = name
         }, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"),
+                                subTitle: message)
         })
     }
 
@@ -852,14 +846,14 @@ final class Model: NSObject, ObservableObject {
             return
         }
         obsWebSocket?.getStreamStatus(onSuccess: { state in
-            self.handleObsStreamStatusChanged(active: state.active, state: state.state)
+            self.obsWebsocketStreamStatusChanged(active: state.active, state: state.state)
         }, onError: { _ in
-            self.handleObsStreamStatusChanged(active: false)
+            self.obsWebsocketStreamStatusChanged(active: false, state: nil)
         })
         obsWebSocket?.getRecordStatus(onSuccess: { status in
-            self.handleObsRecordStatusChanged(active: status.active)
+            self.obsWebsocketRecordStatusChanged(active: status.active, state: nil)
         }, onError: { _ in
-            self.handleObsRecordStatusChanged(active: false)
+            self.obsWebsocketRecordStatusChanged(active: false, state: nil)
         })
         listObsScenes()
     }
@@ -3288,10 +3282,6 @@ final class Model: NSObject, ObservableObject {
 
     private func reloadObsWebSocket() {
         obsWebSocket?.stop()
-        obsWebSocket?.onSceneChanged = nil
-        obsWebSocket?.onStreamStatusChanged = nil
-        obsWebSocket?.onRecordStatusChanged = nil
-        obsWebSocket?.onAudioVolume = nil
         obsWebSocket = nil
         guard isObsRemoteControlConfigured() else {
             return
@@ -3299,17 +3289,7 @@ final class Model: NSObject, ObservableObject {
         guard let url = URL(string: stream.obsWebSocketUrl!) else {
             return
         }
-        obsWebSocket = ObsWebSocket(
-            url: url,
-            password: stream.obsWebSocketPassword!,
-            onConnected: {
-                self.updateObsStatus()
-            }
-        )
-        obsWebSocket!.onSceneChanged = handleObsSceneChanged
-        obsWebSocket!.onStreamStatusChanged = handleObsStreamStatusChanged
-        obsWebSocket!.onRecordStatusChanged = handleObsRecordStatusChanged
-        obsWebSocket!.onAudioVolume = handleAudioVolume
+        obsWebSocket = ObsWebSocket(url: url, password: stream.obsWebSocketPassword!, delegate: self)
         obsWebSocket!.start()
     }
 
@@ -3527,21 +3507,17 @@ final class Model: NSObject, ObservableObject {
         guard !obsSourceScreenshotIsFetching else {
             return
         }
-        guard !obsCurrentScenePicker.isEmpty else {
+        guard !obsCurrentScene.isEmpty else {
             return
         }
-        obsWebSocket?.getSourceScreenshot(name: obsCurrentScenePicker, onSuccess: { data in
+        obsWebSocket?.getSourceScreenshot(name: obsCurrentScene, onSuccess: { data in
             let screenshot = UIImage(data: data)?.cgImage
-            DispatchQueue.main.async {
-                self.obsScreenshot = screenshot
-                self.obsSourceScreenshotIsFetching = false
-            }
+            self.obsScreenshot = screenshot
+            self.obsSourceScreenshotIsFetching = false
         }, onError: { message in
             logger.debug("Failed to update screenshot with error \(message)")
-            DispatchQueue.main.async {
-                self.obsScreenshot = nil
-                self.obsSourceScreenshotIsFetching = false
-            }
+            self.obsScreenshot = nil
+            self.obsSourceScreenshotIsFetching = false
         })
     }
 
@@ -3567,60 +3543,6 @@ final class Model: NSObject, ObservableObject {
             }
         }, onError: { _ in
         })
-    }
-
-    private func handleObsSceneChanged(name: String) {
-        DispatchQueue.main.async {
-            self.obsCurrentScene = name
-        }
-    }
-
-    private func handleObsStreamStatusChanged(active: Bool, state: ObsOutputState? = nil) {
-        DispatchQueue.main.async {
-            self.obsStreaming = active
-            if let state {
-                self.obsStreamingState = state
-            } else if active {
-                self.obsStreamingState = .started
-            } else {
-                self.obsStreamingState = .stopped
-            }
-        }
-    }
-
-    private func handleObsRecordStatusChanged(active: Bool, state: ObsOutputState? = nil) {
-        DispatchQueue.main.async {
-            self.obsRecording = active
-            if let state {
-                self.obsRecordingState = state
-            } else if active {
-                self.obsRecordingState = .started
-            } else {
-                self.obsRecordingState = .stopped
-            }
-        }
-    }
-
-    private func handleAudioVolume(volumes: [ObsAudioInputVolume]) {
-        DispatchQueue.main.async {
-            guard let volume = volumes.first(where: { volume in
-                volume.name == self.stream.obsSourceName!
-            }) else {
-                self
-                    .obsAudioVolumeLatest =
-                    String(localized: "Source \(self.stream.obsSourceName!) not found")
-                return
-            }
-            var values: [String] = []
-            for volume in volume.volumes {
-                if volume.isInfinite {
-                    values.append(String(localized: "Muted"))
-                } else {
-                    values.append(String(localized: "\(formatOneDecimal(value: volume)) dB"))
-                }
-            }
-            self.obsAudioVolumeLatest = values.joined(separator: ", ")
-        }
     }
 
     private func appendChatPost(post: ChatPost) {
@@ -7282,5 +7204,57 @@ extension Model: UIDocumentPickerDelegate {
         DispatchQueue.main.async {
             self.onDocumentPickerUrl?(url)
         }
+    }
+}
+
+extension Model: ObsWebsocketDelegate {
+    func obsWebsocketConnected() {
+        updateObsStatus()
+    }
+
+    func obsWebsocketSceneChanged(sceneName: String) {
+        obsCurrentScenePicker = sceneName
+        obsCurrentScene = sceneName
+    }
+
+    func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?) {
+        obsStreaming = active
+        if let state {
+            obsStreamingState = state
+        } else if active {
+            obsStreamingState = .started
+        } else {
+            obsStreamingState = .stopped
+        }
+    }
+
+    func obsWebsocketRecordStatusChanged(active: Bool, state: ObsOutputState?) {
+        obsRecording = active
+        if let state {
+            obsRecordingState = state
+        } else if active {
+            obsRecordingState = .started
+        } else {
+            obsRecordingState = .stopped
+        }
+    }
+
+    func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume]) {
+        guard let volume = volumes.first(where: { volume in
+            volume.name == self.stream.obsSourceName!
+        }) else {
+            obsAudioVolumeLatest =
+                String(localized: "Source \(stream.obsSourceName!) not found")
+            return
+        }
+        var values: [String] = []
+        for volume in volume.volumes {
+            if volume.isInfinite {
+                values.append(String(localized: "Muted"))
+            } else {
+                values.append(String(localized: "\(formatOneDecimal(value: volume)) dB"))
+            }
+        }
+        obsAudioVolumeLatest = values.joined(separator: ", ")
     }
 }

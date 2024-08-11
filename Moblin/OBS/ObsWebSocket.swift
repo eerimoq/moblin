@@ -372,24 +372,28 @@ struct ObsRecordStatus {
     let active: Bool
 }
 
+protocol ObsWebsocketDelegate: AnyObject {
+    func obsWebsocketConnected()
+    func obsWebsocketSceneChanged(sceneName: String)
+    func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?)
+    func obsWebsocketRecordStatusChanged(active: Bool, state: ObsOutputState?)
+    func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume])
+}
+
 class ObsWebSocket {
     private let url: URL
     private let password: String
     private var webSocket: WebSocketClient
     private var nextId: Int = 0
     private var requests: [String: Request] = [:]
-    private var onConnected: () -> Void
-    var onSceneChanged: ((String) -> Void)?
-    var onStreamStatusChanged: ((Bool, ObsOutputState?) -> Void)?
-    var onRecordStatusChanged: ((Bool, ObsOutputState?) -> Void)?
-    var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
     private var connected = false
+    weak var delegate: (any ObsWebsocketDelegate)?
 
-    init(url: URL, password: String, onConnected: @escaping () -> Void) {
+    init(url: URL, password: String, delegate: ObsWebsocketDelegate) {
         self.url = url
         self.password = password
-        self.onConnected = onConnected
+        self.delegate = delegate
         webSocket = .init(url: url)
     }
 
@@ -712,7 +716,7 @@ class ObsWebSocket {
         let identified = try JSONDecoder().decode(Identified.self, from: data)
         logger.debug("obs-websocket: \(identified)")
         connected = true
-        onConnected()
+        delegate?.obsWebsocketConnected()
     }
 
     private func handleEvent(data: Data) throws {
@@ -743,7 +747,7 @@ class ObsWebSocket {
         }
         do {
             let decoded = try JSONDecoder().decode(SceneChangedEvent.self, from: data)
-            onSceneChanged?(decoded.sceneName)
+            delegate?.obsWebsocketSceneChanged(sceneName: decoded.sceneName)
         } catch {}
     }
 
@@ -754,9 +758,9 @@ class ObsWebSocket {
         do {
             let event = try JSONDecoder().decode(StreamStateChangedEvent.self, from: data)
             if let state = ObsOutputState(rawValue: event.outputState) {
-                onStreamStatusChanged?(event.outputActive, state)
+                delegate?.obsWebsocketStreamStatusChanged(active: event.outputActive, state: state)
             } else {
-                onStreamStatusChanged?(event.outputActive, .stopped)
+                delegate?.obsWebsocketStreamStatusChanged(active: event.outputActive, state: .stopped)
             }
         } catch {}
     }
@@ -768,9 +772,9 @@ class ObsWebSocket {
         do {
             let event = try JSONDecoder().decode(RecordStateChangedEvent.self, from: data)
             if let state = ObsOutputState(rawValue: event.outputState) {
-                onRecordStatusChanged?(event.outputActive, state)
+                delegate?.obsWebsocketRecordStatusChanged(active: event.outputActive, state: state)
             } else {
-                onRecordStatusChanged?(event.outputActive, .stopped)
+                delegate?.obsWebsocketRecordStatusChanged(active: event.outputActive, state: .started)
             }
         } catch {}
     }
@@ -789,7 +793,7 @@ class ObsWebSocket {
                 }
                 volumes.append(audioInput)
             }
-            onAudioVolume?(volumes)
+            delegate?.obsWebsocketAudioVolume(volumes: volumes)
         } catch {}
     }
 
