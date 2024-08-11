@@ -165,7 +165,7 @@ in `create group` from server.
 
 ## Sequence diagrams
 
-Typical streaming with two connections.
+### Typical streaming with two connections
 
 ```
 +--------+        +--------------+   +--------------+   +--------+
