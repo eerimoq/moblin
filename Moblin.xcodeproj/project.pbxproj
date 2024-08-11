@@ -913,6 +913,7 @@
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		03FB42292C68D9A70009FB26 /* IrlStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlStream.swift; sourceTree = "<group>"; };
+		03FB42302C68ECBE0009FB26 /* PROTOCOL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PROTOCOL.md; sourceTree = "<group>"; };
 		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 		03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerClient.swift; sourceTree = "<group>"; };
@@ -1318,6 +1319,7 @@
 				0342F1A02C627A70004DD3EA /* IrlClient.swift */,
 				0342F1A42C627A8F004DD3EA /* IrlCommon.swift */,
 				0342F1A22C627A87004DD3EA /* IrlServer.swift */,
+				03FB42302C68ECBE0009FB26 /* PROTOCOL.md */,
 			);
 			path = Irl;
 			sourceTree = "<group>";
