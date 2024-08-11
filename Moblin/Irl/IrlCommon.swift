@@ -23,7 +23,8 @@ import Foundation
 //
 // Comments
 // - Use transport layer packet length as segment length. Typically up to 1400 bytes (roughly MTU).
-// - Data (8) will need congestion control somehow. Probably as simple as a maximum number of outstanding packets.
+// - Data (8) will need congestion control somehow. Probably as simple as a maximum number of outstanding
+//   packets.
 //
 // First video (0), audio (1), video format (4) or audio format (5) segment, first=1, including total length
 // +---------+-------------+--------------+--------+------------------+-------------------------+
