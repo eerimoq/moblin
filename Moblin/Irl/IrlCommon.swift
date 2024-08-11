@@ -12,8 +12,8 @@ import Foundation
 // ------------------------------------------------
 // (0) Video           Client to Server    yes
 // (1) Audio           Client to Server    yes
-// (2) Video empty     Client to Server    yes
-// (3) Audio empty     Client to Server    yes
+// (2) Video empty     Client to Server    yes (same as original video (0))
+// (3) Audio empty     Client to Server    yes (same as original audio (1))
 // (4) Video format    Client to Server    yes
 // (5) Audio format    Client to Server    yes
 // (6) Mux             Client to Server    no (contained segments have)
