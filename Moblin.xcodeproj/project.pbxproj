@@ -409,6 +409,7 @@
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
 		03FB422A2C68D9A70009FB26 /* IrlStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* IrlStream.swift */; };
+		03FB42332C68EE6D0009FB26 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03FB42322C68EE6D0009FB26 /* README.md */; };
 		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
@@ -913,7 +914,7 @@
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		03FB42292C68D9A70009FB26 /* IrlStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlStream.swift; sourceTree = "<group>"; };
-		03FB42302C68ECBE0009FB26 /* PROTOCOL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PROTOCOL.md; sourceTree = "<group>"; };
+		03FB42322C68EE6D0009FB26 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 		03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerClient.swift; sourceTree = "<group>"; };
@@ -1319,7 +1320,7 @@
 				0342F1A02C627A70004DD3EA /* IrlClient.swift */,
 				0342F1A42C627A8F004DD3EA /* IrlCommon.swift */,
 				0342F1A22C627A87004DD3EA /* IrlServer.swift */,
-				03FB42302C68ECBE0009FB26 /* PROTOCOL.md */,
+				03FB42322C68EE6D0009FB26 /* README.md */,
 			);
 			path = Irl;
 			sourceTree = "<group>";
@@ -2682,6 +2683,7 @@
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
 				0359F9122BD3E049005BFDA8 /* README.md in Resources */,
 				03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */,
+				03FB42332C68EE6D0009FB26 /* README.md in Resources */,
 				03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
