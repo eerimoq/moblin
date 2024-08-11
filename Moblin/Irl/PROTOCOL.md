@@ -9,6 +9,20 @@
 - Fixed latency for video and audio?
 - Dynamic latency for data? Deliver data when available (in order).
 
+## URL
+
+Format:
+
+```
+irl://<address>:<port>/<stream-id>
+```
+
+Example:
+
+```
+irl://foobar.org:5566/ce4e0960-af23-40d4-85aa-d5b3245a6c92
+```
+
 ## Protocol
 
 ### Segment types
