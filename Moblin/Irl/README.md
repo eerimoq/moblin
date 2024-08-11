@@ -14,27 +14,27 @@
 ### Segment types
 
 ```
-Segment type        Direction           Has SN
+Name          Value  Direction         Has SN
 ------------------------------------------------
-(0) video           client to server    yes
-(1) audio           client to server    yes
-(2) video empty     client to server    yes (same as original video (0))
-(3) audio empty     client to server    yes (same as original audio (1))
-(4) video format    client to server    yes
-(5) audio format    client to server    yes
-(6) mux             client to server    no (contained segments have)
-(7) ack             both ways           no
-(8) data            both ways           yes
+video         0      client to server  yes
+audio         1      client to server  yes
+video empty   2      client to server  yes (same as original video (0))
+audio empty   3      client to server  yes (same as original audio (1))
+video format  4      client to server  yes
+audio format  5      client to server  yes
+mux           6      client to server  no (contained segments have)
+ack           7      both ways         no
+data          8      both ways         yes
 ```
 
 ### Comments
 - Use transport layer packet length as segment length. Typically up to 1400 bytes (roughly MTU).
-- `data (8)` will need congestion control somehow. Probably as simple as a maximum number of outstanding
+- `data` will need congestion control somehow. Probably as simple as a maximum number of outstanding
   packets.
 
 ### Segments
 
-First `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` segment, first=1, including total length
+First `video`, `audio`, `video format` or `audio format` segment, first=1, including total length
 
 ```
 +---------+-------------+--------------+--------+------------------+-------------------------+
@@ -42,7 +42,7 @@ First `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` segment
 +---------+-------------+--------------+--------+------------------+-------------------------+
 ```
 
-Consecutive `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` segment, first=0
+Consecutive `video`, `audio`, `video format` or `audio format` segment, first=0
 
 ```
 +---------+-------------+--------------+--------+---------+
@@ -50,7 +50,7 @@ Consecutive `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` s
 +---------+-------------+--------------+--------+---------+
 ```
 
-`video empty (2)` or `audio empty (3)` segment, sent to drop given segment in receiver
+`video empty` or `audio empty` segment, sent to drop given segment in receiver
 
 ```
 +---------+-------------+--------+--------+
@@ -58,7 +58,7 @@ Consecutive `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` s
 +---------+-------------+--------+--------+
 ```
 
-`mux (6)` segment, containing at least two other segments
+`mux` segment, containing at least two other segments
 
 ```
 +---------+-------------+------------+------------+------------+------------+
@@ -66,7 +66,7 @@ Consecutive `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` s
 +---------+-------------+------------+------------+------------+------------+
 ```
 
-`ack (7)` segment, sent every 50 ms on all connections
+`ack` segment, sent every 50 ms on all connections
 
 ```
 +---------+-------------+----------------+--------+--------+--------+--------+--------+
@@ -75,7 +75,7 @@ Consecutive `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` s
                                            single   single   single        range
 ```
 
-First `data (8)` segment, first=1, including total length
+First `data` segment, first=1, including total length
 
 ```
 +---------+-------------+--------------+--------+------------------+---------+
@@ -83,7 +83,7 @@ First `data (8)` segment, first=1, including total length
 +---------+-------------+--------------+--------+------------------+---------+
 ```
 
-Consecutive `data (8)` segment, first=0
+Consecutive `data` segment, first=0
 
 ```
 +---------+-------------+--------------+--------+---------+
