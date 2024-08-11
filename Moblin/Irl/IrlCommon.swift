@@ -6,7 +6,8 @@ import Foundation
 // - Adaptive bitrate friendly.
 // - Efficient. Low CPU usage.
 // - Simple.
-// - Fixed latency?
+// - Fixed latency for video and audio?
+// - Dynamic latency for data? Deliver data when available (in order).
 //
 // Segment type        Direction           Has SN
 // ------------------------------------------------
@@ -17,7 +18,8 @@ import Foundation
 // (4) Video format    Client to Server    yes
 // (5) Audio format    Client to Server    yes
 // (6) Mux             Client to Server    no (contained segments have)
-// (7) Ack             Server to Client    no
+// (7) Ack             Both ways           no
+// (8) Data            Both ways           yes
 //
 // - Use transport layer packet length as segment length. Typically up to 1400 bytes (roughly MTU).
 //
@@ -46,4 +48,14 @@ import Foundation
 // | 5b type | 3b reserved | 8b singles (3) | 24b SN | 24b SN | 24b SN | 24b SN | 24b SN |
 // +---------+-------------+----------------+--------+--------+--------+--------+--------+
 //                                            single   single   single        range
+//
+// First data (8) segment, first=1, including total length
+// +---------+-------------+--------------+--------+------------------+---------+
+// | 5b type | 2b reserved | 1b first (1) | 24b SN | 24b total length | payload |
+// +---------+-------------+--------------+--------+------------------+---------+
+//
+// Consecutive data (8) segment, first=0
+// +---------+-------------+--------------+--------+---------+
+// | 5b type | 2b reserved | 1b first (0) | 24b SN | payload |
+// +---------+-------------+--------------+--------+---------+
 //
