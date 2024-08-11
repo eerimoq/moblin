@@ -18,11 +18,11 @@ Name          Value  Direction         Has SN
 ------------------------------------------------
 video         0      client to server  yes
 audio         1      client to server  yes
-video empty   2      client to server  yes (same as original video (0))
-audio empty   3      client to server  yes (same as original audio (1))
+video empty   2      client to server  yes (same SN as original video)
+audio empty   3      client to server  yes (same SN as original audio)
 video format  4      client to server  yes
 audio format  5      client to server  yes
-mux           6      client to server  no  (contained segments have)
+mux           6      client to server  no  (contained segments have SN)
 ack           7      both ways         no
 data          8      both ways         yes
 create group  9      both ways         no  (client initiated)
