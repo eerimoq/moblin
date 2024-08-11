@@ -113,7 +113,9 @@ in `create group` from server.
 +---------+-------------+-------------+-------------+
 ```
 
-## Sequences
+## Sequence diagrams
+
+Typical streaming with two connections.
 
 ```
 +--------+        +--------------+   +--------------+   +--------+
