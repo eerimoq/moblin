@@ -36,6 +36,8 @@ add to group  10     both ways         no  (client initiated)
 
 ### Segments
 
+All segments starts with a 5 bits type.
+
 First `video`, `audio`, `video format` or `audio format` segment, first=1, including total length
 
 ```
@@ -93,7 +95,7 @@ Consecutive `data` segment, first=0
 +---------+-------------+--------------+--------+---------+
 ```
 
-`create group`, response on same connection
+`create group`, sent on first connection, response on same connection
 
 ```
 +---------+-------------+--------------+--------------+
@@ -101,7 +103,7 @@ Consecutive `data` segment, first=0
 +---------+-------------+--------------+--------------+
 ```
 
-`add to group`, response on same connection
+`add to group`, sent on additional connections, response on same connection
 
 ```
 +---------+-------------+--------------+--------------+
