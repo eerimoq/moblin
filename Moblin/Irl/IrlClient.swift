@@ -1,5 +1,8 @@
+import AVFAudio
 import CoreMedia
 import Foundation
+
+private let lockQueue = DispatchQueue(label: "com.eerimoq.moblin.irl", qos: .userInteractive)
 
 // periphery:ignore
 struct IrlClientStats {
@@ -12,23 +15,43 @@ class IrlClient {
     init() {}
 
     func start() {
-        logger.info("irl: Should start")
+        lockQueue.async {
+            logger.info("irl: client: Should start")
+        }
     }
 
     func stop() {
-        logger.info("irl: Should stop")
+        lockQueue.async {
+            logger.info("irl: client: Should stop")
+        }
     }
 
     func writeVideo(sampleBuffer: CMSampleBuffer) {
-        logger.info("irl: Should write video \(sampleBuffer)")
+        lockQueue.async {
+            logger.info("irl: client: Should write video \(sampleBuffer.presentationTimeStamp.seconds)")
+        }
     }
 
-    func writeAudio(sampleBuffer: CMSampleBuffer) {
-        logger.info("irl: Should write audio \(sampleBuffer)")
+    func writeAudio(buffer _: AVAudioBuffer, presentationTimeStamp: CMTime) {
+        lockQueue.async {
+            logger.info("irl: client: Should write audio \(presentationTimeStamp.seconds)")
+        }
+    }
+
+    func writeVideoFormat() {
+        lockQueue.async {
+            logger.info("irl: client: Should write video format")
+        }
+    }
+
+    func writeAudioFormat() {
+        lockQueue.async {
+            logger.info("irl: client: Should write audio format")
+        }
     }
 
     func getStats() -> IrlClientStats {
-        logger.info("irl: Should get stats")
+        logger.info("irl: client: Should get stats")
         return IrlClientStats(rtt: 0, packetsInFlight: 0)
     }
 }
