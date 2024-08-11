@@ -38,15 +38,15 @@ class IrlClient {
         }
     }
 
-    func writeVideoFormat() {
+    func writeVideoFormat(formatDescription: CMFormatDescription) {
         lockQueue.async {
-            logger.info("irl: client: Should write video format")
+            logger.info("irl: client: Should write video format \(formatDescription)")
         }
     }
 
-    func writeAudioFormat() {
+    func writeAudioFormat(audioFormat: AVAudioFormat) {
         lockQueue.async {
-            logger.info("irl: client: Should write audio format")
+            logger.info("irl: client: Should write audio format \(audioFormat)")
         }
     }
 

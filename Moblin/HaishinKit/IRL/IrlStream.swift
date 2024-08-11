@@ -28,8 +28,8 @@ class IrlStream: NetStream {
 }
 
 extension IrlStream: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {
-        client?.writeVideoFormat()
+    func videoCodecOutputFormat(_: VideoCodec, _ formatDescription: CMFormatDescription) {
+        client?.writeVideoFormat(formatDescription: formatDescription)
     }
 
     func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
@@ -38,8 +38,8 @@ extension IrlStream: VideoCodecDelegate {
 }
 
 extension IrlStream: AudioCodecDelegate {
-    func audioCodecOutputFormat(_: AVAudioFormat) {
-        client?.writeAudioFormat()
+    func audioCodecOutputFormat(_ audioFormat: AVAudioFormat) {
+        client?.writeAudioFormat(audioFormat: audioFormat)
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
