@@ -85,6 +85,13 @@ private func isValidIrlToolkitUrl(url: String) -> String? {
     return nil
 }
 
+private func isValidIrlUrl(url: String) -> String? {
+    guard URL(string: url) != nil else {
+        return String(localized: "Malformed IRL URL")
+    }
+    return nil
+}
+
 func cleanUrl(url value: String) -> String {
     let stripped = value.replacingOccurrences(of: " ", with: "")
     guard var components = URLComponents(string: stripped) else {
@@ -136,6 +143,10 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
         }
     case "irltk":
         if let message = isValidIrlToolkitUrl(url: value) {
+            return message
+        }
+    case "irl":
+        if let message = isValidIrlUrl(url: value) {
             return message
         }
     case nil:

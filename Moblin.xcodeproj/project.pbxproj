@@ -408,6 +408,8 @@
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
+		03FB422A2C68D9A70009FB26 /* IrlStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* IrlStream.swift */; };
+		03FB422D2C68E0240009FB26 /* IrlMuxer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB422C2C68E0240009FB26 /* IrlMuxer.swift */; };
 		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
@@ -911,6 +913,8 @@
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		03FB42292C68D9A70009FB26 /* IrlStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlStream.swift; sourceTree = "<group>"; };
+		03FB422C2C68E0240009FB26 /* IrlMuxer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlMuxer.swift; sourceTree = "<group>"; };
 		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 		03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerClient.swift; sourceTree = "<group>"; };
@@ -1388,6 +1392,7 @@
 				0359F8152BD3DA5F005BFDA8 /* Codec */,
 				0359F8282BD3DA5F005BFDA8 /* Extension */,
 				0359F8342BD3DA5F005BFDA8 /* FLV */,
+				03FB42282C68D99A0009FB26 /* IRL */,
 				0359F83B2BD3DA5F005BFDA8 /* Media */,
 				0359F84B2BD3DA5F005BFDA8 /* MPEG */,
 				0359F84E2BD3DA5F005BFDA8 /* Net */,
@@ -2458,6 +2463,15 @@
 			path = AdaptiveBitrate;
 			sourceTree = "<group>";
 		};
+		03FB42282C68D99A0009FB26 /* IRL */ = {
+			isa = PBXGroup;
+			children = (
+				03FB42292C68D9A70009FB26 /* IrlStream.swift */,
+				03FB422C2C68E0240009FB26 /* IrlMuxer.swift */,
+			);
+			path = IRL;
+			sourceTree = "<group>";
+		};
 		03FB4B2C2AD8CF6B005AA183 /* BitratePresets */ = {
 			isa = PBXGroup;
 			children = (
@@ -2841,6 +2855,7 @@
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
 				03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */,
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
+				03FB422A2C68D9A70009FB26 /* IrlStream.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
 				0359F8F72BD3DA61005BFDA8 /* SRTConnection.swift in Sources */,
 				03A9300E2C1442E500BB9679 /* HevcNalUnit.swift in Sources */,
@@ -2968,6 +2983,7 @@
 				0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
+				03FB422D2C68E0240009FB26 /* IrlMuxer.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
 				03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */,
 				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,

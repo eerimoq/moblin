@@ -2838,6 +2838,8 @@ final class Model: NSObject, ObservableObject {
                                   targetBitrate: stream.bitrate,
                                   adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
+        case .irl:
+            media.irlStartStream()
         }
         updateSpeed(now: .now)
     }

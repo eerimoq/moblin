@@ -21,6 +21,7 @@ final class Media: NSObject {
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
     private var ristStream: RistStream?
+    private var irlStream: IrlStream?
     private var srtlaClient: SrtlaClient?
     private var netStream: NetStream?
     private var srtTotalByteCount: Int64 = 0
@@ -75,9 +76,11 @@ final class Media: NSObject {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
+        irlStopStream()
         rtmpStream = nil
         srtStream = nil
         ristStream = nil
+        irlStream = nil
         netStream = nil
     }
 
@@ -85,17 +88,21 @@ final class Media: NSObject {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
+        irlStopStream()
         rtmpConnection = RTMPConnection()
+        logger.info("irl: \(proto)")
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)
             srtStream = nil
             ristStream = nil
+            irlStream = nil
             netStream = rtmpStream
         case .srt, .irltk:
             srtStream = SRTStream(srtConnection)
             rtmpStream = nil
             ristStream = nil
+            irlStream = nil
             netStream = srtStream
         case .rist:
             ristStream = RistStream()
@@ -103,7 +110,14 @@ final class Media: NSObject {
             ristStream?.onDisconnected = onRistDisconnected
             srtStream = nil
             rtmpStream = nil
+            irlStream = nil
             netStream = ristStream
+        case .irl:
+            irlStream = IrlStream()
+            srtStream = nil
+            rtmpStream = nil
+            ristStream = nil
+            netStream = irlStream
         }
         netStream!.delegate = self
         netStream!.setVideoOrientation(value: .landscapeRight)
@@ -569,6 +583,14 @@ final class Media: NSObject {
 
     func ristStopStream() {
         ristStream?.stop()
+    }
+
+    func irlStartStream() {
+        irlStream?.start()
+    }
+
+    func irlStopStream() {
+        irlStream?.stop()
     }
 
     func irlToolkitStartStream(
