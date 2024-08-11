@@ -29,12 +29,12 @@ Segment type        Direction           Has SN
 
 ### Comments
 - Use transport layer packet length as segment length. Typically up to 1400 bytes (roughly MTU).
-- Data (8) will need congestion control somehow. Probably as simple as a maximum number of outstanding
+- `data (8)` will need congestion control somehow. Probably as simple as a maximum number of outstanding
   packets.
 
 ### Segments
 
-First video (0), audio (1), video format (4) or audio format (5) segment, first=1, including total length
+First `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` segment, first=1, including total length
 
 ```
 +---------+-------------+--------------+--------+------------------+-------------------------+
@@ -42,7 +42,7 @@ First video (0), audio (1), video format (4) or audio format (5) segment, first=
 +---------+-------------+--------------+--------+------------------+-------------------------+
 ```
 
-Consecutive video (0), audio (1), video format (4) or audio format (5) segment, first=0
+Consecutive `video (0)`, `audio (1)`, `video format (4)` or `audio format (5)` segment, first=0
 
 ```
 +---------+-------------+--------------+--------+---------+
@@ -50,7 +50,7 @@ Consecutive video (0), audio (1), video format (4) or audio format (5) segment, 
 +---------+-------------+--------------+--------+---------+
 ```
 
-Video empty (2) or audio empty (3) segment, sent to drop given segment in receiver
+`video empty (2)` or `audio empty (3)` segment, sent to drop given segment in receiver
 
 ```
 +---------+-------------+--------+--------+
@@ -58,7 +58,7 @@ Video empty (2) or audio empty (3) segment, sent to drop given segment in receiv
 +---------+-------------+--------+--------+
 ```
 
-Mux (6) segment, containing at least two other segments
+`mux (6)` segment, containing at least two other segments
 
 ```
 +---------+-------------+------------+------------+------------+------------+
@@ -66,7 +66,7 @@ Mux (6) segment, containing at least two other segments
 +---------+-------------+------------+------------+------------+------------+
 ```
 
-Ack (7) segment, sent every 50 ms on all connections
+`ack (7)` segment, sent every 50 ms on all connections
 
 ```
 +---------+-------------+----------------+--------+--------+--------+--------+--------+
@@ -75,7 +75,7 @@ Ack (7) segment, sent every 50 ms on all connections
                                            single   single   single        range
 ```
 
-First data (8) segment, first=1, including total length
+First `data (8)` segment, first=1, including total length
 
 ```
 +---------+-------------+--------------+--------+------------------+---------+
@@ -83,7 +83,7 @@ First data (8) segment, first=1, including total length
 +---------+-------------+--------------+--------+------------------+---------+
 ```
 
-Consecutive data (8) segment, first=0
+Consecutive `data (8)` segment, first=0
 
 ```
 +---------+-------------+--------------+--------+---------+
