@@ -22,9 +22,11 @@ video empty   2      client to server  yes (same as original video (0))
 audio empty   3      client to server  yes (same as original audio (1))
 video format  4      client to server  yes
 audio format  5      client to server  yes
-mux           6      client to server  no (contained segments have)
+mux           6      client to server  no  (contained segments have)
 ack           7      both ways         no
 data          8      both ways         yes
+create group  9      both ways         no  (client initiated)
+add to group  10     both ways         no  (client initiated)
 ```
 
 ### Comments
@@ -89,4 +91,20 @@ Consecutive `data` segment, first=0
 +---------+-------------+--------------+--------+---------+
 | 5b type | 2b reserved | 1b first (0) | 24b SN | payload |
 +---------+-------------+--------------+--------+---------+
+```
+
+`create group`, response on same connection
+
+```
++---------+-------------+--------------+--------------+
+| 5b type | 3b reserved | 288b UUID #1 | 288b UUID #2 |
++---------+-------------+--------------+--------------+
+```
+
+`add to group`, response on same connection
+
+```
++---------+-------------+--------------+--------------+
+| 5b type | 3b reserved | 288b UUID #1 | 288b UUID #2 |
++---------+-------------+--------------+--------------+
 ```
