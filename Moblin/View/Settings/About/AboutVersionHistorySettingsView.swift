@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.360.0", date: "2024-08-11", changes: [
+        "• Twitch channel points reward redemption started.",
+        "  • Will subscribe for events, and print any received message to the log.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Make OBS remote control more responsive.",
+    ]),
     Version(version: "0.359.0", date: "2024-08-09", changes: [
         "• Use less bandwidth when using OBS remote control preview.",
         "  • By using compressed JPG instead of PNG.",
