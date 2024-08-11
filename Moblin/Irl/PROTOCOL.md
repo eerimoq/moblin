@@ -15,7 +15,7 @@
 
 ```
 Name          Value  Direction         Has SN
-------------------------------------------------
+-----------------------------------------------------------------------
 video         0      client to server  yes
 audio         1      client to server  yes
 video empty   2      client to server  yes (same SN as original video)
@@ -29,6 +29,23 @@ create group  9      both ways         no  (client initiated)
 add to group  10     both ways         no  (client initiated)
 ```
 
+### Video codecs
+
+```
+Name          Value
+---------------------
+H.264         0
+H.265         1
+```
+
+### Audio codecs
+
+```
+Name          Value
+---------------------
+AAC           0
+```
+
 ### Comments
 - Use transport layer packet length as segment length. Typically up to 1400 bytes (roughly MTU).
 - `data` will need congestion control somehow. Probably as simple as a maximum number of outstanding
@@ -38,7 +55,7 @@ add to group  10     both ways         no  (client initiated)
 
 All segments starts with a 5 bits type.
 
-First `video`, `audio`, `video format` or `audio format` segment, first=1, including total length
+First `video` or `audio` segment, first=1, including total length
 
 ```
 +---------+-------------+--------------+--------+------------------+-------------------------+
@@ -46,7 +63,23 @@ First `video`, `audio`, `video format` or `audio format` segment, first=1, inclu
 +---------+-------------+--------------+--------+------------------+-------------------------+
 ```
 
-Consecutive `video`, `audio`, `video format` or `audio format` segment, first=0
+Continuation `video` or `audio` segment, first=0
+
+```
++---------+-------------+--------------+--------+---------+
+| 5b type | 2b reserved | 1b first (0) | 24b SN | payload |
++---------+-------------+--------------+--------+---------+
+```
+
+First `video format` or `audio format` segment, first=1, including total length
+
+```
++---------+-------------+--------------+--------+----------+------------------+---------+
+| 5b type | 2b reserved | 1b first (1) | 24b SN | 8b codec | 24b total length | payload |
++---------+-------------+--------------+--------+----------+------------------+---------+
+```
+
+Continuation `video format` or `audio format` segment, first=0
 
 ```
 +---------+-------------+--------------+--------+---------+
@@ -87,7 +120,7 @@ First `data` segment, first=1, including total length
 +---------+-------------+--------------+--------+------------------+---------+
 ```
 
-Consecutive `data` segment, first=0
+Continuation `data` segment, first=0
 
 ```
 +---------+-------------+--------------+--------+---------+
