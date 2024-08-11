@@ -17,10 +17,11 @@ Format:
 irl://<address>:<port>/<stream-id>
 ```
 
-Example:
+Examples:
 
 ```
 irl://foobar.org:5566/ce4e0960-af23-40d4-85aa-d5b3245a6c92
+irl://kalle.com/1ecee59b-4200-4577-b1f0-b3bdaf6cb81b
 ```
 
 ## Protocol
