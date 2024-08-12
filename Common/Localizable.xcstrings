@@ -59382,6 +59382,9 @@
         }
       }
     },
+    "Moderators" : {
+
+    },
     "Mono audio only uses output channel 1. Stereo audio uses both output channels." : {
       "localizations" : {
         "de" : {
@@ -65363,6 +65366,7 @@
       }
     },
     "Only configured Twitch and Kick channel names and Twitch mods are allowed to execute commands." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -66273,6 +66277,9 @@
         }
       }
     },
+    "Others" : {
+
+    },
     "Output channel 1" : {
       "localizations" : {
         "de" : {
@@ -67052,6 +67059,9 @@
           }
         }
       }
+    },
+    "Permissions" : {
+
     },
     "Pixel format" : {
       "localizations" : {
@@ -97086,6 +97096,7 @@
       }
     },
     "Unknown command %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

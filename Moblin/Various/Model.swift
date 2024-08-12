@@ -3567,9 +3567,6 @@ final class Model: NSObject, ObservableObject {
         isModerator: Bool,
         segments: [ChatPostSegment]
     ) {
-        guard isUserAllowedToUseChatBot(platform: platform, user: user, isModerator: isModerator) else {
-            return
-        }
         var command = ""
         for segment in segments {
             if let text = segment.text {
@@ -3578,22 +3575,27 @@ final class Model: NSObject, ObservableObject {
         }
         switch command.trim() {
         case "!moblin tts on":
-            handleChatBotMessageTtsOn()
+            handleChatBotMessageTtsOn(platform: platform, user: user, isModerator: isModerator)
         case "!moblin tts off":
-            handleChatBotMessageTtsOff()
+            handleChatBotMessageTtsOff(platform: platform, user: user, isModerator: isModerator)
         case "!moblin obs fix":
-            handleChatBotMessageObsFix()
+            handleChatBotMessageObsFix(platform: platform, user: user, isModerator: isModerator)
         case "!moblin map zoom out":
-            handleChatBotMessageMapZoomOut()
+            handleChatBotMessageMapZoomOut(platform: platform, user: user, isModerator: isModerator)
         default:
-            makeErrorToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Unknown command \(command)")
-            )
+            break
         }
     }
 
-    private func handleChatBotMessageTtsOn() {
+    private func handleChatBotMessageTtsOn(platform: Platform, user: String?, isModerator: Bool) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.tts,
+            platform: platform,
+            user: user,
+            isModerator: isModerator
+        ) else {
+            return
+        }
         makeToast(
             title: String(localized: "Chat bot"),
             subTitle: String(localized: "Turning on chat text to speech")
@@ -3602,7 +3604,15 @@ final class Model: NSObject, ObservableObject {
         store()
     }
 
-    private func handleChatBotMessageTtsOff() {
+    private func handleChatBotMessageTtsOff(platform: Platform, user: String?, isModerator: Bool) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.tts,
+            platform: platform,
+            user: user,
+            isModerator: isModerator
+        ) else {
+            return
+        }
         makeToast(
             title: String(localized: "Chat bot"),
             subTitle: String(localized: "Turning off chat text to speech")
@@ -3612,7 +3622,15 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.reset(running: true)
     }
 
-    private func handleChatBotMessageObsFix() {
+    private func handleChatBotMessageObsFix(platform: Platform, user: String?, isModerator: Bool) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.fix,
+            platform: platform,
+            user: user,
+            isModerator: isModerator
+        ) else {
+            return
+        }
         if obsWebSocket != nil {
             makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Fixing OBS input"))
             obsFixStream()
@@ -3624,15 +3642,28 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleChatBotMessageMapZoomOut() {
+    private func handleChatBotMessageMapZoomOut(platform: Platform, user: String?, isModerator: Bool) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.map,
+            platform: platform,
+            user: user,
+            isModerator: isModerator
+        ) else {
+            return
+        }
         makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Zooming out map"))
         for mapEffect in mapEffects.values {
             mapEffect.zoomOutTemporarily()
         }
     }
 
-    private func isUserAllowedToUseChatBot(platform: Platform, user: String?, isModerator: Bool) -> Bool {
-        if isModerator {
+    private func isUserAllowedToUseChatBot(
+        permissions: SettingsChatBotPermissionsCommand,
+        platform: Platform,
+        user: String?,
+        isModerator: Bool
+    ) -> Bool {
+        if isModerator && permissions.moderatorsEnabled {
             return true
         }
         guard let user else {
@@ -3640,20 +3671,30 @@ final class Model: NSObject, ObservableObject {
         }
         switch platform {
         case .twitch:
-            return isTwitchUserAllowedToUseChatBot(user: user)
+            return isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user)
         case .kick:
-            return isKickUserAllowedToUseChatBot(user: user)
+            return isKickUserAllowedToUseChatBot(permissions: permissions, user: user)
         default:
             break
         }
         return false
     }
 
-    private func isTwitchUserAllowedToUseChatBot(user: String) -> Bool {
+    private func isTwitchUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
+                                                 user: String) -> Bool
+    {
+        if permissions.othersEnabled {
+            return true
+        }
         return user == stream.twitchChannelName
     }
 
-    private func isKickUserAllowedToUseChatBot(user: String) -> Bool {
+    private func isKickUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
+                                               user: String) -> Bool
+    {
+        if permissions.othersEnabled {
+            return true
+        }
         return user == stream.kickChannelName
     }
 

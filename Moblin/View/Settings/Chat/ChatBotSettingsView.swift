@@ -1,31 +1,68 @@
 import SwiftUI
 
+private struct PermissionsSettingsView: View {
+    // periphery:ignore
+    @EnvironmentObject var model: Model
+    var permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Form {
+            Toggle(isOn: Binding(get: {
+                permissions.moderatorsEnabled
+            }, set: { value in
+                permissions.moderatorsEnabled = value
+            }), label: {
+                Text("Moderators")
+            })
+            Toggle(isOn: Binding(get: {
+                permissions.othersEnabled
+            }, set: { value in
+                permissions.othersEnabled = value
+            }), label: {
+                Text("Others")
+            })
+        }
+        .navigationTitle("Permissions")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 struct ChatBotSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    private var permissions: SettingsChatBotPermissions {
+        model.database.chat.botCommandPermissions!
+    }
+
     var body: some View {
         Form {
             Section {
-                Text("""
-                Only configured Twitch and Kick channel names and Twitch mods are \
-                allowed to execute commands.
-                """)
-            }
-            Section {
-                Text("!moblin tts on")
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
+                    Text("!moblin tts on")
+                }
             } footer: {
                 Text("Turn on chat text to speech.")
             }
             Section {
-                Text("!moblin tts off")
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
+                    Text("!moblin tts off")
+                }
             } footer: {
                 Text("Turn off chat text to speech.")
             }
             Section {
-                Text("!moblin obs fix")
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.fix)) {
+                    Text("!moblin obs fix")
+                }
             } footer: {
                 Text("Fix OBS input.")
             }
             Section {
-                Text("!moblin map zoom out")
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.map)) {
+                    Text("!moblin map zoom out")
+                }
             } footer: {
                 Text("Zoom out map widget temporarily.")
             }

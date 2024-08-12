@@ -1328,6 +1328,17 @@ class SettingsChatUsername: Identifiable, Codable {
     var value: String = ""
 }
 
+class SettingsChatBotPermissionsCommand: Codable {
+    var moderatorsEnabled: Bool = true
+    var othersEnabled: Bool = false
+}
+
+class SettingsChatBotPermissions: Codable {
+    var tts: SettingsChatBotPermissionsCommand = .init()
+    var fix: SettingsChatBotPermissionsCommand = .init()
+    var map: SettingsChatBotPermissionsCommand = .init()
+}
+
 class SettingsChat: Codable {
     var fontSize: Float = 17.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -1361,6 +1372,7 @@ class SettingsChat: Codable {
     var textToSpeechFilterMentions: Bool? = true
     var mirrored: Bool? = false
     var botEnabled: Bool? = false
+    var botCommandPermissions: SettingsChatBotPermissions? = .init()
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -3475,6 +3487,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.ratings == nil {
             widget.text.ratings = []
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions == nil {
+            realDatabase.chat.botCommandPermissions = .init()
             store()
         }
     }
