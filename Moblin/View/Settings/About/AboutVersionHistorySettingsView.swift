@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.361.0", date: "2024-08-12", changes: [
+        "• Chat bot permissions per command (similar commands share permissions).",
+        "  • Enabled for streamer and moderators be default.",
+        "• Show redeemed rewards in chat and as toast. 💡 plantbaked",
+    ]),
     Version(version: "0.360.0", date: "2024-08-11", changes: [
         "• Twitch channel points reward redemption started.",
         "  • Will subscribe for events, and print any received message to the log.",
