@@ -7,6 +7,7 @@ private let textToSpeechDispatchQueue = DispatchQueue(label: "com.eerimoq.textTo
 private struct TextToSpeechMessage {
     let user: String
     let message: String
+    let isRedemption: Bool
 }
 
 private let saysByLanguage = [
@@ -151,6 +152,8 @@ class ChatTextToSpeech: NSObject {
         let text: String
         if message.user == latestUserThatSaidSomething || !sayUsername {
             text = message.message
+        } else if message.isRedemption {
+            text = "\(message.user) \(message.message)"
         } else {
             text = String(localized: "\(message.user) \(says): \(message.message)")
         }
@@ -164,12 +167,12 @@ class ChatTextToSpeech: NSObject {
         latestUserThatSaidSomething = message.user
     }
 
-    func say(user: String, message: String) {
+    func say(user: String, message: String, isRedemption: Bool) {
         textToSpeechDispatchQueue.async {
             guard self.running else {
                 return
             }
-            self.messageQueue.append(.init(user: user, message: message))
+            self.messageQueue.append(.init(user: user, message: message, isRedemption: isRedemption))
             self.trySayNextMessage()
         }
     }

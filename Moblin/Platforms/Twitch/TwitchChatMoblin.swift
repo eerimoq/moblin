@@ -81,7 +81,8 @@ final class TwitchChatMoblin {
             isAnnouncement: message.announcement,
             isFirstMessage: message.firstMessage,
             isSubscriber: message.subscriber,
-            isModerator: message.moderator
+            isModerator: message.moderator,
+            isRedemption: false
         )
     }
 

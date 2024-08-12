@@ -101,6 +101,55 @@ struct FirstMessageView: View {
     }
 }
 
+struct RedemptionView: View {
+    var chat: SettingsChat
+
+    private func messageColor() -> Color {
+        return chat.messageColor.color()
+    }
+
+    private func backgroundColor() -> Color {
+        if chat.backgroundColorEnabled {
+            return chat.backgroundColor.color().opacity(0.6)
+        } else {
+            return .clear
+        }
+    }
+
+    private func shadowColor() -> Color {
+        if chat.shadowColorEnabled {
+            return chat.shadowColor.color()
+        } else {
+            return .clear
+        }
+    }
+
+    var body: some View {
+        let messageColor = messageColor()
+        let shadowColor = shadowColor()
+        WrappingHStack(
+            alignment: .leading,
+            horizontalSpacing: 0,
+            verticalSpacing: 0,
+            fitContentWidth: true
+        ) {
+            Image(systemName: "medal")
+            Text(" ")
+            Text("Reward redemption")
+        }
+        .foregroundColor(messageColor)
+        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
+        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
+        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
+        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
+        .padding([.leading], 5)
+        .font(.system(size: CGFloat(chat.fontSize)))
+        .background(backgroundColor())
+        .foregroundColor(.white)
+        .cornerRadius(5)
+    }
+}
+
 struct LineView: View {
     var post: ChatPost
     var chat: SettingsChat
@@ -165,7 +214,11 @@ struct LineView: View {
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
-            Text(": ")
+            if post.isRedemption {
+                Text(" ")
+            } else {
+                Text(": ")
+            }
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
@@ -291,6 +344,21 @@ struct StreamOverlayChatView: View {
                                                             .foregroundColor(.yellow)
                                                         VStack(alignment: .leading) {
                                                             FirstMessageView(chat: model.database.chat)
+                                                            LineView(
+                                                                post: post,
+                                                                chat: model.database.chat
+                                                            )
+                                                        }
+                                                    }
+                                                    .rotationEffect(Angle(degrees: 180))
+                                                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                                } else if post.isRedemption {
+                                                    HStack(spacing: 0) {
+                                                        Rectangle()
+                                                            .frame(width: 3)
+                                                            .foregroundColor(.blue)
+                                                        VStack(alignment: .leading) {
+                                                            RedemptionView(chat: model.database.chat)
                                                             LineView(
                                                                 post: post,
                                                                 chat: model.database.chat

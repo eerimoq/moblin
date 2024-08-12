@@ -71353,6 +71353,9 @@
         }
       }
     },
+    "redeemed %@" : {
+
+    },
     "Refresh status" : {
       "localizations" : {
         "de" : {
@@ -73692,6 +73695,9 @@
           }
         }
       }
+    },
+    "Reward redemption" : {
+
     },
     "Right" : {
       "localizations" : {

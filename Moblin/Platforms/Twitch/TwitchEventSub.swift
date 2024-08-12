@@ -130,6 +130,9 @@ private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent)
+    func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
+        event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
+    )
 }
 
 final class TwitchEventSub: NSObject {
@@ -295,7 +298,7 @@ final class TwitchEventSub: NSObject {
             """)
             return
         }
-        logger.info("twitch event-sub: Got reward redemption \(message)")
+        delegate.twitchEventSubChannelPointsCustomRewardRedemptionAdd(event: message.payload.event)
     }
 }
 

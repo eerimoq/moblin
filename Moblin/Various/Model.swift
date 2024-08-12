@@ -153,6 +153,7 @@ struct ChatPost: Identifiable, Equatable {
     var isFirstMessage: Bool
     var isSubscriber: Bool
     var isModerator: Bool
+    var isRedemption: Bool
 }
 
 class ButtonState {
@@ -2169,7 +2170,8 @@ final class Model: NSObject, ObservableObject {
             isAnnouncement: false,
             isFirstMessage: false,
             isSubscriber: false,
-            isModerator: false
+            isModerator: false,
+            isRedemption: false
         )
     }
 
@@ -2206,7 +2208,7 @@ final class Model: NSObject, ObservableObject {
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "")
                 if !message.trimmingCharacters(in: .whitespaces).isEmpty {
-                    chatTextToSpeech.say(user: user, message: message)
+                    chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption)
                 }
             }
             numberOfChatPostsPerTick += 1
@@ -3558,7 +3560,8 @@ final class Model: NSObject, ObservableObject {
                           isAnnouncement: post.isAnnouncement,
                           isFirstMessage: post.isFirstMessage,
                           isSubscriber: post.isSubscriber,
-                          isModerator: post.isModerator)
+                          isModerator: post.isModerator,
+                          isRedemption: post.isRedemption)
     }
 
     private func handleChatBotMessage(
@@ -3709,7 +3712,8 @@ final class Model: NSObject, ObservableObject {
         isAnnouncement: Bool,
         isFirstMessage: Bool,
         isSubscriber: Bool,
-        isModerator: Bool
+        isModerator: Bool,
+        isRedemption: Bool
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
@@ -3732,7 +3736,8 @@ final class Model: NSObject, ObservableObject {
             isAnnouncement: isAnnouncement,
             isFirstMessage: isFirstMessage,
             isSubscriber: isSubscriber,
-            isModerator: isModerator
+            isModerator: isModerator,
+            isRedemption: isRedemption
         )
         chatPostId += 1
         if chatPaused {
@@ -7229,6 +7234,27 @@ extension Model: TwitchEventSubDelegate {
         DispatchQueue.main.async {
             self.makeToast(title: String(localized: "\(event.user_name) just subscribed!"))
             self.playAlert(alert: .twitchSubscribe(event))
+        }
+    }
+
+    func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
+        event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
+    ) {
+        DispatchQueue.main.async {
+            let text = String(localized: "redeemed \(event.reward.title)")
+            self.makeToast(title: "\(event.user_name) \(text)")
+            self.appendChatMessage(platform: .twitch,
+                                   user: event.user_name,
+                                   userColor: nil,
+                                   segments: makeChatPostTextSegments(text: text),
+                                   timestamp: self.digitalClock,
+                                   timestampTime: .now,
+                                   isAction: false,
+                                   isAnnouncement: false,
+                                   isFirstMessage: false,
+                                   isSubscriber: false,
+                                   isModerator: false,
+                                   isRedemption: true)
         }
     }
 }

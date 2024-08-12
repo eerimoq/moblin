@@ -244,7 +244,8 @@ final class YouTubeLiveChat: NSObject {
                                     isAnnouncement: false,
                                     isFirstMessage: false,
                                     isSubscriber: false,
-                                    isModerator: false)
+                                    isModerator: false,
+                                    isRedemption: false)
         }
         return 1
     }

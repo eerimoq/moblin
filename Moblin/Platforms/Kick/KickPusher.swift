@@ -186,7 +186,8 @@ final class KickPusher: NSObject {
             isAnnouncement: false,
             isFirstMessage: false,
             isSubscriber: message.isSubscriber(),
-            isModerator: false
+            isModerator: false,
+            isRedemption: false
         )
     }
 
