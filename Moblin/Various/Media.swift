@@ -90,7 +90,6 @@ final class Media: NSObject {
         ristStopStream()
         irlStopStream()
         rtmpConnection = RTMPConnection()
-        logger.info("irl: \(proto)")
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)
