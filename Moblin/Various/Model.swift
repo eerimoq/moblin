@@ -434,6 +434,7 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardTwitchChannelName = ""
     @Published var wizardTwitchChannelId = ""
     var wizardTwitchAccessToken = ""
+    var wizardTwitchLoggedIn: Bool = false
     @Published var wizardKickChannelName = ""
     @Published var wizardYouTubeVideoId = ""
     @Published var wizardAfreecaTvChannelName = ""
@@ -5930,6 +5931,7 @@ extension Model {
             stream.twitchChannelName = wizardTwitchChannelName.trim()
             stream.twitchChannelId = wizardTwitchChannelId.trim()
             stream.twitchAccessToken = wizardTwitchAccessToken
+            stream.twitchLoggedIn = wizardTwitchLoggedIn
         case .kick:
             stream.kickChannelName = wizardKickChannelName.trim()
         case .youTube:
@@ -7175,6 +7177,7 @@ extension Model {
     }
 
     func twitchLogout(stream: SettingsStream) {
+        stream.twitchLoggedIn = false
         stream.twitchAccessToken = ""
         removeTwitchAccessTokenInKeychain(streamId: stream.id)
         if stream.enabled {
@@ -7186,6 +7189,7 @@ extension Model {
         if let streamId = twitchAuthStream?.id {
             storeTwitchAccessTokenInKeychain(streamId: streamId, accessToken: accessToken)
         }
+        twitchAuthStream?.twitchLoggedIn = true
         twitchAuthStream?.twitchAccessToken = accessToken
         showTwitchAuth = false
         wizardShowTwitchAuth = false
@@ -7324,6 +7328,7 @@ extension Model: ObsWebsocketDelegate {
 extension Model: TwitchApiDelegate {
     func twitchApiUnauthorized() {
         DispatchQueue.main.async {
+            self.stream.twitchLoggedIn = false
             self.makeErrorToast(
                 title: String(localized: "Logged out from Twitch"),
                 subTitle: String(localized: "Please login again")

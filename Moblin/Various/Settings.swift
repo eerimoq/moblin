@@ -364,6 +364,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var twitchAccessToken: String? = ""
+    var twitchLoggedIn: Bool? = false
     var kickChatroomId: String = ""
     var kickChannelName: String? = ""
     var youTubeApiKey: String? = ""
@@ -3456,6 +3457,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions == nil {
             realDatabase.chat.botCommandPermissions = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
+            stream.twitchLoggedIn = false
             store()
         }
     }

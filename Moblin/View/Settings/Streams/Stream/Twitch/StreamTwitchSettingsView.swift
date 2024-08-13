@@ -23,7 +23,7 @@ struct StreamTwitchSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if stream.twitchAccessToken!.isEmpty {
+                if !stream.twitchLoggedIn! {
                     Button {
                         model.showTwitchAuth = true
                         model.twitchLogin(stream: stream)
