@@ -707,7 +707,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin map zoom out"
           }
         },
@@ -1487,7 +1487,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{altitude} - Näytä korkeus"
           }
         },
@@ -1878,7 +1878,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{checkbox} - Näytä valintaruutu"
           }
         },
@@ -2008,7 +2008,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{conditions} - Näytä ehdot"
           }
         },
@@ -2268,7 +2268,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{distance} - Näytä etäisyys"
           }
         },
@@ -2529,7 +2529,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{rating} - Näytä arvio 0-5"
           }
         },
@@ -2659,7 +2659,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{speed} - Näytä nopeus"
           }
         },
@@ -2920,7 +2920,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{temperature} - Näytä lämpötila"
           }
         },
@@ -3180,7 +3180,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{timer} - Näytä ajastin"
           }
         },
@@ -4912,7 +4912,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ yhdistetty"
           }
         },
@@ -5172,7 +5172,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ yhteys katkennut"
           }
         },
@@ -5302,8 +5302,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ seurannut juuri!"
+            "state" : "translated",
+            "value" : "%@ alkoi seurata sinua!"
           }
         },
         "fr" : {
@@ -5432,8 +5432,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ tilasi juuri!"
+            "state" : "translated",
+            "value" : "%@ teki juuri tilauksen!"
           }
         },
         "fr" : {
@@ -6218,7 +6218,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%lld min"
           }
         },
@@ -6738,7 +6738,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "★"
           }
         },
@@ -6868,7 +6868,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "☆"
           }
         },
@@ -7649,7 +7649,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ RTMP-palvelin ei ole käytössä"
           }
         },
@@ -7909,7 +7909,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "🔥 Liekki on punainen 🔥"
           }
         },
@@ -10769,7 +10769,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "laite"
           }
         },
@@ -12200,7 +12200,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aksentti"
           }
         },
@@ -12850,8 +12850,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hälytykset"
+            "state" : "translated",
+            "value" : "Ilmoitukset"
           }
         },
         "fr" : {
@@ -15976,8 +15976,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aloita suoratoisto automaattisesti lähetyksen alkaessa"
+            "state" : "translated",
+            "value" : "Aloita lähetys automaattisesti siirtyessä live-tilaan"
           }
         },
         "fr" : {
@@ -16236,8 +16236,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pysäytä suoratoisto automaattisesti, kun suoratoisto lopetetaan"
+            "state" : "translated",
+            "value" : "Pysäytä lähetys automaattisesti, kun poistutaan live-tilasta"
           }
         },
         "fr" : {
@@ -16366,8 +16366,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Käynnistä suoratoisto automaattisesti uudelleen, kun se on katkennut"
+            "state" : "translated",
+            "value" : "Käynnistä lähetys automaattisesti uudelleen, jos se katkeaa"
           }
         },
         "fr" : {
@@ -20396,7 +20396,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lihavoitu"
           }
         },
@@ -21566,8 +21566,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BRB-kohtaus, kun videolähde on rikki"
+            "state" : "translated",
+            "value" : "BRB-näkymä, kun videolähde on rikki"
           }
         },
         "fr" : {
@@ -21956,7 +21956,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Selainwidgetit ladattu uudelleen"
           }
         },
@@ -22866,8 +22866,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-tuloa ei voi korjata. OBS-kaukosäädintä ei ole määritetty."
+            "state" : "translated",
+            "value" : "OBS-tuloa ei voi korjata. OBS-etähallintaa ei ole määritetty."
           }
         },
         "fr" : {
@@ -23776,7 +23776,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat-botti"
           }
         },
@@ -24426,8 +24426,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "valintaruudut"
+            "state" : "translated",
+            "value" : "Valintaruudut"
           }
         },
         "fr" : {
@@ -24816,7 +24816,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kaupunki"
           }
         },
@@ -26376,7 +26376,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Määritetään"
           }
         },
@@ -26506,7 +26506,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Yhdistetään"
           }
         },
@@ -26636,7 +26636,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Yhdistetään DJI-laitteeseen %@"
           }
         },
@@ -28716,7 +28716,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Maa"
           }
         },
@@ -29886,7 +29886,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Virheenkorjausloki"
           }
         },
@@ -30406,7 +30406,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Oletus"
           }
         },
@@ -30536,7 +30536,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Viive"
           }
         },
@@ -31056,7 +31056,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Design"
           }
         },
@@ -31316,7 +31316,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Laite"
           }
         },
@@ -32486,8 +32486,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Löytäminen"
+            "state" : "translated",
+            "value" : "Etsitään"
           }
         },
         "fr" : {
@@ -33006,8 +33006,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "DJI laite"
+            "state" : "translated",
+            "value" : "DJI-laite"
           }
         },
         "fr" : {
@@ -33136,8 +33136,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "DJI-laite %@ suoratoistaa muokattuun URL-osoitteeseen"
+            "state" : "translated",
+            "value" : "DJI-laite %@ lähettää muokattuun URL-osoitteeseen"
           }
         },
         "fr" : {
@@ -33266,7 +33266,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "DJI-laitteet"
           }
         },
@@ -33526,8 +33526,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Älä sano viestejä, jotka sisältävät mainintoja, paitsi silloin, kun sinut mainitaan."
+            "state" : "translated",
+            "value" : "Älä puhu viestejä, jotka sisältävät mainintoja, paitsi silloin, kun sinut mainitaan."
           }
         },
         "fr" : {
@@ -33916,7 +33916,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tehty"
           }
         },
@@ -40028,8 +40028,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ hahmonnus epäonnistui"
+            "state" : "translated",
+            "value" : "%@ piirtäminen epäonnistui"
           }
         },
         "fr" : {
@@ -40418,7 +40418,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Suoratoiston aloittaminen DJI-laitteesta %@ epäonnistui"
           }
         },
@@ -41978,7 +41978,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Suodata maininnat"
           }
         },
@@ -42888,8 +42888,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-tulon korjaaminen"
+            "state" : "translated",
+            "value" : "OBS-tuloa korjataan"
           }
         },
         "fr" : {
@@ -43408,8 +43408,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Seuraa"
+            "state" : "translated",
+            "value" : "Seuraajat"
           }
         },
         "fr" : {
@@ -43538,7 +43538,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fontti"
           }
         },
@@ -44058,8 +44058,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "etualalla"
+            "state" : "translated",
+            "value" : "Etuala"
           }
         },
         "fr" : {
@@ -45098,7 +45098,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Peliohjain %lld yhdistetty"
           }
         },
@@ -45228,7 +45228,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Peliohjain %lld irrotettu"
           }
         },
@@ -47828,7 +47828,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Horizon Balancing"
           }
         },
@@ -47958,7 +47958,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "HorizonSteady"
           }
         },
@@ -48868,8 +48868,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kuvanvakain"
+            "state" : "translated",
+            "value" : "Kuvanvakautus"
           }
         },
         "fr" : {
@@ -50558,8 +50558,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "vain seurannut!"
+            "state" : "translated",
+            "value" : "alkoi juuri seuraamaan!"
           }
         },
         "fr" : {
@@ -50688,8 +50688,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "juuri tilannut!"
+            "state" : "translated",
+            "value" : "teki juuri tilauksen!"
           }
         },
         "fr" : {
@@ -51469,7 +51469,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pituus"
           }
         },
@@ -51859,7 +51859,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kevyt"
           }
         },
@@ -52119,8 +52119,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Suoratoista ja tallenna, kun sovellus on taustatilassa."
+            "state" : "translated",
+            "value" : "Lähetä ja tallenna, kun sovellus on taustatilassa."
           }
         },
         "fr" : {
@@ -52769,7 +52769,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sijainti (jos Asetukset -> Sijainti on käytössä)"
           }
         },
@@ -53160,7 +53160,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kirjautunut ulos Twitchistä"
           }
         },
@@ -53290,7 +53290,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kirjaudu sisään"
           }
         },
@@ -53420,8 +53420,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kirjautua ulos"
+            "state" : "translated",
+            "value" : "Kirjaudu ulos"
           }
         },
         "fr" : {
@@ -54460,8 +54460,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Varmista, että DJI-laitteesi on päällä ja ettei siihen ole liitetty muita sovelluksia Bluetoothin kautta. Varmista, että Moblin-laite on suhteellisen lähellä DJI-laitetta. Jos et vieläkään näe DJI-laitettasi, sammuta DJI-laite ja käynnistä se sitten uudelleen."
+            "state" : "translated",
+            "value" : "Varmista, että DJI-laitteesi on päällä ja ettei siihen ole liitetty muita sovelluksia Bluetoothin kautta. Varmista, että Moblin-laite on suhteellisen lähellä DJI-laitetta. Jos et vieläkään näe DJI-laitettasi, sammuta DJI-laite ja käynnistä se uudelleen."
           }
         },
         "fr" : {
@@ -54569,7 +54569,14 @@
       }
     },
     "Malformed IRL URL" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Virheellinen IRL-URL-muot"
+          }
+        }
+      }
     },
     "Malformed IRLToolkit URL" : {
       "localizations" : {
@@ -55243,7 +55250,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Virheellinen striimin URL-osoite"
           }
         },
@@ -56414,8 +56421,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kartan maksimiväli"
+            "state" : "translated",
+            "value" : "Kartan maksimikulma"
           }
         },
         "fr" : {
@@ -59144,8 +59151,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin vaihtaa yllä määritettyyn BRB-kohtaukseen, kun nykyisen kohtauksen SRT(LA)- tai RTMP-videolähde irrotetaan. Ota tyypillisesti käyttöön, kun Moblinia käytetään SRT(LA)-palvelimena kotona, joka suoratoistaa OBS:lle samalla tietokoneella."
+            "state" : "translated",
+            "value" : "Moblin vaihtaa yllä määritettyyn BRB-näkymään, kun nykyisen näkymän SRT(LA)- tai RTMP-videolähde irrotetaan. Otetaan yleensä käyttöön, kun Moblinia käytetään SRT(LA)-palvelimena kotona ja suoratoistaa OBS:lle samalla tietokoneella."
           }
         },
         "fr" : {
@@ -59383,7 +59390,14 @@
       }
     },
     "Moderators" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valvojat"
+          }
+        }
+      }
     },
     "Mono audio only uses output channel 1. Stereo audio uses both output channels." : {
       "localizations" : {
@@ -59537,8 +59551,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Monospaced"
+            "state" : "translated",
+            "value" : "Tasalevyinen"
           }
         },
         "fr" : {
@@ -59797,7 +59811,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Liike"
           }
         },
@@ -63177,8 +63191,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP-palvelinvirtaa ei ole olemassa"
+            "state" : "translated",
+            "value" : "RTMP-palvelinlähetyksiä ei ole olemassa"
           }
         },
         "fr" : {
@@ -64087,7 +64101,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ei alkanut"
           }
         },
@@ -65518,8 +65532,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vain GIF:iä tuetaan."
+            "state" : "translated",
+            "value" : "Vain GIF-kuvia tuetaan."
           }
         },
         "fr" : {
@@ -65648,8 +65662,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vain MP3 ja WAV ovat tuettuja."
+            "state" : "translated",
+            "value" : "Vain MP3- ja WAV-muodot ovat tuettuja."
           }
         },
         "fr" : {
@@ -66169,7 +66183,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Valinnainen, mutta yksinkertaistaa asennusta."
           }
         },
@@ -66278,7 +66292,14 @@
       }
     },
     "Others" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muut"
+          }
+        }
+      }
     },
     "Output channel 1" : {
       "localizations" : {
@@ -66822,7 +66843,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pariliitos"
           }
         },
@@ -67061,7 +67082,14 @@
       }
     },
     "Permissions" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oikeudet"
+          }
+        }
+      }
     },
     "Pixel format" : {
       "localizations" : {
@@ -67605,7 +67633,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tarkista WiFi-asetukset"
           }
         },
@@ -67865,8 +67893,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kirjaudu uudelleen"
+            "state" : "translated",
+            "value" : "Ole hyvä ja kirjaudu uudelleen"
           }
         },
         "fr" : {
@@ -68775,8 +68803,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Valmistellaan suoratoistoa"
+            "state" : "translated",
+            "value" : "Valmistellaan lähetystä"
           }
         },
         "fr" : {
@@ -70335,7 +70363,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Arviot"
           }
         },
@@ -71354,7 +71382,14 @@
       }
     },
     "redeemed %@" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "lunasti juuri %@"
+          }
+        }
+      }
     },
     "Refresh status" : {
       "localizations" : {
@@ -71508,7 +71543,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Säännöllinen"
           }
         },
@@ -72158,8 +72193,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaukosäätimen avustaja kytketty"
+            "state" : "translated",
+            "value" : "Etähallinnan avustaja yhdistetty"
           }
         },
         "fr" : {
@@ -72288,8 +72323,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaukosäätimen avustaja irrotettu"
+            "state" : "translated",
+            "value" : "Etäohjausavustajan yhteys katkesi"
           }
         },
         "fr" : {
@@ -72548,8 +72583,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaukosäätimen streamer kytketty"
+            "state" : "translated",
+            "value" : "Etähallinnan lähetin yhdistetty"
           }
         },
         "fr" : {
@@ -72678,8 +72713,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaukosäätimen streamer irrotettu"
+            "state" : "translated",
+            "value" : "Etähallinnan lähetin katkaisi yhteyden"
           }
         },
         "fr" : {
@@ -73697,7 +73732,14 @@
       }
     },
     "Reward redemption" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palkkioiden lunastus"
+          }
+        }
+      }
     },
     "Right" : {
       "localizations" : {
@@ -74241,7 +74283,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RockSteady"
           }
         },
@@ -74371,7 +74413,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RockSteady+"
           }
         },
@@ -74501,7 +74543,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pyöristetty"
           }
         },
@@ -76321,8 +76363,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kuvakaappaus aloitettu"
+            "state" : "translated",
+            "value" : "Näytön kaappaus aloitettu"
           }
         },
         "fr" : {
@@ -76451,7 +76493,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Näytön kaappaus pysäytetty"
           }
         },
@@ -77103,7 +77145,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Valitse laite"
           }
         },
@@ -77363,7 +77405,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Valitse ääni"
           }
         },
@@ -77883,7 +77925,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Serif"
           }
         },
@@ -78013,7 +78055,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Palvelin"
           }
         },
@@ -78273,8 +78315,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wi-Fi:n määrittäminen"
+            "state" : "translated",
+            "value" : "WiFi:n määrittäminen"
           }
         },
         "fr" : {
@@ -79703,7 +79745,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Koko"
           }
         },
@@ -80613,8 +80655,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tilannekuva tallennettu Kuviin"
+            "state" : "translated",
+            "value" : "Kuvankaappaus tallennettu Kuviin"
           }
         },
         "fr" : {
@@ -83213,7 +83255,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SSID"
           }
         },
@@ -83603,8 +83645,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aloita suoratoisto"
+            "state" : "translated",
+            "value" : "Aloita lähetys"
           }
         },
         "fr" : {
@@ -84123,8 +84165,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Striimin aloitus"
+            "state" : "translated",
+            "value" : "Aloita lähetys"
           }
         },
         "fr" : {
@@ -84513,8 +84555,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lopeta suoratoisto"
+            "state" : "translated",
+            "value" : "Päätä lähetys"
           }
         },
         "fr" : {
@@ -84903,8 +84945,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Virran pysäyttäminen"
+            "state" : "translated",
+            "value" : "Päätetään lähetystä"
           }
         },
         "fr" : {
@@ -86593,8 +86635,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "suoratoisto"
+            "state" : "translated",
+            "value" : "Lähetys"
           }
         },
         "fr" : {
@@ -87373,7 +87415,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tilaukset"
           }
         },
@@ -87503,7 +87545,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ehdotukset"
           }
         },
@@ -89583,8 +89625,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Testata"
+            "state" : "translated",
+            "value" : "Testaa"
           }
         },
         "fr" : {
@@ -92573,8 +92615,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kello toimii kaukosäätimen avustajana, kun kaukosäätimen streamer on kytketty. Huomaa, että tässä tapauksessa chattailua, nykyisen TTS:n ohittamista ja muutamia muita ominaisuuksia ei (vielä) tueta."
+            "state" : "translated",
+            "value" : "Kello toimii etähallinnan avustajana, kun etähallittu lähetin on yhdistetty. Huoioi, että tässä tapauksessa chatti, nykyisen TTS:n ohittamista ja muutamia muita ominaisuuksia ei (vielä) tueta."
           }
         },
         "fr" : {
@@ -92963,7 +93005,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aika"
           }
         },
@@ -93093,7 +93135,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ajastin"
           }
         },
@@ -93223,7 +93265,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ajastimet"
           }
         },
@@ -93613,7 +93655,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widgetin näyttäminen synkronoituna korkean viiveen kameroiden kanssa."
           }
         },
@@ -95043,8 +95085,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Matkustaa"
+            "state" : "translated",
+            "value" : "Matka"
           }
         },
         "fr" : {
@@ -95953,8 +95995,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Poistetaan chat tekstistä puheeksi"
+            "state" : "translated",
+            "value" : "Poistetaan käytöstä chatin tekstistä puheeksi"
           }
         },
         "fr" : {
@@ -96083,8 +96125,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Otetaan käyttöön chat tekstistä puheeksi"
+            "state" : "translated",
+            "value" : "Otetaan käyttöön tekstistä puheeksi chatissa"
           }
         },
         "fr" : {
@@ -98685,7 +98727,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL-osoitteiden tuonti onnistui"
           }
         },
@@ -100115,8 +100157,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Käytä oletusarvoa"
+            "state" : "translated",
+            "value" : "Käytetään oletusarvoa"
           }
         },
         "fr" : {
@@ -102455,7 +102497,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sää"
           }
         },
@@ -102585,7 +102627,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sää (jos Asetukset -> Sijainti on käytössä)"
           }
         },
@@ -102975,7 +103017,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Paino"
           }
         },
@@ -104276,7 +104318,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "WiFi"
           }
         },
@@ -104406,8 +104448,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "WiFi-asetus epäonnistui"
+            "state" : "translated",
+            "value" : "WiFi-määritys epäonnistui"
           }
         },
         "fr" : {
@@ -104536,8 +104578,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wi-Fi-asetus epäonnistui DJI-laitteelle %@"
+            "state" : "translated",
+            "value" : "WiFi-määritys epäonnistui DJI-laitteelle %@"
           }
         },
         "fr" : {
@@ -106492,7 +106534,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Loitonna kartta-widgetiä väliaikaisesti."
           }
         },
@@ -106752,7 +106794,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Loitonna kartta"
           }
         },
