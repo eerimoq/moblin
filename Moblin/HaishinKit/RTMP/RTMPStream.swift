@@ -193,7 +193,7 @@ open class RTMPStream: NetStream {
 
     func publish(_ name: String?) {
         // swiftlint:disable:next closure_body_length
-        lockQueue.async {
+        netStreamLockQueue.async {
             guard let name else {
                 switch self.readyState {
                 case .publish, .publishing:
@@ -230,7 +230,7 @@ open class RTMPStream: NetStream {
     }
 
     func send(handlerName: String, arguments: Any?...) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             guard let rtmpConnection = self.rtmpConnection, self.readyState == .publishing else {
                 return
             }
@@ -281,7 +281,7 @@ open class RTMPStream: NetStream {
 
     func close(withLockQueue: Bool) {
         if withLockQueue {
-            lockQueue.sync {
+            netStreamLockQueue.sync {
                 self.close(withLockQueue: false)
             }
             return

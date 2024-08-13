@@ -10,7 +10,7 @@ class IrlStream: NetStream {
     }
 
     func start() {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.client?.start()
             self.mixer.startEncoding(self)
             self.mixer.startRunning()
@@ -18,7 +18,7 @@ class IrlStream: NetStream {
     }
 
     func stop() {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.client?.stop()
             self.client = nil
             self.mixer.stopRunning()

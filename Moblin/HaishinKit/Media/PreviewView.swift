@@ -76,7 +76,7 @@ extension PreviewView {
             currentStream = nil
             return
         }
-        stream.lockQueue.async {
+        netStreamLockQueue.async {
             stream.mixer.video.drawable = self
             self.currentStream = stream
             stream.mixer.startRunning()

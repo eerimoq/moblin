@@ -105,7 +105,7 @@ public class SRTStream: NetStream {
 
     /// Sends streaming audio, video and data message from client.
     public func publish(_ name: String? = "") {
-        lockQueue.async {
+        netStreamLockQueue.async {
             guard let name else {
                 switch self.readyState {
                 case .publish, .publishing:
@@ -125,7 +125,7 @@ public class SRTStream: NetStream {
 
     /// Stops playing or publishing and makes available other uses.
     public func close() {
-        lockQueue.async {
+        netStreamLockQueue.async {
             if self.readyState == .closed || self.readyState == .initialized {
                 return
             }

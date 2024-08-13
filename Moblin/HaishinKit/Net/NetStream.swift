@@ -18,8 +18,9 @@ protocol NetStreamDelegate: AnyObject {
     func stream(_ stream: NetStream, recorderFinishWriting writer: AVAssetWriter)
 }
 
+let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
+
 open class NetStream: NSObject {
-    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
     let mixer = Mixer()
     weak var delegate: (any NetStreamDelegate)?
 
@@ -29,26 +30,26 @@ open class NetStream: NSObject {
     }
 
     func setTorch(value: Bool) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.mixer.video.torch = value
         }
     }
 
     func setFrameRate(value: Float64) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.mixer.video.frameRate = value
         }
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.mixer.video.colorSpace = colorSpace
             onComplete()
         }
     }
 
     func setSessionPreset(preset: AVCaptureSession.Preset) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.mixer.video.preset = preset
         }
     }
@@ -58,7 +59,7 @@ open class NetStream: NSObject {
     }
 
     func setHasAudio(value: Bool) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.mixer.audio.muted = !value
         }
     }
@@ -87,7 +88,7 @@ open class NetStream: NSObject {
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
     ) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             do {
                 try self.mixer.attachCamera(device, replaceVideoCameraId)
                 onSuccess?()
@@ -102,7 +103,7 @@ open class NetStream: NSObject {
         onError: ((_ error: Error) -> Void)? = nil,
         replaceAudioId: UUID? = nil
     ) {
-        lockQueue.async {
+        netStreamLockQueue.async {
             do {
                 try self.mixer.attachAudio(device, replaceAudioId)
             } catch {

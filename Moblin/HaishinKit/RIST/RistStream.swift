@@ -121,7 +121,7 @@ class RistStream: NetStream {
             logger.info("rist: Failed to start")
             return
         }
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.writer.expectedMedias.insert(.video)
             self.writer.expectedMedias.insert(.audio)
             self.mixer.startEncoding(self.writer)
@@ -140,7 +140,7 @@ class RistStream: NetStream {
         state = .disconnected
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
-        lockQueue.async {
+        netStreamLockQueue.async {
             self.writer.stopRunning()
             self.mixer.stopEncoding()
         }
