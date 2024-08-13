@@ -85,6 +85,7 @@ final class Media: NSObject {
     }
 
     func setNetStream(proto: SettingsStreamProtocol) {
+        netStream?.stopMixer()
         srtStopStream()
         rtmpStopStream()
         ristStopStream()

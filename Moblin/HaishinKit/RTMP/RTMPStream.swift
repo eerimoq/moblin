@@ -281,7 +281,7 @@ open class RTMPStream: NetStream {
 
     func close(withLockQueue: Bool) {
         if withLockQueue {
-            netStreamLockQueue.sync {
+            netStreamLockQueue.async {
                 self.close(withLockQueue: false)
             }
             return

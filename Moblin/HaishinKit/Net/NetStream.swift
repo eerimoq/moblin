@@ -183,6 +183,12 @@ open class NetStream: NSObject {
     func stopRecording() {
         mixer.recorder.stopRunning()
     }
+
+    func stopMixer() {
+        netStreamLockQueue.async {
+            self.mixer.stopRunning()
+        }
+    }
 }
 
 extension NetStream: MixerDelegate {
