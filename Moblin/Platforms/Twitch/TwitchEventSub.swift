@@ -133,6 +133,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
+    func twitchEventSubUnauthorized()
 }
 
 final class TwitchEventSub: NSObject {
@@ -148,6 +149,7 @@ final class TwitchEventSub: NSObject {
         twitchApi = TwitchApi(accessToken: accessToken)
         webSocket = .init(url: url)
         super.init()
+        twitchApi.delegate = self
     }
 
     func start() {
@@ -199,39 +201,38 @@ final class TwitchEventSub: NSObject {
             return
         }
         sessionId = message.payload.session.id
-        twitchApi.createEventSubSubscription(body: createChannelFollowBody()) { ok, unauthorized in
-            logger.info("twitch: event-sub: Follow result \(ok) \(unauthorized)")
-            self.twitchApi
-                .createEventSubSubscription(body: self.createChannelSubscribeBody()) { ok, unauthorized in
-                    logger.info("twitch: event-sub: Subscribe result \(ok) \(unauthorized)")
-                    self.twitchApi
-                        .createEventSubSubscription(body: self
-                            .createChannelPointsCustomRewardRedemptionAddSubscribeBody(
-                            )) { ok, unauthorized in
-                                logger.info("twitch: event-sub: Subscribe result \(ok) \(unauthorized)")
-                        }
-                }
-        }
+        subscribeToChannelFollow()
     }
 
-    private func createChannelFollowBody() -> String {
-        return createBody(
+    private func subscribeToChannelFollow() {
+        let body = createBody(
             type: "channel.follow",
             version: 2,
             condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
         )
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            logger.info("twitch: event-sub: Follow result \(ok)")
+            self.subscribeToChannelSubscribe()
+        }
     }
 
-    private func createChannelSubscribeBody() -> String {
-        return createBody(type: "channel.subscribe",
-                          version: 1,
-                          condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+    private func subscribeToChannelSubscribe() {
+        let body = createBody(type: "channel.subscribe",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            logger.info("twitch: event-sub: Subscribe result \(ok)")
+            self.subscribeToChannelPointsCustomRewardRedemptionAdd()
+        }
     }
 
-    private func createChannelPointsCustomRewardRedemptionAddSubscribeBody() -> String {
-        return createBody(type: "channel.channel_points_custom_reward_redemption.add",
-                          version: 1,
-                          condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+    private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
+        let body = createBody(type: "channel.channel_points_custom_reward_redemption.add",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            logger.info("twitch: event-sub: Reward redemption result \(ok)")
+        }
     }
 
     private func createBody(type: String, version: Int, condition: String) -> String {
@@ -309,5 +310,11 @@ extension TwitchEventSub: WebSocketClientDelegate {
 
     func webSocketClientReceiveMessage(string: String) {
         handleMessage(message: string)
+    }
+}
+
+extension TwitchEventSub: TwitchApiDelegate {
+    func twitchApiUnauthorized() {
+        delegate.twitchEventSubUnauthorized()
     }
 }

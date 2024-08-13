@@ -17,63 +17,71 @@ struct TwitchApiStreamKey: Decodable {
     let data: [TwitchApiStreamKeyData]
 }
 
+protocol TwitchApiDelegate: AnyObject {
+    func twitchApiUnauthorized()
+}
+
 class TwitchApi {
     private let clientId: String
     private let accessToken: String
+    weak var delegate: (any TwitchApiDelegate)?
 
     init(accessToken: String) {
         clientId = twitchMoblinAppClientId
         self.accessToken = accessToken
     }
 
-    func getUsers(onComplete: @escaping (TwitchApiUsers?, Bool) -> Void) {
-        doGet(subPath: "users", onComplete: { data, unauthorized in
-            onComplete(try? JSONDecoder().decode(TwitchApiUsers.self, from: data ?? Data()), unauthorized)
+    func getUsers(onComplete: @escaping (TwitchApiUsers?) -> Void) {
+        doGet(subPath: "users", onComplete: { data in
+            onComplete(try? JSONDecoder().decode(TwitchApiUsers.self, from: data ?? Data()))
         })
     }
 
-    func getUserInfo(onComplete: @escaping (TwitchApiUser?, Bool) -> Void) {
-        getUsers(onComplete: { users, unauthorized in
-            onComplete(users?.data.first, unauthorized)
+    func getUserInfo(onComplete: @escaping (TwitchApiUser?) -> Void) {
+        getUsers(onComplete: { users in
+            onComplete(users?.data.first)
         })
     }
 
-    func createEventSubSubscription(body: String, onComplete: @escaping (Bool, Bool) -> Void) {
-        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data, onComplete: { data, unauthorized in
-            onComplete(data != nil, unauthorized)
+    func createEventSubSubscription(body: String, onComplete: @escaping (Bool) -> Void) {
+        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data, onComplete: { data in
+            onComplete(data != nil)
         })
     }
 
     // periphery:ignore
-    func getEventSubSubscriptions(onComplete: @escaping (Bool, Bool) -> Void) {
-        doGet(subPath: "eventsub/subscriptions", onComplete: { data, unauthorized in
-            onComplete(data != nil, unauthorized)
+    func getEventSubSubscriptions(onComplete: @escaping (Bool) -> Void) {
+        doGet(subPath: "eventsub/subscriptions", onComplete: { data in
+            onComplete(data != nil)
         })
     }
 
-    func getStreamKey(userId: String, onComplete: @escaping (String?, Bool) -> Void) {
-        doGet(subPath: "streams/key?broadcaster_id=\(userId)", onComplete: { data, unauthorized in
+    func getStreamKey(userId: String, onComplete: @escaping (String?) -> Void) {
+        doGet(subPath: "streams/key?broadcaster_id=\(userId)", onComplete: { data in
             let response = try? JSONDecoder().decode(TwitchApiStreamKey.self, from: data ?? Data())
-            onComplete(response?.data.first?.stream_key, unauthorized)
+            onComplete(response?.data.first?.stream_key)
         })
     }
 
-    private func doGet(subPath: String, onComplete: @escaping ((Data?, Bool) -> Void)) {
+    private func doGet(subPath: String, onComplete: @escaping ((Data?) -> Void)) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
         let request = createGetRequest(url: url)
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil, response?.http?.isUnauthorized == true)
+                if response?.http?.isUnauthorized == true {
+                    self.delegate?.twitchApiUnauthorized()
+                }
+                onComplete(nil)
                 return
             }
-            onComplete(data, false)
+            onComplete(data)
         }
         .resume()
     }
 
-    private func doPost(subPath: String, body: Data, onComplete: @escaping (Data?, Bool) -> Void) {
+    private func doPost(subPath: String, body: Data, onComplete: @escaping (Data?) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -81,10 +89,13 @@ class TwitchApi {
         request.httpBody = body
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil, response?.http?.isUnauthorized == true)
+                if response?.http?.isUnauthorized == true {
+                    self.delegate?.twitchApiUnauthorized()
+                }
+                onComplete(nil)
                 return
             }
-            onComplete(data, false)
+            onComplete(data)
         }
         .resume()
     }

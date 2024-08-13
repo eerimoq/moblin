@@ -7195,27 +7195,22 @@ extension Model {
         twitchAuthStream?.twitchAccessToken = accessToken
         showTwitchAuth = false
         wizardShowTwitchAuth = false
-        TwitchApi(accessToken: accessToken).getUserInfo { info, unauthorized in
+        TwitchApi(accessToken: accessToken).getUserInfo { info in
             DispatchQueue.main.async {
-                if let info {
-                    guard let twitchAuthStream = self.twitchAuthStream else {
-                        return
-                    }
-                    twitchAuthStream.twitchChannelName = info.login
-                    twitchAuthStream.twitchChannelId = info.id
-                    if twitchAuthStream.enabled {
-                        self.twitchChannelIdUpdated()
-                    }
-                    if let twitchAuthOnComplete = self.twitchAuthOnComplete {
-                        twitchAuthOnComplete()
-                        self.twitchAuthOnComplete = nil
-                    }
-                } else if unauthorized {
-                    self.twitchAuthStream?.twitchAccessToken = ""
-                    self.makeErrorToast(
-                        title: String(localized: "Logged out from Twitch"),
-                        subTitle: String(localized: "Please login again")
-                    )
+                guard let info else {
+                    return
+                }
+                guard let twitchAuthStream = self.twitchAuthStream else {
+                    return
+                }
+                twitchAuthStream.twitchChannelName = info.login
+                twitchAuthStream.twitchChannelId = info.id
+                if twitchAuthStream.enabled {
+                    self.twitchChannelIdUpdated()
+                }
+                if let twitchAuthOnComplete = self.twitchAuthOnComplete {
+                    twitchAuthOnComplete()
+                    self.twitchAuthOnComplete = nil
                 }
             }
         }
@@ -7256,6 +7251,10 @@ extension Model: TwitchEventSubDelegate {
                                    isModerator: false,
                                    isRedemption: true)
         }
+    }
+
+    func twitchEventSubUnauthorized() {
+        twitchApiUnauthorized()
     }
 }
 
@@ -7325,5 +7324,16 @@ extension Model: ObsWebsocketDelegate {
             }
         }
         obsAudioVolumeLatest = values.joined(separator: ", ")
+    }
+}
+
+extension Model: TwitchApiDelegate {
+    func twitchApiUnauthorized() {
+        DispatchQueue.main.async {
+            self.makeErrorToast(
+                title: String(localized: "Logged out from Twitch"),
+                subTitle: String(localized: "Please login again")
+            )
+        }
     }
 }

@@ -12,7 +12,7 @@ struct StreamWizardTwitchSettingsView: View {
         model.wizardTwitchChannelId = model.wizardTwitchStream.twitchChannelId
         model.wizardTwitchAccessToken = model.wizardTwitchStream.twitchAccessToken!
         TwitchApi(accessToken: model.wizardTwitchAccessToken)
-            .getStreamKey(userId: model.wizardTwitchChannelId) { streamKey, _ in
+            .getStreamKey(userId: model.wizardTwitchChannelId) { streamKey in
                 DispatchQueue.main.async {
                     if let streamKey {
                         model.wizardDirectStreamKey = streamKey
