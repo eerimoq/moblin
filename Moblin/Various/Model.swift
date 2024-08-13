@@ -1703,12 +1703,10 @@ final class Model: NSObject, ObservableObject {
                 newStream.obsWebSocketPassword = obs.webSocketPassword.trim()
             }
             if let twitch = stream.twitch {
-                newStream.twitchEnabled = true
                 newStream.twitchChannelName = twitch.channelName.trim()
                 newStream.twitchChannelId = twitch.channelId.trim()
             }
             if let kick = stream.kick {
-                newStream.kickEnabled = true
                 newStream.kickChannelName = kick.channelName.trim()
             }
             database.streams.append(newStream)
@@ -5929,21 +5927,17 @@ extension Model {
         }
         switch wizardPlatform {
         case .twitch:
-            stream.twitchEnabled = true
             stream.twitchChannelName = wizardTwitchChannelName.trim()
             stream.twitchChannelId = wizardTwitchChannelId.trim()
             stream.twitchAccessToken = wizardTwitchAccessToken
         case .kick:
-            stream.kickEnabled = true
             stream.kickChannelName = wizardKickChannelName.trim()
         case .youTube:
             if !wizardYouTubeVideoId.isEmpty {
-                stream.youTubeEnabled = true
                 stream.youTubeVideoId = wizardYouTubeVideoId.trim()
             }
         case .afreecaTv:
             if !wizardAfreecaTvChannelName.isEmpty, !wizardAfreecsTvCStreamId.isEmpty {
-                stream.afreecaTvEnabled = true
                 stream.afreecaTvChannelName = wizardAfreecaTvChannelName.trim()
                 stream.afreecaTvStreamId = wizardAfreecsTvCStreamId.trim()
             }

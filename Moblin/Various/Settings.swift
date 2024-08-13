@@ -361,20 +361,15 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var enabled: Bool = false
     var url: String = defaultStreamUrl
-    var twitchEnabled: Bool? = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var twitchAccessToken: String? = ""
-    var kickEnabled: Bool? = false
     var kickChatroomId: String = ""
     var kickChannelName: String? = ""
-    var youTubeEnabled: Bool? = false
     var youTubeApiKey: String? = ""
     var youTubeVideoId: String? = ""
-    var afreecaTvEnabled: Bool? = false
     var afreecaTvChannelName: String? = ""
     var afreecaTvStreamId: String? = ""
-    var openStreamingPlatformEnabled: Bool? = false
     var openStreamingPlatformUrl: String? = ""
     var openStreamingPlatformChannelId: String? = ""
     var obsWebSocketEnabled: Bool? = false
@@ -414,19 +409,14 @@ class SettingsStream: Codable, Identifiable, Equatable {
     func clone() -> SettingsStream {
         let new = SettingsStream(name: name)
         new.url = url
-        new.twitchEnabled = twitchEnabled
         new.twitchChannelName = twitchChannelName
         new.twitchChannelId = twitchChannelId
-        new.kickEnabled = kickEnabled
         new.kickChatroomId = kickChatroomId
         new.kickChannelName = kickChannelName
-        new.youTubeEnabled = youTubeEnabled
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
-        new.afreecaTvEnabled = afreecaTvEnabled
         new.afreecaTvChannelName = afreecaTvChannelName
         new.afreecaTvStreamId = afreecaTvStreamId
-        new.openStreamingPlatformEnabled = openStreamingPlatformEnabled
         new.openStreamingPlatformUrl = openStreamingPlatformUrl
         new.openStreamingPlatformChannelId = openStreamingPlatformChannelId
         new.obsWebSocketEnabled = obsWebSocketEnabled
@@ -2696,22 +2686,6 @@ final class Settings {
             realDatabase.show.obsStatus = true
             store()
         }
-        for stream in realDatabase.streams where stream.twitchEnabled == nil {
-            stream.twitchEnabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.kickEnabled == nil {
-            stream.kickEnabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.youTubeEnabled == nil {
-            stream.youTubeEnabled = true
-            store()
-        }
-        for stream in realDatabase.streams where stream.afreecaTvEnabled == nil {
-            stream.afreecaTvEnabled = true
-            store()
-        }
         for stream in realDatabase.streams where stream.obsWebSocketEnabled == nil {
             stream.obsWebSocketEnabled = true
             store()
@@ -2966,10 +2940,6 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.frontCameraId == nil {
             scene.frontCameraId = getBestFrontCameraId()
-            store()
-        }
-        for stream in realDatabase.streams where stream.openStreamingPlatformEnabled == nil {
-            stream.openStreamingPlatformEnabled = true
             store()
         }
         for stream in realDatabase.streams where stream.openStreamingPlatformUrl == nil {
