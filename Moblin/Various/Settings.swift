@@ -1459,7 +1459,6 @@ class SettingsDebug: Codable {
     var useAudioForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
-    var twitchEventSub: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3449,10 +3448,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.twitchAccessToken == nil {
             stream.twitchAccessToken = ""
-            store()
-        }
-        if realDatabase.debug!.twitchEventSub == nil {
-            realDatabase.debug!.twitchEventSub = false
             store()
         }
         for widget in realDatabase.widgets where widget.alerts!.twitch == nil {

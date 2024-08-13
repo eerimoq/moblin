@@ -130,12 +130,6 @@ struct DebugSettingsView: View {
                     Text(String(Int(maxMapPitch)))
                         .frame(width: 40)
                 }
-                Toggle("Twitch EventSub", isOn: Binding(get: {
-                    model.database.debug!.twitchEventSub!
-                }, set: { value in
-                    model.database.debug!.twitchEventSub = value
-                    model.reloadTwitchEventSub()
-                }))
             } header: {
                 Text("Experimental")
             }

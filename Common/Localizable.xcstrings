@@ -96322,6 +96322,7 @@
       }
     },
     "Twitch EventSub" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

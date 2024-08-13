@@ -3213,7 +3213,7 @@ final class Model: NSObject, ObservableObject {
 
     func reloadTwitchEventSub() {
         twitchEventSub?.stop()
-        if isTwitchAccessTokenConfigured() && database.debug!.twitchEventSub! {
+        if isTwitchAccessTokenConfigured() {
             twitchEventSub = TwitchEventSub(
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken!,
