@@ -3391,7 +3391,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.361.0;
+				MARKETING_VERSION = 0.362.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3443,7 +3443,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.361.0;
+				MARKETING_VERSION = 0.362.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

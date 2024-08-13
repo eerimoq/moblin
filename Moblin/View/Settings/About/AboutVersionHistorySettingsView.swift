@@ -8,9 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.362.0", date: "2024-08-13", changes: [
+        "• Show toast when not authorized to Twitch (and want to be).",
+        "• Removed EventSub debug toggle.",
+        "  • Make Twitch EventSub enabled when logged in.",
+        "• Hopefully fix a crash/hang when quickly changing stream.",
+        "• Finnish translation updated. ✍️ mikeful",
+    ]),
     Version(version: "0.361.0", date: "2024-08-12", changes: [
         "• Chat bot permissions per command (similar commands share permissions).",
-        "  • Enabled for streamer and moderators be default.",
+        "  • Enabled for streamer and moderators by default.",
         "• Show redeemed rewards in chat and as toast. 💡 plantbaked",
     ]),
     Version(version: "0.360.0", date: "2024-08-11", changes: [
