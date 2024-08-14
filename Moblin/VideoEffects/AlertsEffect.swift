@@ -22,26 +22,39 @@ protocol AlertsEffectDelegate: AnyObject {
     func alertsPlayerRegisterVideoEffect(effect: VideoEffect)
 }
 
+private enum MediaItem {
+    case bundledName(String)
+    case customUrl(URL)
+}
+
 private class Medias {
     var images: [CIImage] = []
     var soundUrl: URL?
     var fps: Double = 1.0
 
-    func updateSoundUrl(url: URL) {
-        if (try? url.checkResourceIsReachable()) == true {
-            soundUrl = url
-        } else {
-            soundUrl = Bundle.main.url(forResource: "Alerts.bundle/sparkle", withExtension: "mp3")
+    func updateSoundUrl(sound: MediaItem) {
+        switch sound {
+        case let .bundledName(name):
+            soundUrl = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "mp3")
+        case let .customUrl(url):
+            if (try? url.checkResourceIsReachable()) == true {
+                soundUrl = url
+            } else {
+                soundUrl = nil
+            }
         }
     }
 
-    func updateImages(url: URL) {
+    func updateImages(image: MediaItem) {
         DispatchQueue.global().async {
-            var images = self.loadImages(url: url)
-            if images.isEmpty {
-                if let url = Bundle.main.url(forResource: "Alerts.bundle/pixels", withExtension: "gif") {
+            var images: [CIImage] = []
+            switch image {
+            case let .bundledName(name):
+                if let url = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "gif") {
                     images = self.loadImages(url: url)
                 }
+            case let .customUrl(url):
+                images = self.loadImages(url: url)
             }
             lockQueue.sync {
                 self.images = images
@@ -87,16 +100,22 @@ final class AlertsEffect: VideoEffect {
     private let mediaStorage: AlertMediaStorage
     private var twitchFollow = Medias()
     private var twitchSubscribe = Medias()
+    private let bundledImages: [SettingsAlertsMediaGalleryItem]
+    private let bundledSounds: [SettingsAlertsMediaGalleryItem]
 
     init(
         settings: SettingsWidgetAlerts,
         fps: Int,
         delegate: AlertsEffectDelegate,
-        mediaStorage: AlertMediaStorage
+        mediaStorage: AlertMediaStorage,
+        bundledImages: [SettingsAlertsMediaGalleryItem],
+        bundledSounds: [SettingsAlertsMediaGalleryItem]
     ) {
         self.settings = settings
         self.delegate = delegate
         self.mediaStorage = mediaStorage
+        self.bundledImages = bundledImages
+        self.bundledSounds = bundledSounds
         twitchFollow.fps = Double(fps)
         twitchSubscribe.fps = Double(fps)
         audioPlayer = nil
@@ -104,12 +123,30 @@ final class AlertsEffect: VideoEffect {
         setSettings(settings: settings)
     }
 
+    private func getMediaItems(alert: SettingsWidgetAlertsTwitchAlert) -> (MediaItem, MediaItem) {
+        let image: MediaItem
+        if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
+            image = .bundledName(bundledImage.name)
+        } else {
+            image = .customUrl(mediaStorage.makePath(id: alert.imageId))
+        }
+        let sound: MediaItem
+        if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
+            sound = .bundledName(bundledSound.name)
+        } else {
+            sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
+        }
+        return (image, sound)
+    }
+
     func setSettings(settings: SettingsWidgetAlerts) {
         let twitch = settings.twitch!
-        twitchFollow.updateImages(url: mediaStorage.makePath(id: twitch.follows.imageId))
-        twitchFollow.updateSoundUrl(url: mediaStorage.makePath(id: twitch.follows.soundId))
-        twitchSubscribe.updateImages(url: mediaStorage.makePath(id: twitch.subscriptions.imageId))
-        twitchSubscribe.updateSoundUrl(url: mediaStorage.makePath(id: twitch.subscriptions.soundId))
+        var (image, sound) = getMediaItems(alert: twitch.follows)
+        twitchFollow.updateImages(image: image)
+        twitchFollow.updateSoundUrl(sound: sound)
+        (image, sound) = getMediaItems(alert: twitch.subscriptions)
+        twitchSubscribe.updateImages(image: image)
+        twitchSubscribe.updateSoundUrl(sound: sound)
         self.settings = settings
     }
 
@@ -265,16 +302,21 @@ final class AlertsEffect: VideoEffect {
         return "Alert widget"
     }
 
+    private func getNext(image: CIImage) -> (CIImage, CIImage?, Double, Double) {
+        guard imageIndex < images.count else {
+            toBeRemoved = true
+            return (image, nil, x, y)
+        }
+        defer {
+            imageIndex += 1
+            toBeRemoved = imageIndex == images.count
+        }
+        return (images[imageIndex], messageImage, x, y)
+    }
+
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         let (alertImage, messageImage, x, y) = lockQueue.sync {
-            guard imageIndex < images.count else {
-                return (image, self.messageImage, self.x, self.y)
-            }
-            defer {
-                self.imageIndex += 1
-                self.toBeRemoved = imageIndex == images.count
-            }
-            return (images[imageIndex], self.messageImage, self.x, self.y)
+            getNext(image: image)
         }
         guard let messageImage else {
             return image
@@ -295,6 +337,7 @@ final class AlertsEffect: VideoEffect {
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
         return lockQueue.sync {
             guard imageIndex < images.count else {
+                self.toBeRemoved = true
                 return image
             }
             defer {

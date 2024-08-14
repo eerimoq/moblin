@@ -12568,6 +12568,9 @@
         }
       }
     },
+    "Add your own images." : {
+
+    },
     "Add your own LUTs." : {
       "localizations" : {
         "de" : {
@@ -12697,6 +12700,9 @@
           }
         }
       }
+    },
+    "Add your own sounds." : {
+
     },
     "AfreecaTV" : {
       "localizations" : {
@@ -45076,6 +45082,9 @@
         }
       }
     },
+    "Gallery" : {
+
+    },
     "Game controller %lld connected" : {
       "localizations" : {
         "de" : {
@@ -65641,6 +65650,7 @@
       }
     },
     "Only MP3 and WAV are supported." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -67480,6 +67490,9 @@
           }
         }
       }
+    },
+    "Play" : {
+
     },
     "Playlist" : {
       "localizations" : {
@@ -77123,6 +77136,9 @@
         }
       }
     },
+    "Select another sound" : {
+
+    },
     "Select device" : {
       "localizations" : {
         "de" : {
@@ -80762,6 +80778,9 @@
           }
         }
       }
+    },
+    "Sound" : {
+
     },
     "Source %@ not found" : {
       "localizations" : {

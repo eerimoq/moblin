@@ -1,6 +1,6 @@
 import Foundation
 
-class MediaStorage {
+class MediaPlayerStorage {
     private var fileManager: FileManager
     private var mediasUrl: URL
 
@@ -16,7 +16,7 @@ class MediaStorage {
                 attributes: nil
             )
         } catch {
-            logger.error("media-storage: Error creating images directory: \(error)")
+            logger.error("media-player-storage: Error creating images directory: \(error)")
         }
     }
 
@@ -40,7 +40,7 @@ class MediaStorage {
         do {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
-            logger.error("media-storage: Remove failed with error \(error)")
+            logger.error("media-player-storage: Remove failed with error \(error)")
         }
     }
 }

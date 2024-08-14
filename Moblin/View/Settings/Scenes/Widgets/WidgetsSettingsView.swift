@@ -43,6 +43,7 @@ struct WidgetsSettingsView: View {
             })
             CreateButtonView(action: {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
+                model.fixAlertMedias()
                 model.store()
             })
         } header: {

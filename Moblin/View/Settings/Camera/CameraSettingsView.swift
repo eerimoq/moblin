@@ -230,10 +230,9 @@ struct CameraSettingsView: View {
                             }
                         }
                         .disabled(model.isLive || model.isRecording)
-                        NavigationLink(destination: CameraSettingsAppleLogLutView(selectedId: model.database
-                                .color!
-                                .lut))
-                        {
+                        NavigationLink(destination: CameraSettingsAppleLogLutView(
+                            selectedId: model.database.color!.lut
+                        )) {
                             Text("Apple Log LUT")
                         }
                     } footer: {

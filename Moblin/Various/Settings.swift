@@ -2029,6 +2029,30 @@ class DeepLinkCreator: Codable {
     var webBrowser: DeepLinkCreatorWebBrowser? = .init()
 }
 
+class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+
+    init(name: String) {
+        self.name = name
+    }
+}
+
+private let allBundledAlertsMediaGalleryImages = [
+    SettingsAlertsMediaGalleryItem(name: "Moblin pixels"),
+]
+
+private let allBundledAlertsMediaGallerySounds = [
+    SettingsAlertsMediaGalleryItem(name: "Sparkle"),
+]
+
+class SettingsAlertsMediaGallery: Codable {
+    var bundledImages = allBundledAlertsMediaGalleryImages
+    var customImages: [SettingsAlertsMediaGalleryItem] = []
+    var bundledSounds = allBundledAlertsMediaGallerySounds
+    var customSounds: [SettingsAlertsMediaGalleryItem] = []
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -2069,6 +2093,7 @@ class Database: Codable {
     var showAllSettings: Bool? = false
     var portrait: Bool? = false
     var djiDevices: SettingsDjiDevices? = .init()
+    var alertsMediaGallery: SettingsAlertsMediaGallery? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2090,6 +2115,7 @@ class Database: Codable {
         }
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
+        addMissingBundledAlertsMediaGallery(database: database)
         return database
     }
 
@@ -2473,6 +2499,31 @@ private func addMissingBundledLuts(database: Database) {
     database.color!.bundledLuts = bundledLuts
 }
 
+private func addMissingBundledAlertsMediaGallery(database: Database) {
+    var bundledImages: [SettingsAlertsMediaGalleryItem] = []
+    for image in allBundledAlertsMediaGalleryImages {
+        if let existingImage = database.alertsMediaGallery!.bundledImages
+            .first(where: { $0.name == image.name })
+        {
+            bundledImages.append(existingImage)
+        } else {
+            bundledImages.append(image)
+        }
+    }
+    database.alertsMediaGallery!.bundledImages = bundledImages
+    var bundledSounds: [SettingsAlertsMediaGalleryItem] = []
+    for sound in allBundledAlertsMediaGallerySounds {
+        if let existingSound = database.alertsMediaGallery!.bundledSounds
+            .first(where: { $0.name == sound.name })
+        {
+            bundledSounds.append(existingSound)
+        } else {
+            bundledSounds.append(sound)
+        }
+    }
+    database.alertsMediaGallery!.bundledSounds = bundledSounds
+}
+
 private func addScenesToGameController(database: Database) {
     var button = database.gameControllers![0].buttons[0]
     button.function = .scene
@@ -2513,6 +2564,7 @@ private func createDefault() -> Database {
     addMissingDeepLinkQuickButtons(database: database)
     addScenesToGameController(database: database)
     addMissingBundledLuts(database: database)
+    addMissingBundledAlertsMediaGallery(database: database)
     return database
 }
 
@@ -3461,6 +3513,10 @@ final class Settings {
         }
         if realDatabase.debug!.useVideoForTimestamps == nil {
             realDatabase.debug!.useVideoForTimestamps = false
+            store()
+        }
+        if realDatabase.alertsMediaGallery == nil {
+            realDatabase.alertsMediaGallery = .init()
             store()
         }
     }

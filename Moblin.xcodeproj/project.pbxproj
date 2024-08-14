@@ -45,7 +45,7 @@
 		031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 031852A42B21890A00AEAD0D /* InfoPlist.strings */; };
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
-		031A43872C33B7A3007CF059 /* MediaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A43862C33B7A3007CF059 /* MediaStorage.swift */; };
+		031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */; };
 		031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */; };
 		031BD2C52C2D11DC002D4E10 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031BD2C42C2D11DC002D4E10 /* Platform.swift */; };
 		031C15B52B93326500BA967D /* WatchChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15B42B93326500BA967D /* WatchChatSettingsView.swift */; };
@@ -517,7 +517,7 @@
 		031852A52B21890A00AEAD0D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
-		031A43862C33B7A3007CF059 /* MediaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStorage.swift; sourceTree = "<group>"; };
+		031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerStorage.swift; sourceTree = "<group>"; };
 		031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAudioSettingsView.swift; sourceTree = "<group>"; };
 		031BD2C42C2D11DC002D4E10 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		031C15B42B93326500BA967D /* WatchChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchChatSettingsView.swift; sourceTree = "<group>"; };
@@ -2292,7 +2292,7 @@
 				038C0F622C2D7C6400A258C6 /* LogsStorage.swift */,
 				03A08B7F2AC368860018BA95 /* Media.swift */,
 				03311B8A2C3271B90073F9E2 /* MediaPlayer.swift */,
-				031A43862C33B7A3007CF059 /* MediaStorage.swift */,
+				031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */,
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
@@ -2948,7 +2948,7 @@
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
-				031A43872C33B7A3007CF059 /* MediaStorage.swift in Sources */,
+				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,
 				03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,

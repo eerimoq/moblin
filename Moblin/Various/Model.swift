@@ -336,7 +336,7 @@ final class Model: NSObject, ObservableObject {
     var remoteControlAssistantLog: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
     var logsStorage = LogsStorage()
-    var mediaStorage = MediaStorage()
+    var mediaStorage = MediaPlayerStorage()
     var alertMediaStorage = AlertMediaStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
@@ -861,6 +861,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        fixAlertMedias()
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
@@ -910,6 +911,7 @@ final class Model: NSObject, ObservableObject {
         updateButtonStates()
         scrollQuickButtonsToBottom()
         removeUnusedImages()
+        removeUnusedAlertMedias()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(orientationDidChange),
                                                name: UIDevice.orientationDidChangeNotification,
@@ -2351,6 +2353,46 @@ final class Model: NSObject, ObservableObject {
         return nil
     }
 
+    private func fixAlert(alert: SettingsWidgetAlertsTwitchAlert) {
+        if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
+            alert.imageId = database.alertsMediaGallery!.bundledImages[0].id
+        }
+        if getAllAlertSounds().first(where: { $0.id == alert.soundId }) == nil {
+            alert.soundId = database.alertsMediaGallery!.bundledSounds[0].id
+        }
+    }
+
+    func fixAlertMedias() {
+        for widget in database.widgets {
+            fixAlert(alert: widget.alerts!.twitch!.follows)
+            fixAlert(alert: widget.alerts!.twitch!.subscriptions)
+        }
+        updateAlertsSettings()
+    }
+
+    private func removeUnusedAlertMedias() {
+        for mediaId in alertMediaStorage.ids() {
+            var found = false
+            if database.alertsMediaGallery!.customImages.contains(where: { $0.id == mediaId }) {
+                found = true
+            }
+            if database.alertsMediaGallery!.customSounds.contains(where: { $0.id == mediaId }) {
+                found = true
+            }
+            if !found {
+                alertMediaStorage.remove(id: mediaId)
+            }
+        }
+    }
+
+    func getAllAlertImages() -> [SettingsAlertsMediaGalleryItem] {
+        return database.alertsMediaGallery!.bundledImages + database.alertsMediaGallery!.customImages
+    }
+
+    func getAllAlertSounds() -> [SettingsAlertsMediaGalleryItem] {
+        return database.alertsMediaGallery!.bundledSounds + database.alertsMediaGallery!.customSounds
+    }
+
     func getAlertsEffect(id: UUID) -> AlertsEffect? {
         for (alertsEffectId, alertsEffect) in alertsEffects where id == alertsEffectId {
             return alertsEffect
@@ -2515,7 +2557,9 @@ final class Model: NSObject, ObservableObject {
                 settings: widget.alerts!.clone(),
                 fps: stream.fps,
                 delegate: self,
-                mediaStorage: alertMediaStorage
+                mediaStorage: alertMediaStorage,
+                bundledImages: database.alertsMediaGallery!.bundledImages,
+                bundledSounds: database.alertsMediaGallery!.bundledSounds
             )
         }
         browsers = browserEffects.map { _, browser in

@@ -24,7 +24,6 @@ class AlertMediaStorage {
         return mediasUrl.appendingPathComponent(id.uuidString)
     }
 
-    // periphery:ignore
     func ids() -> [UUID] {
         do {
             var ids: [UUID] = []
@@ -48,12 +47,15 @@ class AlertMediaStorage {
         }
     }
 
-    // periphery:ignore
     func remove(id: UUID) {
         do {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
             logger.error("alert-media-storage: Remove failed with error \(error)")
         }
+    }
+
+    func tryRead(id: UUID) -> Data? {
+        return try? Data(contentsOf: makePath(id: id))
     }
 }

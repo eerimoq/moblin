@@ -16,7 +16,7 @@ class MediaPlayer {
     private var videoTrackOutput: AVAssetReaderTrackOutput?
     private var audioTrackOutput: AVAssetReaderTrackOutput?
     private var settings: SettingsMediaPlayer
-    private var mediaStorage: MediaStorage
+    private var mediaStorage: MediaPlayerStorage
     private var playing = false
     private var currentFileIndex = 0
     private var fileDuration = 0.0
@@ -30,7 +30,7 @@ class MediaPlayer {
     private var filename = ""
     var delegate: (any MediaPlayerDelegate)?
 
-    init(settings: SettingsMediaPlayer, mediaStorage: MediaStorage) {
+    init(settings: SettingsMediaPlayer, mediaStorage: MediaPlayerStorage) {
         self.settings = settings.clone()
         self.mediaStorage = mediaStorage
         mediaPlayerQueue.async {
