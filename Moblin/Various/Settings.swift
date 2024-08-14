@@ -1447,7 +1447,7 @@ class SettingsDebug: Codable {
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
     var higherDataRateLimit: Bool? = true
-    var useAudioForTimestamps: Bool? = false
+    var useVideoForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
 }
@@ -3152,10 +3152,6 @@ final class Settings {
             stream.backgroundStreaming = false
             store()
         }
-        if realDatabase.debug!.useAudioForTimestamps == nil {
-            realDatabase.debug!.useAudioForTimestamps = false
-            store()
-        }
         for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
             stream.manualFps = stream.fps! != 0
             store()
@@ -3461,6 +3457,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
             stream.twitchLoggedIn = false
+            store()
+        }
+        if realDatabase.debug!.useVideoForTimestamps == nil {
+            realDatabase.debug!.useVideoForTimestamps = false
             store()
         }
     }

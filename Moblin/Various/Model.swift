@@ -885,7 +885,7 @@ final class Model: NSObject, ObservableObject {
         setPixelFormat()
         setMetalPetalFilters()
         setHigherDataRateLimit()
-        setUseAudioForTimestamps()
+        setUseVideoForTimestamps()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -1056,11 +1056,11 @@ final class Model: NSObject, ObservableObject {
         videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
     }
 
-    func setUseAudioForTimestamps() {
-        if database.debug!.useAudioForTimestamps! {
-            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.audioPacketId
-        } else {
+    func setUseVideoForTimestamps() {
+        if database.debug!.useVideoForTimestamps! {
             mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
+        } else {
+            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.audioPacketId
         }
     }
 

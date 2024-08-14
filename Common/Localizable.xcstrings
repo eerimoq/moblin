@@ -98966,6 +98966,7 @@
       }
     },
     "Use audio for timestamps" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -99484,6 +99485,9 @@
           }
         }
       }
+    },
+    "Use video for timestamps" : {
+
     },
     "Use your public IP address if streaming over the internet." : {
       "localizations" : {
