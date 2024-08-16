@@ -2043,7 +2043,7 @@ private let allBundledAlertsMediaGalleryImages = [
 ]
 
 private let allBundledAlertsMediaGallerySounds = [
-    SettingsAlertsMediaGalleryItem(name: "Sparkle"),
+    SettingsAlertsMediaGalleryItem(name: "Notification"),
 ]
 
 class SettingsAlertsMediaGallery: Codable {

@@ -61,6 +61,7 @@
 		031F413C2C6F166400790EEC /* WidgetAlertsImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F413B2C6F166400790EEC /* WidgetAlertsImageSettingsView.swift */; };
 		031F413F2C6F167400790EEC /* WidgetAlertsSoundSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F413E2C6F167400790EEC /* WidgetAlertsSoundSettingsView.swift */; };
 		031F41412C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F41402C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift */; };
+		031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
@@ -533,6 +534,7 @@
 		031F413B2C6F166400790EEC /* WidgetAlertsImageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAlertsImageSettingsView.swift; sourceTree = "<group>"; };
 		031F413E2C6F167400790EEC /* WidgetAlertsSoundSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAlertsSoundSettingsView.swift; sourceTree = "<group>"; };
 		031F41402C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAlertsTextSettingsView.swift; sourceTree = "<group>"; };
+		031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutAttributionsSettingsView.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
@@ -1872,8 +1874,9 @@
 		0379BBAB2AAD962700B718B6 /* About */ = {
 			isa = PBXGroup;
 			children = (
-				0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */,
+				031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */,
 				0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */,
+				0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */,
 				0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */,
 			);
 			path = About;
@@ -2897,6 +2900,7 @@
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* AMF0Serializer.swift in Sources */,
+				031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */,
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,

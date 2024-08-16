@@ -11,6 +11,9 @@ struct AboutSettingsView: View {
                 NavigationLink(destination: AboutLicensesSettingsView()) {
                     Text("Licenses")
                 }
+                NavigationLink(destination: AboutAttributionsSettingsView()) {
+                    Text("Attributions")
+                }
             }
             Section {
                 Button(action: {
