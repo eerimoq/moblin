@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.363.0", date: "2024-08-16", changes: [
+        "• SRT timestamps based on audio timestamps instead of video by default.",
+        "  • Should make the app not crash when entering/exiting background when streaming on some devices.",
+        "• Alert widget image and sound selection redesign.",
+    ]),
     Version(version: "0.362.0", date: "2024-08-13", changes: [
         "• Show toast when not authorized to Twitch (and want to be).",
         "• Removed EventSub debug toggle.",
