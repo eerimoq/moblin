@@ -418,7 +418,7 @@ final class VideoUnit: NSObject {
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        if #available(iOS 17.2, *), colorSpace == .appleLog || !ioVideoUnitMetalPetal {
+        if #available(iOS 17.2, *), colorSpace == .appleLog {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
@@ -426,8 +426,16 @@ final class VideoUnit: NSObject {
                 applyBlur,
                 isFirstAfterAttach
             )
-        } else {
+        } else if ioVideoUnitMetalPetal {
             return applyEffectsMetalPetal(
+                imageBuffer,
+                sampleBuffer,
+                faceDetections,
+                applyBlur,
+                isFirstAfterAttach
+            )
+        } else {
+            return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,

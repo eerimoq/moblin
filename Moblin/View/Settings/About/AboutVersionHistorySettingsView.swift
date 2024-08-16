@@ -14,6 +14,8 @@ private let versions = [
         "• Alert widget image and sound selection redesign.",
         "• Attribution texts to sound and image creators. 💡 Tican",
         "  • Settings → About → Attributions.",
+        "• Fix MetalPetal debug toggle on iOS older than 17.2."
+        "  • MetalPetal was always used for old iOS before this fix."
     ]),
     Version(version: "0.362.0", date: "2024-08-13", changes: [
         "• Show toast when not authorized to Twitch (and want to be).",
