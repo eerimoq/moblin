@@ -2115,7 +2115,6 @@ class Database: Codable {
         }
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
-        addMissingBundledAlertsMediaGallery(database: database)
         return database
     }
 
@@ -2499,7 +2498,7 @@ private func addMissingBundledLuts(database: Database) {
     database.color!.bundledLuts = bundledLuts
 }
 
-private func addMissingBundledAlertsMediaGallery(database: Database) {
+private func updateBundledAlertsMediaGallery(database: Database) {
     var bundledImages: [SettingsAlertsMediaGalleryItem] = []
     for image in allBundledAlertsMediaGalleryImages {
         if let existingImage = database.alertsMediaGallery!.bundledImages
@@ -2564,7 +2563,6 @@ private func createDefault() -> Database {
     addMissingDeepLinkQuickButtons(database: database)
     addScenesToGameController(database: database)
     addMissingBundledLuts(database: database)
-    addMissingBundledAlertsMediaGallery(database: database)
     return database
 }
 
@@ -3519,5 +3517,6 @@ final class Settings {
             realDatabase.alertsMediaGallery = .init()
             store()
         }
+        updateBundledAlertsMediaGallery(database: realDatabase)
     }
 }
