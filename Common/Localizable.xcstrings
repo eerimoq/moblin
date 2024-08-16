@@ -11528,6 +11528,9 @@
         }
       }
     },
+    "a sound" : {
+
+    },
     "a stream" : {
       "localizations" : {
         "de" : {
@@ -12568,9 +12571,6 @@
         }
       }
     },
-    "Add your own images." : {
-
-    },
     "Add your own LUTs." : {
       "localizations" : {
         "de" : {
@@ -12700,9 +12700,6 @@
           }
         }
       }
-    },
-    "Add your own sounds." : {
-
     },
     "AfreecaTV" : {
       "localizations" : {
@@ -13489,6 +13486,9 @@
           }
         }
       }
+    },
+    "an image" : {
+
     },
     "Animated emotes" : {
       "localizations" : {
@@ -60841,6 +60841,9 @@
         }
       }
     },
+    "My images" : {
+
+    },
     "My LUT" : {
       "localizations" : {
         "de" : {
@@ -61230,6 +61233,9 @@
           }
         }
       }
+    },
+    "My sounds" : {
+
     },
     "My source" : {
       "localizations" : {

@@ -111,9 +111,9 @@ private struct SoundGalleryView: View {
                     }
                 })
             } header: {
-                Text("Custom")
+                Text("My sounds")
             } footer: {
-                Text("Add your own sounds.")
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a sound"))
             }
         }
         .navigationTitle("Gallery")

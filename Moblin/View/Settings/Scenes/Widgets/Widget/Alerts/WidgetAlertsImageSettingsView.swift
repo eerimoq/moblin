@@ -106,9 +106,9 @@ private struct ImageGalleryView: View {
                     }
                 })
             } header: {
-                Text("Custom")
+                Text("My images")
             } footer: {
-                Text("Add your own images.")
+                SwipeLeftToDeleteHelpView(kind: String(localized: "an image"))
             }
         }
         .navigationTitle("Gallery")
