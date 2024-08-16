@@ -3,6 +3,7 @@ import SwiftUI
 struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
+    @State var type: String
 
     func submitName(name: String) {
         widget.name = name
@@ -12,25 +13,21 @@ struct WidgetSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(
-                    name: widget.name,
-                    onSubmit: submitName
-                )) {
+                NavigationLink(destination: NameEditView(name: widget.name, onSubmit: submitName)) {
                     TextItemView(name: String(localized: "Name"), value: widget.name)
                 }
                 HStack {
                     Text("Type")
                     Spacer()
-                    Picker("", selection: Binding(get: {
-                        widget.type.toString()
-                    }, set: { value in
-                        widget.type = SettingsWidgetType.fromString(value: value)
-                        model.store()
-                        model.resetSelectedScene()
-                    })) {
+                    Picker("", selection: $type) {
                         ForEach(widgetTypes, id: \.self) {
                             Text($0)
                         }
+                    }
+                    .onChange(of: type) {
+                        widget.type = SettingsWidgetType.fromString(value: $0)
+                        model.store()
+                        model.resetSelectedScene()
                     }
                 }
             }
@@ -45,7 +42,10 @@ struct WidgetSettingsView: View {
                 WidgetTextSettingsView(widget: widget,
                                        backgroundColor: widget.text.backgroundColor!.color(),
                                        foregroundColor: widget.text.foregroundColor!.color(),
-                                       fontSize: Float(widget.text.fontSize!), delay: widget.text.delay!)
+                                       fontSize: Float(widget.text.fontSize!),
+                                       fontDesign: widget.text.fontDesign!.toString(),
+                                       fontWeight: widget.text.fontWeight!.toString(),
+                                       delay: widget.text.delay!)
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:

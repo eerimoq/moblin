@@ -231,6 +231,8 @@ struct WidgetTextSettingsView: View {
     @State var backgroundColor: Color
     @State var foregroundColor: Color
     @State var fontSize: Float
+    @State var fontDesign: String
+    @State var fontWeight: String
     @State var delay: Double
 
     var body: some View {
@@ -334,31 +336,29 @@ struct WidgetTextSettingsView: View {
             HStack {
                 Text("Design")
                 Spacer()
-                Picker("", selection: Binding(get: {
-                    widget.text.fontDesign!.toString()
-                }, set: { value in
-                    widget.text.fontDesign = SettingsFontDesign.fromString(value: value)
-                    model.getTextEffect(id: widget.id)?
-                        .setFontDesign(design: widget.text.fontDesign!.toSystem())
-                })) {
+                Picker("", selection: $fontDesign) {
                     ForEach(textWidgetFontDesigns, id: \.self) {
                         Text($0)
                     }
+                }
+                .onChange(of: fontDesign) {
+                    widget.text.fontDesign = SettingsFontDesign.fromString(value: $0)
+                    model.getTextEffect(id: widget.id)?
+                        .setFontDesign(design: widget.text.fontDesign!.toSystem())
                 }
             }
             HStack {
                 Text("Weight")
                 Spacer()
-                Picker("", selection: Binding(get: {
-                    widget.text.fontWeight!.toString()
-                }, set: { value in
-                    widget.text.fontWeight = SettingsFontWeight.fromString(value: value)
-                    model.getTextEffect(id: widget.id)?
-                        .setFontWeight(weight: widget.text.fontWeight!.toSystem())
-                })) {
+                Picker("", selection: $fontWeight) {
                     ForEach(textWidgetFontWeights, id: \.self) {
                         Text($0)
                     }
+                }
+                .onChange(of: fontWeight) {
+                    widget.text.fontWeight = SettingsFontWeight.fromString(value: $0)
+                    model.getTextEffect(id: widget.id)?
+                        .setFontWeight(weight: widget.text.fontWeight!.toSystem())
                 }
             }
         } header: {

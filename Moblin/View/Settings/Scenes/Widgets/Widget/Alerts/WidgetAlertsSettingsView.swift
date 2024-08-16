@@ -24,6 +24,8 @@ private struct AlertFontView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
     @State var fontSize: Float
+    @State var fontDesign: String
+    @State var fontWeight: String
 
     var body: some View {
         Section {
@@ -44,29 +46,27 @@ private struct AlertFontView: View {
             HStack {
                 Text("Design")
                 Spacer()
-                Picker("", selection: Binding(get: {
-                    alert.fontDesign.toString()
-                }, set: { value in
-                    alert.fontDesign = SettingsFontDesign.fromString(value: value)
-                    model.updateAlertsSettings()
-                })) {
+                Picker("", selection: $fontDesign) {
                     ForEach(textWidgetFontDesigns, id: \.self) {
                         Text($0)
                     }
+                }
+                .onChange(of: fontDesign) {
+                    alert.fontDesign = SettingsFontDesign.fromString(value: $0)
+                    model.updateAlertsSettings()
                 }
             }
             HStack {
                 Text("Weight")
                 Spacer()
-                Picker("", selection: Binding(get: {
-                    alert.fontWeight.toString()
-                }, set: { value in
-                    alert.fontWeight = SettingsFontWeight.fromString(value: value)
-                    model.updateAlertsSettings()
-                })) {
+                Picker("", selection: $fontWeight) {
                     ForEach(textWidgetFontWeights, id: \.self) {
                         Text($0)
                     }
+                }
+                .onChange(of: fontWeight) {
+                    alert.fontWeight = SettingsFontWeight.fromString(value: $0)
+                    model.updateAlertsSettings()
                 }
             }
         } header: {
@@ -269,23 +269,22 @@ private struct ImageGalleryView: View {
 private struct ImageSelectorView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
+    @State var imageId: UUID
 
     var body: some View {
         Form {
             Section {
-                Picker("", selection: Binding(get: {
-                    alert.imageId
-                }, set: {
-                    alert.imageId = $0
-                    model.updateAlertsSettings()
-                    model.objectWillChange.send()
-                })) {
+                Picker("", selection: $imageId) {
                     ForEach(model.getAllAlertImages()) {
                         Text($0.name)
                     }
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+                .onChange(of: imageId) {
+                    alert.imageId = $0
+                    model.updateAlertsSettings()
+                }
             }
             Section {
                 NavigationLink(destination: ImageGalleryView()) {
@@ -423,23 +422,22 @@ private struct SoundGalleryView: View {
 private struct SoundSelectorView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
+    @State var soundId: UUID
 
     var body: some View {
         Form {
             Section {
-                Picker("", selection: Binding(get: {
-                    alert.soundId
-                }, set: {
-                    alert.soundId = $0
-                    model.updateAlertsSettings()
-                    model.objectWillChange.send()
-                })) {
+                Picker("", selection: $soundId) {
                     ForEach(model.getAllAlertSounds()) {
                         Text($0.name)
                     }
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+                .onChange(of: soundId) {
+                    alert.soundId = $0
+                    model.updateAlertsSettings()
+                }
             }
             Section {
                 NavigationLink(destination: SoundGalleryView()) {
@@ -468,10 +466,10 @@ private struct AlertMediaView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: ImageSelectorView(alert: alert)) {
+            NavigationLink(destination: ImageSelectorView(alert: alert, imageId: alert.imageId)) {
                 TextItemView(name: "Image", value: getImageName(id: alert.imageId))
             }
-            NavigationLink(destination: SoundSelectorView(alert: alert)) {
+            NavigationLink(destination: SoundSelectorView(alert: alert, soundId: alert.soundId)) {
                 TextItemView(name: "Sound", value: getSoundName(id: alert.soundId))
             }
         } header: {
@@ -502,7 +500,12 @@ private struct TwitchFollowsView: View {
                 textColor: alert.textColor.color(),
                 accentColor: alert.accentColor.color()
             )
-            AlertFontView(alert: alert, fontSize: Float(alert.fontSize))
+            AlertFontView(
+                alert: alert,
+                fontSize: Float(alert.fontSize),
+                fontDesign: alert.fontDesign.toString(),
+                fontWeight: alert.fontWeight.toString()
+            )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
                 Button(action: {
@@ -554,7 +557,12 @@ private struct TwitchSubscriptionsView: View {
                 textColor: alert.textColor.color(),
                 accentColor: alert.accentColor.color()
             )
-            AlertFontView(alert: alert, fontSize: Float(alert.fontSize))
+            AlertFontView(
+                alert: alert,
+                fontSize: Float(alert.fontSize),
+                fontDesign: alert.fontDesign.toString(),
+                fontWeight: alert.fontWeight.toString()
+            )
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
                 Button(action: {
