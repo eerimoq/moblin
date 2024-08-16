@@ -168,6 +168,7 @@ private struct CustomImageView: View {
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
         image = loadImage(model: model, imageId: media.id)
+        model.updateAlertsSettings()
     }
 
     var body: some View {
@@ -313,6 +314,7 @@ private struct CustomSoundView: View {
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
         audioPlayer = loadSound(model: model, soundId: media.id)
+        model.updateAlertsSettings()
     }
 
     var body: some View {
