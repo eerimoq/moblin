@@ -128,6 +128,7 @@ struct AlertImageSelectorView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
     @Binding var imageId: UUID
+    @State var loopCount: Float
 
     var body: some View {
         Form {
@@ -154,6 +155,27 @@ struct AlertImageSelectorView: View {
                     alert.imageId = $0
                     model.updateAlertsSettings()
                 }
+            }
+            Section {
+                HStack {
+                    Text("Repeat")
+                    Slider(
+                        value: $loopCount,
+                        in: 1 ... 10,
+                        step: 1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            alert.imageLoopCount = Int(loopCount)
+                            model.updateAlertsSettings()
+                        }
+                    )
+                    Text(String(Int(loopCount)))
+                        .frame(width: 25)
+                }
+            } footer: {
+                Text("Number of times the GIF will be played each alert.")
             }
             Section {
                 NavigationLink(destination: ImageGalleryView(alert: alert, imageId: $imageId)) {

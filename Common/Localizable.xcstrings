@@ -64484,6 +64484,9 @@
         }
       }
     },
+    "Number of times the GIF will be played for each alert." : {
+
+    },
     "OBS" : {
       "localizations" : {
         "de" : {
@@ -72839,6 +72842,9 @@
           }
         }
       }
+    },
+    "Repeat" : {
+
     },
     "Reset" : {
       "localizations" : {

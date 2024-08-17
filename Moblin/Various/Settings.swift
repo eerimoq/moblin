@@ -819,6 +819,7 @@ class SettingsWidgetQrCode: Codable {
 class SettingsWidgetAlertsTwitchAlert: Codable {
     var enabled: Bool = true
     var imageId: UUID = .init()
+    var imageLoopCount: Int? = 1
     var soundId: UUID = .init()
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
@@ -833,6 +834,7 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
         let new = SettingsWidgetAlertsTwitchAlert()
         new.enabled = enabled
         new.imageId = imageId
+        new.imageLoopCount = imageLoopCount
         new.soundId = soundId
         new.textColor = textColor
         new.accentColor = accentColor
@@ -3494,6 +3496,10 @@ final class Settings {
                 widget.alerts!.twitch!.follows.textToSpeechLanguageVoices = .init()
                 store()
             }
+            if widget.alerts!.twitch!.follows.imageLoopCount == nil {
+                widget.alerts!.twitch!.follows.imageLoopCount = 1
+                store()
+            }
             if widget.alerts!.twitch!.subscriptions.textToSpeechEnabled == nil {
                 widget.alerts!.twitch!.subscriptions.textToSpeechEnabled = true
                 store()
@@ -3504,6 +3510,10 @@ final class Settings {
             }
             if widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices == nil {
                 widget.alerts!.twitch!.subscriptions.textToSpeechLanguageVoices = .init()
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.imageLoopCount == nil {
+                widget.alerts!.twitch!.subscriptions.imageLoopCount = 1
                 store()
             }
         }

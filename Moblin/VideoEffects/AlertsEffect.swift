@@ -45,16 +45,16 @@ private class Medias {
         }
     }
 
-    func updateImages(image: MediaItem) {
+    func updateImages(image: MediaItem, loopCount: Int) {
         DispatchQueue.global().async {
             var images: [CIImage] = []
             switch image {
             case let .bundledName(name):
                 if let url = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "gif") {
-                    images = self.loadImages(url: url)
+                    images = self.loadImages(url: url, loopCount: loopCount)
                 }
             case let .customUrl(url):
-                images = self.loadImages(url: url)
+                images = self.loadImages(url: url, loopCount: loopCount)
             }
             lockQueue.sync {
                 self.images = images
@@ -62,18 +62,20 @@ private class Medias {
         }
     }
 
-    private func loadImages(url: URL) -> [CIImage] {
+    private func loadImages(url: URL, loopCount: Int) -> [CIImage] {
         var fpsTime = 0.0
         var gifTime = 0.0
         var images: [CIImage] = []
-        if let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) {
-            for index in 0 ..< animatedImage.animatedImageFrameCount {
-                if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
-                    gifTime += animatedImage.animatedImageDuration(at: index)
-                    let image = CIImage(cgImage: cgImage)
-                    while fpsTime < gifTime {
-                        images.append(image)
-                        fpsTime += 1 / fps
+        for _ in 0 ..< loopCount {
+            if let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) {
+                for index in 0 ..< animatedImage.animatedImageFrameCount {
+                    if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
+                        gifTime += animatedImage.animatedImageDuration(at: index)
+                        let image = CIImage(cgImage: cgImage)
+                        while fpsTime < gifTime {
+                            images.append(image)
+                            fpsTime += 1 / fps
+                        }
                     }
                 }
             }
@@ -123,7 +125,7 @@ final class AlertsEffect: VideoEffect {
         setSettings(settings: settings)
     }
 
-    private func getMediaItems(alert: SettingsWidgetAlertsTwitchAlert) -> (MediaItem, MediaItem) {
+    private func getMediaItems(alert: SettingsWidgetAlertsTwitchAlert) -> (MediaItem, Int, MediaItem) {
         let image: MediaItem
         if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
             image = .bundledName(bundledImage.name)
@@ -136,16 +138,16 @@ final class AlertsEffect: VideoEffect {
         } else {
             sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
         }
-        return (image, sound)
+        return (image, alert.imageLoopCount!, sound)
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
         let twitch = settings.twitch!
-        var (image, sound) = getMediaItems(alert: twitch.follows)
-        twitchFollow.updateImages(image: image)
+        var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
+        twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
         twitchFollow.updateSoundUrl(sound: sound)
-        (image, sound) = getMediaItems(alert: twitch.subscriptions)
-        twitchSubscribe.updateImages(image: image)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
+        twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
         twitchSubscribe.updateSoundUrl(sound: sound)
         self.settings = settings
     }

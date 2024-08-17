@@ -82,7 +82,11 @@ private struct AlertMediaView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: AlertImageSelectorView(alert: alert, imageId: $imageId)) {
+            NavigationLink(destination: AlertImageSelectorView(
+                alert: alert,
+                imageId: $imageId,
+                loopCount: Float(alert.imageLoopCount!)
+            )) {
                 TextItemView(name: "Image", value: getImageName(id: imageId))
             }
             NavigationLink(destination: AlertSoundSelectorView(alert: alert, soundId: $soundId)) {
