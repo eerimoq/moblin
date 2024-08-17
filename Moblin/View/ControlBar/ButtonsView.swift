@@ -516,6 +516,7 @@ struct CheckboxWidgetView: View {
     private let index: Int
     private let textEffect: TextEffect
     private var indented: Bool
+    @State var image: String
 
     init(
         name: String,
@@ -529,6 +530,7 @@ struct CheckboxWidgetView: View {
         self.index = index
         self.textEffect = textEffect
         self.indented = indented
+        self.image = checkbox.checked ? "checkmark.square" : "square"
     }
 
     private func updateTextEffect() {
@@ -541,15 +543,18 @@ struct CheckboxWidgetView: View {
                 Text("")
                 Text("").frame(width: iconWidth)
             }
-            Toggle(isOn: Binding(get: {
-                checkbox.checked
-            }, set: { value in
-                checkbox.checked = value
+            Text(name)
+            Spacer()
+            Button(action: {
+                checkbox.checked = !checkbox.checked
+                image = checkbox.checked ? "checkmark.square" : "square"
                 updateTextEffect()
-            })) {
-                Text(name)
-            }
+            }, label: {
+                Image(systemName: image)
+                    .font(.title)
+            })
         }
+        .buttonStyle(BorderlessButtonStyle())
     }
 }
 
