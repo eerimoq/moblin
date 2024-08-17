@@ -126,7 +126,7 @@ private struct SoundGalleryView: View {
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
-    @State var soundId: UUID
+    @Binding var soundId: UUID
 
     var body: some View {
         Form {

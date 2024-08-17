@@ -69,6 +69,8 @@ private struct AlertTextToSpeechView: View {
 private struct AlertMediaView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
+    @State var imageId: UUID
+    @State var soundId: UUID
 
     private func getImageName(id: UUID?) -> String {
         return model.getAllAlertImages().first(where: { $0.id == id })?.name ?? ""
@@ -80,11 +82,11 @@ private struct AlertMediaView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: AlertImageSelectorView(alert: alert, imageId: alert.imageId)) {
-                TextItemView(name: "Image", value: getImageName(id: alert.imageId))
+            NavigationLink(destination: AlertImageSelectorView(alert: alert, imageId: $imageId)) {
+                TextItemView(name: "Image", value: getImageName(id: imageId))
             }
-            NavigationLink(destination: AlertSoundSelectorView(alert: alert, soundId: alert.soundId)) {
-                TextItemView(name: "Sound", value: getSoundName(id: alert.soundId))
+            NavigationLink(destination: AlertSoundSelectorView(alert: alert, soundId: $soundId)) {
+                TextItemView(name: "Sound", value: getSoundName(id: soundId))
             }
         } header: {
             Text("Media")
@@ -108,7 +110,7 @@ private struct TwitchFollowsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert)
+            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -165,7 +167,7 @@ private struct TwitchSubscriptionsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert)
+            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),

@@ -121,7 +121,7 @@ private struct ImageGalleryView: View {
 struct AlertImageSelectorView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
-    @State var imageId: UUID
+    @Binding var imageId: UUID
 
     var body: some View {
         Form {
