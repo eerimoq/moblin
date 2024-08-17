@@ -1,23 +1,37 @@
 import AVFAudio
 import SwiftUI
-import UniformTypeIdentifiers
 
-private func loadImage(model: Model, imageId: UUID) -> UIImage? {
-    if let data = model.alertMediaStorage.tryRead(id: imageId) {
-        return UIImage(data: data)!
-    } else {
-        return nil
+private var loadedImages: [UUID: Image] = [:]
+
+private func loadImage(model: Model, imageId: UUID) -> Image? {
+    if let image = loadedImages[imageId] {
+        return image
     }
+    var image: Image?
+    if let bundledImage = model.database.alertsMediaGallery!.bundledImages
+        .first(where: { $0.id == imageId })
+    {
+        image = Image("Alerts.bundle/\(bundledImage.name).gif")
+    } else if let data = model.alertMediaStorage.tryRead(id: imageId) {
+        if let uiImage = UIImage(data: data) {
+            image = Image(uiImage: uiImage)
+        }
+    }
+    if let image {
+        loadedImages[imageId] = image
+    }
+    return nil
 }
 
 private struct CustomImageView: View {
     @EnvironmentObject var model: Model
     var media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
-    @State var image: UIImage?
+    @State var image: Image?
 
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
+        loadedImages.removeValue(forKey: media.id)
         image = loadImage(model: model, imageId: media.id)
         model.updateAlertsSettings()
     }
@@ -41,7 +55,7 @@ private struct CustomImageView: View {
                     HStack {
                         Spacer()
                         if let image {
-                            Image(uiImage: image)
+                            image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 1920 / 6, height: 1080 / 6)
@@ -67,18 +81,11 @@ private struct CustomImageView: View {
 
 private struct ImageGalleryView: View {
     @EnvironmentObject var model: Model
+    var alert: SettingsWidgetAlertsTwitchAlert
+    @Binding var imageId: UUID
 
     var body: some View {
         Form {
-            Section {
-                List {
-                    ForEach(model.database.alertsMediaGallery!.bundledImages) { image in
-                        Text(image.name)
-                    }
-                }
-            } header: {
-                Text("Bundled")
-            }
             Section {
                 List {
                     ForEach(model.database.alertsMediaGallery!.customImages) { image in
@@ -92,6 +99,7 @@ private struct ImageGalleryView: View {
                     .onDelete(perform: { offsets in
                         model.database.alertsMediaGallery!.customImages.remove(atOffsets: offsets)
                         model.fixAlertMedias()
+                        imageId = alert.imageId
                     })
                 }
                 Button(action: {
@@ -127,8 +135,19 @@ struct AlertImageSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $imageId) {
-                    ForEach(model.getAllAlertImages()) {
-                        Text($0.name)
+                    ForEach(model.getAllAlertImages()) { image in
+                        HStack {
+                            Text(image.name)
+                            Spacer()
+                            if let image = loadImage(model: model, imageId: image.id) {
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 50)
+                            } else {
+                                Image(systemName: "photo")
+                            }
+                        }
                     }
                 }
                 .pickerStyle(.inline)
@@ -139,7 +158,7 @@ struct AlertImageSelectorView: View {
                 }
             }
             Section {
-                NavigationLink(destination: ImageGalleryView()) {
+                NavigationLink(destination: ImageGalleryView(alert: alert, imageId: $imageId)) {
                     Text("Gallery")
                 }
             }

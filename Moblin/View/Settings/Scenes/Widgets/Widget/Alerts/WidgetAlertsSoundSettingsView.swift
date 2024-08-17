@@ -3,7 +3,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 private func loadSound(model: Model, soundId: UUID) -> AVAudioPlayer? {
-    let url = model.alertMediaStorage.makePath(id: soundId)
+    var url: URL?
+    if let bundledSound = model.database.alertsMediaGallery!.bundledSounds
+        .first(where: { $0.id == soundId })
+    {
+        url = Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
+    } else {
+        url = model.alertMediaStorage.makePath(id: soundId)
+    }
+    guard let url else {
+        return nil
+    }
     return try? AVAudioPlayer(contentsOf: url)
 }
 
@@ -72,18 +82,11 @@ private struct CustomSoundView: View {
 
 private struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
+    var alert: SettingsWidgetAlertsTwitchAlert
+    @Binding var soundId: UUID
 
     var body: some View {
         Form {
-            Section {
-                List {
-                    ForEach(model.database.alertsMediaGallery!.bundledSounds) { sound in
-                        Text(sound.name)
-                    }
-                }
-            } header: {
-                Text("Bundled")
-            }
             Section {
                 List {
                     ForEach(model.database.alertsMediaGallery!.customSounds) { sound in
@@ -97,6 +100,7 @@ private struct SoundGalleryView: View {
                     .onDelete(perform: { offsets in
                         model.database.alertsMediaGallery!.customSounds.remove(atOffsets: offsets)
                         model.fixAlertMedias()
+                        soundId = alert.soundId
                     })
                 }
                 Button(action: {
@@ -123,6 +127,8 @@ private struct SoundGalleryView: View {
     }
 }
 
+private var player: AVAudioPlayer?
+
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
@@ -132,8 +138,17 @@ struct AlertSoundSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $soundId) {
-                    ForEach(model.getAllAlertSounds()) {
-                        Text($0.name)
+                    ForEach(model.getAllAlertSounds()) { sound in
+                        HStack {
+                            Text(sound.name)
+                            Spacer()
+                            Button(action: {
+                                player = loadSound(model: model, soundId: sound.id)
+                                player?.play()
+                            }, label: {
+                                Image(systemName: "play.fill")
+                            })
+                        }
                     }
                 }
                 .pickerStyle(.inline)
@@ -144,10 +159,13 @@ struct AlertSoundSelectorView: View {
                 }
             }
             Section {
-                NavigationLink(destination: SoundGalleryView()) {
+                NavigationLink(destination: SoundGalleryView(alert: alert, soundId: $soundId)) {
                     Text("Gallery")
                 }
             }
+        }
+        .onDisappear {
+            player = nil
         }
         .navigationTitle("Sound")
         .toolbar {
