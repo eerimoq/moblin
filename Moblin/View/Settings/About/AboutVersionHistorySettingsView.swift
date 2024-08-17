@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.365.0", date: "2024-08-17", changes: [
+        "• Checkboxes instead of toggles in widgets quick button view.",
+        "• More alert images (GIFs).",
+        "  • Moblin trillionaire.",
+        "  • Moblin party.",
+        "• Snappier UI when changing some settings.",
+        "• Fix preview not updating when selecting GIF.",
+        "• Settings to repeat an alert GIF.",
+        "  • Useful if the GIF is too short.",
+    ]),
     Version(version: "0.364.0", date: "2024-08-17", changes: [
         "• More bundled alert sounds.",
         "• Alert sound play button.",
