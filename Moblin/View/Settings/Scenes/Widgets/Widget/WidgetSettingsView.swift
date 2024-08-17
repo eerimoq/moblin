@@ -4,17 +4,18 @@ struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
     @State var type: String
+    @State var name: String
 
     func submitName(name: String) {
         widget.name = name
-        model.store()
+        self.name = name
     }
 
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(name: widget.name, onSubmit: submitName)) {
-                    TextItemView(name: String(localized: "Name"), value: widget.name)
+                NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                    TextItemView(name: String(localized: "Name"), value: name)
                 }
                 HStack {
                     Text("Type")

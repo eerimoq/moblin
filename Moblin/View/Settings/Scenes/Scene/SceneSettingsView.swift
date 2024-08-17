@@ -5,6 +5,7 @@ struct SceneSettingsView: View {
     @State private var showingAddWidget = false
     @State private var expandedWidget: SettingsSceneWidget?
     var scene: SettingsScene
+    @State var name: String
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -12,7 +13,7 @@ struct SceneSettingsView: View {
 
     func submitName(name: String) {
         scene.name = name
-        model.store()
+        self.name = name
     }
 
     private func widgetHasPosition(id: UUID) -> Bool {
@@ -84,11 +85,8 @@ struct SceneSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(
-                name: scene.name,
-                onSubmit: submitName
-            )) {
-                TextItemView(name: String(localized: "Name"), value: scene.name)
+            NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                TextItemView(name: String(localized: "Name"), value: name)
             }
             Section {
                 NavigationLink(destination: InlinePickerView(

@@ -3,20 +3,18 @@ import SwiftUI
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     var stream: SettingsStream
+    @State var name: String
 
     func submitName(name: String) {
         stream.name = name
-        model.store()
+        self.name = name
     }
 
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(
-                    name: stream.name,
-                    onSubmit: submitName
-                )) {
-                    TextItemView(name: String(localized: "Name"), value: stream.name)
+                NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                    TextItemView(name: String(localized: "Name"), value: name)
                 }
             }
             Section {

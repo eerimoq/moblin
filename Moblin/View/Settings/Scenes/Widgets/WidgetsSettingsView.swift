@@ -12,7 +12,8 @@ struct WidgetsSettingsView: View {
             ForEach(database.widgets) { widget in
                 NavigationLink(destination: WidgetSettingsView(
                     widget: widget,
-                    type: widget.type.toString()
+                    type: widget.type.toString(),
+                    name: widget.name
                 )) {
                     Toggle(isOn: Binding(get: {
                         widget.enabled!

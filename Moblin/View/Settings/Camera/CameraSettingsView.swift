@@ -4,10 +4,11 @@ import SwiftUI
 struct CustomLutView: View {
     @EnvironmentObject var model: Model
     var lut: SettingsColorLut
+    @State var name: String
 
     private func submitName(value: String) {
         model.setLutName(lut: lut, name: value)
-        model.objectWillChange.send()
+        name = value
     }
 
     func loadImage() -> UIImage? {
@@ -32,8 +33,8 @@ struct CustomLutView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(name: lut.name, onSubmit: submitName)) {
-                    TextItemView(name: String(localized: "Name"), value: lut.name)
+                NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                    TextItemView(name: String(localized: "Name"), value: name)
                 }
                 if let button = model.findLutButton(lut: lut) {
                     NavigationLink(destination: ImagePickerView(
@@ -91,7 +92,7 @@ struct CameraSettingsLutsView: View {
             Section {
                 List {
                     ForEach(model.database.color!.diskLuts!) { lut in
-                        NavigationLink(destination: CustomLutView(lut: lut)) {
+                        NavigationLink(destination: CustomLutView(lut: lut, name: lut.name)) {
                             HStack {
                                 Image(systemName: getIcon(lut: lut))
                                 Text(lut.name)
