@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.364.0", date: "2024-08-17", changes: [
+        "• More bundled alert sounds.",
+        "• Alert sound play button.",
+        "• Alert image previews.",
+    ]),
     Version(version: "0.363.0", date: "2024-08-16", changes: [
         "• SRT timestamps based on audio timestamps instead of video by default.",
         "  • Should make the app not crash when entering/exiting background when streaming on some devices.",
