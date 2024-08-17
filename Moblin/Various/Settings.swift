@@ -2040,6 +2040,7 @@ class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
 
 private let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Moblin pixels"),
+    SettingsAlertsMediaGalleryItem(name: "Moblin party"),
     SettingsAlertsMediaGalleryItem(name: "Moblin trillionaire"),
 ]
 
