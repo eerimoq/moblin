@@ -32,10 +32,7 @@ struct CustomLutView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(
-                    name: lut.name,
-                    onSubmit: submitName
-                )) {
+                NavigationLink(destination: NameEditView(name: lut.name, onSubmit: submitName)) {
                     TextItemView(name: String(localized: "Name"), value: lut.name)
                 }
                 if let button = model.findLutButton(lut: lut) {
