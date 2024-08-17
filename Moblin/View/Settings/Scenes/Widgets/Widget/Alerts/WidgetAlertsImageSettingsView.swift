@@ -11,7 +11,11 @@ private func loadImage(model: Model, imageId: UUID) -> Image? {
     if let bundledImage = model.database.alertsMediaGallery!.bundledImages
         .first(where: { $0.id == imageId })
     {
-        image = Image("Alerts.bundle/\(bundledImage.name).gif")
+        if let path = Bundle.main.path(forResource: "Alerts.bundle/\(bundledImage.name)", ofType: "gif"),
+           let uiImage = UIImage(contentsOfFile: path)
+        {
+            image = Image(uiImage: uiImage)
+        }
     } else if let data = model.alertMediaStorage.tryRead(id: imageId) {
         if let uiImage = UIImage(data: data) {
             image = Image(uiImage: uiImage)
