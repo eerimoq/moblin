@@ -114,13 +114,11 @@ private struct SoundGalleryView: View {
                         Spacer()
                     }
                 })
-            } header: {
-                Text("My sounds")
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a sound"))
             }
         }
-        .navigationTitle("Gallery")
+        .navigationTitle("My sounds")
         .toolbar {
             SettingsToolbar()
         }
@@ -160,7 +158,7 @@ struct AlertSoundSelectorView: View {
             }
             Section {
                 NavigationLink(destination: SoundGalleryView(alert: alert, soundId: $soundId)) {
-                    Text("Gallery")
+                    Text("My sounds")
                 }
             }
         }

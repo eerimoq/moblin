@@ -1,37 +1,33 @@
 import AVFAudio
 import SwiftUI
 
-private var loadedImages: [UUID: Image] = [:]
+private var loadedImages: [UUID: UIImage] = [:]
 
-private func loadImage(model: Model, imageId: UUID) -> Image? {
+private func loadImage(model: Model, imageId: UUID) -> UIImage? {
     if let image = loadedImages[imageId] {
         return image
     }
-    var image: Image?
+    var image: UIImage?
     if let bundledImage = model.database.alertsMediaGallery!.bundledImages
         .first(where: { $0.id == imageId })
     {
-        if let path = Bundle.main.path(forResource: "Alerts.bundle/\(bundledImage.name)", ofType: "gif"),
-           let uiImage = UIImage(contentsOfFile: path)
-        {
-            image = Image(uiImage: uiImage)
+        if let path = Bundle.main.path(forResource: "Alerts.bundle/\(bundledImage.name)", ofType: "gif") {
+            image = UIImage(contentsOfFile: path)
         }
     } else if let data = model.alertMediaStorage.tryRead(id: imageId) {
-        if let uiImage = UIImage(data: data) {
-            image = Image(uiImage: uiImage)
-        }
+        image = UIImage(data: data)
     }
     if let image {
         loadedImages[imageId] = image
     }
-    return nil
+    return image
 }
 
 private struct CustomImageView: View {
     @EnvironmentObject var model: Model
     var media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
-    @State var image: Image?
+    @State var image: UIImage?
 
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
@@ -59,7 +55,7 @@ private struct CustomImageView: View {
                     HStack {
                         Spacer()
                         if let image {
-                            image
+                            Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 1920 / 6, height: 1080 / 6)
@@ -117,13 +113,11 @@ private struct ImageGalleryView: View {
                         Spacer()
                     }
                 })
-            } header: {
-                Text("My images")
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "an image"))
             }
         }
-        .navigationTitle("Gallery")
+        .navigationTitle("My images")
         .toolbar {
             SettingsToolbar()
         }
@@ -144,7 +138,7 @@ struct AlertImageSelectorView: View {
                             Text(image.name)
                             Spacer()
                             if let image = loadImage(model: model, imageId: image.id) {
-                                image
+                                Image(uiImage: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: 50)
@@ -163,7 +157,7 @@ struct AlertImageSelectorView: View {
             }
             Section {
                 NavigationLink(destination: ImageGalleryView(alert: alert, imageId: $imageId)) {
-                    Text("Gallery")
+                    Text("My images")
                 }
             }
         }
