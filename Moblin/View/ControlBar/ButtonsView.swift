@@ -530,7 +530,7 @@ struct CheckboxWidgetView: View {
         self.index = index
         self.textEffect = textEffect
         self.indented = indented
-        self.image = checkbox.checked ? "checkmark.square" : "square"
+        image = checkbox.checked ? "checkmark.square" : "square"
     }
 
     private func updateTextEffect() {
