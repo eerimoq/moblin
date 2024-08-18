@@ -47,6 +47,7 @@ struct WidgetsSettingsView: View {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                 model.fixAlertMedias()
                 model.store()
+                model.objectWillChange.send()
             })
         } header: {
             Text("Widgets")

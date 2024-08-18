@@ -39,6 +39,22 @@ private let soundAttributions: [Attribution] = [
         ]
     ),
     Attribution(
+        name: "Fart",
+        text: [
+            "FART.aif by Manicciola",
+            "-- https://freesound.org/s/121783/",
+            "-- License: Creative Commons 0",
+        ]
+    ),
+    Attribution(
+        name: "Fart 2",
+        text: [
+            "Fart sound.wav by aditwayer",
+            "-- https://freesound.org/s/520671/",
+            "-- License: Creative Commons 0",
+        ]
+    ),
+    Attribution(
         name: "Level up",
         text: [
             "320655__rhodesmas__level-up-01.mp3 by shinephoenixstormcrow",
