@@ -57,6 +57,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.obsStatus = value
                 }
+                InfoView(icon: "megaphone", text: String(localized: "Events (alerts)")) {
+                    show.events!
+                } set: { value in
+                    show.events = value
+                }
                 InfoView(icon: "message", text: String(localized: "Chat")) {
                     show.chat
                 } set: { value in

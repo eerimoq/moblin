@@ -96,6 +96,7 @@ struct RemoteControlStatusTopLeft: Codable {
     var mic: RemoteControlStatusItem?
     var zoom: RemoteControlStatusItem?
     var obs: RemoteControlStatusItem?
+    var events: RemoteControlStatusItem?
     var chat: RemoteControlStatusItem?
     var viewers: RemoteControlStatusItem?
 }

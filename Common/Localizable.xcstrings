@@ -26493,6 +26493,9 @@
         }
       }
     },
+    "Connected" : {
+
+    },
     "Connecting" : {
       "localizations" : {
         "de" : {
@@ -37154,6 +37157,9 @@
           }
         }
       }
+    },
+    "Events (alerts)" : {
+
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {

@@ -1215,6 +1215,7 @@ class SettingsShow: Codable {
     var remoteControl: Bool? = true
     var browserWidgets: Bool? = true
     var bonding: Bool? = true
+    var events: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -3541,5 +3542,9 @@ final class Settings {
             store()
         }
         updateBundledAlertsMediaGallery(database: realDatabase)
+        if realDatabase.show.events == nil {
+            realDatabase.show.events = true
+            store()
+        }
     }
 }

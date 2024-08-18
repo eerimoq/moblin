@@ -11,6 +11,16 @@ struct LeftOverlayView: View {
         return .white
     }
 
+    func eventsColor() -> Color {
+        if !model.isEventsConfigured() {
+            return .white
+        } else if model.isEventsConnected() {
+            return .white
+        } else {
+            return .red
+        }
+    }
+
     func chatColor() -> Color {
         if !model.isChatConfigured() {
             return .white
@@ -58,6 +68,12 @@ struct LeftOverlayView: View {
                 icon: "xserve",
                 text: model.statusObsText(),
                 color: obsStatusColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusEvents(),
+                icon: "megaphone",
+                text: model.statusEventsText(),
+                color: eventsColor()
             )
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusChat(),

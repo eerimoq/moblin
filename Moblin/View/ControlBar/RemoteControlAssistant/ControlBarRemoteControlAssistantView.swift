@@ -314,6 +314,7 @@ struct ControlBarRemoteControlAssistantView: View {
                                     StatusItemView(icon: "music.mic", status: status.mic)
                                     StatusItemView(icon: "magnifyingglass", status: status.zoom)
                                     StatusItemView(icon: "xserve", status: status.obs)
+                                    StatusItemView(icon: "megaphone", status: status.events)
                                     StatusItemView(icon: "message", status: status.chat)
                                     StatusItemView(icon: "eye", status: status.viewers)
                                 }

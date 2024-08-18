@@ -3101,6 +3101,22 @@ final class Model: NSObject, ObservableObject {
         return stream != fallbackStream
     }
 
+    func isEventsConfigured() -> Bool {
+        return isTwitchEventSubConfigured()
+    }
+
+    func isTwitchEventSubConfigured() -> Bool {
+        return isTwitchAccessTokenConfigured()
+    }
+
+    func isEventsConnected() -> Bool {
+        return isTwitchEventsConnected()
+    }
+
+    func isTwitchEventsConnected() -> Bool {
+        return twitchEventSub?.isConnected() ?? false
+    }
+
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
@@ -3256,7 +3272,7 @@ final class Model: NSObject, ObservableObject {
 
     func reloadTwitchEventSub() {
         twitchEventSub?.stop()
-        if isTwitchAccessTokenConfigured() {
+        if isTwitchEventSubConfigured() {
             twitchEventSub = TwitchEventSub(
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken!,
@@ -4926,6 +4942,10 @@ final class Model: NSObject, ObservableObject {
         return database.show.obsStatus! && isObsRemoteControlConfigured()
     }
 
+    func isShowingStatusEvents() -> Bool {
+        return database.show.events! && isEventsConfigured()
+    }
+
     func isShowingStatusChat() -> Bool {
         return database.show.chat && isChatConfigured()
     }
@@ -4970,6 +4990,16 @@ final class Model: NSObject, ObservableObject {
             }
         } else {
             return obsConnectionErrorMessage()
+        }
+    }
+
+    func statusEventsText() -> String {
+        if !isEventsConfigured() {
+            return String(localized: "Not configured")
+        } else if isEventsConnected() {
+            return String(localized: "Connected")
+        } else {
+            return String(localized: "Disconnected")
         }
     }
 
@@ -5105,6 +5135,9 @@ extension Model: RemoteControlStreamerDelegate {
             }
             if self.isShowingStatusObs() {
                 topLeft.obs = RemoteControlStatusItem(message: self.statusObsText())
+            }
+            if self.isShowingStatusEvents() {
+                topLeft.events = RemoteControlStatusItem(message: self.statusEventsText())
             }
             if self.isShowingStatusChat() {
                 topLeft.chat = RemoteControlStatusItem(message: self.statusChatText())

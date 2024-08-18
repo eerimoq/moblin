@@ -142,6 +142,7 @@ final class TwitchEventSub: NSObject {
     private var sessionId: String = ""
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
+    private var connected = false
 
     init(userId: String, accessToken: String, delegate: TwitchEventSubDelegate) {
         self.userId = userId
@@ -159,6 +160,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func connect() {
+        connected = false
         webSocket = .init(url: url)
         webSocket.delegate = self
         webSocket.start()
@@ -170,12 +172,12 @@ final class TwitchEventSub: NSObject {
     }
 
     func stopInternal() {
+        connected = false
         webSocket.stop()
     }
 
-    // periphery:ignore
     func isConnected() -> Bool {
-        return webSocket.isConnected()
+        return connected
     }
 
     private func handleMessage(message: String) {
@@ -201,6 +203,7 @@ final class TwitchEventSub: NSObject {
             return
         }
         sessionId = message.payload.session.id
+        connected = true
         subscribeToChannelFollow()
     }
 
@@ -306,7 +309,9 @@ final class TwitchEventSub: NSObject {
 extension TwitchEventSub: WebSocketClientDelegate {
     func webSocketClientConnected() {}
 
-    func webSocketClientDisconnected() {}
+    func webSocketClientDisconnected() {
+        connected = false
+    }
 
     func webSocketClientReceiveMessage(string: String) {
         handleMessage(message: string)
