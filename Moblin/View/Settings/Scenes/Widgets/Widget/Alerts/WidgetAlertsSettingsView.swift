@@ -215,21 +215,23 @@ private struct TwitchSubscriptionsView: View {
 
 private struct TwitchRewardView: View {
     @EnvironmentObject var model: Model
-    var name: String
+    var reward: SettingsStreamTwitchReward
 
     var body: some View {
         Form {
             Section {
                 Toggle(isOn: Binding(get: {
-                    true
-                }, set: { _ in
+                    reward.alert.enabled
+                }, set: { value in
+                    reward.alert.enabled = value
                     model.updateAlertsSettings()
                 })) {
                     Text("Enabled")
                 }
             }
+            AlertMediaView(alert: reward.alert, imageId: reward.alert.imageId, soundId: reward.alert.soundId)
         }
-        .navigationTitle(name)
+        .navigationTitle(reward.title)
         .toolbar {
             SettingsToolbar()
         }
@@ -245,7 +247,7 @@ private struct TwitchRewardsView: View {
                 Text("No rewards found")
             } else {
                 ForEach(model.stream.twitchRewards!) { reward in
-                    NavigationLink(destination: TwitchRewardView(name: reward.title)) {
+                    NavigationLink(destination: TwitchRewardView(reward: reward)) {
                         Text(reward.title)
                     }
                 }
