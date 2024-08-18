@@ -213,7 +213,56 @@ private struct TwitchSubscriptionsView: View {
     }
 }
 
+private struct TwitchRewardView: View {
+    @EnvironmentObject var model: Model
+    var name: String
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    true
+                }, set: { _ in
+                    model.updateAlertsSettings()
+                })) {
+                    Text("Enabled")
+                }
+            }
+        }
+        .navigationTitle(name)
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+private struct TwitchRewardsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            if model.stream.twitchRewards!.isEmpty {
+                Text("No rewards found")
+            } else {
+                ForEach(model.stream.twitchRewards!) { reward in
+                    NavigationLink(destination: TwitchRewardView(name: reward.title)) {
+                        Text(reward.title)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            model.fetchTwitchRewards()
+        }
+        .navigationTitle("Rewards")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 private struct WidgetAlertsSettingsTwitchView: View {
+    @EnvironmentObject var model: Model
     var twitch: SettingsWidgetAlertsTwitch
 
     var body: some View {
@@ -224,6 +273,11 @@ private struct WidgetAlertsSettingsTwitchView: View {
                 }
                 NavigationLink(destination: TwitchSubscriptionsView(alert: twitch.subscriptions)) {
                     Text("Subscriptions")
+                }
+                if model.database.debug!.twitchRewards! {
+                    NavigationLink(destination: TwitchRewardsView()) {
+                        Text("Rewards")
+                    }
                 }
             }
         }

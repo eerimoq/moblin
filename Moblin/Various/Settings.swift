@@ -352,6 +352,15 @@ class SettingsStreamRecording: Codable {
     }
 }
 
+class SettingsStreamTwitchReward: Codable, Identifiable {
+    var id: UUID = .init()
+    // periphery:ignore
+    var rewardId: String = ""
+    var title: String = ""
+    // periphery:ignore
+    var alert: SettingsWidgetAlertsTwitchAlert = .init()
+}
+
 class SettingsStream: Codable, Identifiable, Equatable {
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -365,6 +374,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var twitchChannelId: String = ""
     var twitchAccessToken: String? = ""
     var twitchLoggedIn: Bool? = false
+    var twitchRewards: [SettingsStreamTwitchReward]? = []
     var kickChatroomId: String = ""
     var kickChannelName: String? = ""
     var youTubeApiKey: String? = ""
@@ -1453,6 +1463,7 @@ class SettingsDebug: Codable {
     var useVideoForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
+    var twitchRewards: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3544,6 +3555,14 @@ final class Settings {
         updateBundledAlertsMediaGallery(database: realDatabase)
         if realDatabase.show.events == nil {
             realDatabase.show.events = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.twitchRewards == nil {
+            stream.twitchRewards = .init()
+            store()
+        }
+        if realDatabase.debug!.twitchRewards == nil {
+            realDatabase.debug!.twitchRewards = false
             store()
         }
     }

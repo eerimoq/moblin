@@ -130,6 +130,11 @@ struct DebugSettingsView: View {
                     Text(String(Int(maxMapPitch)))
                         .frame(width: 40)
                 }
+                Toggle("Twitch rewards", isOn: Binding(get: {
+                    model.database.debug!.twitchRewards!
+                }, set: { value in
+                    model.database.debug!.twitchRewards = value
+                }))
             } header: {
                 Text("Experimental")
             }

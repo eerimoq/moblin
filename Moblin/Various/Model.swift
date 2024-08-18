@@ -3282,6 +3282,23 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func fetchTwitchRewards() {
+        TwitchApi(accessToken: stream.twitchAccessToken!)
+            .getChannelPointsCustomRewards(userId: stream.twitchChannelId) { rewards in
+                guard let rewards else {
+                    logger.info("Failed to get Twitch rewards")
+                    return
+                }
+                logger.info("Twitch rewards: \(rewards)")
+                self.stream.twitchRewards = rewards.data.map {
+                    let reward = SettingsStreamTwitchReward()
+                    reward.rewardId = $0.id
+                    reward.title = $0.title
+                    return reward
+                }
+            }
+    }
+
     private func reloadKickViewers() {
         kickViewers?.stop()
         if isKickViewersConfigured() {

@@ -85,12 +85,12 @@ class TwitchApi {
         })
     }
 
-    // periphery:ignore
     func getChannelPointsCustomRewards(
         userId: String,
         onComplete: @escaping (TwitchApiChannelPointsCustomRewards?) -> Void
     ) {
         doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(userId)", onComplete: { data in
+            logger.info("Twitch rewards: \(String(data: data ?? Data(), encoding: .utf8))")
             let data = try? JSONDecoder().decode(
                 TwitchApiChannelPointsCustomRewards.self,
                 from: data ?? Data()
@@ -106,6 +106,9 @@ class TwitchApi {
         let request = createGetRequest(url: url)
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
+                let status = response?.http?.statusCode ?? -1
+                let body = String(data: data ?? Data(), encoding: .utf8) ?? "-"
+                logger.info("twitch-api: Response \(status) for \(url) is '\(body)'")
                 if response?.http?.isUnauthorized == true {
                     self.delegate?.twitchApiUnauthorized()
                 }
