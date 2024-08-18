@@ -2056,6 +2056,7 @@ private let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "SFX magic"),
     SettingsAlertsMediaGalleryItem(name: "Whoosh"),
     SettingsAlertsMediaGalleryItem(name: "Coin dropping"),
+    SettingsAlertsMediaGalleryItem(name: "Silence"),
 ]
 
 class SettingsAlertsMediaGallery: Codable {

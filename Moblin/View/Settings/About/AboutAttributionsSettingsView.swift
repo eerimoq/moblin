@@ -71,6 +71,14 @@ private let soundAttributions: [Attribution] = [
         ]
     ),
     Attribution(
+        name: "Silence",
+        text: [
+            "C0000_silence5sec.mp3 by thanvannispen",
+            "-- https://freesound.org/s/107061/",
+            "-- License: Attribution 4.0",
+        ]
+    ),
+    Attribution(
         name: "Whoosh",
         text: [
             "Whoosh by qubodup",
