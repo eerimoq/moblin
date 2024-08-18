@@ -7288,22 +7288,20 @@ extension Model {
         showTwitchAuth = false
         wizardShowTwitchAuth = false
         TwitchApi(accessToken: accessToken).getUserInfo { info in
-            DispatchQueue.main.async {
-                guard let info else {
-                    return
-                }
-                guard let twitchAuthStream = self.twitchAuthStream else {
-                    return
-                }
-                twitchAuthStream.twitchChannelName = info.login
-                twitchAuthStream.twitchChannelId = info.id
-                if twitchAuthStream.enabled {
-                    self.twitchChannelIdUpdated()
-                }
-                if let twitchAuthOnComplete = self.twitchAuthOnComplete {
-                    twitchAuthOnComplete()
-                    self.twitchAuthOnComplete = nil
-                }
+            guard let info else {
+                return
+            }
+            guard let twitchAuthStream = self.twitchAuthStream else {
+                return
+            }
+            twitchAuthStream.twitchChannelName = info.login
+            twitchAuthStream.twitchChannelId = info.id
+            if twitchAuthStream.enabled {
+                self.twitchChannelIdUpdated()
+            }
+            if let twitchAuthOnComplete = self.twitchAuthOnComplete {
+                twitchAuthOnComplete()
+                self.twitchAuthOnComplete = nil
             }
         }
     }
@@ -7421,12 +7419,10 @@ extension Model: ObsWebsocketDelegate {
 
 extension Model: TwitchApiDelegate {
     func twitchApiUnauthorized() {
-        DispatchQueue.main.async {
-            self.stream.twitchLoggedIn = false
-            self.makeErrorToast(
-                title: String(localized: "Logged out from Twitch"),
-                subTitle: String(localized: "Please login again")
-            )
-        }
+        stream.twitchLoggedIn = false
+        makeErrorToast(
+            title: String(localized: "Logged out from Twitch"),
+            subTitle: String(localized: "Please login again")
+        )
     }
 }

@@ -203,7 +203,6 @@ final class TwitchEventSub: NSObject {
             return
         }
         sessionId = message.payload.session.id
-        connected = true
         subscribeToChannelFollow()
     }
 
@@ -214,7 +213,10 @@ final class TwitchEventSub: NSObject {
             condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
         )
         twitchApi.createEventSubSubscription(body: body) { ok in
-            logger.info("twitch: event-sub: Follow result \(ok)")
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup follow events")
+                return
+            }
             self.subscribeToChannelSubscribe()
         }
     }
@@ -224,7 +226,10 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            logger.info("twitch: event-sub: Subscribe result \(ok)")
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup subscription events")
+                return
+            }
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
     }
@@ -234,7 +239,11 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            logger.info("twitch: event-sub: Reward redemption result \(ok)")
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup reward redemption events")
+                return
+            }
+            self.connected = true
         }
     }
 

@@ -14,10 +14,8 @@ struct StreamWizardTwitchSettingsView: View {
         model.wizardTwitchLoggedIn = model.wizardTwitchStream.twitchLoggedIn!
         TwitchApi(accessToken: model.wizardTwitchAccessToken)
             .getStreamKey(userId: model.wizardTwitchChannelId) { streamKey in
-                DispatchQueue.main.async {
-                    if let streamKey {
-                        model.wizardDirectStreamKey = streamKey
-                    }
+                if let streamKey {
+                    model.wizardDirectStreamKey = streamKey
                 }
             }
     }
