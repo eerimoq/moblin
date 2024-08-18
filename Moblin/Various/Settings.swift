@@ -803,8 +803,11 @@ class SettingsWidgetBrowser: Codable {
 }
 
 class SettingsWidgetMap: Codable {
+    // Remove
     var width: Int = 250
+    // Remove
     var height: Int = 250
+    var migrated: Bool? = false
     var northUp: Bool? = false
     var delay: Double? = 0.0
 
@@ -812,6 +815,7 @@ class SettingsWidgetMap: Codable {
         let new = SettingsWidgetMap()
         new.width = width
         new.height = height
+        new.migrated = migrated
         new.northUp = northUp
         new.delay = delay
         return new
@@ -3563,6 +3567,47 @@ final class Settings {
         }
         if realDatabase.debug!.twitchRewards == nil {
             realDatabase.debug!.twitchRewards = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.map!.migrated == nil {
+            widget.map!.migrated = false
+            store()
+        }
+        for widget in realDatabase.widgets where !widget.map!.migrated! {
+            widget.map!.migrated = true
+            let stream = realDatabase.streams.first(where: { $0.enabled }) ?? SettingsStream(name: "")
+            if widget.type == .map {
+                for scene in realDatabase.scenes {
+                    for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
+                        var width: Double
+                        var height: Double
+                        switch stream.resolution {
+                        case .r3840x2160:
+                            width = 3840
+                            height = 2160
+                        case .r1920x1080:
+                            width = 1920
+                            height = 1080
+                        case .r1280x720:
+                            width = 1280
+                            height = 720
+                        case .r854x480:
+                            width = 854
+                            height = 480
+                        case .r640x360:
+                            width = 640
+                            height = 360
+                        case .r426x240:
+                            width = 426
+                            height = 240
+                        }
+                        sceneWidget.width = (100 * Double(widget.map!.width) / width)
+                            .clamped(to: 1 ... 100)
+                        sceneWidget.height = (100 * Double(widget.map!.height) / height)
+                            .clamped(to: 1 ... 100)
+                    }
+                }
+            }
             store()
         }
     }

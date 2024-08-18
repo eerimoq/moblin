@@ -103,18 +103,21 @@ final class MapEffect: VideoEffect {
             guard let snapshot, error == nil, let image = snapshot.image.cgImage, let dot = self.dot else {
                 return
             }
+            let height = toPixels(newSceneWidget.height, size.height)
+            let width = toPixels(newSceneWidget.width, size.width)
+            let side = max(40, min(height, width))
             let x = toPixels(newSceneWidget.x, size.width)
-            let y = size.height - toPixels(newSceneWidget.y, size.height) - Double(self.widget.height)
+            let y = size.height - toPixels(newSceneWidget.y, size.height) - side
             let overlay = dot
                 .transformed(by: CGAffineTransform(
-                    translationX: CGFloat(self.widget.width - 30) / 2,
-                    y: CGFloat(self.widget.height - 30) / 2 -
-                        CGFloat(dotOffsetRatio * CGFloat(self.widget.height) / 2)
+                    translationX: CGFloat(side - 30) / 2,
+                    y: CGFloat(side - 30) / 2 -
+                        CGFloat(dotOffsetRatio * CGFloat(side) / 2)
                 ))
                 .composited(over: CIImage(cgImage: image)
                     .transformed(by: CGAffineTransform(
-                        scaleX: CGFloat(self.widget.width) / CGFloat(image.width),
-                        y: CGFloat(self.widget.height) / CGFloat(image.width)
+                        scaleX: CGFloat(side) / CGFloat(image.width),
+                        y: CGFloat(side) / CGFloat(image.width)
                     )))
                 .transformed(by: CGAffineTransform(translationX: x, y: y))
                 .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
@@ -159,8 +162,11 @@ final class MapEffect: VideoEffect {
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
+            let height = toPixels(newSceneWidget.height, size.height)
+            let width = toPixels(newSceneWidget.width, size.width)
+            let side = max(40, min(height, width))
             let overlay = MTIImage(cgImage: image, isOpaque: false).resized(
-                to: .init(width: self.widget.width, height: self.widget.height),
+                to: .init(width: side, height: side),
                 resizingMode: .aspect
             )
             mapQueue.sync {
