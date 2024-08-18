@@ -158,9 +158,11 @@ struct SettingsView: View {
                             text: String(localized: "DJI devices")
                         )
                     }
-                    NavigationLink(destination: LocationSettingsView()) {
-                        IconAndTextView(image: "location", text: String(localized: "Location"))
-                    }
+                }
+                NavigationLink(destination: LocationSettingsView()) {
+                    IconAndTextView(image: "location", text: String(localized: "Location"))
+                }
+                if model.database.showAllSettings! {
                     NavigationLink(destination: WebBrowserSettingsView()) {
                         IconAndTextView(image: "globe", text: String(localized: "Web browser"))
                     }
