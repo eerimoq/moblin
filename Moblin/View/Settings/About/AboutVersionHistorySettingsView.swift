@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.366.0", date: "2024-08-18", changes: [
+        "• New alert sounds.",
+        "  • Two farts.",
+        "  • Silence.",
+        "• Events/alerts connection status in top left of UI.",
+        "• Always show location settings.",
+        "  • As they are required by Map widget.",
+        "• Configure map widget size in Settings → Scenes → My scene → Widgets.",
+        "  • To make it scale with video resolution.",
+    ]),
     Version(version: "0.365.0", date: "2024-08-17", changes: [
         "• Checkboxes instead of toggles in widgets quick button view.",
         "• More alert images (GIFs).",
