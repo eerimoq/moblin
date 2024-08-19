@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.367.0", date: "2024-08-19", changes: [
+        "• Only send stream preview to remote control assistant if the assistant needs it.",
+        "  • Previously the preview was sent periodically when the remote control streamer was connected to the assistant (about 100 kbps, so not that much data).",
+        "• Show checkbox text instead of \"Checkbox 1\" in text widget.",
+        "• Animated GIFs in alert widget image selector.",
+    ]),
     Version(version: "0.366.0", date: "2024-08-18", changes: [
         "• New alert sounds.",
         "  • Two farts.",
