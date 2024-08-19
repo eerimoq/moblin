@@ -17,8 +17,7 @@ enum RemoteControlRequest: Codable {
     case setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
     case setSrtConnectionPrioritiesEnabled(enabled: Bool)
     case reloadBrowserWidgets
-    case newSubscriber(name: String, message: String)
-    case playMediaShare(fileId: UUID, fileSize: UInt64, message: String)
+    case twitchEventSubNotification(message: String)
 }
 
 enum RemoteControlResponse: Codable {
@@ -195,6 +194,8 @@ enum RemoteControlMessageToAssistant: Codable {
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
     case preview(preview: Data)
+    case twitchStart(accessToken: String)
+    case twitchStop
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {
@@ -217,4 +218,24 @@ func remoteControlHashPassword(challenge: String, salt: String, password: String
     concatenated = "\(hash.base64EncodedString())\(challenge)"
     hash = Data(SHA256.hash(data: Data(concatenated.utf8)))
     return hash.base64EncodedString()
+}
+
+// periphery:ignore
+class RemoteControlEncryption {
+    private let key: SymmetricKey
+
+    init(password: String) {
+        key = SymmetricKey(data: password.utf8Data)
+    }
+
+    func encrypt(data: Data) -> Data? {
+        return try? AES.GCM.seal(data, using: key).combined
+    }
+
+    func decrypt(data: Data) -> Data? {
+        guard let sealedBox = try? AES.GCM.SealedBox(combined: data) else {
+            return nil
+        }
+        return try? AES.GCM.open(sealedBox, using: key)
+    }
 }

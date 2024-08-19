@@ -100,7 +100,7 @@ extension [TextFormatPart] {
         var currentIndex = 0
         for part in self {
             switch part {
-            case .text(let text):
+            case let .text(text):
                 if afterCheckbox {
                     checkboxTexts.append(text)
                     afterCheckbox = false

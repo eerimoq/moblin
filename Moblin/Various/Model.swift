@@ -1472,7 +1472,7 @@ final class Model: NSObject, ObservableObject {
                 handleRtmpServerPublishStop(streamKey: stream.streamKey)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
                 if currentMic.id != micId, isLastMic {
-                    setMic(id: micId) {}
+                    selectMicById(id: micId)
                 }
             }
         }
@@ -5085,7 +5085,7 @@ final class Model: NSObject, ObservableObject {
 }
 
 extension Model: RemoteControlStreamerDelegate {
-    func connected() {
+    func remoteControlStreamerConnected() {
         DispatchQueue.main.async {
             self.makeToast(title: String(localized: "Remote control assistant connected"))
             self.setLowFpsImage()
@@ -5103,7 +5103,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func disconnected() {
+    func remoteControlStreamerDisconnected() {
         DispatchQueue.main.async {
             self.makeToast(title: String(localized: "Remote control assistant disconnected"))
             self.setLowFpsImage()
@@ -5111,7 +5111,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func getStatus(onComplete: @escaping (
+    func remoteControlStreamerGetStatus(onComplete: @escaping (
         RemoteControlStatusGeneral,
         RemoteControlStatusTopLeft,
         RemoteControlStatusTopRight
@@ -5209,7 +5209,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
+    func remoteControlStreamerGetSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
         DispatchQueue.main.async {
             let scenes = self.database.scenes.map { scene in
                 RemoteControlSettingsScene(id: scene.id, name: scene.name)
@@ -5242,21 +5242,21 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setScene(id: UUID, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetScene(id: UUID, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.selectScene(id: id)
             onComplete()
         }
     }
 
-    func setMic(id: String, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetMic(id: String, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.selectMicById(id: id)
             onComplete()
         }
     }
 
-    func setBitratePreset(id: UUID, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetBitratePreset(id: UUID, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             guard let preset = self.database.bitratePresets.first(where: { preset in
                 preset.id == id
@@ -5271,7 +5271,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setRecord(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetRecord(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if on {
                 self.startRecording()
@@ -5283,7 +5283,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setStream(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetStream(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if on {
                 self.startStream()
@@ -5295,7 +5295,7 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setZoom(x: Float, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
                 self.setZoomX(x: x)
@@ -5315,14 +5315,14 @@ extension Model: RemoteControlStreamerDelegate {
         updateButtonStates()
     }
 
-    func setMute(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetMute(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.setMuteOn(value: on)
             onComplete()
         }
     }
 
-    func setTorch(on: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetTorch(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if on {
                 self.isTorchOn = true
@@ -5336,14 +5336,17 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func reloadBrowserWidgets(onComplete: @escaping () -> Void) {
+    func remoteControlStreamerReloadBrowserWidgets(onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.reloadBrowserWidgets()
             onComplete()
         }
     }
 
-    func setSrtConnectionPrioritiesEnabled(enabled: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(
+        enabled: Bool,
+        onComplete: @escaping () -> Void
+    ) {
         DispatchQueue.main.async {
             self.stream.srt.connectionPriorities!.enabled = enabled
             self.store()
@@ -5352,7 +5355,12 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool, onComplete: @escaping () -> Void) {
+    func remoteControlStreamerSetSrtConnectionPriority(
+        id: UUID,
+        priority: Int,
+        enabled: Bool,
+        onComplete: @escaping () -> Void
+    ) {
         DispatchQueue.main.async {
             if let entry = self.stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
                 entry.priority = clampConnectionPriority(value: priority)
@@ -5369,6 +5377,10 @@ extension Model: RemoteControlStreamerDelegate {
             return
         }
         remoteControlStreamer?.sendPreview(preview: preview)
+    }
+
+    func remoteControlStreamerTwitchEventSubNotification(message _: String) {
+        // twitchEventSub?.webSocketClientReceiveMessage(string: message)
     }
 }
 
@@ -5388,8 +5400,7 @@ extension Model {
         guard isRemoteControlStreamerConfigured() else {
             return
         }
-        let server = database.remoteControl!.server
-        guard let url = URL(string: server.url) else {
+        guard let url = URL(string: database.remoteControl!.server.url) else {
             return
         }
         remoteControlStreamer = RemoteControlStreamer(
@@ -5437,9 +5448,8 @@ extension Model {
         guard isRemoteControlAssistantConfigured() else {
             return
         }
-        let client = database.remoteControl!.client
         remoteControlAssistant = RemoteControlAssistant(
-            port: client.port,
+            port: database.remoteControl!.client.port,
             password: database.remoteControl!.password!,
             delegate: self
         )
@@ -5550,20 +5560,20 @@ extension Model {
 }
 
 extension Model: RemoteControlAssistantDelegate {
-    func assistantConnected() {
+    func remoteControlAssistantConnected() {
         makeToast(title: String(localized: "Remote control streamer connected"))
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
     }
 
-    func assistantDisconnected() {
+    func remoteControlAssistantDisconnected() {
         makeToast(title: String(localized: "Remote control streamer disconnected"))
         remoteControlTopLeft = nil
         remoteControlTopRight = nil
         updateRemoteControlStatus()
     }
 
-    func assistantStateChanged(state: RemoteControlState) {
+    func remoteControlAssistantStateChanged(state: RemoteControlState) {
         if let scene = state.scene {
             remoteControlState.scene = scene
             remoteControlScene = scene
@@ -5582,12 +5592,12 @@ extension Model: RemoteControlAssistantDelegate {
         }
     }
 
-    func assistantPreview(preview: Data) {
+    func remoteControlAssistantPreview(preview: Data) {
         remoteControlPreview = UIImage(data: preview)
         sendPreviewToWatch(image: preview)
     }
 
-    func assistantLog(entry: String) {
+    func remoteControlAssistantLog(entry: String) {
         if remoteControlAssistantLog.count > 100_000 {
             remoteControlAssistantLog.removeFirst()
         }
@@ -7337,6 +7347,10 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubUnauthorized() {
         twitchApiUnauthorized()
+    }
+
+    func twitchEventSubNotification(message _: String) {
+        // remoteControlAssistant?.twitchEventSubNotification(message: message)
     }
 }
 

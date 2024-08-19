@@ -134,6 +134,7 @@ protocol TwitchEventSubDelegate: AnyObject {
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
     func twitchEventSubUnauthorized()
+    func twitchEventSubNotification(message: String)
 }
 
 final class TwitchEventSub: NSObject {
@@ -180,8 +181,8 @@ final class TwitchEventSub: NSObject {
         return connected
     }
 
-    private func handleMessage(message: String) {
-        let messageData = message.utf8Data
+    private func handleMessage(messageText: String) {
+        let messageData = messageText.utf8Data
         guard let message = try? JSONDecoder().decode(BasicMessage.self, from: messageData) else {
             return
         }
@@ -191,7 +192,7 @@ final class TwitchEventSub: NSObject {
         case "session_keepalive":
             break
         case "notification":
-            handleNotification(message: message, messageData: messageData)
+            handleNotification(message: message, messageText: messageText, messageData: messageData)
         default:
             logger.info("twitch: event-sub: Unknown message type \(message.metadata.message_type)")
         }
@@ -261,7 +262,7 @@ final class TwitchEventSub: NSObject {
         """
     }
 
-    private func handleNotification(message: BasicMessage, messageData: Data) {
+    private func handleNotification(message: BasicMessage, messageText: String, messageData: Data) {
         switch message.metadata.subscription_type {
         case "channel.follow":
             handleNotificationChannelFollow(messageData: messageData)
@@ -276,6 +277,7 @@ final class TwitchEventSub: NSObject {
                 logger.info("twitch: event-sub: Missing notification type")
             }
         }
+        delegate.twitchEventSubNotification(message: messageText)
     }
 
     private func handleNotificationChannelFollow(messageData: Data) {
@@ -323,7 +325,7 @@ extension TwitchEventSub: WebSocketClientDelegate {
     }
 
     func webSocketClientReceiveMessage(string: String) {
-        handleMessage(message: string)
+        handleMessage(messageText: string)
     }
 }
 

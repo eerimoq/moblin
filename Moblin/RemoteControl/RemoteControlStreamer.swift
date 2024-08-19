@@ -2,25 +2,34 @@ import Foundation
 import Network
 
 protocol RemoteControlStreamerDelegate: AnyObject {
-    func connected()
-    func disconnected()
-    func getStatus(onComplete: @escaping (
+    func remoteControlStreamerConnected()
+    func remoteControlStreamerDisconnected()
+    func remoteControlStreamerGetStatus(onComplete: @escaping (
         RemoteControlStatusGeneral,
         RemoteControlStatusTopLeft,
         RemoteControlStatusTopRight
     ) -> Void)
-    func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
-    func setScene(id: UUID, onComplete: @escaping () -> Void)
-    func setMic(id: String, onComplete: @escaping () -> Void)
-    func setBitratePreset(id: UUID, onComplete: @escaping () -> Void)
-    func setRecord(on: Bool, onComplete: @escaping () -> Void)
-    func setStream(on: Bool, onComplete: @escaping () -> Void)
-    func setZoom(x: Float, onComplete: @escaping () -> Void)
-    func setMute(on: Bool, onComplete: @escaping () -> Void)
-    func setTorch(on: Bool, onComplete: @escaping () -> Void)
-    func reloadBrowserWidgets(onComplete: @escaping () -> Void)
-    func setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool, onComplete: @escaping () -> Void)
-    func setSrtConnectionPrioritiesEnabled(enabled: Bool, onComplete: @escaping () -> Void)
+    func remoteControlStreamerGetSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
+    func remoteControlStreamerSetScene(id: UUID, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetMic(id: String, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetBitratePreset(id: UUID, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetRecord(on: Bool, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetStream(on: Bool, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetMute(on: Bool, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetTorch(on: Bool, onComplete: @escaping () -> Void)
+    func remoteControlStreamerReloadBrowserWidgets(onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetSrtConnectionPriority(
+        id: UUID,
+        priority: Int,
+        enabled: Bool,
+        onComplete: @escaping () -> Void
+    )
+    func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(
+        enabled: Bool,
+        onComplete: @escaping () -> Void
+    )
+    func remoteControlStreamerTwitchEventSubNotification(message: String)
 }
 
 class RemoteControlStreamer {
@@ -124,7 +133,7 @@ class RemoteControlStreamer {
         switch result {
         case .ok:
             connected = true
-            delegate?.connected()
+            delegate?.remoteControlStreamerConnected()
             return true
         case .wrongPassword:
             connectionErrorMessage = "Wrong password"
@@ -140,7 +149,7 @@ class RemoteControlStreamer {
         }
         switch data {
         case .getStatus:
-            delegate.getStatus { general, topLeft, topRight in
+            delegate.remoteControlStreamerGetStatus { general, topLeft, topRight in
                 self.send(message: .response(
                     id: id,
                     result: .ok,
@@ -148,57 +157,60 @@ class RemoteControlStreamer {
                 ))
             }
         case .getSettings:
-            delegate.getSettings { data in
+            delegate.remoteControlStreamerGetSettings { data in
                 self.send(message: .response(id: id, result: .ok, data: .getSettings(data: data)))
             }
         case let .setScene(id: sceneId):
-            delegate.setScene(id: sceneId) {
+            delegate.remoteControlStreamerSetScene(id: sceneId) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setMic(id: micId):
-            delegate.setMic(id: micId) {
+            delegate.remoteControlStreamerSetMic(id: micId) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setBitratePreset(id: bitratePresetId):
-            delegate.setBitratePreset(id: bitratePresetId) {
+            delegate.remoteControlStreamerSetBitratePreset(id: bitratePresetId) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setRecord(on: on):
-            delegate.setRecord(on: on) {
+            delegate.remoteControlStreamerSetRecord(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setStream(on: on):
-            delegate.setStream(on: on) {
+            delegate.remoteControlStreamerSetStream(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setZoom(x: x):
-            delegate.setZoom(x: x) {
+            delegate.remoteControlStreamerSetZoom(x: x) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setMute(on: on):
-            delegate.setMute(on: on) {
+            delegate.remoteControlStreamerSetMute(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setTorch(on: on):
-            delegate.setTorch(on: on) {
+            delegate.remoteControlStreamerSetTorch(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case .reloadBrowserWidgets:
-            delegate.reloadBrowserWidgets {
+            delegate.remoteControlStreamerReloadBrowserWidgets {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled):
-            delegate.setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled) {
+            delegate.remoteControlStreamerSetSrtConnectionPriority(
+                id: priorityId,
+                priority: priority,
+                enabled: enabled
+            ) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setSrtConnectionPrioritiesEnabled(enabled: enabled):
-            delegate.setSrtConnectionPrioritiesEnabled(enabled: enabled) {
+            delegate.remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: enabled) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
-        case .newSubscriber:
-            break
-        case .playMediaShare:
-            break
+        case let .twitchEventSubNotification(message: message):
+            delegate.remoteControlStreamerTwitchEventSubNotification(message: message)
+            send(message: .response(id: id, result: .ok, data: nil))
         }
     }
 }
@@ -208,7 +220,7 @@ extension RemoteControlStreamer: WebSocketClientDelegate {
 
     func webSocketClientDisconnected() {
         if connected {
-            delegate?.disconnected()
+            delegate?.remoteControlStreamerDisconnected()
         }
         connected = false
         connectionErrorMessage = String(localized: "Disconnected")

@@ -3,11 +3,11 @@ import Foundation
 import Telegraph
 
 protocol RemoteControlAssistantDelegate: AnyObject {
-    func assistantConnected()
-    func assistantDisconnected()
-    func assistantPreview(preview: Data)
-    func assistantStateChanged(state: RemoteControlState)
-    func assistantLog(entry: String)
+    func remoteControlAssistantConnected()
+    func remoteControlAssistantDisconnected()
+    func remoteControlAssistantPreview(preview: Data)
+    func remoteControlAssistantStateChanged(state: RemoteControlState)
+    func remoteControlAssistantLog(entry: String)
 }
 
 private struct RemoteControlRequestResponse {
@@ -29,6 +29,8 @@ class RemoteControlAssistant {
     private var streamerIdentified: Bool = false
     private var challenge: String = ""
     private var salt: String = ""
+    // private var twitchEventSubNotitications: [String] = []
+    // private var twitchEventSubNotiticationWaitForResponse: Bool = false
 
     init(
         port: UInt16,
@@ -148,6 +150,29 @@ class RemoteControlAssistant {
         )
     }
 
+    func twitchEventSubNotification(message _: String) {
+        // twitchEventSubNotitications.append(message)
+        // tryNextTwitchEventSubNotification()
+    }
+
+    // private func tryNextTwitchEventSubNotification() {
+    //     guard !twitchEventSubNotiticationWaitForResponse else {
+    //         return
+    //     }
+    //     guard let message = twitchEventSubNotitications.first else {
+    //         return
+    //     }
+    //     twitchEventSubNotiticationWaitForResponse = true
+    //     performRequestNoResponseData(
+    //         data: .twitchEventSubNotification(message: message),
+    //         onSuccess: {
+    //             self.twitchEventSubNotitications.removeFirst()
+    //             self.twitchEventSubNotiticationWaitForResponse = false
+    //             self.tryNextTwitchEventSubNotification()
+    //         }
+    //     )
+    // }
+
     private func startInternal() {
         do {
             try server.start(port: Endpoint.Port(port))
@@ -193,7 +218,7 @@ class RemoteControlAssistant {
         }
         streamerWebSocket = nil
         connected = false
-        delegate?.assistantDisconnected()
+        delegate?.remoteControlAssistantDisconnected()
     }
 
     private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
@@ -209,6 +234,10 @@ class RemoteControlAssistant {
                 try handleResponse(id: id, result: result, data: data)
             case let .preview(preview: preview):
                 try handlePreview(preview: preview)
+            case let .twitchStart(accessToken: accessToken):
+                break
+            case .twitchStop:
+                break
             }
         } catch {
             logger.debug("remote-control-assistant: Failed to process message with error \(error)")
@@ -223,8 +252,10 @@ class RemoteControlAssistant {
         ) {
             streamerIdentified = true
             connected = true
-            delegate?.assistantConnected()
+            delegate?.remoteControlAssistantConnected()
             send(message: .identified(result: .ok))
+            // twitchEventSubNotiticationWaitForResponse = false
+            // tryNextTwitchEventSubNotification()
         } else {
             logger.info("remote-control-assistant: Streamer sent wrong password")
             send(message: .identified(result: .wrongPassword))
@@ -273,15 +304,15 @@ class RemoteControlAssistant {
         guard streamerIdentified else {
             throw "Streamer not identified"
         }
-        delegate?.assistantPreview(preview: preview)
+        delegate?.remoteControlAssistantPreview(preview: preview)
     }
 
     private func handleStateEvent(state: RemoteControlState) {
-        delegate?.assistantStateChanged(state: state)
+        delegate?.remoteControlAssistantStateChanged(state: state)
     }
 
     private func handleLogEvent(entry: String) {
-        delegate?.assistantLog(entry: entry)
+        delegate?.remoteControlAssistantLog(entry: entry)
     }
 
     private func performRequest(
