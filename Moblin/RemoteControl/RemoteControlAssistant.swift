@@ -150,9 +150,17 @@ class RemoteControlAssistant {
         )
     }
 
-    func twitchEventSubNotification(message _: String) {
-        // twitchEventSubNotitications.append(message)
-        // tryNextTwitchEventSubNotification()
+    // func twitchEventSubNotification(message _: String) {
+    //     twitchEventSubNotitications.append(message)
+    //     tryNextTwitchEventSubNotification()
+    // }
+
+    func startPreview() {
+        performRequestNoResponseData(data: .startPreview, onSuccess: {})
+    }
+
+    func stopPreview() {
+        performRequestNoResponseData(data: .stopPreview, onSuccess: {})
     }
 
     // private func tryNextTwitchEventSubNotification() {
@@ -234,7 +242,7 @@ class RemoteControlAssistant {
                 try handleResponse(id: id, result: result, data: data)
             case let .preview(preview: preview):
                 try handlePreview(preview: preview)
-            case let .twitchStart(accessToken: accessToken):
+            case let .twitchStart(accessToken: _):
                 break
             case .twitchStop:
                 break

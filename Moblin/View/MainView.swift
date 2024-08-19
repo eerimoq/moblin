@@ -380,6 +380,7 @@ struct MainView: View {
                         model.showingRemoteControl = false
                         model.attachCamera()
                         model.updateScreenAutoOff()
+                        model.remoteControlAssistantStopPreview()
                     }
                 }
             }

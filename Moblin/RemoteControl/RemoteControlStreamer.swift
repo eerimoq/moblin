@@ -30,6 +30,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
         onComplete: @escaping () -> Void
     )
     func remoteControlStreamerTwitchEventSubNotification(message: String)
+    func remoteControlStreamerStartPreview(onComplete: @escaping () -> Void)
+    func remoteControlStreamerStopPreview(onComplete: @escaping () -> Void)
 }
 
 class RemoteControlStreamer {
@@ -211,6 +213,14 @@ class RemoteControlStreamer {
         case let .twitchEventSubNotification(message: message):
             delegate.remoteControlStreamerTwitchEventSubNotification(message: message)
             send(message: .response(id: id, result: .ok, data: nil))
+        case .startPreview:
+            delegate.remoteControlStreamerStartPreview {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case .stopPreview:
+            delegate.remoteControlStreamerStopPreview {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
         }
     }
 }

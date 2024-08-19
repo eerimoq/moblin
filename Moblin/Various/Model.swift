@@ -475,6 +475,7 @@ final class Model: NSObject, ObservableObject {
     private var remoteControlAssistant: RemoteControlAssistant?
     @Published var remoteControlAssistantShowPreview = true
     @Published var remoteControlAssistantShowPreviewFullScreen = false
+    private var isRemoteControlAssistantRequestingPreview = false
 
     private var currentWiFiSsid: String?
     @Published var djiDeviceStreamingState: DjiDeviceState?
@@ -3554,7 +3555,7 @@ final class Model: NSObject, ObservableObject {
         if isWatchReachable() {
             fps = 1.0
         }
-        if isRemoteControlStreamerConnected() {
+        if isRemoteControlStreamerConnected() && isRemoteControlAssistantRequestingPreview {
             fps = database.remoteControl!.server.previewFps!
         }
         media.setLowFpsImage(fps: fps)
@@ -5086,29 +5087,27 @@ final class Model: NSObject, ObservableObject {
 
 extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
-        DispatchQueue.main.async {
-            self.makeToast(title: String(localized: "Remote control assistant connected"))
-            self.setLowFpsImage()
-            self.updateRemoteControlStatus()
-            var state = RemoteControlState()
-            if self.sceneIndex < self.enabledScenes.count {
-                state.scene = self.enabledScenes[self.sceneIndex].id
-            }
-            state.mic = self.currentMic.id
-            if let preset = self.getBitratePresetByBitrate(bitrate: self.stream.bitrate) {
-                state.bitrate = preset.id
-            }
-            state.zoom = self.zoomX
-            self.remoteControlStreamer?.stateChanged(state: state)
+        makeToast(title: String(localized: "Remote control assistant connected"))
+        isRemoteControlAssistantRequestingPreview = false
+        setLowFpsImage()
+        updateRemoteControlStatus()
+        var state = RemoteControlState()
+        if sceneIndex < enabledScenes.count {
+            state.scene = enabledScenes[sceneIndex].id
         }
+        state.mic = currentMic.id
+        if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
+            state.bitrate = preset.id
+        }
+        state.zoom = zoomX
+        remoteControlStreamer?.stateChanged(state: state)
     }
 
     func remoteControlStreamerDisconnected() {
-        DispatchQueue.main.async {
-            self.makeToast(title: String(localized: "Remote control assistant disconnected"))
-            self.setLowFpsImage()
-            self.updateRemoteControlStatus()
-        }
+        makeToast(title: String(localized: "Remote control assistant disconnected"))
+        isRemoteControlAssistantRequestingPreview = false
+        setLowFpsImage()
+        updateRemoteControlStatus()
     }
 
     func remoteControlStreamerGetStatus(onComplete: @escaping (
@@ -5116,192 +5115,176 @@ extension Model: RemoteControlStreamerDelegate {
         RemoteControlStatusTopLeft,
         RemoteControlStatusTopRight
     ) -> Void) {
-        DispatchQueue.main.async {
-            var general = RemoteControlStatusGeneral()
-            general.batteryCharging = self.isBatteryCharging()
-            general.batteryLevel = Int(100 * self.batteryLevel)
-            switch self.thermalState {
-            case .nominal:
-                general.flame = .white
-            case .fair:
-                general.flame = .white
-            case .serious:
-                general.flame = .yellow
-            case .critical:
-                general.flame = .red
-            @unknown default:
-                general.flame = .red
-            }
-            general.wiFiSsid = self.currentWiFiSsid
-            general.isLive = self.isLive
-            general.isRecording = self.isRecording
-            general.isMuted = self.isMuteOn
-            var topLeft = RemoteControlStatusTopLeft()
-            if self.isShowingStatusStream() {
-                topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())
-            }
-            if self.isShowingStatusCamera() {
-                topLeft.camera = RemoteControlStatusItem(message: self.statusCameraText())
-            }
-            if self.isShowingStatusMic() {
-                topLeft.mic = RemoteControlStatusItem(message: self.currentMic.name)
-            }
-            if self.isShowingStatusZoom() {
-                topLeft.zoom = RemoteControlStatusItem(message: self.statusZoomText())
-            }
-            if self.isShowingStatusObs() {
-                topLeft.obs = RemoteControlStatusItem(message: self.statusObsText())
-            }
-            if self.isShowingStatusEvents() {
-                topLeft.events = RemoteControlStatusItem(message: self.statusEventsText())
-            }
-            if self.isShowingStatusChat() {
-                topLeft.chat = RemoteControlStatusItem(message: self.statusChatText())
-            }
-            if self.isShowingStatusViewers() {
-                topLeft.viewers = RemoteControlStatusItem(message: self.statusViewersText())
-            }
-            var topRight = RemoteControlStatusTopRight()
-            if self.isShowingStatusAudioLevel() {
-                let level = formatAudioLevel(level: self.audioLevel) +
-                    formatAudioLevelChannels(channels: self.numberOfAudioChannels)
-                topRight.audioLevel = RemoteControlStatusItem(message: level)
-                topRight.audioInfo = .init(
-                    audioLevel: .unknown,
-                    numberOfAudioChannels: self.numberOfAudioChannels
-                )
-                if self.audioLevel.isNaN {
-                    topRight.audioInfo!.audioLevel = .muted
-                } else if self.audioLevel.isInfinite {
-                    topRight.audioInfo!.audioLevel = .unknown
-                } else {
-                    topRight.audioInfo!.audioLevel = .value(self.audioLevel)
-                }
-            }
-            if self.isShowingStatusServers() {
-                topRight.rtmpServer = RemoteControlStatusItem(message: self.serversSpeedAndTotal)
-            }
-            if self.isShowingStatusRemoteControl() {
-                topRight.remoteControl = RemoteControlStatusItem(message: self.remoteControlStatus)
-            }
-            if self.isShowingStatusGameController() {
-                topRight.gameController = RemoteControlStatusItem(message: self.gameControllersTotal)
-            }
-            if self.isShowingStatusBitrate() {
-                topRight.bitrate = RemoteControlStatusItem(message: self.speedAndTotal)
-            }
-            if self.isShowingStatusUptime() {
-                topRight.uptime = RemoteControlStatusItem(message: self.uptime)
-            }
-            if self.isShowingStatusLocation() {
-                topRight.location = RemoteControlStatusItem(message: self.location)
-            }
-            if self.isShowingStatusBonding() {
-                topRight.srtla = RemoteControlStatusItem(message: self.bondingStatistics)
-            }
-            if self.isShowingStatusRecording() {
-                topRight.recording = RemoteControlStatusItem(message: self.recordingLength)
-            }
-            if self.isShowingStatusBrowserWidgets() {
-                topRight.browserWidgets = RemoteControlStatusItem(message: self.browserWidgetsStatus)
-            }
-            onComplete(general, topLeft, topRight)
+        var general = RemoteControlStatusGeneral()
+        general.batteryCharging = isBatteryCharging()
+        general.batteryLevel = Int(100 * batteryLevel)
+        switch thermalState {
+        case .nominal:
+            general.flame = .white
+        case .fair:
+            general.flame = .white
+        case .serious:
+            general.flame = .yellow
+        case .critical:
+            general.flame = .red
+        @unknown default:
+            general.flame = .red
         }
+        general.wiFiSsid = currentWiFiSsid
+        general.isLive = isLive
+        general.isRecording = isRecording
+        general.isMuted = isMuteOn
+        var topLeft = RemoteControlStatusTopLeft()
+        if isShowingStatusStream() {
+            topLeft.stream = RemoteControlStatusItem(message: statusStreamText())
+        }
+        if isShowingStatusCamera() {
+            topLeft.camera = RemoteControlStatusItem(message: statusCameraText())
+        }
+        if isShowingStatusMic() {
+            topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
+        }
+        if isShowingStatusZoom() {
+            topLeft.zoom = RemoteControlStatusItem(message: statusZoomText())
+        }
+        if isShowingStatusObs() {
+            topLeft.obs = RemoteControlStatusItem(message: statusObsText())
+        }
+        if isShowingStatusEvents() {
+            topLeft.events = RemoteControlStatusItem(message: statusEventsText())
+        }
+        if isShowingStatusChat() {
+            topLeft.chat = RemoteControlStatusItem(message: statusChatText())
+        }
+        if isShowingStatusViewers() {
+            topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
+        }
+        var topRight = RemoteControlStatusTopRight()
+        if isShowingStatusAudioLevel() {
+            let level = formatAudioLevel(level: audioLevel) +
+                formatAudioLevelChannels(channels: numberOfAudioChannels)
+            topRight.audioLevel = RemoteControlStatusItem(message: level)
+            topRight.audioInfo = .init(
+                audioLevel: .unknown,
+                numberOfAudioChannels: numberOfAudioChannels
+            )
+            if audioLevel.isNaN {
+                topRight.audioInfo!.audioLevel = .muted
+            } else if audioLevel.isInfinite {
+                topRight.audioInfo!.audioLevel = .unknown
+            } else {
+                topRight.audioInfo!.audioLevel = .value(audioLevel)
+            }
+        }
+        if isShowingStatusServers() {
+            topRight.rtmpServer = RemoteControlStatusItem(message: serversSpeedAndTotal)
+        }
+        if isShowingStatusRemoteControl() {
+            topRight.remoteControl = RemoteControlStatusItem(message: remoteControlStatus)
+        }
+        if isShowingStatusGameController() {
+            topRight.gameController = RemoteControlStatusItem(message: gameControllersTotal)
+        }
+        if isShowingStatusBitrate() {
+            topRight.bitrate = RemoteControlStatusItem(message: speedAndTotal)
+        }
+        if isShowingStatusUptime() {
+            topRight.uptime = RemoteControlStatusItem(message: uptime)
+        }
+        if isShowingStatusLocation() {
+            topRight.location = RemoteControlStatusItem(message: location)
+        }
+        if isShowingStatusBonding() {
+            topRight.srtla = RemoteControlStatusItem(message: bondingStatistics)
+        }
+        if isShowingStatusRecording() {
+            topRight.recording = RemoteControlStatusItem(message: recordingLength)
+        }
+        if isShowingStatusBrowserWidgets() {
+            topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
+        }
+        onComplete(general, topLeft, topRight)
     }
 
     func remoteControlStreamerGetSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
-        DispatchQueue.main.async {
-            let scenes = self.database.scenes.map { scene in
-                RemoteControlSettingsScene(id: scene.id, name: scene.name)
-            }
-            let mics = self.listMics().map { mic in
-                RemoteControlSettingsMic(id: mic.id, name: mic.name)
-            }
-            let bitratePresets = self.database.bitratePresets.map { preset in
-                RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
-            }
-            let connectionPriorities = self.stream.srt.connectionPriorities!.priorities
-                .map { priority in
-                    RemoteControlSettingsSrtConnectionPriority(
-                        id: priority.id,
-                        name: priority.name,
-                        priority: priority.priority,
-                        enabled: priority.enabled!
-                    )
-                }
-            let connectionPrioritiesEnabled = self.stream.srt.connectionPriorities!.enabled
-            onComplete(RemoteControlSettings(
-                scenes: scenes,
-                bitratePresets: bitratePresets,
-                mics: mics,
-                srt: RemoteControlSettingsSrt(
-                    connectionPrioritiesEnabled: connectionPrioritiesEnabled,
-                    connectionPriorities: connectionPriorities
-                )
-            ))
+        let scenes = database.scenes.map { scene in
+            RemoteControlSettingsScene(id: scene.id, name: scene.name)
         }
+        let mics = listMics().map { mic in
+            RemoteControlSettingsMic(id: mic.id, name: mic.name)
+        }
+        let bitratePresets = database.bitratePresets.map { preset in
+            RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
+        }
+        let connectionPriorities = stream.srt.connectionPriorities!.priorities
+            .map { priority in
+                RemoteControlSettingsSrtConnectionPriority(
+                    id: priority.id,
+                    name: priority.name,
+                    priority: priority.priority,
+                    enabled: priority.enabled!
+                )
+            }
+        let connectionPrioritiesEnabled = stream.srt.connectionPriorities!.enabled
+        onComplete(RemoteControlSettings(
+            scenes: scenes,
+            bitratePresets: bitratePresets,
+            mics: mics,
+            srt: RemoteControlSettingsSrt(
+                connectionPrioritiesEnabled: connectionPrioritiesEnabled,
+                connectionPriorities: connectionPriorities
+            )
+        ))
     }
 
     func remoteControlStreamerSetScene(id: UUID, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            self.selectScene(id: id)
-            onComplete()
-        }
+        selectScene(id: id)
+        onComplete()
     }
 
     func remoteControlStreamerSetMic(id: String, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            self.selectMicById(id: id)
-            onComplete()
-        }
+        selectMicById(id: id)
+        onComplete()
     }
 
     func remoteControlStreamerSetBitratePreset(id: UUID, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            guard let preset = self.database.bitratePresets.first(where: { preset in
-                preset.id == id
-            }) else {
-                return
-            }
-            self.setBitrate(bitrate: preset.bitrate)
-            if self.stream.enabled {
-                self.setStreamBitrate(stream: self.stream)
-            }
-            onComplete()
+        guard let preset = database.bitratePresets.first(where: { preset in
+            preset.id == id
+        }) else {
+            return
         }
+        setBitrate(bitrate: preset.bitrate)
+        if stream.enabled {
+            setStreamBitrate(stream: stream)
+        }
+        onComplete()
     }
 
     func remoteControlStreamerSetRecord(on: Bool, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            if on {
-                self.startRecording()
-            } else {
-                self.stopRecording()
-            }
-            self.updateButtonStates()
-            onComplete()
+        if on {
+            startRecording()
+        } else {
+            stopRecording()
         }
+        updateButtonStates()
+        onComplete()
     }
 
     func remoteControlStreamerSetStream(on: Bool, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            if on {
-                self.startStream()
-            } else {
-                self.stopStream()
-            }
-            self.updateButtonStates()
-            onComplete()
+        if on {
+            startStream()
+        } else {
+            stopStream()
         }
+        updateButtonStates()
+        onComplete()
     }
 
     func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
-                self.setZoomX(x: x)
-            }
-            onComplete()
+        if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
+            setZoomX(x: x)
         }
+        onComplete()
     }
 
     private func setMuteOn(value: Bool) {
@@ -5316,31 +5299,25 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetMute(on: Bool, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            self.setMuteOn(value: on)
-            onComplete()
-        }
+        setMuteOn(value: on)
+        onComplete()
     }
 
     func remoteControlStreamerSetTorch(on: Bool, onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            if on {
-                self.isTorchOn = true
-            } else {
-                self.isTorchOn = false
-            }
-            self.updateTorch()
-            self.toggleGlobalButton(type: .torch)
-            self.updateButtonStates()
-            onComplete()
+        if on {
+            isTorchOn = true
+        } else {
+            isTorchOn = false
         }
+        updateTorch()
+        toggleGlobalButton(type: .torch)
+        updateButtonStates()
+        onComplete()
     }
 
     func remoteControlStreamerReloadBrowserWidgets(onComplete: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            self.reloadBrowserWidgets()
-            onComplete()
-        }
+        reloadBrowserWidgets()
+        onComplete()
     }
 
     func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(
@@ -5381,6 +5358,16 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerTwitchEventSubNotification(message _: String) {
         // twitchEventSub?.webSocketClientReceiveMessage(string: message)
+    }
+
+    func remoteControlStreamerStartPreview(onComplete _: @escaping () -> Void) {
+        isRemoteControlAssistantRequestingPreview = true
+        setLowFpsImage()
+    }
+
+    func remoteControlStreamerStopPreview(onComplete _: @escaping () -> Void) {
+        isRemoteControlAssistantRequestingPreview = false
+        setLowFpsImage()
     }
 }
 
@@ -5556,6 +5543,14 @@ extension Model {
             priority: priority.priority,
             enabled: priority.enabled
         ) {}
+    }
+
+    func remoteControlAssistantStartPreview() {
+        remoteControlAssistant?.startPreview()
+    }
+
+    func remoteControlAssistantStopPreview() {
+        remoteControlAssistant?.stopPreview()
     }
 }
 

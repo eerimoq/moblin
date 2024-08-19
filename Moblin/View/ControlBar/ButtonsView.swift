@@ -817,6 +817,9 @@ struct ButtonsInnerView: View {
         model.updateRemoteControlAssistantStatus()
         model.detachCamera()
         model.updateScreenAutoOff()
+        if model.remoteControlAssistantShowPreview {
+            model.remoteControlAssistantStartPreview()
+        }
     }
 
     private func drawAction(state _: ButtonState) {

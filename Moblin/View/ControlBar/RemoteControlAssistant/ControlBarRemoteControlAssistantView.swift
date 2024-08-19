@@ -267,6 +267,7 @@ struct ControlBarRemoteControlAssistantView: View {
                                             model.remoteControlAssistantShowPreviewFullScreen = true
                                         }
                                         .onTapGesture(count: 1) { _ in
+                                            model.remoteControlAssistantStopPreview()
                                             model.remoteControlAssistantShowPreview = false
                                         }
                                 } else {
@@ -274,6 +275,7 @@ struct ControlBarRemoteControlAssistantView: View {
                                 }
                             } else {
                                 Button {
+                                    model.remoteControlAssistantStartPreview()
                                     model.remoteControlAssistantShowPreview = true
                                 } label: {
                                     HStack {

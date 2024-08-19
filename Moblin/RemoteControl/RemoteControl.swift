@@ -18,6 +18,8 @@ enum RemoteControlRequest: Codable {
     case setSrtConnectionPrioritiesEnabled(enabled: Bool)
     case reloadBrowserWidgets
     case twitchEventSubNotification(message: String)
+    case startPreview
+    case stopPreview
 }
 
 enum RemoteControlResponse: Codable {
