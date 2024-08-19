@@ -405,8 +405,7 @@ final class Model: NSObject, ObservableObject {
 
     @Published var showTwitchAuth = false
     var twitchAuth = TwitchAuth()
-    private var twitchAuthStream: SettingsStream?
-    private var twitchAuthOnComplete: (() -> Void)?
+    private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -7266,8 +7265,24 @@ extension Model {
 
 extension Model {
     func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
-        twitchAuthStream = stream
-        twitchAuthOnComplete = onComplete
+        twitchAuthOnComplete = { accessToken in
+            storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: accessToken)
+            stream.twitchLoggedIn = true
+            stream.twitchAccessToken = accessToken
+            self.showTwitchAuth = false
+            self.wizardShowTwitchAuth = false
+            TwitchApi(accessToken: accessToken).getUserInfo { info in
+                guard let info else {
+                    return
+                }
+                stream.twitchChannelName = info.login
+                stream.twitchChannelId = info.id
+                if stream.enabled {
+                    self.twitchChannelIdUpdated()
+                }
+                onComplete?()
+            }
+        }
     }
 
     func twitchLogout(stream: SettingsStream) {
@@ -7280,30 +7295,7 @@ extension Model {
     }
 
     private func handleTwitchAccessToken(accessToken: String) {
-        if let streamId = twitchAuthStream?.id {
-            storeTwitchAccessTokenInKeychain(streamId: streamId, accessToken: accessToken)
-        }
-        twitchAuthStream?.twitchLoggedIn = true
-        twitchAuthStream?.twitchAccessToken = accessToken
-        showTwitchAuth = false
-        wizardShowTwitchAuth = false
-        TwitchApi(accessToken: accessToken).getUserInfo { info in
-            guard let info else {
-                return
-            }
-            guard let twitchAuthStream = self.twitchAuthStream else {
-                return
-            }
-            twitchAuthStream.twitchChannelName = info.login
-            twitchAuthStream.twitchChannelId = info.id
-            if twitchAuthStream.enabled {
-                self.twitchChannelIdUpdated()
-            }
-            if let twitchAuthOnComplete = self.twitchAuthOnComplete {
-                twitchAuthOnComplete()
-                self.twitchAuthOnComplete = nil
-            }
-        }
+        twitchAuthOnComplete?(accessToken)
     }
 }
 
