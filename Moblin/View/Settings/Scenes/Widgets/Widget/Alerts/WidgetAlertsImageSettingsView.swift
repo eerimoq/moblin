@@ -1,21 +1,22 @@
 import AVFAudio
+import SDWebImageSwiftUI
 import SwiftUI
 
-private var loadedImages: [UUID: UIImage] = [:]
+private var loadedImages: [UUID: Data] = [:]
 
-private func loadImage(model: Model, imageId: UUID) -> UIImage? {
+private func loadImage(model: Model, imageId: UUID) -> Data? {
     if let image = loadedImages[imageId] {
         return image
     }
-    var image: UIImage?
+    var image: Data?
     if let bundledImage = model.database.alertsMediaGallery!.bundledImages
         .first(where: { $0.id == imageId })
     {
         if let path = Bundle.main.path(forResource: "Alerts.bundle/\(bundledImage.name)", ofType: "gif") {
-            image = UIImage(contentsOfFile: path)
+            image = try? Data(contentsOf: URL(filePath: path))
         }
-    } else if let data = model.alertMediaStorage.tryRead(id: imageId) {
-        image = UIImage(data: data)
+    } else {
+        image = model.alertMediaStorage.tryRead(id: imageId)
     }
     if let image {
         loadedImages[imageId] = image
@@ -27,7 +28,7 @@ private struct CustomImageView: View {
     @EnvironmentObject var model: Model
     var media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
-    @State var image: UIImage?
+    @State var image: Data?
 
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
@@ -55,7 +56,7 @@ private struct CustomImageView: View {
                     HStack {
                         Spacer()
                         if let image {
-                            Image(uiImage: image)
+                            AnimatedImage(data: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 1920 / 6, height: 1080 / 6)
@@ -139,7 +140,7 @@ struct AlertImageSelectorView: View {
                             Text(image.name)
                             Spacer()
                             if let image = loadImage(model: model, imageId: image.id) {
-                                Image(uiImage: image)
+                                AnimatedImage(data: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: 50)
