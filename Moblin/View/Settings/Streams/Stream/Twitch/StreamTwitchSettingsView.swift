@@ -3,6 +3,7 @@ import SwiftUI
 struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
+    @State var loggedIn: Bool
 
     func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -20,13 +21,17 @@ struct StreamTwitchSettingsView: View {
         }
     }
 
+    func onLoggedIn() {
+        loggedIn = true
+    }
+
     var body: some View {
         Form {
             Section {
-                if !stream.twitchLoggedIn! {
+                if !loggedIn {
                     Button {
                         model.showTwitchAuth = true
-                        model.twitchLogin(stream: stream)
+                        model.twitchLogin(stream: stream, onComplete: onLoggedIn)
                     } label: {
                         HStack {
                             Spacer()
@@ -37,6 +42,7 @@ struct StreamTwitchSettingsView: View {
                 } else {
                     Button {
                         model.twitchLogout(stream: stream)
+                        loggedIn = false
                     } label: {
                         HStack {
                             Spacer()

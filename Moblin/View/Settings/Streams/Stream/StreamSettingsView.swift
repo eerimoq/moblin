@@ -79,7 +79,10 @@ struct StreamSettingsView: View {
                 Text("Widgets will be wrongly rotated when the portrait toggle is enabled.")
             }
             Section {
-                NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
+                NavigationLink(destination: StreamTwitchSettingsView(
+                    stream: stream,
+                    loggedIn: stream.twitchLoggedIn!
+                )) {
                     Text("Twitch")
                 }
                 NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
