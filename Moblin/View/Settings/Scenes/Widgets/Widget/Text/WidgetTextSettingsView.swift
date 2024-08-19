@@ -261,11 +261,12 @@ struct WidgetTextSettingsView: View {
         }
         if !widget.text.checkboxes!.isEmpty {
             if let textEffect = model.getTextEffect(id: widget.id) {
+                let textFormat = loadTextFormat(format: widget.text.formatString)
                 Section {
                     ForEach(widget.text.checkboxes!) { checkbox in
                         let index = widget.text.checkboxes!.firstIndex(where: { $0 === checkbox }) ?? 0
                         CheckboxWidgetView(
-                            name: "Checkbox \(index + 1)",
+                            name: textFormat.getCheckboxText(index: index),
                             checkbox: checkbox,
                             index: index,
                             textEffect: textEffect,

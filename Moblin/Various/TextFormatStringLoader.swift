@@ -92,3 +92,37 @@ class TextFormatLoader {
 func loadTextFormat(format: String) -> [TextFormatPart] {
     return TextFormatLoader().load(format: format)
 }
+
+extension [TextFormatPart] {
+    func getCheckboxText(index: Int) -> String {
+        var afterCheckbox = false
+        var checkboxTexts: [String] = []
+        var currentIndex = 0
+        for part in self {
+            switch part {
+            case .text(let text):
+                if afterCheckbox {
+                    checkboxTexts.append(text)
+                    afterCheckbox = false
+                }
+            case .newLine:
+                if afterCheckbox {
+                    checkboxTexts.append("Checkbox \(currentIndex)")
+                }
+                afterCheckbox = false
+            case .checkbox:
+                if afterCheckbox {
+                    checkboxTexts.append("Checkbox \(currentIndex)")
+                }
+                afterCheckbox = true
+                currentIndex += 1
+            default:
+                break
+            }
+        }
+        guard index < checkboxTexts.count else {
+            return ""
+        }
+        return checkboxTexts[index]
+    }
+}

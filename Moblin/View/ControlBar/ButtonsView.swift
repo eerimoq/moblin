@@ -629,6 +629,7 @@ struct WidgetsView: View {
                         }
                         if widget.type == .text {
                             if let textEffect = model.getTextEffect(id: widget.id) {
+                                let textFormat = loadTextFormat(format: widget.text.formatString)
                                 ForEach(widget.text.timers!) { timer in
                                     let index = widget.text.timers!.firstIndex(where: { $0 === timer }) ?? 0
                                     TimerWidgetView(
@@ -643,7 +644,7 @@ struct WidgetsView: View {
                                     let index = widget.text.checkboxes!
                                         .firstIndex(where: { $0 === checkbox }) ?? 0
                                     CheckboxWidgetView(
-                                        name: "Checkbox \(index + 1)",
+                                        name: textFormat.getCheckboxText(index: index),
                                         checkbox: checkbox,
                                         index: index,
                                         textEffect: textEffect,
