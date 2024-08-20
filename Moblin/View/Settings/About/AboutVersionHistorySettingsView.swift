@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.368.0", date: "2024-08-20", changes: [
+        "• Optional reliable Twitch alerts via remote control.",
+        "  • Moblin at home (assistant) subscribes to Twitch alerts, and forwards them to the phone (streamer).",
+        "  • If the phone is disconnected, wait for it to come online and send them then.",
+        "• Only allow generated random passwords for the remote control.",
+    ]),
     Version(version: "0.367.0", date: "2024-08-19", changes: [
         "• Only send stream preview to remote control assistant if the assistant needs it.",
         "  • Previously the preview was sent periodically when the remote control streamer was connected to the assistant (about 100 kbps, so not that much data).",
