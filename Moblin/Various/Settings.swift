@@ -1948,7 +1948,7 @@ class SettingsRemoteControlServer: Codable {
 class SettingsRemoteControl: Codable {
     var client: SettingsRemoteControlClient = .init()
     var server: SettingsRemoteControlServer = .init()
-    var password: String? = ""
+    var password: String? = randomHumanString()
 }
 
 class SettingsPrivacyRegion: Codable, Identifiable {
@@ -2923,7 +2923,7 @@ final class Settings {
             store()
         }
         if realDatabase.remoteControl!.password == nil {
-            realDatabase.remoteControl!.password = ""
+            realDatabase.remoteControl!.password = randomHumanString()
             store()
         }
         for widget in realDatabase.widgets where widget.browser.scaleToFitVideo == nil {

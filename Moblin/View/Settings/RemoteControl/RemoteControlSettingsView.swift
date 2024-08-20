@@ -25,40 +25,27 @@ private struct InterfaceView: View {
     }
 }
 
-struct PasswordView: View {
-    @Environment(\.dismiss) var dismiss
+private struct PasswordView: View {
+    @EnvironmentObject var model: Model
     @State var value: String
     var onSubmit: (String) -> Void
-    @State private var changed = false
-    @State private var submitted = false
-
-    private func submit() {
-        submitted = true
-        value = value.trim()
-        onSubmit(value)
-    }
 
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .onChange(of: value) { _ in
-                        changed = true
+                HStack {
+                    Text(value)
+                    Spacer()
+                    Button {
+                        UIPasteboard.general.string = value
+                        model.makeToast(title: "Password copied to clipboard")
+                    } label: {
+                        Image(systemName: "doc.on.doc")
                     }
-                    .onSubmit {
-                        submit()
-                        dismiss()
-                    }
-                    .submitLabel(.done)
-                    .onDisappear {
-                        if changed && !submitted {
-                            submit()
-                        }
-                    }
+                }
                 Button {
                     value = randomHumanString()
+                    onSubmit(value)
                 } label: {
                     HStack {
                         Spacer()
