@@ -29,13 +29,46 @@ private struct PasswordView: View {
     @EnvironmentObject var model: Model
     @State var value: String
     var onSubmit: (String) -> Void
+    @State private var changed = false
+    @State private var submitted = false
+    @State private var message: String?
+
+    private func submit() {
+        value = value.trim()
+        if isGoodPassword(password: value) {
+            submitted = true
+            onSubmit(value)
+        }
+    }
+
+    private func createMessage() -> String? {
+        if isGoodPassword(password: value) {
+            return nil
+        } else {
+            return "Not long and random enough"
+        }
+    }
 
     var body: some View {
         Form {
             Section {
                 HStack {
-                    Text(value)
-                    Spacer()
+                    TextField("", text: $value)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .onChange(of: value) { _ in
+                            changed = true
+                            message = createMessage()
+                        }
+                        .onSubmit {
+                            submit()
+                        }
+                        .submitLabel(.done)
+                        .onDisappear {
+                            if changed && !submitted {
+                                submit()
+                            }
+                        }
                     Button {
                         UIPasteboard.general.string = value
                         model.makeToast(title: "Password copied to clipboard")
@@ -43,9 +76,17 @@ private struct PasswordView: View {
                         Image(systemName: "doc.on.doc")
                     }
                 }
+            } footer: {
+                if let message {
+                    Text(message)
+                        .foregroundColor(.red)
+                        .bold()
+                }
+            }
+            Section {
                 Button {
-                    value = randomHumanString()
-                    onSubmit(value)
+                    value = randomGoodPassword()
+                    submit()
                 } label: {
                     HStack {
                         Spacer()

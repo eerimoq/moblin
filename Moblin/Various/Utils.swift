@@ -71,11 +71,37 @@ func randomString() -> String {
 }
 
 func randomHumanString() -> String {
-    return Data.random(length: 10).base64EncodedString().replacingOccurrences(
+    return Data.random(length: 15).base64EncodedString().replacingOccurrences(
         of: "[+/=]",
         with: "",
         options: .regularExpression
     )
+}
+
+func isGoodPassword(password: String) -> Bool {
+    guard password.count >= 16 else {
+        return false
+    }
+    var seenCharacters = ""
+    for character in password {
+        if seenCharacters.contains(character) {
+            return false
+        }
+        seenCharacters.append(character)
+    }
+    guard password.contains(/\d/) else {
+        return false
+    }
+    return true
+}
+
+func randomGoodPassword() -> String {
+    while true {
+        let password = randomHumanString()
+        if isGoodPassword(password: password) {
+            return password
+        }
+    }
 }
 
 extension RgbColor {
