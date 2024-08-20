@@ -139,13 +139,15 @@ protocol TwitchEventSubDelegate: AnyObject {
 
 final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
+    private var remoteControl: Bool
     private let userId: String
     private var sessionId: String = ""
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
 
-    init(userId: String, accessToken: String, delegate: TwitchEventSubDelegate) {
+    init(remoteControl: Bool, userId: String, accessToken: String, delegate: TwitchEventSubDelegate) {
+        self.remoteControl = remoteControl
         self.userId = userId
         self.delegate = delegate
         twitchApi = TwitchApi(accessToken: accessToken)
@@ -164,7 +166,9 @@ final class TwitchEventSub: NSObject {
         connected = false
         webSocket = .init(url: url)
         webSocket.delegate = self
-        webSocket.start()
+        if !remoteControl {
+            webSocket.start()
+        }
     }
 
     func stop() {
@@ -175,6 +179,10 @@ final class TwitchEventSub: NSObject {
     func stopInternal() {
         connected = false
         webSocket.stop()
+    }
+
+    func isRemoteControl() -> Bool {
+        return remoteControl
     }
 
     func isConnected() -> Bool {

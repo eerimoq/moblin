@@ -3113,6 +3113,10 @@ final class Model: NSObject, ObservableObject {
         return isTwitchEventsConnected()
     }
 
+    func isEventsRemoteControl() -> Bool {
+        return twitchEventSub?.isRemoteControl() ?? false
+    }
+
     func isTwitchEventsConnected() -> Bool {
         return twitchEventSub?.isConnected() ?? false
     }
@@ -3272,13 +3276,16 @@ final class Model: NSObject, ObservableObject {
 
     func reloadTwitchEventSub() {
         twitchEventSub?.stop()
+        twitchEventSub = nil
         if isTwitchEventSubConfigured() {
             twitchEventSub = TwitchEventSub(
+                remoteControl: isRemoteControlStreamerConnected(),
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken!,
                 delegate: self
             )
             twitchEventSub!.start()
+            updateRemoteControlStreamerTwitch()
         }
     }
 
@@ -5013,10 +5020,18 @@ final class Model: NSObject, ObservableObject {
     func statusEventsText() -> String {
         if !isEventsConfigured() {
             return String(localized: "Not configured")
-        } else if isEventsConnected() {
-            return String(localized: "Connected")
+        } else if isEventsRemoteControl() {
+            if isRemoteControlStreamerConnected() {
+                return String(localized: "Connected (remote control)")
+            } else {
+                return String(localized: "Disconnected (remote control)")
+            }
         } else {
-            return String(localized: "Disconnected")
+            if isEventsConnected() {
+                return String(localized: "Connected")
+            } else {
+                return String(localized: "Disconnected")
+            }
         }
     }
 
@@ -5091,6 +5106,7 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
         updateRemoteControlStatus()
+        reloadTwitchEventSub()
         var state = RemoteControlState()
         if sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneIndex].id
@@ -5108,6 +5124,7 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
         updateRemoteControlStatus()
+        updateRemoteControlStreamerTwitch()
     }
 
     func remoteControlStreamerGetStatus(onComplete: @escaping (
@@ -5356,8 +5373,8 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlStreamer?.sendPreview(preview: preview)
     }
 
-    func remoteControlStreamerTwitchEventSubNotification(message _: String) {
-        // twitchEventSub?.webSocketClientReceiveMessage(string: message)
+    func remoteControlStreamerTwitchEventSubNotification(message: String) {
+        twitchEventSub?.webSocketClientReceiveMessage(string: message)
     }
 
     func remoteControlStreamerStartPreview(onComplete _: @escaping () -> Void) {
@@ -5385,9 +5402,11 @@ extension Model {
         remoteControlStreamer?.stop()
         remoteControlStreamer = nil
         guard isRemoteControlStreamerConfigured() else {
+            reloadTwitchEventSub()
             return
         }
         guard let url = URL(string: database.remoteControl!.server.url) else {
+            reloadTwitchEventSub()
             return
         }
         remoteControlStreamer = RemoteControlStreamer(
@@ -5396,6 +5415,17 @@ extension Model {
             delegate: self
         )
         remoteControlStreamer!.start()
+    }
+
+    private func updateRemoteControlStreamerTwitch() {
+        if stream.twitchLoggedIn! {
+            remoteControlStreamer?.twitchStart(
+                channelId: stream.twitchChannelId,
+                accessToken: stream.twitchAccessToken!
+            )
+        } else {
+            remoteControlStreamer?.twitchStop()
+        }
     }
 
     private func updateRemoteControlStatus() {
@@ -7344,9 +7374,7 @@ extension Model: TwitchEventSubDelegate {
         twitchApiUnauthorized()
     }
 
-    func twitchEventSubNotification(message _: String) {
-        // remoteControlAssistant?.twitchEventSubNotification(message: message)
-    }
+    func twitchEventSubNotification(message _: String) {}
 }
 
 extension Model: AlertsEffectDelegate {

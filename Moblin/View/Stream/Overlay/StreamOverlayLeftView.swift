@@ -14,10 +14,18 @@ struct LeftOverlayView: View {
     func eventsColor() -> Color {
         if !model.isEventsConfigured() {
             return .white
-        } else if model.isEventsConnected() {
-            return .white
+        } else if model.isEventsRemoteControl() {
+            if model.isRemoteControlStreamerConnected() {
+                return .white
+            } else {
+                return .red
+            }
         } else {
-            return .red
+            if model.isEventsConnected() {
+                return .white
+            } else {
+                return .red
+            }
         }
     }
 

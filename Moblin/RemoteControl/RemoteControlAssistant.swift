@@ -15,7 +15,7 @@ private struct RemoteControlRequestResponse {
     let onError: (String) -> Void
 }
 
-class RemoteControlAssistant {
+class RemoteControlAssistant: NSObject {
     private let port: UInt16
     private let password: String
     private var connected: Bool = false
@@ -29,8 +29,12 @@ class RemoteControlAssistant {
     private var streamerIdentified: Bool = false
     private var challenge: String = ""
     private var salt: String = ""
-    // private var twitchEventSubNotitications: [String] = []
-    // private var twitchEventSubNotiticationWaitForResponse: Bool = false
+    private var encryption: RemoteControlEncryption
+    private var twitchEventSub: TwitchEventSub?
+    private var twitchChannelId: String?
+    private var twitchAccessToken: String?
+    private var twitchEventSubNotitications: [String] = []
+    private var twitchEventSubNotiticationWaitForResponse: Bool = false
 
     init(
         port: UInt16,
@@ -40,7 +44,9 @@ class RemoteControlAssistant {
         self.port = port
         self.password = password
         self.delegate = delegate
+        encryption = RemoteControlEncryption(password: password)
         server = Server()
+        super.init()
         server.webSocketConfig.pingInterval = 30
         server.webSocketConfig.readTimeout = 60
         server.webSocketDelegate = self
@@ -150,11 +156,6 @@ class RemoteControlAssistant {
         )
     }
 
-    // func twitchEventSubNotification(message _: String) {
-    //     twitchEventSubNotitications.append(message)
-    //     tryNextTwitchEventSubNotification()
-    // }
-
     func startPreview() {
         performRequestNoResponseData(data: .startPreview, onSuccess: {})
     }
@@ -163,23 +164,23 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .stopPreview, onSuccess: {})
     }
 
-    // private func tryNextTwitchEventSubNotification() {
-    //     guard !twitchEventSubNotiticationWaitForResponse else {
-    //         return
-    //     }
-    //     guard let message = twitchEventSubNotitications.first else {
-    //         return
-    //     }
-    //     twitchEventSubNotiticationWaitForResponse = true
-    //     performRequestNoResponseData(
-    //         data: .twitchEventSubNotification(message: message),
-    //         onSuccess: {
-    //             self.twitchEventSubNotitications.removeFirst()
-    //             self.twitchEventSubNotiticationWaitForResponse = false
-    //             self.tryNextTwitchEventSubNotification()
-    //         }
-    //     )
-    // }
+    private func tryNextTwitchEventSubNotification() {
+        guard !twitchEventSubNotiticationWaitForResponse else {
+            return
+        }
+        guard let message = twitchEventSubNotitications.first else {
+            return
+        }
+        twitchEventSubNotiticationWaitForResponse = true
+        performRequestNoResponseData(
+            data: .twitchEventSubNotification(message: message),
+            onSuccess: {
+                self.twitchEventSubNotitications.removeFirst()
+                self.twitchEventSubNotiticationWaitForResponse = false
+                self.tryNextTwitchEventSubNotification()
+            }
+        )
+    }
 
     private func startInternal() {
         do {
@@ -242,10 +243,10 @@ class RemoteControlAssistant {
                 try handleResponse(id: id, result: result, data: data)
             case let .preview(preview: preview):
                 try handlePreview(preview: preview)
-            case let .twitchStart(accessToken: _):
-                break
+            case let .twitchStart(channelId: channelId, accessToken: accessToken):
+                try handleTwitchStart(channelId: channelId, accessToken: accessToken)
             case .twitchStop:
-                break
+                try handleTwitchStop()
             }
         } catch {
             logger.debug("remote-control-assistant: Failed to process message with error \(error)")
@@ -262,8 +263,8 @@ class RemoteControlAssistant {
             connected = true
             delegate?.remoteControlAssistantConnected()
             send(message: .identified(result: .ok))
-            // twitchEventSubNotiticationWaitForResponse = false
-            // tryNextTwitchEventSubNotification()
+            twitchEventSubNotiticationWaitForResponse = false
+            tryNextTwitchEventSubNotification()
         } else {
             logger.info("remote-control-assistant: Streamer sent wrong password")
             send(message: .identified(result: .wrongPassword))
@@ -313,6 +314,46 @@ class RemoteControlAssistant {
             throw "Streamer not identified"
         }
         delegate?.remoteControlAssistantPreview(preview: preview)
+    }
+
+    private func handleTwitchStart(channelId: String, accessToken: String) throws {
+        guard streamerIdentified else {
+            throw "Streamer not identified"
+        }
+        guard let data = Data(base64Encoded: accessToken) else {
+            throw "Access token not base64"
+        }
+        guard let data = encryption.decrypt(data: data) else {
+            throw "Access token decryption failed"
+        }
+        guard let accessToken = String(data: data, encoding: .utf8) else {
+            throw "Access token not UTF-8"
+        }
+        guard channelId != twitchChannelId || accessToken != twitchAccessToken || twitchEventSub?
+            .isConnected() == false
+        else {
+            return
+        }
+        twitchChannelId = channelId
+        twitchAccessToken = accessToken
+        twitchEventSub?.stop()
+        twitchEventSub = TwitchEventSub(
+            remoteControl: false,
+            userId: channelId,
+            accessToken: accessToken,
+            delegate: self
+        )
+        twitchEventSub?.start()
+    }
+
+    private func handleTwitchStop() throws {
+        guard streamerIdentified else {
+            throw "Streamer not identified"
+        }
+        twitchChannelId = nil
+        twitchAccessToken = nil
+        twitchEventSub?.stop()
+        twitchEventSubNotitications.removeAll()
     }
 
     private func handleStateEvent(state: RemoteControlState) {
@@ -396,5 +437,24 @@ extension RemoteControlAssistant: ServerWebSocketDelegate {
 extension Telegraph.WebSocket {
     func isSame(other: Telegraph.WebSocket?) -> Bool {
         return localEndpoint == other?.localEndpoint && remoteEndpoint == other?.remoteEndpoint
+    }
+}
+
+extension RemoteControlAssistant: TwitchEventSubDelegate {
+    func twitchEventSubChannelFollow(event _: TwitchEventSubNotificationChannelFollowEvent) {}
+
+    func twitchEventSubChannelSubscribe(event _: TwitchEventSubNotificationChannelSubscribeEvent) {}
+
+    func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
+        event _: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
+    ) {}
+
+    func twitchEventSubUnauthorized() {
+        logger.info("remote-control-assistant: Twitch not authorized")
+    }
+
+    func twitchEventSubNotification(message: String) {
+        twitchEventSubNotitications.append(message)
+        tryNextTwitchEventSubNotification()
     }
 }

@@ -196,7 +196,7 @@ enum RemoteControlMessageToAssistant: Codable {
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
     case preview(preview: Data)
-    case twitchStart(accessToken: String)
+    case twitchStart(channelId: String, accessToken: String)
     case twitchStop
 
     func toJson() throws -> String {
@@ -222,12 +222,11 @@ func remoteControlHashPassword(challenge: String, salt: String, password: String
     return hash.base64EncodedString()
 }
 
-// periphery:ignore
 class RemoteControlEncryption {
     private let key: SymmetricKey
 
     init(password: String) {
-        key = SymmetricKey(data: password.utf8Data)
+        key = SymmetricKey(data: Data(SHA256.hash(data: password.utf8Data)))
     }
 
     func encrypt(data: Data) -> Data? {

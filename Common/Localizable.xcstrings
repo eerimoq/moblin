@@ -26496,6 +26496,9 @@
     "Connected" : {
 
     },
+    "Connected (remote control)" : {
+
+    },
     "Connecting" : {
       "localizations" : {
         "de" : {
@@ -32345,6 +32348,9 @@
           }
         }
       }
+    },
+    "Disconnected (remote control)" : {
+
     },
     "Discord" : {
       "localizations" : {

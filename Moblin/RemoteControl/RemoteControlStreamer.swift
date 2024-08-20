@@ -41,11 +41,13 @@ class RemoteControlStreamer {
     private var webSocket: WebSocketClient
     var connectionErrorMessage: String = ""
     private var connected = false
+    private var encryption: RemoteControlEncryption
 
     init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
         self.password = password
         self.delegate = delegate
+        encryption = RemoteControlEncryption(password: password)
         webSocket = .init(url: clientUrl)
     }
 
@@ -91,6 +93,20 @@ class RemoteControlStreamer {
 
     func sendPreview(preview: Data) {
         send(message: .preview(preview: preview))
+    }
+
+    func twitchStart(channelId: String, accessToken: String) {
+        guard connected else {
+            return
+        }
+        guard let accessToken = encryption.encrypt(data: accessToken.utf8Data)?.base64EncodedString() else {
+            return
+        }
+        send(message: .twitchStart(channelId: channelId, accessToken: accessToken))
+    }
+
+    func twitchStop() {
+        send(message: .twitchStop)
     }
 
     private func send(message: RemoteControlMessageToAssistant) {
