@@ -119,6 +119,7 @@
 		034FA1B82C151DFF00695825 /* AdaptiveBitrateSrtFight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034FA1B72C151DFF00695825 /* AdaptiveBitrateSrtFight.swift */; };
 		034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034FA1BA2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift */; };
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
+		03510DDC2C7661A400FD3A27 /* SpeechToText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03510DDB2C7661A400FD3A27 /* SpeechToText.swift */; };
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* FaceEffect.swift */; };
@@ -591,6 +592,7 @@
 		034FA1BA2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrateRistExperiment.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
+		03510DDB2C7661A400FD3A27 /* SpeechToText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechToText.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
 		0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferCommon.swift; sourceTree = "<group>"; };
 		03559E7D2BDCEB14002D0886 /* FaceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEffect.swift; sourceTree = "<group>"; };
@@ -2310,6 +2312,7 @@
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
+				03510DDB2C7661A400FD3A27 /* SpeechToText.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
@@ -2796,6 +2799,7 @@
 				0359F8FD2BD3DA61005BFDA8 /* SRTSocketOption.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */,
+				03510DDC2C7661A400FD3A27 /* SpeechToText.swift in Sources */,
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
@@ -3394,6 +3398,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Moblin can add transcription to the stream.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -3446,6 +3451,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Moblin can add transcription to the stream.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

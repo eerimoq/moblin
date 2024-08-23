@@ -207,6 +207,7 @@ final class AudioUnit: NSObject {
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
     let session = makeCaptureSession()
+    private var speechToTextEnabled = false
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -246,6 +247,9 @@ final class AudioUnit: NSObject {
         guard let sampleBuffer = sampleBuffer.muted(muted) else {
             return
         }
+        if speechToTextEnabled {
+            mixer?.delegate?.mixer(audioSampleBuffer: sampleBuffer)
+        }
         inputSourceFormat = sampleBuffer.formatDescription?.streamBasicDescription?.pointee
         codec.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         mixer?.recorder.appendAudio(sampleBuffer)
@@ -260,6 +264,12 @@ final class AudioUnit: NSObject {
         codec.stopRunning()
         codec.delegate = nil
         inputSourceFormat = nil
+    }
+
+    func setSpeechToText(enabled: Bool) {
+        lockQueue.async {
+            self.speechToTextEnabled = enabled
+        }
     }
 
     private func attachDevice(_ device: AVCaptureDevice?, _ captureSession: AVCaptureSession) throws {

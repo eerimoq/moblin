@@ -18,6 +18,7 @@ protocol MixerDelegate: AnyObject {
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
     func mixer(recorderFinishWriting writer: AVAssetWriter)
     func mixer(findVideoFormatError: String, activeFormat: String)
+    func mixer(audioSampleBuffer: CMSampleBuffer)
 }
 
 /// An object that mixies audio and video for streaming.

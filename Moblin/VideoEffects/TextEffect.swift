@@ -67,6 +67,7 @@ final class TextEffect: VideoEffect {
     private var checkboxes: [Bool]
     private var ratings: [Int]
     private let temperatureFormatter = MeasurementFormatter()
+    private var subtitles: String = ""
 
     init(
         format: String,
@@ -194,6 +195,11 @@ final class TextEffect: VideoEffect {
         }
     }
 
+    func updateSubtitles(text: String) {
+        subtitles = String(text.suffix(40))
+        forceImageUpdate()
+    }
+
     override func getName() -> String {
         return "\(settingName) text widget"
     }
@@ -281,6 +287,8 @@ final class TextEffect: VideoEffect {
                     parts.append(.init(id: partId, data: .rating(ratings[ratingIndex])))
                 }
                 ratingIndex += 1
+            case .subtitles:
+                parts.append(.init(id: partId, data: .text(subtitles)))
             }
             partId += 1
         }

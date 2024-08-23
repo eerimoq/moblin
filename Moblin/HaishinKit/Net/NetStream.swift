@@ -16,6 +16,7 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
     func stream(_ stream: NetStream, recorderFinishWriting writer: AVAssetWriter)
+    func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
 }
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
@@ -169,6 +170,10 @@ open class NetStream: NSObject {
         mixer.recorder.setAudioChannelsMap(map: map)
     }
 
+    func setSpeechToText(enabled: Bool) {
+        mixer.audio.setSpeechToText(enabled: enabled)
+    }
+
     func startRecording(
         url: URL,
         audioSettings: [String: Any],
@@ -219,5 +224,9 @@ extension NetStream: MixerDelegate {
 
     func mixer(recorderFinishWriting writer: AVAssetWriter) {
         delegate?.stream(self, recorderFinishWriting: writer)
+    }
+
+    func mixer(audioSampleBuffer: CMSampleBuffer) {
+        delegate?.streamAudio(self, sampleBuffer: audioSampleBuffer)
     }
 }

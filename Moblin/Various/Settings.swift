@@ -767,6 +767,7 @@ class SettingsWidgetText: Codable {
     var timers: [SettingsWidgetTextTimer]? = []
     var needsWeather: Bool? = false
     var needsGeography: Bool? = false
+    var needsSubtitles: Bool? = false
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
 }
@@ -3608,6 +3609,10 @@ final class Settings {
                     }
                 }
             }
+            store()
+        }
+        for widget in database.widgets where widget.text.needsSubtitles == nil {
+            widget.text.needsSubtitles = false
             store()
         }
     }

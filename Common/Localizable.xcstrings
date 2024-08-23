@@ -2898,6 +2898,9 @@
         }
       }
     },
+    "{subtitles} - Show subtitles" : {
+
+    },
     "{temperature} - Show temperature" : {
       "localizations" : {
         "de" : {
@@ -87574,6 +87577,9 @@
           }
         }
       }
+    },
+    "Subtitles" : {
+
     },
     "Suggestions" : {
       "localizations" : {

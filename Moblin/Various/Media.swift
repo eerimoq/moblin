@@ -44,6 +44,7 @@ final class Media: NSObject {
     var onRistConnected: (() -> Void)!
     var onRistDisconnected: (() -> Void)!
     var onAudioMuteChange: (() -> Void)!
+    var onAudioBuffer: ((CMSampleBuffer) -> Void)!
     var onLowFpsImage: ((Data?, UInt64) -> Void)!
     var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
@@ -730,6 +731,10 @@ final class Media: NSObject {
         netStream?.setAudioChannelsMap(map: channelsMap)
     }
 
+    func setSpeechToText(enabled: Bool) {
+        netStream?.setSpeechToText(enabled: enabled)
+    }
+
     func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
         guard let device = netStream?.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")
@@ -916,6 +921,10 @@ extension Media: NetStreamDelegate {
 
     func stream(_: NetStream, recorderFinishWriting _: AVAssetWriter) {
         logger.info("stream: Recording finished")
+    }
+
+    func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
+        onAudioBuffer(sampleBuffer)
     }
 }
 

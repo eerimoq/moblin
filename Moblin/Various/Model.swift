@@ -403,6 +403,8 @@ final class Model: NSObject, ObservableObject {
         settings.database
     }
 
+    private var speechToText = SpeechToText()
+
     @Published var showTwitchAuth = false
     var twitchAuth = TwitchAuth()
     private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
@@ -860,6 +862,34 @@ final class Model: NSObject, ObservableObject {
         listObsScenes()
     }
 
+    func reloadSpeechToText() {
+        speechToText.stop()
+        for textEffect in textEffects.values {
+            textEffect.updateSubtitles(text: "")
+        }
+        if isSpeechToTextNeeded() {
+            speechToText = SpeechToText()
+            speechToText.delegate = self
+            speechToText.start()
+        }
+    }
+
+    private func isSpeechToTextNeeded() -> Bool {
+        for widget in database.widgets {
+            guard widget.type == .text else {
+                continue
+            }
+            guard widget.enabled! else {
+                continue
+            }
+            guard widget.text.needsSubtitles! else {
+                continue
+            }
+            return true
+        }
+        return false
+    }
+
     func setup() {
         fixAlertMedias()
         setMapPitch()
@@ -881,6 +911,7 @@ final class Model: NSObject, ObservableObject {
         media.onRistConnected = handleRistConnected
         media.onRistDisconnected = handleRistDisconnected
         media.onAudioMuteChange = updateAudioLevel
+        media.onAudioBuffer = handleAudioBuffer
         media.onLowFpsImage = handleLowFpsImage
         media.onFindVideoFormatError = handleFindVideoFormatError
         setPixelFormat()
@@ -888,6 +919,7 @@ final class Model: NSObject, ObservableObject {
         setHigherDataRateLimit()
         setUseVideoForTimestamps()
         setupAudioSession()
+        reloadSpeechToText()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
@@ -1337,6 +1369,7 @@ final class Model: NSObject, ObservableObject {
             geographyManager.stop()
             obsWebSocket?.stop()
             media.stopAllNetStreams()
+            speechToText.stop()
         }
     }
 
@@ -1358,6 +1391,7 @@ final class Model: NSObject, ObservableObject {
             if isRecording {
                 resumeRecording()
             }
+            reloadSpeechToText()
         }
     }
 
@@ -1844,6 +1878,7 @@ final class Model: NSObject, ObservableObject {
             self.updateRemoteControlAssistantStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+            let monotonicNow = ContinuousClock.now
             if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -1852,11 +1887,12 @@ final class Model: NSObject, ObservableObject {
                 self.trySendNextChatPostToWatch()
             }
             if let lastAttachCompletedTime = self.lastAttachCompletedTime,
-               lastAttachCompletedTime.duration(to: .now) > .seconds(0.5)
+               lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
             {
                 self.updateTorch()
                 self.lastAttachCompletedTime = nil
             }
+            self.speechToText.tick(now: monotonicNow)
         })
         Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
@@ -2110,6 +2146,12 @@ final class Model: NSObject, ObservableObject {
             if !isRemoteControlAssistantConnected() {
                 sendAudioLevelToWatch(audioLevel: audioLevel)
             }
+        }
+    }
+
+    private func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
+        DispatchQueue.main.async {
+            self.speechToText.append(sampleBuffer: sampleBuffer)
         }
     }
 
@@ -4071,6 +4113,7 @@ final class Model: NSObject, ObservableObject {
         var usedBrowserEffects: [BrowserEffect] = []
         var usedMapEffects: [MapEffect] = []
         var addedScenes: [SettingsScene] = []
+        var needsSpeechToText = false
         enabledAlertsEffects = []
         addSceneEffects(
             scene,
@@ -4078,7 +4121,8 @@ final class Model: NSObject, ObservableObject {
             &usedBrowserEffects,
             &usedMapEffects,
             &addedScenes,
-            &enabledAlertsEffects
+            &enabledAlertsEffects,
+            &needsSpeechToText
         )
         if !drawOnStreamLines.isEmpty {
             effects.append(drawOnStreamEffect)
@@ -4091,6 +4135,7 @@ final class Model: NSObject, ObservableObject {
         for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
             mapEffect.setSceneWidget(sceneWidget: nil)
         }
+        media.setSpeechToText(enabled: needsSpeechToText)
         attachSingleLayout(scene: scene)
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStreamLines.isEmpty {
@@ -4109,7 +4154,8 @@ final class Model: NSObject, ObservableObject {
         _ usedBrowserEffects: inout [BrowserEffect],
         _ usedMapEffects: inout [MapEffect],
         _ addedScenes: inout [SettingsScene],
-        _ enabledAlertsEffects: inout [AlertsEffect]
+        _ enabledAlertsEffects: inout [AlertsEffect],
+        _ needsSpeechToText: inout Bool
     ) {
         guard !addedScenes.contains(scene) else {
             return
@@ -4131,6 +4177,9 @@ final class Model: NSObject, ObservableObject {
                 if let textEffect = textEffects[widget.id] {
                     textEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     effects.append(textEffect)
+                    if widget.text.needsSubtitles! {
+                        needsSpeechToText = true
+                    }
                 }
             case .videoEffect:
                 break
@@ -4174,7 +4223,8 @@ final class Model: NSObject, ObservableObject {
                         &usedBrowserEffects,
                         &usedMapEffects,
                         &addedScenes,
-                        &enabledAlertsEffects
+                        &enabledAlertsEffects,
+                        &needsSpeechToText
                     )
                 }
             case .qrCode:
@@ -7453,5 +7503,13 @@ extension Model: TwitchApiDelegate {
             title: String(localized: "Logged out from Twitch"),
             subTitle: String(localized: "Please login again")
         )
+    }
+}
+
+extension Model: SpeechToTextDelegate {
+    func speechToTextPartialResult(text: String) {
+        for textEffect in textEffects.values {
+            textEffect.updateSubtitles(text: text)
+        }
     }
 }
