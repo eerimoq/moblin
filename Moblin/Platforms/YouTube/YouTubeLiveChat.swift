@@ -4,6 +4,20 @@ private let userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0)
 private let minimumPollDelayMs = 200
 private let maximumPollDelayMs = 3000
 
+private let paidMessageHighlight = ChatHighlight(
+    kind: .other,
+    color: .yellow,
+    image: "medal",
+    title: "Paid message"
+)
+private let paidStickerHighlight = ChatHighlight(
+    kind: .other,
+    color: .green,
+    image: "medal",
+    title: "Paid sticker"
+)
+private let memberHighlight = ChatHighlight(kind: .other, color: .blue, image: "medal", title: "Member")
+
 private struct InvalidationContinuationData: Codable {
     let continuation: String
 }
@@ -37,14 +51,15 @@ private struct Author: Codable {
     let simpleText: String
 }
 
-// private struct Amount: Codable {
-//     let simpleText: String
-// }
+private struct Amount: Codable {
+    let simpleText: String
+}
 
 private struct ChatDescription: Codable {
     let authorName: Author
     let message: Message?
-    // let purchaseAmountText: Amount?
+    let purchaseAmountText: Amount?
+    let headerSubtext: Message?
 }
 
 private struct AddChatItemActionItem: Codable {
@@ -187,16 +202,28 @@ final class YouTubeLiveChat: NSObject {
                         continue
                     }
                     if let chatDescription = item.liveChatTextMessageRenderer {
-                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                        numberOfMessages += await handleChatDescription(
+                            chatDescription: chatDescription,
+                            highlight: nil
+                        )
                     }
                     if let chatDescription = item.liveChatPaidMessageRenderer {
-                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                        numberOfMessages += await handleChatDescription(
+                            chatDescription: chatDescription,
+                            highlight: paidMessageHighlight
+                        )
                     }
                     if let chatDescription = item.liveChatPaidStickerRenderer {
-                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                        numberOfMessages += await handleChatDescription(
+                            chatDescription: chatDescription,
+                            highlight: paidStickerHighlight
+                        )
                     }
                     if let chatDescription = item.liveChatMembershipItemRenderer {
-                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                        numberOfMessages += await handleChatDescription(
+                            chatDescription: chatDescription,
+                            highlight: memberHighlight
+                        )
                     }
                 }
             }
@@ -222,17 +249,31 @@ final class YouTubeLiveChat: NSObject {
         }
     }
 
-    private func handleChatDescription(chatDescription: ChatDescription) async -> Int {
-        guard let message = chatDescription.message else {
-            return 0
-        }
+    private func handleChatDescription(chatDescription: ChatDescription,
+                                       highlight: ChatHighlight?) async -> Int
+    {
         var segments: [ChatPostSegment] = []
-        for run in message.runs {
-            if let text = run.text {
-                segments += createSegments(message: text)
+        if let amount = chatDescription.purchaseAmountText?.simpleText {
+            segments += createSegments(message: amount)
+        }
+        if let headerSubtext = chatDescription.headerSubtext {
+            for run in headerSubtext.runs {
+                if let text = run.text {
+                    segments += createSegments(message: text)
+                }
+                if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
+                    segments.append(.init(url: URL(string: emojiUrl)))
+                }
             }
-            if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
-                segments.append(.init(url: URL(string: emojiUrl)))
+        }
+        if let message = chatDescription.message {
+            for run in message.runs {
+                if let text = run.text {
+                    segments += createSegments(message: text)
+                }
+                if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
+                    segments.append(.init(url: URL(string: emojiUrl)))
+                }
             }
         }
         guard !segments.isEmpty else {
@@ -249,7 +290,7 @@ final class YouTubeLiveChat: NSObject {
                                     isAction: false,
                                     isSubscriber: false,
                                     isModerator: false,
-                                    highlight: nil)
+                                    highlight: highlight)
         }
         return 1
     }
