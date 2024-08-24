@@ -79,7 +79,10 @@ class SpeechToText: NSObject {
         guard isStarted else {
             return
         }
-        oldText = String((oldText + " " + previousBestTranscription).suffix(100))
+        oldText = String((oldText + " " + previousBestTranscription).suffix(100)).trim()
+        if !oldText.isEmpty {
+            oldText += " "
+        }
         latestResultTime = nil
         running = true
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -101,7 +104,7 @@ class SpeechToText: NSObject {
                 if result.isFinal {
                     self.startRecognition()
                 } else {
-                    self.delegate?.speechToTextPartialResult(text: self.oldText + " " + text)
+                    self.delegate?.speechToTextPartialResult(text: self.oldText + text)
                     self.latestResultTime = .now
                 }
                 self.previousBestTranscription = text
