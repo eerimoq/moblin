@@ -3,8 +3,10 @@ import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
-struct AnnouncementView: View {
-    var chat: SettingsChat
+struct HighlightMessageView: View {
+    let chat: SettingsChat
+    let image: String
+    let name: String
 
     private func messageColor() -> Color {
         return chat.messageColor.color()
@@ -35,107 +37,9 @@ struct AnnouncementView: View {
             verticalSpacing: 0,
             fitContentWidth: true
         ) {
-            Image(systemName: "horn.blast")
+            Image(systemName: image)
             Text(" ")
-            Text("Announcement")
-        }
-        .foregroundColor(messageColor)
-        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
-        .padding([.leading], 5)
-        .font(.system(size: CGFloat(chat.fontSize)))
-        .background(backgroundColor())
-        .foregroundColor(.white)
-        .cornerRadius(5)
-    }
-}
-
-struct FirstMessageView: View {
-    var chat: SettingsChat
-
-    private func messageColor() -> Color {
-        return chat.messageColor.color()
-    }
-
-    private func backgroundColor() -> Color {
-        if chat.backgroundColorEnabled {
-            return chat.backgroundColor.color().opacity(0.6)
-        } else {
-            return .clear
-        }
-    }
-
-    private func shadowColor() -> Color {
-        if chat.shadowColorEnabled {
-            return chat.shadowColor.color()
-        } else {
-            return .clear
-        }
-    }
-
-    var body: some View {
-        let messageColor = messageColor()
-        let shadowColor = shadowColor()
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Image(systemName: "bubble.left")
-            Text(" ")
-            Text("First time chatter")
-        }
-        .foregroundColor(messageColor)
-        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
-        .padding([.leading], 5)
-        .font(.system(size: CGFloat(chat.fontSize)))
-        .background(backgroundColor())
-        .foregroundColor(.white)
-        .cornerRadius(5)
-    }
-}
-
-struct RedemptionView: View {
-    var chat: SettingsChat
-
-    private func messageColor() -> Color {
-        return chat.messageColor.color()
-    }
-
-    private func backgroundColor() -> Color {
-        if chat.backgroundColorEnabled {
-            return chat.backgroundColor.color().opacity(0.6)
-        } else {
-            return .clear
-        }
-    }
-
-    private func shadowColor() -> Color {
-        if chat.shadowColorEnabled {
-            return chat.shadowColor.color()
-        } else {
-            return .clear
-        }
-    }
-
-    var body: some View {
-        let messageColor = messageColor()
-        let shadowColor = shadowColor()
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Image(systemName: "medal")
-            Text(" ")
-            Text("Reward redemption")
+            Text(name)
         }
         .foregroundColor(messageColor)
         .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
@@ -328,7 +232,11 @@ struct StreamOverlayChatView: View {
                                                             .frame(width: 3)
                                                             .foregroundColor(.green)
                                                         VStack(alignment: .leading) {
-                                                            AnnouncementView(chat: model.database.chat)
+                                                            HighlightMessageView(
+                                                                chat: model.database.chat,
+                                                                image: "horn.blast",
+                                                                name: "Announcement"
+                                                            )
                                                             LineView(
                                                                 post: post,
                                                                 chat: model.database.chat
@@ -343,7 +251,11 @@ struct StreamOverlayChatView: View {
                                                             .frame(width: 3)
                                                             .foregroundColor(.yellow)
                                                         VStack(alignment: .leading) {
-                                                            FirstMessageView(chat: model.database.chat)
+                                                            HighlightMessageView(
+                                                                chat: model.database.chat,
+                                                                image: "bubble.left",
+                                                                name: "First time chatter"
+                                                            )
                                                             LineView(
                                                                 post: post,
                                                                 chat: model.database.chat
@@ -358,7 +270,11 @@ struct StreamOverlayChatView: View {
                                                             .frame(width: 3)
                                                             .foregroundColor(.blue)
                                                         VStack(alignment: .leading) {
-                                                            RedemptionView(chat: model.database.chat)
+                                                            HighlightMessageView(
+                                                                chat: model.database.chat,
+                                                                image: "medal",
+                                                                name: "Reward redemption"
+                                                            )
                                                             LineView(
                                                                 post: post,
                                                                 chat: model.database.chat
