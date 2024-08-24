@@ -37,9 +37,14 @@ private struct Author: Codable {
     let simpleText: String
 }
 
+// private struct Amount: Codable {
+//     let simpleText: String
+// }
+
 private struct ChatDescription: Codable {
     let authorName: Author
     let message: Message?
+    // let purchaseAmountText: Amount?
 }
 
 private struct AddChatItemActionItem: Codable {
@@ -47,6 +52,7 @@ private struct AddChatItemActionItem: Codable {
     let liveChatPaidMessageRenderer: ChatDescription?
     let liveChatPaidStickerRenderer: ChatDescription?
     let liveChatMembershipItemRenderer: ChatDescription?
+    // let liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: ?
 }
 
 private struct AddChatItemAction: Codable {
@@ -241,11 +247,9 @@ final class YouTubeLiveChat: NSObject {
                                     timestamp: model.digitalClock,
                                     timestampTime: .now,
                                     isAction: false,
-                                    isAnnouncement: false,
-                                    isFirstMessage: false,
                                     isSubscriber: false,
                                     isModerator: false,
-                                    isRedemption: false)
+                                    highlight: nil)
         }
         return 1
     }

@@ -136,9 +136,25 @@ func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
     return segments
 }
 
+enum ChatHighlightKind {
+    case redemption
+    case other
+}
+
+struct ChatHighlight {
+    let kind: ChatHighlightKind
+    let color: Color
+    let image: String
+    let title: String
+}
+
 struct ChatPost: Identifiable, Equatable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    func isRedemption() -> Bool {
+        return highlight?.kind == .redemption
     }
 
     var id: Int
@@ -149,11 +165,9 @@ struct ChatPost: Identifiable, Equatable {
     var timestamp: String
     var timestampTime: ContinuousClock.Instant
     var isAction: Bool
-    var isAnnouncement: Bool
-    var isFirstMessage: Bool
     var isSubscriber: Bool
     var isModerator: Bool
-    var isRedemption: Bool
+    var highlight: ChatHighlight?
 }
 
 class ButtonState {
@@ -2212,11 +2226,9 @@ final class Model: NSObject, ObservableObject {
             timestamp: "",
             timestampTime: .now,
             isAction: false,
-            isAnnouncement: false,
-            isFirstMessage: false,
             isSubscriber: false,
             isModerator: false,
-            isRedemption: false
+            highlight: nil
         )
     }
 
@@ -2253,7 +2265,7 @@ final class Model: NSObject, ObservableObject {
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "")
                 if !message.trimmingCharacters(in: .whitespaces).isEmpty {
-                    chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption)
+                    chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption())
                 }
             }
             numberOfChatPostsPerTick += 1
@@ -3684,11 +3696,9 @@ final class Model: NSObject, ObservableObject {
                           timestamp: post.timestamp,
                           timestampTime: post.timestampTime,
                           isAction: post.isAction,
-                          isAnnouncement: post.isAnnouncement,
-                          isFirstMessage: post.isFirstMessage,
                           isSubscriber: post.isSubscriber,
                           isModerator: post.isModerator,
-                          isRedemption: post.isRedemption)
+                          highlight: post.highlight)
     }
 
     private func handleChatBotMessage(
@@ -3836,11 +3846,9 @@ final class Model: NSObject, ObservableObject {
         timestamp: String,
         timestampTime: ContinuousClock.Instant,
         isAction: Bool,
-        isAnnouncement: Bool,
-        isFirstMessage: Bool,
         isSubscriber: Bool,
         isModerator: Bool,
-        isRedemption: Bool
+        highlight: ChatHighlight?
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
@@ -3860,11 +3868,9 @@ final class Model: NSObject, ObservableObject {
             timestamp: timestamp,
             timestampTime: timestampTime,
             isAction: isAction,
-            isAnnouncement: isAnnouncement,
-            isFirstMessage: isFirstMessage,
             isSubscriber: isSubscriber,
             isModerator: isModerator,
-            isRedemption: isRedemption
+            highlight: highlight
         )
         chatPostId += 1
         if chatPaused {
@@ -7414,11 +7420,14 @@ extension Model: TwitchEventSubDelegate {
                                    timestamp: self.digitalClock,
                                    timestampTime: .now,
                                    isAction: false,
-                                   isAnnouncement: false,
-                                   isFirstMessage: false,
                                    isSubscriber: false,
                                    isModerator: false,
-                                   isRedemption: true)
+                                   highlight: .init(
+                                       kind: .redemption,
+                                       color: .blue,
+                                       image: "medal",
+                                       title: String(localized: "Reward redemption")
+                                   ))
         }
     }
 

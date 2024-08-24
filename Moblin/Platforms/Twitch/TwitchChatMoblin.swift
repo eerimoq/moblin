@@ -78,12 +78,30 @@ final class TwitchChatMoblin {
             timestamp: model.digitalClock,
             timestampTime: .now,
             isAction: isAction,
-            isAnnouncement: message.announcement,
-            isFirstMessage: message.firstMessage,
             isSubscriber: message.subscriber,
             isModerator: message.moderator,
-            isRedemption: false
+            highlight: createHighlight(message: message)
         )
+    }
+
+    private func createHighlight(message: ChatMessage) -> ChatHighlight? {
+        if message.announcement {
+            return .init(
+                kind: .other,
+                color: .green,
+                image: "horn.blast",
+                title: String(localized: "Announcement")
+            )
+        } else if message.firstMessage {
+            return .init(
+                kind: .other,
+                color: .yellow,
+                image: "bubble.left",
+                title: String(localized: "First time chatter")
+            )
+        } else {
+            return nil
+        }
     }
 
     func isConnected() -> Bool {

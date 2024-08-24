@@ -226,11 +226,9 @@ class OpenStreamingPlatformChat {
                                     timestamp: model.digitalClock,
                                     timestampTime: .now,
                                     isAction: false,
-                                    isAnnouncement: false,
-                                    isFirstMessage: false,
                                     isSubscriber: false,
                                     isModerator: false,
-                                    isRedemption: false)
+                                    highlight: nil)
         }
     }
 

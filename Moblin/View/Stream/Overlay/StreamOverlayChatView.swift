@@ -118,7 +118,7 @@ struct LineView: View {
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
-            if post.isRedemption {
+            if post.isRedemption() {
                 Text(" ")
             } else {
                 Text(": ")
@@ -226,54 +226,16 @@ struct StreamOverlayChatView: View {
                                     LazyVStack(alignment: .leading, spacing: 1) {
                                         ForEach(model.chatPosts) { post in
                                             if post.user != nil {
-                                                if post.isAnnouncement {
+                                                if let highlight = post.highlight {
                                                     HStack(spacing: 0) {
                                                         Rectangle()
                                                             .frame(width: 3)
-                                                            .foregroundColor(.green)
+                                                            .foregroundColor(highlight.color)
                                                         VStack(alignment: .leading) {
                                                             HighlightMessageView(
                                                                 chat: model.database.chat,
-                                                                image: "horn.blast",
-                                                                name: "Announcement"
-                                                            )
-                                                            LineView(
-                                                                post: post,
-                                                                chat: model.database.chat
-                                                            )
-                                                        }
-                                                    }
-                                                    .rotationEffect(Angle(degrees: 180))
-                                                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-                                                } else if post.isFirstMessage {
-                                                    HStack(spacing: 0) {
-                                                        Rectangle()
-                                                            .frame(width: 3)
-                                                            .foregroundColor(.yellow)
-                                                        VStack(alignment: .leading) {
-                                                            HighlightMessageView(
-                                                                chat: model.database.chat,
-                                                                image: "bubble.left",
-                                                                name: "First time chatter"
-                                                            )
-                                                            LineView(
-                                                                post: post,
-                                                                chat: model.database.chat
-                                                            )
-                                                        }
-                                                    }
-                                                    .rotationEffect(Angle(degrees: 180))
-                                                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-                                                } else if post.isRedemption {
-                                                    HStack(spacing: 0) {
-                                                        Rectangle()
-                                                            .frame(width: 3)
-                                                            .foregroundColor(.blue)
-                                                        VStack(alignment: .leading) {
-                                                            HighlightMessageView(
-                                                                chat: model.database.chat,
-                                                                image: "medal",
-                                                                name: "Reward redemption"
+                                                                image: highlight.image,
+                                                                name: highlight.title
                                                             )
                                                             LineView(
                                                                 post: post,

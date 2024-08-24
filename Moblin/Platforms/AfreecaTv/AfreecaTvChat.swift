@@ -249,11 +249,9 @@ final class AfreecaTvChat: NSObject {
                 timestamp: model.digitalClock,
                 timestampTime: .now,
                 isAction: false,
-                isAnnouncement: false,
-                isFirstMessage: false,
                 isSubscriber: false,
                 isModerator: false,
-                isRedemption: false
+                highlight: nil
             )
         }
     }

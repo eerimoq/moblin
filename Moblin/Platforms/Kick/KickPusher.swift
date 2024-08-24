@@ -183,11 +183,9 @@ final class KickPusher: NSObject {
             timestamp: model.digitalClock,
             timestampTime: .now,
             isAction: false,
-            isAnnouncement: false,
-            isFirstMessage: false,
             isSubscriber: message.isSubscriber(),
             isModerator: false,
-            isRedemption: false
+            highlight: nil
         )
     }
 
