@@ -864,13 +864,15 @@ final class Model: NSObject, ObservableObject {
 
     func reloadSpeechToText() {
         speechToText.stop()
+        speechToText = SpeechToText()
+        speechToText.delegate = self
         for textEffect in textEffects.values {
             textEffect.updateSubtitles(text: "")
         }
         if isSpeechToTextNeeded() {
-            speechToText = SpeechToText()
-            speechToText.delegate = self
-            speechToText.start()
+            speechToText.start { message in
+                self.makeErrorToast(title: message)
+            }
         }
     }
 

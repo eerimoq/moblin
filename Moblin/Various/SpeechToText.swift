@@ -14,9 +14,13 @@ class SpeechToText: NSObject {
     private var latestResultTime: ContinuousClock.Instant?
     private var running = false
     private var isStarted = false
+    private var oldText = ""
+    private var previousBestTranscription = ""
 
-    func start() {
+    func start(onError: @escaping (String) -> Void) {
         isStarted = true
+        oldText = ""
+        previousBestTranscription = ""
         speechRecognizer?.delegate = self
         SFSpeechRecognizer.requestAuthorization { authStatus in
             switch authStatus {
@@ -25,13 +29,13 @@ class SpeechToText: NSObject {
                     self.startAuthorized()
                 }
             case .denied:
-                logger.info("speech-to-text: User denied access to speech recognition")
+                onError("Speech recognition not allowed")
             case .restricted:
-                logger.info("speech-to-text: Speech recognition restricted on this device")
+                onError("Speech recognition restricted on this device")
             case .notDetermined:
-                logger.info("speech-to-text: Speech recognition not yet authorized")
+                onError("Speech recognition not yet authorized")
             @unknown default:
-                logger.info("speech-to-text: Speech recognition unknown error")
+                onError("Speech recognition error")
             }
         }
     }
@@ -75,12 +79,12 @@ class SpeechToText: NSObject {
         guard isStarted else {
             return
         }
+        oldText = String((oldText + " " + previousBestTranscription).suffix(100))
         latestResultTime = nil
         running = true
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         recognitionRequest.shouldReportPartialResults = true
         recognitionRequest.addsPunctuation = false
-        // recognitionRequest?.requiresOnDeviceRecognition = true // gives error 1101
         recognitionTask = speechRecognizer?.recognitionTask(
             with: recognitionRequest,
             resultHandler: { result, error in
@@ -97,9 +101,10 @@ class SpeechToText: NSObject {
                 if result.isFinal {
                     self.startRecognition()
                 } else {
+                    self.delegate?.speechToTextPartialResult(text: self.oldText + " " + text)
                     self.latestResultTime = .now
-                    self.delegate?.speechToTextPartialResult(text: text)
                 }
+                self.previousBestTranscription = text
             }
         )
     }
