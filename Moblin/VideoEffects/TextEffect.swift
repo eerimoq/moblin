@@ -227,12 +227,12 @@ final class TextEffect: VideoEffect {
             let firstLine: Substring
             if let spaceBeforeLastLineIndex {
                 if let spaceBeforeFirstLineIndex {
-                    firstLine = text[spaceBeforeFirstLineIndex..<spaceBeforeLastLineIndex]
+                    firstLine = text[spaceBeforeFirstLineIndex ..< spaceBeforeLastLineIndex]
                 } else {
-                    firstLine = text[firstLineIndex..<spaceBeforeLastLineIndex]
+                    firstLine = text[firstLineIndex ..< spaceBeforeLastLineIndex]
                 }
             } else {
-                firstLine = text[firstLineIndex..<lastLineIndex]
+                firstLine = text[firstLineIndex ..< lastLineIndex]
             }
             subtitlesLines = [firstLine.trim(), lastLine.trim()]
         } else {
