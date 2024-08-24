@@ -867,7 +867,7 @@ final class Model: NSObject, ObservableObject {
         speechToText = SpeechToText()
         speechToText.delegate = self
         for textEffect in textEffects.values {
-            textEffect.updateSubtitles(text: "")
+            textEffect.clearSubtitles()
         }
         if isSpeechToTextNeeded() {
             speechToText.start { message in
@@ -7511,7 +7511,7 @@ extension Model: TwitchApiDelegate {
 extension Model: SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
         for textEffect in textEffects.values {
-            textEffect.updateSubtitles(text: text)
+            textEffect.updateSubtitles(position: position, text: text)
         }
     }
 }

@@ -18,6 +18,12 @@ extension String {
     }
 }
 
+extension Substring {
+    func trim() -> String {
+        return trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
 func makeRtmpUri(url: String) -> String {
     guard var url = URL(string: url) else {
         return ""

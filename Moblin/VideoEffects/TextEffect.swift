@@ -67,7 +67,7 @@ final class TextEffect: VideoEffect {
     private var checkboxes: [Bool]
     private var ratings: [Int]
     private let temperatureFormatter = MeasurementFormatter()
-    private var subtitles: String = ""
+    private var subtitlesLines: [String] = []
 
     init(
         format: String,
@@ -195,8 +195,49 @@ final class TextEffect: VideoEffect {
         }
     }
 
-    func updateSubtitles(text: String) {
-        subtitles = String(text.suffix(40))
+    private var lastLinePosition = 0
+
+    func clearSubtitles() {
+        lastLinePosition = 0
+        subtitlesLines = []
+        forceImageUpdate()
+    }
+
+    func updateSubtitles(position: Int, text: String) {
+        let endPosition = position + text.count
+        while lastLinePosition + 40 < endPosition {
+            lastLinePosition += 40
+        }
+        if lastLinePosition >= endPosition {
+            lastLinePosition -= 40
+            lastLinePosition = max(lastLinePosition, 0)
+        }
+        let firstLinePosition = lastLinePosition - 40
+        let lastLineIndex = text.index(text.startIndex, offsetBy: lastLinePosition - position)
+        let spaceBeforeLastLineIndex = text[...lastLineIndex].lastIndex(of: " ")
+        let lastLine: Substring
+        if let spaceBeforeLastLineIndex {
+            lastLine = text[spaceBeforeLastLineIndex...]
+        } else {
+            lastLine = text[lastLineIndex...]
+        }
+        if firstLinePosition >= position {
+            let firstLineIndex = text.index(text.startIndex, offsetBy: firstLinePosition - position)
+            let spaceBeforeFirstLineIndex = text[...firstLineIndex].lastIndex(of: " ")
+            let firstLine: Substring
+            if let spaceBeforeLastLineIndex {
+                if let spaceBeforeFirstLineIndex {
+                    firstLine = text[spaceBeforeFirstLineIndex..<spaceBeforeLastLineIndex]
+                } else {
+                    firstLine = text[firstLineIndex..<spaceBeforeLastLineIndex]
+                }
+            } else {
+                firstLine = text[firstLineIndex..<lastLineIndex]
+            }
+            subtitlesLines = [firstLine.trim(), lastLine.trim()]
+        } else {
+            subtitlesLines = [lastLine.trim()]
+        }
         forceImageUpdate()
     }
 
@@ -288,7 +329,20 @@ final class TextEffect: VideoEffect {
                 }
                 ratingIndex += 1
             case .subtitles:
-                parts.append(.init(id: partId, data: .text(subtitles)))
+                for line in subtitlesLines {
+                    if !parts.isEmpty {
+                        lines.append(.init(id: lineId, parts: parts))
+                        lineId += 1
+                        parts = []
+                    }
+                    parts.append(.init(id: partId, data: .text(line)))
+                    partId += 1
+                }
+                if !parts.isEmpty {
+                    lines.append(.init(id: lineId, parts: parts))
+                    lineId += 1
+                    parts = []
+                }
             }
             partId += 1
         }

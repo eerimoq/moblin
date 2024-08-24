@@ -10,7 +10,7 @@ private struct Suggestion: Identifiable {
 private let suggestionCountry = "{countryFlag} {country}"
 private let suggestionCity = "{countryFlag} {city}"
 private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude}"
-private let suggestionSubtitles = "💬 {subtitles}"
+private let suggestionSubtitles = "{subtitles}"
 private let suggestionTime = "🕑 {time}"
 private let suggestionTimer = "⏳ {timer}"
 private let suggestionWeather = "{conditions} {temperature}"
