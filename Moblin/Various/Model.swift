@@ -7509,7 +7509,7 @@ extension Model: TwitchApiDelegate {
 }
 
 extension Model: SpeechToTextDelegate {
-    func speechToTextPartialResult(text: String) {
+    func speechToTextPartialResult(position: Int, text: String) {
         for textEffect in textEffects.values {
             textEffect.updateSubtitles(text: text)
         }

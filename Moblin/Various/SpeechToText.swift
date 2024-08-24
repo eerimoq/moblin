@@ -2,24 +2,25 @@ import AVKit
 import Speech
 
 protocol SpeechToTextDelegate: AnyObject {
-    func speechToTextPartialResult(text: String)
+    func speechToTextPartialResult(position: Int, text: String)
 }
 
 class SpeechToText: NSObject {
-    private let speechRecognizer =
-        SFSpeechRecognizer() // SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+    private let speechRecognizer = SFSpeechRecognizer()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var recognitionTask: SFSpeechRecognitionTask?
     weak var delegate: SpeechToTextDelegate?
     private var latestResultTime: ContinuousClock.Instant?
     private var running = false
     private var isStarted = false
-    private var oldText = ""
+    private var frozenText = ""
+    private var frozenTextPosition = 0
     private var previousBestTranscription = ""
 
     func start(onError: @escaping (String) -> Void) {
         isStarted = true
-        oldText = ""
+        frozenText = ""
+        frozenTextPosition = 0
         previousBestTranscription = ""
         speechRecognizer?.delegate = self
         SFSpeechRecognizer.requestAuthorization { authStatus in
@@ -79,9 +80,11 @@ class SpeechToText: NSObject {
         guard isStarted else {
             return
         }
-        oldText = String((oldText + " " + previousBestTranscription).suffix(100)).trim()
-        if !oldText.isEmpty {
-            oldText += " "
+        let newFrozenText = frozenText + previousBestTranscription
+        frozenText = String(newFrozenText.suffix(100)).trim()
+        frozenTextPosition += newFrozenText.count - frozenText.count
+        if !frozenText.isEmpty {
+            frozenText += " "
         }
         latestResultTime = nil
         running = true
@@ -104,7 +107,10 @@ class SpeechToText: NSObject {
                 if result.isFinal {
                     self.startRecognition()
                 } else {
-                    self.delegate?.speechToTextPartialResult(text: self.oldText + text)
+                    self.delegate?.speechToTextPartialResult(
+                        position: self.frozenTextPosition,
+                        text: self.frozenText + text
+                    )
                     self.latestResultTime = .now
                 }
                 self.previousBestTranscription = text
