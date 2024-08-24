@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.369.0", date: "2024-08-24", changes: [
+        "• Make some black backgrounds more transparent.",
+        "• Speech to text. 💡 ariathome",
+        "  • Show with `{subtitles}` in text widget. Single line right now.",
+    ]),
     Version(version: "0.368.0", date: "2024-08-20", changes: [
         "• Optional reliable Twitch alerts via remote control.",
         "  • Moblin at home (assistant) subscribes to Twitch alerts, and forwards them to the phone (streamer).",
