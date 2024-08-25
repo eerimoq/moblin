@@ -831,6 +831,45 @@ class SettingsWidgetQrCode: Codable {
     var message = ""
 }
 
+enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
+    case scene = "Scene"
+    case face = "Face"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertPositionType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .scene
+    }
+
+    static func fromString(value: String) -> SettingsWidgetAlertPositionType {
+        switch value {
+        case String(localized: "Scene"):
+            return .scene
+        case String(localized: "Face"):
+            return .face
+        default:
+            return .scene
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .scene:
+            return String(localized: "Scene")
+        case .face:
+            return String(localized: "Face")
+        }
+    }
+}
+
+let alertPositionTypes = SettingsWidgetAlertPositionType.allCases.map { $0.toString() }
+
+class SettingsWidgetAlertFacePosition: Codable {
+    var x: Float = 0.5
+    var y: Float = 0.5
+    var width: Float = 0.5
+    var height: Float = 0.5
+}
+
 class SettingsWidgetAlertsTwitchAlert: Codable {
     var enabled: Bool = true
     var imageId: UUID = .init()
@@ -844,6 +883,8 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
     var textToSpeechEnabled: Bool? = true
     var textToSpeechDelay: Double? = 1.5
     var textToSpeechLanguageVoices: [String: String]? = .init()
+    var positionType: SettingsWidgetAlertPositionType? = .scene
+    var facePosition: SettingsWidgetAlertFacePosition? = .init()
 
     func clone() -> SettingsWidgetAlertsTwitchAlert {
         let new = SettingsWidgetAlertsTwitchAlert()
@@ -859,6 +900,8 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
         new.textToSpeechEnabled = textToSpeechEnabled
         new.textToSpeechDelay = textToSpeechDelay
         new.textToSpeechLanguageVoices = textToSpeechLanguageVoices
+        new.positionType = positionType
+        new.facePosition = facePosition
         return new
     }
 }
@@ -3520,6 +3563,14 @@ final class Settings {
                 widget.alerts!.twitch!.follows.imageLoopCount = 1
                 store()
             }
+            if widget.alerts!.twitch!.follows.positionType == nil {
+                widget.alerts!.twitch!.follows.positionType = .scene
+                store()
+            }
+            if widget.alerts!.twitch!.follows.facePosition == nil {
+                widget.alerts!.twitch!.follows.facePosition = .init()
+                store()
+            }
             if widget.alerts!.twitch!.subscriptions.textToSpeechEnabled == nil {
                 widget.alerts!.twitch!.subscriptions.textToSpeechEnabled = true
                 store()
@@ -3534,6 +3585,14 @@ final class Settings {
             }
             if widget.alerts!.twitch!.subscriptions.imageLoopCount == nil {
                 widget.alerts!.twitch!.subscriptions.imageLoopCount = 1
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.positionType == nil {
+                widget.alerts!.twitch!.subscriptions.positionType = .scene
+                store()
+            }
+            if widget.alerts!.twitch!.subscriptions.facePosition == nil {
+                widget.alerts!.twitch!.subscriptions.facePosition = .init()
                 store()
             }
         }

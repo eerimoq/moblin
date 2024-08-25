@@ -98,6 +98,39 @@ private struct AlertMediaView: View {
     }
 }
 
+private struct AlertPositionView: View {
+    @EnvironmentObject var model: Model
+    var alert: SettingsWidgetAlertsTwitchAlert
+    @State var positionType: String
+
+    var body: some View {
+        if false {
+            Section {
+                Picker("Type", selection: $positionType) {
+                    ForEach(alertPositionTypes, id: \.self) { type in
+                        Text(type)
+                    }
+                }
+                .onChange(of: positionType) { _ in
+                    alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
+                }
+            } header: {
+                Text("Position")
+            }
+            Section {
+                switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
+                case .face:
+                    Image("AlertFace")
+                        .resizable()
+                        .scaledToFit()
+                default:
+                    EmptyView()
+                }
+            }
+        }
+    }
+}
+
 private struct TwitchFollowsView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
@@ -115,6 +148,7 @@ private struct TwitchFollowsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -172,6 +206,7 @@ private struct TwitchSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),

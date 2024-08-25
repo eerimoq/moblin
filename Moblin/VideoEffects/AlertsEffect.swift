@@ -304,6 +304,10 @@ final class AlertsEffect: VideoEffect {
         return "Alert widget"
     }
 
+    override func needsFaceDetections() -> Bool {
+        return false
+    }
+
     private func getNext(image: CIImage) -> (CIImage, CIImage?, Double, Double) {
         guard imageIndex < images.count else {
             toBeRemoved = true
