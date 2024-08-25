@@ -81,7 +81,7 @@ class SpeechToText: NSObject {
             return
         }
         let newFrozenText = frozenText + previousBestTranscription
-        frozenText = String(newFrozenText.suffix(100)).trim()
+        frozenText = String(newFrozenText.suffix(150)).trim()
         frozenTextPosition += newFrozenText.count - frozenText.count
         if !frozenText.isEmpty {
             frozenText += " "

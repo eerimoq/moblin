@@ -205,14 +205,15 @@ final class TextEffect: VideoEffect {
 
     func updateSubtitles(position: Int, text: String) {
         let endPosition = position + text.count
-        while lastLinePosition + 40 < endPosition {
-            lastLinePosition += 40
+        let length = 50
+        while lastLinePosition + length < endPosition {
+            lastLinePosition += length
         }
         if lastLinePosition >= endPosition {
-            lastLinePosition -= 40
+            lastLinePosition -= length
             lastLinePosition = max(lastLinePosition, 0)
         }
-        let firstLinePosition = lastLinePosition - 40
+        let firstLinePosition = lastLinePosition - length
         let lastLineIndex = text.index(text.startIndex, offsetBy: lastLinePosition - position)
         let spaceBeforeLastLineIndex = text[...lastLineIndex].lastIndex(of: " ")
         let lastLine: Substring
