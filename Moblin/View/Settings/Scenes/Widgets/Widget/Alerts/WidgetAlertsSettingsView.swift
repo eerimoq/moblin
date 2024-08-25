@@ -123,6 +123,15 @@ private struct AlertPositionView: View {
                     Image("AlertFace")
                         .resizable()
                         .scaledToFit()
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    print("xxx DragGesture", value.location)
+                                }
+                                .onEnded { _ in
+                                    print("xxx DragGesture ended")
+                                }
+                        )
                 default:
                     EmptyView()
                 }
