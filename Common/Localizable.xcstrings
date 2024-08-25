@@ -57419,6 +57419,9 @@
         }
       }
     },
+    "Member" : {
+
+    },
     "Message" : {
       "localizations" : {
         "de" : {
@@ -89008,6 +89011,12 @@
           }
         }
       }
+    },
+    "Super Chat%@" : {
+
+    },
+    "Super Sticker%@" : {
+
     },
     "Support Moblin developers by buying icons." : {
       "localizations" : {
