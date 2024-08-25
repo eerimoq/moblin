@@ -102,6 +102,7 @@ private struct AlertPositionView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
     @State var positionType: String
+    @State var facePosition: CGPoint = .init(x: 100, y: 100)
 
     var body: some View {
         if false {
@@ -120,18 +121,32 @@ private struct AlertPositionView: View {
             Section {
                 switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
                 case .face:
-                    Image("AlertFace")
-                        .resizable()
-                        .scaledToFit()
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { value in
-                                    print("xxx DragGesture", value.location)
-                                }
-                                .onEnded { _ in
-                                    print("xxx DragGesture ended")
-                                }
-                        )
+                    ZStack {
+                        Image("AlertFace")
+                            .resizable()
+                            .scaledToFit()
+                        Canvas { context, size in
+                            let x = facePosition.x.clamped(to: 0 ... size.width - 1)
+                            let y = facePosition.y.clamped(to: 0 ... size.height - 1)
+                            let width = CGFloat(alert.facePosition!.width) * size.width
+                            let height = CGFloat(alert.facePosition!.height) * size.height
+                            var path = Path()
+                            path.move(to: .init(x: x, y: y))
+                            path.addLine(to: .init(x: x + width, y: y))
+                            path.addLine(to: .init(x: x + width, y: y + height))
+                            path.addLine(to: .init(x: x, y: y + height))
+                            path.addLine(to: .init(x: x, y: y))
+                            context.stroke(path, with: .color(.red), lineWidth: 1)
+                        }
+                    }
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                facePosition = value.location
+                            }
+                            .onEnded { _ in
+                            }
+                    )
                 default:
                     EmptyView()
                 }
