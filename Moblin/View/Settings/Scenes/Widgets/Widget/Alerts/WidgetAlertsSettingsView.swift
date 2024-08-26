@@ -1,4 +1,5 @@
 import AVFAudio
+import SDWebImageSwiftUI
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -106,13 +107,15 @@ private enum AnchorPoint {
     case center
 }
 
-private struct AlertPositionView: View {
+private struct AlertPositionFaceView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
-    @State var positionType: String
-    @State var facePosition: CGPoint = .init(x: 100, y: 100)
-    @State var facePositionOffset: CGSize = .init(width: 0, height: 0)
-    @State var facePositionAnchorPoint: AnchorPoint?
+    @State private var facePosition: CGPoint = .init(x: 100, y: 100)
+    @State private var facePositionOffset: CGSize = .init(width: 0, height: 0)
+    @State private var facePositionAnchorPoint: AnchorPoint?
+    @State private var imageWidth: CGFloat = 100
+    @State private var imageHeight: CGFloat = 100
+    @State private var imageOffset: CGSize = .init(width: 0, height: 0)
 
     private func calculateFacePositionAnchorPoint(location: CGPoint, size: CGSize) -> (AnchorPoint?, CGSize) {
         let x = Float(location.x / size.width)
@@ -129,6 +132,10 @@ private struct AlertPositionView: View {
         let yCenterBottomRight = yBottomRight - alert.facePosition!.height / 4
         if x > xCenterTopLeft && x < xCenterBottomRight && y > yCenterTopLeft && y < yCenterBottomRight {
             return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
+        } else if x + 0.1 < xTopLeft || x > xBottomRight + 0.1 || y + 0.1 < yTopLeft || y > yBottomRight +
+            0.1
+        {
+            return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
         } else if x < xCenterTopLeft && y < yCenterTopLeft {
             return (.topLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yTopLeft - y)))
         } else if x > xCenterBottomRight && y < yCenterTopLeft {
@@ -142,7 +149,16 @@ private struct AlertPositionView: View {
         }
     }
 
-    private func createFacePositionPath(size: CGSize) -> Path {
+    private func updateFacePositionAnchorPoint(location: CGPoint, size: CGSize) {
+        if facePositionAnchorPoint == nil {
+            (facePositionAnchorPoint, facePositionOffset) = calculateFacePositionAnchorPoint(
+                location: location,
+                size: size
+            )
+        }
+    }
+
+    private func createFacePositionPathAndUpdateImage(size: CGSize) -> Path {
         var xTopLeft = alert.facePosition!.x
         var yTopLeft = alert.facePosition!.y
         var xBottomRight = xTopLeft + alert.facePosition!.width
@@ -214,18 +230,65 @@ private struct AlertPositionView: View {
         path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints + heightPoints))
         path.addLine(to: .init(x: xPoints, y: yPoints + heightPoints))
         path.addLine(to: .init(x: xPoints, y: yPoints))
-        let xCenterPoints = xPoints + widthPoints / 2
-        let yCenterPoints = yPoints + heightPoints / 2
-        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
-        path.addLine(to: .init(x: xCenterPoints + 5, y: yCenterPoints))
-        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
-        path.addLine(to: .init(x: xCenterPoints - 5, y: yCenterPoints))
-        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
-        path.addLine(to: .init(x: xCenterPoints, y: yCenterPoints + 5))
-        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
-        path.addLine(to: .init(x: xCenterPoints, y: yCenterPoints - 5))
+        path.addEllipse(in: .init(x: xPoints - 5, y: yPoints - 5, width: 10, height: 10))
+        path.addEllipse(in: .init(x: xPoints + widthPoints - 5, y: yPoints - 5, width: 10, height: 10))
+        path.addEllipse(in: .init(
+            x: xPoints + widthPoints - 5,
+            y: yPoints + heightPoints - 5,
+            width: 10,
+            height: 10
+        ))
+        path.addEllipse(in: .init(x: xPoints - 5, y: yPoints + heightPoints - 5, width: 10, height: 10))
+        imageWidth = widthPoints
+        imageHeight = heightPoints
+        imageOffset = .init(
+            width: xPoints + widthPoints / 2 - size.width / 2,
+            height: yPoints + heightPoints / 2 - size.height / 2
+        )
         return path
     }
+
+    var body: some View {
+        ZStack {
+            Image("AlertFace")
+                .resizable()
+                .scaledToFit()
+                .allowsHitTesting(false)
+            if let image = loadAlertImage(model: model, imageId: alert.imageId) {
+                AnimatedImage(data: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: imageWidth, height: imageHeight)
+                    .offset(imageOffset)
+                    .allowsHitTesting(false)
+            }
+            GeometryReader { reader in
+                Canvas { context, size in
+                    context.stroke(
+                        createFacePositionPathAndUpdateImage(size: size),
+                        with: .color(.blue),
+                        lineWidth: 1.5
+                    )
+                }
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            facePosition = value.location
+                            updateFacePositionAnchorPoint(location: facePosition, size: reader.size)
+                        }
+                        .onEnded { _ in
+                            facePositionAnchorPoint = nil
+                        }
+                )
+            }
+        }
+    }
+}
+
+private struct AlertPositionView: View {
+    @EnvironmentObject var model: Model
+    var alert: SettingsWidgetAlertsTwitchAlert
+    @State var positionType: String
 
     var body: some View {
         if false {
@@ -244,36 +307,7 @@ private struct AlertPositionView: View {
             Section {
                 switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
                 case .face:
-                    ZStack {
-                        Image("AlertFace")
-                            .resizable()
-                            .scaledToFit()
-                        GeometryReader { reader in
-                            Canvas { context, size in
-                                context.stroke(
-                                    createFacePositionPath(size: size),
-                                    with: .color(.red),
-                                    lineWidth: 2
-                                )
-                            }
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { value in
-                                        if facePositionAnchorPoint == nil {
-                                            (facePositionAnchorPoint,
-                                             facePositionOffset) = calculateFacePositionAnchorPoint(
-                                                location: value.location,
-                                                size: reader.size
-                                            )
-                                        }
-                                        facePosition = value.location
-                                    }
-                                    .onEnded { _ in
-                                        facePositionAnchorPoint = nil
-                                    }
-                            )
-                        }
-                    }
+                    AlertPositionFaceView(alert: alert)
                 default:
                     EmptyView()
                 }

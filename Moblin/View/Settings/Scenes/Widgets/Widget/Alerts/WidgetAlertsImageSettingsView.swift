@@ -4,7 +4,7 @@ import SwiftUI
 
 private var loadedImages: [UUID: Data] = [:]
 
-private func loadImage(model: Model, imageId: UUID) -> Data? {
+func loadAlertImage(model: Model, imageId: UUID) -> Data? {
     if let image = loadedImages[imageId] {
         return image
     }
@@ -33,7 +33,7 @@ private struct CustomImageView: View {
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
         loadedImages.removeValue(forKey: media.id)
-        image = loadImage(model: model, imageId: media.id)
+        image = loadAlertImage(model: model, imageId: media.id)
         model.updateAlertsSettings()
     }
 
@@ -92,7 +92,7 @@ private struct ImageGalleryView: View {
                     ForEach(model.database.alertsMediaGallery!.customImages) { image in
                         NavigationLink(destination: CustomImageView(
                             media: image,
-                            image: loadImage(model: model, imageId: image.id)
+                            image: loadAlertImage(model: model, imageId: image.id)
                         )) {
                             Text(image.name)
                         }
@@ -139,7 +139,7 @@ struct AlertImageSelectorView: View {
                         HStack {
                             Text(image.name)
                             Spacer()
-                            if let image = loadImage(model: model, imageId: image.id) {
+                            if let image = loadAlertImage(model: model, imageId: image.id) {
                                 AnimatedImage(data: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
