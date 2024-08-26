@@ -98,11 +98,134 @@ private struct AlertMediaView: View {
     }
 }
 
+private enum AnchorPoint {
+    case topLeft
+    case topRight
+    case bottomLeft
+    case bottomRight
+    case center
+}
+
 private struct AlertPositionView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsTwitchAlert
     @State var positionType: String
     @State var facePosition: CGPoint = .init(x: 100, y: 100)
+    @State var facePositionOffset: CGSize = .init(width: 0, height: 0)
+    @State var facePositionAnchorPoint: AnchorPoint?
+
+    private func calculateFacePositionAnchorPoint(location: CGPoint, size: CGSize) -> (AnchorPoint?, CGSize) {
+        let x = Float(location.x / size.width)
+        let y = Float(location.y / size.height)
+        let xTopLeft = alert.facePosition!.x
+        let yTopLeft = alert.facePosition!.y
+        let xBottomRight = alert.facePosition!.x + alert.facePosition!.width
+        let yBottomRight = alert.facePosition!.y + alert.facePosition!.height
+        let xCenter = xTopLeft + alert.facePosition!.width / 2
+        let yCenter = yTopLeft + alert.facePosition!.height / 2
+        let xCenterTopLeft = xTopLeft + alert.facePosition!.width / 4
+        let yCenterTopLeft = yTopLeft + alert.facePosition!.height / 4
+        let xCenterBottomRight = xBottomRight - alert.facePosition!.width / 4
+        let yCenterBottomRight = yBottomRight - alert.facePosition!.height / 4
+        if x > xCenterTopLeft && x < xCenterBottomRight && y > yCenterTopLeft && y < yCenterBottomRight {
+            return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
+        } else if x < xCenterTopLeft && y < yCenterTopLeft {
+            return (.topLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yTopLeft - y)))
+        } else if x > xCenterBottomRight && y < yCenterTopLeft {
+            return (.topRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yTopLeft - y)))
+        } else if x < xCenterTopLeft && y > yCenterBottomRight {
+            return (.bottomLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yBottomRight - y)))
+        } else if x > xCenterBottomRight && y > yCenterBottomRight {
+            return (.bottomRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yBottomRight - y)))
+        } else {
+            return (nil, .zero)
+        }
+    }
+
+    private func createFacePositionPath(size: CGSize) -> Path {
+        var xTopLeft = alert.facePosition!.x
+        var yTopLeft = alert.facePosition!.y
+        var xBottomRight = xTopLeft + alert.facePosition!.width
+        var yBottomRight = yTopLeft + alert.facePosition!.height
+        let facePositionX = Float((facePosition.x) / size.width + facePositionOffset.width)
+            .clamped(to: 0 ... 1)
+        let facePositionY = Float((facePosition.y) / size.height + facePositionOffset.height)
+            .clamped(to: 0 ... 1)
+        let minimumWidth: Float = 0.1
+        let minimumHeight: Float = 0.08
+        switch facePositionAnchorPoint {
+        case .topLeft:
+            if facePositionX + minimumWidth < xBottomRight {
+                xTopLeft = facePositionX
+            }
+            if facePositionY + minimumHeight < yBottomRight {
+                yTopLeft = facePositionY
+            }
+        case .topRight:
+            if facePositionX > xTopLeft + minimumWidth {
+                xBottomRight = facePositionX
+            }
+            if facePositionY + minimumHeight < yBottomRight {
+                yTopLeft = facePositionY
+            }
+        case .bottomLeft:
+            if facePositionX + minimumWidth < xBottomRight {
+                xTopLeft = facePositionX
+            }
+            if facePositionY > yTopLeft + minimumHeight {
+                yBottomRight = facePositionY
+            }
+        case .bottomRight:
+            if facePositionX > xTopLeft + minimumWidth {
+                xBottomRight = facePositionX
+            }
+            if facePositionY > yTopLeft + minimumHeight {
+                yBottomRight = facePositionY
+            }
+        case .center:
+            let halfWidth = alert.facePosition!.width / 2
+            let halfHeight = alert.facePosition!.height / 2
+            var x = alert.facePosition!.x
+            var y = alert.facePosition!.y
+            if facePositionX - halfWidth >= 0 && facePositionX + halfWidth <= 1 {
+                x = facePositionX - halfWidth
+            }
+            if facePositionY - halfHeight >= 0 && facePositionY + halfHeight <= 1 {
+                y = facePositionY - halfHeight
+            }
+            xTopLeft = x
+            yTopLeft = y
+            xBottomRight = x + alert.facePosition!.width
+            yBottomRight = y + alert.facePosition!.height
+        case nil:
+            break
+        }
+        alert.facePosition!.x = xTopLeft
+        alert.facePosition!.y = yTopLeft
+        alert.facePosition!.width = xBottomRight - xTopLeft
+        alert.facePosition!.height = yBottomRight - yTopLeft
+        let xPoints = CGFloat(alert.facePosition!.x) * size.width
+        let yPoints = CGFloat(alert.facePosition!.y) * size.height
+        let widthPoints = CGFloat(alert.facePosition!.width) * size.width
+        let heightPoints = CGFloat(alert.facePosition!.height) * size.height
+        var path = Path()
+        path.move(to: .init(x: xPoints, y: yPoints))
+        path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints))
+        path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints + heightPoints))
+        path.addLine(to: .init(x: xPoints, y: yPoints + heightPoints))
+        path.addLine(to: .init(x: xPoints, y: yPoints))
+        let xCenterPoints = xPoints + widthPoints / 2
+        let yCenterPoints = yPoints + heightPoints / 2
+        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
+        path.addLine(to: .init(x: xCenterPoints + 5, y: yCenterPoints))
+        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
+        path.addLine(to: .init(x: xCenterPoints - 5, y: yCenterPoints))
+        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
+        path.addLine(to: .init(x: xCenterPoints, y: yCenterPoints + 5))
+        path.move(to: .init(x: xCenterPoints, y: yCenterPoints))
+        path.addLine(to: .init(x: xCenterPoints, y: yCenterPoints - 5))
+        return path
+    }
 
     var body: some View {
         if false {
@@ -125,28 +248,32 @@ private struct AlertPositionView: View {
                         Image("AlertFace")
                             .resizable()
                             .scaledToFit()
-                        Canvas { context, size in
-                            let x = facePosition.x.clamped(to: 0 ... size.width - 1)
-                            let y = facePosition.y.clamped(to: 0 ... size.height - 1)
-                            let width = CGFloat(alert.facePosition!.width) * size.width
-                            let height = CGFloat(alert.facePosition!.height) * size.height
-                            var path = Path()
-                            path.move(to: .init(x: x, y: y))
-                            path.addLine(to: .init(x: x + width, y: y))
-                            path.addLine(to: .init(x: x + width, y: y + height))
-                            path.addLine(to: .init(x: x, y: y + height))
-                            path.addLine(to: .init(x: x, y: y))
-                            context.stroke(path, with: .color(.red), lineWidth: 1)
+                        GeometryReader { reader in
+                            Canvas { context, size in
+                                context.stroke(
+                                    createFacePositionPath(size: size),
+                                    with: .color(.red),
+                                    lineWidth: 2
+                                )
+                            }
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        if facePositionAnchorPoint == nil {
+                                            (facePositionAnchorPoint,
+                                             facePositionOffset) = calculateFacePositionAnchorPoint(
+                                                location: value.location,
+                                                size: reader.size
+                                            )
+                                        }
+                                        facePosition = value.location
+                                    }
+                                    .onEnded { _ in
+                                        facePositionAnchorPoint = nil
+                                    }
+                            )
                         }
                     }
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                facePosition = value.location
-                            }
-                            .onEnded { _ in
-                            }
-                    )
                 default:
                     EmptyView()
                 }

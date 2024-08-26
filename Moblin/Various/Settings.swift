@@ -864,8 +864,8 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
 let alertPositionTypes = SettingsWidgetAlertPositionType.allCases.map { $0.toString() }
 
 class SettingsWidgetAlertFacePosition: Codable {
-    var x: Float = 0.5
-    var y: Float = 0.5
+    var x: Float = 0.25
+    var y: Float = 0.25
     var width: Float = 0.5
     var height: Float = 0.5
 }
