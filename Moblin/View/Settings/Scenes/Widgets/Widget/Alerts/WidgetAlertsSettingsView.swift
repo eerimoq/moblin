@@ -266,7 +266,7 @@ private struct AlertPositionFaceView: View {
                 Canvas { context, size in
                     context.stroke(
                         createFacePositionPathAndUpdateImage(size: size),
-                        with: .color(.blue),
+                        with: .color(.black),
                         lineWidth: 1.5
                     )
                 }
@@ -291,7 +291,7 @@ private struct AlertPositionView: View {
     @State var positionType: String
 
     var body: some View {
-        if false {
+        if true {
             Section {
                 Picker("Type", selection: $positionType) {
                     ForEach(alertPositionTypes, id: \.self) { type in

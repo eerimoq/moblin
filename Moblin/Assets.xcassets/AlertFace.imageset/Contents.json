@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "face.png",
+      "filename" : "alert-face.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
