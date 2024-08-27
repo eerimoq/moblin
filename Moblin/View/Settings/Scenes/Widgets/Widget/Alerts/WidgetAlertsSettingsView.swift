@@ -167,8 +167,8 @@ private struct AlertPositionFaceView: View {
             .clamped(to: 0 ... 1)
         let facePositionY = ((facePosition.y) / size.height + facePositionOffset.height)
             .clamped(to: 0 ... 1)
-        let minimumWidth = 0.1
-        let minimumHeight = 0.08
+        let minimumWidth = 0.05
+        let minimumHeight = 0.04
         switch facePositionAnchorPoint {
         case .topLeft:
             if facePositionX + minimumWidth < xBottomRight {

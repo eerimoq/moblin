@@ -2104,6 +2104,7 @@ private let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Moblin pixels"),
     SettingsAlertsMediaGalleryItem(name: "Moblin party"),
     SettingsAlertsMediaGalleryItem(name: "Moblin trillionaire"),
+    SettingsAlertsMediaGalleryItem(name: "White star"),
 ]
 
 private let allBundledAlertsMediaGallerySounds = [

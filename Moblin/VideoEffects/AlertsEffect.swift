@@ -38,16 +38,16 @@ private struct BackgroundLandmarkRectangle {
 }
 
 private let backgroundLeftEyeRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 47,
-    topLeftY: 105,
-    bottomRightX: 75,
-    bottomRightY: 125
+    topLeftX: 50,
+    topLeftY: 108,
+    bottomRightX: 72,
+    bottomRightY: 122
 )
 private let backgroundRightEyeRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 79,
-    topLeftY: 105,
-    bottomRightX: 107,
-    bottomRightY: 125
+    topLeftX: 82,
+    topLeftY: 108,
+    bottomRightX: 104,
+    bottomRightY: 122
 )
 private let backgroundMouthRectangle = BackgroundLandmarkRectangle(
     topLeftX: 60,
