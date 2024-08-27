@@ -118,8 +118,8 @@ private struct AlertPositionFaceView: View {
     @State private var imageOffset: CGSize = .init(width: 0, height: 0)
 
     private func calculateFacePositionAnchorPoint(location: CGPoint, size: CGSize) -> (AnchorPoint?, CGSize) {
-        let x = Float(location.x / size.width)
-        let y = Float(location.y / size.height)
+        let x = location.x / size.width
+        let y = location.y / size.height
         let xTopLeft = alert.facePosition!.x
         let yTopLeft = alert.facePosition!.y
         let xBottomRight = alert.facePosition!.x + alert.facePosition!.width
@@ -163,12 +163,12 @@ private struct AlertPositionFaceView: View {
         var yTopLeft = alert.facePosition!.y
         var xBottomRight = xTopLeft + alert.facePosition!.width
         var yBottomRight = yTopLeft + alert.facePosition!.height
-        let facePositionX = Float((facePosition.x) / size.width + facePositionOffset.width)
+        let facePositionX = ((facePosition.x) / size.width + facePositionOffset.width)
             .clamped(to: 0 ... 1)
-        let facePositionY = Float((facePosition.y) / size.height + facePositionOffset.height)
+        let facePositionY = ((facePosition.y) / size.height + facePositionOffset.height)
             .clamped(to: 0 ... 1)
-        let minimumWidth: Float = 0.1
-        let minimumHeight: Float = 0.08
+        let minimumWidth = 0.1
+        let minimumHeight = 0.08
         switch facePositionAnchorPoint {
         case .topLeft:
             if facePositionX + minimumWidth < xBottomRight {
@@ -253,7 +253,6 @@ private struct AlertPositionFaceView: View {
             Image("AlertFace")
                 .resizable()
                 .scaledToFit()
-                .allowsHitTesting(false)
             if let image = loadAlertImage(model: model, imageId: alert.imageId) {
                 AnimatedImage(data: image)
                     .resizable()
@@ -270,11 +269,13 @@ private struct AlertPositionFaceView: View {
                         lineWidth: 1.5
                     )
                 }
+                .padding([.top, .bottom], 6)
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { value in
                             facePosition = value.location
-                            updateFacePositionAnchorPoint(location: facePosition, size: reader.size)
+                            let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
+                            updateFacePositionAnchorPoint(location: facePosition, size: size)
                         }
                         .onEnded { _ in
                             facePositionAnchorPoint = nil
@@ -291,7 +292,7 @@ private struct AlertPositionView: View {
     @State var positionType: String
 
     var body: some View {
-        if false {
+        if true {
             Section {
                 Picker("Type", selection: $positionType) {
                     ForEach(alertPositionTypes, id: \.self) { type in

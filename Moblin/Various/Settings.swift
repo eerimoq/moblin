@@ -864,10 +864,10 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
 let alertPositionTypes = SettingsWidgetAlertPositionType.allCases.map { $0.toString() }
 
 class SettingsWidgetAlertFacePosition: Codable {
-    var x: Float = 0.25
-    var y: Float = 0.25
-    var width: Float = 0.5
-    var height: Float = 0.5
+    var x: Double = 0.25
+    var y: Double = 0.25
+    var width: Double = 0.5
+    var height: Double = 0.5
 }
 
 class SettingsWidgetAlertsTwitchAlert: Codable {

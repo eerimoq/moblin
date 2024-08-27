@@ -8,6 +8,60 @@ import WrappingHStack
 
 private let lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.Alerts")
 
+private let backgroundFaceImageWidth = 150.0
+private let backgroundFaceImageHeight = 180.0
+
+private struct BackgroundLandmarkRectangle {
+    let topLeftX: Double
+    let topLeftY: Double
+    let bottomRightX: Double
+    let bottomRightY: Double
+
+    init(topLeftX: Double,
+         topLeftY: Double,
+         bottomRightX: Double,
+         bottomRightY: Double)
+    {
+        self.topLeftX = topLeftX / backgroundFaceImageWidth
+        self.topLeftY = topLeftY / backgroundFaceImageHeight
+        self.bottomRightX = bottomRightX / backgroundFaceImageWidth
+        self.bottomRightY = bottomRightY / backgroundFaceImageHeight
+    }
+
+    func width() -> Double {
+        return bottomRightX - topLeftX
+    }
+
+    func height() -> Double {
+        return bottomRightY - topLeftY
+    }
+}
+
+private let backgroundLeftEyeRectangle = BackgroundLandmarkRectangle(
+    topLeftX: 47,
+    topLeftY: 105,
+    bottomRightX: 75,
+    bottomRightY: 125
+)
+private let backgroundRightEyeRectangle = BackgroundLandmarkRectangle(
+    topLeftX: 79,
+    topLeftY: 105,
+    bottomRightX: 107,
+    bottomRightY: 125
+)
+private let backgroundMouthRectangle = BackgroundLandmarkRectangle(
+    topLeftX: 60,
+    topLeftY: 137,
+    bottomRightX: 92,
+    bottomRightY: 152
+)
+private let backgroundFaceRectangle = BackgroundLandmarkRectangle(
+    topLeftX: 35,
+    topLeftY: 100,
+    bottomRightX: 115,
+    bottomRightY: 167
+)
+
 private struct Word: Identifiable {
     let id: UUID = .init()
     let text: String
@@ -84,6 +138,20 @@ private class Medias {
     }
 }
 
+private enum FaceLandmark {
+    case face
+    case leftEye
+    case rightEye
+    case mouth
+}
+
+private struct LandmarkSettings {
+    let landmark: FaceLandmark
+    let height: Double
+    let centerX: Double
+    let centerY: Double
+}
+
 final class AlertsEffect: VideoEffect {
     private var images: [CIImage] = []
     private var imageIndex: Int = 0
@@ -104,6 +172,7 @@ final class AlertsEffect: VideoEffect {
     private var twitchSubscribe = Medias()
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
+    private var landmarkSettings: LandmarkSettings?
 
     init(
         settings: SettingsWidgetAlerts,
@@ -220,11 +289,13 @@ final class AlertsEffect: VideoEffect {
     ) {
         isPlaying = true
         let messageImage = renderMessage(username: username, message: message, settings: settings)
+        let landmarkSettings = calculateLandmarkSettings(settings: settings)
         lockQueue.sync {
             self.images = medias.images
             imageIndex = 0
             self.messageImage = messageImage
             toBeRemoved = false
+            self.landmarkSettings = landmarkSettings
         }
         delegate?.alertsPlayerRegisterVideoEffect(effect: self)
         if let soundUrl = medias.soundUrl {
@@ -300,33 +371,184 @@ final class AlertsEffect: VideoEffect {
         return CIImage(image: image)
     }
 
+    private func isInRectangle(_ x: Double, _ y: Double, _ rectangle: BackgroundLandmarkRectangle) -> Bool {
+        return x > rectangle.topLeftX && x < rectangle.bottomRightX && y > rectangle.topLeftY && y < rectangle
+            .bottomRightY
+    }
+
+    private func calculateLandmark(settings: SettingsWidgetAlertsTwitchAlert) -> FaceLandmark {
+        let centerX = settings.facePosition!.x + settings.facePosition!.width / 2
+        let centerY = settings.facePosition!.y + settings.facePosition!.height / 2
+        if isInRectangle(centerX, centerY, backgroundLeftEyeRectangle) {
+            return .leftEye
+        } else if isInRectangle(centerX, centerY, backgroundRightEyeRectangle) {
+            return .rightEye
+        } else if isInRectangle(centerX, centerY, backgroundMouthRectangle) {
+            return .mouth
+        } else {
+            return .face
+        }
+    }
+
+    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsTwitchAlert) -> LandmarkSettings? {
+        if settings.positionType == .face {
+            let landmark = calculateLandmark(settings: settings)
+            let x: Double
+            let y: Double
+            let centerX = settings.facePosition!.x + settings.facePosition!.width / 2
+            let centerY = settings.facePosition!.y + settings.facePosition!.height / 2
+            switch landmark {
+            case .face:
+                x = (centerX - backgroundFaceRectangle.topLeftX) / backgroundFaceRectangle.width()
+                y = (centerY - backgroundFaceRectangle.topLeftY) / backgroundFaceRectangle.height()
+            case .leftEye:
+                x = (centerX - backgroundLeftEyeRectangle.topLeftX) / backgroundLeftEyeRectangle.width()
+                y = (centerY - backgroundLeftEyeRectangle.topLeftY) / backgroundLeftEyeRectangle.height()
+            case .rightEye:
+                x = (centerX - backgroundRightEyeRectangle.topLeftX) / backgroundRightEyeRectangle.width()
+                y = (centerY - backgroundRightEyeRectangle.topLeftY) / backgroundRightEyeRectangle.height()
+            case .mouth:
+                x = (centerX - backgroundMouthRectangle.topLeftX) / backgroundMouthRectangle.width()
+                y = (centerY - backgroundMouthRectangle.topLeftY) / backgroundMouthRectangle.height()
+            }
+            let height = settings.facePosition!.height / backgroundFaceRectangle.height()
+            return LandmarkSettings(landmark: landmark, height: height, centerX: x, centerY: y)
+        } else {
+            return nil
+        }
+    }
+
     override func getName() -> String {
         return "Alert widget"
     }
 
     override func needsFaceDetections() -> Bool {
-        return false
+        return landmarkSettings != nil
     }
 
-    private func getNext(image: CIImage) -> (CIImage, CIImage?, Double, Double) {
+    private func getNext(image: CIImage)
+        -> (CIImage, CIImage?, Double, Double, LandmarkSettings?)
+    {
         guard imageIndex < images.count else {
             toBeRemoved = true
-            return (image, nil, x, y)
+            return (image, nil, x, y, landmarkSettings)
         }
         defer {
             imageIndex += 1
             toBeRemoved = imageIndex == images.count
         }
-        return (images[imageIndex], messageImage, x, y)
+        return (images[imageIndex], messageImage, x, y, landmarkSettings)
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
-        let (alertImage, messageImage, x, y) = lockQueue.sync {
-            getNext(image: image)
+    private func calcMinXMaxYWidthHeight(points: [CGPoint]) -> (CGFloat, CGFloat, CGFloat, CGFloat)? {
+        guard let firstPoint = points.first else {
+            return nil
         }
-        guard let messageImage else {
+        var minX = firstPoint.x
+        var maxX = firstPoint.x
+        var minY = firstPoint.y
+        var maxY = firstPoint.y
+        for point in points {
+            minX = min(point.x, minX)
+            maxX = max(point.x, maxX)
+            minY = min(point.y, minY)
+            maxY = max(point.y, maxY)
+        }
+        let width = maxX - minX
+        let height = maxY - minY
+        return (minX, maxY, width, height)
+    }
+
+    private func executePositionFace(
+        _ image: CIImage,
+        _ faceDetections: [VNFaceObservation]?,
+        _ alertImage: CIImage,
+        _ landmarkSettings: LandmarkSettings
+    ) -> CIImage {
+        guard let faceDetections else {
             return image
         }
+        var outputImage = image
+        for detection in faceDetections {
+            var centerX: Double
+            var centerY: Double
+            var alertImageHeight: Double
+            guard let allPoints = detection.landmarks?.allPoints else {
+                continue
+            }
+            let points = allPoints.pointsInImage(imageSize: image.extent.size)
+            guard let firstPoint = points.first else {
+                continue
+            }
+            var faceMinX = firstPoint.x
+            var faceMaxX = firstPoint.x
+            var faceMinY = firstPoint.y
+            var faceMaxY = firstPoint.y
+            for point in points {
+                faceMinX = min(point.x, faceMinX)
+                faceMaxX = max(point.x, faceMaxX)
+                faceMinY = min(point.y, faceMinY)
+                faceMaxY = max(point.y, faceMaxY)
+            }
+            let faceWidth = faceMaxX - faceMinX
+            let faceHeight = faceMaxY - faceMinY
+            alertImageHeight = faceHeight * landmarkSettings.height
+            switch landmarkSettings.landmark {
+            case .face:
+                centerX = faceMinX + landmarkSettings.centerX * faceWidth
+                centerY = faceMaxY - landmarkSettings.centerY * faceHeight
+            case .leftEye:
+                guard let leftEye = detection.landmarks?.leftEye else {
+                    continue
+                }
+                let points = leftEye.pointsInImage(imageSize: image.extent.size)
+                guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
+                    continue
+                }
+                centerX = minX + landmarkSettings.centerX * width
+                centerY = maxY - landmarkSettings.centerY * height
+            case .rightEye:
+                guard let rightEye = detection.landmarks?.rightEye else {
+                    continue
+                }
+                let points = rightEye.pointsInImage(imageSize: image.extent.size)
+                guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
+                    continue
+                }
+                centerX = minX + landmarkSettings.centerX * width
+                centerY = maxY - landmarkSettings.centerY * height
+            case .mouth:
+                guard let outerLips = detection.landmarks?.outerLips else {
+                    continue
+                }
+                let points = outerLips.pointsInImage(imageSize: image.extent.size)
+                guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
+                    continue
+                }
+                centerX = minX + landmarkSettings.centerX * width
+                centerY = maxY - landmarkSettings.centerY * height
+            }
+            let moblinImage = alertImage
+                .transformed(by: CGAffineTransform(
+                    scaleX: alertImageHeight / alertImage.extent.height,
+                    y: alertImageHeight / alertImage.extent.height
+                ))
+            centerX -= moblinImage.extent.width / 2
+            centerY -= moblinImage.extent.height / 2
+            outputImage = moblinImage
+                .transformed(by: CGAffineTransform(translationX: centerX, y: centerY))
+                .composited(over: outputImage)
+        }
+        return outputImage.cropped(to: image.extent)
+    }
+
+    private func executePositionScene(
+        _ image: CIImage,
+        _ alertImage: CIImage,
+        _ messageImage: CIImage,
+        _ x: Double,
+        _ y: Double
+    ) -> CIImage {
         let xPos = toPixels(x, image.extent.width)
         let yPos = image.extent.height - toPixels(y, image.extent.height) - alertImage.extent.height
         return messageImage
@@ -338,6 +560,20 @@ final class AlertsEffect: VideoEffect {
             .transformed(by: CGAffineTransform(translationX: xPos, y: yPos))
             .composited(over: image)
             .cropped(to: image.extent)
+    }
+
+    override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?, _: Bool) -> CIImage {
+        let (alertImage, messageImage, x, y, landmarkSettings) = lockQueue.sync {
+            getNext(image: image)
+        }
+        guard let messageImage else {
+            return image
+        }
+        if let landmarkSettings {
+            return executePositionFace(image, faceDetections, alertImage, landmarkSettings)
+        } else {
+            return executePositionScene(image, alertImage, messageImage, x, y)
+        }
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
