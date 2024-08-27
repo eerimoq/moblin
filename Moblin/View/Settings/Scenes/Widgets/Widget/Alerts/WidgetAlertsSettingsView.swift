@@ -292,7 +292,7 @@ private struct AlertPositionView: View {
     @State var positionType: String
 
     var body: some View {
-        if false {
+        if model.database.debug!.faceAlerts! {
             Section {
                 Picker("Type", selection: $positionType) {
                     ForEach(alertPositionTypes, id: \.self) { type in

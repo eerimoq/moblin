@@ -135,6 +135,11 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.twitchRewards = value
                 }))
+                Toggle("Face alerts", isOn: Binding(get: {
+                    model.database.debug!.faceAlerts!
+                }, set: { value in
+                    model.database.debug!.faceAlerts = value
+                }))
             } header: {
                 Text("Experimental")
             }
