@@ -292,7 +292,7 @@ private struct AlertPositionView: View {
     @State var positionType: String
 
     var body: some View {
-        if true {
+        if false {
             Section {
                 Picker("Type", selection: $positionType) {
                     ForEach(alertPositionTypes, id: \.self) { type in
@@ -301,6 +301,7 @@ private struct AlertPositionView: View {
                 }
                 .onChange(of: positionType) { _ in
                     alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
+                    model.updateAlertsSettings()
                 }
             } header: {
                 Text("Position")
