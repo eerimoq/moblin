@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.371.0", date: "2024-08-27", changes: [
+        "• Experimental alert positioning based on faces.",
+        "  • Enable in Settings → Debug → Face alerts.",
+        "  • If no face is found, no image will be shown.",
+        "  • No alert text shown.",
+    ]),
     Version(version: "0.370.0", date: "2024-08-25", changes: [
         "• Show subtitles over two lines instead of one.",
         "• Highlight some YouTube chat messages. 💡 Johnny Strides",
