@@ -13,7 +13,7 @@ private let versions = [
         "  • Enable in Settings → Debug → Face alerts.",
         "  • If no face is found, no image will be shown.",
         "  • No alert text shown.",
-        "• More GIFs. 🧑‍🏭 plantbaked"
+        "• More GIFs. 🧑‍🏭 plantbaked",
     ]),
     Version(version: "0.370.0", date: "2024-08-25", changes: [
         "• Show subtitles over two lines instead of one.",
