@@ -23,7 +23,7 @@ struct AlertPickerView: UIViewControllerRepresentable {
 
 private struct AlertTextToSpeechView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @State var ttsDelay: Double
 
     private func onVoiceChange(languageCode: String, voice: String) {
@@ -69,7 +69,7 @@ private struct AlertTextToSpeechView: View {
 
 private struct AlertMediaView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @State var imageId: UUID
     @State var soundId: UUID
 
@@ -109,7 +109,7 @@ private enum AnchorPoint {
 
 private struct AlertPositionFaceView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @State private var facePosition: CGPoint = .init(x: 100, y: 100)
     @State private var facePositionOffset: CGSize = .init(width: 0, height: 0)
     @State private var facePositionAnchorPoint: AnchorPoint?
@@ -288,7 +288,7 @@ private struct AlertPositionFaceView: View {
 
 private struct AlertPositionView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @State var positionType: String
 
     var body: some View {
@@ -320,7 +320,7 @@ private struct AlertPositionView: View {
 
 private struct TwitchFollowsView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Form {
@@ -378,7 +378,7 @@ private struct TwitchFollowsView: View {
 
 private struct TwitchSubscriptionsView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Form {
@@ -512,6 +512,104 @@ private struct WidgetAlertsSettingsTwitchView: View {
     }
 }
 
+private struct ChatBotCommandView: View {
+    @EnvironmentObject var model: Model
+    var command: SettingsWidgetAlertsChatBotAlert
+
+    private var alert: SettingsWidgetAlertsAlert {
+        command.alert
+    }
+
+    private func onSubmit(value: String) {
+        command.command = value.lowercased().trim()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    alert.enabled
+                }, set: { value in
+                    alert.enabled = value
+                    model.updateAlertsSettings()
+                })) {
+                    Text("Enabled")
+                }
+            }
+            Section {
+                NavigationLink(destination: TextEditView(
+                    title: "Command",
+                    value: command.command,
+                    onSubmit: onSubmit
+                )) {
+                    TextItemView(
+                        name: String(localized: "Command"),
+                        value: command.command
+                    )
+                }
+            } footer: {
+                Text("Trigger with chat message '!moblin alert \(command.command)'")
+            }
+            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertColorsView(
+                alert: alert,
+                textColor: alert.textColor.color(),
+                accentColor: alert.accentColor.color()
+            )
+            AlertFontView(
+                alert: alert,
+                fontSize: Float(alert.fontSize),
+                fontDesign: alert.fontDesign.toString(),
+                fontWeight: alert.fontWeight.toString()
+            )
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+            Section {
+                Button(action: {
+                    model.testAlert(alert: .chatBotCommand(command.command, testNames.randomElement()!))
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Test")
+                        Spacer()
+                    }
+                })
+            }
+        }
+        .navigationTitle("Command")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+private struct WidgetAlertsSettingsChatBotView: View {
+    @EnvironmentObject var model: Model
+    var chatBot: SettingsWidgetAlertsChatBot
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(chatBot.commands) { command in
+                        NavigationLink(destination: ChatBotCommandView(command: command)) {
+                            Text(command.command.capitalized)
+                        }
+                    }
+                }
+                CreateButtonView {
+                    let command = SettingsWidgetAlertsChatBotAlert()
+                    chatBot.commands.append(command)
+                }
+            }
+        }
+        .navigationTitle("Chat bot")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 struct WidgetAlertsSettingsView: View {
     var widget: SettingsWidget
 
@@ -519,6 +617,9 @@ struct WidgetAlertsSettingsView: View {
         Section {
             NavigationLink(destination: WidgetAlertsSettingsTwitchView(twitch: widget.alerts!.twitch!)) {
                 Text("Twitch")
+            }
+            NavigationLink(destination: WidgetAlertsSettingsChatBotView(chatBot: widget.alerts!.chatBot!)) {
+                Text("Chat bot")
             }
         }
     }

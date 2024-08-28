@@ -82,7 +82,7 @@ private struct CustomSoundView: View {
 
 private struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
     var body: some View {
@@ -129,7 +129,7 @@ private var player: AVAudioPlayer?
 
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
     var body: some View {

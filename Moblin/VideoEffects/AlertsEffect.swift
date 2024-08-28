@@ -70,6 +70,7 @@ private struct Word: Identifiable {
 enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
+    case chatBotCommand(String, String)
 }
 
 protocol AlertsEffectDelegate: AnyObject {
@@ -165,11 +166,13 @@ final class AlertsEffect: VideoEffect {
     private var toBeRemoved: Bool = true
     private var isPlaying: Bool = false
     private var settings: SettingsWidgetAlerts
+    private var fps: Double
     private var x: Double = 0
     private var y: Double = 0
     private let mediaStorage: AlertMediaStorage
     private var twitchFollow = Medias()
     private var twitchSubscribe = Medias()
+    private var chatBotCommands: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var landmarkSettings: LandmarkSettings?
@@ -183,18 +186,19 @@ final class AlertsEffect: VideoEffect {
         bundledSounds: [SettingsAlertsMediaGalleryItem]
     ) {
         self.settings = settings
+        self.fps = Double(fps)
         self.delegate = delegate
         self.mediaStorage = mediaStorage
         self.bundledImages = bundledImages
         self.bundledSounds = bundledSounds
-        twitchFollow.fps = Double(fps)
-        twitchSubscribe.fps = Double(fps)
+        twitchFollow.fps = self.fps
+        twitchSubscribe.fps = self.fps
         audioPlayer = nil
         super.init()
         setSettings(settings: settings)
     }
 
-    private func getMediaItems(alert: SettingsWidgetAlertsTwitchAlert) -> (MediaItem, Int, MediaItem) {
+    private func getMediaItems(alert: SettingsWidgetAlertsAlert) -> (MediaItem, Int, MediaItem) {
         let image: MediaItem
         if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
             image = .bundledName(bundledImage.name)
@@ -218,6 +222,15 @@ final class AlertsEffect: VideoEffect {
         (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
         twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
         twitchSubscribe.updateSoundUrl(sound: sound)
+        chatBotCommands = []
+        for command in settings.chatBot!.commands {
+            (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
+            var medias = Medias()
+            medias.fps = fps
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            chatBotCommands.append(medias)
+        }
         self.settings = settings
     }
 
@@ -251,6 +264,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchFollow(event: event)
         case let .twitchSubscribe(event):
             playTwitchSubscribe(event: event)
+        case let .chatBotCommand(command, name):
+            playChatBotCommand(command: command, name: name)
         }
     }
 
@@ -281,11 +296,33 @@ final class AlertsEffect: VideoEffect {
     }
 
     @MainActor
+    private func playChatBotCommand(command: String, name: String) {
+        guard let commandSettings = settings.chatBot!.commands
+            .first(where: { command == $0.command && $0.alert.enabled })
+        else {
+            return
+        }
+        guard let commandIndex = settings.chatBot!.commands.firstIndex(where: { command == $0.command })
+        else {
+            return
+        }
+        guard commandIndex < chatBotCommands.count else {
+            return
+        }
+        play(
+            medias: chatBotCommands[commandIndex],
+            username: name,
+            message: command,
+            settings: commandSettings.alert
+        )
+    }
+
+    @MainActor
     private func play(
         medias: Medias,
         username: String,
         message: String,
-        settings: SettingsWidgetAlertsTwitchAlert
+        settings: SettingsWidgetAlertsAlert
     ) {
         isPlaying = true
         let messageImage = renderMessage(username: username, message: message, settings: settings)
@@ -307,7 +344,7 @@ final class AlertsEffect: VideoEffect {
         }
     }
 
-    private func say(username: String, message: String, settings: SettingsWidgetAlertsTwitchAlert) {
+    private func say(username: String, message: String, settings: SettingsWidgetAlertsAlert) {
         guard let voice = getVoice(settings: settings) else {
             return
         }
@@ -321,7 +358,7 @@ final class AlertsEffect: VideoEffect {
         }
     }
 
-    private func getVoice(settings: SettingsWidgetAlertsTwitchAlert) -> AVSpeechSynthesisVoice? {
+    private func getVoice(settings: SettingsWidgetAlertsAlert) -> AVSpeechSynthesisVoice? {
         guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
@@ -337,7 +374,7 @@ final class AlertsEffect: VideoEffect {
 
     @MainActor
     private func renderMessage(username: String, message: String,
-                               settings: SettingsWidgetAlertsTwitchAlert) -> CIImage?
+                               settings: SettingsWidgetAlertsAlert) -> CIImage?
     {
         let words = message.split(separator: " ").map { Word(text: String($0)) }
         let message = WrappingHStack(
@@ -376,7 +413,7 @@ final class AlertsEffect: VideoEffect {
             .bottomRightY
     }
 
-    private func calculateLandmark(settings: SettingsWidgetAlertsTwitchAlert) -> FaceLandmark {
+    private func calculateLandmark(settings: SettingsWidgetAlertsAlert) -> FaceLandmark {
         let centerX = settings.facePosition!.x + settings.facePosition!.width / 2
         let centerY = settings.facePosition!.y + settings.facePosition!.height / 2
         if isInRectangle(centerX, centerY, backgroundLeftEyeRectangle) {
@@ -390,7 +427,7 @@ final class AlertsEffect: VideoEffect {
         }
     }
 
-    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsTwitchAlert) -> LandmarkSettings? {
+    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsAlert) -> LandmarkSettings? {
         if settings.positionType == .face {
             let landmark = calculateLandmark(settings: settings)
             let centerX = settings.facePosition!.x + settings.facePosition!.width / 2

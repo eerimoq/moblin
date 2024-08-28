@@ -82,7 +82,7 @@ private struct CustomImageView: View {
 
 private struct ImageGalleryView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
 
     var body: some View {
@@ -127,7 +127,7 @@ private struct ImageGalleryView: View {
 
 struct AlertImageSelectorView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsTwitchAlert
+    var alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
     @State var loopCount: Float
 

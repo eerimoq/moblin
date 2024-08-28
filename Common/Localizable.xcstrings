@@ -25439,6 +25439,9 @@
         }
       }
     },
+    "Command" : {
+
+    },
     "Configure it in Settings → Remote control" : {
       "localizations" : {
         "de" : {
@@ -96944,6 +96947,9 @@
           }
         }
       }
+    },
+    "Trigger with chat message '!moblin alert %@'" : {
+
     },
     "Triple" : {
       "localizations" : {

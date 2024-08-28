@@ -2409,7 +2409,7 @@ final class Model: NSObject, ObservableObject {
         return nil
     }
 
-    private func fixAlert(alert: SettingsWidgetAlertsTwitchAlert) {
+    private func fixAlert(alert: SettingsWidgetAlertsAlert) {
         if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery!.bundledImages[0].id
         }
@@ -2669,7 +2669,7 @@ final class Model: NSObject, ObservableObject {
 
     func updateAlertsSettings() {
         for widget in database.widgets where widget.type == .alerts {
-            getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts!)
+            getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts!.clone())
         }
     }
 
@@ -3713,7 +3713,8 @@ final class Model: NSObject, ObservableObject {
                 command += text
             }
         }
-        switch command.trim() {
+        command = command.trim()
+        switch command {
         case "!moblin tts on":
             handleChatBotMessageTtsOn(platform: platform, user: user, isModerator: isModerator)
         case "!moblin tts off":
@@ -3723,7 +3724,14 @@ final class Model: NSObject, ObservableObject {
         case "!moblin map zoom out":
             handleChatBotMessageMapZoomOut(platform: platform, user: user, isModerator: isModerator)
         default:
-            break
+            if command.starts(with: "!moblin alert ") {
+                let parts = command.split(separator: " ")
+                if parts.count >= 3 {
+                    DispatchQueue.main.async {
+                        self.playAlert(alert: .chatBotCommand(parts[2].trim(), user ?? "Unknown"))
+                    }
+                }
+            }
         }
     }
 

@@ -358,7 +358,7 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var rewardId: String = ""
     var title: String = ""
     // periphery:ignore
-    var alert: SettingsWidgetAlertsTwitchAlert = .init()
+    var alert: SettingsWidgetAlertsAlert = .init()
 }
 
 class SettingsStream: Codable, Identifiable, Equatable {
@@ -870,7 +870,7 @@ class SettingsWidgetAlertFacePosition: Codable {
     var height: Double = 0.5
 }
 
-class SettingsWidgetAlertsTwitchAlert: Codable {
+class SettingsWidgetAlertsAlert: Codable {
     var enabled: Bool = true
     var imageId: UUID = .init()
     var imageLoopCount: Int? = 1
@@ -886,8 +886,8 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
     var positionType: SettingsWidgetAlertPositionType? = .scene
     var facePosition: SettingsWidgetAlertFacePosition? = .init()
 
-    func clone() -> SettingsWidgetAlertsTwitchAlert {
-        let new = SettingsWidgetAlertsTwitchAlert()
+    func clone() -> SettingsWidgetAlertsAlert {
+        let new = SettingsWidgetAlertsAlert()
         new.enabled = enabled
         new.imageId = imageId
         new.imageLoopCount = imageLoopCount
@@ -907,13 +907,38 @@ class SettingsWidgetAlertsTwitchAlert: Codable {
 }
 
 class SettingsWidgetAlertsTwitch: Codable {
-    var follows: SettingsWidgetAlertsTwitchAlert = .init()
-    var subscriptions: SettingsWidgetAlertsTwitchAlert = .init()
+    var follows: SettingsWidgetAlertsAlert = .init()
+    var subscriptions: SettingsWidgetAlertsAlert = .init()
 
     func clone() -> SettingsWidgetAlertsTwitch {
         let new = SettingsWidgetAlertsTwitch()
         new.follows = follows.clone()
         new.subscriptions = subscriptions.clone()
+        return new
+    }
+}
+
+class SettingsWidgetAlertsChatBotAlert: Codable, Identifiable {
+    var id: UUID = .init()
+    var command: String = "mycommand"
+    var alert: SettingsWidgetAlertsAlert = .init()
+
+    func clone() -> SettingsWidgetAlertsChatBotAlert {
+        let new = SettingsWidgetAlertsChatBotAlert()
+        new.command = command
+        new.alert = alert.clone()
+        return new
+    }
+}
+
+class SettingsWidgetAlertsChatBot: Codable {
+    var commands: [SettingsWidgetAlertsChatBotAlert] = []
+
+    func clone() -> SettingsWidgetAlertsChatBot {
+        let new = SettingsWidgetAlertsChatBot()
+        for command in commands {
+            new.commands.append(command.clone())
+        }
         return new
     }
 }
@@ -943,10 +968,12 @@ class SettingsWidgetAlerts: Codable {
     // periphery:ignore
     var fontWeight: SettingsFontWeight? = .regular
     var twitch: SettingsWidgetAlertsTwitch? = .init()
+    var chatBot: SettingsWidgetAlertsChatBot? = .init()
 
     func clone() -> SettingsWidgetAlerts {
         let new = SettingsWidgetAlerts()
         new.twitch = twitch!.clone()
+        new.chatBot = chatBot!.clone()
         return new
     }
 }
@@ -2110,6 +2137,7 @@ private let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "TMYK"),
     SettingsAlertsMediaGalleryItem(name: "Sunglasses"),
     SettingsAlertsMediaGalleryItem(name: "Salty"),
+    SettingsAlertsMediaGalleryItem(name: "-100"),
 ]
 
 private let allBundledAlertsMediaGallerySounds = [
@@ -3682,6 +3710,10 @@ final class Settings {
         }
         if realDatabase.debug!.faceAlerts == nil {
             realDatabase.debug!.faceAlerts = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.alerts!.chatBot == nil {
+            widget.alerts!.chatBot = .init()
             store()
         }
     }
