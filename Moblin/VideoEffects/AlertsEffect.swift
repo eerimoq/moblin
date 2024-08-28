@@ -8,8 +8,8 @@ import WrappingHStack
 
 private let lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.Alerts")
 
-private let backgroundFaceImageWidth = 150.0
-private let backgroundFaceImageHeight = 180.0
+private let backgroundFaceImageWidth = 130.0
+private let backgroundFaceImageHeight = 160.0
 
 private struct BackgroundLandmarkRectangle {
     let topLeftX: Double
@@ -38,28 +38,28 @@ private struct BackgroundLandmarkRectangle {
 }
 
 private let backgroundLeftEyeRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 50,
-    topLeftY: 108,
-    bottomRightX: 72,
-    bottomRightY: 122
+    topLeftX: 40,
+    topLeftY: 89,
+    bottomRightX: 62,
+    bottomRightY: 103
 )
 private let backgroundRightEyeRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 82,
-    topLeftY: 108,
-    bottomRightX: 104,
-    bottomRightY: 122
+    topLeftX: 72,
+    topLeftY: 89,
+    bottomRightX: 94,
+    bottomRightY: 103
 )
 private let backgroundMouthRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 60,
-    topLeftY: 137,
-    bottomRightX: 92,
-    bottomRightY: 152
+    topLeftX: 50,
+    topLeftY: 120,
+    bottomRightX: 82,
+    bottomRightY: 130
 )
 private let backgroundFaceRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 35,
-    topLeftY: 100,
-    bottomRightX: 115,
-    bottomRightY: 167
+    topLeftX: 25,
+    topLeftY: 80,
+    bottomRightX: 105,
+    bottomRightY: 147
 )
 
 private struct Word: Identifiable {
@@ -393,24 +393,21 @@ final class AlertsEffect: VideoEffect {
     private func calculateLandmarkSettings(settings: SettingsWidgetAlertsTwitchAlert) -> LandmarkSettings? {
         if settings.positionType == .face {
             let landmark = calculateLandmark(settings: settings)
-            let x: Double
-            let y: Double
             let centerX = settings.facePosition!.x + settings.facePosition!.width / 2
             let centerY = settings.facePosition!.y + settings.facePosition!.height / 2
+            let landmarkRectangle: BackgroundLandmarkRectangle
             switch landmark {
             case .face:
-                x = (centerX - backgroundFaceRectangle.topLeftX) / backgroundFaceRectangle.width()
-                y = (centerY - backgroundFaceRectangle.topLeftY) / backgroundFaceRectangle.height()
+                landmarkRectangle = backgroundFaceRectangle
             case .leftEye:
-                x = (centerX - backgroundLeftEyeRectangle.topLeftX) / backgroundLeftEyeRectangle.width()
-                y = (centerY - backgroundLeftEyeRectangle.topLeftY) / backgroundLeftEyeRectangle.height()
+                landmarkRectangle = backgroundLeftEyeRectangle
             case .rightEye:
-                x = (centerX - backgroundRightEyeRectangle.topLeftX) / backgroundRightEyeRectangle.width()
-                y = (centerY - backgroundRightEyeRectangle.topLeftY) / backgroundRightEyeRectangle.height()
+                landmarkRectangle = backgroundRightEyeRectangle
             case .mouth:
-                x = (centerX - backgroundMouthRectangle.topLeftX) / backgroundMouthRectangle.width()
-                y = (centerY - backgroundMouthRectangle.topLeftY) / backgroundMouthRectangle.height()
+                landmarkRectangle = backgroundMouthRectangle
             }
+            let x = (centerX - landmarkRectangle.topLeftX) / landmarkRectangle.width()
+            let y = (centerY - landmarkRectangle.topLeftY) / landmarkRectangle.height()
             let height = settings.facePosition!.height / backgroundFaceRectangle.height()
             return LandmarkSettings(landmark: landmark, height: height, centerX: x, centerY: y)
         } else {

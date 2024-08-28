@@ -271,7 +271,7 @@ private struct AlertPositionFaceView: View {
                 }
                 .padding([.top, .bottom], 6)
                 .gesture(
-                    DragGesture(minimumDistance: 0)
+                    DragGesture()
                         .onChanged { value in
                             facePosition = value.location
                             let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
