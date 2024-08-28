@@ -49105,6 +49105,9 @@
         }
       }
     },
+    "Images" : {
+
+    },
     "Immediately install the old version of the app to keep your old settings." : {
       "localizations" : {
         "de" : {

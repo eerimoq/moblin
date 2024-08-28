@@ -104,6 +104,16 @@ private let soundAttributions: [Attribution] = [
     ),
 ]
 
+private let imageAttributions: [Attribution] = [
+    Attribution(
+        name: "-100",
+        text: [
+            "Credit Richie Velasquez ",
+            "https://www.deladeso.com/",
+        ]
+    ),
+]
+
 private struct AboutAttributionsSoundsSettingsView: View {
     var body: some View {
         ScrollView {
@@ -133,11 +143,43 @@ private struct AboutAttributionsSoundsSettingsView: View {
     }
 }
 
+private struct AboutAttributionsImagesSettingsView: View {
+    var body: some View {
+        ScrollView {
+            HStack {
+                LazyVStack(alignment: .leading) {
+                    ForEach(imageAttributions, id: \.name) { attribution in
+                        Text(attribution.name)
+                            .font(.title2)
+                            .padding([.top])
+                        VStack(alignment: .leading) {
+                            ForEach(attribution.text, id: \.self) { line in
+                                Text(line)
+                            }
+                        }
+                        .padding([.top, .leading], 5)
+                    }
+                    Spacer()
+                }
+                .padding()
+                Spacer()
+            }
+        }
+        .navigationTitle("Images")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 struct AboutAttributionsSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: AboutAttributionsSoundsSettingsView()) {
                 Text("Sounds")
+            }
+            NavigationLink(destination: AboutAttributionsImagesSettingsView()) {
+                Text("Images")
             }
         }
         .navigationTitle("Attributions")
