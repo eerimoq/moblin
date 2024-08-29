@@ -3703,7 +3703,7 @@
 			repositoryURL = "https://github.com/cybozu/LicenseList.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.2;
+				minimumVersion = 1.0.0;
 			};
 		};
 		033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */ = {
@@ -3759,7 +3759,7 @@
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 3.1.1;
 			};
 		};
 		03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */ = {

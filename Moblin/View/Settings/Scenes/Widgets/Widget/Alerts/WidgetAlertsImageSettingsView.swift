@@ -143,7 +143,7 @@ struct AlertImageSelectorView: View {
                                 AnimatedImage(data: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: 50)
+                                    .frame(width: 90, height: 50)
                             } else {
                                 Image(systemName: "photo")
                             }
