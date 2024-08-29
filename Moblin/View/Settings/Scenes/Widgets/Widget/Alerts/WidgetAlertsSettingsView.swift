@@ -611,6 +611,12 @@ private struct WidgetAlertsSettingsChatBotView: View {
                     chatBot.commands.append(command)
                     model.updateAlertsSettings()
                 }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Trigger alerts with chat bot commands.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a command"))
+                }
             }
         }
         .navigationTitle("Chat bot")
