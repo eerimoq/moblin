@@ -12,6 +12,7 @@ private let versions = [
         "• Trigger alerts with chat messages.",
         "  • !moblin alert <name>.",
         "  • Chat bot permissions applies.",
+        "• Fix alert image resizing.",
     ]),
     Version(version: "0.371.0", date: "2024-08-27", changes: [
         "• Experimental alert positioning based on faces.",
