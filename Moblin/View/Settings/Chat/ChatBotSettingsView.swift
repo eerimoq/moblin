@@ -66,6 +66,13 @@ struct ChatBotSettingsView: View {
             } footer: {
                 Text("Zoom out map widget temporarily.")
             }
+            Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.alert!)) {
+                    Text("!moblin alert <name>")
+                }
+            } footer: {
+                Text("Trigger alerts. Configure alert names in alert widgets.")
+            }
         }
         .navigationTitle("Bot")
         .toolbar {

@@ -514,14 +514,19 @@ private struct WidgetAlertsSettingsTwitchView: View {
 
 private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
-    var command: SettingsWidgetAlertsChatBotAlert
+    var command: SettingsWidgetAlertsChatBotCommand
 
     private var alert: SettingsWidgetAlertsAlert {
         command.alert
     }
 
     private func onSubmit(value: String) {
-        command.command = value.lowercased().trim()
+        command.name = value.lowercased().trim().replacingOccurrences(
+            of: "\\s",
+            with: "",
+            options: .regularExpression
+        )
+        model.updateAlertsSettings()
     }
 
     var body: some View {
@@ -538,17 +543,17 @@ private struct ChatBotCommandView: View {
             }
             Section {
                 NavigationLink(destination: TextEditView(
-                    title: "Command",
-                    value: command.command,
+                    title: String(localized: "Name"),
+                    value: command.name,
                     onSubmit: onSubmit
                 )) {
                     TextItemView(
-                        name: String(localized: "Command"),
-                        value: command.command
+                        name: String(localized: "Name"),
+                        value: command.name
                     )
                 }
             } footer: {
-                Text("Trigger with chat message '!moblin alert \(command.command)'")
+                Text("Trigger with chat message '!moblin alert \(command.name)'")
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
             AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
@@ -566,7 +571,7 @@ private struct ChatBotCommandView: View {
             AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
             Section {
                 Button(action: {
-                    model.testAlert(alert: .chatBotCommand(command.command, testNames.randomElement()!))
+                    model.testAlert(alert: .chatBotCommand(command.name, testNames.randomElement()!))
                 }, label: {
                     HStack {
                         Spacer()
@@ -593,13 +598,18 @@ private struct WidgetAlertsSettingsChatBotView: View {
                 List {
                     ForEach(chatBot.commands) { command in
                         NavigationLink(destination: ChatBotCommandView(command: command)) {
-                            Text(command.command.capitalized)
+                            Text(command.name.capitalized)
                         }
                     }
+                    .onDelete(perform: { indexes in
+                        chatBot.commands.remove(atOffsets: indexes)
+                        model.updateAlertsSettings()
+                    })
                 }
                 CreateButtonView {
-                    let command = SettingsWidgetAlertsChatBotAlert()
+                    let command = SettingsWidgetAlertsChatBotCommand()
                     chatBot.commands.append(command)
+                    model.updateAlertsSettings()
                 }
             }
         }

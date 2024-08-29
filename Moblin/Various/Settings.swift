@@ -918,21 +918,21 @@ class SettingsWidgetAlertsTwitch: Codable {
     }
 }
 
-class SettingsWidgetAlertsChatBotAlert: Codable, Identifiable {
+class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable {
     var id: UUID = .init()
-    var command: String = "mycommand"
+    var name: String = "myname"
     var alert: SettingsWidgetAlertsAlert = .init()
 
-    func clone() -> SettingsWidgetAlertsChatBotAlert {
-        let new = SettingsWidgetAlertsChatBotAlert()
-        new.command = command
+    func clone() -> SettingsWidgetAlertsChatBotCommand {
+        let new = SettingsWidgetAlertsChatBotCommand()
+        new.name = name
         new.alert = alert.clone()
         return new
     }
 }
 
 class SettingsWidgetAlertsChatBot: Codable {
-    var commands: [SettingsWidgetAlertsChatBotAlert] = []
+    var commands: [SettingsWidgetAlertsChatBotCommand] = []
 
     func clone() -> SettingsWidgetAlertsChatBot {
         let new = SettingsWidgetAlertsChatBot()
@@ -1416,6 +1416,7 @@ class SettingsChatBotPermissions: Codable {
     var tts: SettingsChatBotPermissionsCommand = .init()
     var fix: SettingsChatBotPermissionsCommand = .init()
     var map: SettingsChatBotPermissionsCommand = .init()
+    var alert: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -3714,6 +3715,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.alerts!.chatBot == nil {
             widget.alerts!.chatBot = .init()
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.alert == nil {
+            realDatabase.chat.botCommandPermissions!.alert = .init()
             store()
         }
     }

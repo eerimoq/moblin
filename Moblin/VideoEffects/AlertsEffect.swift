@@ -225,7 +225,7 @@ final class AlertsEffect: VideoEffect {
         chatBotCommands = []
         for command in settings.chatBot!.commands {
             (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
-            var medias = Medias()
+            let medias = Medias()
             medias.fps = fps
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
@@ -297,12 +297,8 @@ final class AlertsEffect: VideoEffect {
 
     @MainActor
     private func playChatBotCommand(command: String, name: String) {
-        guard let commandSettings = settings.chatBot!.commands
-            .first(where: { command == $0.command && $0.alert.enabled })
-        else {
-            return
-        }
-        guard let commandIndex = settings.chatBot!.commands.firstIndex(where: { command == $0.command })
+        guard let commandIndex = settings.chatBot!.commands
+            .firstIndex(where: { command == $0.name && $0.alert.enabled })
         else {
             return
         }
@@ -313,7 +309,7 @@ final class AlertsEffect: VideoEffect {
             medias: chatBotCommands[commandIndex],
             username: name,
             message: command,
-            settings: commandSettings.alert
+            settings: settings.chatBot!.commands[commandIndex].alert
         )
     }
 

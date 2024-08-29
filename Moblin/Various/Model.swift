@@ -3725,12 +3725,12 @@ final class Model: NSObject, ObservableObject {
             handleChatBotMessageMapZoomOut(platform: platform, user: user, isModerator: isModerator)
         default:
             if command.starts(with: "!moblin alert ") {
-                let parts = command.split(separator: " ")
-                if parts.count >= 3 {
-                    DispatchQueue.main.async {
-                        self.playAlert(alert: .chatBotCommand(parts[2].trim(), user ?? "Unknown"))
-                    }
-                }
+                handleChatBotMessageAlert(
+                    platform: platform,
+                    user: user,
+                    isModerator: isModerator,
+                    command: command
+                )
             }
         }
     }
@@ -3802,6 +3802,29 @@ final class Model: NSObject, ObservableObject {
         makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Zooming out map"))
         for mapEffect in mapEffects.values {
             mapEffect.zoomOutTemporarily()
+        }
+    }
+
+    private func handleChatBotMessageAlert(
+        platform: Platform,
+        user: String?,
+        isModerator: Bool,
+        command: String
+    ) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.alert!,
+            platform: platform,
+            user: user,
+            isModerator: isModerator
+        ) else {
+            return
+        }
+        let parts = command.split(separator: " ")
+        guard parts.count >= 3 else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.playAlert(alert: .chatBotCommand(parts[2].trim(), user ?? "Unknown"))
         }
     }
 

@@ -685,6 +685,9 @@
         }
       }
     },
+    "!moblin alert <name>" : {
+
+    },
     "!moblin map zoom out" : {
       "localizations" : {
         "de" : {
@@ -96950,6 +96953,9 @@
           }
         }
       }
+    },
+    "Trigger alerts. Configure alert names in alert widgets." : {
+
     },
     "Trigger with chat message '!moblin alert %@'" : {
 
