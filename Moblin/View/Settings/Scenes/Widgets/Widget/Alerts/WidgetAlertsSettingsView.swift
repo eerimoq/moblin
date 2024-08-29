@@ -609,7 +609,9 @@ private struct WidgetAlertsSettingsChatBotView: View {
                 CreateButtonView {
                     let command = SettingsWidgetAlertsChatBotCommand()
                     chatBot.commands.append(command)
+                    model.fixAlertMedias()
                     model.updateAlertsSettings()
+                    model.objectWillChange.send()
                 }
             } footer: {
                 VStack(alignment: .leading) {

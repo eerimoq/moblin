@@ -2422,6 +2422,9 @@ final class Model: NSObject, ObservableObject {
         for widget in database.widgets {
             fixAlert(alert: widget.alerts!.twitch!.follows)
             fixAlert(alert: widget.alerts!.twitch!.subscriptions)
+            for command in widget.alerts!.chatBot!.commands {
+                fixAlert(alert: command.alert)
+            }
         }
         updateAlertsSettings()
     }
