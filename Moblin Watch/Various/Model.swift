@@ -56,6 +56,8 @@ class Model: NSObject, ObservableObject {
     @Published var isMuted = false
     @Published var thermalState = ProcessInfo.ThermalState.nominal
     private var latestThermalStateTime = ContinuousClock.now
+    @Published var zoomX = 0.0
+    @Published var isZooming = false
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -270,6 +272,17 @@ class Model: NSObject, ObservableObject {
         latestPreviewTime = .now
     }
 
+    private func handleZoom(_ data: Any) throws {
+        guard let x = data as? Float else {
+            logger.info("Invalid zoom message")
+            return
+        }
+        guard !isZooming else {
+            return
+        }
+        zoomX = Double(x)
+    }
+
     func setIsLive(value: Bool) {
         let message = WatchMessageFromWatch.pack(type: .setIsLive, data: value)
         WCSession.default.sendMessage(message, replyHandler: nil)
@@ -292,6 +305,11 @@ class Model: NSObject, ObservableObject {
 
     func skipCurrentChatTextToSpeechMessage() {
         let message = WatchMessageFromWatch.pack(type: .skipCurrentChatTextToSpeechMessage, data: true)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func setZoom(x: Double) {
+        let message = WatchMessageFromWatch.pack(type: .setZoom, data: Float(x))
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
@@ -359,6 +377,8 @@ extension Model: WCSessionDelegate {
                     try self.handleIsMuted(data)
                 case .thermalState:
                     try self.handleThermalState(data)
+                case .zoom:
+                    try self.handleZoom(data)
                 }
             } catch {}
         }

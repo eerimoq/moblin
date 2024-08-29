@@ -12,6 +12,7 @@ enum WatchMessageToWatch: String {
     case isRecording
     case isMuted
     case thermalState
+    case zoom
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -42,6 +43,7 @@ enum WatchMessageFromWatch: String {
     case setIsMuted
     case keepAlive
     case skipCurrentChatTextToSpeechMessage
+    case setZoom
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {

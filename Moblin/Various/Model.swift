@@ -4785,6 +4785,7 @@ final class Model: NSObject, ObservableObject {
         }
         zoomX = x
         remoteControlStreamer?.stateChanged(state: RemoteControlState(zoom: x))
+        sendZoomToWatch(x: x)
         if setPinch {
             zoomXPinch = zoomX
         }
@@ -5825,6 +5826,13 @@ extension Model {
         sendMessageToWatch(type: .preview, data: image)
     }
 
+    private func sendZoomToWatch(x: Float) {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .zoom, data: x)
+    }
+
     private func sendSettingsToWatch() {
         guard isWatchReachable() else {
             return
@@ -5887,6 +5895,7 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             self.setLowFpsImage()
             self.sendSettingsToWatch()
+            self.sendZoomToWatch(x: self.zoomX)
             if self.isRemoteControlAssistantConnected() {
                 if let general = self.remoteControlGeneral {
                     if let thermalState = general.flame?.toThermalState() {
@@ -6022,6 +6031,17 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func handleSetZoomMessage(_ data: Any) {
+        guard let x = data as? Float else {
+            return
+        }
+        DispatchQueue.main.async {
+            if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
+                self.setZoomX(x: x)
+            }
+        }
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -6056,6 +6076,8 @@ extension Model: WCSessionDelegate {
             break
         case .skipCurrentChatTextToSpeechMessage:
             handleSkipCurrentChatTextToSpeechMessage(data)
+        case .setZoom:
+            handleSetZoomMessage(data)
         default:
             break
         }
