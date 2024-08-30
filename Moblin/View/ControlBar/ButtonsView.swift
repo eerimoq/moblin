@@ -331,6 +331,9 @@ struct ObsView: View {
                         }
                     }
                     .onChange(of: model.obsCurrentScenePicker) { _ in
+                        guard model.obsCurrentScene != model.obsCurrentScenePicker else {
+                            return
+                        }
                         model.setObsScene(name: model.obsCurrentScenePicker)
                     }
                     .pickerStyle(.inline)
