@@ -4314,6 +4314,9 @@ final class Model: NSObject, ObservableObject {
     func setSceneId(id: UUID) {
         selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
+        sendSceneToWatch()
+        sendZoomPresetsToWatch()
+        sendZoomPresetToWatch()
         showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
     }
 
@@ -4771,6 +4774,9 @@ final class Model: NSObject, ObservableObject {
             if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
                 setZoomX(x: preset.x!)
             }
+            sendZoomPresetToWatch()
+        } else {
+            clearZoomId()
         }
     }
 
@@ -4820,6 +4826,7 @@ final class Model: NSObject, ObservableObject {
         default:
             break
         }
+        sendZoomPresetToWatch()
     }
 
     private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
@@ -5833,6 +5840,52 @@ extension Model {
         sendMessageToWatch(type: .zoom, data: x)
     }
 
+    private func sendZoomPresetsToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        let zoomPresets: [WatchProtocolZoomPreset]
+        if cameraPosition == .front {
+            zoomPresets = frontZoomPresets().map { .init(id: $0.id, name: $0.name) }
+        } else {
+            zoomPresets = backZoomPresets().map { .init(id: $0.id, name: $0.name) }
+        }
+        do {
+            let zoomPresets = try JSONEncoder().encode(zoomPresets)
+            sendMessageToWatch(type: .zoomPresets, data: zoomPresets)
+        } catch {}
+    }
+
+    private func sendZoomPresetToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        let zoomPreset: UUID
+        if cameraPosition == .front {
+            zoomPreset = frontZoomPresetId
+        } else {
+            zoomPreset = backZoomPresetId
+        }
+        sendMessageToWatch(type: .zoomPreset, data: zoomPreset.uuidString)
+    }
+
+    private func sendScenesToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        let scenes = enabledScenes.map { WatchProtocolScene(id: $0.id, name: $0.name) }
+        do {
+            try sendMessageToWatch(type: .scenes, data: JSONEncoder().encode(scenes))
+        } catch {}
+    }
+
+    private func sendSceneToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .scene, data: selectedSceneId.uuidString)
+    }
+
     private func sendSettingsToWatch() {
         guard isWatchReachable() else {
             return
@@ -5896,6 +5949,10 @@ extension Model: WCSessionDelegate {
             self.setLowFpsImage()
             self.sendSettingsToWatch()
             self.sendZoomToWatch(x: self.zoomX)
+            self.sendZoomPresetsToWatch()
+            self.sendZoomPresetToWatch()
+            self.sendScenesToWatch()
+            self.sendSceneToWatch()
             if self.isRemoteControlAssistantConnected() {
                 if let general = self.remoteControlGeneral {
                     if let thermalState = general.flame?.toThermalState() {
@@ -6036,9 +6093,34 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
+            self.clearZoomId()
             if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
                 self.setZoomX(x: x)
             }
+        }
+    }
+
+    private func handleSetZoomPresetMessage(_ data: Any) {
+        guard let data = data as? String else {
+            return
+        }
+        guard let zoomPresetId = UUID(uuidString: data) else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.setCameraZoomPreset(id: zoomPresetId)
+        }
+    }
+
+    private func handleSetSceneMessage(_ data: Any) {
+        guard let data = data as? String else {
+            return
+        }
+        guard let sceneId = UUID(uuidString: data) else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.selectScene(id: sceneId)
         }
     }
 
@@ -6078,6 +6160,10 @@ extension Model: WCSessionDelegate {
             handleSkipCurrentChatTextToSpeechMessage(data)
         case .setZoom:
             handleSetZoomMessage(data)
+        case .setZoomPreset:
+            handleSetZoomPresetMessage(data)
+        case .setScene:
+            handleSetSceneMessage(data)
         default:
             break
         }

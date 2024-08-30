@@ -4,7 +4,7 @@ struct PreviewView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ZStack {
                 if let preview = model.preview {
                     Image(uiImage: preview)
@@ -86,6 +86,35 @@ struct PreviewView: View {
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .frame(maxWidth: .infinity)
             }
+            .padding([.bottom], 3)
+            List {
+                Picker(selection: $model.zoomPresetId) {
+                    ForEach(model.zoomPresets) { zoomPreset in
+                        Text(zoomPreset.name)
+                            .tag(zoomPreset.id as UUID?)
+                    }
+                    .onChange(of: model.zoomPresetId) { _, _ in
+                        model.setZoomPreset(id: model.zoomPresetId ?? .init())
+                    }
+                    Text("Other")
+                        .tag(nil as UUID?)
+                } label: {
+                    Text("Zoom")
+                }
+                if model.scenes.contains(where: { model.sceneId == $0.id }) {
+                    Picker(selection: $model.sceneId) {
+                        ForEach(model.scenes) { scene in
+                            Text(scene.name)
+                        }
+                        .onChange(of: model.sceneId) { _, _ in
+                            model.setScene(id: model.sceneId)
+                        }
+                    } label: {
+                        Text("Scene")
+                    }
+                }
+            }
+            .scrollDisabled(true)
             Spacer()
         }
         .ignoresSafeArea()

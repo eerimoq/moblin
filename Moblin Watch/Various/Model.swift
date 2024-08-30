@@ -58,6 +58,10 @@ class Model: NSObject, ObservableObject {
     private var latestThermalStateTime = ContinuousClock.now
     @Published var zoomX = 0.0
     @Published var isZooming = false
+    @Published var zoomPresets: [WatchProtocolZoomPreset] = []
+    @Published var zoomPresetId: UUID?
+    @Published var scenes: [WatchProtocolScene] = []
+    @Published var sceneId: UUID = .init()
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -283,6 +287,54 @@ class Model: NSObject, ObservableObject {
         zoomX = Double(x)
     }
 
+    private func handleZoomPresets(_ data: Any) throws {
+        guard let data = data as? Data else {
+            logger.info("Invalid zoom presets message")
+            return
+        }
+        zoomPresets = try JSONDecoder().decode([WatchProtocolZoomPreset].self, from: data)
+    }
+
+    private func handleZoomPreset(_ data: Any) throws {
+        guard let data = data as? String else {
+            logger.info("Invalid scene message")
+            return
+        }
+        guard let zoomPresetId = UUID(uuidString: data) else {
+            return
+        }
+        guard zoomPresetId != self.zoomPresetId else {
+            return
+        }
+        if zoomPresets.contains(where: { $0.id == zoomPresetId }) {
+            self.zoomPresetId = zoomPresetId
+        } else {
+            self.zoomPresetId = nil
+        }
+    }
+
+    private func handleScenes(_ data: Any) throws {
+        guard let data = data as? Data else {
+            logger.info("Invalid scenes message")
+            return
+        }
+        scenes = try JSONDecoder().decode([WatchProtocolScene].self, from: data)
+    }
+
+    private func handleScene(_ data: Any) throws {
+        guard let data = data as? String else {
+            logger.info("Invalid scene message")
+            return
+        }
+        guard let sceneId = UUID(uuidString: data) else {
+            return
+        }
+        guard sceneId != self.sceneId else {
+            return
+        }
+        self.sceneId = sceneId
+    }
+
     func setIsLive(value: Bool) {
         let message = WatchMessageFromWatch.pack(type: .setIsLive, data: value)
         WCSession.default.sendMessage(message, replyHandler: nil)
@@ -310,6 +362,16 @@ class Model: NSObject, ObservableObject {
 
     func setZoom(x: Double) {
         let message = WatchMessageFromWatch.pack(type: .setZoom, data: Float(x))
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func setZoomPreset(id: UUID) {
+        let message = WatchMessageFromWatch.pack(type: .setZoomPreset, data: id.uuidString)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func setScene(id: UUID) {
+        let message = WatchMessageFromWatch.pack(type: .setScene, data: id.uuidString)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
@@ -379,6 +441,14 @@ extension Model: WCSessionDelegate {
                     try self.handleThermalState(data)
                 case .zoom:
                     try self.handleZoom(data)
+                case .zoomPresets:
+                    try self.handleZoomPresets(data)
+                case .zoomPreset:
+                    try self.handleZoomPreset(data)
+                case .scenes:
+                    try self.handleScenes(data)
+                case .scene:
+                    try self.handleScene(data)
                 }
             } catch {}
         }

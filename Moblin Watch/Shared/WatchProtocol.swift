@@ -13,6 +13,10 @@ enum WatchMessageToWatch: String {
     case isMuted
     case thermalState
     case zoom
+    case zoomPresets
+    case zoomPreset
+    case scenes
+    case scene
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -44,6 +48,8 @@ enum WatchMessageFromWatch: String {
     case keepAlive
     case skipCurrentChatTextToSpeechMessage
     case setZoom
+    case setZoomPreset
+    case setScene
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {
@@ -88,6 +94,18 @@ struct WatchProtocolColor: Codable {
     var red: Int
     var green: Int
     var blue: Int
+}
+
+// periphery:ignore
+struct WatchProtocolScene: Codable, Identifiable {
+    var id: UUID
+    var name: String
+}
+
+// periphery:ignore
+struct WatchProtocolZoomPreset: Codable, Identifiable {
+    var id: UUID
+    var name: String
 }
 
 extension WatchProtocolColor {
