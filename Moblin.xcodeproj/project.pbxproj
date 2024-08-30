@@ -277,6 +277,10 @@
 		0397C3612C5C195D00F93E58 /* Alerts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0397C3602C5C195D00F93E58 /* Alerts.bundle */; };
 		0397C36A2C5E16FA00F93E58 /* AlertMediaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */; };
 		03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03980C542C5E74A9000ED476 /* VoicesView.swift */; };
+		03987B372C8280B300226C03 /* ObsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B362C8280B300226C03 /* ObsView.swift */; };
+		03987B392C82846F00226C03 /* WidgetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B382C82846F00226C03 /* WidgetsView.swift */; };
+		03987B3C2C82859C00226C03 /* MicButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3B2C82859C00226C03 /* MicButtonView.swift */; };
+		03987B3E2C8285D900226C03 /* StreamSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3D2C8285D900226C03 /* StreamSwitcherView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */; };
@@ -799,6 +803,10 @@
 		0397C3602C5C195D00F93E58 /* Alerts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Alerts.bundle; sourceTree = "<group>"; };
 		0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertMediaStorage.swift; sourceTree = "<group>"; };
 		03980C542C5E74A9000ED476 /* VoicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicesView.swift; sourceTree = "<group>"; };
+		03987B362C8280B300226C03 /* ObsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsView.swift; sourceTree = "<group>"; };
+		03987B382C82846F00226C03 /* WidgetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsView.swift; sourceTree = "<group>"; };
+		03987B3B2C82859C00226C03 /* MicButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicButtonView.swift; sourceTree = "<group>"; };
+		03987B3D2C8285D900226C03 /* StreamSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSwitcherView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsoTypeBufferUtil.swift; sourceTree = "<group>"; };
@@ -1965,6 +1973,17 @@
 			path = NetworkInterfaceNames;
 			sourceTree = "<group>";
 		};
+		03987B3A2C8284A500226C03 /* QuickButton */ = {
+			isa = PBXGroup;
+			children = (
+				03987B3B2C82859C00226C03 /* MicButtonView.swift */,
+				03987B362C8280B300226C03 /* ObsView.swift */,
+				03987B3D2C8285D900226C03 /* StreamSwitcherView.swift */,
+				03987B382C82846F00226C03 /* WidgetsView.swift */,
+			);
+			path = QuickButton;
+			sourceTree = "<group>";
+		};
 		039A9E262BAEC58F00A23F97 /* Crop */ = {
 			isa = PBXGroup;
 			children = (
@@ -2156,6 +2175,7 @@
 		03B373F72A9EFB1F0028DDD5 /* ControlBar */ = {
 			isa = PBXGroup;
 			children = (
+				03987B3A2C8284A500226C03 /* QuickButton */,
 				0346B5F22B9AF4D300999109 /* RemoteControlAssistant */,
 				03B373F82A9EFB340028DDD5 /* BatteryView.swift */,
 				03B374032AA036D10028DDD5 /* ButtonsView.swift */,
@@ -2824,6 +2844,7 @@
 				038C91302C458EB4003CAD5F /* DjiDevicesSettingsView.swift in Sources */,
 				0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */,
 				0359F8D52BD3DA61005BFDA8 /* VideoEffect.swift in Sources */,
+				03987B372C8280B300226C03 /* ObsView.swift in Sources */,
 				03311B8B2C3271B90073F9E2 /* MediaPlayer.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
@@ -2925,6 +2946,7 @@
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
 				03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */,
+				03987B392C82846F00226C03 /* WidgetsView.swift in Sources */,
 				0359F8D32BD3DA61005BFDA8 /* VideoUnit.swift in Sources */,
 				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
@@ -2967,6 +2989,7 @@
 				037FE03A2C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift in Sources */,
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
+				03987B3E2C8285D900226C03 /* StreamSwitcherView.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,
@@ -2981,6 +3004,7 @@
 				03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */,
 				03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */,
 				0359F8DB2BD3DA61005BFDA8 /* Crc32.swift in Sources */,
+				03987B3C2C82859C00226C03 /* MicButtonView.swift in Sources */,
 				0359F8FE2BD3DA61005BFDA8 /* SRTStream.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,

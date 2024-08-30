@@ -1,5 +1,56 @@
 import SwiftUI
 
+private struct ButtonsPortraitView: View {
+    @EnvironmentObject var model: Model
+    var width: CGFloat
+
+    var body: some View {
+        HStack {
+            ForEach(model.buttonPairs) { pair in
+                if model.database.quickButtons!.twoColumns {
+                    VStack(alignment: .leading) {
+                        if let second = pair.second {
+                            ButtonsInnerView(
+                                state: second,
+                                size: buttonSize,
+                                nameSize: 10,
+                                nameWidth: buttonSize
+                            )
+                        } else {
+                            ButtonPlaceholderImage()
+                        }
+                        ButtonsInnerView(
+                            state: pair.first,
+                            size: buttonSize,
+                            nameSize: 10,
+                            nameWidth: buttonSize
+                        )
+                    }
+                    .id(pair.first.button.id)
+                } else {
+                    if let second = pair.second {
+                        ButtonsInnerView(
+                            state: second,
+                            size: singleButtonSize,
+                            nameSize: 12,
+                            nameWidth: width - 10
+                        )
+                    } else {
+                        EmptyView()
+                    }
+                    ButtonsInnerView(
+                        state: pair.first,
+                        size: singleButtonSize,
+                        nameSize: 12,
+                        nameWidth: width - 10
+                    )
+                    .id(pair.first.button.id)
+                }
+            }
+        }
+    }
+}
+
 struct ControlBarPortraitView: View {
     @EnvironmentObject var model: Model
     @Environment(\.accessibilityShowButtonShapes)
