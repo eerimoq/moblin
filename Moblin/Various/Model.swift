@@ -1892,6 +1892,7 @@ final class Model: NSObject, ObservableObject {
         })
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             self.updateRemoteControlAssistantStatus()
+            self.sendThermalStateToWatch(thermalState: self.thermalState)
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             let monotonicNow = ContinuousClock.now

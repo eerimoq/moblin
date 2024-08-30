@@ -59,9 +59,11 @@ class Model: NSObject, ObservableObject {
     @Published var zoomX = 0.0
     @Published var isZooming = false
     @Published var zoomPresets: [WatchProtocolZoomPreset] = []
-    @Published var zoomPresetId: UUID?
+    @Published var zoomPresetId: UUID = .init()
+    @Published var zoomPresetIdPicker: UUID?
     @Published var scenes: [WatchProtocolScene] = []
     @Published var sceneId: UUID = .init()
+    @Published var sceneIdPicker: UUID = .init()
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -293,6 +295,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         zoomPresets = try JSONDecoder().decode([WatchProtocolZoomPreset].self, from: data)
+        updateZoomPresets()
     }
 
     private func handleZoomPreset(_ data: Any) throws {
@@ -303,13 +306,15 @@ class Model: NSObject, ObservableObject {
         guard let zoomPresetId = UUID(uuidString: data) else {
             return
         }
-        guard zoomPresetId != self.zoomPresetId else {
-            return
-        }
+        self.zoomPresetId = zoomPresetId
+        updateZoomPresets()
+    }
+
+    private func updateZoomPresets() {
         if zoomPresets.contains(where: { $0.id == zoomPresetId }) {
-            self.zoomPresetId = zoomPresetId
+            zoomPresetIdPicker = zoomPresetId
         } else {
-            self.zoomPresetId = nil
+            zoomPresetIdPicker = nil
         }
     }
 
@@ -329,10 +334,8 @@ class Model: NSObject, ObservableObject {
         guard let sceneId = UUID(uuidString: data) else {
             return
         }
-        guard sceneId != self.sceneId else {
-            return
-        }
         self.sceneId = sceneId
+        sceneIdPicker = sceneId
     }
 
     func setIsLive(value: Bool) {

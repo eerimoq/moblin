@@ -88,26 +88,32 @@ struct PreviewView: View {
             }
             .padding([.bottom], 3)
             List {
-                Picker(selection: $model.zoomPresetId) {
+                Picker(selection: $model.zoomPresetIdPicker) {
                     ForEach(model.zoomPresets) { zoomPreset in
                         Text(zoomPreset.name)
                             .tag(zoomPreset.id as UUID?)
                     }
-                    .onChange(of: model.zoomPresetId) { _, _ in
-                        model.setZoomPreset(id: model.zoomPresetId ?? .init())
+                    .onChange(of: model.zoomPresetIdPicker) { _, _ in
+                        guard model.zoomPresetIdPicker != model.zoomPresetId else {
+                            return
+                        }
+                        model.setZoomPreset(id: model.zoomPresetIdPicker ?? .init())
                     }
                     Text("Other")
                         .tag(nil as UUID?)
                 } label: {
                     Text("Zoom")
                 }
-                if model.scenes.contains(where: { model.sceneId == $0.id }) {
-                    Picker(selection: $model.sceneId) {
+                if model.scenes.contains(where: { model.sceneIdPicker == $0.id }) {
+                    Picker(selection: $model.sceneIdPicker) {
                         ForEach(model.scenes) { scene in
                             Text(scene.name)
                         }
-                        .onChange(of: model.sceneId) { _, _ in
-                            model.setScene(id: model.sceneId)
+                        .onChange(of: model.sceneIdPicker) { _, _ in
+                            guard model.sceneIdPicker != model.sceneId else {
+                                return
+                            }
+                            model.setScene(id: model.sceneIdPicker)
                         }
                     } label: {
                         Text("Scene")
