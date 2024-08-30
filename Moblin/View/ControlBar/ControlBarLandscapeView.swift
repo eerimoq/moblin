@@ -10,16 +10,16 @@ private struct ButtonsLandscapeView: View {
                 if model.database.quickButtons!.twoColumns {
                     HStack(alignment: .top) {
                         if let second = pair.second {
-                            ButtonsInnerView(
+                            QuickButtonsInnerView(
                                 state: second,
                                 size: buttonSize,
                                 nameSize: 10,
                                 nameWidth: buttonSize
                             )
                         } else {
-                            ButtonPlaceholderImage()
+                            QuickButtonPlaceholderImage()
                         }
-                        ButtonsInnerView(
+                        QuickButtonsInnerView(
                             state: pair.first,
                             size: buttonSize,
                             nameSize: 10,
@@ -29,18 +29,18 @@ private struct ButtonsLandscapeView: View {
                     .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
-                        ButtonsInnerView(
+                        QuickButtonsInnerView(
                             state: second,
-                            size: singleButtonSize,
+                            size: singleQuickButtonSize,
                             nameSize: 12,
                             nameWidth: width - 10
                         )
                     } else {
                         EmptyView()
                     }
-                    ButtonsInnerView(
+                    QuickButtonsInnerView(
                         state: pair.first,
-                        size: singleButtonSize,
+                        size: singleQuickButtonSize,
                         nameSize: 12,
                         nameWidth: width - 10
                     )

@@ -1,9 +1,9 @@
 import AVFoundation
 import SwiftUI
 
-let singleButtonSize: CGFloat = 45
+let singleQuickButtonSize: CGFloat = 45
 
-private struct ButtonImage: View {
+private struct QuickButtonImage: View {
     var state: ButtonState
     var buttonSize: CGFloat
     var slash: Bool = false
@@ -63,7 +63,7 @@ private struct ButtonImage: View {
     }
 }
 
-struct ButtonPlaceholderImage: View {
+struct QuickButtonPlaceholderImage: View {
     var body: some View {
         Button {} label: {
             Image(systemName: "pawprint")
@@ -78,7 +78,7 @@ private func startStopText(button: ButtonState) -> String {
     return button.isOn ? "Stop" : "Start"
 }
 
-struct ButtonsInnerView: View {
+struct QuickButtonsInnerView: View {
     @EnvironmentObject var model: Model
     var state: ButtonState
     var size: CGFloat
@@ -273,54 +273,54 @@ struct ButtonsInnerView: View {
         VStack {
             switch state.button.type {
             case .unknown:
-                ButtonPlaceholderImage()
+                QuickButtonPlaceholderImage()
             case .torch:
                 Button(action: {
                     torchAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .mute:
                 Button(action: {
                     muteAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .bitrate:
                 Button(action: {
                     model.showingBitrate = true
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .widget:
                 Button(action: {
                     widgetAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .mic:
                 Button(action: {
                     model.showingMic = true
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .chat:
                 Button(action: {
                     chatAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size, slash: true)
+                    QuickButtonImage(state: state, buttonSize: size, slash: true)
                 })
             case .interactiveChat:
                 Button(action: {
                     interactiveChatAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .blackScreen:
                 Button(action: {
                     blackScreenAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .record:
                 Button(action: {
@@ -330,7 +330,7 @@ struct ButtonsInnerView: View {
                         recordAction(state: state)
                     }
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
                     Button(startStopText(button: state)) {
@@ -341,127 +341,127 @@ struct ButtonsInnerView: View {
                 Button(action: {
                     model.showingRecordings = true
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .image:
                 Button(action: {
                     imageAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .movie:
                 Button(action: {
                     movieAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .fourThree:
                 Button(action: {
                     fourThreeAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .grayScale:
                 Button(action: {
                     grayScaleAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .sepia:
                 Button(action: {
                     sepiaAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .triple:
                 Button(action: {
                     tripleAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .pixellate:
                 Button(action: {
                     pixellateAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .stream:
                 Button(action: {
                     streamAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .grid:
                 Button(action: {
                     gridAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .obs:
                 Button(action: {
                     obsAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .remote:
                 Button(action: {
                     remoteAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .draw:
                 Button(action: {
                     drawAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .localOverlays:
                 Button(action: {
                     localOverlaysAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .browser:
                 Button(action: {
                     browserAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .lut:
                 Button(action: {
                     lutAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .cameraPreview:
                 Button(action: {
                     cameraPreviewAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .face:
                 Button(action: {
                     faceAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .poll:
                 Button(action: {
                     pollAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .snapshot:
                 Button(action: {
                     snapshotAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             case .widgets:
                 Button(action: {
                     model.showingWidgets = true
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size)
+                    QuickButtonImage(state: state, buttonSize: size)
                 })
             }
             if model.database.quickButtons!

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct MicButtonView: View {
+struct QuickButtonMicView: View {
     @EnvironmentObject var model: Model
     @State var selectedMic: Mic
     var done: () -> Void

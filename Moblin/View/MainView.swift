@@ -332,7 +332,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        MicButtonView(selectedMic: model.currentMic) {
+                        QuickButtonMicView(selectedMic: model.currentMic) {
                             model.showingMic = false
                         }
                     }
@@ -343,7 +343,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        StreamSwitcherView {
+                        QuickButtonStreamSwitcherView {
                             model.showingStreamSwitcher = false
                         }
                     }
@@ -354,7 +354,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        ObsView {
+                        QuickButtonObsView {
                             model.showingObs = false
                             model.stopObsSourceScreenshot()
                             model.stopObsAudioVolume()
@@ -367,7 +367,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        WidgetsView {
+                        QuickButtonWidgetsView {
                             model.showingWidgets = false
                         }
                     }

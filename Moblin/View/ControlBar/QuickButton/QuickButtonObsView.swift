@@ -157,7 +157,7 @@ private struct ObsStartStopRecordingView: View {
     }
 }
 
-struct ObsView: View {
+struct QuickButtonObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
 

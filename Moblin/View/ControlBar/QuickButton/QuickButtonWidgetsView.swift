@@ -177,7 +177,7 @@ struct RatingWidgetView: View {
     }
 }
 
-struct WidgetsView: View {
+struct QuickButtonWidgetsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
 

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct StreamSwitcherView: View {
+struct QuickButtonStreamSwitcherView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
 
