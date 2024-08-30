@@ -1540,7 +1540,6 @@ class SettingsDebug: Codable {
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
-    var faceAlerts: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3707,10 +3706,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.needsSubtitles == nil {
             widget.text.needsSubtitles = false
-            store()
-        }
-        if realDatabase.debug!.faceAlerts == nil {
-            realDatabase.debug!.faceAlerts = false
             store()
         }
         for widget in realDatabase.widgets where widget.alerts!.chatBot == nil {

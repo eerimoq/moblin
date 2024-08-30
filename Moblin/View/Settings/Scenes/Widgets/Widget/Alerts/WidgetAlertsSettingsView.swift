@@ -292,27 +292,25 @@ private struct AlertPositionView: View {
     @State var positionType: String
 
     var body: some View {
-        if model.database.debug!.faceAlerts! {
-            Section {
-                Picker("Type", selection: $positionType) {
-                    ForEach(alertPositionTypes, id: \.self) { type in
-                        Text(type)
-                    }
+        Section {
+            Picker("Type", selection: $positionType) {
+                ForEach(alertPositionTypes, id: \.self) { type in
+                    Text(type)
                 }
-                .onChange(of: positionType) { _ in
-                    alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
-                    model.updateAlertsSettings()
-                }
-            } header: {
-                Text("Position")
             }
-            Section {
-                switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
-                case .face:
-                    AlertPositionFaceView(alert: alert)
-                default:
-                    EmptyView()
-                }
+            .onChange(of: positionType) { _ in
+                alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
+                model.updateAlertsSettings()
+            }
+        } header: {
+            Text("Position")
+        }
+        Section {
+            switch SettingsWidgetAlertPositionType.fromString(value: positionType) {
+            case .face:
+                AlertPositionFaceView(alert: alert)
+            default:
+                EmptyView()
             }
         }
     }
