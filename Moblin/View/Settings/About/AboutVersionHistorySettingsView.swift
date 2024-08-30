@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.375.0", date: "2024-08-30", changes: [
+        "• Face alerts not behind debug toggle anymore.",
+        "  • Face alerts works, but image positioning could be improved.",
+        "• Make OBS scene switching more robust when the server is on another continent.",
+        "• Watch companion app.",
+        "  • Zoom presets and scene selection improvements.",
+    ]),
     Version(version: "0.374.0", date: "2024-08-30", changes: [
         "• Watch companion app.",
         "  • Zoom preset and scene selection pickers.",
