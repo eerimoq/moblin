@@ -2134,7 +2134,6 @@ private let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Moblin trillionaire"),
     SettingsAlertsMediaGalleryItem(name: "White star"),
     SettingsAlertsMediaGalleryItem(name: "Angry"),
-    SettingsAlertsMediaGalleryItem(name: "TMYK"),
     SettingsAlertsMediaGalleryItem(name: "Sunglasses"),
     SettingsAlertsMediaGalleryItem(name: "Salty"),
     SettingsAlertsMediaGalleryItem(name: "-100"),
