@@ -58,6 +58,7 @@ struct ControlView: View {
                 }
                 Spacer()
             }
+            .padding()
         }
     }
 }
