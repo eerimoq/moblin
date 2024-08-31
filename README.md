@@ -34,6 +34,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Chat.
     - Announcements.
     - /me styling.
+  - Login.
+    - Follow and subscribe alerts.
 - Kick integration.
   - Number of viewers.
   - Chat.
@@ -42,12 +44,20 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - AfreecaTv integration.
   - Scuffed chat.
 - Basic scenes.
+  - Alerts widget.
+    - Trigged by Twitch events and chat messages.
   - Image widget. Show an image on stream.
   - Text widget.
     - Any text.
-    - Current local time.
-    - Current speed.
-    - Current altitude.
+    - Weather conditions.
+    - Temperature.
+    - Timer.
+    - Country.
+    - City.
+    - Subtitles.
+    - Local time.
+    - Speed.
+    - Altitude.
     - Distance. Reset manually.
     - Debug information.
   - Browser widget. Show a web page on stream.
@@ -90,6 +100,12 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Noise reduction.
   - Random. A single effect that applies a random effect.
   - Triple. Show center of image three times. Experimental.
+- Alerts styling.
+  - Optional text to speech (TTS).
+    - Many voices.
+  - Text message colors, font weight, font design and more.
+  - Select sound and image per alert.
+  - Image placement relative to your face or scene.
 - Chat styling.
   - Optional text to speech (TTS).
     - Optionally subscribers only.
@@ -163,6 +179,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Chat.
   - Limited to 20 messages.
 - Control.
+  - Zoom using digital crown and presets.
+  - Switch scene.
   - Go live.
   - Record.
   - Mute.
