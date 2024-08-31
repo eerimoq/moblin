@@ -58,6 +58,7 @@ class Model: NSObject, ObservableObject {
     @Published var scenes: [WatchProtocolScene] = []
     @Published var sceneId: UUID = .init()
     @Published var sceneIdPicker: UUID = .init()
+    @Published var verboseStatuses = false
 
     func setup() {
         if WCSession.isSupported() {

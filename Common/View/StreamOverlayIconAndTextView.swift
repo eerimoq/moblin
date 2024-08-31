@@ -1,16 +1,22 @@
 import SwiftUI
 
+enum StreamOverlayIconAndTextPlacement {
+    case beforeIcon
+    case afterIcon
+    case hide
+}
+
 struct StreamOverlayIconAndTextView: View {
     var show: Bool
     var icon: String
     var text: String
-    var textFirst = false
+    var textPlacement: StreamOverlayIconAndTextPlacement
     var color: Color = .white
 
     var body: some View {
         if show {
             HStack(spacing: 1) {
-                if textFirst {
+                if textPlacement == .beforeIcon {
                     StreamOverlayTextView(text: text)
                         .font(smallFont)
                 }
@@ -21,12 +27,14 @@ struct StreamOverlayIconAndTextView: View {
                     .foregroundColor(color)
                     .background(backgroundColor)
                     .cornerRadius(5)
-                if !textFirst {
+                if textPlacement == .afterIcon {
                     StreamOverlayTextView(text: text)
                         .font(smallFont)
                 }
             }
-            .padding(0)
+            .padding(5)
+            .contentShape(Rectangle())
+            .padding(-5)
         }
     }
 }

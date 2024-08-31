@@ -163,7 +163,6 @@ struct StreamOverlayView: View {
                         .padding([.leading], leadingPadding())
                     Spacer()
                 }
-                .allowsHitTesting(false)
                 HStack {
                     Spacer()
                     RightOverlayView(width: width)

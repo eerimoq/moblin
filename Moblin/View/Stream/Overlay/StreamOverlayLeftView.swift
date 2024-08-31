@@ -1,8 +1,9 @@
 import SwiftUI
 import WebKit
 
-struct LeftOverlayView: View {
+private struct StatusesView: View {
     @EnvironmentObject var model: Model
+    let textPlacement: StreamOverlayIconAndTextPlacement
 
     func viewersColor() -> Color {
         if model.isTwitchViewersConfigured() && !model.isTwitchPubSubConnected() {
@@ -50,51 +51,78 @@ struct LeftOverlayView: View {
     }
 
     var body: some View {
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusStream(),
+            icon: "dot.radiowaves.left.and.right",
+            text: model.statusStreamText(),
+            textPlacement: textPlacement
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusCamera(),
+            icon: "camera",
+            text: model.statusCameraText(),
+            textPlacement: textPlacement
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusMic(),
+            icon: "music.mic",
+            text: model.currentMic.name,
+            textPlacement: textPlacement
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusZoom(),
+            icon: "magnifyingglass",
+            text: model.statusZoomText(),
+            textPlacement: textPlacement
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusObs(),
+            icon: "xserve",
+            text: model.statusObsText(),
+            textPlacement: textPlacement,
+            color: obsStatusColor()
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusEvents(),
+            icon: "megaphone",
+            text: model.statusEventsText(),
+            textPlacement: textPlacement,
+            color: eventsColor()
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusChat(),
+            icon: "message",
+            text: model.statusChatText(),
+            textPlacement: textPlacement,
+            color: chatColor()
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusViewers(),
+            icon: "eye",
+            text: model.statusViewersText(),
+            textPlacement: textPlacement,
+            color: viewersColor()
+        )
+    }
+}
+
+struct LeftOverlayView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusStream(),
-                icon: "dot.radiowaves.left.and.right",
-                text: model.statusStreamText()
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusCamera(),
-                icon: "camera",
-                text: model.statusCameraText()
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusMic(),
-                icon: "music.mic",
-                text: model.currentMic.name
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusZoom(),
-                icon: "magnifyingglass",
-                text: model.statusZoomText()
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusObs(),
-                icon: "xserve",
-                text: model.statusObsText(),
-                color: obsStatusColor()
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusEvents(),
-                icon: "megaphone",
-                text: model.statusEventsText(),
-                color: eventsColor()
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusChat(),
-                icon: "message",
-                text: model.statusChatText(),
-                color: chatColor()
-            )
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusViewers(),
-                icon: "eye",
-                text: model.statusViewersText(),
-                color: viewersColor()
-            )
+            VStack(alignment: .leading, spacing: 1) {
+                if model.verboseStatuses {
+                    StatusesView(textPlacement: .afterIcon)
+                } else {
+                    HStack(spacing: 1) {
+                        StatusesView(textPlacement: .hide)
+                    }
+                }
+            }
+            .onTapGesture {
+                model.verboseStatuses = !model.verboseStatuses
+            }
             Spacer()
         }
     }

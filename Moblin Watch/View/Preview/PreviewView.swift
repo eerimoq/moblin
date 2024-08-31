@@ -1,5 +1,34 @@
 import SwiftUI
 
+private struct StatusesView: View {
+    @EnvironmentObject var model: Model
+    var textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusThermalState() {
+            Image(systemName: "flame")
+                .frame(width: 17, height: 17)
+                .font(smallFont)
+                .padding([.leading, .trailing], 2)
+                .foregroundColor(model.thermalState.color())
+                .background(backgroundColor)
+                .cornerRadius(5)
+        }
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusBitrate(),
+            icon: "speedometer",
+            text: model.speedAndTotal,
+            textPlacement: textPlacement
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusRecording(),
+            icon: "record.circle",
+            text: model.recordingLength,
+            textPlacement: textPlacement
+        )
+    }
+}
+
 struct PreviewView: View {
     @EnvironmentObject var model: Model
 
@@ -37,36 +66,25 @@ struct PreviewView: View {
                             show: true,
                             icon: "magnifyingglass",
                             text: String(format: "%.1f", model.zoomX),
-                            textFirst: false
+                            textPlacement: .afterIcon
                         )
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 1) {
                         Spacer()
-                        if model.isShowingStatusThermalState() {
-                            Image(systemName: "flame")
-                                .frame(width: 17, height: 17)
-                                .font(smallFont)
-                                .padding([.leading, .trailing], 2)
-                                .foregroundColor(model.thermalState.color())
-                                .background(backgroundColor)
-                                .cornerRadius(5)
+                        if model.verboseStatuses {
+                            StatusesView(textPlacement: .beforeIcon)
+                        } else {
+                            HStack(spacing: 1) {
+                                StatusesView(textPlacement: .hide)
+                            }
                         }
                         if model.isShowingStatusAudioLevel() {
                             AudioLevelView(showBar: true, level: model.audioLevel)
                         }
-                        StreamOverlayIconAndTextView(
-                            show: model.isShowingStatusBitrate(),
-                            icon: "speedometer",
-                            text: model.speedAndTotal,
-                            textFirst: true
-                        )
-                        StreamOverlayIconAndTextView(
-                            show: model.isShowingStatusRecording(),
-                            icon: "record.circle",
-                            text: model.recordingLength,
-                            textFirst: true
-                        )
+                    }
+                    .onTapGesture {
+                        model.verboseStatuses = !model.verboseStatuses
                     }
                 }
                 .focusable(true)

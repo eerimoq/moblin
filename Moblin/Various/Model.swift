@@ -423,6 +423,7 @@ final class Model: NSObject, ObservableObject {
     var twitchAuth = TwitchAuth()
     private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
+    @Published var verboseStatuses = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
     @Published var showFaceBeauty = false
