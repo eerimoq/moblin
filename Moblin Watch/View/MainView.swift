@@ -8,9 +8,6 @@ struct MainView: View {
             PreviewView()
             ChatView()
             ControlView()
-            NavigationStack {
-                SettingsView()
-            }
         }
         .onAppear {
             model.setup()

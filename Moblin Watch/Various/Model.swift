@@ -27,11 +27,6 @@ struct ChatPost: Identifiable {
     var timestamp: String
 }
 
-struct LogEntry: Identifiable {
-    var id: Int
-    var message: String
-}
-
 class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
@@ -48,7 +43,6 @@ class Model: NSObject, ObservableObject {
     private var numberOfNormalPostsInChat = 0
     private var nextExpectedWatchChatPostId = 1
     private var nextNonNormalChatLineId = -1
-    var log: Deque<LogEntry> = []
     private var logId = 1
     var numberOfMessagesReceived = 0
     @Published var isLive = false
@@ -66,8 +60,6 @@ class Model: NSObject, ObservableObject {
     @Published var sceneIdPicker: UUID = .init()
 
     func setup() {
-        logger.handler = debugLog(message:)
-        logger.debugEnabled = true
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
@@ -81,16 +73,6 @@ class Model: NSObject, ObservableObject {
             self.updatePreview()
             self.keepAlive()
         })
-    }
-
-    func debugLog(message: String) {
-        DispatchQueue.main.async {
-            if self.log.count > 50 {
-                self.log.removeFirst()
-            }
-            self.log.append(LogEntry(id: self.logId, message: message))
-            self.logId += 1
-        }
     }
 
     private func updatePreview() {
@@ -141,7 +123,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleChatMessage(_ data: Any) throws {
         guard let data = data as? Data else {
-            logger.info("Invalid chat message message")
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
@@ -194,7 +175,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleSpeedAndTotal(_ data: Any) throws {
         guard let speedAndTotal = data as? String else {
-            logger.info("Invalid speed and total message")
             return
         }
         self.speedAndTotal = speedAndTotal
@@ -203,7 +183,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleRecordingLength(_ data: Any) throws {
         guard let recordingLength = data as? String else {
-            logger.info("Invalid recording length message")
             return
         }
         self.recordingLength = recordingLength
@@ -212,7 +191,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleAudioLevel(_ data: Any) throws {
         guard let audioLevel = data as? Float else {
-            logger.info("Invalid audio level message")
             return
         }
         self.audioLevel = audioLevel
@@ -242,7 +220,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleSettings(_ data: Any) throws {
         guard let settings = data as? Data else {
-            logger.info("Invalid settings message")
             return
         }
         self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
@@ -261,7 +238,6 @@ class Model: NSObject, ObservableObject {
         guard let value = data as? Int,
               let thermalState = ProcessInfo.ThermalState(rawValue: value)
         else {
-            logger.info("Invalid thermal state message")
             return
         }
         self.thermalState = thermalState
@@ -270,7 +246,6 @@ class Model: NSObject, ObservableObject {
 
     private func handlePreview(_ data: Any) throws {
         guard let image = data as? Data else {
-            logger.info("Invalid preview message")
             return
         }
         preview = UIImage(data: image)
@@ -280,7 +255,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleZoom(_ data: Any) throws {
         guard let x = data as? Float else {
-            logger.info("Invalid zoom message")
             return
         }
         guard !isZooming else {
@@ -291,7 +265,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleZoomPresets(_ data: Any) throws {
         guard let data = data as? Data else {
-            logger.info("Invalid zoom presets message")
             return
         }
         zoomPresets = try JSONDecoder().decode([WatchProtocolZoomPreset].self, from: data)
@@ -300,7 +273,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleZoomPreset(_ data: Any) throws {
         guard let data = data as? String else {
-            logger.info("Invalid scene message")
             return
         }
         guard let zoomPresetId = UUID(uuidString: data) else {
@@ -320,7 +292,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleScenes(_ data: Any) throws {
         guard let data = data as? Data else {
-            logger.info("Invalid scenes message")
             return
         }
         scenes = try JSONDecoder().decode([WatchProtocolScene].self, from: data)
@@ -328,7 +299,6 @@ class Model: NSObject, ObservableObject {
 
     private func handleScene(_ data: Any) throws {
         guard let data = data as? String else {
-            logger.info("Invalid scene message")
             return
         }
         guard let sceneId = UUID(uuidString: data) else {
@@ -398,24 +368,12 @@ class Model: NSObject, ObservableObject {
 extension Model: WCSessionDelegate {
     func session(
         _: WCSession,
-        activationDidCompleteWith activationState: WCSessionActivationState,
+        activationDidCompleteWith _: WCSessionActivationState,
         error _: Error?
-    ) {
-        switch activationState {
-        case .activated:
-            logger.info("Connectivity activated")
-        case .inactive:
-            logger.info("Connectivity inactive")
-        case .notActivated:
-            logger.info("Connectivity not activated")
-        default:
-            logger.info("Connectivity unknown")
-        }
-    }
+    ) {}
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
         guard let (type, data) = WatchMessageToWatch.unpack(message) else {
-            logger.info("watch: Invalid message")
             return
         }
         DispatchQueue.main.async {
@@ -457,7 +415,5 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    func sessionReachabilityDidChange(_: WCSession) {
-        logger.debug("Reachability changed to \(WCSession.default.isReachable)")
-    }
+    func sessionReachabilityDidChange(_: WCSession) {}
 }

@@ -22976,6 +22976,7 @@
       }
     },
     "Change settings in Moblin in iPhone/iPad." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -57692,6 +57693,7 @@
       }
     },
     "Messages" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
