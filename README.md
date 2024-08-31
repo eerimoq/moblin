@@ -8,8 +8,8 @@ and [OBS Studio](https://obsproject.com) as well (and probably more).
 
 <p>
     <img src="https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png" width="60%" >
-    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png" width="20%" >
-    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot-chat.png" width="20%" >
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png" width="18%" >
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot-chat.png" width="18%" >
 </p>
 
 Discord: https://discord.gg/nt3UwHqbMM
