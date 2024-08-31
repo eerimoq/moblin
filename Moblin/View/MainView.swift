@@ -319,9 +319,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        StreamVideoBitrateSettingsButtonView(selection: model.stream
-                            .bitrate)
-                        {
+                        QuickButtonBitrateView(selection: model.stream.bitrate) {
                             model.showingBitrate = false
                         }
                     }

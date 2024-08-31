@@ -18,6 +18,13 @@ struct StreamVideoSettingsView: View {
         model.updateOrientation()
     }
 
+    private func onBitrateChange(bitrate: UInt32) {
+        stream.bitrate = bitrate
+        if stream.enabled {
+            model.setStreamBitrate(stream: stream)
+        }
+    }
+
     private func onCodecChange(codec: String) {
         stream.codec = SettingsStreamCodec(rawValue: codec)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
@@ -75,14 +82,17 @@ struct StreamVideoSettingsView: View {
                         }
                     }
                     .disabled(stream.enabled && model.isLive)
-                    NavigationLink(destination: StreamVideoBitrateSettingsView(
-                        stream: stream,
-                        selection: stream.bitrate
-                    )) {
-                        TextItemView(
-                            name: String(localized: "Bitrate"),
-                            value: formatBytesPerSecond(speed: Int64(stream.bitrate))
-                        )
+                    HStack {
+                        Text("Bitrate")
+                        Spacer()
+                        Picker("", selection: Binding(get: {
+                            stream.bitrate
+                        }, set: onBitrateChange)) {
+                            ForEach(model.database.bitratePresets) { preset in
+                                Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
+                                    .tag(preset.bitrate)
+                            }
+                        }
                     }
                     NavigationLink(destination: TextEditView(
                         title: String(localized: "Key frame interval"),

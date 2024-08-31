@@ -205,7 +205,7 @@
 		0359F9122BD3E049005BFDA8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359F9112BD3E049005BFDA8 /* README.md */; };
 		035BC8B22C17ABC5008FF4D2 /* SrtServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035BC8B12C17ABC5008FF4D2 /* SrtServerClient.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
-		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
+		035D37372AB230E700045B92 /* QuickButtonBitrateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* QuickButtonBitrateView.swift */; };
 		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MoblinApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
@@ -726,7 +726,7 @@
 		0359F9112BD3E049005BFDA8 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		035BC8B12C17ABC5008FF4D2 /* SrtServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtServerClient.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
-		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
+		035D37362AB230E700045B92 /* QuickButtonBitrateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonBitrateView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MoblinApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinApp.swift; sourceTree = "<group>"; };
@@ -1791,7 +1791,6 @@
 		0379BB842AA8362E00B718B6 /* Video */ = {
 			isa = PBXGroup;
 			children = (
-				035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */,
 				0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */,
 			);
 			path = Video;
@@ -1950,6 +1949,7 @@
 		03987B3A2C8284A500226C03 /* QuickButton */ = {
 			isa = PBXGroup;
 			children = (
+				035D37362AB230E700045B92 /* QuickButtonBitrateView.swift */,
 				03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */,
 				03987B362C8280B300226C03 /* QuickButtonObsView.swift */,
 				03987B3D2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift */,
@@ -3075,7 +3075,7 @@
 				0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */,
 				031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
-				035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */,
+				035D37372AB230E700045B92 /* QuickButtonBitrateView.swift in Sources */,
 				0359F8C22BD3DA61005BFDA8 /* URL+Extension.swift in Sources */,
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
 				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
