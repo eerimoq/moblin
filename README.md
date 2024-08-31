@@ -7,8 +7,9 @@ stream to [YouTube](https://youtube.com), [Kick](https://kick.com), [Facebook](h
 and [OBS Studio](https://obsproject.com) as well (and probably more).
 
 <p>
-    <img src="https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png" width="70%" >
-    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png" width="22%" >
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png" width="65%" >
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png" width="15%" >
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot-chat.png" width="15%" >
 </p>
 
 Discord: https://discord.gg/nt3UwHqbMM
