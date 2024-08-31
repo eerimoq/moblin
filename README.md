@@ -35,7 +35,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Chat.
     - Announcements.
     - /me styling.
-  - Login.
+  - Optional login.
     - Follow and subscribe alerts.
 - Kick integration.
   - Number of viewers.
