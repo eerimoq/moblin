@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.376.0", date: "2024-08-31", changes: [
+        "• Clear subtitles after 5 seconds of silence. 💡 plantbaked",
+        "• Remove TMYK image as we are not allowed to use it.",
+    ]),
     Version(version: "0.375.0", date: "2024-08-30", changes: [
         "• Face alerts not behind debug toggle anymore.",
         "  • Face alerts works, but image positioning could be improved.",
