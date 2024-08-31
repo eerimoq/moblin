@@ -7666,4 +7666,10 @@ extension Model: SpeechToTextDelegate {
             textEffect.updateSubtitles(position: position, text: text)
         }
     }
+
+    func speechToTextClear() {
+        for textEffect in textEffects.values {
+            textEffect.clearSubtitles()
+        }
+    }
 }

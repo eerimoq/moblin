@@ -3,6 +3,7 @@ import Speech
 
 protocol SpeechToTextDelegate: AnyObject {
     func speechToTextPartialResult(position: Int, text: String)
+    func speechToTextClear()
 }
 
 class SpeechToText: NSObject {
@@ -10,7 +11,8 @@ class SpeechToText: NSObject {
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var recognitionTask: SFSpeechRecognitionTask?
     weak var delegate: SpeechToTextDelegate?
-    private var latestResultTime: ContinuousClock.Instant?
+    private var latestResultTime: ContinuousClock.Instant = .now
+    private var hasResult = false
     private var running = false
     private var isStarted = false
     private var frozenText = ""
@@ -19,8 +21,7 @@ class SpeechToText: NSObject {
 
     func start(onError: @escaping (String) -> Void) {
         isStarted = true
-        frozenText = ""
-        frozenTextPosition = 0
+        clearFrozenText()
         previousBestTranscription = ""
         speechRecognizer?.delegate = self
         SFSpeechRecognizer.requestAuthorization { authStatus in
@@ -49,7 +50,7 @@ class SpeechToText: NSObject {
     private func stopInternal() {
         recognitionTask?.cancel()
         recognitionTask = nil
-        latestResultTime = nil
+        hasResult = false
         running = false
     }
 
@@ -64,11 +65,21 @@ class SpeechToText: NSObject {
         guard running else {
             return
         }
-        guard let latestResultTime, latestResultTime.duration(to: now) > .seconds(2) else {
-            return
+        if hasResult, latestResultTime.duration(to: now) > .seconds(2) {
+            running = false
+            recognitionRequest.endAudio()
         }
-        running = false
-        recognitionRequest.endAudio()
+        if latestResultTime.duration(to: now) > .seconds(5) {
+            if !frozenText.isEmpty {
+                clearFrozenText()
+                delegate?.speechToTextClear()
+            }
+        }
+    }
+
+    private func clearFrozenText() {
+        frozenText = ""
+        frozenTextPosition = 0
     }
 
     private func startAuthorized() {
@@ -86,7 +97,7 @@ class SpeechToText: NSObject {
         if !frozenText.isEmpty {
             frozenText += " "
         }
-        latestResultTime = nil
+        hasResult = false
         running = true
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         recognitionRequest.shouldReportPartialResults = true
@@ -112,6 +123,7 @@ class SpeechToText: NSObject {
                         text: self.frozenText + text
                     )
                     self.latestResultTime = .now
+                    self.hasResult = true
                 }
                 self.previousBestTranscription = text
             }
