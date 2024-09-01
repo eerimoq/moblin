@@ -2216,6 +2216,9 @@ final class Model: NSObject, ObservableObject {
                     continue
                 }
             }
+            if interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                interactiveChatPosts.removeLast()
+            }
             interactiveChatPosts.prepend(post)
             numberOfPostsAppended += 1
         }

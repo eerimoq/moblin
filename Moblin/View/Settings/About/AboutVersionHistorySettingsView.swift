@@ -8,6 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.377.0", date: "2024-09-01", changes: [
+        "• Watch companion app.",
+        "  • Remove settings tab.",
+        "• Collapse/expand statuses in top left and top right on UI by tapping them.",
+        "  • For less cluttered UI.",
+        "• Remove hide chat button.",
+        "  • Use hide all button instead.",
+        "• Chat redesign.",
+        "  • Chat overlay always shows latest messages and is never interactive.",
+        "  • Interactive chat button now opens an interactive chat in a new panel.",
+    ]),
     Version(version: "0.376.0", date: "2024-08-31", changes: [
         "• Clear subtitles after 5 seconds of silence. 💡 plantbaked",
         "• Remove TMYK image as we are not allowed to use it.",
