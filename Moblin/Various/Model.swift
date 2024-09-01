@@ -338,6 +338,12 @@ final class Model: NSObject, ObservableObject {
     private var pausedInteractiveChatPosts: Deque<ChatPost> = []
     @Published var pausedInteractiveChatPostsCount: Int = 0
     @Published var interactiveChatPaused = false
+    @Published var showAllInteractiveChatMessage = true
+    @Published var interactiveChatAlertsPosts: Deque<ChatPost> = []
+    private var newInteractiveChatAlertsPosts: Deque<ChatPost> = []
+    private var pausedInteractiveChatAlertsPosts: Deque<ChatPost> = []
+    @Published var pausedInteractiveChatAlertsPostsCount: Int = 0
+    @Published var interactiveChatAlertsPaused = false
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var nextWatchChatPostId = 1
     private var chatSpeedTicks = 0
@@ -2244,6 +2250,33 @@ final class Model: NSObject, ObservableObject {
         )
     }
 
+    func endOfInteractiveChatAlertsReachedWhenPaused() {
+        var numberOfPostsAppended = 0
+        while numberOfPostsAppended < 5, let post = pausedInteractiveChatAlertsPosts.popFirst() {
+            if post.user == nil {
+                if let lastPost = interactiveChatAlertsPosts.first, lastPost.user == nil {
+                    continue
+                }
+                if pausedInteractiveChatAlertsPosts.isEmpty {
+                    continue
+                }
+            }
+            if interactiveChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                interactiveChatAlertsPosts.removeLast()
+            }
+            interactiveChatAlertsPosts.prepend(post)
+            numberOfPostsAppended += 1
+        }
+        if numberOfPostsAppended == 0 {
+            interactiveChatAlertsPaused = false
+        }
+    }
+
+    func pauseInteractiveChatAlerts() {
+        interactiveChatAlertsPaused = true
+        pausedInteractiveChatAlertsPostsCount = 0
+    }
+
     private func removeOldChatMessages(now: ContinuousClock.Instant) {
         if interactiveChatPaused {
             return
@@ -2287,6 +2320,17 @@ final class Model: NSObject, ObservableObject {
                     interactiveChatPosts.removeLast()
                 }
                 interactiveChatPosts.prepend(post)
+            }
+        }
+        if interactiveChatAlertsPaused {
+            // The red line is one post.
+            pausedInteractiveChatAlertsPostsCount = max(pausedInteractiveChatAlertsPosts.count - 1, 0)
+        } else {
+            while let post = newInteractiveChatAlertsPosts.popFirst() {
+                if interactiveChatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                    interactiveChatAlertsPosts.removeLast()
+                }
+                interactiveChatAlertsPosts.prepend(post)
             }
         }
     }
@@ -3330,6 +3374,9 @@ final class Model: NSObject, ObservableObject {
         interactiveChatPosts = []
         pausedInteractiveChatPosts = []
         newInteractiveChatPosts = []
+        interactiveChatAlertsPosts = []
+        pausedInteractiveChatAlertsPosts = []
+        newInteractiveChatAlertsPosts = []
         chatTextToSpeech.reset(running: true)
     }
 
@@ -3934,6 +3981,15 @@ final class Model: NSObject, ObservableObject {
             }
         } else {
             newInteractiveChatPosts.append(post)
+        }
+        if highlight != nil {
+            if interactiveChatAlertsPaused {
+                if pausedInteractiveChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
+                    pausedInteractiveChatAlertsPosts.append(post)
+                }
+            } else {
+                newInteractiveChatAlertsPosts.append(post)
+            }
         }
     }
 
@@ -7555,15 +7611,29 @@ extension Model {
 extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
-            self.makeToast(title: String(localized: "\(event.user_name) just followed!"))
+            let text = String(localized: "just followed!")
+            self.makeToast(title: "\(event.user_name) \(text)")
             self.playAlert(alert: .twitchFollow(event))
+            self.appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New follower"),
+                color: .pink
+            )
         }
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
         DispatchQueue.main.async {
-            self.makeToast(title: String(localized: "\(event.user_name) just subscribed!"))
+            let text = String(localized: "just subscribed!")
+            self.makeToast(title: "\(event.user_name) \(text)")
             self.playAlert(alert: .twitchSubscribe(event))
+            self.appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New subscriber"),
+                color: .cyan
+            )
         }
     }
 
@@ -7573,22 +7643,31 @@ extension Model: TwitchEventSubDelegate {
         DispatchQueue.main.async {
             let text = String(localized: "redeemed \(event.reward.title)")
             self.makeToast(title: "\(event.user_name) \(text)")
-            self.appendChatMessage(platform: .twitch,
-                                   user: event.user_name,
-                                   userColor: nil,
-                                   segments: makeChatPostTextSegments(text: text),
-                                   timestamp: self.digitalClock,
-                                   timestampTime: .now,
-                                   isAction: false,
-                                   isSubscriber: false,
-                                   isModerator: false,
-                                   highlight: .init(
-                                       kind: .redemption,
-                                       color: .blue,
-                                       image: "medal",
-                                       title: String(localized: "Reward redemption")
-                                   ))
+            self.appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "Reward redemption"),
+                color: .blue
+            )
         }
+    }
+
+    private func appendTwitchChatAlertMessage(user: String, text: String, title: String, color: Color) {
+        appendChatMessage(platform: .twitch,
+                          user: user,
+                          userColor: nil,
+                          segments: makeChatPostTextSegments(text: text),
+                          timestamp: digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          highlight: .init(
+                              kind: .redemption,
+                              color: color,
+                              image: "medal",
+                              title: title
+                          ))
     }
 
     func twitchEventSubUnauthorized() {

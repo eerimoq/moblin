@@ -5021,6 +5021,7 @@
       }
     },
     "%@ just followed!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5151,6 +5152,7 @@
       }
     },
     "%@ just subscribed!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -24146,6 +24148,9 @@
           }
         }
       }
+    },
+    "Chat paused: %lld new alerts" : {
+
     },
     "Chat paused: %lld new messages" : {
       "localizations" : {
@@ -63025,6 +63030,12 @@
         }
       }
     },
+    "New follower" : {
+
+    },
+    "New subscriber" : {
+
+    },
     "Next" : {
       "localizations" : {
         "de" : {
@@ -78630,6 +78641,9 @@
           }
         }
       }
+    },
+    "Send message" : {
+
     },
     "Send your location to https://rtirl.com, to let your viewers know where you are." : {
       "localizations" : {

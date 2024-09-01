@@ -121,7 +121,7 @@ struct LeftOverlayView: View {
                 }
             }
             .onTapGesture {
-                model.verboseStatuses = !model.verboseStatuses
+                model.verboseStatuses.toggle()
             }
             Spacer()
         }

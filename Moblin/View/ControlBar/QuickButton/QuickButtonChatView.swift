@@ -211,6 +211,128 @@ private struct MessagesView: View {
     }
 }
 
+private struct ChatView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ZStack {
+            MessagesView()
+            if model.interactiveChatPaused {
+                ChatInfo(
+                    message: String(
+                        localized: "Chat paused: \(model.pausedInteractiveChatPostsCount) new messages"
+                    )
+                )
+                .padding(2)
+            }
+        }
+    }
+}
+
+private struct AlertsMessagesView: View {
+    @EnvironmentObject var model: Model
+    private let spaceName = "scroll"
+    @State var wholeSize: CGSize = .zero
+    @State var scrollViewSize: CGSize = .zero
+
+    var body: some View {
+        GeometryReader { metrics in
+            ChildSizeReader(size: $wholeSize) {
+                ScrollView {
+                    ChildSizeReader(size: $scrollViewSize) {
+                        VStack {
+                            LazyVStack(alignment: .leading, spacing: 1) {
+                                ForEach(model.interactiveChatAlertsPosts) { post in
+                                    if post.user != nil {
+                                        if let highlight = post.highlight {
+                                            HStack(spacing: 0) {
+                                                Rectangle()
+                                                    .frame(width: 3)
+                                                    .foregroundColor(highlight.color)
+                                                VStack(alignment: .leading) {
+                                                    HighlightMessageView(
+                                                        image: highlight.image,
+                                                        name: highlight.title
+                                                    )
+                                                    LineView(
+                                                        post: post,
+                                                        chat: model.database.chat
+                                                    )
+                                                }
+                                            }
+                                            .rotationEffect(Angle(degrees: 180))
+                                            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                        } else {
+                                            LineView(post: post, chat: model.database.chat)
+                                                .padding([.leading], 3)
+                                                .rotationEffect(Angle(degrees: 180))
+                                                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                        }
+                                    } else {
+                                        Rectangle()
+                                            .fill(.red)
+                                            .frame(width: metrics.size.width, height: 1.5)
+                                            .padding(2)
+                                            .rotationEffect(Angle(degrees: 180))
+                                            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                    }
+                                }
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        .background(
+                            GeometryReader { proxy in
+                                Color.clear.preference(
+                                    key: ViewOffsetKey.self,
+                                    value: -1 * proxy.frame(in: .named(spaceName)).origin.y
+                                )
+                            }
+                        )
+                        .onPreferenceChange(
+                            ViewOffsetKey.self,
+                            perform: { scrollViewOffsetFromTop in
+                                let offset = max(scrollViewOffsetFromTop, 0)
+                                if offset >= scrollViewSize.height - wholeSize.height - 50 {
+                                    if model.interactiveChatAlertsPaused, offset >= previousOffset {
+                                        model.endOfInteractiveChatAlertsReachedWhenPaused()
+                                    }
+                                } else if !model.interactiveChatAlertsPaused {
+                                    if !model.interactiveChatAlertsPosts.isEmpty {
+                                        model.pauseInteractiveChatAlerts()
+                                    }
+                                }
+                                previousOffset = offset
+                            }
+                        )
+                        .frame(minHeight: metrics.size.height)
+                    }
+                }
+                .rotationEffect(Angle(degrees: 180))
+                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                .coordinateSpace(name: spaceName)
+            }
+        }
+    }
+}
+
+private struct ChatAlertsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ZStack {
+            AlertsMessagesView()
+            if model.interactiveChatAlertsPaused {
+                ChatInfo(
+                    message: String(
+                        localized: "Chat paused: \(model.pausedInteractiveChatAlertsPostsCount) new alerts"
+                    )
+                )
+                .padding(2)
+            }
+        }
+    }
+}
+
 struct QuickButtonChatView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -218,17 +340,33 @@ struct QuickButtonChatView: View {
 
     var body: some View {
         VStack {
-            ZStack {
-                MessagesView()
-                if model.interactiveChatPaused {
-                    ChatInfo(
-                        message: String(
-                            localized: "Chat paused: \(model.pausedInteractiveChatPostsCount) new messages"
-                        )
-                    )
-                    .padding()
-                }
+            if model.showAllInteractiveChatMessage {
+                ChatView()
+            } else {
+                ChatAlertsView()
             }
+            HStack {
+                TextField("Send message", text: $message)
+                    .padding(5)
+                Button(action: {
+                    model.makeErrorToast(title: "Sending chat messages does not yet work")
+                    message = ""
+                }, label: {
+                    Image(systemName: "paperplane")
+                        .font(.title)
+                        .padding(5)
+                })
+                .disabled(message.isEmpty)
+                Button(action: {
+                    model.showAllInteractiveChatMessage.toggle()
+                }, label: {
+                    Image(systemName: model.showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
+                        .font(.title)
+                        .padding(5)
+                })
+            }
+            .border(.secondary)
+            .padding([.leading, .trailing], 5)
         }
         .navigationTitle("Chat")
         .toolbar {

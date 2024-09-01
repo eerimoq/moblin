@@ -84,7 +84,7 @@ struct PreviewView: View {
                         }
                     }
                     .onTapGesture {
-                        model.verboseStatuses = !model.verboseStatuses
+                        model.verboseStatuses.toggle()
                     }
                 }
                 .focusable(true)
