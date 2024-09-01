@@ -80,6 +80,20 @@ struct WatchProtocolChatSegment: Codable {
 }
 
 // periphery:ignore
+enum WatchProtocolChatHighlightKind: Codable {
+    case redemption
+    case other
+}
+
+// periphery:ignore
+struct WatchProtocolChatHighlight: Codable {
+    let kind: WatchProtocolChatHighlightKind
+    let color: WatchProtocolColor
+    let image: String
+    let title: String
+}
+
+// periphery:ignore
 struct WatchProtocolChatMessage: Codable {
     // Starts at 1 and incremented for each new message
     var id: Int
@@ -87,6 +101,7 @@ struct WatchProtocolChatMessage: Codable {
     var user: String
     var userColor: WatchProtocolColor
     var segments: [WatchProtocolChatSegment]
+    var highlight: WatchProtocolChatHighlight?
 }
 
 // periphery:ignore

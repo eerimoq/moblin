@@ -1153,7 +1153,6 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case widget = "Widget"
     case mic = "Mic"
     case chat = "Chat"
-    case interactiveChat = "Interactive chat"
     case blackScreen = "Black screen"
     case record = "Record"
     case recordings = "Recrodings"
@@ -1181,7 +1180,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
         if value == "Pause chat" {
-            value = "Interactive chat"
+            value = "Chat"
         }
         self = SettingsButtonType(rawValue: value) ?? .unknown
     }
@@ -1816,7 +1815,6 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case torch = "Torch"
     case blackScreen = "Black screen"
     case chat = "Chat"
-    case interactiveChat = "Interactive chat"
     case scene = "Scene"
 
     public init(from decoder: Decoder) throws {
@@ -1847,8 +1845,6 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return .blackScreen
         case String(localized: "Chat"):
             return .chat
-        case String(localized: "Interactive chat"):
-            return .interactiveChat
         case String(localized: "Scene"):
             return .scene
         default:
@@ -1876,8 +1872,6 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return String(localized: "Black screen")
         case .chat:
             return String(localized: "Chat")
-        case .interactiveChat:
-            return String(localized: "Interactive chat")
         case .scene:
             return String(localized: "Scene")
         }
@@ -1973,7 +1967,7 @@ class SettingsGameController: Codable, Identifiable {
         button = SettingsGameControllerButton()
         button.name = "r.rectangle.roundedbottom"
         button.text = "R"
-        button.function = .interactiveChat
+        button.function = .chat
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l2.rectangle.roundedtop"
@@ -1993,7 +1987,7 @@ class SettingsGameController: Codable, Identifiable {
         button = SettingsGameControllerButton()
         button.name = "r1.rectangle.roundedbottom"
         button.text = "R1"
-        button.function = .interactiveChat
+        button.function = .chat
         buttons.append(button)
     }
 }
@@ -2361,14 +2355,6 @@ private func addMissingGlobalButtons(database: Database) {
     button = SettingsButton(name: String(localized: "Chat"))
     button.id = UUID()
     button.type = .chat
-    button.imageType = "System name"
-    button.systemImageNameOn = "message.fill"
-    button.systemImageNameOff = "message"
-    updateGlobalButton(database: database, button: button)
-
-    button = SettingsButton(name: String(localized: "Interactive chat"))
-    button.id = UUID()
-    button.type = .interactiveChat
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"

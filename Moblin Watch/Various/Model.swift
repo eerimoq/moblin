@@ -18,6 +18,36 @@ enum ChatPostKind {
     case info
 }
 
+enum ChatPostHighlightKind {
+    case redemption
+    case other
+
+    static func fromWatchProtocol(kind: WatchProtocolChatHighlightKind) -> ChatPostHighlightKind {
+        switch kind {
+        case .redemption:
+            return .redemption
+        case .other:
+            return .other
+        }
+    }
+}
+
+struct ChatPostHighlight {
+    let kind: ChatPostHighlightKind
+    let color: Color
+    let image: String
+    let title: String
+
+    static func fromWatchProtocol(highlight: WatchProtocolChatHighlight) -> ChatPostHighlight {
+        return ChatPostHighlight(
+            kind: ChatPostHighlightKind.fromWatchProtocol(kind: highlight.kind),
+            color: highlight.color.color(),
+            image: highlight.image,
+            title: highlight.title
+        )
+    }
+}
+
 struct ChatPost: Identifiable {
     var id: Int
     var kind: ChatPostKind
@@ -25,6 +55,11 @@ struct ChatPost: Identifiable {
     var userColor: Color
     var segments: [ChatPostSegment]
     var timestamp: String
+    var highlight: ChatPostHighlight?
+
+    func isRedemption() -> Bool {
+        return highlight?.kind == .redemption
+    }
 }
 
 class Model: NSObject, ObservableObject {
@@ -157,15 +192,18 @@ class Model: NSObject, ObservableObject {
             }
         }
         latestChatMessageTime = now
-        chatPosts.prepend(ChatPost(id: message.id,
-                                   kind: .normal,
-                                   user: message.user,
-                                   userColor: message.userColor.color(),
-                                   segments: message.segments.map { ChatPostSegment(
-                                       text: $0.text,
-                                       url: makeUrl(url: $0.url)
-                                   ) },
-                                   timestamp: message.timestamp))
+        chatPosts.prepend(
+            ChatPost(id: message.id,
+                     kind: .normal,
+                     user: message.user,
+                     userColor: message.userColor.color(),
+                     segments: message.segments.map { ChatPostSegment(
+                         text: $0.text,
+                         url: makeUrl(url: $0.url)
+                     ) },
+                     timestamp: message.timestamp,
+                     highlight: message.highlight.map { ChatPostHighlight.fromWatchProtocol(highlight: $0) })
+        )
         numberOfNormalPostsInChat += 1
         while numberOfNormalPostsInChat > maximumNumberOfWatchChatMessages {
             if chatPosts.popLast()?.kind == .normal {

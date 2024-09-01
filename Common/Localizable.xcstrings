@@ -23887,6 +23887,7 @@
       }
     },
     "Chat is hidden" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -50023,6 +50024,7 @@
       }
     },
     "Interactive chat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

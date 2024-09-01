@@ -404,6 +404,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingChat {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        QuickButtonChatView {
+                            model.showingChat = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if debug.letItSnow! {
                 SpriteView(scene: scene, options: [.allowsTransparency])
                     .ignoresSafeArea()

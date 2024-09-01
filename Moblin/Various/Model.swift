@@ -37,6 +37,7 @@ class DjiDeviceWrapper {
 }
 
 private let maximumNumberOfChatMessages = 50
+private let maximumNumberOfInteractiveChatMessages = 100
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
 let fffffMessage = String(localized: "😢 FFFFF 😢")
@@ -146,6 +147,23 @@ struct ChatHighlight {
     let color: Color
     let image: String
     let title: String
+
+    func toWatchProtocol() -> WatchProtocolChatHighlight {
+        let watchProtocolKind: WatchProtocolChatHighlightKind
+        switch kind {
+        case .redemption:
+            watchProtocolKind = .redemption
+        case .other:
+            watchProtocolKind = .other
+        }
+        let color = color.toRgb() ?? .init(red: 0, green: 255, blue: 0)
+        return WatchProtocolChatHighlight(
+            kind: watchProtocolKind,
+            color: .init(red: color.red, green: color.green, blue: color.blue),
+            image: image,
+            title: title
+        )
+    }
 }
 
 struct ChatPost: Identifiable, Equatable {
@@ -275,9 +293,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showingSettings = false
     @Published var showingCosmetics = false
     @Published var settingsLayout: SettingsLayout = .right
-    @Published var showChatMessages = true
-    @Published var chatPaused = false
-    @Published var interactiveChat = false
+    @Published var showingChat = false
     @Published var blackScreen = false
     @Published var findFace = false
     private var findFaceTimer: Timer?
@@ -310,8 +326,6 @@ final class Model: NSObject, ObservableObject {
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
-    private var pausedChatPosts: Deque<ChatPost> = []
-    @Published var pausedChatPostsCount: Int = 0
     private var newChatPosts: Deque<ChatPost> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
@@ -319,6 +333,11 @@ final class Model: NSObject, ObservableObject {
     private var numberOfChatPostsPerMinute = 0
     @Published var chatPostsRate = String(localized: "0.0/min")
     @Published var chatPostsTotal: Int = 0
+    @Published var interactiveChatPosts: Deque<ChatPost> = []
+    private var newInteractiveChatPosts: Deque<ChatPost> = []
+    private var pausedInteractiveChatPosts: Deque<ChatPost> = []
+    @Published var pausedInteractiveChatPostsCount: Int = 0
+    @Published var interactiveChatPaused = false
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var nextWatchChatPostId = 1
     private var chatSpeedTicks = 0
@@ -1240,13 +1259,6 @@ final class Model: NSObject, ObservableObject {
                 updateButtonStates()
             }
         case .chat:
-            if !pressed {
-                showChatMessages.toggle()
-                toggleGlobalButton(type: .chat)
-                sceneUpdated(store: false)
-                updateButtonStates()
-            }
-        case .interactiveChat:
             break
         case .scene:
             if !pressed {
@@ -2193,33 +2205,28 @@ final class Model: NSObject, ObservableObject {
         media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!)
     }
 
-    func endOfChatReachedWhenPaused() {
+    func endOfInteractiveChatReachedWhenPaused() {
         var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedChatPosts.popFirst() {
+        while numberOfPostsAppended < 5, let post = pausedInteractiveChatPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = chatPosts.first, lastPost.user == nil {
+                if let lastPost = interactiveChatPosts.first, lastPost.user == nil {
                     continue
                 }
-                if pausedChatPosts.isEmpty {
+                if pausedInteractiveChatPosts.isEmpty {
                     continue
                 }
             }
-            chatPosts.prepend(post)
-            if !isRemoteControlAssistantConnected() {
-                sendChatMessageToWatch(post: post)
-            }
-            numberOfChatPostsPerTick += 1
-            streamTotalChatMessages += 1
+            interactiveChatPosts.prepend(post)
             numberOfPostsAppended += 1
         }
         if numberOfPostsAppended == 0 {
-            chatPaused = false
+            interactiveChatPaused = false
         }
     }
 
-    func pauseChat() {
-        chatPaused = true
-        pausedChatPostsCount = 0
+    func pauseInteractiveChat() {
+        interactiveChatPaused = true
+        pausedInteractiveChatPostsCount = 0
         appendChatMessage(
             platform: .unknown,
             user: nil,
@@ -2235,7 +2242,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func removeOldChatMessages(now: ContinuousClock.Instant) {
-        if chatPaused {
+        if interactiveChatPaused {
             return
         }
         guard database.chat.maximumAgeEnabled! else {
@@ -2251,11 +2258,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateChat() {
-        if chatPaused {
-            // The red line is one post.
-            pausedChatPostsCount = max(pausedChatPosts.count - 1, 0)
-            return
-        }
         while let post = newChatPosts.popFirst() {
             if chatPosts.count > maximumNumberOfChatMessages - 1 {
                 chatPosts.removeLast()
@@ -2272,6 +2274,17 @@ final class Model: NSObject, ObservableObject {
             }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
+        }
+        if interactiveChatPaused {
+            // The red line is one post.
+            pausedInteractiveChatPostsCount = max(pausedInteractiveChatPosts.count - 1, 0)
+        } else {
+            while let post = newInteractiveChatPosts.popFirst() {
+                if interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                    interactiveChatPosts.removeLast()
+                }
+                interactiveChatPosts.prepend(post)
+            }
         }
     }
 
@@ -3306,12 +3319,14 @@ final class Model: NSObject, ObservableObject {
         chatPostsTotal = 0
         chatSpeedTicks = 0
         chatPosts = []
-        pausedChatPosts = []
         newChatPosts = []
         numberOfChatPostsPerTick = 0
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
         numberOfChatPostsPerMinute = 0
+        interactiveChatPosts = []
+        pausedInteractiveChatPosts = []
+        newInteractiveChatPosts = []
         chatTextToSpeech.reset(running: true)
     }
 
@@ -3909,12 +3924,13 @@ final class Model: NSObject, ObservableObject {
             highlight: highlight
         )
         chatPostId += 1
-        if chatPaused {
-            if pausedChatPosts.count < 2 * maximumNumberOfChatMessages {
-                pausedChatPosts.append(post)
+        newChatPosts.append(post)
+        if interactiveChatPaused {
+            if pausedInteractiveChatPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
+                pausedInteractiveChatPosts.append(post)
             }
         } else {
-            newChatPosts.append(post)
+            newInteractiveChatPosts.append(post)
         }
     }
 
@@ -3928,10 +3944,6 @@ final class Model: NSObject, ObservableObject {
 
     func toggleBlackScreen() {
         blackScreen.toggle()
-    }
-
-    func toggleInteractiveChat() {
-        interactiveChat.toggle()
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
@@ -5786,7 +5798,7 @@ extension Model {
         guard let user = post.user else {
             return
         }
-        var userColor: WatchProtocolColor
+        let userColor: WatchProtocolColor
         if let hexColor = post.userColor,
            let color = WatchProtocolColor.fromHex(value: hexColor)
         {
@@ -5801,7 +5813,8 @@ extension Model {
             user: user,
             userColor: userColor,
             segments: post.segments
-                .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) }
+                .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) },
+            highlight: post.highlight?.toWatchProtocol()
         )
         nextWatchChatPostId += 1
         watchChatPosts.append(post)

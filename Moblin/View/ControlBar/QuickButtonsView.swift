@@ -103,20 +103,6 @@ struct QuickButtonsInnerView: View {
         model.sceneUpdated(store: false)
     }
 
-    private func chatAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.showChatMessages.toggle()
-        model.sceneUpdated(store: false)
-        model.updateButtonStates()
-    }
-
-    private func interactiveChatAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.toggleInteractiveChat()
-        model.sceneUpdated(store: false)
-        model.updateButtonStates()
-    }
-
     private func blackScreenAction(state _: ButtonState) {
         model.toggleBlackScreen()
         model.makeToast(
@@ -306,13 +292,7 @@ struct QuickButtonsInnerView: View {
                 })
             case .chat:
                 Button(action: {
-                    chatAction(state: state)
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size, slash: true)
-                })
-            case .interactiveChat:
-                Button(action: {
-                    interactiveChatAction(state: state)
+                    model.showingChat = true
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
