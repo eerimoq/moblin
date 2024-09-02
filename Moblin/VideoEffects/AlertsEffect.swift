@@ -489,6 +489,29 @@ final class AlertsEffect: VideoEffect {
         return (minX, maxY, width, height)
     }
 
+    private func calcFaceAngle(detection: VNFaceObservation, imageSize: CGSize) -> CGFloat? {
+        guard let medianLine = detection.landmarks?.medianLine else {
+            return nil
+        }
+        let medianLinePoints = medianLine.pointsInImage(imageSize: imageSize)
+        guard let firstPoint = medianLinePoints.first, let lastPoint = medianLinePoints.last else {
+            return nil
+        }
+        let deltaX = firstPoint.x - lastPoint.x
+        let deltaY = firstPoint.y - lastPoint.y
+        return -atan(deltaX / deltaY)
+    }
+
+    private func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
+        return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
+    }
+
+    private func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
+        let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
+        let beta = atan(point.y / point.x)
+        return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
+    }
+
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -500,21 +523,25 @@ final class AlertsEffect: VideoEffect {
         }
         var outputImage = image
         for detection in faceDetections {
+            guard let rotationAngle = calcFaceAngle(detection: detection, imageSize: image.extent.size) else {
+                continue
+            }
             var centerX: Double
             var centerY: Double
             var alertImageHeight: Double
-            guard let allPoints = detection.landmarks?.allPoints else {
+            guard var allPoints = detection.landmarks?.allPoints?.pointsInImage(imageSize: image.extent.size)
+            else {
                 continue
             }
-            let points = allPoints.pointsInImage(imageSize: image.extent.size)
-            guard let firstPoint = points.first else {
+            allPoints = rotateFace(allPoints: allPoints, rotationAngle: -rotationAngle)
+            guard let firstPoint = allPoints.first else {
                 continue
             }
             var faceMinX = firstPoint.x
             var faceMaxX = firstPoint.x
             var faceMinY = firstPoint.y
             var faceMaxY = firstPoint.y
-            for point in points {
+            for point in allPoints {
                 faceMinX = min(point.x, faceMinX)
                 faceMaxX = max(point.x, faceMaxX)
                 faceMinY = min(point.y, faceMinY)
@@ -531,7 +558,8 @@ final class AlertsEffect: VideoEffect {
                 guard let leftEye = detection.landmarks?.leftEye else {
                     continue
                 }
-                let points = leftEye.pointsInImage(imageSize: image.extent.size)
+                var points = leftEye.pointsInImage(imageSize: image.extent.size)
+                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
                 guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
                     continue
                 }
@@ -541,7 +569,8 @@ final class AlertsEffect: VideoEffect {
                 guard let rightEye = detection.landmarks?.rightEye else {
                     continue
                 }
-                let points = rightEye.pointsInImage(imageSize: image.extent.size)
+                var points = rightEye.pointsInImage(imageSize: image.extent.size)
+                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
                 guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
                     continue
                 }
@@ -551,7 +580,8 @@ final class AlertsEffect: VideoEffect {
                 guard let outerLips = detection.landmarks?.outerLips else {
                     continue
                 }
-                let points = outerLips.pointsInImage(imageSize: image.extent.size)
+                var points = outerLips.pointsInImage(imageSize: image.extent.size)
+                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
                 guard let (minX, maxY, width, height) = calcMinXMaxYWidthHeight(points: points) else {
                     continue
                 }
@@ -563,10 +593,13 @@ final class AlertsEffect: VideoEffect {
                     scaleX: alertImageHeight / alertImage.extent.height,
                     y: alertImageHeight / alertImage.extent.height
                 ))
-            centerX -= moblinImage.extent.width / 2
-            centerY -= moblinImage.extent.height / 2
+            let centerPoint = rotatePoint(
+                point: .init(x: centerX - moblinImage.extent.midX, y: centerY - moblinImage.extent.midY),
+                alpha: rotationAngle
+            )
             outputImage = moblinImage
-                .transformed(by: CGAffineTransform(translationX: centerX, y: centerY))
+                .transformed(by: CGAffineTransform(rotationAngle: rotationAngle))
+                .transformed(by: CGAffineTransform(translationX: centerPoint.x, y: centerPoint.y))
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
