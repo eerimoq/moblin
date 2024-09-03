@@ -512,6 +512,14 @@ final class AlertsEffect: VideoEffect {
         return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
     }
 
+    private func getFacePoints(detection: VNFaceObservation, imageSize: CGSize) -> [CGPoint] {
+        var points: [CGPoint] = []
+        points += detection.landmarks?.medianLine?.pointsInImage(imageSize: imageSize) ?? []
+        points += detection.landmarks?.leftEyebrow?.pointsInImage(imageSize: imageSize) ?? []
+        points += detection.landmarks?.rightEyebrow?.pointsInImage(imageSize: imageSize) ?? []
+        return points
+    }
+
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -526,14 +534,10 @@ final class AlertsEffect: VideoEffect {
             guard let rotationAngle = calcFaceAngle(detection: detection, imageSize: image.extent.size) else {
                 continue
             }
-            var centerX: Double
-            var centerY: Double
-            var alertImageHeight: Double
-            guard var allPoints = detection.landmarks?.allPoints?.pointsInImage(imageSize: image.extent.size)
-            else {
-                continue
-            }
-            allPoints = rotateFace(allPoints: allPoints, rotationAngle: -rotationAngle)
+            let allPoints = rotateFace(
+                allPoints: getFacePoints(detection: detection, imageSize: image.extent.size),
+                rotationAngle: -rotationAngle
+            )
             guard let firstPoint = allPoints.first else {
                 continue
             }
@@ -549,7 +553,9 @@ final class AlertsEffect: VideoEffect {
             }
             let faceWidth = faceMaxX - faceMinX
             let faceHeight = faceMaxY - faceMinY
-            alertImageHeight = faceHeight * landmarkSettings.height
+            let alertImageHeight = faceHeight * landmarkSettings.height
+            var centerX: Double
+            var centerY: Double
             switch landmarkSettings.landmark {
             case .face:
                 centerX = faceMinX + landmarkSettings.centerX * faceWidth

@@ -7560,6 +7560,7 @@ extension Model {
             if device.autoRestartStream! {
                 startDjiDeviceLiveStream(device: device)
             } else {
+                // Remove to keep stream running?
                 stopDjiDeviceLiveStream(device: device)
             }
         }
