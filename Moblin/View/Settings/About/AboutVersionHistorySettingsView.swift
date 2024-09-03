@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.379.0", date: "2024-09-03", changes: [
+        "• Make face alert images rotate with the face.",
+        "• Show \"Quick button created\" toast when creating a LUT. 💡 TurtleVerified",
+        "• Enable reaction effects. 💡 MikeV",
+        "  • Seems to work on front and USB cameras.",
+        "  • Might remove this soon if not working well for you guys.",
+    ]),
     Version(version: "0.378.0", date: "2024-09-01", changes: [
         "• Preparations for sending chat messages.",
         "• Chat button to show important events (alerts-like).",
