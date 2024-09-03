@@ -168,12 +168,15 @@ final class KickPusher: NSObject {
     private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
         var segments: [ChatPostSegment] = []
-        for var segment in createKickSegments(message: message.content) {
+        var id = 0
+        for var segment in createKickSegments(message: message.content, id: &id) {
             if let text = segment.text {
-                segments += emotes.createSegments(text: text)
+                segments += emotes.createSegments(text: text, id: &id)
                 segment.text = nil
             }
-            segments.append(segment)
+            if segment.text != nil || segment.url != nil {
+                segments.append(segment)
+            }
         }
         model.appendChatMessage(
             platform: .kick,
@@ -194,19 +197,20 @@ final class KickPusher: NSObject {
         webSocket.send(string: message)
     }
 
-    private func createKickSegments(message: String) -> [ChatPostSegment] {
+    private func createKickSegments(message: String, id: inout Int) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
         var startIndex = message.startIndex
         for match in message[startIndex...].matches(of: /\[emote:(\d+):[^\]]+\]/) {
             let emoteId = match.output.1
             let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
             let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
-            segments += makeChatPostTextSegments(text: String(textBeforeEmote))
-            segments.append(ChatPostSegment(url: url))
+            segments += makeChatPostTextSegments(text: String(textBeforeEmote), id: &id)
+            segments.append(ChatPostSegment(id: id, url: url))
+            id += 1
             startIndex = match.range.upperBound
         }
         if startIndex != message.endIndex {
-            segments += makeChatPostTextSegments(text: String(message[startIndex...]))
+            segments += makeChatPostTextSegments(text: String(message[startIndex...]), id: &id)
         }
         return segments
     }

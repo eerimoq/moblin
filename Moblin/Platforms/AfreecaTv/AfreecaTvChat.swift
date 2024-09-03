@@ -281,12 +281,15 @@ final class AfreecaTvChat: NSObject {
 
     private func createSegments(message: String) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
-        for var segment in makeChatPostTextSegments(text: message) {
+        var id = 0
+        for var segment in makeChatPostTextSegments(text: message, id: &id) {
             if let text = segment.text {
-                segments += emotes.createSegments(text: text)
+                segments += emotes.createSegments(text: text, id: &id)
                 segment.text = nil
             }
-            segments.append(segment)
+            if segment.text != nil || segment.url != nil {
+                segments.append(segment)
+            }
         }
         return segments
     }

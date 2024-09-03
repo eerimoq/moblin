@@ -122,17 +122,19 @@ struct ChatMessageEmote: Identifiable {
 }
 
 struct ChatPostSegment: Identifiable {
-    var id = UUID()
+    var id: Int
     var text: String?
     var url: URL?
 }
 
-func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
+func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] {
     var segments: [ChatPostSegment] = []
     for word in text.split(separator: " ") {
         segments.append(ChatPostSegment(
+            id: id,
             text: "\(word) "
         ))
+        id += 1
     }
     return segments
 }
@@ -7658,10 +7660,11 @@ extension Model: TwitchEventSubDelegate {
     }
 
     private func appendTwitchChatAlertMessage(user: String, text: String, title: String, color: Color) {
+        var id = 0
         appendChatMessage(platform: .twitch,
                           user: user,
                           userColor: nil,
-                          segments: makeChatPostTextSegments(text: text),
+                          segments: makeChatPostTextSegments(text: text, id: &id),
                           timestamp: digitalClock,
                           timestampTime: .now,
                           isAction: false,

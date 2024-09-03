@@ -90,7 +90,7 @@ class Emotes {
         task = nil
     }
 
-    func createSegments(text: String) -> [ChatPostSegment] {
+    func createSegments(text: String, id: inout Int) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
         var parts: [String] = []
         for word in text.components(separatedBy: .whitespaces) {
@@ -99,13 +99,16 @@ class Emotes {
                 continue
             }
             segments.append(ChatPostSegment(
+                id: id,
                 text: parts.joined(separator: " "),
                 url: emote.url
             ))
+            id += 1
             parts.removeAll()
         }
         if !parts.isEmpty {
-            segments.append(ChatPostSegment(text: parts.joined(separator: " ")))
+            segments.append(ChatPostSegment(id: id, text: parts.joined(separator: " ")))
+            id += 1
         }
         return segments
     }

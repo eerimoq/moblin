@@ -326,6 +326,7 @@ class OpenStreamingPlatformChat {
     }
 
     private func createSegments(message: String) -> [ChatPostSegment] {
-        return makeChatPostTextSegments(text: message)
+        var id = 0
+        return makeChatPostTextSegments(text: message, id: &id)
     }
 }

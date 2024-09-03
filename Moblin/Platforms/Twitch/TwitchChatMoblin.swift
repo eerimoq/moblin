@@ -125,7 +125,8 @@ final class TwitchChatMoblin {
     }
 
     private func createTwitchSegments(text: String,
-                                      emotes: [ChatMessageEmote]) -> [ChatPostSegment]
+                                      emotes: [ChatMessageEmote],
+                                      id: inout Int) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
         let unicodeText = text.unicodeScalars
@@ -164,10 +165,12 @@ final class TwitchChatMoblin {
                 }
             }
             if let text {
-                segments += makeChatPostTextSegments(text: text)
+                segments += makeChatPostTextSegments(text: text, id: &id)
             }
-            segments.append(ChatPostSegment(url: emote.url))
-            segments.append(ChatPostSegment(text: ""))
+            segments.append(ChatPostSegment(id: id, url: emote.url))
+            id += 1
+            segments.append(ChatPostSegment(id: id, text: ""))
+            id += 1
             startIndex = unicodeText.index(
                 unicodeText.startIndex,
                 offsetBy: emote.range.upperBound + 1
@@ -175,7 +178,8 @@ final class TwitchChatMoblin {
         }
         if startIndex < unicodeText.endIndex {
             for word in String(unicodeText[startIndex...]).split(separator: " ") {
-                segments.append(ChatPostSegment(text: "\(word) "))
+                segments.append(ChatPostSegment(id: id, text: "\(word) "))
+                id += 1
             }
         }
         return segments
@@ -186,12 +190,15 @@ final class TwitchChatMoblin {
                                 emotesManager: Emotes) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
-        for var segment in createTwitchSegments(text: text, emotes: emotes) {
+        var id = 0
+        for var segment in createTwitchSegments(text: text, emotes: emotes, id: &id) {
             if let text = segment.text {
-                segments += emotesManager.createSegments(text: text)
+                segments += emotesManager.createSegments(text: text, id: &id)
                 segment.text = nil
             }
-            segments.append(segment)
+            if segment.text != nil || segment.url != nil {
+                segments.append(segment)
+            }
         }
         return segments
     }

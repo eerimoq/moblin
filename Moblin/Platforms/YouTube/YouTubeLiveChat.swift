@@ -268,24 +268,27 @@ final class YouTubeLiveChat: NSObject {
     private func handleChatDescription(chatDescription: ChatDescription,
                                        highlight: ChatHighlight?) async -> Int
     {
+        var id = 0
         var segments: [ChatPostSegment] = []
         if let headerSubtext = chatDescription.headerSubtext {
             for run in headerSubtext.runs {
                 if let text = run.text {
-                    segments += createSegments(message: text)
+                    segments += createSegments(message: text, id: &id)
                 }
                 if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
-                    segments.append(.init(url: URL(string: emojiUrl)))
+                    segments.append(.init(id: id, url: URL(string: emojiUrl)))
+                    id += 1
                 }
             }
         }
         if let message = chatDescription.message {
             for run in message.runs {
                 if let text = run.text {
-                    segments += createSegments(message: text)
+                    segments += createSegments(message: text, id: &id)
                 }
                 if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
-                    segments.append(.init(url: URL(string: emojiUrl)))
+                    segments.append(.init(id: id, url: URL(string: emojiUrl)))
+                    id += 1
                 }
             }
         }
@@ -330,14 +333,16 @@ final class YouTubeLiveChat: NSObject {
         """.utf8Data
     }
 
-    private func createSegments(message: String) -> [ChatPostSegment] {
+    private func createSegments(message: String, id: inout Int) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
-        for var segment in makeChatPostTextSegments(text: message) {
+        for var segment in makeChatPostTextSegments(text: message, id: &id) {
             if let text = segment.text {
-                segments += emotes.createSegments(text: text)
+                segments += emotes.createSegments(text: text, id: &id)
                 segment.text = nil
             }
-            segments.append(segment)
+            if segment.text != nil || segment.url != nil {
+                segments.append(segment)
+            }
         }
         return segments
     }
