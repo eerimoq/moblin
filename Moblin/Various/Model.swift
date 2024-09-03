@@ -7559,12 +7559,13 @@ extension Model {
             guard device.isStarted! else {
                 continue
             }
-            if device.autoRestartStream! {
-                startDjiDeviceLiveStream(device: device)
-            } else {
-                // Remove to keep stream running?
-                stopDjiDeviceLiveStream(device: device)
+            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+                return
             }
+            guard djiDeviceWrapper.device.getState() != .streaming else {
+                return
+            }
+            startDjiDeviceLiveStream(device: device)
         }
     }
 

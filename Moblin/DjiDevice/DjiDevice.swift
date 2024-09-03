@@ -96,6 +96,9 @@ class DjiDevice: NSObject {
     }
 
     func stopLiveStream() {
+        guard state != .idle else {
+            return
+        }
         logger.info("dji-device: Stop live stream")
         stopStartStreamingTimer()
         startStopStreamingTimer()
@@ -150,6 +153,9 @@ class DjiDevice: NSObject {
     }
 
     private func setState(state: DjiDeviceState) {
+        guard state != self.state else {
+            return
+        }
         logger.info("dji-device: State change \(self.state) -> \(state)")
         self.state = state
         delegate?.djiDeviceStreamingState(self, state: state)
