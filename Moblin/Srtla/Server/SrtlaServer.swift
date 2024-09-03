@@ -218,7 +218,8 @@ class SrtlaServer {
         }
         let groupId = packet[srtControlTypeSize...]
         guard let client = clients[groupId] else {
-            logger.warning("srtla-server: Unknown group id in reg 2 packet")
+            logger.info("srtla-server: Unknown group id in reg 2 packet.")
+            sendSrtlaNgp(connection: connection)
             return false
         }
         client.addConnection(connection: connection)
@@ -236,6 +237,12 @@ class SrtlaServer {
     private func sendSrtlaReg3(connection: NWConnection) {
         logger.info("srtla-server: Sending reg 3 (connection registered)")
         let packet = createSrtlaPacket(type: .reg3, length: srtControlTypeSize)
+        sendPacket(connection: connection, packet: packet)
+    }
+
+    private func sendSrtlaNgp(connection: NWConnection) {
+        logger.info("srtla-server: Sending ngp (no group)")
+        let packet = createSrtlaPacket(type: .regNgp, length: srtControlTypeSize)
         sendPacket(connection: connection, packet: packet)
     }
 
