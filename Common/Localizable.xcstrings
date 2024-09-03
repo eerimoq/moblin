@@ -53929,6 +53929,9 @@
         }
       }
     },
+    "LUT quick button created" : {
+
+    },
     "LUTs" : {
       "localizations" : {
         "de" : {
@@ -61209,6 +61212,9 @@
           }
         }
       }
+    },
+    "My LUTs" : {
+
     },
     "My scene" : {
       "localizations" : {
@@ -89954,6 +89960,9 @@
           }
         }
       }
+    },
+    "Tap it to apply the LUT" : {
+
     },
     "Tap screen to focus" : {
       "localizations" : {

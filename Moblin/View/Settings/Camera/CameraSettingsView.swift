@@ -128,7 +128,7 @@ struct CameraSettingsLutsView: View {
                     }
                 }
             } header: {
-                Text("Custom")
+                Text("My LUTs")
             } footer: {
                 Text("Add your own LUTs.")
             }

@@ -2067,6 +2067,10 @@ final class Model: NSObject, ObservableObject {
         store()
         updateButtonStates()
         resetSelectedScene()
+        makeToast(
+            title: String(localized: "LUT quick button created"),
+            subTitle: String(localized: "Tap it to apply the LUT")
+        )
     }
 
     func removeLut(offsets: IndexSet) {
