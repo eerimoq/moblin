@@ -934,7 +934,13 @@ final class Model: NSObject, ObservableObject {
         return false
     }
 
+    private let catPrinter = CatPrinter()
+
     func setup() {
+        if false {
+            catPrinter.start(deviceId: UUID())
+            catPrinter.print(image: Data())
+        }
         fixAlertMedias()
         setMapPitch()
         setAllowVideoRangePixelFormat()
