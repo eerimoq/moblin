@@ -28,20 +28,24 @@ private let checksumTable: [UInt8] = [
     0xFA, 0xFD, 0xF4, 0xF3,
 ]
 
-private func calcCrc(_ data: [UInt8], _ offset: Int, _ count: Int) -> UInt8 {
+private func calcCrc(_ data: [UInt8]) -> UInt8 {
     var crc: UInt8 = 0
-    for index in offset ..< (offset + count) {
-        crc = checksumTable[Int((crc ^ data[index]) & 0xFF)]
+    for byte in data {
+        crc = checksumTable[Int((crc ^ byte) & 0xFF)]
     }
     return crc
 }
 
+private func packCommand(command: UInt8, payload: [UInt8]) -> [UInt8] {
+    if payload.count > 0xff {
+        logger.info("Command payload too big (\(payload.count) > 255)")
+        return []
+    }
+    return [0x51, 0x78, command, 0x00, UInt8(payload.count), 0x00] + payload + [calcCrc(payload), 0xff]
+}
+
 private let cmdGetDevState: [UInt8] = [
     0x51, 0x78, 0xA3, 0x00, 0x01, 0x00, 0x00, 0x00, 0xFF,
-]
-
-private let cmdSetQuality200Dpi: [UInt8] = [
-    0x51, 0x78, 0xA4, 0x00, 0x01, 0x00, 0x32, 0x9E, 0xFF,
 ]
 
 private let cmdLatticeStart: [UInt8] = [
@@ -58,28 +62,23 @@ private let cmdSetPaper: [UInt8] = [
     0x51, 0x78, 0xA1, 0x00, 0x02, 0x00, 0x30, 0x00, 0xF9, 0xFF,
 ]
 
+private func cmdSetQuality200Dpi() -> [UInt8] {
+    return packCommand(command: 0xA4, payload: [0x32])
+}
+
+private func cmdSetEnergy(_ value: UInt16) -> [UInt8] {
+    return packCommand(command: 0xAF, payload: [UInt8((value >> 8) & 0xFF), UInt8(value & 0xFF)])
+}
+
 private func cmdFeedPaper(_ value: UInt8) -> [UInt8] {
-    var data: [UInt8] = [0x51, 0x78, 0xBD, 0x00, 0x01, 0x00, value, 0x00, 0xFF]
-    data[data.count - 2] = calcCrc(data, 6, 1)
-    return data
+    return packCommand(command: 0xBD, payload: [value])
 }
 
-private func cmdSetEnergy(_ value: UInt8) -> [UInt8] {
-    var data: [UInt8] = [
-        0x51, 0x78, 0xAF, 0x00, 0x02, 0x00,
-        UInt8((value >> 8) & 0xFF),
-        UInt8(value & 0xFF),
-        0x00, 0xFF,
-    ]
-    data[data.count - 2] = calcCrc(data, 6, 2)
-    return data
-}
-
-private func encodeByte(_ imageRow: [Bool]) -> [UInt8] {
+private func encodeBytes(_ imageRow: [Bool]) -> [UInt8] {
     var res: [UInt8] = []
-    for byteStart in 0 ..< imageRow.count / 8 {
+    for byteStart in stride(from: 0, to: imageRow.count, by: 8) {
         var byte: UInt8 = 0
-        for bitIndex in 0 ..< 8 where imageRow[byteStart * 8 + bitIndex] {
+        for bitIndex in 0 ..< 8 where imageRow[byteStart + bitIndex] {
             byte |= (1 << bitIndex)
         }
         res.append(byte)
@@ -88,21 +87,16 @@ private func encodeByte(_ imageRow: [Bool]) -> [UInt8] {
 }
 
 private func cmdPrintRow(_ imageRow: [Bool]) -> [UInt8] {
-    let encodedImage = encodeByte(imageRow)
-    var data: [UInt8] = [0x51, 0x78, 0xA2, 0x00, UInt8(encodedImage.count), 0x00]
-    data += encodedImage
-    data += [0x00, 0xFF]
-    data[data.count - 2] = calcCrc(data, 6, encodedImage.count)
-    return data
+    return packCommand(command: 0xA2, payload: encodeBytes(imageRow))
 }
 
 func createPrintImageCommand(image: [[Bool]]) -> [UInt8] {
     var data = cmdGetDevState
-    data += cmdSetQuality200Dpi
+    data += cmdSetQuality200Dpi()
     data += cmdLatticeStart
-    data += cmdSetEnergy(255)
-    for row in image {
-        data += cmdPrintRow(row)
+    data += cmdSetEnergy(0x3000)
+    for imageRow in image {
+        data += cmdPrintRow(imageRow)
     }
     data += cmdFeedPaper(25)
     data += cmdSetPaper
