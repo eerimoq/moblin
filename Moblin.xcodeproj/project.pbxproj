@@ -2133,7 +2133,7 @@
 				0379BB992AAD80AF00B718B6 /* Debug */,
 				032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */,
 				03B16A2B2B35D71500E5AB07 /* Display */,
-				03E3E38F2C431DD800932B00 /* DjiDevice */,
+				03E3E38F2C431DD800932B00 /* DjiDevices */,
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
@@ -2392,14 +2392,14 @@
 			path = NetworkSetup;
 			sourceTree = "<group>";
 		};
-		03E3E38F2C431DD800932B00 /* DjiDevice */ = {
+		03E3E38F2C431DD800932B00 /* DjiDevices */ = {
 			isa = PBXGroup;
 			children = (
 				03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */,
 				038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */,
 				0333322C2C48A31700C87D62 /* DjiDeviceScannerSettingsView.swift */,
 			);
-			path = DjiDevice;
+			path = DjiDevices;
 			sourceTree = "<group>";
 		};
 		03E877F52B2DB26100086355 /* GlobalButtons */ = {
