@@ -939,7 +939,7 @@ final class Model: NSObject, ObservableObject {
     func setup() {
         if false {
             catPrinter.start(deviceId: UUID())
-            catPrinter.print(image: Data())
+            catPrinter.print(image: CIImage.black.cropped(to: .init(x: 0, y: 0, width: 1920, height: 1080)))
         }
         fixAlertMedias()
         setMapPitch()

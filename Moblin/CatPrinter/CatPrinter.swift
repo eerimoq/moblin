@@ -2,6 +2,7 @@
 // MIT License
 
 import CoreBluetooth
+import CoreImage
 import Foundation
 
 private enum State {
@@ -17,6 +18,7 @@ private let services = [
 class CatPrinter: NSObject {
     private var state: State = .idle
     private var centralManager: CBCentralManager?
+    private let context = CIContext()
 
     func start(deviceId _: UUID) {
         reset()
@@ -28,9 +30,33 @@ class CatPrinter: NSObject {
         reset()
     }
 
-    func print(image _: Data) {
+    func print(image: CIImage) {
+        let image = process(image: image)
         let command = createPrintImageCommand(image: [[true, false]])
         logger.info("cat-printer: Command \(command)")
+    }
+
+    // Each returned byte is a grayscale pixel
+    private func process(image: CIImage) -> ([UInt8], CGSize)? {
+        var image = image
+        let filter = CIFilter.colorMonochrome()
+        filter.inputImage = image
+        filter.color = CIColor(red: 0.75, green: 0.75, blue: 0.75)
+        filter.intensity = 1.0
+        image = filter.outputImage ?? image
+        let scale = 384 / image.extent.width
+        image = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        guard let cgImage = context.createCGImage(image, from: image.extent) else {
+            return nil
+        }
+        guard let data = cgImage.dataProvider?.data else {
+            return nil
+        }
+        let length = CFDataGetLength(data)
+        guard let data = CFDataGetBytePtr(data) else {
+            return nil
+        }
+        return (Data(bytes: data, count: length).bytes, image.extent.size)
     }
 
     private func reset() {
