@@ -1540,6 +1540,7 @@ class SettingsDebug: Codable {
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
+    var catPrinters: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -1792,6 +1793,18 @@ class SettingsDjiDevice: Codable, Identifiable {
 
 class SettingsDjiDevices: Codable {
     var devices: [SettingsDjiDevice] = []
+}
+
+class SettingsCatPrinter: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+}
+
+class SettingsCatPrinters: Codable {
+    var devices: [SettingsCatPrinter] = []
 }
 
 class SettingsQuickButtons: Codable {
@@ -2197,6 +2210,7 @@ class Database: Codable {
     var portrait: Bool? = false
     var djiDevices: SettingsDjiDevices? = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery? = .init()
+    var catPrinters: SettingsCatPrinters? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3704,6 +3718,14 @@ final class Settings {
         }
         if realDatabase.chat.botSendLowBatteryWarning == nil {
             realDatabase.chat.botSendLowBatteryWarning = false
+            store()
+        }
+        if realDatabase.catPrinters == nil {
+            realDatabase.catPrinters = .init()
+            store()
+        }
+        if realDatabase.debug!.catPrinters == nil {
+            realDatabase.debug!.catPrinters = false
             store()
         }
     }

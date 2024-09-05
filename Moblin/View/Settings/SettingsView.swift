@@ -158,6 +158,14 @@ struct SettingsView: View {
                             text: String(localized: "DJI devices")
                         )
                     }
+                    if model.database.debug!.catPrinters! {
+                        NavigationLink(destination: CatPrintersSettingsView()) {
+                            IconAndTextView(
+                                image: "pawprint",
+                                text: String(localized: "Cat printers")
+                            )
+                        }
+                    }
                 }
                 NavigationLink(destination: LocationSettingsView()) {
                     IconAndTextView(image: "location", text: String(localized: "Location"))

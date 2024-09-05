@@ -5,18 +5,18 @@ import CoreBluetooth
 import CoreImage
 import Foundation
 
-private enum State {
+enum CatPrinterState {
     case idle
     case discovering
 }
 
-private let services = [
+let catPrinterServices = [
     CBUUID(string: "0000ae30-0000-1000-8000-00805f9b34fb"),
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
 class CatPrinter: NSObject {
-    private var state: State = .idle
+    private var state: CatPrinterState = .idle
     private var centralManager: CBCentralManager?
     private let context = CIContext()
 
@@ -64,7 +64,7 @@ class CatPrinter: NSObject {
         setState(state: .idle)
     }
 
-    private func setState(state: State) {
+    private func setState(state: CatPrinterState) {
         guard state != self.state else {
             return
         }
@@ -77,7 +77,7 @@ extension CatPrinter: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: services)
+            centralManager?.scanForPeripherals(withServices: catPrinterServices)
         default:
             break
         }

@@ -10621,6 +10621,9 @@
         }
       }
     },
+    "a printer" : {
+
+    },
     "a privacy region" : {
       "localizations" : {
         "de" : {
@@ -22847,6 +22850,12 @@
         }
       }
     },
+    "Cat printer" : {
+
+    },
+    "Cat printers" : {
+
+    },
     "Change camera and restart stream for these to work properly." : {
       "localizations" : {
         "de" : {
@@ -32217,6 +32226,9 @@
           }
         }
       }
+    },
+    "Disabled" : {
+
     },
     "Disabled connections will not be used." : {
       "localizations" : {

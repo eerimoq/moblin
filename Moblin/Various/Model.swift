@@ -524,6 +524,10 @@ final class Model: NSObject, ObservableObject {
     private var currentWiFiSsid: String?
     @Published var djiDeviceStreamingState: DjiDeviceState?
     private var currentDjiDeviceSettings: SettingsDjiDevice?
+    private var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
+
+    @Published var catPrinterState: CatPrinterState?
+    private var catPrinters: [UUID: CatPrinter] = [:]
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -559,7 +563,6 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
-    private var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
 
     override init() {
         super.init()
@@ -934,13 +937,7 @@ final class Model: NSObject, ObservableObject {
         return false
     }
 
-    private let catPrinter = CatPrinter()
-
     func setup() {
-        if false {
-            catPrinter.start(deviceId: UUID())
-            catPrinter.print(image: CIImage.black.cropped(to: .init(x: 0, y: 0, width: 1920, height: 1080)))
-        }
         fixAlertMedias()
         setMapPitch()
         setAllowVideoRangePixelFormat()
@@ -1077,6 +1074,7 @@ final class Model: NSObject, ObservableObject {
         initMediaPlayers()
         removeUnusedLogs()
         autoStartDjiDevices()
+        autoStartCatPrinters()
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
@@ -7797,6 +7795,46 @@ extension Model: SpeechToTextDelegate {
     func speechToTextClear() {
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
+        }
+    }
+}
+
+extension Model {
+    func isCatPrinterEnabled(device: SettingsCatPrinter) -> Bool {
+        return device.enabled
+    }
+
+    func enableCatPrinter(device: SettingsCatPrinter) {
+        if !catPrinters.keys.contains(device.id) {
+            catPrinters[device.id] = CatPrinter()
+        }
+        guard let catPrinter = catPrinters[device.id] else {
+            return
+        }
+        catPrinter.start(deviceId: device.id)
+    }
+
+    func disableCatPrinter(device: SettingsCatPrinter) {
+        guard let catPrinter = catPrinters[device.id] else {
+            return
+        }
+        catPrinter.stop()
+    }
+
+    func setCurrentCatPrinter(device: SettingsCatPrinter) {
+        catPrinterState = getCatPrinterState(device: device)
+    }
+
+    func getCatPrinterState(device _: SettingsCatPrinter) -> CatPrinterState {
+        return .idle
+    }
+
+    private func autoStartCatPrinters() {
+        guard database.debug!.catPrinters! else {
+            return
+        }
+        for device in database.catPrinters!.devices where device.enabled {
+            enableCatPrinter(device: device)
         }
     }
 }

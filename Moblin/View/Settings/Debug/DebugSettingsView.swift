@@ -135,6 +135,16 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.twitchRewards = value
                 }))
+                Toggle("Cat printers", isOn: Binding(get: {
+                    model.database.debug!.catPrinters!
+                }, set: { value in
+                    model.database.debug!.catPrinters = value
+                    if !model.database.debug!.catPrinters! {
+                        for device in model.database.catPrinters!.devices {
+                            model.disableCatPrinter(device: device)
+                        }
+                    }
+                }))
             } header: {
                 Text("Experimental")
             }
