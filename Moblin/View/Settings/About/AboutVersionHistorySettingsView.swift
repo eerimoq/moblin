@@ -20,6 +20,8 @@ private let versions = [
         "• Enable reaction effects. 💡 MikeV",
         "  • Seems to work on front and USB cameras.",
         "  • Might remove this soon if not working well for you guys.",
+        "• Do not stop or restart DJI device RTMP streams when entering foregound if the DJI device is likely already streaming. 💡 SoWeQ",
+        "• Make the SRTLA server work with BELABOX, hopefully. 🐛 JohannesLiv 🧑‍🏭 mikeful",
     ]),
     Version(version: "0.378.0", date: "2024-09-01", changes: [
         "• Preparations for sending chat messages.",
