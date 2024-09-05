@@ -52,11 +52,24 @@ class CatPrinter: NSObject {
         }
         logger.info("cat-printer: Printing...")
         let image = process(image: currentPrintJob.image)
-        let command = createPrintImageCommand(image: [[true, false]])
+        let command = createPrintImageCommand(image: [
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true],
+        ])
         send(command: command)
     }
 
-    private func send(command _: [UInt8]) {}
+    private func send(command: [UInt8]) {
+        logger.info("cat-printer: Sending \(command.count) bytes...")
+    }
 
     // Each returned byte is a grayscale pixel
     private func process(image: CIImage) -> ([UInt8], CGSize)? {
