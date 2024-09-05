@@ -349,7 +349,7 @@ struct QuickButtonChatView: View {
                 TextField("Send message", text: $message)
                     .padding(5)
                 Button(action: {
-                    model.makeErrorToast(title: "Sending chat messages does not yet work")
+                    model.sendChatMessage(message: message)
                     message = ""
                 }, label: {
                     Image(systemName: "paperplane")

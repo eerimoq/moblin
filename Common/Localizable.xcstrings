@@ -25455,6 +25455,9 @@
     "Command" : {
 
     },
+    "Commands" : {
+
+    },
     "Configure it in Settings → Remote control" : {
       "localizations" : {
         "de" : {
@@ -78647,6 +78650,9 @@
           }
         }
       }
+    },
+    "Send low battery message" : {
+
     },
     "Send message" : {
 

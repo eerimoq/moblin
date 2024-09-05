@@ -3444,6 +3444,19 @@ final class Model: NSObject, ObservableObject {
             }
     }
 
+    func sendChatMessage(message: String) {
+        guard isTwitchAccessTokenConfigured() else {
+            makeErrorToast(title: "Not logged in to Twitch")
+            return
+        }
+        TwitchApi(accessToken: stream.twitchAccessToken!)
+            .sendChatMessage(userId: stream.twitchChannelId, message: message) { ok in
+                if !ok {
+                    self.makeErrorToast(title: "Failed to send chat message")
+                }
+            }
+    }
+
     private func reloadKickViewers() {
         kickViewers?.stop()
         if isKickViewersConfigured() {
@@ -4471,6 +4484,9 @@ final class Model: NSObject, ObservableObject {
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
         if batteryLevel < 0.05 && !isBatteryCharging() && !ProcessInfo().isiOSAppOnMac {
             makeWarningToast(title: lowBatteryMessage, vibrate: true)
+            if database.chat.botEnabled! && database.chat.botSendLowBatteryWarning! {
+                sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
+            }
         }
     }
 

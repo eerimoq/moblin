@@ -29,7 +29,7 @@ private struct PermissionsSettingsView: View {
     }
 }
 
-struct ChatBotSettingsView: View {
+struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
     private var permissions: SettingsChatBotPermissions {
@@ -72,6 +72,33 @@ struct ChatBotSettingsView: View {
                 }
             } footer: {
                 Text("Trigger alerts. Configure alert names in alert widgets.")
+            }
+        }
+        .navigationTitle("Commands")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+struct ChatBotSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            Section {
+                NavigationLink(destination: ChatBotCommandsSettingsView()) {
+                    Text("Commands")
+                }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.botSendLowBatteryWarning!
+                }, set: { value in
+                    model.database.chat.botSendLowBatteryWarning = value
+                }), label: {
+                    Text("Send low battery message")
+                })
             }
         }
         .navigationTitle("Bot")

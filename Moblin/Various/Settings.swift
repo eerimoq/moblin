@@ -1452,6 +1452,7 @@ class SettingsChat: Codable {
     var mirrored: Bool? = false
     var botEnabled: Bool? = false
     var botCommandPermissions: SettingsChatBotPermissions? = .init()
+    var botSendLowBatteryWarning: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -3699,6 +3700,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.alert == nil {
             realDatabase.chat.botCommandPermissions!.alert = .init()
+            store()
+        }
+        if realDatabase.chat.botSendLowBatteryWarning == nil {
+            realDatabase.chat.botSendLowBatteryWarning = false
             store()
         }
     }
