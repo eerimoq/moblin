@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.380.0", date: "2024-09-05", changes: [
+        "• Send chat messages to Twitch.",
+        "• Optionally automatically send \"Low battery\" chat message when battery level is low.",
+        "  • Sent every 10 seconds, so might spam too much?",
+        "  • Enable in Settings → Chat → Send low battery message. Settings → Bot must be enabled as well.",
+    ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",
         "• Show \"Quick button created\" toast when creating a LUT. 💡 TurtleVerified",
