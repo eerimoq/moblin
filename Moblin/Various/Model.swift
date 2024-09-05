@@ -7808,17 +7808,18 @@ extension Model {
         if !catPrinters.keys.contains(device.id) {
             catPrinters[device.id] = CatPrinter()
         }
-        guard let catPrinter = catPrinters[device.id] else {
-            return
-        }
-        catPrinter.start(deviceId: device.id)
+        catPrinters[device.id]?.start(deviceId: device.id)
     }
 
     func disableCatPrinter(device: SettingsCatPrinter) {
-        guard let catPrinter = catPrinters[device.id] else {
-            return
-        }
-        catPrinter.stop()
+        catPrinters[device.id]?.stop()
+    }
+
+    func catPrinterPrintTestImage(device: SettingsCatPrinter) {
+        catPrinters[device.id]?.print(image: CIImage.black.cropped(to: .init(
+            origin: .zero,
+            size: .init(width: 50, height: 50)
+        )))
     }
 
     func setCurrentCatPrinter(device: SettingsCatPrinter) {

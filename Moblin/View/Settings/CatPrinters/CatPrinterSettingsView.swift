@@ -83,6 +83,13 @@ struct CatPrinterSettingsView: View {
                         Spacer()
                     }
                 }
+                Section {
+                    Button(action: {
+                        model.catPrinterPrintTestImage(device: device)
+                    }, label: {
+                        Text("Test")
+                    })
+                }
             }
         }
         .onAppear {

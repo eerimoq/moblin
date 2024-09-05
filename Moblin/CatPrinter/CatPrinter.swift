@@ -1,6 +1,7 @@
 // Based on https://github.com/rbaron/catprinter
 // MIT License
 
+import Collections
 import CoreBluetooth
 import CoreImage
 import Foundation
@@ -15,10 +16,16 @@ let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
+private struct PrintJob {
+    let image: CIImage
+}
+
 class CatPrinter: NSObject {
     private var state: CatPrinterState = .idle
     private var centralManager: CBCentralManager?
     private let context = CIContext()
+    private var printJobs: Deque<PrintJob> = []
+    private var currentPrintJob: PrintJob?
 
     func start(deviceId _: UUID) {
         reset()
@@ -31,10 +38,25 @@ class CatPrinter: NSObject {
     }
 
     func print(image: CIImage) {
-        let image = process(image: image)
-        let command = createPrintImageCommand(image: [[true, false]])
-        logger.info("cat-printer: Command \(command)")
+        printJobs.append(PrintJob(image: image))
+        tryPrintNext()
     }
+
+    private func tryPrintNext() {
+        guard currentPrintJob == nil else {
+            return
+        }
+        currentPrintJob = printJobs.popFirst()
+        guard let currentPrintJob else {
+            return
+        }
+        logger.info("cat-printer: Printing...")
+        let image = process(image: currentPrintJob.image)
+        let command = createPrintImageCommand(image: [[true, false]])
+        send(command: command)
+    }
+
+    private func send(command _: [UInt8]) {}
 
     // Each returned byte is a grayscale pixel
     private func process(image: CIImage) -> ([UInt8], CGSize)? {
