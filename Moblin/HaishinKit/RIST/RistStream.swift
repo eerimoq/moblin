@@ -160,7 +160,7 @@ class RistStream: NetStream {
         return totalBandwidth
     }
 
-    func connectionStatistics() -> String? {
+    func connectionStatistics() -> [BondingConnection] {
         var connections: [BondingConnection] = []
         ristQueue.sync {
             for peer in peers {
@@ -171,7 +171,7 @@ class RistStream: NetStream {
                 connections.append(connection)
             }
         }
-        return bondingStatistics(connections: connections)
+        return connections
     }
 
     func getStats() -> [RistSenderStats] {

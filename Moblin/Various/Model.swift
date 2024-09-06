@@ -450,6 +450,8 @@ final class Model: NSObject, ObservableObject {
     var twitchAuth = TwitchAuth()
     private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
+    @Published var bondingPieChartPercentages: [BondingPercentage] = []
+
     @Published var verboseStatuses = false
     @Published var showDrawOnStream = false
     @Published var showFace = false
@@ -2203,12 +2205,18 @@ final class Model: NSObject, ObservableObject {
 
     private func updateBondingStatistics() {
         if isStreamConnected() {
-            if let statistics = media.srtlaConnectionStatistics() {
-                bondingStatistics = statistics
+            if let connections = media.srtlaConnectionStatistics() {
+                if let (message, percentages) = calcBondingStatistics(connections: connections) {
+                    bondingStatistics = message
+                    bondingPieChartPercentages = percentages
+                }
                 return
             }
-            if let statistics = media.ristBondingStatistics() {
-                bondingStatistics = statistics
+            if let connections = media.ristBondingStatistics() {
+                if let (message, percentages) = calcBondingStatistics(connections: connections) {
+                    bondingStatistics = message
+                    bondingPieChartPercentages = percentages
+                }
                 return
             }
         }

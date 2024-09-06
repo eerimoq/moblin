@@ -233,7 +233,7 @@ class SrtlaClient {
         remoteConnections = newRemoteConnections
     }
 
-    func connectionStatistics() -> String? {
+    func connectionStatistics() -> [BondingConnection] {
         var connections: [BondingConnection] = []
         srtlaDispatchQueue.sync {
             for connection in remoteConnections where connection.isEnabled() {
@@ -246,7 +246,7 @@ class SrtlaClient {
                 ))
             }
         }
-        return bondingStatistics(connections: connections)
+        return connections
     }
 
     func logStatistics() {

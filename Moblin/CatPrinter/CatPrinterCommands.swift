@@ -1,8 +1,8 @@
 // Based on https://github.com/rbaron/catprinter
 // MIT License
 
-import Foundation
 import CrcSwift
+import Foundation
 
 private func packCommand(command: UInt8, data: Data) -> Data {
     if data.count > 0xFF {

@@ -1,4 +1,40 @@
+import Charts
 import SwiftUI
+
+private struct CompactBondingView: View {
+    @EnvironmentObject var model: Model
+    var show: Bool
+    var color: Color
+
+    var body: some View {
+        if show {
+            HStack(spacing: 1) {
+                Image(systemName: "phone.connection")
+                    .frame(width: 17, height: 17)
+                    .font(smallFont)
+                    .padding([.leading, .trailing], 2)
+                    .foregroundColor(color)
+                if #available(iOS 17.0, *) {
+                    if !model.bondingPieChartPercentages.isEmpty {
+                        Chart(model.bondingPieChartPercentages) { item in
+                            SectorMark(angle: .value("", item.percentage))
+                                .foregroundStyle(by: .value("", item.id))
+                        }
+                        .chartLegend(.hidden)
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
+                        .padding([.trailing], 2)
+                    }
+                }
+            }
+            .background(backgroundColor)
+            .cornerRadius(5)
+            .padding(5)
+            .contentShape(Rectangle())
+            .padding(-5)
+        }
+    }
+}
 
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
@@ -71,13 +107,17 @@ private struct StatusesView: View {
             textPlacement: textPlacement,
             color: .white
         )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusBonding(),
-            icon: "phone.connection",
-            text: model.bondingStatistics,
-            textPlacement: textPlacement,
-            color: netStreamColor()
-        )
+        if textPlacement == .hide {
+            CompactBondingView(show: model.isShowingStatusBonding(), color: netStreamColor())
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusBonding(),
+                icon: "phone.connection",
+                text: model.bondingStatistics,
+                textPlacement: textPlacement,
+                color: netStreamColor()
+            )
+        }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusRecording(),
             icon: "record.circle",

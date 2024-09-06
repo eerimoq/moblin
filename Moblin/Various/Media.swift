@@ -56,11 +56,11 @@ final class Media: NSObject {
         srtlaClient?.logStatistics()
     }
 
-    func srtlaConnectionStatistics() -> String? {
+    func srtlaConnectionStatistics() -> [BondingConnection]? {
         return srtlaClient?.connectionStatistics()
     }
 
-    func ristBondingStatistics() -> String? {
+    func ristBondingStatistics() -> [BondingConnection]? {
         return ristStream?.connectionStatistics()
     }
 

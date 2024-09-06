@@ -426,7 +426,12 @@ struct BondingConnection {
     var usage: UInt64
 }
 
-func bondingStatistics(connections: [BondingConnection]) -> String? {
+struct BondingPercentage: Identifiable {
+    let id: Int
+    let percentage: UInt64
+}
+
+func calcBondingStatistics(connections: [BondingConnection]) -> (String, [BondingPercentage])? {
     guard !connections.isEmpty else {
         return nil
     }
@@ -444,9 +449,10 @@ func bondingStatistics(connections: [BondingConnection]) -> String? {
         .reduce(0) { total, percentage in
             total + percentage.usage
         }
-    return percentges.map { percentage in
+    let message = percentges.map { percentage in
         "\(percentage.usage)% \(percentage.name)"
     }.joined(separator: ", ")
+    return (message, percentges.enumerated().map { .init(id: $0, percentage: $1.usage) })
 }
 
 extension MTILayer {
