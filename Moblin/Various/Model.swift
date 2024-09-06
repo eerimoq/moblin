@@ -62,7 +62,6 @@ struct Mic: Identifiable, Hashable {
     var id: String {
         "\(inputUid) \(dataSourceID ?? 0)"
     }
-
     var name: String
     var inputUid: String
     var dataSourceID: NSNumber?

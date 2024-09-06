@@ -63,6 +63,7 @@ private let cmdSetPaper: [UInt8] = [
 ]
 
 private func cmdSetQuality200Dpi() -> [UInt8] {
+    // 0x32, 0x33 or 0x35?
     return packCommand(command: 0xA4, payload: [0x32])
 }
 
