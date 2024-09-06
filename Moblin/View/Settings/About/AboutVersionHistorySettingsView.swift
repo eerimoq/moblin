@@ -13,6 +13,9 @@ private let versions = [
         "• Optionally automatically send \"Low battery\" chat message when battery level is low.",
         "  • Sent every 10 seconds, so might spam too much?",
         "  • Enable in Settings → Chat → Send low battery message. Settings → Bot must be enabled as well.",
+        "• Show bonding percentages when collapsed. 💡 JohannesLiv",
+        "• Remove zoom icon and number.",
+        "• Show bitrate when collapsed. 💡 JohannesLiv",
     ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",
