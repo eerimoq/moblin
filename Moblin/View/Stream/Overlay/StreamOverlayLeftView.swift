@@ -70,12 +70,6 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         StreamOverlayIconAndTextView(
-            show: model.isShowingStatusZoom(),
-            icon: "magnifyingglass",
-            text: model.statusZoomText(),
-            textPlacement: textPlacement
-        )
-        StreamOverlayIconAndTextView(
             show: model.isShowingStatusObs(),
             icon: "xserve",
             text: model.statusObsText(),
