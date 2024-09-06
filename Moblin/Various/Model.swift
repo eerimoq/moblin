@@ -353,6 +353,7 @@ final class Model: NSObject, ObservableObject {
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var speedAndTotal = noValue
+    @Published var speedMbpsNoDecimals = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     let streamPreviewView = PreviewView(frame: .zero)
     let cameraPreviewView = CameraPreviewUiView()
@@ -4549,6 +4550,7 @@ final class Model: NSObject, ObservableObject {
             let speed = media.streamSpeed()
             checkLowBitrate(speed: speed, now: now)
             streamingHistoryStream?.updateBitrate(bitrate: speed)
+            speedMbpsNoDecimals = String(UInt64((Double(speed) / 1_000_000).rounded()))
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speedString) (\(total))")
@@ -4556,6 +4558,7 @@ final class Model: NSObject, ObservableObject {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
         } else if speedAndTotal != noValue {
+            speedMbpsNoDecimals = noValue
             speedAndTotal = noValue
             if !isRemoteControlAssistantConnected() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)

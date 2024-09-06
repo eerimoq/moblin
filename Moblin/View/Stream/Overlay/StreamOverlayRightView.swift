@@ -1,7 +1,7 @@
 import Charts
 import SwiftUI
 
-private struct CompactBondingView: View {
+private struct CollapsedBondingView: View {
     @EnvironmentObject var model: Model
     var show: Bool
     var color: Color
@@ -27,6 +27,34 @@ private struct CompactBondingView: View {
                     }
                 }
             }
+            .background(backgroundColor)
+            .cornerRadius(5)
+            .padding(5)
+            .contentShape(Rectangle())
+            .padding(-5)
+        }
+    }
+}
+
+private struct CollapsedBitrateView: View {
+    @EnvironmentObject var model: Model
+    var show: Bool
+    var color: Color
+
+    var body: some View {
+        if show {
+            HStack(spacing: 1) {
+                Image(systemName: "speedometer")
+                    .frame(width: 17, height: 17)
+                    .padding([.leading], 2)
+                    .foregroundColor(color)
+                if !model.speedMbpsNoDecimals.isEmpty {
+                    Text(model.speedMbpsNoDecimals)
+                        .foregroundColor(.white)
+                        .padding([.trailing], 2)
+                }
+            }
+            .font(smallFont)
             .background(backgroundColor)
             .cornerRadius(5)
             .padding(5)
@@ -86,13 +114,17 @@ private struct StatusesView: View {
             textPlacement: textPlacement,
             color: .white
         )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusBitrate(),
-            icon: "speedometer",
-            text: model.speedAndTotal,
-            textPlacement: textPlacement,
-            color: netStreamColor()
-        )
+        if textPlacement == .hide {
+            CollapsedBitrateView(show: model.isShowingStatusBitrate(), color: netStreamColor())
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusBitrate(),
+                icon: "speedometer",
+                text: model.speedAndTotal,
+                textPlacement: textPlacement,
+                color: netStreamColor()
+            )
+        }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusUptime(),
             icon: "deskclock",
@@ -108,7 +140,7 @@ private struct StatusesView: View {
             color: .white
         )
         if textPlacement == .hide {
-            CompactBondingView(show: model.isShowingStatusBonding(), color: netStreamColor())
+            CollapsedBondingView(show: model.isShowingStatusBonding(), color: netStreamColor())
         } else {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusBonding(),
