@@ -38,6 +38,10 @@ class CatPrinter: NSObject {
     }
 
     func print(image: CIImage) {
+        guard printJobs.count < 10 else {
+            logger.info("cat-printer: Too many jobs. Discarding image.")
+            return
+        }
         printJobs.append(PrintJob(image: image))
         tryPrintNext()
     }
@@ -51,8 +55,8 @@ class CatPrinter: NSObject {
             return
         }
         logger.info("cat-printer: Printing...")
-        let image = process(image: currentPrintJob.image)
-        let command = createPrintImageCommand(image: [
+        let _image = process(image: currentPrintJob.image)
+        let commands = packPrintImageCommands(image: [
             [true, true, true, true, true, true, true, true],
             [true, true, true, true, true, true, true, true],
             [true, true, true, true, true, true, true, true],
@@ -64,11 +68,11 @@ class CatPrinter: NSObject {
             [true, true, true, true, true, true, true, true],
             [true, true, true, true, true, true, true, true],
         ])
-        send(command: command)
+        send(data: commands)
     }
 
-    private func send(command: [UInt8]) {
-        logger.info("cat-printer: Sending \(command.count) bytes...")
+    private func send(data: Data) {
+        logger.info("cat-printer: Sending \(data)...")
     }
 
     // Each returned byte is a grayscale pixel
@@ -146,24 +150,29 @@ extension CatPrinter: CBCentralManagerDelegate {
 extension CatPrinter: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
         logger.info("cat-printer: peripheral didDiscoverServices \(peripheral.services)")
-        guard let peripheralServices = peripheral.services else {
-            return
-        }
-        for service in peripheralServices {
+        for service in peripheral.services ?? [] {
             logger.info("cat-printer: service \(service)")
+            peripheral.discoverCharacteristics(nil, for: service)
         }
     }
 
     func peripheral(
-        _: CBPeripheral,
+        _ peripheral: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
         error _: Error?
     ) {
         logger.info("cat-printer: didDiscoverCharacteristicsFor \(service)")
+        for characteristic in service.characteristics ?? [] {
+            peripheral.setNotifyValue(true, for: characteristic)
+        }
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
         logger.info("cat-printer: peripheral didUpdateValueFor characteristic \(characteristic)")
+        guard let value = characteristic.value else {
+            return
+        }
+        logger.info("cat-printer: Got \(value.hexString())")
     }
 
     func peripheral(
