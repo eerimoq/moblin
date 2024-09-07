@@ -1416,6 +1416,7 @@ class SettingsChatBotPermissions: Codable {
     var fix: SettingsChatBotPermissionsCommand = .init()
     var map: SettingsChatBotPermissionsCommand = .init()
     var alert: SettingsChatBotPermissionsCommand? = .init()
+    var fax: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -3726,6 +3727,10 @@ final class Settings {
         }
         if realDatabase.debug!.catPrinters == nil {
             realDatabase.debug!.catPrinters = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fax == nil {
+            realDatabase.chat.botCommandPermissions!.fax = .init()
             store()
         }
     }

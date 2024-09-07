@@ -567,6 +567,8 @@ final class Model: NSObject, ObservableObject {
 
     private let sampleBufferReceiver = SampleBufferReceiver()
 
+    private let faxReceiver = FaxReceiver()
+
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
@@ -941,6 +943,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        faxReceiver.delegate = self
         fixAlertMedias()
         setMapPitch()
         setAllowVideoRangePixelFormat()
@@ -3833,6 +3836,9 @@ final class Model: NSObject, ObservableObject {
                     isModerator: isModerator,
                     command: command
                 )
+            } else if command.starts(with: "!moblin fax ") {
+                handleChatBotMessageFax(platform: platform, user: user, isModerator: isModerator,
+                                        command: command)
             }
         }
     }
@@ -3928,6 +3934,27 @@ final class Model: NSObject, ObservableObject {
         DispatchQueue.main.async {
             self.playAlert(alert: .chatBotCommand(parts[2].trim(), user ?? "Unknown"))
         }
+    }
+
+    private func handleChatBotMessageFax(
+        platform: Platform,
+        user: String?,
+        isModerator: Bool,
+        command: String
+    ) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.fax!,
+            platform: platform,
+            user: user,
+            isModerator: isModerator
+        ) else {
+            return
+        }
+        let parts = command.split(separator: " ")
+        guard parts.count >= 3 else {
+            return
+        }
+        faxReceiver.add(url: parts[2].trim())
     }
 
     private func isUserAllowedToUseChatBot(
@@ -7847,6 +7874,17 @@ extension Model {
         }
         for device in database.catPrinters!.devices where device.enabled {
             enableCatPrinter(device: device)
+        }
+    }
+}
+
+extension Model: FaxReceiverDelegate {
+    func faxReceiverPrint(image: CIImage) {
+        DispatchQueue.main.async {
+            logger.info("Printing fax?")
+            for catPrinter in self.catPrinters.values {
+                catPrinter.print(image: image)
+            }
         }
     }
 }

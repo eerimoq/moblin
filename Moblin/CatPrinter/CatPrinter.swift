@@ -101,6 +101,8 @@ class CatPrinter: NSObject {
     private func reset() {
         centralManager = nil
         setState(state: .idle)
+        printJobs.removeAll()
+        currentPrintJob = nil
     }
 
     private func setState(state: CatPrinterState) {
