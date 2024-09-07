@@ -7,8 +7,30 @@ import CoreImage
 import Foundation
 
 enum CatPrinterState {
-    case idle
+    case disconnected
     case discovering
+    case connected
+}
+
+private class CurrentJob {
+    let data: Data
+    var offset: Int = 0
+    let mtu: Int
+
+    init(data: Data, mtu: Int) {
+        self.data = data
+        self.mtu = mtu
+    }
+
+    func nextChunk() -> Data? {
+        logger.info("cat-printer: At offset \(offset) of \(data.count)")
+        let chunk = data[offset ..< offset + mtu]
+        guard !chunk.isEmpty else {
+            return nil
+        }
+        offset += mtu
+        return chunk
+    }
 }
 
 let catPrinterServices = [
@@ -21,11 +43,13 @@ private struct PrintJob {
 }
 
 class CatPrinter: NSObject {
-    private var state: CatPrinterState = .idle
+    private var state: CatPrinterState = .disconnected
     private var centralManager: CBCentralManager?
+    private var peripheral: CBPeripheral?
+    private var characteristic: CBCharacteristic?
     private let context = CIContext()
     private var printJobs: Deque<PrintJob> = []
-    private var currentPrintJob: PrintJob?
+    private var currentJob: CurrentJob?
 
     func start(deviceId _: UUID) {
         reset()
@@ -38,6 +62,10 @@ class CatPrinter: NSObject {
     }
 
     func print(image: CIImage) {
+        guard state == .connected else {
+            logger.info("cat-printer: Not connected. Discarding image.")
+            return
+        }
         guard printJobs.count < 10 else {
             logger.info("cat-printer: Too many jobs. Discarding image.")
             return
@@ -46,17 +74,19 @@ class CatPrinter: NSObject {
         tryPrintNext()
     }
 
+    private func reconnect() {}
+
     private func tryPrintNext() {
-        guard currentPrintJob == nil else {
+        guard currentJob == nil else {
             return
         }
-        currentPrintJob = printJobs.popFirst()
-        guard let currentPrintJob else {
+        let printJob = printJobs.popFirst()
+        guard let printJob else {
             return
         }
         logger.info("cat-printer: Printing...")
-        let _image = process(image: currentPrintJob.image)
-        let commands = packPrintImageCommands(image: [
+        let _image = process(image: printJob.image)
+        let data = packPrintImageCommands(image: [
             [true, true, true, true, true, true, true, true],
             [true, true, true, true, true, true, true, true],
             [true, true, true, true, true, true, true, true],
@@ -68,11 +98,16 @@ class CatPrinter: NSObject {
             [true, true, true, true, true, true, true, true],
             [true, true, true, true, true, true, true, true],
         ])
-        send(data: commands)
-    }
-
-    private func send(data: Data) {
-        logger.info("cat-printer: Sending \(data)...")
+        guard let peripheral else {
+            reconnect()
+            return
+        }
+        currentJob = CurrentJob(data: data, mtu: peripheral.maximumWriteValueLength(for: .withResponse))
+        guard let chunk = currentJob?.nextChunk(), let characteristic else {
+            reconnect()
+            return
+        }
+        peripheral.writeValue(chunk, for: characteristic, type: .withResponse)
     }
 
     // Each returned byte is a grayscale pixel
@@ -100,9 +135,9 @@ class CatPrinter: NSObject {
 
     private func reset() {
         centralManager = nil
-        setState(state: .idle)
         printJobs.removeAll()
-        currentPrintJob = nil
+        currentJob = nil
+        setState(state: .disconnected)
     }
 
     private func setState(state: CatPrinterState) {
@@ -138,6 +173,7 @@ extension CatPrinter: CBCentralManagerDelegate {
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         logger.info("cat-printer: centralManager didConnect \(peripheral)")
+        self.peripheral = peripheral
     }
 
     func centralManager(
@@ -151,7 +187,7 @@ extension CatPrinter: CBCentralManagerDelegate {
 
 extension CatPrinter: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
-        logger.info("cat-printer: peripheral didDiscoverServices \(peripheral.services)")
+        logger.info("cat-printer: peripheral didDiscoverServices \(peripheral.services ?? [])")
         for service in peripheral.services ?? [] {
             logger.info("cat-printer: service \(service)")
             peripheral.discoverCharacteristics(nil, for: service)
@@ -185,14 +221,15 @@ extension CatPrinter: CBPeripheralDelegate {
     }
 
     func peripheral(
-        _: CBPeripheral,
-        didUpdateNotificationStateFor characteristic: CBCharacteristic,
-        error _: Error?
+        _ peripheral: CBPeripheral,
+        didWriteValueFor characteristic: CBCharacteristic,
+        error _: (any Error)?
     ) {
-        logger.info("cat-printer: peripheral didUpdateNotificationStateFor characteristic \(characteristic)")
-    }
-
-    func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {
-        logger.info("cat-printer: peripheral toSendWriteWithoutResponse")
+        if let chunk = currentJob?.nextChunk() {
+            peripheral.writeValue(chunk, for: characteristic, type: .withResponse)
+        } else {
+            currentJob = nil
+            tryPrintNext()
+        }
     }
 }

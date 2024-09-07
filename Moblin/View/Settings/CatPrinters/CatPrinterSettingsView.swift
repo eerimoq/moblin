@@ -1,10 +1,12 @@
 import SwiftUI
 
 private func formatCatPrinterState(state: CatPrinterState?) -> String {
-    if state == nil || state == .idle {
+    if state == nil || state == .disconnected {
         return String(localized: "Disabled")
     } else if state == .discovering {
         return String(localized: "Discovering")
+    } else if state == .connected {
+        return String(localized: "Connected")
     } else {
         return String(localized: "Unknown")
     }

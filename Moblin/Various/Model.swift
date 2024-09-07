@@ -7865,7 +7865,7 @@ extension Model {
     }
 
     func getCatPrinterState(device _: SettingsCatPrinter) -> CatPrinterState {
-        return .idle
+        return .disconnected
     }
 
     private func autoStartCatPrinters() {
