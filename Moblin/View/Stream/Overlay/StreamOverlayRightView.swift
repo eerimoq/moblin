@@ -125,6 +125,17 @@ private struct StatusesView: View {
                 color: netStreamColor()
             )
         }
+        if textPlacement == .hide {
+            CollapsedBondingView(show: model.isShowingStatusBonding(), color: netStreamColor())
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusBonding(),
+                icon: "phone.connection",
+                text: model.bondingStatistics,
+                textPlacement: textPlacement,
+                color: netStreamColor()
+            )
+        }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusUptime(),
             icon: "deskclock",
@@ -139,17 +150,6 @@ private struct StatusesView: View {
             textPlacement: textPlacement,
             color: .white
         )
-        if textPlacement == .hide {
-            CollapsedBondingView(show: model.isShowingStatusBonding(), color: netStreamColor())
-        } else {
-            StreamOverlayIconAndTextView(
-                show: model.isShowingStatusBonding(),
-                icon: "phone.connection",
-                text: model.bondingStatistics,
-                textPlacement: textPlacement,
-                color: netStreamColor()
-            )
-        }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusRecording(),
             icon: "record.circle",
