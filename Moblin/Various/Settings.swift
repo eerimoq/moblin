@@ -1768,7 +1768,15 @@ enum SettingsDjiDeviceModel: String, Codable {
     }
 }
 
-var djiDeviceBitrates: [UInt32] = [12_000_000, 8_000_000, 6_000_000, 4_000_000, 2_000_000]
+var djiDeviceBitrates: [UInt32] = [
+    20_000_000,
+    16_000_000,
+    12_000_000,
+    8_000_000,
+    6_000_000,
+    4_000_000,
+    2_000_000,
+]
 
 var djiDeviceFpss: [Int] = [25, 30]
 
