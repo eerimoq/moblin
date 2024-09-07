@@ -43,7 +43,6 @@ private struct LineView: View {
     }
 
     var body: some View {
-        let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
         WrappingHStack(
             alignment: .leading,
@@ -53,13 +52,12 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(timestampColor)
             }
             Text(post.user!)
                 .foregroundColor(usernameColor)
                 .lineLimit(1)
                 .padding([.trailing], 0)
-                .bold(chat.boldUsername)
+                .bold()
             if post.isRedemption() {
                 Text(" ")
             } else {
@@ -68,7 +66,6 @@ private struct LineView: View {
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .bold(chat.boldMessage)
                         .italic(post.isAction)
                 }
                 if let url = segment.url {
@@ -76,8 +73,7 @@ private struct LineView: View {
                         WebImage(url: url)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
-                            .frame(height: CGFloat(chat.fontSize * 1.7))
+                            .frame(height: 25)
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
@@ -86,8 +82,7 @@ private struct LineView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
-                        .frame(height: CGFloat(chat.fontSize * 1.7))
+                        .frame(height: 25)
                     }
                     Text(" ")
                 }
@@ -145,7 +140,7 @@ private struct MessagesView: View {
                                                 Rectangle()
                                                     .frame(width: 3)
                                                     .foregroundColor(highlight.color)
-                                                VStack(alignment: .leading) {
+                                                VStack(alignment: .leading, spacing: 1) {
                                                     HighlightMessageView(
                                                         image: highlight.image,
                                                         name: highlight.title
@@ -249,7 +244,7 @@ private struct AlertsMessagesView: View {
                                                 Rectangle()
                                                     .frame(width: 3)
                                                     .foregroundColor(highlight.color)
-                                                VStack(alignment: .leading) {
+                                                VStack(alignment: .leading, spacing: 1) {
                                                     HighlightMessageView(
                                                         image: highlight.image,
                                                         name: highlight.title

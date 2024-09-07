@@ -197,7 +197,7 @@ struct StreamOverlayChatView: View {
                                             Rectangle()
                                                 .frame(width: 3)
                                                 .foregroundColor(highlight.color)
-                                            VStack(alignment: .leading) {
+                                            VStack(alignment: .leading, spacing: 1) {
                                                 HighlightMessageView(
                                                     chat: model.database.chat,
                                                     image: highlight.image,
