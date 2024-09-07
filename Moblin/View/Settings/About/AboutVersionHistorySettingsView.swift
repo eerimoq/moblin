@@ -16,6 +16,9 @@ private let versions = [
         "• Show bonding percentages when collapsed. 💡 JohannesLiv",
         "• Remove zoom icon and number.",
         "• Show bitrate when collapsed. 💡 JohannesLiv",
+        "• Bonding and bitrate icons next to each other.",
+        "• Chat styling.",
+        "• 16K and 20K bitrate added to DJI device (not tested). 💡 SoWeQ",
     ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",
