@@ -173,6 +173,13 @@ extension CatPrinter: CBPeripheralDelegate {
             return
         }
         logger.info("cat-printer: Got \(value.hexString())")
+        if value.hexString() == "5178ae0101001070ff" {
+            logger.info("Busy, cannot write.")
+        } else if value.hexString() == "5178ae0101000000ff" {
+            logger.info("Idle, can write.")
+        } else if value[2] == 0xA3 {
+            logger.info("Printer status.")
+        }
     }
 
     func peripheral(
