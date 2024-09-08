@@ -1514,7 +1514,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer!.streams.filter { stream in !stream.streamId.isEmpty }.first { stream in
+        return database.srtlaServer!.streams.first { stream in
             stream.streamId == streamId
         }
     }

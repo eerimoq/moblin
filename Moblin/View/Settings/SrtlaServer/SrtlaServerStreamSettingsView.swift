@@ -2,7 +2,11 @@ import Network
 import SwiftUI
 
 private func srtlaStreamUrl(address: String, srtlaPort: UInt16, streamId: String) -> String {
-    return "srtla://\(address):\(srtlaPort)?streamid=\(streamId)"
+    var url = "srtla://\(address):\(srtlaPort)"
+    if !streamId.isEmpty {
+        url += "?streamid=\(streamId)"
+    }
+    return url
 }
 
 private struct InterfaceView: View {
@@ -18,12 +22,8 @@ private struct InterfaceView: View {
 
     var body: some View {
         HStack {
-            if streamId.isEmpty {
-                Text("Stream id missing")
-            } else {
-                Image(systemName: image)
-                Text(streamUrl())
-            }
+            Image(systemName: image)
+            Text(streamUrl())
             Spacer()
             Button(action: {
                 UIPasteboard.general.string = streamUrl()
@@ -49,14 +49,13 @@ struct SrtlaServerStreamSettingsView: View {
 
     private func submitStreamId(value: String) {
         let streamId = value.trim()
-        guard streamId.wholeMatch(of: /[a-z]*/) != nil else {
+        guard streamId.wholeMatch(of: /[a-zA-Z0-9]*/) != nil else {
             return
         }
         if model.getSrtlaStream(streamId: streamId) != nil {
             return
         }
         stream.streamId = streamId
-        model.store()
         model.reloadSrtlaServer()
         model.objectWillChange.send()
     }

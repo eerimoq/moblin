@@ -86860,6 +86860,7 @@
       }
     },
     "Stream id missing" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -93,8 +93,14 @@ struct SrtlaServerSettingsView: View {
                     }
                 }
                 CreateButtonView(action: {
-                    model.database.srtlaServer!.streams.append(SettingsSrtlaServerStream())
-                    model.store()
+                    let stream = SettingsSrtlaServerStream()
+                    while true {
+                        stream.streamId = randomHumanString()
+                        if model.getSrtlaStream(streamId: stream.streamId) == nil {
+                            break
+                        }
+                    }
+                    model.database.srtlaServer!.streams.append(stream)
                     model.objectWillChange.send()
                 })
                 .disabled(model.srtlaServerEnabled())
