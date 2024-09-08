@@ -8,7 +8,7 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.380.0", date: "2024-09-05", changes: [
+    Version(version: "0.380.0", date: "2024-09-08", changes: [
         "• Send chat messages to Twitch.",
         "• Optionally automatically send \"Low battery\" chat message when battery level is low.",
         "  • Sent every 10 seconds, so might spam too much?",
@@ -19,6 +19,7 @@ private let versions = [
         "• Bonding and bitrate icons next to each other.",
         "• Chat styling.",
         "• 16K and 20K bitrate added to DJI device (not tested). 💡 SoWeQ",
+        "• Allow empty/no stream id in SRTLA server. 💡 JohannesLiv",
     ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",
