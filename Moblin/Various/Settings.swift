@@ -2189,7 +2189,7 @@ class Database: Codable {
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
-    var reactionsEnabled: Bool? = false
+    var reactionsEnabled: Bool? = true
     var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
@@ -3746,7 +3746,7 @@ final class Settings {
             store()
         }
         if realDatabase.reactionsEnabled == nil {
-            realDatabase.reactionsEnabled = false
+            realDatabase.reactionsEnabled = true
             store()
         }
     }
