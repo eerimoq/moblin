@@ -20,6 +20,7 @@ private let versions = [
         "• Chat styling.",
         "• 16K and 20K bitrate added to DJI device (not tested). 💡 SoWeQ",
         "• Allow empty/no stream id in SRTLA server. 💡 JohannesLiv",
+        "• Increase low battery warning from 5% to 7% left. 💡 djandrea.",
     ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",
@@ -517,7 +518,7 @@ private let versions = [
         "• Play silence when audio has been dropped in SRT(LA) server.",
     ]),
     Version(version: "0.305.0", date: "2024-06-19", changes: [
-        "• Make minimum bitrate configurable for belabox algorithm. :bulb: djandrea.",
+        "• Make minimum bitrate configurable for belabox algorithm. 💡 djandrea.",
         "• Lower minimum bitrate default value from 500 Kbps to 250 Kbps.",
         "• Fix bug in SRT(LA) server. Start sending valid SRTLA ACK packets.",
     ]),
