@@ -71123,6 +71123,12 @@
         }
       }
     },
+    "Reactions" : {
+
+    },
+    "Reactions typically only works on front and UVC cameras. Best effort." : {
+
+    },
     "RealtimeIRL" : {
       "localizations" : {
         "de" : {

@@ -22,6 +22,8 @@ private let versions = [
         "• Allow empty/no stream id in SRTLA server. 💡 JohannesLiv",
         "• Increase low battery warning from 4% to 5% left. 💡 djandrea.",
         "• Low battery warning every 30 seconds instead of 10 seconds.",
+        "• Enable/disable reactions. 💡 djandrea.",
+        "  • Settings → Camera → Reactions.",
     ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",

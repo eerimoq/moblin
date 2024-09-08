@@ -212,6 +212,17 @@ struct CameraSettingsView: View {
                     "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait."
                 )
             }
+            Section {
+                Toggle("Reactions", isOn: Binding(get: {
+                    model.database.reactionsEnabled!
+                }, set: { value in
+                    model.database.reactionsEnabled = value
+                    model.setReactionsEnabled()
+                    model.reattachCamera()
+                }))
+            } footer: {
+                Text("Reactions typically only works on front and UVC cameras. Best effort.")
+            }
             if model.database.showAllSettings! {
                 if model.supportsAppleLog {
                     Section {
