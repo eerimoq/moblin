@@ -20,7 +20,7 @@ private let versions = [
         "• Chat styling.",
         "• 16K and 20K bitrate added to DJI device (not tested). 💡 SoWeQ",
         "• Allow empty/no stream id in SRTLA server. 💡 JohannesLiv",
-        "• Increase low battery warning from 5% to 7% left. 💡 djandrea.",
+        "• Increase low battery warning from 4% to 5% left. 💡 djandrea.",
     ]),
     Version(version: "0.379.0", date: "2024-09-03", changes: [
         "• Make face alert images rotate with the face.",
