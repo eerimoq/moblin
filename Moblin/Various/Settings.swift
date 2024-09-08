@@ -2603,6 +2603,9 @@ private func addMissingBundledLutButton(database: Database, lut: SettingsColorLu
 }
 
 private func addMissingBundledLuts(database: Database) {
+    if database.color == nil {
+        database.color = .init()
+    }
     var bundledLuts: [SettingsColorLut] = []
     for lut in allBundledLuts {
         if let existingLut = database.color!.bundledLuts.first(where: { $0.name == lut.name }) {
