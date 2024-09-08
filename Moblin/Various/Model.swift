@@ -351,6 +351,7 @@ final class Model: NSObject, ObservableObject {
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
+    private var batteryLevelLowCounter = -1
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var speedAndTotal = noValue
     @Published var speedMbpsNoDecimals = noValue
@@ -4517,10 +4518,15 @@ final class Model: NSObject, ObservableObject {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
         if batteryLevel <= 0.05 && !isBatteryCharging() && !ProcessInfo().isiOSAppOnMac {
-            makeWarningToast(title: lowBatteryMessage, vibrate: true)
-            if database.chat.botEnabled! && database.chat.botSendLowBatteryWarning! {
-                sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
+            batteryLevelLowCounter += 1
+            if (batteryLevelLowCounter % 3) == 0 {
+                makeWarningToast(title: lowBatteryMessage, vibrate: true)
+                if database.chat.botEnabled! && database.chat.botSendLowBatteryWarning! {
+                    sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
+                }
             }
+        } else {
+            batteryLevelLowCounter = -1
         }
     }
 
