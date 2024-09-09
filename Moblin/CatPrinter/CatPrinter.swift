@@ -13,58 +13,67 @@ enum CatPrinterState {
     case connected
 }
 
+private enum JobState {
+    case idle
+    case waitingForReady
+    case writingChunks
+}
+
 private class CurrentJob {
     let data: Data
     var offset: Int = 0
     let mtu: Int
+    var state: JobState = .idle
 
     init(data: Data, mtu: Int) {
         self.data = data
         self.mtu = mtu
     }
 
+    func setState(state: JobState) {
+        guard state != self.state else {
+            return
+        }
+        logger.info("cat-printer: Job sate change \(self.state) -> \(state)")
+        self.state = state
+    }
+
     func nextChunk() -> Data? {
-        logger.info("cat-printer: At offset \(offset) of \(data.count)")
-        let chunk = data[offset ..< offset + mtu]
+        guard offset < data.count else {
+            return nil
+        }
+        let chunk = data[offset ..< min(offset + mtu, data.count)]
         guard !chunk.isEmpty else {
             return nil
         }
-        offset += mtu
+        offset += chunk.count
         return chunk
     }
 }
 
 let catPrinterServices = [
-    CBUUID(string: "0000ae30-0000-1000-8000-00805f9b34fb"),
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
+private let printId = CBUUID(string: "AE01")
+// periphery:ignore
+private let notifyId = CBUUID(string: "AE02")
+
 private struct PrintJob {
     let image: CIImage
-}
-
-struct PrinterStatus {
-    var readyForWrite = false
-    var readyToStartPrinting = false
-    var noPaper = false
-    var coverIsOpen = false
-    var isOverheated = false
-    var batteryIsLow = false
 }
 
 class CatPrinter: NSObject {
     private var state: CatPrinterState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
-    private var characteristic: CBCharacteristic?
+    private var printCharacteristic: CBCharacteristic?
     private let context = CIContext()
     private var printJobs: Deque<PrintJob> = []
     private var currentJob: CurrentJob?
     private var deviceId: UUID?
-    private var printerStatus = PrinterStatus()
-    private var waitingForWriteResponse = false
 
-    func start(deviceId: UUID) {
+    func start(deviceId: UUID?) {
         self.deviceId = deviceId
         reset()
         setState(state: .discovering)
@@ -76,6 +85,7 @@ class CatPrinter: NSObject {
     }
 
     func print(image: CIImage) {
+        logger.info("cat-printer: Print!")
         guard printJobs.count < 10 else {
             logger.info("cat-printer: Too many jobs. Discarding image.")
             return
@@ -85,11 +95,12 @@ class CatPrinter: NSObject {
     }
 
     private func tryPrintNext() {
+        logger.info("cat-printer: Try print!")
         guard let peripheral else {
             reconnect()
             return
         }
-        guard currentJob == nil, printerStatus.readyToStartPrinting else {
+        guard currentJob == nil else {
             return
         }
         guard let printJob = printJobs.popFirst() else {
@@ -97,29 +108,41 @@ class CatPrinter: NSObject {
         }
         logger.info("cat-printer: Printing...")
         _ = process(image: printJob.image)
-        let data = catPrinterPackPrintImageCommands(image: [
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true],
-        ])
-        currentJob = CurrentJob(data: data, mtu: peripheral.maximumWriteValueLength(for: .withResponse))
-        tryWriteNextChunk()
+        let blackFirstRow: [Bool] = (0 ..< 384).map { i in
+            (i / 32) % 2 == 0
+        }
+        let whiteFirstRow: [Bool] = (0 ..< 384).map { i in
+            (i / 32) % 2 == 1
+        }
+        let blackFirstRows: [[Bool]] = (0 ..< 32).map { _ in
+            blackFirstRow
+        }
+        let whiteFirstRows: [[Bool]] = (0 ..< 32).map { _ in
+            whiteFirstRow
+        }
+        let data = catPrinterPackPrintImageCommands(
+            image: blackFirstRows + whiteFirstRows + blackFirstRows + whiteFirstRows
+                + blackFirstRows + whiteFirstRows + blackFirstRows + whiteFirstRows
+                + blackFirstRows + whiteFirstRows + blackFirstRows + whiteFirstRows
+        )
+        currentJob = CurrentJob(data: data, mtu: peripheral.maximumWriteValueLength(for: .withoutResponse))
+        let message = CatPrinterCommand.getDeviceState().pack()
+        guard let printCharacteristic, let currentJob else {
+            return
+        }
+        currentJob.setState(state: .waitingForReady)
+        peripheral.writeValue(message, for: printCharacteristic, type: .withoutResponse)
     }
 
     private func tryWriteNextChunk() {
-        guard !waitingForWriteResponse, printerStatus.readyForWrite, let peripheral, let characteristic else {
+        guard let peripheral, let printCharacteristic else {
             return
         }
         if let chunk = currentJob?.nextChunk() {
-            waitingForWriteResponse = true
-            peripheral.writeValue(chunk, for: characteristic, type: .withResponse)
+            peripheral.writeValue(chunk, for: printCharacteristic, type: .withoutResponse)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.tryWriteNextChunk()
+            }
         } else {
             currentJob = nil
             tryPrintNext()
@@ -182,10 +205,9 @@ extension CatPrinter: CBCentralManagerDelegate {
 
     func centralManager(_ central: CBCentralManager,
                         didDiscover peripheral: CBPeripheral,
-                        advertisementData: [String: Any],
+                        advertisementData _: [String: Any],
                         rssi _: NSNumber)
     {
-        logger.info("cat-printer: centralManager didDiscover \(advertisementData)")
         guard peripheral.identifier == deviceId else {
             return
         }
@@ -216,67 +238,58 @@ extension CatPrinter: CBCentralManagerDelegate {
 
 extension CatPrinter: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
-        logger.info("cat-printer: peripheral didDiscoverServices \(peripheral.services ?? [])")
-        for service in peripheral.services ?? [] {
-            logger.info("cat-printer: service \(service)")
+        if let service = peripheral.services?.first {
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
 
     func peripheral(
-        _ peripheral: CBPeripheral,
+        _: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
         error _: Error?
     ) {
-        logger.info("cat-printer: didDiscoverCharacteristicsFor \(service)")
         for characteristic in service.characteristics ?? [] {
-            peripheral.setNotifyValue(true, for: characteristic)
+            switch characteristic.uuid {
+            case printId:
+                printCharacteristic = characteristic
+            default:
+                break
+            }
         }
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
-        logger.info("cat-printer: peripheral didUpdateValueFor characteristic \(characteristic)")
-        guard let value = characteristic.value else {
+        guard let value = characteristic.value, let currentJob else {
             return
         }
-        guard let (command, data) = try? catPrinterUnpackCommand(data: value) else {
+        guard let command = CatPrinterCommand(data: value) else {
+            logger.info("cat-printer: Unknown command \(value.hexString())")
             return
         }
-        switch command {
-        case .writePacing:
-            if data.count == 1 {
-                if data[0] == 0x01 {
-                    logger.info("Busy, cannot write.")
-                    printerStatus.readyForWrite = false
-                } else if data[0] == 0x00 {
-                    logger.info("Idle, can write.")
-                    printerStatus.readyForWrite = true
-                    tryWriteNextChunk()
-                }
-            }
-        case .getDeviceState:
-            logger.info("Got printer status.")
-            if data.count == 1 {
-                printerStatus.noPaper = (data[0] & 0b0000_0001) == 0b0000_0001
-                printerStatus.coverIsOpen = (data[0] & 0b0000_0010) == 0b0000_0010
-                printerStatus.isOverheated = (data[0] & 0b0000_0100) == 0b0000_0100
-                printerStatus.batteryIsLow = (data[0] & 0b0000_1000) == 0b0000_1000
-                printerStatus.readyToStartPrinting = data[0] == 0
-                tryPrintNext()
-            }
-        default:
+        logger.info("cat-printer: Got \(command)!")
+        switch currentJob.state {
+        case .idle:
             break
+        case .waitingForReady:
+            switch command {
+            case .getDeviceState:
+                currentJob.setState(state: .writingChunks)
+                tryWriteNextChunk()
+            default:
+                break
+            }
+        case .writingChunks:
+            switch command {
+            case .writePacing:
+                tryWriteNextChunk()
+            default:
+                break
+            }
         }
-        logger.info("cat-printer: Status \(printerStatus)")
     }
 
-    func peripheral(
-        _: CBPeripheral,
-        didWriteValueFor _: CBCharacteristic,
-        error _: (any Error)?
-    ) {
+    func peripheral(_: CBPeripheral, didWriteValueFor _: CBCharacteristic, error _: (any Error)?) {
         logger.info("cat-printer: Write response.")
-        waitingForWriteResponse = false
-        tryWriteNextChunk()
+        // tryWriteNextChunk()
     }
 }

@@ -4,131 +4,176 @@
 import CrcSwift
 import Foundation
 
-enum CatPrinterCommand: UInt8 {
-    case setPaper = 0xA1
+private enum CatPrinterCommandId: UInt8 {
+    case feedPaper = 0xA1
     case drawRow = 0xA2
     case getDeviceState = 0xA3
     case setQuality = 0xA4
     case lattice = 0xA6
     case writePacing = 0xAE
     case setEnergy = 0xAF
-    case feedPaper = 0xBD
     case setDrawMode = 0xBE
 }
 
-private enum DrawMode: UInt8 {
+// periphery:ignore
+struct CatPrinterDeviceState {
+    let noPaper: Bool
+    let coverIsOpen: Bool
+    let isOverheated: Bool
+    let batteryIsLow: Bool
+}
+
+enum CatPrinterDrawMode: UInt8 {
     case image = 0
     case text = 1
 }
 
-private func packCommand(_ command: CatPrinterCommand, _ data: Data) -> Data {
-    if data.count > 0xFFFF {
-        logger.info("Command data too big (\(data.count) > 0xFFFF)")
-        return Data()
-    }
-    return ByteArray()
-        .writeUInt8(0x51)
-        .writeUInt8(0x78)
-        .writeUInt8(command.rawValue)
-        .writeUInt8(0x00)
-        .writeUInt16Le(UInt16(data.count))
-        .writeBytes(data)
-        .writeUInt8(CrcSwift.computeCrc8(data))
-        .writeUInt8(0xFF)
-        .data
-}
+enum CatPrinterCommand {
+    case getDeviceState(state: CatPrinterDeviceState? = nil)
+    case writePacing(ready: Bool)
+    case setQuality(level: UInt8)
+    case setEnergy(energy: UInt16)
+    case feedPaper(pixels: UInt16)
+    case setDrawMode(mode: CatPrinterDrawMode)
+    case drawRow(imageRow: [Bool])
+    case lattice(data: Data)
 
-func catPrinterUnpackCommand(data: Data) throws -> (CatPrinterCommand, Data) {
-    let reader = ByteArray(data: data)
-    guard try reader.readUInt8() == 0x51 else {
-        throw "Wrong first byte"
-    }
-    guard try reader.readUInt8() == 0x78 else {
-        throw "Wrong second byte"
-    }
-    guard let command = try CatPrinterCommand(rawValue: reader.readUInt8()) else {
-        throw "Unsupported command."
-    }
-    _ = try reader.readUInt8()
-    let length = try reader.readUInt16Le()
-    let data = try reader.readBytes(Int(length))
-    let crc = try reader.readUInt8()
-    guard CrcSwift.computeCrc8(data) == crc else {
-        throw "Wrong crc"
-    }
-    guard try reader.readUInt8() == 0xFF else {
-        throw "Wrong last byte"
-    }
-    return (command, data)
-}
-
-private func packGetDeviceState() -> Data {
-    return packCommand(.getDeviceState, Data([0x00]))
-}
-
-private func packLatticeStart() -> Data {
-    return packCommand(.lattice, Data([
+    static let latticeStartData = Data([
         0xAA, 0x55, 0x17, 0x38, 0x44, 0x5F, 0x5F, 0x5F, 0x44, 0x38, 0x2C,
-    ]))
-}
+    ])
 
-private func packLatticeEnd() -> Data {
-    return packCommand(.lattice, Data([
+    static let latticeEndData = Data([
         0xAA, 0x55, 0x17, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x17,
-    ]))
-}
+    ])
 
-private func packSetPaper() -> Data {
-    return packCommand(.setPaper, Data([0x30, 0x00]))
-}
-
-private func packSetQuality(_ value: UInt8) -> Data {
-    return packCommand(.setQuality, Data([value]))
-}
-
-private func packSetEnergy(_ value: UInt16) -> Data {
-    return packCommand(.setEnergy, ByteArray().writeUInt16Le(value).data)
-}
-
-private func packFeedPaper(_ value: UInt8) -> Data {
-    return packCommand(.feedPaper, Data([value]))
-}
-
-private func packSetDrawMode(_ value: DrawMode) -> Data {
-    return packCommand(.setDrawMode, Data([value.rawValue]))
-}
-
-private func encodeImageRow(_ imageRow: [Bool]) -> Data {
-    var data = Data(count: imageRow.count / 8)
-    for byteIndex in 0 ..< data.count {
-        var byte: UInt8 = 0
-        for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] {
-            byte |= (1 << bitIndex)
+    init?(data: Data) {
+        do {
+            let (command, data) = try Self.unpack(data: data)
+            switch command {
+            case .getDeviceState:
+                guard data.count >= 1 else {
+                    return nil
+                }
+                let data = data[0]
+                self = .getDeviceState(state: CatPrinterDeviceState(
+                    noPaper: data.isBitSet(index: 0),
+                    coverIsOpen: data.isBitSet(index: 1),
+                    isOverheated: data.isBitSet(index: 2),
+                    batteryIsLow: data.isBitSet(index: 3)
+                ))
+            case .writePacing:
+                guard data.count == 1 else {
+                    return nil
+                }
+                self = .writePacing(ready: data[0] == 0x00)
+            default:
+                return nil
+            }
+        } catch {
+            return nil
         }
-        data[byteIndex] = byte
     }
-    return data
-}
 
-private func packDrawRow(_ imageRow: [Bool]) -> Data {
-    return packCommand(.drawRow, encodeImageRow(imageRow))
-}
+    func pack() -> Data {
+        let command: CatPrinterCommandId
+        let data: Data
+        switch self {
+        case .getDeviceState:
+            command = .getDeviceState
+            data = Data([0x00])
+        case .writePacing:
+            command = .writePacing
+            data = Data([0x00])
+        case let .setQuality(level):
+            command = .setQuality
+            data = Data([level])
+        case let .setEnergy(energy):
+            command = .setEnergy
+            data = ByteArray().writeUInt16Le(energy).data
+        case let .feedPaper(pixels):
+            command = .feedPaper
+            data = ByteArray().writeUInt16Le(pixels).data
+        case let .setDrawMode(mode):
+            command = .setDrawMode
+            data = Data([mode.rawValue])
+        case let .drawRow(imageRow):
+            command = .drawRow
+            data = Self.encodeImageRow(imageRow)
+        case let .lattice(latticeData):
+            command = .lattice
+            data = latticeData
+        }
+        return Self.packCommand(command, data)
+    }
 
-func catPrinterPackGetDeviceState() -> Data {
-    return packGetDeviceState()
+    private static func packCommand(_ command: CatPrinterCommandId, _ data: Data) -> Data {
+        if data.count > 0xFFFF {
+            logger.info("Command data too big (\(data.count) > 0xFFFF)")
+            return Data()
+        }
+        return ByteArray()
+            .writeUInt8(0x51)
+            .writeUInt8(0x78)
+            .writeUInt8(command.rawValue)
+            .writeUInt8(0x00)
+            .writeUInt16Le(UInt16(data.count))
+            .writeBytes(data)
+            .writeUInt8(CrcSwift.computeCrc8(data))
+            .writeUInt8(0xFF)
+            .data
+    }
+
+    private static func unpack(data: Data) throws -> (CatPrinterCommandId, Data) {
+        let reader = ByteArray(data: data)
+        guard try reader.readUInt8() == 0x51 else {
+            throw "Wrong first byte"
+        }
+        guard try reader.readUInt8() == 0x78 else {
+            throw "Wrong second byte"
+        }
+        guard let command = try CatPrinterCommandId(rawValue: reader.readUInt8()) else {
+            throw "Unsupported command."
+        }
+        _ = try reader.readUInt8()
+        let length = try reader.readUInt16Le()
+        let data = try reader.readBytes(Int(length))
+        let crc = try reader.readUInt8()
+        guard CrcSwift.computeCrc8(data) == crc else {
+            throw "Wrong crc"
+        }
+        guard try reader.readUInt8() == 0xFF else {
+            throw "Wrong last byte"
+        }
+        return (command, data)
+    }
+
+    private static func encodeImageRow(_ imageRow: [Bool]) -> Data {
+        var data = Data(count: imageRow.count / 8)
+        for byteIndex in 0 ..< data.count {
+            var byte: UInt8 = 0
+            for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] {
+                byte |= (1 << bitIndex)
+            }
+            data[byteIndex] = byte
+        }
+        return data
+    }
 }
 
 // One bit per pixel, often 384 pixels wide.
 func catPrinterPackPrintImageCommands(image: [[Bool]]) -> Data {
-    var data = packSetQuality(0x33)
-    data += packLatticeStart()
-    data += packSetEnergy(0x3000)
-    data += packSetDrawMode(.image)
+    var commands: [CatPrinterCommand] = [
+        .setQuality(level: 0x35),
+        .lattice(data: CatPrinterCommand.latticeStartData),
+        .setEnergy(energy: 0x7000),
+        .setDrawMode(mode: .image),
+    ]
     for imageRow in image {
-        data += packDrawRow(imageRow)
+        commands.append(.drawRow(imageRow: imageRow))
     }
-    data += packFeedPaper(25)
-    data += packSetPaper()
-    data += packLatticeEnd()
-    return data
+    commands += [
+        .feedPaper(pixels: 0x40),
+        .lattice(data: CatPrinterCommand.latticeEndData),
+    ]
+    return Data(commands.map { $0.pack() }.joined())
 }

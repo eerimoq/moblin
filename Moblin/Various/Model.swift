@@ -7857,7 +7857,7 @@ extension Model {
         if !catPrinters.keys.contains(device.id) {
             catPrinters[device.id] = CatPrinter()
         }
-        catPrinters[device.id]?.start(deviceId: device.id)
+        catPrinters[device.id]?.start(deviceId: device.bluetoothPeripheralId)
     }
 
     func disableCatPrinter(device: SettingsCatPrinter) {

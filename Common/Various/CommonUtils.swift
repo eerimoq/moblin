@@ -443,6 +443,12 @@ extension ExpressibleByIntegerLiteral {
     }
 }
 
+extension UnsignedInteger {
+    func isBitSet(index: Int) -> Bool {
+        return ((self >> index) & 1) == 1
+    }
+}
+
 extension Data {
     func hexString() -> String {
         return map { String(format: "%02hhx", $0) }.joined()
