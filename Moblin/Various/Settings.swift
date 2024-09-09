@@ -2189,7 +2189,6 @@ class Database: Codable {
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
-    var reactionsEnabled: Bool? = true
     var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
@@ -3743,10 +3742,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.fax == nil {
             realDatabase.chat.botCommandPermissions!.fax = .init()
-            store()
-        }
-        if realDatabase.reactionsEnabled == nil {
-            realDatabase.reactionsEnabled = true
             store()
         }
     }

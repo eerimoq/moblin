@@ -949,7 +949,6 @@ final class Model: NSObject, ObservableObject {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
-        setReactionsEnabled()
         supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared
@@ -1156,10 +1155,6 @@ final class Model: NSObject, ObservableObject {
 
     func setMapPitch() {
         maxMapPitch = database.debug!.maxMapPitch!
-    }
-
-    func setReactionsEnabled() {
-        videoUnitReactionsEnabled = database.reactionsEnabled!
     }
 
     private func setupSampleBufferReceiver() {

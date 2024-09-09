@@ -10,7 +10,6 @@ var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
-var videoUnitReactionsEnabled = true
 private let lockQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.VideoIOComponent",
     qos: .userInteractive
@@ -1014,19 +1013,6 @@ final class VideoUnit: NSObject {
         formats = formats.filter {
             $0.formatDescription.mediaSubType
                 .rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange || allowVideoRangePixelFormat
-        }
-        if #available(iOS 17, *) {
-            if videoUnitReactionsEnabled {
-                let reactionsFormats = formats.filter { $0.reactionEffectsSupported }
-                if !reactionsFormats.isEmpty {
-                    formats = reactionsFormats
-                }
-            } else {
-                let noReactionsFormats = formats.filter { !$0.reactionEffectsSupported }
-                if !noReactionsFormats.isEmpty {
-                    formats = noReactionsFormats
-                }
-            }
         }
         if formats.isEmpty {
             return (nil, "Unsupported video pixel format")
