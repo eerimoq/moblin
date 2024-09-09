@@ -10,6 +10,7 @@ enum CatPrinterCommand: UInt8 {
     case getDeviceState = 0xA3
     case setQuality = 0xA4
     case lattice = 0xA6
+    case writePacing = 0xAE
     case setEnergy = 0xAF
     case feedPaper = 0xBD
     case setDrawMode = 0xBE
@@ -35,6 +36,30 @@ private func packCommand(_ command: CatPrinterCommand, _ data: Data) -> Data {
         .writeUInt8(CrcSwift.computeCrc8(data))
         .writeUInt8(0xFF)
         .data
+}
+
+func catPrinterUnpackCommand(data: Data) throws -> (CatPrinterCommand, Data) {
+    let reader = ByteArray(data: data)
+    guard try reader.readUInt8() == 0x51 else {
+        throw "Wrong first byte"
+    }
+    guard try reader.readUInt8() == 0x78 else {
+        throw "Wrong second byte"
+    }
+    guard let command = try CatPrinterCommand(rawValue: reader.readUInt8()) else {
+        throw "Unsupported command."
+    }
+    _ = try reader.readUInt8()
+    let length = try reader.readUInt16Le()
+    let data = try reader.readBytes(Int(length))
+    let crc = try reader.readUInt8()
+    guard CrcSwift.computeCrc8(data) == crc else {
+        throw "Wrong crc"
+    }
+    guard try reader.readUInt8() == 0xFF else {
+        throw "Wrong last byte"
+    }
+    return (command, data)
 }
 
 private func packGetDeviceState() -> Data {
@@ -89,10 +114,13 @@ private func packDrawRow(_ imageRow: [Bool]) -> Data {
     return packCommand(.drawRow, encodeImageRow(imageRow))
 }
 
+func catPrinterPackGetDeviceState() -> Data {
+    return packGetDeviceState()
+}
+
 // One bit per pixel, often 384 pixels wide.
-func packPrintImageCommands(image: [[Bool]]) -> Data {
-    var data = packGetDeviceState()
-    data += packSetQuality(0x33)
+func catPrinterPackPrintImageCommands(image: [[Bool]]) -> Data {
+    var data = packSetQuality(0x33)
     data += packLatticeStart()
     data += packSetEnergy(0x3000)
     data += packSetDrawMode(.image)
@@ -102,6 +130,5 @@ func packPrintImageCommands(image: [[Bool]]) -> Data {
     data += packFeedPaper(25)
     data += packSetPaper()
     data += packLatticeEnd()
-    data += packGetDeviceState()
     return data
 }
