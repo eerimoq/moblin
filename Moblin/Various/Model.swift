@@ -7862,7 +7862,7 @@ extension Model {
     func catPrinterPrintTestImage(device: SettingsCatPrinter) {
         catPrinters[device.id]?.print(image: CIImage.black.cropped(to: .init(
             origin: .zero,
-            size: .init(width: 50, height: 50)
+            size: .init(width: 100, height: 10)
         )))
     }
 

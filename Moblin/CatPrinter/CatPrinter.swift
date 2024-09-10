@@ -6,11 +6,18 @@ import CoreBluetooth
 import CoreImage
 import Foundation
 
+private let catPrinterDispatchQueue = DispatchQueue(label: "com.eerimoq.cat-printer")
+
 enum CatPrinterState {
     case disconnected
     case discovering
     case connecting
     case connected
+}
+
+private enum DitheringAlgorithm {
+    case floydSteinberg
+    case atkinson
 }
 
 private enum JobState {
@@ -56,7 +63,6 @@ let catPrinterServices = [
 ]
 
 private let printId = CBUUID(string: "AE01")
-// periphery:ignore
 private let notifyId = CBUUID(string: "AE02")
 
 private struct PrintJob {
@@ -72,20 +78,38 @@ class CatPrinter: NSObject {
     private var printJobs: Deque<PrintJob> = []
     private var currentJob: CurrentJob?
     private var deviceId: UUID?
+    private let ditheringAlgorithm: DitheringAlgorithm = .atkinson
 
     func start(deviceId: UUID?) {
-        self.deviceId = deviceId
-        reset()
-        setState(state: .discovering)
-        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        catPrinterDispatchQueue.async {
+            self.startInternal(deviceId: deviceId)
+        }
     }
 
     func stop() {
-        reset()
+        catPrinterDispatchQueue.async {
+            self.stopInternal()
+        }
     }
 
     func print(image: CIImage) {
-        logger.info("cat-printer: Print!")
+        catPrinterDispatchQueue.async {
+            self.printInternal(image: image)
+        }
+    }
+
+    private func startInternal(deviceId: UUID?) {
+        self.deviceId = deviceId
+        reset()
+        setState(state: .discovering)
+        centralManager = CBCentralManager(delegate: self, queue: catPrinterDispatchQueue)
+    }
+
+    private func stopInternal() {
+        reset()
+    }
+
+    private func printInternal(image: CIImage) {
         guard printJobs.count < 10 else {
             logger.info("cat-printer: Too many jobs. Discarding image.")
             return
@@ -95,7 +119,6 @@ class CatPrinter: NSObject {
     }
 
     private func tryPrintNext() {
-        logger.info("cat-printer: Try print!")
         guard let peripheral else {
             reconnect()
             return
@@ -106,25 +129,10 @@ class CatPrinter: NSObject {
         guard let printJob = printJobs.popFirst() else {
             return
         }
-        logger.info("cat-printer: Printing...")
-        _ = process(image: printJob.image)
-        let blackFirstRow: [Bool] = (0 ..< 384).map { i in
-            (i / 32) % 2 == 0
+        guard let image = process(image: printJob.image) else {
+            return
         }
-        let whiteFirstRow: [Bool] = (0 ..< 384).map { i in
-            (i / 32) % 2 == 1
-        }
-        let blackFirstRows: [[Bool]] = (0 ..< 32).map { _ in
-            blackFirstRow
-        }
-        let whiteFirstRows: [[Bool]] = (0 ..< 32).map { _ in
-            whiteFirstRow
-        }
-        let data = catPrinterPackPrintImageCommands(
-            image: blackFirstRows + whiteFirstRows + blackFirstRows + whiteFirstRows
-                + blackFirstRows + whiteFirstRows + blackFirstRows + whiteFirstRows
-                + blackFirstRows + whiteFirstRows + blackFirstRows + whiteFirstRows
-        )
+        let data = catPrinterPackPrintImageCommands(image: image)
         currentJob = CurrentJob(data: data, mtu: peripheral.maximumWriteValueLength(for: .withoutResponse))
         let message = CatPrinterCommand.getDeviceState().pack()
         guard let printCharacteristic, let currentJob else {
@@ -140,7 +148,7 @@ class CatPrinter: NSObject {
         }
         if let chunk = currentJob?.nextChunk() {
             peripheral.writeValue(chunk, for: printCharacteristic, type: .withoutResponse)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            catPrinterDispatchQueue.asyncAfter(deadline: .now() + 0.1) {
                 self.tryWriteNextChunk()
             }
         } else {
@@ -149,31 +157,61 @@ class CatPrinter: NSObject {
         }
     }
 
-    // Each returned byte is a grayscale pixel
-    private func process(image: CIImage) -> ([UInt8], CGSize)? {
+    private func process(image: CIImage) -> [[Bool]]? {
         var image = image
         let filter = CIFilter.colorMonochrome()
         filter.inputImage = image
-        filter.color = CIColor(red: 0.75, green: 0.75, blue: 0.75)
+        filter.color = CIColor(red: 1, green: 1, blue: 1)
         filter.intensity = 1.0
         image = filter.outputImage ?? image
         let scale = 384 / image.extent.width
         image = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         guard let cgImage = context.createCGImage(image, from: image.extent) else {
+            logger.info("cat-printer: Failed to create core graphics image")
             return nil
         }
         guard let data = cgImage.dataProvider?.data else {
+            logger.info("cat-printer: Failed to get data")
             return nil
         }
         let length = CFDataGetLength(data)
         guard let data = CFDataGetBytePtr(data) else {
+            logger.info("cat-printer: Failed to get length")
             return nil
         }
-        return (Data(bytes: data, count: length).bytes, image.extent.size)
+        guard cgImage.bitsPerComponent == 8 else {
+            logger.info("cat-printer: Expected 8 bits per component, but got \(cgImage.bitsPerComponent)")
+            return nil
+        }
+        guard cgImage.bitsPerPixel == 32 else {
+            logger.info("cat-printer: Expected 32 bits per pixel, but got \(cgImage.bitsPerPixel)")
+            return nil
+        }
+        var pixels: [[UInt8]] = []
+        for rowOffset in stride(from: 0, to: length, by: 4 * Int(image.extent.width)) {
+            var row: [UInt8] = []
+            for columnOffset in stride(from: 0, to: 4 * Int(image.extent.width), by: 4) {
+                if data[rowOffset + columnOffset + 3] != 255 {
+                    row.append(255)
+                } else {
+                    row.append(data[rowOffset + columnOffset])
+                }
+            }
+            pixels.append(row)
+        }
+        switch ditheringAlgorithm {
+        case .floydSteinberg:
+            pixels = FloydSteinbergDithering().apply(image: pixels)
+        case .atkinson:
+            pixels = AtkinsonDithering().apply(image: pixels)
+        }
+        return pixels.map { $0.map { $0 < 127 } }
     }
 
     private func reset() {
         centralManager = nil
+        peripheral = nil
+        printCharacteristic = nil
         printJobs.removeAll()
         currentJob = nil
         setState(state: .disconnected)
@@ -252,6 +290,8 @@ extension CatPrinter: CBPeripheralDelegate {
             switch characteristic.uuid {
             case printId:
                 printCharacteristic = characteristic
+            case notifyId:
+                peripheral?.setNotifyValue(true, for: characteristic)
             default:
                 break
             }
@@ -286,10 +326,5 @@ extension CatPrinter: CBPeripheralDelegate {
                 break
             }
         }
-    }
-
-    func peripheral(_: CBPeripheral, didWriteValueFor _: CBCharacteristic, error _: (any Error)?) {
-        logger.info("cat-printer: Write response.")
-        // tryWriteNextChunk()
     }
 }

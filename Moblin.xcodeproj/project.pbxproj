@@ -354,6 +354,8 @@
 		03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */; };
 		03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D962B92DD670022EAE7 /* PreviewView.swift */; };
 		03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D992B92DDA80022EAE7 /* ChatView.swift */; };
+		03BA3B412C90124400DEFA3E /* FloydSteinbergDithering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA3B402C90124400DEFA3E /* FloydSteinbergDithering.swift */; };
+		03BA3B432C9019D500DEFA3E /* AtkinsonDithering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA3B422C9019D500DEFA3E /* AtkinsonDithering.swift */; };
 		03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */; };
 		03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
 		03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
@@ -876,6 +878,8 @@
 		03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOpenStreamingPlatformSettingsView.swift; sourceTree = "<group>"; };
 		03B89D962B92DD670022EAE7 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		03B89D992B92DDA80022EAE7 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		03BA3B402C90124400DEFA3E /* FloydSteinbergDithering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloydSteinbergDithering.swift; sourceTree = "<group>"; };
+		03BA3B422C9019D500DEFA3E /* AtkinsonDithering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtkinsonDithering.swift; sourceTree = "<group>"; };
 		03BBAE952B2E5FD20033D425 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03BBAE992B2EB4FD0033D425 /* StreamEmotesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamEmotesSettingsView.swift; sourceTree = "<group>"; };
 		03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bttv.swift; sourceTree = "<group>"; };
@@ -2233,6 +2237,8 @@
 				03B507A62C88B8F6003CDEDF /* CatPrinter.swift */,
 				0379E6692C88C9340021AB59 /* CatPrinterCommands.swift */,
 				0379E6722C8985710021AB59 /* CatPrinterScanner.swift */,
+				03BA3B402C90124400DEFA3E /* FloydSteinbergDithering.swift */,
+				03BA3B422C9019D500DEFA3E /* AtkinsonDithering.swift */,
 			);
 			path = CatPrinter;
 			sourceTree = "<group>";
@@ -2863,6 +2869,7 @@
 				030499632C4038C9003488F4 /* WidgetQrCodeSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
+				03BA3B432C9019D500DEFA3E /* AtkinsonDithering.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* IrlCommon.swift in Sources */,
@@ -3025,6 +3032,7 @@
 				03987B3C2C82859C00226C03 /* QuickButtonMicView.swift in Sources */,
 				0359F8FE2BD3DA61005BFDA8 /* SRTStream.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
+				03BA3B412C90124400DEFA3E /* FloydSteinbergDithering.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				0359F8DF2BD3DA61005BFDA8 /* MpegTsPacketizedElementaryStream.swift in Sources */,
 				0359F8EE2BD3DA61005BFDA8 /* RTMPMessage.swift in Sources */,
