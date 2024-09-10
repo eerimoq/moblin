@@ -2,9 +2,11 @@ import SwiftUI
 
 private func formatCatPrinterState(state: CatPrinterState?) -> String {
     if state == nil || state == .disconnected {
-        return String(localized: "Disabled")
+        return String(localized: "Disconnected")
     } else if state == .discovering {
         return String(localized: "Discovering")
+    } else if state == .connecting {
+        return String(localized: "Connecting")
     } else if state == .connected {
         return String(localized: "Connected")
     } else {

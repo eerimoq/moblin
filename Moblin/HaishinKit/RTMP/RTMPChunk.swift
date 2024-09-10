@@ -130,7 +130,7 @@ final class RTMPChunk {
                 return
             }
 
-            var pos: Int = 0
+            var pos = 0
             switch newValue[0] & 0b0011_1111 {
             case 0:
                 pos = 2

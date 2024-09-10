@@ -73,6 +73,13 @@ struct ChatBotCommandsSettingsView: View {
             } footer: {
                 Text("Trigger alerts. Configure alert names in alert widgets.")
             }
+            Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.fax!)) {
+                    Text("!moblin fax <url>")
+                }
+            } footer: {
+                Text("Fax the streamer images.")
+            }
         }
         .navigationTitle("Commands")
         .toolbar {

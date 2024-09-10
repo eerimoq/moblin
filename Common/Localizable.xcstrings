@@ -688,6 +688,9 @@
     "!moblin alert <name>" : {
 
     },
+    "!moblin fax <url>" : {
+
+    },
     "!moblin map zoom out" : {
       "localizations" : {
         "de" : {
@@ -32227,9 +32230,6 @@
         }
       }
     },
-    "Disabled" : {
-
-    },
     "Disabled connections will not be used." : {
       "localizations" : {
         "de" : {
@@ -41329,6 +41329,9 @@
           }
         }
       }
+    },
+    "Fax the streamer images." : {
+
     },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
       "localizations" : {

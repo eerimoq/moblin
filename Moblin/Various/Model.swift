@@ -531,6 +531,7 @@ final class Model: NSObject, ObservableObject {
     private var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
 
     @Published var catPrinterState: CatPrinterState?
+    private var currentCatPrinterSettings: SettingsCatPrinter?
     private var catPrinters: [UUID: CatPrinter] = [:]
 
     var cameraDevice: AVCaptureDevice?
@@ -7850,7 +7851,9 @@ extension Model {
 
     func enableCatPrinter(device: SettingsCatPrinter) {
         if !catPrinters.keys.contains(device.id) {
-            catPrinters[device.id] = CatPrinter()
+            let catPrinter = CatPrinter()
+            catPrinter.delegate = self
+            catPrinters[device.id] = catPrinter
         }
         catPrinters[device.id]?.start(deviceId: device.bluetoothPeripheralId)
     }
@@ -7866,12 +7869,17 @@ extension Model {
         )))
     }
 
+    private func getCatPrinterSettings(catPrinter: CatPrinter) -> SettingsCatPrinter? {
+        return database.catPrinters!.devices.first(where: { catPrinters[$0.id] === catPrinter })
+    }
+
     func setCurrentCatPrinter(device: SettingsCatPrinter) {
+        currentCatPrinterSettings = device
         catPrinterState = getCatPrinterState(device: device)
     }
 
-    func getCatPrinterState(device _: SettingsCatPrinter) -> CatPrinterState {
-        return .disconnected
+    func getCatPrinterState(device: SettingsCatPrinter) -> CatPrinterState {
+        return catPrinters[device.id]?.getState() ?? .disconnected
     }
 
     private func autoStartCatPrinters() {
@@ -7880,6 +7888,17 @@ extension Model {
         }
         for device in database.catPrinters!.devices where device.enabled {
             enableCatPrinter(device: device)
+        }
+    }
+}
+
+extension Model: CatPrinterDelegate {
+    func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
+        guard let device = getCatPrinterSettings(catPrinter: catPrinter) else {
+            return
+        }
+        if device === currentCatPrinterSettings {
+            catPrinterState = state
         }
     }
 }

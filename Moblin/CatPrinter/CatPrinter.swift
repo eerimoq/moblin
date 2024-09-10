@@ -8,6 +8,10 @@ import Foundation
 
 private let catPrinterDispatchQueue = DispatchQueue(label: "com.eerimoq.cat-printer")
 
+protocol CatPrinterDelegate: AnyObject {
+    func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState)
+}
+
 enum CatPrinterState {
     case disconnected
     case discovering
@@ -41,7 +45,7 @@ private class CurrentJob {
         guard state != self.state else {
             return
         }
-        logger.info("cat-printer: Job sate change \(self.state) -> \(state)")
+        logger.info("cat-printer: Job state change \(self.state) -> \(state)")
         self.state = state
     }
 
@@ -70,6 +74,7 @@ private struct PrintJob {
 }
 
 class CatPrinter: NSObject {
+    private var isStarted = false
     private var state: CatPrinterState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
@@ -79,6 +84,7 @@ class CatPrinter: NSObject {
     private var currentJob: CurrentJob?
     private var deviceId: UUID?
     private let ditheringAlgorithm: DitheringAlgorithm = .atkinson
+    weak var delegate: (any CatPrinterDelegate)?
 
     func start(deviceId: UUID?) {
         catPrinterDispatchQueue.async {
@@ -98,14 +104,19 @@ class CatPrinter: NSObject {
         }
     }
 
+    func getState() -> CatPrinterState {
+        return state
+    }
+
     private func startInternal(deviceId: UUID?) {
+        isStarted = true
         self.deviceId = deviceId
         reset()
-        setState(state: .discovering)
-        centralManager = CBCentralManager(delegate: self, queue: catPrinterDispatchQueue)
+        reconnect()
     }
 
     private func stopInternal() {
+        isStarted = false
         reset()
     }
 
@@ -134,12 +145,12 @@ class CatPrinter: NSObject {
         }
         let data = catPrinterPackPrintImageCommands(image: image)
         currentJob = CurrentJob(data: data, mtu: peripheral.maximumWriteValueLength(for: .withoutResponse))
-        let message = CatPrinterCommand.getDeviceState().pack()
         guard let printCharacteristic, let currentJob else {
             return
         }
-        currentJob.setState(state: .waitingForReady)
+        let message = CatPrinterCommand.getDeviceState().pack()
         peripheral.writeValue(message, for: printCharacteristic, type: .withoutResponse)
+        currentJob.setState(state: .waitingForReady)
     }
 
     private func tryWriteNextChunk() {
@@ -218,8 +229,11 @@ class CatPrinter: NSObject {
     }
 
     private func reconnect() {
-        centralManager = nil
-        setState(state: .disconnected)
+        peripheral = nil
+        printCharacteristic = nil
+        currentJob = nil
+        setState(state: .discovering)
+        centralManager = CBCentralManager(delegate: self, queue: catPrinterDispatchQueue)
     }
 
     private func setState(state: CatPrinterState) {
@@ -228,6 +242,7 @@ class CatPrinter: NSObject {
         }
         logger.info("cat-printer: State change \(self.state) -> \(state)")
         self.state = state
+        delegate?.catPrinterState(self, state: state)
     }
 }
 
@@ -262,15 +277,14 @@ extension CatPrinter: CBCentralManagerDelegate {
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)
-        setState(state: .connected)
     }
 
     func centralManager(
         _: CBCentralManager,
-        didDisconnectPeripheral peripheral: CBPeripheral,
+        didDisconnectPeripheral _: CBPeripheral,
         error _: Error?
     ) {
-        logger.info("cat-printer: centralManager didDisconnectPeripheral \(peripheral)")
+        reconnect()
     }
 }
 
@@ -292,6 +306,8 @@ extension CatPrinter: CBPeripheralDelegate {
                 printCharacteristic = characteristic
             case notifyId:
                 peripheral?.setNotifyValue(true, for: characteristic)
+                setState(state: .connected)
+                tryPrintNext()
             default:
                 break
             }
@@ -303,10 +319,8 @@ extension CatPrinter: CBPeripheralDelegate {
             return
         }
         guard let command = CatPrinterCommand(data: value) else {
-            logger.info("cat-printer: Unknown command \(value.hexString())")
             return
         }
-        logger.info("cat-printer: Got \(command)!")
         switch currentJob.state {
         case .idle:
             break
