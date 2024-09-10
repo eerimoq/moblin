@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.381.0", date: "2024-09-10", changes: [
+        "• Initial cat printer support.",
+    ]),
     Version(version: "0.380.0", date: "2024-09-08", changes: [
         "• Send chat messages to Twitch.",
         "• Optionally automatically send \"Low battery\" chat message when battery level is low.",
