@@ -11,6 +11,8 @@ private let versions = [
     Version(version: "0.381.0", date: "2024-09-10", changes: [
         "• Initial cat printer support.",
         "• Increase low battery warning from 5% to 7% left. 💡 djandrea.",
+        "• Print chat messages when a cat printer is connected.",
+        "  • No way to disable it yet.",
     ]),
     Version(version: "0.380.0", date: "2024-09-08", changes: [
         "• Send chat messages to Twitch.",
