@@ -172,7 +172,7 @@ func catPrinterPackPrintImageCommands(image: [[Bool]]) -> Data {
         commands.append(.drawRow(imageRow: imageRow))
     }
     commands += [
-        .feedPaper(pixels: 0x40),
+        .feedPaper(pixels: 0x30),
         .lattice(data: CatPrinterCommand.latticeEndData),
     ]
     return Data(commands.map { $0.pack() }.joined())

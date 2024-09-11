@@ -17,6 +17,7 @@ import TwitchChat
 import VideoToolbox
 import WatchConnectivity
 import WebKit
+import WrappingHStack
 
 class Browser: Identifiable {
     var id: UUID = .init()
@@ -2332,6 +2333,9 @@ final class Model: NSObject, ObservableObject {
                     chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption())
                 }
             }
+            if isCatPrinterConnected() {
+                printChatMessage(post: post)
+            }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
@@ -2356,6 +2360,51 @@ final class Model: NSObject, ObservableObject {
                 }
                 interactiveChatAlertsPosts.prepend(post)
             }
+        }
+    }
+
+    private func printChatMessage(post: ChatPost) {
+        // Delay 2 seconds to likely have emotes fetched.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let message = HStack {
+                WrappingHStack(
+                    alignment: .leading,
+                    horizontalSpacing: 0,
+                    verticalSpacing: 0,
+                    fitContentWidth: true
+                ) {
+                    ForEach(post.segments) { segment in
+                        if let text = segment.text {
+                            Text(text)
+                        }
+                        if let url = segment.url {
+                            CacheAsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                Image("AppIconNoBackground")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            }
+                            .frame(height: 45)
+                            Text(" ")
+                        }
+                    }
+                }
+                .foregroundColor(.black)
+                .font(.system(size: CGFloat(30), weight: .bold, design: .default))
+                Spacer()
+            }
+            .frame(width: 384)
+            let renderer = ImageRenderer(content: message)
+            guard let image = renderer.uiImage else {
+                return
+            }
+            guard let ciImage = CIImage(image: image) else {
+                return
+            }
+            self.printImage(image: ciImage)
         }
     }
 
@@ -7890,6 +7939,16 @@ extension Model {
             enableCatPrinter(device: device)
         }
     }
+
+    private func isCatPrinterConnected() -> Bool {
+        return catPrinters.values.contains(where: { $0.getState() == .connected })
+    }
+
+    private func printImage(image: CIImage) {
+        for catPrinter in catPrinters.values {
+            catPrinter.print(image: image)
+        }
+    }
 }
 
 extension Model: CatPrinterDelegate {
@@ -7906,9 +7965,7 @@ extension Model: CatPrinterDelegate {
 extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         DispatchQueue.main.async {
-            for catPrinter in self.catPrinters.values {
-                catPrinter.print(image: image)
-            }
+            self.printImage(image: image)
         }
     }
 }
