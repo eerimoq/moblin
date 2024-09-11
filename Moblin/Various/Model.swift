@@ -7932,9 +7932,6 @@ extension Model {
     }
 
     private func autoStartCatPrinters() {
-        guard database.debug!.catPrinters! else {
-            return
-        }
         for device in database.catPrinters!.devices where device.enabled {
             enableCatPrinter(device: device)
         }

@@ -1541,7 +1541,6 @@ class SettingsDebug: Codable {
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
-    var catPrinters: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3734,10 +3733,6 @@ final class Settings {
         }
         if realDatabase.catPrinters == nil {
             realDatabase.catPrinters = .init()
-            store()
-        }
-        if realDatabase.debug!.catPrinters == nil {
-            realDatabase.debug!.catPrinters = false
             store()
         }
         if realDatabase.chat.botCommandPermissions!.fax == nil {
