@@ -14,13 +14,13 @@ class FloydSteinbergDithering {
         width = image[0].count
         for y in 0 ..< height {
             for x in 0 ..< width {
-                let newVal = self.image[y][x] > 127 ? 255 : 0
-                let err = Int(self.image[y][x]) - newVal
-                self.image[y][x] = UInt8(newVal)
-                adjustPixel(y: y, x: x + 1, delta: err * 7 / 16)
-                adjustPixel(y: y + 1, x: x - 1, delta: err * 3 / 16)
-                adjustPixel(y: y + 1, x: x, delta: err * 5 / 16)
-                adjustPixel(y: y + 1, x: x + 1, delta: err * 1 / 16)
+                let newColor = self.image[y][x] > 127 ? 255 : 0
+                let diff = Int(self.image[y][x]) - newColor
+                self.image[y][x] = UInt8(newColor)
+                adjustPixel(y: y, x: x + 1, delta: diff * 7 / 16)
+                adjustPixel(y: y + 1, x: x - 1, delta: diff * 3 / 16)
+                adjustPixel(y: y + 1, x: x, delta: diff * 5 / 16)
+                adjustPixel(y: y + 1, x: x + 1, delta: diff * 1 / 16)
             }
         }
         return self.image

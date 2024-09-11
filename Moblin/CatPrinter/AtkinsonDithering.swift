@@ -14,15 +14,15 @@ class AtkinsonDithering {
         width = image[0].count
         for y in 0 ..< height {
             for x in 0 ..< width {
-                let newVal = self.image[y][x] > 127 ? 255 : 0
-                let err = Int(self.image[y][x]) - newVal
-                self.image[y][x] = UInt8(newVal)
-                adjustPixel(y: y, x: x + 1, delta: err / 8)
-                adjustPixel(y: y, x: x + 2, delta: err / 8)
-                adjustPixel(y: y + 1, x: x - 1, delta: err / 8)
-                adjustPixel(y: y + 1, x: x, delta: err / 8)
-                adjustPixel(y: y + 1, x: x + 1, delta: err / 8)
-                adjustPixel(y: y + 2, x: x, delta: err / 8)
+                let newColor = self.image[y][x] > 127 ? 255 : 0
+                let diff = Int(self.image[y][x]) - newColor
+                self.image[y][x] = UInt8(newColor)
+                adjustPixel(y: y, x: x + 1, delta: diff / 8)
+                adjustPixel(y: y, x: x + 2, delta: diff / 8)
+                adjustPixel(y: y + 1, x: x - 1, delta: diff / 8)
+                adjustPixel(y: y + 1, x: x, delta: diff / 8)
+                adjustPixel(y: y + 1, x: x + 1, delta: diff / 8)
+                adjustPixel(y: y + 2, x: x, delta: diff / 8)
             }
         }
         return self.image
