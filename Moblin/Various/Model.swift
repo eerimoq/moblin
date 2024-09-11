@@ -7906,7 +7906,6 @@ extension Model: CatPrinterDelegate {
 extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         DispatchQueue.main.async {
-            logger.info("Printing fax?")
             for catPrinter in self.catPrinters.values {
                 catPrinter.print(image: image)
             }

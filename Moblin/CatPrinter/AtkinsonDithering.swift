@@ -29,7 +29,7 @@ class AtkinsonDithering {
     }
 
     private func adjustPixel(y: Int, x: Int, delta: Int) {
-        if y < 0 || y >= height || x < 0 || x >= width {
+        guard y >= 0, y < height, x >= 0, x < width else {
             return
         }
         image[y][x] = UInt8(min(255, max(0, Int(image[y][x]) + delta)))

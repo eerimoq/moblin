@@ -187,7 +187,7 @@ class CatPrinter: NSObject {
     private func makeMonochrome(image: CIImage) -> CIImage {
         let filter = CIFilter.colorMonochrome()
         filter.inputImage = image
-        filter.color = .white
+        filter.color = CIColor(red: 0.9, green: 0.9, blue: 0.9)
         filter.intensity = 1
         return filter.outputImage ?? image
     }
