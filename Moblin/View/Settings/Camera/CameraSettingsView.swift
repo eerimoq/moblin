@@ -19,31 +19,11 @@ struct CustomLutView: View {
         }
     }
 
-    func onSystemImageName(name: String) {
-        guard let button = model.findLutButton(lut: lut) else {
-            return
-        }
-        button.systemImageNameOn = name
-        button.systemImageNameOff = name
-        model.store()
-        model.objectWillChange.send()
-        model.updateButtonStates()
-    }
-
     var body: some View {
         Form {
             Section {
                 NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
                     TextItemView(name: String(localized: "Name"), value: name)
-                }
-                if let button = model.findLutButton(lut: lut) {
-                    NavigationLink(destination: ImagePickerView(
-                        title: String(localized: "Icon"),
-                        selectedImageSystemName: button.systemImageNameOn,
-                        onChange: onSystemImageName
-                    )) {
-                        ImageItemView(name: String(localized: "Icon"), image: button.systemImageNameOn)
-                    }
                 }
             }
             Section {
@@ -70,20 +50,13 @@ struct CameraSettingsLutsView: View {
     @EnvironmentObject var model: Model
     @State var selectedImageItem: PhotosPickerItem?
 
-    private func getIcon(lut: SettingsColorLut) -> String {
-        return model.findLutButton(lut: lut)?.systemImageNameOn ?? "camera.filters"
-    }
-
     var body: some View {
         Form {
             Section {
                 List {
                     ForEach(model.database.color!.bundledLuts) { lut in
-                        HStack {
-                            Image(systemName: getIcon(lut: lut))
-                            Text(lut.name)
-                        }
-                        .tag(lut.id)
+                        Text(lut.name)
+                            .tag(lut.id)
                     }
                 }
             } header: {
@@ -93,10 +66,7 @@ struct CameraSettingsLutsView: View {
                 List {
                     ForEach(model.database.color!.diskLuts!) { lut in
                         NavigationLink(destination: CustomLutView(lut: lut, name: lut.name)) {
-                            HStack {
-                                Image(systemName: getIcon(lut: lut))
-                                Text(lut.name)
-                            }
+                            Text(lut.name)
                         }
                         .tag(lut.id)
                     }

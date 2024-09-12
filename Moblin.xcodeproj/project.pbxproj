@@ -87,7 +87,7 @@
 		032B4EDC2C3491F200204547 /* CameraSettingsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */; };
 		032B4EDE2C34927C00204547 /* SegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B4EDD2C34927C00204547 /* SegmentedPicker.swift */; };
 		032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */; };
-		032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */; };
+		032F3B3C2C935385002FF97E /* QuickButtonLutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */; };
 		032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFB2B0B1183007BE85E /* ValueEditView.swift */; };
 		032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */; };
 		032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDC012B0B11C5007BE85E /* SizeEditView.swift */; };
@@ -570,7 +570,7 @@
 		032B4EDD2C34927C00204547 /* SegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedPicker.swift; sourceTree = "<group>"; };
 		032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonLutsView.swift; sourceTree = "<group>"; };
 		032FDBFB2B0B1183007BE85E /* ValueEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueEditView.swift; sourceTree = "<group>"; };
 		032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionEditView.swift; sourceTree = "<group>"; };
 		032FDC012B0B11C5007BE85E /* SizeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeEditView.swift; sourceTree = "<group>"; };
@@ -1148,7 +1148,6 @@
 				0315A37B2AA439B500295443 /* NameEditView.swift */,
 				0315A37D2AA43DCC00295443 /* TextEditView.swift */,
 				035D37272AB0EBB500045B92 /* IconAndTextView.swift */,
-				032D47DA2BCC54AC00AB81F4 /* ImagePickerView.swift */,
 				031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */,
 				03C088362B0AFFA8000990DA /* InlinePickerView.swift */,
 				032FDBFB2B0B1183007BE85E /* ValueEditView.swift */,
@@ -1982,6 +1981,7 @@
 			children = (
 				035D37362AB230E700045B92 /* QuickButtonBitrateView.swift */,
 				0318B4122C845214002B4F58 /* QuickButtonChatView.swift */,
+				032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */,
 				03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */,
 				03987B362C8280B300226C03 /* QuickButtonObsView.swift */,
 				03987B3D2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift */,
@@ -2873,7 +2873,6 @@
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* IrlCommon.swift in Sources */,
-				032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
@@ -3013,6 +3012,7 @@
 				037FE03A2C5A04DD0067B5AC /* WidgetAlertsSettingsView.swift in Sources */,
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
+				032F3B3C2C935385002FF97E /* QuickButtonLutsView.swift in Sources */,
 				03987B3E2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,

@@ -48357,6 +48357,7 @@
       }
     },
     "Icon" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -48487,6 +48488,7 @@
       }
     },
     "Icons" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -53949,9 +53951,6 @@
           }
         }
       }
-    },
-    "LUT quick button created" : {
-
     },
     "LUTs" : {
       "localizations" : {
@@ -61105,6 +61104,7 @@
       }
     },
     "My LUT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -89985,9 +89985,6 @@
           }
         }
       }
-    },
-    "Tap it to apply the LUT" : {
-
     },
     "Tap screen to focus" : {
       "localizations" : {

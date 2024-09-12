@@ -228,12 +228,6 @@ struct QuickButtonsInnerView: View {
         model.toggleBrowser()
     }
 
-    private func lutAction(state _: ButtonState) {
-        state.button.isOn.toggle()
-        model.updateButtonStates()
-        model.sceneUpdated(store: false)
-    }
-
     private func cameraPreviewAction(state _: ButtonState) {
         state.button.isOn.toggle()
         model.updateButtonStates()
@@ -408,9 +402,7 @@ struct QuickButtonsInnerView: View {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
             case .lut:
-                Button(action: {
-                    lutAction(state: state)
-                }, label: {
+                Button(action: {}, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
             case .cameraPreview:
@@ -440,6 +432,12 @@ struct QuickButtonsInnerView: View {
             case .widgets:
                 Button(action: {
                     model.showingWidgets = true
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .luts:
+                Button(action: {
+                    model.showingLuts = true
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

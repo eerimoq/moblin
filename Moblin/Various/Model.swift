@@ -414,6 +414,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
     @Published var showingObs = false
+    @Published var showingLuts = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
     @Published var obsAudioVolume: String = noValue
@@ -2070,47 +2071,27 @@ final class Model: NSObject, ObservableObject {
     }
 
     func addLut(data: Data) {
-        let button = SettingsButton(name: String(localized: "My LUT"))
-        button.type = .lut
-        button.systemImageNameOn = "camera.filters"
-        button.systemImageNameOff = "camera.filters"
-        let lut = SettingsColorLut(type: .disk, name: button.name)
-        lut.buttonId = button.id
+        let lut = SettingsColorLut(type: .disk, name: "My LUT")
+        lut.buttonId = .init()
         imageStorage.write(id: lut.id, data: data)
         database.color!.diskLuts!.append(lut)
-        database.globalButtons!.append(button)
-        store()
-        updateButtonStates()
         resetSelectedScene()
-        makeToast(
-            title: String(localized: "LUT quick button created"),
-            subTitle: String(localized: "Tap it to apply the LUT")
-        )
     }
 
     func removeLut(offsets: IndexSet) {
         for offset in offsets {
             let lut = database.color!.diskLuts![offset]
             imageStorage.remove(id: lut.id)
-            database.globalButtons!.removeAll(where: { $0.id == lut.buttonId })
         }
         database.color!.diskLuts!.remove(atOffsets: offsets)
-        store()
-        updateButtonStates()
         resetSelectedScene()
-    }
-
-    func findLutButton(lut: SettingsColorLut) -> SettingsButton? {
-        return database.globalButtons!.first(where: { $0.id == lut.buttonId })
     }
 
     func setLutName(lut: SettingsColorLut, name: String) {
         lut.name = name
-        findLutButton(lut: lut)?.name = name
-        store()
     }
 
-    private func allLuts() -> [SettingsColorLut] {
+    func allLuts() -> [SettingsColorLut] {
         return database.color!.bundledLuts + database.color!.diskLuts!
     }
 
@@ -4333,7 +4314,7 @@ final class Model: NSObject, ObservableObject {
             effects.append(lutEffect)
         }
         for lut in allLuts() {
-            guard let button = findLutButton(lut: lut), button.enabled!, button.isOn else {
+            guard lut.enabled! else {
                 continue
             }
             guard let lutEffect = lutEffects[lut.id] else {

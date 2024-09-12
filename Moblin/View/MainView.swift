@@ -348,6 +348,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingLuts {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        QuickButtonLutsView {
+                            model.showingLuts = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.showingObs {
                 HStack {
                     Spacer()

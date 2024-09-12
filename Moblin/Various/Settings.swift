@@ -1176,6 +1176,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case poll = "Poll"
     case snapshot = "Snapshot"
     case widgets = "Widgets"
+    case luts = "LUTs"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -1241,6 +1242,8 @@ class SettingsColorLut: Codable, Identifiable {
     var id: UUID = .init()
     var type: SettingsColorLutType = .bundled
     var name: String = ""
+    var enabled: Bool? = false
+    // Remove at some point.
     var buttonId: UUID?
 
     init(type: SettingsColorLutType, name: String) {
@@ -2559,6 +2562,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "chart.bar.xaxis"
     updateGlobalButton(database: database, button: button)
 
+    button = SettingsButton(name: String(localized: "LUTs"))
+    button.id = UUID()
+    button.type = .luts
+    button.imageType = "System name"
+    button.systemImageNameOn = "camera.filters"
+    button.systemImageNameOff = "camera.filters"
+    updateGlobalButton(database: database, button: button)
+
     database.globalButtons = database.globalButtons!.filter { button in
         button.type != .unknown
     }
@@ -3737,6 +3748,20 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.fax == nil {
             realDatabase.chat.botCommandPermissions!.fax = .init()
+            store()
+        }
+        let allLuts = realDatabase.color!.bundledLuts + (realDatabase.color!.diskLuts ?? [])
+        for lut in allLuts where lut.enabled == nil {
+            if let button = realDatabase.globalButtons!.first(where: { $0.id == lut.buttonId }) {
+                lut.enabled = button.isOn
+            } else {
+                lut.enabled = false
+            }
+            store()
+        }
+        let newButtons = realDatabase.globalButtons!.filter { $0.type != .lut }
+        if realDatabase.globalButtons!.count != newButtons.count {
+            realDatabase.globalButtons = newButtons
             store()
         }
     }
