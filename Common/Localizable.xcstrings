@@ -2251,6 +2251,9 @@
         }
       }
     },
+    "{muted} - Show muted" : {
+
+    },
     "{rating} - Show a 0-5 rating" : {
       "localizations" : {
         "de" : {

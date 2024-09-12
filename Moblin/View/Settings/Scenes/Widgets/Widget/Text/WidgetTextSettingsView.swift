@@ -11,6 +11,7 @@ private let suggestionCountry = "{countryFlag} {country}"
 private let suggestionCity = "{countryFlag} {city}"
 private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude}"
 private let suggestionSubtitles = "{subtitles}"
+private let suggestionMuted = "{muted}"
 private let suggestionTime = "🕑 {time}"
 private let suggestionTimer = "⏳ {timer}"
 private let suggestionWeather = "{conditions} {temperature}"
@@ -27,7 +28,8 @@ private let suggestions = [
     Suggestion(id: 5, name: String(localized: "Country"), text: suggestionCountry),
     Suggestion(id: 6, name: String(localized: "Movement"), text: suggestionMovement),
     Suggestion(id: 7, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-    Suggestion(id: 8, name: String(localized: "Debug"), text: suggestionDebug),
+    Suggestion(id: 8, name: String(localized: "Muted"), text: suggestionMuted),
+    Suggestion(id: 9, name: String(localized: "Debug"), text: suggestionDebug),
 ]
 
 private struct SuggestionsView: View {
@@ -219,6 +221,7 @@ private struct TextSelectionView: View {
                     Text("{checkbox} - Show a checkbox")
                     Text("{rating} - Show a 0-5 rating")
                     Text("{subtitles} - Show subtitles")
+                    Text("{muted} - Show muted")
                     Text("")
                     Text("Location (if Settings -> Location is enabled)").bold()
                     Text("{speed} - Show speed")

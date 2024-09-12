@@ -2617,10 +2617,17 @@ final class Model: NSObject, ObservableObject {
             temperature: weather?.currentWeather.temperature,
             country: placemark?.country ?? "",
             countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
-            city: placemark?.locality
+            city: placemark?.locality,
+            muted: isMuteOn
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
+        }
+    }
+
+    private func forceUpdateTextEffects() {
+        for textEffect in textEffects.values {
+            textEffect.forceImageUpdate()
         }
     }
 
@@ -4952,6 +4959,8 @@ final class Model: NSObject, ObservableObject {
         if !isRemoteControlAssistantConnected() {
             sendIsMutedToWatch(isMuteOn: isMuteOn)
         }
+        updateTextEffects(now: .now, timestamp: .now)
+        forceUpdateTextEffects()
     }
 
     func setCameraZoomPreset(id: UUID) {

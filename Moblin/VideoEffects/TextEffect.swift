@@ -9,18 +9,19 @@ import WeatherKit
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
 struct TextEffectStats {
-    var timestamp: ContinuousClock.Instant
-    var bitrateAndTotal: String
-    var date: Date
-    var debugOverlayLines: [String]
-    var speed: String
-    var altitude: String
-    var distance: String
-    var conditions: String?
-    var temperature: Measurement<UnitTemperature>?
-    var country: String?
-    var countryFlag: String?
-    var city: String?
+    let timestamp: ContinuousClock.Instant
+    let bitrateAndTotal: String
+    let date: Date
+    let debugOverlayLines: [String]
+    let speed: String
+    let altitude: String
+    let distance: String
+    let conditions: String?
+    let temperature: Measurement<UnitTemperature>?
+    let country: String?
+    let countryFlag: String?
+    let city: String?
+    let muted: Bool
 }
 
 private enum PartData: Equatable {
@@ -101,7 +102,7 @@ final class TextEffect: VideoEffect {
         super.init()
     }
 
-    private func forceImageUpdate() {
+    func forceImageUpdate() {
         textQueue.sync {
             forceUpdate = true
             forceUpdateMetalPetal = true
@@ -345,6 +346,10 @@ final class TextEffect: VideoEffect {
                     lines.append(.init(id: lineId, parts: parts))
                     lineId += 1
                     parts = []
+                }
+            case .muted:
+                if stats.muted {
+                    parts.append(.init(id: partId, data: .imageSystemName("mic.slash")))
                 }
             }
             partId += 1
