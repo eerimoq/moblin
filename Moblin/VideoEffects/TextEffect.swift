@@ -56,6 +56,8 @@ final class TextEffect: VideoEffect {
     private var overlayMetalPetal: MTIImage?
     private var image: UIImage?
     private var imageMetalPetal: UIImage?
+    private var newImagePresent: Bool = false
+    private var newImageMetalPetalPresent: Bool = false
     private var nextUpdateTime = ContinuousClock.now
     private var nextUpdateTimeMetalPetal = ContinuousClock.now
     private var previousLines: [Line]?
@@ -360,25 +362,30 @@ final class TextEffect: VideoEffect {
     private func updateOverlay(size: CGSize) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y, forceUpdate) = textQueue.sync {
+        let (x, y, forceUpdate, newImagePresent) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
             }
             defer {
                 self.forceUpdate = false
+                self.newImagePresent = false
             }
-            return (self.x, self.y, self.forceUpdate)
+            return (self.x, self.y, self.forceUpdate, self.newImagePresent)
         }
-        if let newImage {
-            let x = toPixels(x, size.width)
-            let y = toPixels(y, size.height)
-            overlay = CIImage(image: newImage)?
-                .transformed(by: CGAffineTransform(
-                    translationX: x,
-                    y: size.height - newImage.size.height - y
-                ))
-                .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        if newImagePresent {
+            if let newImage {
+                let x = toPixels(x, size.width)
+                let y = toPixels(y, size.height)
+                overlay = CIImage(image: newImage)?
+                    .transformed(by: CGAffineTransform(
+                        translationX: x,
+                        y: size.height - newImage.size.height - y
+                    ))
+                    .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+            } else {
+                overlay = nil
+            }
         }
         guard now >= nextUpdateTime || forceUpdate else {
             return
@@ -438,6 +445,7 @@ final class TextEffect: VideoEffect {
             let image = renderer.uiImage
             textQueue.sync {
                 self.image = image
+                self.newImagePresent = true
             }
         }
     }
@@ -445,18 +453,23 @@ final class TextEffect: VideoEffect {
     private func updateOverlayMetalPetal(size: CGSize) -> (Double, Double) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y, forceUpdate) = textQueue.sync {
+        let (x, y, forceUpdate, newImagePresent) = textQueue.sync {
             if self.imageMetalPetal != nil {
                 newImage = self.imageMetalPetal
                 self.imageMetalPetal = nil
             }
             defer {
                 self.forceUpdateMetalPetal = false
+                self.newImageMetalPetalPresent = false
             }
-            return (self.x, self.y, self.forceUpdateMetalPetal)
+            return (self.x, self.y, self.forceUpdateMetalPetal, self.newImageMetalPetalPresent)
         }
-        if let image = newImage?.cgImage {
-            overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
+        if newImagePresent {
+            if let image = newImage?.cgImage {
+                overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
+            } else {
+                overlayMetalPetal = nil
+            }
         }
         guard now >= nextUpdateTimeMetalPetal || forceUpdate else {
             return (x, y)
@@ -516,6 +529,7 @@ final class TextEffect: VideoEffect {
             let image = renderer.uiImage
             textQueue.sync {
                 self.imageMetalPetal = image
+                self.newImageMetalPetalPresent = true
             }
         }
         return (x, y)
