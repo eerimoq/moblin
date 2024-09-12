@@ -96,7 +96,7 @@ class MoblinSettingsUrl: Codable {
     func toString() throws -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
-        return try String(decoding: encoder.encode(self), as: UTF8.self)
+        return try String.fromUtf8(data: encoder.encode(self))
     }
 
     static func fromString(query: String) throws -> MoblinSettingsUrl {

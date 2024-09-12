@@ -122,7 +122,7 @@ class StreamingHistoryDatabase: Codable {
     }
 
     func toString() throws -> String {
-        return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
+        return try String.fromUtf8(data: JSONEncoder().encode(self))
     }
 }
 

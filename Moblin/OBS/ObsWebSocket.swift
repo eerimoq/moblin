@@ -270,7 +270,7 @@ struct ObsAudioInputVolume: Identifiable {
 private let rpcVersion = 1
 
 private func packMessage(op: OpCode, data: Data) -> String {
-    let data = String(decoding: data, as: UTF8.self)
+    let data = String.fromUtf8(data: data)
     return "{\"op\": \(op.rawValue), \"d\": \(data)}"
 }
 

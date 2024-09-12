@@ -619,3 +619,12 @@ extension Duration {
         return Double(milliseconds) / 1000
     }
 }
+
+extension String {
+    static func fromUtf8(data: Data) -> String {
+        guard let text = String(data: data, encoding: .utf8) else {
+            fatalError("Not UTF-8")
+        }
+        return text
+    }
+}
