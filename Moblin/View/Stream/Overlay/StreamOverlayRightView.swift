@@ -29,9 +29,9 @@ private struct CollapsedBondingView: View {
             }
             .background(backgroundColor)
             .cornerRadius(5)
-            .padding(5)
+            .padding(20)
             .contentShape(Rectangle())
-            .padding(-5)
+            .padding(-20)
         }
     }
 }
@@ -57,9 +57,9 @@ private struct CollapsedBitrateView: View {
             .font(smallFont)
             .background(backgroundColor)
             .cornerRadius(5)
-            .padding(5)
+            .padding(20)
             .contentShape(Rectangle())
-            .padding(-5)
+            .padding(-20)
         }
     }
 }
@@ -184,6 +184,9 @@ struct RightOverlayView: View {
                         level: model.audioLevel,
                         channels: model.numberOfAudioChannels
                     )
+                    .padding(20)
+                    .contentShape(Rectangle())
+                    .padding(-20)
                 }
                 if model.verboseStatuses {
                     StatusesView(textPlacement: .beforeIcon)

@@ -32,9 +32,9 @@ struct StreamOverlayIconAndTextView: View {
                         .font(smallFont)
                 }
             }
-            .padding(5)
+            .padding(20)
             .contentShape(Rectangle())
-            .padding(-5)
+            .padding(-20)
         }
     }
 }
