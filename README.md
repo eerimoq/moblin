@@ -55,12 +55,15 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Timer.
     - Country.
     - City.
-    - Subtitles.
+    - Subtitles. Speech to text.
     - Local time.
     - Speed.
     - Altitude.
     - Distance. Reset manually.
     - Debug information.
+    - Muted.
+    - Checkboxes.
+    - Ratings.
   - Browser widget. Show a web page on stream.
   - Map widget with location.
   - QR code widget.
@@ -97,17 +100,21 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Grayscale.
   - Movie. Paint top and bottom of 16:9 video black to look like
     2.35:1.
+  - 4:3. Paint left and right of 16:9 video black to look like 4:3.
   - Seipa.
   - Noise reduction.
   - Random. A single effect that applies a random effect.
   - Triple. Show center of image three times. Experimental.
-- Alerts styling.
+- Alerts.
   - Optional text to speech (TTS).
     - Many voices.
   - Text message colors, font weight, font design and more.
   - Select sound and image per alert.
   - Image placement relative to your face or scene.
-- Chat styling.
+- Chat.
+  - Alerts filter.
+  - Send messages to Twitch.
+  - Highlight important events.
   - Optional text to speech (TTS).
     - Optionally subscribers only.
     - Many voices.
@@ -163,13 +170,26 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Simple poll.
   - Chat types 1, 2 or 3.
 - Chat bot.
-  - Turn chat text to speech on an off.
-  - Fix OBS.
+  - Commands.
+    - Turn chat text to speech on an off.
+    - Fix OBS.
+    - Map zoom out.
+    - Trigger alerts.
+    - Fax.
+  - Send low battery warning to chat periodically.
 - Screen capture as video source.
 - Basic video player as video source and mic.
 - DJI camera Bluetooth controller.
   - Automatically start DJI camera live stream.
   - Tested with OA4, OA3 and OP3.
+- Show grid for easier positioning.
+- Camera settings (on some cameras).
+  - Exposure bias.
+  - White balance.
+  - ISO.
+  - Focus.
+- Cat printer.
+  - Print chat and faxes.
 
 ## Apple Watch companion app
 
@@ -187,19 +207,6 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Mute.
   - Skip current TTS message.
 - Watch face complication.
-
-# Ideas/plan
-
-- Show two cameras at the same time.
-- Audio filters. For example volume limiter.
-  - An adjustable gain would be nice, then limiter (to keep audio from
-    clipping), and a noise gate would be my top 3 requested audio
-    filters when you have the time. I think that would be the same
-    order in terms of complexity to implement as well.
-- Add Twitch/Kick Icons next to chat messages depending on which
-  platform the message came from.
-- Lookup Twitch channel id from channel name. Possibly login to
-  Twitch.
 
 # Import settings using moblin:// (custom URL)
 
