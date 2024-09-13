@@ -2385,7 +2385,7 @@ final class Model: NSObject, ObservableObject {
             guard let ciImage = CIImage(image: image) else {
                 return
             }
-            self.printImage(image: ciImage)
+            self.printImage(image: ciImage, feedPaperDelay: 3)
         }
     }
 
@@ -7931,9 +7931,9 @@ extension Model {
         return catPrinters.values.contains(where: { $0.getState() == .connected })
     }
 
-    private func printImage(image: CIImage) {
+    private func printImage(image: CIImage, feedPaperDelay: Double? = nil) {
         for catPrinter in catPrinters.values {
-            catPrinter.print(image: image)
+            catPrinter.print(image: image, feedPaperDelay: feedPaperDelay)
         }
     }
 }

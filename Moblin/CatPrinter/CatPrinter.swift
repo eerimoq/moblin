@@ -35,10 +35,12 @@ private class CurrentJob {
     var offset: Int = 0
     let mtu: Int
     var state: JobState = .idle
+    let feedPaperDelay: Double?
 
-    init(data: Data, mtu: Int) {
+    init(data: Data, mtu: Int, feedPaperDelay: Double?) {
         self.data = data
         self.mtu = mtu
+        self.feedPaperDelay = feedPaperDelay
     }
 
     func setState(state: JobState) {
@@ -71,6 +73,7 @@ private let notifyId = CBUUID(string: "AE02")
 
 private struct PrintJob {
     let image: CIImage
+    let feedPaperDelay: Double?
 }
 
 class CatPrinter: NSObject {
@@ -86,6 +89,7 @@ class CatPrinter: NSObject {
     private let ditheringAlgorithm: DitheringAlgorithm = .atkinson
     weak var delegate: (any CatPrinterDelegate)?
     private var tryWriteNextChunkTimer: DispatchSourceTimer?
+    private var feedPaperTimer: DispatchSourceTimer?
 
     func start(deviceId: UUID?) {
         catPrinterDispatchQueue.async {
@@ -99,9 +103,9 @@ class CatPrinter: NSObject {
         }
     }
 
-    func print(image: CIImage) {
+    func print(image: CIImage, feedPaperDelay: Double? = nil) {
         catPrinterDispatchQueue.async {
-            self.printInternal(image: image)
+            self.printInternal(image: image, feedPaperDelay: feedPaperDelay)
         }
     }
 
@@ -119,12 +123,12 @@ class CatPrinter: NSObject {
         reset()
     }
 
-    private func printInternal(image: CIImage) {
-        guard printJobs.count < 10 else {
+    private func printInternal(image: CIImage, feedPaperDelay: Double?) {
+        guard printJobs.count < 50 else {
             logger.info("cat-printer: Too many jobs. Discarding image.")
             return
         }
-        printJobs.append(PrintJob(image: image))
+        printJobs.append(PrintJob(image: image, feedPaperDelay: feedPaperDelay))
         tryPrintNext()
     }
 
@@ -146,15 +150,31 @@ class CatPrinter: NSObject {
             logger.info("cat-printer: \(error)")
             return
         }
-        let data = catPrinterPackPrintImageCommands(image: image)
-        currentJob = CurrentJob(data: data, mtu: peripheral.maximumWriteValueLength(for: .withoutResponse))
+        let data = catPrinterPackPrintImageCommands(image: image, feedPaper: printJob.feedPaperDelay == nil)
+        currentJob = CurrentJob(
+            data: data,
+            mtu: peripheral.maximumWriteValueLength(for: .withoutResponse),
+            feedPaperDelay: printJob.feedPaperDelay
+        )
+        stopFeedPaperTimer()
         guard let printCharacteristic, let currentJob else {
             reconnect()
             return
         }
-        let message = CatPrinterCommand.getDeviceState().pack()
-        peripheral.writeValue(message, for: printCharacteristic, type: .withoutResponse)
+        send(command: CatPrinterCommand.getDeviceState(), peripheral, printCharacteristic)
         currentJob.setState(state: .waitingForReady)
+    }
+
+    private func send(
+        command: CatPrinterCommand,
+        _ peripheral: CBPeripheral,
+        _ characteristic: CBCharacteristic
+    ) {
+        send(data: command.pack(), peripheral, characteristic)
+    }
+
+    private func send(data: Data, _ peripheral: CBPeripheral, _ characteristic: CBCharacteristic) {
+        peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
     }
 
     private func tryWriteNextChunk() {
@@ -163,9 +183,13 @@ class CatPrinter: NSObject {
             return
         }
         if let chunk = currentJob?.nextChunk() {
-            peripheral.writeValue(chunk, for: printCharacteristic, type: .withoutResponse)
+            send(data: chunk, peripheral, printCharacteristic)
             startTryWriteNextChunkTimer()
         } else {
+            if let feedPaperDelay = currentJob?.feedPaperDelay, printJobs.isEmpty {
+                stopFeedPaperTimer()
+                startFeedPaperTimer(delay: feedPaperDelay)
+            }
             currentJob = nil
             tryPrintNext()
         }
@@ -238,6 +262,7 @@ class CatPrinter: NSObject {
         printJobs.removeAll()
         currentJob = nil
         stopTryWriteNextChunkTimer()
+        stopFeedPaperTimer()
         setState(state: .disconnected)
     }
 
@@ -248,6 +273,7 @@ class CatPrinter: NSObject {
         currentJob = nil
         setState(state: .discovering)
         stopTryWriteNextChunkTimer()
+        stopFeedPaperTimer()
         centralManager = CBCentralManager(delegate: self, queue: catPrinterDispatchQueue)
     }
 
@@ -272,6 +298,27 @@ class CatPrinter: NSObject {
     private func stopTryWriteNextChunkTimer() {
         tryWriteNextChunkTimer?.cancel()
         tryWriteNextChunkTimer = nil
+    }
+
+    private func startFeedPaperTimer(delay: Double) {
+        feedPaperTimer = DispatchSource.makeTimerSource(queue: catPrinterDispatchQueue)
+        feedPaperTimer!.schedule(deadline: .now() + delay)
+        feedPaperTimer!.setEventHandler { [weak self] in
+            self?.feedPaper()
+        }
+        feedPaperTimer!.activate()
+    }
+
+    private func stopFeedPaperTimer() {
+        feedPaperTimer?.cancel()
+        feedPaperTimer = nil
+    }
+
+    private func feedPaper() {
+        guard let peripheral, let printCharacteristic else {
+            return
+        }
+        send(command: .feedPaper(pixels: catPrinterFeedPaperPixels), peripheral, printCharacteristic)
     }
 }
 

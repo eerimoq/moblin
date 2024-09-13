@@ -4,6 +4,8 @@
 import CrcSwift
 import Foundation
 
+let catPrinterFeedPaperPixels: UInt16 = 50
+
 private enum CatPrinterCommandId: UInt8 {
     case feedPaper = 0xA1
     case drawRow = 0xA2
@@ -161,7 +163,7 @@ enum CatPrinterCommand {
 }
 
 // One bit per pixel, often 384 pixels wide.
-func catPrinterPackPrintImageCommands(image: [[Bool]]) -> Data {
+func catPrinterPackPrintImageCommands(image: [[Bool]], feedPaper: Bool) -> Data {
     var commands: [CatPrinterCommand] = [
         .setQuality(level: 0x35),
         .lattice(data: CatPrinterCommand.latticeStartData),
@@ -171,9 +173,9 @@ func catPrinterPackPrintImageCommands(image: [[Bool]]) -> Data {
     for imageRow in image {
         commands.append(.drawRow(imageRow: imageRow))
     }
-    commands += [
-        .feedPaper(pixels: 0x30),
-        .lattice(data: CatPrinterCommand.latticeEndData),
-    ]
+    if feedPaper {
+        commands.append(.feedPaper(pixels: catPrinterFeedPaperPixels))
+    }
+    commands.append(.lattice(data: CatPrinterCommand.latticeEndData))
     return Data(commands.map { $0.pack() }.joined())
 }
