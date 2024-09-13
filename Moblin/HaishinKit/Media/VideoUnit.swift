@@ -499,6 +499,9 @@ final class VideoUnit: NSObject {
         if Int32(image.extent.width) != preset.width || Int32(image.extent.height) != preset.height {
             image = scaleImage(image)
         }
+        if applyBlur {
+            image = blurImage(image)
+        }
         let extent = image.extent
         var failedEffect: String?
         for effect in effects {
@@ -510,9 +513,6 @@ final class VideoUnit: NSObject {
             }
         }
         mixer?.delegate?.mixerVideo(failedEffect: failedEffect)
-        if applyBlur {
-            image = blurImage(image)
-        }
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
         }
