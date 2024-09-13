@@ -6,6 +6,12 @@ struct CatPrintersSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Image("CatPrinter")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                Text("A small affordable black and white printer.")
+            }
+            Section {
                 List {
                     ForEach(model.database.catPrinters!.devices) { device in
                         NavigationLink(destination: CatPrinterSettingsView(device: device)) {
