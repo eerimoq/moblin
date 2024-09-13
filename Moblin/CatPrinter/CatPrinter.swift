@@ -125,7 +125,6 @@ class CatPrinter: NSObject {
 
     private func printInternal(image: CIImage, feedPaperDelay: Double?) {
         guard printJobs.count < 50 else {
-            logger.info("cat-printer: Too many jobs. Discarding image.")
             return
         }
         printJobs.append(PrintJob(image: image, feedPaperDelay: feedPaperDelay))
@@ -347,9 +346,7 @@ extension CatPrinter: CBCentralManagerDelegate {
         setState(state: .connecting)
     }
 
-    func centralManager(_: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error _: Error?) {
-        logger.info("cat-printer: centralManager didFailToConnect \(peripheral)")
-    }
+    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)

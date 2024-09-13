@@ -7940,11 +7940,13 @@ extension Model {
 
 extension Model: CatPrinterDelegate {
     func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
-        guard let device = getCatPrinterSettings(catPrinter: catPrinter) else {
-            return
-        }
-        if device === currentCatPrinterSettings {
-            catPrinterState = state
+        DispatchQueue.main.async {
+            guard let device = self.getCatPrinterSettings(catPrinter: catPrinter) else {
+                return
+            }
+            if device === self.currentCatPrinterSettings {
+                self.catPrinterState = state
+            }
         }
     }
 }
