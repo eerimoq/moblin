@@ -499,11 +499,11 @@ final class VideoUnit: NSObject {
         if Int32(image.extent.width) != preset.width || Int32(image.extent.height) != preset.height {
             image = scaleImage(image)
         }
+        let extent = image.extent
+        var failedEffect: String?
         if applyBlur {
             image = blurImage(image)
         }
-        let extent = image.extent
-        var failedEffect: String?
         for effect in effects {
             let effectOutputImage = effect.execute(image, faceDetections, isFirstAfterAttach)
             if effectOutputImage.extent == extent {
@@ -585,6 +585,9 @@ final class VideoUnit: NSObject {
         {
             image = scaleImageMetalPetal(image)
         }
+        if applyBlur {
+            image = blurImageMetalPetal(image)
+        }
         for effect in effects {
             let effectOutputImage = effect.executeMetalPetal(image, faceDetections, isFirstAfterAttach)
             if effectOutputImage != nil {
@@ -594,9 +597,6 @@ final class VideoUnit: NSObject {
             }
         }
         mixer?.delegate?.mixerVideo(failedEffect: failedEffect)
-        if applyBlur {
-            image = blurImageMetalPetal(image)
-        }
         guard originalImage != image, let image else {
             return (nil, nil)
         }
