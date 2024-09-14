@@ -307,6 +307,7 @@ final class Model: NSObject, ObservableObject {
     private var streamStartTime: ContinuousClock.Instant?
     @Published var isLive = false
     @Published var isRecording = false
+    @Published var isWorkout = false
     private var currentRecording: Recording?
     @Published var recordingLength = noValue
     @Published var browserWidgetsStatus = noValue
@@ -393,7 +394,6 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private var heartRateEnabled = false
     private var heartRate: Int?
     private var pollVotes: [Int] = [0, 0, 0]
     private var pollEnabled = false
@@ -1426,8 +1426,6 @@ final class Model: NSObject, ObservableObject {
             obsWebSocket?.stop()
             media.stopAllNetStreams()
             speechToText.stop()
-            heartRateEnabled = false
-            sendHeartRateEnabledToWatch()
         }
     }
 
@@ -2884,6 +2882,32 @@ final class Model: NSObject, ObservableObject {
         currentRecording = nil
     }
 
+    func startWorkout() {
+        guard WCSession.default.isWatchAppInstalled else {
+            makeToast(title: String(localized: "Workout requires an Apple Watch"))
+            return
+        }
+        setIsWorkout(value: true)
+        authorizeHealthKit {
+            DispatchQueue.main.async {
+                self.sendHeartRateEnabledToWatch()
+            }
+        }
+        makeToast(
+            title: String(localized: "Workout starting"),
+            subTitle: String(localized: "Open Moblin in your Apple Watch to start it")
+        )
+    }
+
+    func stopWorkout() {
+        guard isWorkout else {
+            return
+        }
+        setIsWorkout(value: false)
+        sendHeartRateEnabledToWatch()
+        makeToast(title: String(localized: "Workout stopped"))
+    }
+
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
         for button in database.globalButtons! where button.type == type {
             button.isOn = isOn
@@ -2942,6 +2966,12 @@ final class Model: NSObject, ObservableObject {
         if !isRemoteControlAssistantConnected() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }
+    }
+
+    func setIsWorkout(value: Bool) {
+        isWorkout = value
+        setGlobalButtonState(type: .workout, isOn: value)
+        updateButtonStates()
     }
 
     private func setIsMuted(value: Bool) {
@@ -4335,7 +4365,6 @@ final class Model: NSObject, ObservableObject {
         var usedMapEffects: [MapEffect] = []
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
-        var needsHeartRate = false
         enabledAlertsEffects = []
         addSceneEffects(
             scene,
@@ -4344,8 +4373,7 @@ final class Model: NSObject, ObservableObject {
             &usedMapEffects,
             &addedScenes,
             &enabledAlertsEffects,
-            &needsSpeechToText,
-            &needsHeartRate
+            &needsSpeechToText
         )
         if !drawOnStreamLines.isEmpty {
             effects.append(drawOnStreamEffect)
@@ -4359,14 +4387,6 @@ final class Model: NSObject, ObservableObject {
             mapEffect.setSceneWidget(sceneWidget: nil)
         }
         media.setSpeechToText(enabled: needsSpeechToText)
-        if heartRateEnabled != needsHeartRate {
-            heartRateEnabled = needsHeartRate
-            authorizeHealthKit {
-                DispatchQueue.main.async {
-                    self.sendHeartRateEnabledToWatch()
-                }
-            }
-        }
         attachSingleLayout(scene: scene)
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStreamLines.isEmpty {
@@ -4398,8 +4418,7 @@ final class Model: NSObject, ObservableObject {
         _ usedMapEffects: inout [MapEffect],
         _ addedScenes: inout [SettingsScene],
         _ enabledAlertsEffects: inout [AlertsEffect],
-        _ needsSpeechToText: inout Bool,
-        _ needsHeartRate: inout Bool
+        _ needsSpeechToText: inout Bool
     ) {
         guard !addedScenes.contains(scene) else {
             return
@@ -4423,9 +4442,6 @@ final class Model: NSObject, ObservableObject {
                     effects.append(textEffect)
                     if widget.text.needsSubtitles! {
                         needsSpeechToText = true
-                    }
-                    if widget.text.needsHeartRate! {
-                        needsHeartRate = true
                     }
                 }
             case .videoEffect:
@@ -4471,8 +4487,7 @@ final class Model: NSObject, ObservableObject {
                         &usedMapEffects,
                         &addedScenes,
                         &enabledAlertsEffects,
-                        &needsSpeechToText,
-                        &needsHeartRate
+                        &needsSpeechToText
                     )
                 }
             case .qrCode:
@@ -5999,7 +6014,7 @@ extension Model {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: .heartRateEnabled, data: heartRateEnabled)
+        sendMessageToWatch(type: .heartRateEnabled, data: isWorkout)
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {

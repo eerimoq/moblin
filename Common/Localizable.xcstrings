@@ -66325,6 +66325,9 @@
         }
       }
     },
+    "Open Moblin in your Apple Watch to start it" : {
+
+    },
     "Open Streaming Platform" : {
       "localizations" : {
         "de" : {
@@ -106126,6 +106129,18 @@
           }
         }
       }
+    },
+    "Workout" : {
+
+    },
+    "Workout requires an Apple Watch" : {
+
+    },
+    "Workout starting" : {
+
+    },
+    "Workout stopped" : {
+
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {

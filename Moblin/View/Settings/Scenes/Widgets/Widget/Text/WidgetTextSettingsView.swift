@@ -171,18 +171,6 @@ private struct TextSelectionView: View {
         model.reloadSpeechToText()
     }
 
-    private func updateNeedsHeartRate(_ parts: [TextFormatPart]) {
-        widget.text.needsHeartRate = !parts.filter { value in
-            switch value {
-            case .heartRate:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.reloadSpeechToText()
-    }
-
     private func update() {
         widget.text.formatString = value
         let textEffect = model.getTextEffect(id: widget.id)
@@ -194,7 +182,6 @@ private struct TextSelectionView: View {
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
         updateNeedsSubtitles(parts)
-        updateNeedsHeartRate(parts)
         model.sceneUpdated(store: false)
     }
 

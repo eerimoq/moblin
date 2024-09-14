@@ -103,7 +103,7 @@ struct QuickButtonsInnerView: View {
         model.sceneUpdated(store: false)
     }
 
-    private func blackScreenAction(state _: ButtonState) {
+    private func blackScreenAction() {
         model.toggleBlackScreen()
         model.makeToast(
             title: String(localized: "Black screen"),
@@ -119,13 +119,12 @@ struct QuickButtonsInnerView: View {
         model.updateButtonStates()
     }
 
-    private func recordAction(state _: ButtonState) {
+    private func recordAction() {
         if !model.isRecording {
             model.startRecording()
         } else {
             model.stopRecording()
         }
-        model.updateButtonStates()
     }
 
     private func videoEffectAction(state: ButtonState, type: SettingsButtonType) {
@@ -249,6 +248,14 @@ struct QuickButtonsInnerView: View {
         model.takeSnapshot()
     }
 
+    private func workoutAction() {
+        if !model.isWorkout {
+            model.startWorkout()
+        } else {
+            model.stopWorkout()
+        }
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -292,7 +299,7 @@ struct QuickButtonsInnerView: View {
                 })
             case .blackScreen:
                 Button(action: {
-                    blackScreenAction(state: state)
+                    blackScreenAction()
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
@@ -301,14 +308,14 @@ struct QuickButtonsInnerView: View {
                     if model.database.startStopRecordingConfirmations! {
                         isPresentingRecordConfirm = true
                     } else {
-                        recordAction(state: state)
+                        recordAction()
                     }
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
                     Button(startStopText(button: state)) {
-                        recordAction(state: state)
+                        recordAction()
                     }
                 }
             case .recordings:
@@ -438,6 +445,12 @@ struct QuickButtonsInnerView: View {
             case .luts:
                 Button(action: {
                     model.showingLuts = true
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .workout:
+                Button(action: {
+                    workoutAction()
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

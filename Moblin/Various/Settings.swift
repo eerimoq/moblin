@@ -768,7 +768,6 @@ class SettingsWidgetText: Codable {
     var needsWeather: Bool? = false
     var needsGeography: Bool? = false
     var needsSubtitles: Bool? = false
-    var needsHeartRate: Bool? = false
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
 }
@@ -1178,6 +1177,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case snapshot = "Snapshot"
     case widgets = "Widgets"
     case luts = "LUTs"
+    case workout = "Workout"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2571,6 +2571,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "camera.filters"
     updateGlobalButton(database: database, button: button)
 
+    button = SettingsButton(name: String(localized: "Workout"))
+    button.id = UUID()
+    button.type = .workout
+    button.imageType = "System name"
+    button.systemImageNameOn = "figure.run"
+    button.systemImageNameOff = "figure.run"
+    updateGlobalButton(database: database, button: button)
+
     database.globalButtons = database.globalButtons!.filter { button in
         button.type != .unknown
     }
@@ -3763,10 +3771,6 @@ final class Settings {
         let newButtons = realDatabase.globalButtons!.filter { $0.type != .lut }
         if realDatabase.globalButtons!.count != newButtons.count {
             realDatabase.globalButtons = newButtons
-            store()
-        }
-        for widget in database.widgets where widget.text.needsHeartRate == nil {
-            widget.text.needsHeartRate = false
             store()
         }
     }
