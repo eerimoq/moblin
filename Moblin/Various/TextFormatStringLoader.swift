@@ -19,6 +19,7 @@ enum TextFormatPart {
     case rating
     case subtitles
     case muted
+    case heartRate
 }
 
 class TextFormatLoader {
@@ -68,6 +69,8 @@ class TextFormatLoader {
                     loadItem(part: .subtitles, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{muted}") {
                     loadItem(part: .muted, offsetBy: 7)
+                } else if formatFromIndex.hasPrefix("{heartrate}") {
+                    loadItem(part: .heartRate, offsetBy: 11)
                 } else {
                     index = format.index(after: index)
                 }

@@ -768,6 +768,7 @@ class SettingsWidgetText: Codable {
     var needsWeather: Bool? = false
     var needsGeography: Bool? = false
     var needsSubtitles: Bool? = false
+    var needsHeartRate: Bool? = false
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
 }
@@ -3762,6 +3763,10 @@ final class Settings {
         let newButtons = realDatabase.globalButtons!.filter { $0.type != .lut }
         if realDatabase.globalButtons!.count != newButtons.count {
             realDatabase.globalButtons = newButtons
+            store()
+        }
+        for widget in database.widgets where widget.text.needsHeartRate == nil {
+            widget.text.needsHeartRate = false
             store()
         }
     }

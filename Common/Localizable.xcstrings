@@ -2251,6 +2251,9 @@
         }
       }
     },
+    "{heartRate} - Show heart rate" : {
+
+    },
     "{muted} - Show muted" : {
 
     },
@@ -47058,6 +47061,12 @@
           }
         }
       }
+    },
+    "Health (requires Apple Watch)" : {
+
+    },
+    "Heart rate" : {
+
     },
     "Height" : {
       "localizations" : {

@@ -17,6 +17,7 @@ enum WatchMessageToWatch: String {
     case zoomPreset
     case scenes
     case scene
+    case heartRateEnabled
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -50,6 +51,7 @@ enum WatchMessageFromWatch: String {
     case setZoom
     case setZoomPreset
     case setScene
+    case updateHeartRate
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {

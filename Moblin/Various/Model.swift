@@ -392,6 +392,8 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private var heartRateEnabled = false
+    private var heartRate: Int?
     private var pollVotes: [Int] = [0, 0, 0]
     private var pollEnabled = false
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
@@ -2599,7 +2601,8 @@ final class Model: NSObject, ObservableObject {
             country: placemark?.country ?? "",
             countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
             city: placemark?.locality,
-            muted: isMuteOn
+            muted: isMuteOn,
+            heartRate: heartRate
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -4327,6 +4330,7 @@ final class Model: NSObject, ObservableObject {
         var usedMapEffects: [MapEffect] = []
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
+        var needsHeartRate = false
         enabledAlertsEffects = []
         addSceneEffects(
             scene,
@@ -4335,7 +4339,8 @@ final class Model: NSObject, ObservableObject {
             &usedMapEffects,
             &addedScenes,
             &enabledAlertsEffects,
-            &needsSpeechToText
+            &needsSpeechToText,
+            &needsHeartRate
         )
         if !drawOnStreamLines.isEmpty {
             effects.append(drawOnStreamEffect)
@@ -4349,6 +4354,10 @@ final class Model: NSObject, ObservableObject {
             mapEffect.setSceneWidget(sceneWidget: nil)
         }
         media.setSpeechToText(enabled: needsSpeechToText)
+        if heartRateEnabled != needsHeartRate {
+            heartRateEnabled = needsHeartRate
+            sendHeartRateEnabledToWatch()
+        }
         attachSingleLayout(scene: scene)
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStreamLines.isEmpty {
@@ -4368,7 +4377,8 @@ final class Model: NSObject, ObservableObject {
         _ usedMapEffects: inout [MapEffect],
         _ addedScenes: inout [SettingsScene],
         _ enabledAlertsEffects: inout [AlertsEffect],
-        _ needsSpeechToText: inout Bool
+        _ needsSpeechToText: inout Bool,
+        _ needsHeartRate: inout Bool
     ) {
         guard !addedScenes.contains(scene) else {
             return
@@ -4392,6 +4402,9 @@ final class Model: NSObject, ObservableObject {
                     effects.append(textEffect)
                     if widget.text.needsSubtitles! {
                         needsSpeechToText = true
+                    }
+                    if widget.text.needsHeartRate! {
+                        needsHeartRate = true
                     }
                 }
             case .videoEffect:
@@ -4437,7 +4450,8 @@ final class Model: NSObject, ObservableObject {
                         &usedMapEffects,
                         &addedScenes,
                         &enabledAlertsEffects,
-                        &needsSpeechToText
+                        &needsSpeechToText,
+                        &needsHeartRate
                     )
                 }
             case .qrCode:
@@ -5960,6 +5974,13 @@ extension Model {
         sendMessageToWatch(type: .thermalState, data: thermalState.rawValue)
     }
 
+    private func sendHeartRateEnabledToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .heartRateEnabled, data: heartRateEnabled)
+    }
+
     private func enqueueWatchChatPost(post: ChatPost) {
         guard WCSession.default.isWatchAppInstalled else {
             return
@@ -6137,6 +6158,8 @@ extension Model: WCSessionDelegate {
             self.sendZoomPresetToWatch()
             self.sendScenesToWatch()
             self.sendSceneToWatch()
+            self.sendHeartRateEnabledToWatch()
+            self.heartRate = nil
             if self.isRemoteControlAssistantConnected() {
                 if let general = self.remoteControlGeneral {
                     if let thermalState = general.flame?.toThermalState() {
@@ -6308,6 +6331,15 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func handleUpdateHeartRate(_ data: Any) {
+        guard let heartRate = data as? Double else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.heartRate = Int(heartRate)
+        }
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -6348,6 +6380,8 @@ extension Model: WCSessionDelegate {
             handleSetZoomPresetMessage(data)
         case .setScene:
             handleSetSceneMessage(data)
+        case .updateHeartRate:
+            handleUpdateHeartRate(data)
         default:
             break
         }

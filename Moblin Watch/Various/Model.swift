@@ -1,10 +1,12 @@
 import Collections
 import Foundation
+import HealthKit
 import SwiftUI
 import WatchConnectivity
 
 // Remote control assistant polls status every 5 seconds.
 private let previewTimeout = Duration.seconds(6)
+private let heartRateUnit = HKUnit(from: "count/min")
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
@@ -94,6 +96,8 @@ class Model: NSObject, ObservableObject {
     @Published var sceneId: UUID = .init()
     @Published var sceneIdPicker: UUID = .init()
     @Published var verboseStatuses = false
+    private var healthStore = HKHealthStore()
+    private var heartRateQuery: HKAnchoredObjectQuery?
 
     func setup() {
         if WCSession.isSupported() {
@@ -102,6 +106,14 @@ class Model: NSObject, ObservableObject {
             session.activate()
         }
         setupPeriodicTimers()
+        authorizeHealthKit()
+    }
+
+    private func authorizeHealthKit() {
+        let types: Set<HKSampleType> = [
+            .quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!,
+        ]
+        healthStore.requestAuthorization(toShare: nil, read: types) { _, _ in }
     }
 
     private func setupPeriodicTimers() {
@@ -347,6 +359,62 @@ class Model: NSObject, ObservableObject {
         sceneIdPicker = sceneId
     }
 
+    private func handleHeartRateEnabled(_ data: Any) throws {
+        guard let enabled = data as? Bool else {
+            return
+        }
+        authorizeHealthKit()
+        if enabled {
+            startHeartRateMonitor()
+        } else {
+            stopHeartRateMonitor()
+        }
+    }
+
+    private func startHeartRateMonitor() {
+        stopHeartRateMonitor()
+        let type = HKObjectType.quantityType(forIdentifier: .heartRate)!
+        heartRateQuery = HKAnchoredObjectQuery(
+            type: type,
+            predicate: HKQuery.predicateForObjects(from: [HKDevice.local()]),
+            anchor: nil,
+            limit: HKObjectQueryNoLimit,
+            resultsHandler: handleHeartRate
+        )
+        heartRateQuery!.updateHandler = handleHeartRate
+        healthStore.execute(heartRateQuery!)
+        healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { _, _ in
+        }
+    }
+
+    private func handleHeartRate(
+        _: HKAnchoredObjectQuery,
+        _ samples: [HKSample]?,
+        _: [HKDeletedObject]?,
+        _: HKQueryAnchor?,
+        _: Error?
+    ) {
+        guard let samples = samples as? [HKQuantitySample] else {
+            return
+        }
+        guard let sample = samples.last else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.updateHeartRate(heartRate: sample.quantity.doubleValue(for: heartRateUnit))
+        }
+    }
+
+    private func stopHeartRateMonitor() {
+        guard let heartRateQuery else {
+            return
+        }
+        healthStore.stop(heartRateQuery)
+        self.heartRateQuery = nil
+        healthStore.disableAllBackgroundDelivery { _, _ in
+        }
+    }
+
     func setIsLive(value: Bool) {
         let message = WatchMessageFromWatch.pack(type: .setIsLive, data: value)
         WCSession.default.sendMessage(message, replyHandler: nil)
@@ -384,6 +452,11 @@ class Model: NSObject, ObservableObject {
 
     func setScene(id: UUID) {
         let message = WatchMessageFromWatch.pack(type: .setScene, data: id.uuidString)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    private func updateHeartRate(heartRate: Double) {
+        let message = WatchMessageFromWatch.pack(type: .updateHeartRate, data: heartRate)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
@@ -449,6 +522,8 @@ extension Model: WCSessionDelegate {
                     try self.handleScenes(data)
                 case .scene:
                     try self.handleScene(data)
+                case .heartRateEnabled:
+                    try self.handleHeartRateEnabled(data)
                 }
             } catch {}
         }

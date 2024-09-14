@@ -22,6 +22,7 @@ struct TextEffectStats {
     let countryFlag: String?
     let city: String?
     let muted: Bool
+    let heartRate: Int?
 }
 
 private enum PartData: Equatable {
@@ -351,6 +352,14 @@ final class TextEffect: VideoEffect {
                 if stats.muted {
                     parts.append(.init(id: partId, data: .imageSystemName("mic.slash")))
                 }
+            case .heartRate:
+                let text: String
+                if let heartRate = stats.heartRate {
+                    text = String(heartRate)
+                } else {
+                    text = "-"
+                }
+                parts.append(.init(id: partId, data: .text(text)))
             }
             partId += 1
         }

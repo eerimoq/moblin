@@ -10,6 +10,7 @@ private struct Suggestion: Identifiable {
 private let suggestionCountry = "{countryFlag} {country}"
 private let suggestionCity = "{countryFlag} {city}"
 private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude}"
+private let suggestionHeartRate = "♥️ {heartRate}"
 private let suggestionSubtitles = "{subtitles}"
 private let suggestionMuted = "{muted}"
 private let suggestionTime = "🕑 {time}"
@@ -27,9 +28,10 @@ private let suggestions = [
     Suggestion(id: 4, name: String(localized: "City"), text: suggestionCity),
     Suggestion(id: 5, name: String(localized: "Country"), text: suggestionCountry),
     Suggestion(id: 6, name: String(localized: "Movement"), text: suggestionMovement),
-    Suggestion(id: 7, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-    Suggestion(id: 8, name: String(localized: "Muted"), text: suggestionMuted),
-    Suggestion(id: 9, name: String(localized: "Debug"), text: suggestionDebug),
+    Suggestion(id: 7, name: String(localized: "Heart rate"), text: suggestionHeartRate),
+    Suggestion(id: 8, name: String(localized: "Subtitles"), text: suggestionSubtitles),
+    Suggestion(id: 9, name: String(localized: "Muted"), text: suggestionMuted),
+    Suggestion(id: 10, name: String(localized: "Debug"), text: suggestionDebug),
 ]
 
 private struct SuggestionsView: View {
@@ -169,6 +171,18 @@ private struct TextSelectionView: View {
         model.reloadSpeechToText()
     }
 
+    private func updateNeedsHeartRate(_ parts: [TextFormatPart]) {
+        widget.text.needsHeartRate = !parts.filter { value in
+            switch value {
+            case .heartRate:
+                return true
+            default:
+                return false
+            }
+        }.isEmpty
+        model.reloadSpeechToText()
+    }
+
     private func update() {
         widget.text.formatString = value
         let textEffect = model.getTextEffect(id: widget.id)
@@ -180,6 +194,7 @@ private struct TextSelectionView: View {
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
         updateNeedsSubtitles(parts)
+        updateNeedsHeartRate(parts)
         model.sceneUpdated(store: false)
     }
 
@@ -231,6 +246,9 @@ private struct TextSelectionView: View {
                     Text("Weather (if Settings -> Location is enabled)").bold()
                     Text("{conditions} - Show conditions")
                     Text("{temperature} - Show temperature")
+                    Text("")
+                    Text("Health (requires Apple Watch)").bold()
+                    Text("{heartRate} - Show heart rate")
                     Text("")
                     Text("Debug").bold()
                     Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")

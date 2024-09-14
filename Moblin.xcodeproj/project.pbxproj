@@ -571,6 +571,7 @@
 		032BAEF02C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkCreatorSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonLutsView.swift; sourceTree = "<group>"; };
+		032F3B3D2C950F08002FF97E /* MoblinWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MoblinWatch.entitlements; sourceTree = "<group>"; };
 		032FDBFB2B0B1183007BE85E /* ValueEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueEditView.swift; sourceTree = "<group>"; };
 		032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionEditView.swift; sourceTree = "<group>"; };
 		032FDC012B0B11C5007BE85E /* SizeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeEditView.swift; sourceTree = "<group>"; };
@@ -781,6 +782,7 @@
 		0379E66E2C89802B0021AB59 /* CatPrinterSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterSettingsView.swift; sourceTree = "<group>"; };
 		0379E6702C8980460021AB59 /* CatPrinterScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterScannerSettingsView.swift; sourceTree = "<group>"; };
 		0379E6722C8985710021AB59 /* CatPrinterScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterScanner.swift; sourceTree = "<group>"; };
+		037CDEB62C9523A6007911A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
 		037FE02F2C594CE40067B5AC /* AlertsEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsEffect.swift; sourceTree = "<group>"; };
@@ -2456,6 +2458,8 @@
 				03ECDF652B8E798000BD920E /* Various */,
 				03ECDF4E2B8E4E6000BD920E /* Preview Content */,
 				03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */,
+				032F3B3D2C950F08002FF97E /* MoblinWatch.entitlements */,
+				037CDEB62C9523A6007911A6 /* Info.plist */,
 				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
 				03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */,
 			);
@@ -3608,6 +3612,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Moblin Watch/MoblinWatch.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
@@ -3616,7 +3621,10 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Watch/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your pulse on stream.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your pulse on stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
@@ -3647,6 +3655,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Moblin Watch/MoblinWatch.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
@@ -3655,7 +3664,10 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Watch/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your pulse on stream.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your pulse on stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
