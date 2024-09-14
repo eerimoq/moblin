@@ -1426,6 +1426,8 @@ final class Model: NSObject, ObservableObject {
             obsWebSocket?.stop()
             media.stopAllNetStreams()
             speechToText.stop()
+            heartRateEnabled = false
+            sendHeartRateEnabledToWatch()
         }
     }
 
@@ -4359,8 +4361,11 @@ final class Model: NSObject, ObservableObject {
         media.setSpeechToText(enabled: needsSpeechToText)
         if heartRateEnabled != needsHeartRate {
             heartRateEnabled = needsHeartRate
-            sendHeartRateEnabledToWatch()
-            authorizeHealthKit()
+            authorizeHealthKit {
+                DispatchQueue.main.async {
+                    self.sendHeartRateEnabledToWatch()
+                }
+            }
         }
         attachSingleLayout(scene: scene)
         // To do: Should update on first frame in draw effect instead.
@@ -4374,11 +4379,16 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func authorizeHealthKit() {
+    private func authorizeHealthKit(completion: @escaping () -> Void) {
+        let typesToShare: Set = [
+            HKQuantityType.workoutType(),
+        ]
         let types: Set<HKSampleType> = [
             .quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!,
         ]
-        healthStore.requestAuthorization(toShare: nil, read: types) { _, _ in }
+        healthStore.requestAuthorization(toShare: typesToShare, read: types) { _, _ in
+            completion()
+        }
     }
 
     private func addSceneEffects(

@@ -97,7 +97,8 @@ class Model: NSObject, ObservableObject {
     @Published var sceneIdPicker: UUID = .init()
     @Published var verboseStatuses = false
     private var healthStore = HKHealthStore()
-    private var heartRateQuery: HKAnchoredObjectQuery?
+    private var workoutSession: HKWorkoutSession?
+    private var workoutBuilder: HKLiveWorkoutBuilder?
 
     func setup() {
         if WCSession.isSupported() {
@@ -364,46 +365,29 @@ class Model: NSObject, ObservableObject {
 
     private func startHeartRateMonitor() {
         stopHeartRateMonitor()
-        let type = HKObjectType.quantityType(forIdentifier: .heartRate)!
-        heartRateQuery = HKAnchoredObjectQuery(
-            type: type,
-            predicate: HKQuery.predicateForObjects(from: [.local()]),
-            anchor: nil,
-            limit: HKObjectQueryNoLimit,
-            resultsHandler: handleHeartRate
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .running
+        configuration.locationType = .outdoor
+        do {
+            workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
+            workoutBuilder = workoutSession?.associatedWorkoutBuilder()
+        } catch {
+            return
+        }
+        workoutBuilder?.dataSource = HKLiveWorkoutDataSource(
+            healthStore: healthStore,
+            workoutConfiguration: configuration
         )
-        heartRateQuery!.updateHandler = handleHeartRate
-        healthStore.execute(heartRateQuery!)
-        healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { _, _ in
-        }
-    }
-
-    private func handleHeartRate(
-        _: HKAnchoredObjectQuery,
-        _ samples: [HKSample]?,
-        _: [HKDeletedObject]?,
-        _: HKQueryAnchor?,
-        _: Error?
-    ) {
-        guard let samples = samples as? [HKQuantitySample] else {
-            return
-        }
-        guard let sample = samples.last else {
-            return
-        }
-        DispatchQueue.main.async {
-            self.updateHeartRate(heartRate: sample.quantity.doubleValue(for: heartRateUnit))
+        workoutSession?.delegate = self
+        workoutSession?.startActivity(with: .now)
+        workoutBuilder?.delegate = self
+        workoutBuilder?.beginCollection(withStart: .now) { _, _ in
         }
     }
 
     private func stopHeartRateMonitor() {
-        guard let heartRateQuery else {
-            return
-        }
-        healthStore.stop(heartRateQuery)
-        self.heartRateQuery = nil
-        healthStore.disableAllBackgroundDelivery { _, _ in
-        }
+        workoutBuilder?.discardWorkout()
+        workoutSession?.end()
     }
 
     func setIsLive(value: Bool) {
@@ -520,5 +504,46 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    func sessionReachabilityDidChange(_: WCSession) {}
+    func sessionReachabilityDidChange(_: WCSession) {
+        stopHeartRateMonitor()
+    }
+
+    func session(
+        _: WCSession,
+        didFinish _: WCSessionUserInfoTransfer,
+        error _: (any Error)?
+    ) {}
+}
+
+extension Model: HKWorkoutSessionDelegate {
+    func workoutSession(
+        _: HKWorkoutSession,
+        didChangeTo _: HKWorkoutSessionState,
+        from _: HKWorkoutSessionState,
+        date _: Date
+    ) {}
+
+    func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
+}
+
+extension Model: HKLiveWorkoutBuilderDelegate {
+    func workoutBuilder(
+        _ workoutBuilder: HKLiveWorkoutBuilder,
+        didCollectDataOf collectedTypes: Set<HKSampleType>
+    ) {
+        for type in collectedTypes {
+            guard let quantityType = type as? HKQuantityType else {
+                continue
+            }
+            let statistics = workoutBuilder.statistics(for: quantityType)
+            guard let heartRate = statistics?.mostRecentQuantity()?.doubleValue(for: heartRateUnit) else {
+                continue
+            }
+            DispatchQueue.main.async {
+                self.updateHeartRate(heartRate: heartRate)
+            }
+        }
+    }
+
+    func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
 }
