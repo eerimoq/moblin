@@ -3623,8 +3623,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Moblin Watch/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
-				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your pulse on stream.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your pulse on stream.";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Moblin can optionally show your heart rate on stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
@@ -3666,8 +3667,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Moblin Watch/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
-				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your pulse on stream.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your pulse on stream.";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Moblin can optionally show your heart rate on stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;

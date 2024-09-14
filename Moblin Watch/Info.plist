@@ -4,5 +4,7 @@
 <dict>
 	<key>UIBackgroundModes</key>
 	<array/>
+	<key>WKBackgroundModes</key>
+	<array/>
 </dict>
 </plist>
