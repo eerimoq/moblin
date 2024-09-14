@@ -3,6 +3,7 @@ import Collections
 import Combine
 import CoreMotion
 import GameController
+import HealthKit
 import MapKit
 import NaturalLanguage
 import Network
@@ -619,6 +620,8 @@ final class Model: NSObject, ObservableObject {
     private let geographyManager = GeographyManager()
 
     var onDocumentPickerUrl: ((URL) -> Void)?
+
+    private var healthStore = HKHealthStore()
 
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
@@ -4357,6 +4360,7 @@ final class Model: NSObject, ObservableObject {
         if heartRateEnabled != needsHeartRate {
             heartRateEnabled = needsHeartRate
             sendHeartRateEnabledToWatch()
+            authorizeHealthKit()
         }
         attachSingleLayout(scene: scene)
         // To do: Should update on first frame in draw effect instead.
@@ -4368,6 +4372,13 @@ final class Model: NSObject, ObservableObject {
                 mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
             )
         }
+    }
+
+    private func authorizeHealthKit() {
+        let types: Set<HKSampleType> = [
+            .quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!,
+        ]
+        healthStore.requestAuthorization(toShare: nil, read: types) { _, _ in }
     }
 
     private func addSceneEffects(

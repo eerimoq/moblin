@@ -106,14 +106,6 @@ class Model: NSObject, ObservableObject {
             session.activate()
         }
         setupPeriodicTimers()
-        authorizeHealthKit()
-    }
-
-    private func authorizeHealthKit() {
-        let types: Set<HKSampleType> = [
-            .quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!,
-        ]
-        healthStore.requestAuthorization(toShare: nil, read: types) { _, _ in }
     }
 
     private func setupPeriodicTimers() {
@@ -363,7 +355,6 @@ class Model: NSObject, ObservableObject {
         guard let enabled = data as? Bool else {
             return
         }
-        authorizeHealthKit()
         if enabled {
             startHeartRateMonitor()
         } else {
@@ -376,7 +367,7 @@ class Model: NSObject, ObservableObject {
         let type = HKObjectType.quantityType(forIdentifier: .heartRate)!
         heartRateQuery = HKAnchoredObjectQuery(
             type: type,
-            predicate: HKQuery.predicateForObjects(from: [HKDevice.local()]),
+            predicate: HKQuery.predicateForObjects(from: [.local()]),
             anchor: nil,
             limit: HKObjectQueryNoLimit,
             resultsHandler: handleHeartRate

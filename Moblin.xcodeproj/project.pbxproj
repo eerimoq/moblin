@@ -3445,6 +3445,9 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Moblin can optionally show your heart rate on stream.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on screen and stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
@@ -3498,6 +3501,9 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Moblin can optionally show your heart rate on stream.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Moblin can optionally show your heart rate on stream.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on screen and stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
