@@ -36529,6 +36529,15 @@
         }
       }
     },
+    "End but leave OBS recording" : {
+
+    },
+    "End but leave OBS streaming" : {
+
+    },
+    "End but leave OBS streaming and recording" : {
+
+    },
     "End-user license agreement (EULA)" : {
       "localizations" : {
         "de" : {

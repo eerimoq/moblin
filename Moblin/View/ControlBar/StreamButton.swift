@@ -31,6 +31,19 @@ struct StreamButton: View {
                     )
             })
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
+                if model.stream.obsAutoStopStream! && model.stream.obsAutoStopRecording! {
+                    Button("End but leave OBS streaming and recording") {
+                        model.stopStream(stopObsStreamIfEnabled: false, stopObsRecordingIfEnabled: false)
+                    }
+                } else if model.stream.obsAutoStopStream! {
+                    Button("End but leave OBS streaming") {
+                        model.stopStream(stopObsStreamIfEnabled: false)
+                    }
+                } else if model.stream.obsAutoStopRecording! {
+                    Button("End but leave OBS recording") {
+                        model.stopStream(stopObsRecordingIfEnabled: false)
+                    }
+                }
                 Button("End") {
                     model.stopStream()
                 }

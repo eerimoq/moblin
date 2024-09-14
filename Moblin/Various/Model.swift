@@ -3018,7 +3018,7 @@ final class Model: NSObject, ObservableObject {
         streamingHistoryStream!.updateLowestBatteryLevel(level: batteryLevel)
     }
 
-    func stopStream() {
+    func stopStream(stopObsStreamIfEnabled: Bool = true, stopObsRecordingIfEnabled: Bool = true) {
         setIsLive(value: false)
         updateScreenAutoOff()
         realtimeIrl?.stop()
@@ -3031,10 +3031,10 @@ final class Model: NSObject, ObservableObject {
         if stream.recording!.autoStopRecording! {
             stopRecording()
         }
-        if stream.obsAutoStopStream! {
+        if stopObsStreamIfEnabled && stream.obsAutoStopStream! {
             obsStopStream()
         }
-        if stream.obsAutoStopRecording! {
+        if stopObsRecordingIfEnabled && stream.obsAutoStopRecording! {
             obsStopRecording()
         }
         stopNetStream()
