@@ -197,8 +197,9 @@ struct DjiDeviceSettingsView: View {
                 Text("RTMP")
             } footer: {
                 Text("""
-                Select Server if you want the DJI camera to stream to Moblin's RTMP server
-                on this device. Select Custom to make the DJI camera stream to any destination.
+                Select \(String(localized: "Server")) if you want the DJI camera to stream to
+                Moblin's RTMP server on this device. Select \(String(localized: "Custom")) to
+                make the DJI camera stream to any destination.
                 """)
             }
             Section {
