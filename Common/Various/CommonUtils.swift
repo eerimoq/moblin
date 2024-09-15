@@ -6,7 +6,7 @@ import SwiftUI
 
 let iconWidth = 32.0
 let buttonSize: CGFloat = 40
-let maximumNumberOfWatchChatMessages = 20
+let maximumNumberOfWatchChatMessages = 50
 let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)
 
