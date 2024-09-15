@@ -457,7 +457,10 @@ struct MainView: View {
                         Text("Close").padding()
                     })
                 }
-                TwitchAuthView()
+                ScrollView {
+                    TwitchAuthView()
+                        .frame(height: 2500)
+                }
             }
         }
         .toast(isPresenting: $model.showingToast, duration: 5) {
