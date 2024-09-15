@@ -63,47 +63,52 @@ private enum OpCode: Int, Codable {
      case unsupportedFeature = 4012
  } */
 
-/* private enum RequestStatus: Int, Codable {
-     case unknown = 0
-     case noError = 10
-     case success = 100
-     case missingRequestType = 203
-     case unknownRequestType = 204
-     case genericError = 205
-     case unsupportedRequestBatchExecutionType = 206
-     case notReady = 207
-     case missingRequestField = 300
-     case missingRequestData = 301
-     case invalidRequestField = 400
-     case invalidRequestFieldType = 401
-     case requestFieldOutOfRange = 402
-     case requestFieldEmpty = 403
-     case tooManyRequestFields = 404
-     case outputRunning = 500
-     case outputNotRunning = 501
-     case outputPaused = 502
-     case outputNotPaused = 503
-     case outputDisabled = 504
-     case studioModeActive = 505
-     case studioModeNotActive = 506
-     case resourceNotFound = 600
-     case resourceAlreadyExists = 601
-     case invalidResourceType = 602
-     case notEnoughResources = 603
-     case invalidResourceState = 604
-     case invalidInputKind = 605
-     case resourceNotConfigurable = 606
-     case invalidFilterKind = 607
-     case resourceCreationFailed = 700
-     case resourceActionFailed = 701
-     case requestProcessingFailed = 702
-     case cannotAct = 703
- } */
+private enum RequestStatus: Int, Codable {
+    case unknown = 0
+    case noError = 10
+    case success = 100
+    case missingRequestType = 203
+    case unknownRequestType = 204
+    case genericError = 205
+    case unsupportedRequestBatchExecutionType = 206
+    case notReady = 207
+    case missingRequestField = 300
+    case missingRequestData = 301
+    case invalidRequestField = 400
+    case invalidRequestFieldType = 401
+    case requestFieldOutOfRange = 402
+    case requestFieldEmpty = 403
+    case tooManyRequestFields = 404
+    case outputRunning = 500
+    case outputNotRunning = 501
+    case outputPaused = 502
+    case outputNotPaused = 503
+    case outputDisabled = 504
+    case studioModeActive = 505
+    case studioModeNotActive = 506
+    case resourceNotFound = 600
+    case resourceAlreadyExists = 601
+    case invalidResourceType = 602
+    case notEnoughResources = 603
+    case invalidResourceState = 604
+    case invalidInputKind = 605
+    case resourceNotConfigurable = 606
+    case invalidFilterKind = 607
+    case resourceCreationFailed = 700
+    case resourceActionFailed = 701
+    case requestProcessingFailed = 702
+    case cannotAct = 703
+}
 
 private struct ResponseRequestStatus: Codable {
     let result: Bool
-    // let code: Int
+    let code: Int
     let comment: String?
+}
+
+private enum RequestError {
+    case message(String)
+    case response(RequestStatus, String?)
 }
 
 private enum RequestType: String, Codable {
@@ -353,9 +358,9 @@ private func unpackRequestResponse(data: Data) throws -> (String, ResponseReques
     return (requestId, status, responseData)
 }
 
-struct Request {
+private struct Request {
     let onSuccess: (Data?) -> Void
-    let onError: (String) -> Void
+    let onError: (RequestError) -> Void
 }
 
 struct ObsSceneList {
@@ -438,9 +443,29 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
+    }
+
+    private func onRequestError(
+        requestError: RequestError,
+        onError: @escaping (String) -> Void,
+        onObsResponseError: ((RequestStatus, String?) -> Bool)? = nil
+    ) {
+        switch requestError {
+        case let .message(message):
+            onError(message)
+        case let .response(code, comment):
+            if let onObsResponseError, onObsResponseError(code, comment) {
+                return
+            }
+            var message = ""
+            if let comment {
+                message = " (\(comment))"
+            }
+            onError("Operation failed with \(code)\(message)")
+        }
     }
 
     func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
@@ -451,8 +476,8 @@ class ObsWebSocket {
             let request = try JSONEncoder().encode(request)
             performRequest(type: .setCurrentProgramScene, data: request, onSuccess: { _ in
                 onSuccess()
-            }, onError: { message in
-                onError(message)
+            }, onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
             })
         } catch {
             onError("JSON decode failed")
@@ -473,8 +498,8 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
     }
 
@@ -492,40 +517,72 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
     }
 
     func startStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .startStream, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
+                switch code {
+                case .outputRunning:
+                    onError("Already streaming")
+                default:
+                    return false
+                }
+                return true
+            }
         })
     }
 
     func stopStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .stopStream, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
+                switch code {
+                case .outputNotRunning:
+                    onError("Not streaming")
+                default:
+                    return false
+                }
+                return true
+            }
         })
     }
 
     func startRecord(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .startRecord, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
+                switch code {
+                case .outputRunning:
+                    onError("Already recording")
+                default:
+                    return false
+                }
+                return true
+            }
         })
     }
 
     func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
+                switch code {
+                case .outputNotRunning:
+                    onError("Not recording")
+                default:
+                    return false
+                }
+                return true
+            }
         })
     }
 
@@ -572,8 +629,8 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
     }
 
@@ -595,8 +652,8 @@ class ObsWebSocket {
         }
         performRequest(type: .setInputAudioSyncOffset, data: request, onSuccess: { _ in
             onSuccess()
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
     }
 
@@ -623,8 +680,8 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
     }
 
@@ -641,8 +698,8 @@ class ObsWebSocket {
         }
         performRequest(type: .setInputSettings, data: request, onSuccess: { _ in
             onSuccess()
-        }, onError: { message in
-            onError(message)
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
         })
     }
 
@@ -650,10 +707,10 @@ class ObsWebSocket {
         type: RequestType,
         data: Data?,
         onSuccess: @escaping (Data?) -> Void,
-        onError: @escaping (String) -> Void
+        onError: @escaping (RequestError) -> Void
     ) {
         guard isConnected() else {
-            onError("Not connected to server")
+            onError(.message("Not connected to server"))
             return
         }
         let requestId = getNextId()
@@ -808,7 +865,8 @@ class ObsWebSocket {
         if status.result {
             request.onSuccess(data)
         } else {
-            request.onError("Operation failed: \(status.comment ?? "?")")
+            let code = RequestStatus(rawValue: status.code) ?? .unknown
+            request.onError(.response(code, status.comment))
         }
     }
 
