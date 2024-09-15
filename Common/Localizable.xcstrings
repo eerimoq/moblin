@@ -49760,6 +49760,9 @@
         }
       }
     },
+    "High bitrates may be unstable." : {
+
+    },
     "Higher data rate limit" : {
       "localizations" : {
         "de" : {
@@ -81621,6 +81624,9 @@
         }
       }
     },
+    "Select Server if you want the DJI camera to stream to Moblin's RTMP server\non this device. Select Custom to make the DJI camera stream to any destination." : {
+
+    },
     "Select sound" : {
       "localizations" : {
         "de" : {
@@ -95673,6 +95679,9 @@
           }
         }
       }
+    },
+    "The DJI device will connect to and stream RTMP over this WiFi." : {
+
     },
     "The log is empty." : {
       "localizations" : {

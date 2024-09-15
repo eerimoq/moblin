@@ -135,6 +135,8 @@ struct DjiDeviceSettingsView: View {
                 .disabled(model.isDjiDeviceStarted(device: device))
             } header: {
                 Text("WiFi")
+            } footer: {
+                Text("The DJI device will connect to and stream RTMP over this WiFi.")
             }
             Section {
                 Picker("Type", selection: Binding(get: {
@@ -193,6 +195,11 @@ struct DjiDeviceSettingsView: View {
                 }
             } header: {
                 Text("RTMP")
+            } footer: {
+                Text("""
+                Select Server if you want the DJI camera to stream to Moblin's RTMP server
+                on this device. Select Custom to make the DJI camera stream to any destination.
+                """)
             }
             Section {
                 Picker("Resolution", selection: Binding(get: {
@@ -246,6 +253,8 @@ struct DjiDeviceSettingsView: View {
                     }
                     .disabled(model.isDjiDeviceStarted(device: device))
                 }
+            } footer: {
+                Text("High bitrates may be unstable.")
             }
             if device.rtmpUrlType == .server {
                 Section {
