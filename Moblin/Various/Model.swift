@@ -1426,7 +1426,7 @@ final class Model: NSObject, ObservableObject {
             obsWebSocket?.stop()
             media.stopAllNetStreams()
             speechToText.stop()
-            stopWorkout()
+            stopWorkout(showToast: false)
         }
     }
 
@@ -2900,11 +2900,13 @@ final class Model: NSObject, ObservableObject {
         )
     }
 
-    func stopWorkout() {
+    func stopWorkout(showToast: Bool = true) {
         setIsWorkout(type: nil)
         sendWorkoutToWatch()
-        makeToast(title: String(localized: "Ending workout"),
-                  subTitle: String(localized: "Open Moblin in your Apple Watch to end it"))
+        if showToast {
+            makeToast(title: String(localized: "Ending workout"),
+                      subTitle: String(localized: "Open Moblin in your Apple Watch to end it"))
+        }
     }
 
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
