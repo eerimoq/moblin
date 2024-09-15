@@ -38573,6 +38573,9 @@
         }
       }
     },
+    "Ending workout" : {
+
+    },
     "Enter assistant's address and port. For example ws://132.23.43.43:2345." : {
       "localizations" : {
         "de" : {
@@ -52484,6 +52487,9 @@
           }
         }
       }
+    },
+    "Install Moblin on your Apple Watch" : {
+
     },
     "Interactive chat" : {
       "extractionState" : "stale",
@@ -69127,6 +69133,9 @@
           }
         }
       }
+    },
+    "Open Moblin in your Apple Watch to end it" : {
+
     },
     "Open Moblin in your Apple Watch to start it" : {
       "localizations" : {
@@ -88368,6 +88377,9 @@
         }
       }
     },
+    "Start cycling workout" : {
+
+    },
     "Start live stream" : {
       "localizations" : {
         "de" : {
@@ -88627,6 +88639,9 @@
           }
         }
       }
+    },
+    "Start running workout" : {
+
     },
     "Start streaming" : {
       "localizations" : {
@@ -88888,6 +88903,9 @@
         }
       }
     },
+    "Start walking workout" : {
+
+    },
     "Starting stream" : {
       "localizations" : {
         "de" : {
@@ -89017,6 +89035,9 @@
           }
         }
       }
+    },
+    "Starting workout" : {
+
     },
     "Starting..." : {
       "localizations" : {
@@ -89667,6 +89688,9 @@
           }
         }
       }
+    },
+    "Stop workout" : {
+
     },
     "Stopping stream" : {
       "localizations" : {
@@ -110080,6 +110104,7 @@
       }
     },
     "Workout requires an Apple Watch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -110210,6 +110235,7 @@
       }
     },
     "Workout starting" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -110340,6 +110366,7 @@
       }
     },
     "Workout stopped" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

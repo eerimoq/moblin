@@ -85,6 +85,8 @@ struct QuickButtonsInnerView: View {
     var nameSize: CGFloat
     var nameWidth: CGFloat
     @State private var isPresentingRecordConfirm: Bool = false
+    @State private var isPresentingStartWorkoutTypePicker: Bool = false
+    @State private var isPresentingStopWorkoutConfirm: Bool = false
 
     private func torchAction(state: ButtonState) {
         state.button.isOn.toggle()
@@ -246,14 +248,6 @@ struct QuickButtonsInnerView: View {
 
     private func snapshotAction(state _: ButtonState) {
         model.takeSnapshot()
-    }
-
-    private func workoutAction() {
-        if !model.isWorkout {
-            model.startWorkout()
-        } else {
-            model.stopWorkout()
-        }
     }
 
     var body: some View {
@@ -449,11 +443,35 @@ struct QuickButtonsInnerView: View {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
             case .workout:
-                Button(action: {
-                    workoutAction()
-                }, label: {
-                    QuickButtonImage(state: state, buttonSize: size)
-                })
+                if state.isOn {
+                    Button(action: {
+                        isPresentingStopWorkoutConfirm = true
+                    }, label: {
+                        QuickButtonImage(state: state, buttonSize: size)
+                    })
+                    .confirmationDialog("", isPresented: $isPresentingStopWorkoutConfirm) {
+                        Button("Stop workout") {
+                            model.stopWorkout()
+                        }
+                    }
+                } else {
+                    Button(action: {
+                        isPresentingStartWorkoutTypePicker = true
+                    }, label: {
+                        QuickButtonImage(state: state, buttonSize: size)
+                    })
+                    .confirmationDialog("", isPresented: $isPresentingStartWorkoutTypePicker) {
+                        Button("Start walking workout") {
+                            model.startWorkout(type: .walking)
+                        }
+                        Button("Start running workout") {
+                            model.startWorkout(type: .running)
+                        }
+                        Button("Start cycling workout") {
+                            model.startWorkout(type: .cycling)
+                        }
+                    }
+                }
             }
             if model.database.quickButtons!
                 .showName && !(model.stream.portrait! || model.database.portrait!)

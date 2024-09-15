@@ -352,41 +352,49 @@ class Model: NSObject, ObservableObject {
         sceneIdPicker = sceneId
     }
 
-    private func handleHeartRateEnabled(_ data: Any) throws {
-        guard let enabled = data as? Bool else {
+    private func handleStartWorkout(_ data: Any) throws {
+        guard let data = data as? Data else {
             return
         }
-        if enabled {
-            startHeartRateMonitor()
-        } else {
-            stopHeartRateMonitor()
+        let message = try JSONDecoder().decode(WatchProtocolStartWorkout.self, from: data)
+        guard workoutSession?.state != .running else {
+            return
         }
-    }
-
-    private func startHeartRateMonitor() {
-        stopHeartRateMonitor()
         let configuration = HKWorkoutConfiguration()
-        configuration.activityType = .running
+        var activityType: HKWorkoutActivityType
+        switch message.type {
+        case .walking:
+            activityType = .walking
+        case .running:
+            activityType = .running
+        case .cycling:
+            activityType = .cycling
+        }
+        configuration.activityType = activityType
         configuration.locationType = .outdoor
-        do {
-            workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
-            workoutBuilder = workoutSession?.associatedWorkoutBuilder()
-        } catch {
+        workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
+        guard let workoutSession else {
             return
         }
-        workoutBuilder?.dataSource = HKLiveWorkoutDataSource(
+        workoutBuilder = workoutSession.associatedWorkoutBuilder()
+        guard let workoutBuilder else {
+            return
+        }
+        workoutBuilder.dataSource = HKLiveWorkoutDataSource(
             healthStore: healthStore,
             workoutConfiguration: configuration
         )
-        workoutSession?.delegate = self
-        workoutSession?.startActivity(with: .now)
-        workoutBuilder?.delegate = self
-        workoutBuilder?.beginCollection(withStart: .now) { _, _ in
-        }
+        workoutSession.delegate = self
+        workoutSession.startActivity(with: .now)
+        workoutBuilder.delegate = self
+        workoutBuilder.beginCollection(withStart: .now) { _, _ in }
     }
 
-    private func stopHeartRateMonitor() {
-        workoutBuilder?.discardWorkout()
+    private func handleStopWorkout() {
+        guard workoutSession?.state == .running else {
+            return
+        }
+        workoutBuilder?.finishWorkout { _, _ in }
         workoutSession?.end()
     }
 
@@ -497,16 +505,16 @@ extension Model: WCSessionDelegate {
                     try self.handleScenes(data)
                 case .scene:
                     try self.handleScene(data)
-                case .heartRateEnabled:
-                    try self.handleHeartRateEnabled(data)
+                case .startWorkout:
+                    try self.handleStartWorkout(data)
+                case .stopWorkout:
+                    self.handleStopWorkout()
                 }
             } catch {}
         }
     }
 
-    func sessionReachabilityDidChange(_: WCSession) {
-        stopHeartRateMonitor()
-    }
+    func sessionReachabilityDidChange(_: WCSession) {}
 
     func session(
         _: WCSession,

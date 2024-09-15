@@ -307,7 +307,7 @@ final class Model: NSObject, ObservableObject {
     private var streamStartTime: ContinuousClock.Instant?
     @Published var isLive = false
     @Published var isRecording = false
-    @Published var isWorkout = false
+    private var workoutType: WatchProtocolWorkoutType?
     private var currentRecording: Recording?
     @Published var recordingLength = noValue
     @Published var browserWidgetsStatus = noValue
@@ -2882,30 +2882,28 @@ final class Model: NSObject, ObservableObject {
         currentRecording = nil
     }
 
-    func startWorkout() {
+    func startWorkout(type: WatchProtocolWorkoutType) {
         guard WCSession.default.isWatchAppInstalled else {
-            makeToast(title: String(localized: "Workout requires an Apple Watch"))
+            makeToast(title: String(localized: "Install Moblin on your Apple Watch"))
             return
         }
-        setIsWorkout(value: true)
+        setIsWorkout(type: type)
         authorizeHealthKit {
             DispatchQueue.main.async {
-                self.sendHeartRateEnabledToWatch()
+                self.sendWorkoutToWatch()
             }
         }
         makeToast(
-            title: String(localized: "Workout starting"),
+            title: String(localized: "Starting workout"),
             subTitle: String(localized: "Open Moblin in your Apple Watch to start it")
         )
     }
 
     func stopWorkout() {
-        guard isWorkout else {
-            return
-        }
-        setIsWorkout(value: false)
-        sendHeartRateEnabledToWatch()
-        makeToast(title: String(localized: "Workout stopped"))
+        setIsWorkout(type: nil)
+        sendWorkoutToWatch()
+        makeToast(title: String(localized: "Ending workout"),
+                  subTitle: String(localized: "Open Moblin in your Apple Watch to end it"))
     }
 
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
@@ -2968,9 +2966,9 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func setIsWorkout(value: Bool) {
-        isWorkout = value
-        setGlobalButtonState(type: .workout, isOn: value)
+    func setIsWorkout(type: WatchProtocolWorkoutType?) {
+        workoutType = type
+        setGlobalButtonState(type: .workout, isOn: type != nil)
         updateButtonStates()
     }
 
@@ -6010,11 +6008,33 @@ extension Model {
         sendMessageToWatch(type: .thermalState, data: thermalState.rawValue)
     }
 
-    private func sendHeartRateEnabledToWatch() {
+    private func sendStartWorkoutToWatch(type: WatchProtocolWorkoutType) {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: .heartRateEnabled, data: isWorkout)
+        var data: Data
+        do {
+            let message = WatchProtocolStartWorkout(type: type)
+            data = try JSONEncoder().encode(message)
+        } catch {
+            return
+        }
+        sendMessageToWatch(type: .startWorkout, data: data)
+    }
+
+    private func sendStopWorkoutToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .stopWorkout, data: true)
+    }
+
+    private func sendWorkoutToWatch() {
+        if let workoutType {
+            sendStartWorkoutToWatch(type: workoutType)
+        } else {
+            sendStopWorkoutToWatch()
+        }
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {
@@ -6194,7 +6214,7 @@ extension Model: WCSessionDelegate {
             self.sendZoomPresetToWatch()
             self.sendScenesToWatch()
             self.sendSceneToWatch()
-            self.sendHeartRateEnabledToWatch()
+            self.sendWorkoutToWatch()
             self.heartRate = nil
             if self.isRemoteControlAssistantConnected() {
                 if let general = self.remoteControlGeneral {

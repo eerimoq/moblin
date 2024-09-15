@@ -17,7 +17,8 @@ enum WatchMessageToWatch: String {
     case zoomPreset
     case scenes
     case scene
-    case heartRateEnabled
+    case startWorkout
+    case stopWorkout
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -123,6 +124,17 @@ struct WatchProtocolScene: Codable, Identifiable {
 struct WatchProtocolZoomPreset: Codable, Identifiable {
     var id: UUID
     var name: String
+}
+
+enum WatchProtocolWorkoutType: Codable {
+    case walking
+    case running
+    case cycling
+}
+
+// periphery:ignore
+struct WatchProtocolStartWorkout: Codable {
+    var type: WatchProtocolWorkoutType
 }
 
 extension WatchProtocolColor {
