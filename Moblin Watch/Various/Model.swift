@@ -358,9 +358,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolStartWorkout.self, from: data)
-        guard workoutSession?.state != .running else {
-            return
-        }
+        handleStopWorkout()
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
         switch message.type {
@@ -395,11 +393,12 @@ class Model: NSObject, ObservableObject {
     }
 
     private func handleStopWorkout() {
-        guard workoutSession?.state == .running else {
-            return
-        }
         workoutBuilder?.finishWorkout { _, _ in }
         workoutSession?.end()
+    }
+
+    private func isWorkoutRunning() -> Bool {
+        return workoutSession?.state == .running
     }
 
     func setIsLive(value: Bool) {
@@ -464,7 +463,7 @@ class Model: NSObject, ObservableObject {
     }
 
     func isShowingWorkout() -> Bool {
-        return workoutSession?.state == .running
+        return isWorkoutRunning()
     }
 }
 
