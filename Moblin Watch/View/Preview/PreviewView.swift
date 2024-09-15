@@ -15,6 +15,12 @@ private struct StatusesView: View {
                 .cornerRadius(5)
         }
         StreamOverlayIconAndTextView(
+            show: model.isShowingWorkout(),
+            icon: "figure.run",
+            text: model.workoutType,
+            textPlacement: textPlacement
+        )
+        StreamOverlayIconAndTextView(
             show: model.isShowingStatusBitrate(),
             icon: "speedometer",
             text: model.speedAndTotal,

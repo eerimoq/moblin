@@ -99,6 +99,7 @@ class Model: NSObject, ObservableObject {
     private var healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
+    @Published var workoutType = noValue
 
     func setup() {
         if WCSession.isSupported() {
@@ -365,10 +366,13 @@ class Model: NSObject, ObservableObject {
         switch message.type {
         case .walking:
             activityType = .walking
+            workoutType = "Walking"
         case .running:
             activityType = .running
+            workoutType = "Running"
         case .cycling:
             activityType = .cycling
+            workoutType = "Cycling"
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -457,6 +461,10 @@ class Model: NSObject, ObservableObject {
 
     func isShowingStatusRecording() -> Bool {
         return isRecording
+    }
+
+    func isShowingWorkout() -> Bool {
+        return workoutSession?.state == .running
     }
 }
 
