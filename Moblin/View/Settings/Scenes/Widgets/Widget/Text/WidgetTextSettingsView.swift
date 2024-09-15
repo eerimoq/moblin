@@ -234,7 +234,7 @@ private struct TextSelectionView: View {
                     Text("{conditions} - Show conditions")
                     Text("{temperature} - Show temperature")
                     Text("")
-                    Text("Health (requires Apple Watch)").bold()
+                    Text("Workout (requires Apple Watch)").bold()
                     Text("{heartRate} - Show heart rate")
                     Text("")
                     Text("Debug").bold()

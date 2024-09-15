@@ -49107,6 +49107,7 @@
       }
     },
     "Health (requires Apple Watch)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -110102,6 +110103,9 @@
           }
         }
       }
+    },
+    "Workout (requires Apple Watch)" : {
+
     },
     "Workout requires an Apple Watch" : {
       "extractionState" : "stale",
