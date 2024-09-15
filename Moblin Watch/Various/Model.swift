@@ -6,7 +6,6 @@ import WatchConnectivity
 
 // Remote control assistant polls status every 5 seconds.
 private let previewTimeout = Duration.seconds(6)
-private let heartRateUnit = HKUnit(from: "count/min")
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
@@ -393,6 +392,7 @@ class Model: NSObject, ObservableObject {
     }
 
     private func handleStopWorkout() {
+        // workoutBuilder?.discardWorkout()
         workoutBuilder?.finishWorkout { _, _ in }
         workoutSession?.end()
     }
@@ -441,8 +441,11 @@ class Model: NSObject, ObservableObject {
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
-    private func updateHeartRate(heartRate: Double) {
-        let message = WatchMessageFromWatch.pack(type: .updateHeartRate, data: heartRate)
+    private func updateWorkoutStats(stats: WatchProtocolWorkoutStats) {
+        guard let stats = try? JSONEncoder().encode(stats) else {
+            return
+        }
+        let message = WatchMessageFromWatch.pack(type: .updateWorkoutStats, data: stats)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
@@ -550,12 +553,39 @@ extension Model: HKLiveWorkoutBuilderDelegate {
             guard let quantityType = type as? HKQuantityType else {
                 continue
             }
-            let statistics = workoutBuilder.statistics(for: quantityType)
-            guard let heartRate = statistics?.mostRecentQuantity()?.doubleValue(for: heartRateUnit) else {
+            guard let statistics = workoutBuilder.statistics(for: quantityType) else {
                 continue
             }
             DispatchQueue.main.async {
-                self.updateHeartRate(heartRate: heartRate)
+                var stats = WatchProtocolWorkoutStats()
+                switch statistics.quantityType {
+                case HKQuantityType.quantityType(forIdentifier: .heartRate):
+                    if let heartRate = statistics.mostRecentQuantity()?
+                        .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
+                    {
+                        stats.heartRate = Int(heartRate)
+                    }
+                case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
+                    if let activeEnergyBurned = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) {
+                        stats.activeEnergyBurned = Int(activeEnergyBurned)
+                    }
+                case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning),
+                     HKQuantityType.quantityType(forIdentifier: .distanceCycling):
+                    if let distance = statistics.sumQuantity()?.doubleValue(for: .meter()) {
+                        stats.distance = Int(distance)
+                    }
+                case HKQuantityType.quantityType(forIdentifier: .stepCount):
+                    if let stepCount = statistics.sumQuantity()?.doubleValue(for: .count()) {
+                        stats.stepCount = Int(stepCount)
+                    }
+                case HKQuantityType.quantityType(forIdentifier: .runningPower):
+                    if let power = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
+                        stats.power = Int(power)
+                    }
+                default:
+                    break
+                }
+                self.updateWorkoutStats(stats: stats)
             }
         }
     }

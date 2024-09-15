@@ -52,7 +52,7 @@ enum WatchMessageFromWatch: String {
     case setZoom
     case setZoomPreset
     case setScene
-    case updateHeartRate
+    case updateWorkoutStats
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {
@@ -135,6 +135,14 @@ enum WatchProtocolWorkoutType: Codable {
 // periphery:ignore
 struct WatchProtocolStartWorkout: Codable {
     var type: WatchProtocolWorkoutType
+}
+
+struct WatchProtocolWorkoutStats: Codable {
+    var heartRate: Int?
+    var activeEnergyBurned: Int?
+    var distance: Int?
+    var stepCount: Int?
+    var power: Int?
 }
 
 extension WatchProtocolColor {

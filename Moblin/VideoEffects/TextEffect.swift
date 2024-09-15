@@ -23,6 +23,10 @@ struct TextEffectStats {
     let city: String?
     let muted: Bool
     let heartRate: Int?
+    let activeEnergyBurned: Int?
+    let workoutDistance: Int?
+    let power: Int?
+    let stepCount: Int?
 }
 
 private enum PartData: Equatable {
@@ -356,6 +360,38 @@ final class TextEffect: VideoEffect {
                 let text: String
                 if let heartRate = stats.heartRate {
                     text = String(heartRate)
+                } else {
+                    text = "-"
+                }
+                parts.append(.init(id: partId, data: .text(text)))
+            case .activeEnergyBurned:
+                let text: String
+                if let activeEnergyBurned = stats.activeEnergyBurned {
+                    text = String(activeEnergyBurned)
+                } else {
+                    text = "-"
+                }
+                parts.append(.init(id: partId, data: .text(text)))
+            case .power:
+                let text: String
+                if let power = stats.power {
+                    text = String(power)
+                } else {
+                    text = "-"
+                }
+                parts.append(.init(id: partId, data: .text(text)))
+            case .stepCount:
+                let text: String
+                if let stepCount = stats.stepCount {
+                    text = String(stepCount)
+                } else {
+                    text = "-"
+                }
+                parts.append(.init(id: partId, data: .text(text)))
+            case .workoutDistance:
+                let text: String
+                if let workoutDistance = stats.workoutDistance {
+                    text = String(workoutDistance)
                 } else {
                     text = "-"
                 }

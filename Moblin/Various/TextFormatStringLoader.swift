@@ -20,6 +20,10 @@ enum TextFormatPart {
     case subtitles
     case muted
     case heartRate
+    case activeEnergyBurned
+    case power
+    case stepCount
+    case workoutDistance
 }
 
 class TextFormatLoader {
@@ -71,6 +75,14 @@ class TextFormatLoader {
                     loadItem(part: .muted, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{heartrate}") {
                     loadItem(part: .heartRate, offsetBy: 11)
+                } else if formatFromIndex.hasPrefix("{activeenergyburned}") {
+                    loadItem(part: .activeEnergyBurned, offsetBy: 20)
+                } else if formatFromIndex.hasPrefix("{power}") {
+                    loadItem(part: .power, offsetBy: 7)
+                } else if formatFromIndex.hasPrefix("{stepcount}") {
+                    loadItem(part: .stepCount, offsetBy: 11)
+                } else if formatFromIndex.hasPrefix("{workoutdistance}") {
+                    loadItem(part: .workoutDistance, offsetBy: 17)
                 } else {
                     index = format.index(after: index)
                 }

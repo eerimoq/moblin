@@ -394,7 +394,11 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private var heartRate: Int?
+    private var workoutHeartRate: Int?
+    private var workoutActiveEnergyBurned: Int?
+    private var workoutDistance: Int?
+    private var workoutPower: Int?
+    private var workoutStepCount: Int?
     private var pollVotes: [Int] = [0, 0, 0]
     private var pollEnabled = false
     private var mediaPlayers: [UUID: MediaPlayer] = [:]
@@ -2606,7 +2610,11 @@ final class Model: NSObject, ObservableObject {
             countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
             city: placemark?.locality,
             muted: isMuteOn,
-            heartRate: heartRate
+            heartRate: workoutHeartRate,
+            activeEnergyBurned: workoutActiveEnergyBurned,
+            workoutDistance: workoutDistance,
+            power: workoutPower,
+            stepCount: workoutStepCount
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -4404,9 +4412,17 @@ final class Model: NSObject, ObservableObject {
         let typesToShare: Set = [
             HKQuantityType.workoutType(),
         ]
-        let types: Set<HKSampleType> = [
-            .quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!,
+        var types: Set<HKSampleType> = [
+            .quantityType(forIdentifier: .heartRate)!,
+            .quantityType(forIdentifier: .distanceCycling)!,
+            .quantityType(forIdentifier: .distanceWalkingRunning)!,
+            .quantityType(forIdentifier: .stepCount)!,
+            .quantityType(forIdentifier: .activeEnergyBurned)!,
+            .quantityType(forIdentifier: .runningPower)!,
         ]
+        if #available(iOS 17.0, *) {
+            types.insert(.quantityType(forIdentifier: .cyclingPower)!)
+        }
         healthStore.requestAuthorization(toShare: typesToShare, read: types) { _, _ in
             completion()
         }
@@ -6040,6 +6056,14 @@ extension Model {
         }
     }
 
+    private func resetWorkoutStats() {
+        workoutHeartRate = nil
+        workoutActiveEnergyBurned = nil
+        workoutDistance = nil
+        workoutPower = nil
+        workoutStepCount = nil
+    }
+
     private func enqueueWatchChatPost(post: ChatPost) {
         guard WCSession.default.isWatchAppInstalled else {
             return
@@ -6219,7 +6243,7 @@ extension Model: WCSessionDelegate {
             self.sendScenesToWatch()
             self.sendSceneToWatch()
             self.sendWorkoutToWatch()
-            self.heartRate = nil
+            self.resetWorkoutStats()
             if self.isRemoteControlAssistantConnected() {
                 if let general = self.remoteControlGeneral {
                     if let thermalState = general.flame?.toThermalState() {
@@ -6391,12 +6415,29 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleUpdateHeartRate(_ data: Any) {
-        guard let heartRate = data as? Double else {
+    private func handleUpdateWorkoutStats(_ data: Any) {
+        guard let data = data as? Data else {
+            return
+        }
+        guard let stats = try? JSONDecoder().decode(WatchProtocolWorkoutStats.self, from: data) else {
             return
         }
         DispatchQueue.main.async {
-            self.heartRate = Int(heartRate)
+            if let heartRate = stats.heartRate {
+                self.workoutHeartRate = heartRate
+            }
+            if let activeEnergyBurned = stats.activeEnergyBurned {
+                self.workoutActiveEnergyBurned = activeEnergyBurned
+            }
+            if let distance = stats.distance {
+                self.workoutDistance = distance
+            }
+            if let stepCount = stats.stepCount {
+                self.workoutStepCount = stepCount
+            }
+            if let power = stats.power {
+                self.workoutPower = power
+            }
         }
     }
 
@@ -6440,8 +6481,8 @@ extension Model: WCSessionDelegate {
             handleSetZoomPresetMessage(data)
         case .setScene:
             handleSetSceneMessage(data)
-        case .updateHeartRate:
-            handleUpdateHeartRate(data)
+        case .updateWorkoutStats:
+            handleUpdateWorkoutStats(data)
         default:
             break
         }
