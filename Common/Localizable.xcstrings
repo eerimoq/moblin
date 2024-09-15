@@ -38443,6 +38443,9 @@
         }
       }
     },
+    "End workout" : {
+
+    },
     "End-user license agreement (EULA)" : {
       "localizations" : {
         "de" : {
@@ -89689,9 +89692,6 @@
           }
         }
       }
-    },
-    "Stop workout" : {
-
     },
     "Stopping stream" : {
       "localizations" : {

@@ -1426,6 +1426,7 @@ final class Model: NSObject, ObservableObject {
             obsWebSocket?.stop()
             media.stopAllNetStreams()
             speechToText.stop()
+            stopWorkout()
         }
     }
 
@@ -6190,6 +6191,7 @@ extension Model: WCSessionDelegate {
         case .activated:
             DispatchQueue.main.async {
                 self.setLowFpsImage()
+                self.sendWorkoutToWatch()
             }
         default:
             break

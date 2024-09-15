@@ -450,7 +450,7 @@ struct QuickButtonsInnerView: View {
                         QuickButtonImage(state: state, buttonSize: size)
                     })
                     .confirmationDialog("", isPresented: $isPresentingStopWorkoutConfirm) {
-                        Button("Stop workout") {
+                        Button("End workout") {
                             model.stopWorkout()
                         }
                     }
