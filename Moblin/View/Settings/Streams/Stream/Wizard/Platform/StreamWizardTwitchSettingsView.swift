@@ -93,7 +93,10 @@ struct StreamWizardTwitchSettingsView: View {
                         Text("Close").padding()
                     })
                 }
-                TwitchAuthView()
+                ScrollView {
+                    TwitchAuthView()
+                        .frame(height: 2500)
+                }
             }
         }
         .onAppear {
