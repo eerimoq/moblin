@@ -6,7 +6,6 @@ struct DebugVideoSettingsView: View {
     private func onPixelFormatChange(format: String) {
         model.database.debug!.pixelFormat = format
         model.setPixelFormat()
-        model.store()
         model.reloadStream()
         model.sceneUpdated()
     }
@@ -30,7 +29,6 @@ struct DebugVideoSettingsView: View {
                 }, set: { value in
                     model.database.debug!.allowVideoRangePixelFormat = value
                     model.setAllowVideoRangePixelFormat()
-                    model.store()
                 }))
             } footer: {
                 Text("Change camera and restart stream for these to work properly.")

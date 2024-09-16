@@ -99,6 +99,7 @@ private let globalMyIcons = [
         id: "AppIconHalloweenPumpkin",
         price: ""
     ),
+    Icon(name: "San Diego", id: "AppIconSanDiego", price: "$"),
 ]
 
 private let iconsProductIds = [

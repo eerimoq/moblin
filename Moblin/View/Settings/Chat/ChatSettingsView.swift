@@ -70,7 +70,6 @@ struct ChatSettingsView: View {
                         model.database.chat.boldUsername
                     }, set: { value in
                         model.database.chat.boldUsername = value
-                        model.store()
                         model.reloadChatMessages()
                     })) {
                         Text("Bold username")
@@ -79,7 +78,6 @@ struct ChatSettingsView: View {
                         model.database.chat.boldMessage
                     }, set: { value in
                         model.database.chat.boldMessage = value
-                        model.store()
                         model.reloadChatMessages()
                     })) {
                         Text("Bold message")
@@ -88,7 +86,6 @@ struct ChatSettingsView: View {
                         model.database.chat.animatedEmotes
                     }, set: { value in
                         model.database.chat.animatedEmotes = value
-                        model.store()
                         model.reloadChatMessages()
                     })) {
                         Text("Animated emotes")
@@ -103,7 +100,6 @@ struct ChatSettingsView: View {
                             model.database.chat.maximumAgeEnabled!
                         }, set: { value in
                             model.database.chat.maximumAgeEnabled = value
-                            model.store()
                         })) {
                             TextItemView(
                                 name: String(localized: "Maximum age"),
@@ -171,7 +167,6 @@ struct ChatSettingsView: View {
                                 return
                             }
                             model.database.chat.height = height
-                            model.store()
                             model.reloadChatMessages()
                         }
                     )
@@ -265,7 +260,6 @@ struct ChatSettingsView: View {
                         model.database.chat.meInUsernameColor!
                     }, set: { value in
                         model.database.chat.meInUsernameColor = value
-                        model.store()
                     })) {
                         Text("Me in username color")
                     }

@@ -74,7 +74,6 @@ struct DebugSettingsView: View {
                             }
                             ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(cameraSwitchRemoveBlackish)
                             model.database.debug!.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
-                            model.store()
                         }
                     )
                     Text("\(formatOneDecimal(value: cameraSwitchRemoveBlackish)) s")
@@ -85,7 +84,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.blurSceneSwitch = value
                     model.setBlurSceneSwitch()
-                    model.store()
                 }))
                 Toggle("Global tone mapping", isOn: Binding(get: {
                     model.getGlobalToneMappingOn()
@@ -97,13 +95,11 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.metalPetalFilters = value
                     model.setMetalPetalFilters()
-                    model.store()
                 }))
                 Toggle("Higher data rate limit", isOn: Binding(get: {
                     model.database.debug!.higherDataRateLimit!
                 }, set: { value in
                     model.database.debug!.higherDataRateLimit = value
-                    model.store()
                     model.setHigherDataRateLimit()
                 }))
                 Toggle("Use video for timestamps", isOn: Binding(get: {

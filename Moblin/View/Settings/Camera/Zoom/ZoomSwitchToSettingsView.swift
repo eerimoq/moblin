@@ -29,7 +29,6 @@ struct ZoomSwitchToSettingsView: View {
                     return
                 }
                 defaultZoom.x = x
-                model.store()
             },
             keyboardType: .numbersAndPunctuation
         )) {
@@ -37,7 +36,6 @@ struct ZoomSwitchToSettingsView: View {
                 defaultZoom.enabled
             }, set: { value in
                 defaultZoom.enabled = value
-                model.store()
             })) {
                 TextItemView(
                     name: String(localized: "To \(name) camera"),

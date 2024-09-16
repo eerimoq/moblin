@@ -116,7 +116,6 @@ struct CameraSettingsAppleLogLutView: View {
 
     private func submitLut(id: UUID) {
         model.database.color!.lut = id
-        model.store()
         model.lutUpdated()
         model.objectWillChange.send()
     }
@@ -133,7 +132,6 @@ struct CameraSettingsAppleLogLutView: View {
                 }, set: { value in
                     model.database.color!.lutEnabled = value
                     model.lutEnabledUpdated()
-                    model.store()
                 })) {
                     Text("Enabled")
                 }
@@ -212,7 +210,6 @@ struct CameraSettingsView: View {
                             model.database.color!.space.rawValue
                         }, set: { value in
                             model.database.color!.space = SettingsColorSpace(rawValue: value)!
-                            model.store()
                             model.colorSpaceUpdated()
                             model.objectWillChange.send()
                         })) {
