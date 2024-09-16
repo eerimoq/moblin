@@ -81234,12 +81234,12 @@
         }
       }
     },
-    "Select %@ if you want the DJI camera to stream to\nMoblin's RTMP server on this device. Select %@ to\nmake the DJI camera stream to any destination." : {
+    "Select %@ if you want the DJI camera to stream to Moblin's RTMP server on this device. Select %@ to make the DJI camera stream to any destination." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Select %1$@ if you want the DJI camera to stream to\nMoblin's RTMP server on this device. Select %2$@ to\nmake the DJI camera stream to any destination."
+            "value" : "Select %1$@ if you want the DJI camera to stream to Moblin's RTMP server on this device. Select %2$@ to make the DJI camera stream to any destination."
           }
         }
       }
