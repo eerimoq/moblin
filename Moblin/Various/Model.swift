@@ -5139,7 +5139,10 @@ final class Model: NSObject, ObservableObject {
     private func handleNoTorch() {
         DispatchQueue.main.async {
             if !self.isFrontCameraSelected {
-                self.makeErrorToast(title: "Torch unavailable in this scene.")
+                self.makeErrorToast(
+                    title: String(localized: "Torch unavailable in this scene."),
+                    subTitle: String(localized: "Normally only available for built-in cameras.")
+                )
             }
         }
     }

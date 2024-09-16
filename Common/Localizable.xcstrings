@@ -67191,6 +67191,9 @@
         }
       }
     },
+    "Normally only available for built-in cameras." : {
+
+    },
     "North up" : {
       "localizations" : {
         "de" : {
@@ -99589,6 +99592,9 @@
           }
         }
       }
+    },
+    "Torch unavailable in this scene." : {
+
     },
     "Total recordings" : {
       "localizations" : {
