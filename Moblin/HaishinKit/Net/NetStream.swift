@@ -17,6 +17,7 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
     func stream(_ stream: NetStream, recorderFinishWriting writer: AVAssetWriter)
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
+    func streamNoTorch()
 }
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
@@ -228,5 +229,9 @@ extension NetStream: MixerDelegate {
 
     func mixer(audioSampleBuffer: CMSampleBuffer) {
         delegate?.streamAudio(self, sampleBuffer: audioSampleBuffer)
+    }
+
+    func mixerNoTorch() {
+        delegate?.streamNoTorch()
     }
 }

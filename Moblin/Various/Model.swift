@@ -980,6 +980,7 @@ final class Model: NSObject, ObservableObject {
         media.onAudioBuffer = handleAudioBuffer
         media.onLowFpsImage = handleLowFpsImage
         media.onFindVideoFormatError = handleFindVideoFormatError
+        media.onNoTorch = handleNoTorch
         setPixelFormat()
         setMetalPetalFilters()
         setHigherDataRateLimit()
@@ -5131,6 +5132,14 @@ final class Model: NSObject, ObservableObject {
     private func handleFindVideoFormatError(findVideoFormatError: String, activeFormat: String) {
         DispatchQueue.main.async {
             self.makeErrorToast(title: findVideoFormatError, subTitle: activeFormat)
+        }
+    }
+
+    private func handleNoTorch() {
+        DispatchQueue.main.async {
+            if !self.isFrontCameraSelected {
+                self.makeErrorToast(title: "Torch unavailable in this scene.")
+            }
         }
     }
 

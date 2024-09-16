@@ -176,6 +176,9 @@ final class VideoUnit: NSObject {
     var torch = false {
         didSet {
             guard let device else {
+                if torch {
+                    mixer?.delegate?.mixerNoTorch()
+                }
                 return
             }
             setTorchMode(device, torch ? .on : .off)
@@ -1116,6 +1119,9 @@ final class VideoUnit: NSObject {
 
     private func setTorchMode(_ device: AVCaptureDevice, _ torchMode: AVCaptureDevice.TorchMode) {
         guard device.isTorchModeSupported(torchMode) else {
+            if torchMode == .on {
+                mixer?.delegate?.mixerNoTorch()
+            }
             return
         }
         do {

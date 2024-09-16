@@ -47,6 +47,7 @@ final class Media: NSObject {
     var onAudioBuffer: ((CMSampleBuffer) -> Void)!
     var onLowFpsImage: ((Data?, UInt64) -> Void)!
     var onFindVideoFormatError: ((String, String) -> Void)!
+    var onNoTorch: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
     private var irlToolkitFetcher: IrlToolkitFetcher?
@@ -925,6 +926,10 @@ extension Media: NetStreamDelegate {
 
     func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
         onAudioBuffer(sampleBuffer)
+    }
+
+    func streamNoTorch() {
+        onNoTorch()
     }
 }
 
