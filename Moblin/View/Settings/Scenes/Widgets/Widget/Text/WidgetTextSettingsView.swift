@@ -20,19 +20,30 @@ private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 
-private let suggestions = [
-    Suggestion(id: 0, name: String(localized: "Travel"), text: suggestionTravel),
-    Suggestion(id: 1, name: String(localized: "Weather"), text: suggestionWeather),
-    Suggestion(id: 2, name: String(localized: "Time"), text: suggestionTime),
-    Suggestion(id: 3, name: String(localized: "Timer"), text: suggestionTimer),
-    Suggestion(id: 4, name: String(localized: "City"), text: suggestionCity),
-    Suggestion(id: 5, name: String(localized: "Country"), text: suggestionCountry),
-    Suggestion(id: 6, name: String(localized: "Movement"), text: suggestionMovement),
-    Suggestion(id: 7, name: String(localized: "Heart rate"), text: suggestionHeartRate),
-    Suggestion(id: 8, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-    Suggestion(id: 9, name: String(localized: "Muted"), text: suggestionMuted),
-    Suggestion(id: 10, name: String(localized: "Debug"), text: suggestionDebug),
-]
+private let suggestions = createSuggestions()
+
+private func createSuggestions() -> [Suggestion] {
+    var suggestions = [
+        Suggestion(id: 0, name: String(localized: "Travel"), text: suggestionTravel),
+        Suggestion(id: 1, name: String(localized: "Weather"), text: suggestionWeather),
+        Suggestion(id: 2, name: String(localized: "Time"), text: suggestionTime),
+        Suggestion(id: 3, name: String(localized: "Timer"), text: suggestionTimer),
+        Suggestion(id: 4, name: String(localized: "City"), text: suggestionCity),
+        Suggestion(id: 5, name: String(localized: "Country"), text: suggestionCountry),
+        Suggestion(id: 6, name: String(localized: "Movement"), text: suggestionMovement),
+    ]
+    if isPhone() {
+        suggestions += [
+            Suggestion(id: 7, name: String(localized: "Heart rate"), text: suggestionHeartRate),
+        ]
+    }
+    suggestions += [
+        Suggestion(id: 8, name: String(localized: "Subtitles"), text: suggestionSubtitles),
+        Suggestion(id: 9, name: String(localized: "Muted"), text: suggestionMuted),
+        Suggestion(id: 10, name: String(localized: "Debug"), text: suggestionDebug),
+    ]
+    return suggestions
+}
 
 private struct SuggestionsView: View {
     @Environment(\.dismiss) var dismiss
