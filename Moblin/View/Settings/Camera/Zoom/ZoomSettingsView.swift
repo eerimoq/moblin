@@ -18,7 +18,6 @@ struct ZoomSettingsView: View {
                                 return
                             }
                             model.database.zoom.speed = speed
-                            model.store()
                         }
                     )
                     Text(String(formatOneDecimal(value: speed)))

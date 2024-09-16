@@ -8,7 +8,6 @@ struct TapScreenToFocusSettingsView: View {
             model.database.tapToFocus
         }, set: { value in
             model.database.tapToFocus = value
-            model.store()
             if !value {
                 model.setAutoFocus()
             }

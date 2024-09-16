@@ -44,7 +44,6 @@ struct StreamSettingsView: View {
                         stream.portrait!
                     }, set: { value in
                         stream.portrait = value
-                        model.store()
                         model.updateOrientationLock()
                         model.objectWillChange.send()
                     })) {
@@ -109,7 +108,6 @@ struct StreamSettingsView: View {
                         stream.obsWebSocketEnabled!
                     }, set: { value in
                         stream.obsWebSocketEnabled = value
-                        model.store()
                         if stream.enabled {
                             model.obsWebSocketEnabledUpdated()
                         }
@@ -121,7 +119,6 @@ struct StreamSettingsView: View {
                             stream.realtimeIrlEnabled!
                         }, set: { value in
                             stream.realtimeIrlEnabled = value
-                            model.store()
                             if stream.enabled {
                                 model.reloadLocation()
                             }
@@ -136,7 +133,6 @@ struct StreamSettingsView: View {
                             stream.backgroundStreaming!
                         }, set: { value in
                             stream.backgroundStreaming = value
-                            model.store()
                         }))
                     } footer: {
                         Text("Live stream and record when the app is in background mode.")

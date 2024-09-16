@@ -8,7 +8,6 @@ struct MirrorFrontCameraOnStreamView: View {
             model.database.mirrorFrontCameraOnStream!
         }, set: { value in
             model.database.mirrorFrontCameraOnStream = value
-            model.store()
             model.reattachCamera()
         }))
     }

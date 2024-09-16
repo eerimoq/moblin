@@ -17,7 +17,6 @@ struct ZoomPresetSettingsView: View {
         }
         preset.x = x
         preset.name = "\(Int(x.rounded()))x"
-        model.store()
     }
 
     private func formatX(x: Float) -> String {
