@@ -2467,14 +2467,6 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "camera"
     updateGlobalButton(database: database, button: button)
 
-    // button = SettingsButton(name: String(localized: "Camera preview"))
-    // button.id = UUID()
-    // button.type = .cameraPreview
-    // button.imageType = "System name"
-    // button.systemImageNameOn = "photo.tv"
-    // button.systemImageNameOff = "photo.tv"
-    // updateGlobalButton(database: database, button: button)
-
     button = SettingsButton(name: String(localized: "Browser"))
     button.id = UUID()
     button.type = .browser
@@ -2571,16 +2563,24 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "camera.filters"
     updateGlobalButton(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Workout"))
-    button.id = UUID()
-    button.type = .workout
-    button.imageType = "System name"
-    button.systemImageNameOn = "figure.run"
-    button.systemImageNameOff = "figure.run"
-    updateGlobalButton(database: database, button: button)
+    if UIDevice.current.userInterfaceIdiom == .phone {
+        button = SettingsButton(name: String(localized: "Workout"))
+        button.id = UUID()
+        button.type = .workout
+        button.imageType = "System name"
+        button.systemImageNameOn = "figure.run"
+        button.systemImageNameOff = "figure.run"
+        updateGlobalButton(database: database, button: button)
+    }
 
     database.globalButtons = database.globalButtons!.filter { button in
-        button.type != .unknown
+        if button.type == .unknown {
+            return false
+        }
+        if button.type == .workout, UIDevice.current.userInterfaceIdiom != .phone {
+            return false
+        }
+        return true
     }
 }
 
