@@ -495,3 +495,7 @@ func emojiFlag(country: String) -> String {
     }
     return emote
 }
+
+func isPhone() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .phone
+}

@@ -180,7 +180,7 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddWidget) {
                     VStack {
-                        if UIDevice.current.userInterfaceIdiom == .phone {
+                        if isPhone() {
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -216,7 +216,7 @@ struct SceneSettingsView: View {
                                 }
                             }
                         }
-                        if UIDevice.current.userInterfaceIdiom != .phone {
+                        if !isPhone() {
                             form
                                 .frame(width: 300, height: 400)
                         } else {

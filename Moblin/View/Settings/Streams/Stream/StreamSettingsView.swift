@@ -39,7 +39,7 @@ struct StreamSettingsView: View {
                         Text("Recording")
                     }
                 }
-                if UIDevice.current.userInterfaceIdiom == .phone {
+                if isPhone() {
                     Toggle(isOn: Binding(get: {
                         stream.portrait!
                     }, set: { value in

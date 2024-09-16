@@ -73,15 +73,15 @@ class TextFormatLoader {
                     loadItem(part: .subtitles, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{muted}") {
                     loadItem(part: .muted, offsetBy: 7)
-                } else if formatFromIndex.hasPrefix("{heartrate}") {
+                } else if isPhone(), formatFromIndex.hasPrefix("{heartrate}") {
                     loadItem(part: .heartRate, offsetBy: 11)
-                } else if formatFromIndex.hasPrefix("{activeenergyburned}") {
+                } else if isPhone(), formatFromIndex.hasPrefix("{activeenergyburned}") {
                     loadItem(part: .activeEnergyBurned, offsetBy: 20)
-                } else if formatFromIndex.hasPrefix("{power}") {
+                } else if isPhone(), formatFromIndex.hasPrefix("{power}") {
                     loadItem(part: .power, offsetBy: 7)
-                } else if formatFromIndex.hasPrefix("{stepcount}") {
+                } else if isPhone(), formatFromIndex.hasPrefix("{stepcount}") {
                     loadItem(part: .stepCount, offsetBy: 11)
-                } else if formatFromIndex.hasPrefix("{workoutdistance}") {
+                } else if isPhone(), formatFromIndex.hasPrefix("{workoutdistance}") {
                     loadItem(part: .workoutDistance, offsetBy: 17)
                 } else {
                     index = format.index(after: index)

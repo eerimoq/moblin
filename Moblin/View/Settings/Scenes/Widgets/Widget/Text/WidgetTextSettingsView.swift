@@ -234,9 +234,11 @@ private struct TextSelectionView: View {
                     Text("{conditions} - Show conditions")
                     Text("{temperature} - Show temperature")
                     Text("")
-                    Text("Workout (requires Apple Watch)").bold()
-                    Text("{heartRate} - Show heart rate")
-                    Text("")
+                    if isPhone() {
+                        Text("Workout (requires Apple Watch)").bold()
+                        Text("{heartRate} - Show heart rate")
+                        Text("")
+                    }
                     Text("Debug").bold()
                     Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
                     Text("{debugOverlay} - Show debug overlay (if enabled)")

@@ -2563,21 +2563,19 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "camera.filters"
     updateGlobalButton(database: database, button: button)
 
-    if UIDevice.current.userInterfaceIdiom == .phone {
-        button = SettingsButton(name: String(localized: "Workout"))
-        button.id = UUID()
-        button.type = .workout
-        button.imageType = "System name"
-        button.systemImageNameOn = "figure.run"
-        button.systemImageNameOff = "figure.run"
-        updateGlobalButton(database: database, button: button)
-    }
+    button = SettingsButton(name: String(localized: "Workout"))
+    button.id = UUID()
+    button.type = .workout
+    button.imageType = "System name"
+    button.systemImageNameOn = "figure.run"
+    button.systemImageNameOff = "figure.run"
+    updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in
         if button.type == .unknown {
             return false
         }
-        if button.type == .workout, UIDevice.current.userInterfaceIdiom != .phone {
+        if button.type == .workout, !isPhone() {
             return false
         }
         return true

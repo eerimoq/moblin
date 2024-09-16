@@ -67,13 +67,13 @@ struct ControlBarLandscapeView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                if UIDevice.current.userInterfaceIdiom == .phone {
+                if isPhone() {
                     BatteryView()
                 }
                 Spacer(minLength: 0)
                 ThermalStateView(thermalState: model.thermalState)
                 Spacer(minLength: 0)
-                if UIDevice.current.userInterfaceIdiom == .phone {
+                if isPhone() {
                     Text(model.digitalClock)
                         .foregroundColor(.white)
                         .font(smallFont)
