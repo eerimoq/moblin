@@ -8,7 +8,6 @@ struct ChatTextToSpeechSettingsView: View {
 
     private func onVoiceChange(languageCode: String, voice: String) {
         model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
-        model.store()
         model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
     }
 
@@ -32,7 +31,6 @@ struct ChatTextToSpeechSettingsView: View {
                                 return
                             }
                             model.database.chat.textToSpeechRate = rate
-                            model.store()
                             model.chatTextToSpeech.setRate(rate: rate)
                         }
                     )
@@ -49,7 +47,6 @@ struct ChatTextToSpeechSettingsView: View {
                                 return
                             }
                             model.database.chat.textToSpeechSayVolume = volume
-                            model.store()
                             model.chatTextToSpeech.setVolume(volume: volume)
                         }
                     )
@@ -61,7 +58,6 @@ struct ChatTextToSpeechSettingsView: View {
                     model.database.chat.textToSpeechDetectLanguagePerMessage!
                 }, set: { value in
                     model.database.chat.textToSpeechDetectLanguagePerMessage = value
-                    model.store()
                     model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
                 })) {
                     Text("Detect language per message")
@@ -70,7 +66,6 @@ struct ChatTextToSpeechSettingsView: View {
                     model.database.chat.textToSpeechSayUsername!
                 }, set: { value in
                     model.database.chat.textToSpeechSayUsername = value
-                    model.store()
                     model.chatTextToSpeech.setSayUsername(value: value)
                 })) {
                     Text("Say username")
@@ -79,7 +74,6 @@ struct ChatTextToSpeechSettingsView: View {
                     model.database.chat.textToSpeechSubscribersOnly!
                 }, set: { value in
                     model.database.chat.textToSpeechSubscribersOnly = value
-                    model.store()
                 })) {
                     Text("Subscribers only")
                 }
@@ -91,7 +85,6 @@ struct ChatTextToSpeechSettingsView: View {
                     model.database.chat.textToSpeechFilter!
                 }, set: { value in
                     model.database.chat.textToSpeechFilter = value
-                    model.store()
                     model.chatTextToSpeech.setFilter(value: value)
                 })) {
                     Text("Filter")
@@ -104,7 +97,6 @@ struct ChatTextToSpeechSettingsView: View {
                     model.database.chat.textToSpeechFilterMentions!
                 }, set: { value in
                     model.database.chat.textToSpeechFilterMentions = value
-                    model.store()
                     model.chatTextToSpeech.setFilterMentions(value: value)
                 })) {
                     Text("Filter mentions")

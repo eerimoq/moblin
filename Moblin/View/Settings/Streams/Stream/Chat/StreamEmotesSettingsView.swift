@@ -11,7 +11,6 @@ struct StreamEmotesSettingsView: View {
                     stream.chat!.bttvEmotes
                 }, set: { value in
                     stream.chat!.bttvEmotes = value
-                    model.store()
                     if stream.enabled {
                         model.bttvEmotesEnabledUpdated()
                     }
@@ -20,7 +19,6 @@ struct StreamEmotesSettingsView: View {
                     stream.chat!.ffzEmotes
                 }, set: { value in
                     stream.chat!.ffzEmotes = value
-                    model.store()
                     if stream.enabled {
                         model.ffzEmotesEnabledUpdated()
                     }
@@ -29,7 +27,6 @@ struct StreamEmotesSettingsView: View {
                     stream.chat!.seventvEmotes
                 }, set: { value in
                     stream.chat!.seventvEmotes = value
-                    model.store()
                     if stream.enabled {
                         model.seventvEmotesEnabledUpdated()
                     }

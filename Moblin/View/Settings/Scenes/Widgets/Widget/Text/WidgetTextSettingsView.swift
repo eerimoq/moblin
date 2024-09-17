@@ -193,7 +193,7 @@ private struct TextSelectionView: View {
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
         updateNeedsSubtitles(parts)
-        model.sceneUpdated(store: false)
+        model.sceneUpdated()
     }
 
     var body: some View {
@@ -424,9 +424,6 @@ struct WidgetTextSettingsView: View {
             Text("Delay")
         } footer: {
             Text("To show the widget in sync with high latency cameras.")
-        }
-        .onDisappear {
-            model.store()
         }
     }
 }

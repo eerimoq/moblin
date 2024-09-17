@@ -11,7 +11,6 @@ struct StreamObsRemoteControlSettingsView: View {
             return
         }
         stream.obsWebSocketUrl = url
-        model.store()
         if stream.enabled {
             model.obsWebSocketUrlUpdated()
         }
@@ -19,7 +18,6 @@ struct StreamObsRemoteControlSettingsView: View {
 
     func submitWebSocketPassword(value: String) {
         stream.obsWebSocketPassword = value
-        model.store()
         if stream.enabled {
             model.obsWebSocketPasswordUpdated()
         }
@@ -27,12 +25,10 @@ struct StreamObsRemoteControlSettingsView: View {
 
     func submitSourceName(value: String) {
         stream.obsSourceName = value
-        model.store()
     }
 
     func submitBrbScene(value: String) {
         stream.obsBrbScene = value
-        model.store()
     }
 
     var body: some View {
@@ -99,13 +95,11 @@ struct StreamObsRemoteControlSettingsView: View {
                         stream.obsAutoStartStream!
                     }, set: { value in
                         stream.obsAutoStartStream = value
-                        model.store()
                     }))
                     Toggle("Auto stop streaming when ending stream", isOn: Binding(get: {
                         stream.obsAutoStopStream!
                     }, set: { value in
                         stream.obsAutoStopStream = value
-                        model.store()
                     }))
                 }
                 Section {
@@ -113,13 +107,11 @@ struct StreamObsRemoteControlSettingsView: View {
                         stream.obsAutoStartRecording!
                     }, set: { value in
                         stream.obsAutoStartRecording = value
-                        model.store()
                     }))
                     Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
                         stream.obsAutoStopRecording!
                     }, set: { value in
                         stream.obsAutoStopRecording = value
-                        model.store()
                     }))
                 }
             }

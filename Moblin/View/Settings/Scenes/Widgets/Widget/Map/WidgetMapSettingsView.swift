@@ -11,7 +11,6 @@ struct WidgetMapSettingsView: View {
                 widget.map!.northUp!
             }, set: { value in
                 widget.map!.northUp = value
-                model.store()
                 model.resetSelectedScene(changeScene: false)
             })) {
                 Text("North up")
@@ -30,7 +29,6 @@ struct WidgetMapSettingsView: View {
                             return
                         }
                         widget.map!.delay = delay
-                        model.store()
                         model.resetSelectedScene(changeScene: false)
                     }
                 )

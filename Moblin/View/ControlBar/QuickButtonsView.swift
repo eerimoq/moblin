@@ -102,7 +102,7 @@ struct QuickButtonsInnerView: View {
 
     private func widgetAction(state: ButtonState) {
         state.button.isOn.toggle()
-        model.sceneUpdated(store: false)
+        model.sceneUpdated()
     }
 
     private func blackScreenAction() {
@@ -132,7 +132,7 @@ struct QuickButtonsInnerView: View {
     private func videoEffectAction(state: ButtonState, type: SettingsButtonType) {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: type, isOn: state.button.isOn)
-        model.sceneUpdated(store: false)
+        model.sceneUpdated()
         model.updateButtonStates()
     }
 
@@ -167,7 +167,7 @@ struct QuickButtonsInnerView: View {
     private func gridAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.showingGrid.toggle()
-        model.sceneUpdated(store: false)
+        model.sceneUpdated()
         model.updateButtonStates()
     }
 

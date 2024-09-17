@@ -12,7 +12,6 @@ struct WidgetCropSettingsView: View {
             return
         }
         widget.crop!.x = x
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -24,7 +23,6 @@ struct WidgetCropSettingsView: View {
             return
         }
         widget.crop!.y = y
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -36,7 +34,6 @@ struct WidgetCropSettingsView: View {
             return
         }
         widget.crop!.width = width
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -48,7 +45,6 @@ struct WidgetCropSettingsView: View {
             return
         }
         widget.crop!.height = height
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -72,7 +68,6 @@ struct WidgetCropSettingsView: View {
                         return
                     }
                     widget.crop!.sourceWidgetId = value
-                    model.store()
                     model.resetSelectedScene(changeScene: false)
                 })) {
                     if !sourceWidgetExists() {

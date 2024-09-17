@@ -187,7 +187,6 @@ struct CameraSettingsView: View {
                             model.database.color!.space.rawValue
                         }, set: { value in
                             model.database.color!.space = SettingsColorSpace(rawValue: value)!
-                            model.store()
                             model.colorSpaceUpdated()
                             model.objectWillChange.send()
                         })) {

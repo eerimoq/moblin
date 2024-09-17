@@ -16,7 +16,6 @@ struct PrivacyRegionView: View {
                 region.longitudeDelta = current.span.longitudeDelta
             }
             .onDisappear {
-                model.store()
                 model.reloadLocation()
             }
     }
@@ -32,7 +31,6 @@ struct LocationSettingsView: View {
                     model.database.location!.enabled
                 }, set: { value in
                     model.database.location!.enabled = value
-                    model.store()
                     model.reloadLocation()
                 }))
             }
@@ -64,7 +62,6 @@ struct LocationSettingsView: View {
                     }
                     .onDelete(perform: { indexes in
                         model.database.location!.privacyRegions.remove(atOffsets: indexes)
-                        model.store()
                         model.reloadLocation()
                     })
                 }
@@ -77,7 +74,6 @@ struct LocationSettingsView: View {
                         privacyRegion.longitudeDelta = 0.02
                     }
                     model.database.location!.privacyRegions.append(privacyRegion)
-                    model.store()
                     model.objectWillChange.send()
                     model.reloadLocation()
                 })

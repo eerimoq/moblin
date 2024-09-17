@@ -9,7 +9,6 @@ struct StreamOpenStreamingPlatformSettingsView: View {
             return
         }
         stream.openStreamingPlatformUrl = value
-        model.store()
         if stream.enabled {
             model.openStreamingPlatformUrlUpdated()
         }
@@ -17,7 +16,6 @@ struct StreamOpenStreamingPlatformSettingsView: View {
 
     func submitRoom(value: String) {
         stream.openStreamingPlatformChannelId = value
-        model.store()
         if stream.enabled {
             model.openStreamingPlatformRoomUpdated()
         }

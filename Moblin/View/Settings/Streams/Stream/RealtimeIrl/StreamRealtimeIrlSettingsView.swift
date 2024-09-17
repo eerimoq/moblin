@@ -6,7 +6,6 @@ struct StreamRealtimeIrlSettingsView: View {
 
     func submitPushKey(value: String) {
         stream.realtimeIrlPushKey = value
-        model.store()
         if stream.enabled {
             model.reloadLocation()
         }

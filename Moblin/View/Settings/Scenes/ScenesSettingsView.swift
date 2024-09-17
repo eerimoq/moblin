@@ -18,7 +18,6 @@ private struct ScenesListView: View {
                                 scene.enabled
                             }, set: { value in
                                 scene.enabled = value
-                                model.store()
                                 model.resetSelectedScene()
                             }))
                         }
@@ -26,7 +25,6 @@ private struct ScenesListView: View {
                     .swipeActions(edge: .trailing) {
                         Button(action: {
                             database.scenes.removeAll { $0 == scene }
-                            model.store()
                             model.resetSelectedScene()
                         }, label: {
                             Text("Delete")
@@ -36,7 +34,6 @@ private struct ScenesListView: View {
                     .swipeActions(edge: .trailing) {
                         Button(action: {
                             database.scenes.append(scene.clone())
-                            model.store()
                             model.resetSelectedScene()
                         }, label: {
                             Text("Duplicate")
@@ -46,13 +43,11 @@ private struct ScenesListView: View {
                 }
                 .onMove(perform: { froms, to in
                     database.scenes.move(fromOffsets: froms, toOffset: to)
-                    model.store()
                     model.resetSelectedScene()
                 })
             }
             CreateButtonView(action: {
                 database.scenes.append(SettingsScene(name: String(localized: "My scene")))
-                model.store()
                 model.resetSelectedScene()
             })
         } header: {

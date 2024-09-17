@@ -6,7 +6,6 @@ struct StreamYouTubeSettingsView: View {
 
     func submitVideoId(value: String) {
         stream.youTubeVideoId = value
-        model.store()
         if stream.enabled {
             model.youTubeVideoIdUpdated()
         }

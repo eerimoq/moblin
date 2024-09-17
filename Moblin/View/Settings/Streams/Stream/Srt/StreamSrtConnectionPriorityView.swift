@@ -27,7 +27,6 @@ struct PriorityItemView: View {
             priority.enabled!
         }, set: { value in
             priority.enabled = value
-            model.store()
             model.updateSrtlaPriorities()
         })) {
             HStack {
@@ -42,7 +41,6 @@ struct PriorityItemView: View {
                             return
                         }
                         priority.priority = clampConnectionPriority(value: Int(prio))
-                        model.store()
                         model.updateSrtlaPriorities()
                     }
                 )
@@ -62,7 +60,6 @@ struct StreamSrtConnectionPriorityView: View {
                     stream.srt.connectionPriorities!.enabled
                 }, set: { value in
                     stream.srt.connectionPriorities!.enabled = value
-                    model.store()
                     model.updateSrtlaPriorities()
                     model.objectWillChange.send()
                 })) {

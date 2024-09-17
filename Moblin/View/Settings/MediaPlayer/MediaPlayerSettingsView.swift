@@ -26,7 +26,6 @@ struct MediaPlayerSettingsView: View {
 
     private func submitName(value: String) {
         player.name = value.trim()
-        model.store()
         model.objectWillChange.send()
         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
@@ -55,7 +54,6 @@ struct MediaPlayerSettingsView: View {
                         player.autoSelectMic
                     }, set: { value in
                         player.autoSelectMic = value
-                        model.store()
                         model.objectWillChange.send()
                     }))
                 }
@@ -82,12 +80,10 @@ struct MediaPlayerSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         player.playlist.move(fromOffsets: froms, toOffset: to)
-                        model.store()
                         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
                     })
                     .onDelete(perform: { indexes in
                         player.playlist.remove(atOffsets: indexes)
-                        model.store()
                         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
                     })
                 }

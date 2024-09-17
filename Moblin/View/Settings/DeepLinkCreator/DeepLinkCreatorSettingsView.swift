@@ -141,7 +141,6 @@ struct DeepLinkCreatorSettingsView: View {
                             deepLinkCreator.quickButtonsEnabled!
                         }, set: {
                             deepLinkCreator.quickButtonsEnabled = $0
-                            model.store()
                             updateDeepLink()
                         })) {
                             Text("Quick buttons")
@@ -155,7 +154,6 @@ struct DeepLinkCreatorSettingsView: View {
                             deepLinkCreator.webBrowserEnabled!
                         }, set: {
                             deepLinkCreator.webBrowserEnabled = $0
-                            model.store()
                             updateDeepLink()
                         })) {
                             Text("Web browser")

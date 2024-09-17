@@ -23,7 +23,6 @@ struct StreamSrtSettingsView: View {
             return
         }
         stream.srt.overheadBandwidth = overheadBandwidth
-        model.store()
     }
 
     var body: some View {

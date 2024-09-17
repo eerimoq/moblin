@@ -18,7 +18,7 @@ struct WatchChatSettingsView: View {
                                 return
                             }
                             model.database.watch!.chat.fontSize = fontSize
-                            model.store()
+                            model.sendSettingsToWatch()
                         }
                     )
                     .onChange(of: fontSize) { _ in
@@ -31,7 +31,7 @@ struct WatchChatSettingsView: View {
                     model.database.watch!.chat.timestampEnabled!
                 }, set: { value in
                     model.database.watch!.chat.timestampEnabled = value
-                    model.store()
+                    model.sendSettingsToWatch()
                 })) {
                     Text("Timestamp")
                 }
@@ -39,7 +39,7 @@ struct WatchChatSettingsView: View {
                     model.database.watch!.chat.notificationOnMessage!
                 }, set: { value in
                     model.database.watch!.chat.notificationOnMessage = value
-                    model.store()
+                    model.sendSettingsToWatch()
                 })) {
                     Text("Notification on message")
                 }
@@ -48,7 +48,7 @@ struct WatchChatSettingsView: View {
             }
         }
         .onDisappear {
-            model.store()
+            model.sendSettingsToWatch()
         }
         .navigationTitle("Chat")
         .toolbar {

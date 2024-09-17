@@ -5,7 +5,6 @@ struct WebBrowserSettingsView: View {
 
     private func submitHome(value: String) {
         model.database.webBrowser!.home = value
-        model.store()
     }
 
     var body: some View {

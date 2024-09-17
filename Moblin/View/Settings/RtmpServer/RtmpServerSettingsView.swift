@@ -8,7 +8,6 @@ struct RtmpServerSettingsView: View {
             return
         }
         model.database.rtmpServer!.port = port
-        model.store()
         model.reloadRtmpServer()
     }
 
@@ -25,7 +24,6 @@ struct RtmpServerSettingsView: View {
                     model.database.rtmpServer!.enabled
                 }, set: { value in
                     model.database.rtmpServer!.enabled = value
-                    model.store()
                     model.reloadRtmpServer()
                     model.objectWillChange.send()
                 }))
@@ -71,7 +69,6 @@ struct RtmpServerSettingsView: View {
                     if !model.rtmpServerEnabled() {
                         list.onDelete(perform: { indexes in
                             model.database.rtmpServer!.streams.remove(atOffsets: indexes)
-                            model.store()
                             model.reloadRtmpServer()
                         })
                     } else {
@@ -87,7 +84,6 @@ struct RtmpServerSettingsView: View {
                         }
                     }
                     model.database.rtmpServer!.streams.append(stream)
-                    model.store()
                     model.objectWillChange.send()
                 })
                 .disabled(model.rtmpServerEnabled())

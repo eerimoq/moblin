@@ -43,7 +43,6 @@ struct CosmeticsSettingsView: View {
                 }
                 .onChange(of: model.iconImage) { iconImage in
                     model.database.iconImage = iconImage
-                    model.store()
                     setAppIcon(iconImage: iconImage)
                 }
                 .pickerStyle(.inline)

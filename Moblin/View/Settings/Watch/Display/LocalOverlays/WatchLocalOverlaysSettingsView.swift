@@ -14,19 +14,19 @@ struct WatchLocalOverlaysSettingsView: View {
                     show.thermalState
                 }, set: { value in
                     show.thermalState = value
-                    model.store()
+                    model.sendSettingsToWatch()
                 }))
                 Toggle("Audio level", isOn: Binding(get: {
                     show.audioLevel
                 }, set: { value in
                     show.audioLevel = value
-                    model.store()
+                    model.sendSettingsToWatch()
                 }))
                 Toggle("Bitrate", isOn: Binding(get: {
                     show.speed
                 }, set: { value in
                     show.speed = value
-                    model.store()
+                    model.sendSettingsToWatch()
                 }))
             }
         }

@@ -7,7 +7,6 @@ struct DisplaySettingsView: View {
 
     private func onAudioLevelChange(type: String) {
         model.database.show.audioBar = type == String(localized: "Bar")
-        model.store()
     }
 
     private func audioLevel() -> String {
@@ -31,7 +30,6 @@ struct DisplaySettingsView: View {
                             model.database.batteryPercentage!
                         }, set: { value in
                             model.database.batteryPercentage = value
-                            model.store()
                             model.objectWillChange.send()
                         }))
                     }
@@ -56,13 +54,11 @@ struct DisplaySettingsView: View {
                         model.database.lowBitrateWarning!
                     }, set: { value in
                         model.database.lowBitrateWarning = value
-                        model.store()
                     }))
                     Toggle("Recording confirmations", isOn: Binding(get: {
                         model.database.startStopRecordingConfirmations!
                     }, set: { value in
                         model.database.startStopRecordingConfirmations = value
-                        model.store()
                     }))
                 }
             }
@@ -71,7 +67,6 @@ struct DisplaySettingsView: View {
                     model.database.vibrate!
                 }, set: { value in
                     model.database.vibrate = value
-                    model.store()
                     model.setAllowHapticsAndSystemSoundsDuringRecording()
                 }))
             } footer: {
@@ -94,7 +89,6 @@ struct DisplaySettingsView: View {
                             model.database.portrait!
                         }, set: { value in
                             model.database.portrait = value
-                            model.store()
                             model.updateOrientationLock()
                         })) {
                             Text("Portrait")

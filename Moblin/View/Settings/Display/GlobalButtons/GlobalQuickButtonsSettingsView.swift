@@ -11,9 +11,7 @@ struct GlobalQuickButtonsSettingsView: View {
         model.updateButtonStates()
     }
 
-    private func onBackgroundColorSubmit() {
-        model.store()
-    }
+    private func onBackgroundColorSubmit() {}
 
     var body: some View {
         Form {
@@ -23,7 +21,6 @@ struct GlobalQuickButtonsSettingsView: View {
                         model.database.quickButtons!.enableScroll
                     }, set: { value in
                         model.database.quickButtons!.enableScroll = value
-                        model.store()
                         model.updateButtonStates()
                         model.scrollQuickButtonsToBottom()
                     }))
@@ -31,7 +28,6 @@ struct GlobalQuickButtonsSettingsView: View {
                         model.database.quickButtons!.twoColumns
                     }, set: { value in
                         model.database.quickButtons!.twoColumns = value
-                        model.store()
                         model.updateButtonStates()
                         model.scrollQuickButtonsToBottom()
                     }))
@@ -40,7 +36,6 @@ struct GlobalQuickButtonsSettingsView: View {
                     model.database.quickButtons!.showName
                 }, set: { value in
                     model.database.quickButtons!.showName = value
-                    model.store()
                     model.updateButtonStates()
                     model.scrollQuickButtonsToBottom()
                 }))
@@ -63,7 +58,6 @@ struct GlobalQuickButtonsSettingsView: View {
                                     button.enabled!
                                 }, set: { value in
                                     button.enabled = value
-                                    model.store()
                                     model.updateButtonStates()
                                 })) {
                                     HStack {
@@ -82,7 +76,6 @@ struct GlobalQuickButtonsSettingsView: View {
                                 button.enabled!
                             }, set: { value in
                                 button.enabled = value
-                                model.store()
                                 model.updateButtonStates()
                             })) {
                                 HStack {

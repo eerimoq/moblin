@@ -34,7 +34,6 @@ struct StreamsSettingsView: View {
                             item.swipeActions(edge: .trailing) {
                                 Button(action: {
                                     database.streams.append(stream.clone())
-                                    model.store()
                                 }, label: {
                                     Text("Duplicate")
                                 })
@@ -44,7 +43,6 @@ struct StreamsSettingsView: View {
                             item.swipeActions(edge: .trailing) {
                                 Button(action: {
                                     database.streams.removeAll { $0 == stream }
-                                    model.store()
                                     model.reloadStream()
                                     model.sceneUpdated()
                                 }, label: {
@@ -55,7 +53,6 @@ struct StreamsSettingsView: View {
                             .swipeActions(edge: .trailing) {
                                 Button(action: {
                                     database.streams.append(stream.clone())
-                                    model.store()
                                 }, label: {
                                     Text("Duplicate")
                                 })
@@ -65,7 +62,6 @@ struct StreamsSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         database.streams.move(fromOffsets: froms, toOffset: to)
-                        model.store()
                     })
                 }
                 CreateButtonView(action: {

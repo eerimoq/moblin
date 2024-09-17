@@ -27,7 +27,6 @@ struct WidgetSettingsView: View {
                     }
                     .onChange(of: type) {
                         widget.type = SettingsWidgetType.fromString(value: $0)
-                        model.store()
                         model.resetSelectedScene()
                     }
                 }

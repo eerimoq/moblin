@@ -7,7 +7,6 @@ struct WidgetQrCodeSettingsView: View {
 
     private func submitMessage(value: String) {
         widget.qrCode!.message = value
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 

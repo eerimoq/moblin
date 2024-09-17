@@ -10,7 +10,6 @@ struct StreamRecordingSettingsView: View {
 
     private func onVideoCodecChange(codec: String) {
         recording.videoCodec = SettingsStreamCodec(rawValue: codec)!
-        model.store()
     }
 
     private func submitVideoBitrateChange(value: String) {
@@ -20,7 +19,6 @@ struct StreamRecordingSettingsView: View {
         bitrate = max(bitrate, 0)
         bitrate = min(bitrate, 50)
         recording.videoBitrate = bitrateFromMbps(bitrate: bitrate)
-        model.store()
     }
 
     private func submitMaxKeyFrameInterval(value: String) {
@@ -31,7 +29,6 @@ struct StreamRecordingSettingsView: View {
             return
         }
         recording.maxKeyFrameInterval = interval
-        model.store()
     }
 
     var body: some View {
@@ -91,13 +88,11 @@ struct StreamRecordingSettingsView: View {
                     recording.autoStartRecording!
                 }, set: { value in
                     recording.autoStartRecording = value
-                    model.store()
                 }))
                 Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
                     recording.autoStopRecording!
                 }, set: { value in
                     recording.autoStopRecording = value
-                    model.store()
                 }))
             }
             footer: {

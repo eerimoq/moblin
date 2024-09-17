@@ -19,13 +19,9 @@ struct StreamButtonsSettingsView: View {
                     .onChange(of: background) { _ in
                         onColorChange(color: background)
                     }
-                    .onDisappear {
-                        model.store()
-                    }
                 Button(action: {
                     background = defaultStreamButtonColor.color()
                     onColorChange(color: background)
-                    model.store()
                 }, label: {
                     HStack {
                         Spacer()

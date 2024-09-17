@@ -243,7 +243,6 @@ struct SettingsView: View {
                     model.database.showAllSettings!
                 }, set: { value in
                     model.database.showAllSettings = value
-                    model.store()
                     model.objectWillChange.send()
                 }))
             }

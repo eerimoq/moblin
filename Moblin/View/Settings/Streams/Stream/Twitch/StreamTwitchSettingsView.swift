@@ -7,7 +7,6 @@ struct StreamTwitchSettingsView: View {
 
     func submitChannelName(value: String) {
         stream.twitchChannelName = value
-        model.store()
         if stream.enabled {
             model.twitchChannelNameUpdated()
         }
@@ -15,7 +14,6 @@ struct StreamTwitchSettingsView: View {
 
     func submitChannelId(value: String) {
         stream.twitchChannelId = value
-        model.store()
         if stream.enabled {
             model.twitchChannelIdUpdated()
         }

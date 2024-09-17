@@ -1210,7 +1210,6 @@ final class Model: NSObject, ObservableObject {
             {
                 stream.srt.connectionPriorities!.priorities
                     .append(SettingsStreamSrtConnectionPriority(name: status.name))
-                store()
             }
             if !database.networkInterfaceNames!.contains(where: { interface in
                 interface.interfaceName == status.name
@@ -1219,7 +1218,6 @@ final class Model: NSObject, ObservableObject {
                 interface.interfaceName = status.name
                 interface.name = status.name
                 database.networkInterfaceNames!.append(interface)
-                store()
             }
         }
     }
@@ -1442,7 +1440,7 @@ final class Model: NSObject, ObservableObject {
         }
         if !shouldStreamInBackground() {
             reloadStream()
-            sceneUpdated(store: false)
+            sceneUpdated()
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadRtmpServer()
@@ -1749,7 +1747,6 @@ final class Model: NSObject, ObservableObject {
         if !isInMyIcons(id: database.iconImage) {
             logger.warning("Database icon image \(database.iconImage) is not mine")
             database.iconImage = plainIcon.id
-            store()
         }
         iconImage = database.iconImage
     }
@@ -1857,7 +1854,6 @@ final class Model: NSObject, ObservableObject {
         handleSettingsUrlsDefaultStreams(settings: settings)
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
-        store()
         makeToast(title: String(localized: "URL import successful"))
         updateButtonStates()
     }
@@ -2786,12 +2782,11 @@ final class Model: NSObject, ObservableObject {
             }
             lutEffects[lut.id] = lutEffect
         }
-        sceneUpdated(imageEffectChanged: true, store: false)
+        sceneUpdated(imageEffectChanged: true)
     }
 
     func store() {
         settings.store()
-        sendSettingsToWatch()
     }
 
     func networkInterfaceNamesUpdated() {
@@ -3945,7 +3940,6 @@ final class Model: NSObject, ObservableObject {
             subTitle: String(localized: "Turning on chat text to speech")
         )
         database.chat.textToSpeechEnabled = true
-        store()
     }
 
     private func handleChatBotMessageTtsOff(platform: Platform, user: String?, isModerator: Bool) {
@@ -3962,7 +3956,6 @@ final class Model: NSObject, ObservableObject {
             subTitle: String(localized: "Turning off chat text to speech")
         )
         database.chat.textToSpeechEnabled = false
-        store()
         chatTextToSpeech.reset(running: true)
     }
 
@@ -4573,10 +4566,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
-        if store {
-            self.store()
-        }
+    func sceneUpdated(imageEffectChanged: Bool = false) {
         if imageEffectChanged {
             reloadImageEffects()
         }
@@ -5190,7 +5180,7 @@ final class Model: NSObject, ObservableObject {
         }) {
             backZoomPresetId = database.zoom.back[0].id
         }
-        sceneUpdated(store: true)
+        sceneUpdated()
     }
 
     func frontZoomUpdated() {
@@ -5199,7 +5189,7 @@ final class Model: NSObject, ObservableObject {
         }) {
             frontZoomPresetId = database.zoom.front[0].id
         }
-        sceneUpdated(store: true)
+        sceneUpdated()
     }
 
     private func makeConnectFailureToast(subTitle: String) {
@@ -5706,7 +5696,6 @@ extension Model: RemoteControlStreamerDelegate {
     ) {
         DispatchQueue.main.async {
             self.stream.srt.connectionPriorities!.enabled = enabled
-            self.store()
             self.updateSrtlaPriorities()
             onComplete()
         }
@@ -5722,7 +5711,6 @@ extension Model: RemoteControlStreamerDelegate {
             if let entry = self.stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
                 entry.priority = clampConnectionPriority(value: priority)
                 entry.enabled = enabled
-                self.store()
                 self.updateSrtlaPriorities()
             }
             onComplete()
@@ -6187,7 +6175,7 @@ extension Model {
         sendMessageToWatch(type: .scene, data: selectedSceneId.uuidString)
     }
 
-    private func sendSettingsToWatch() {
+    func sendSettingsToWatch() {
         guard isWatchReachable() else {
             return
         }
@@ -6963,7 +6951,6 @@ extension Model {
             return
         }
         database.mic = orientation
-        store()
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {

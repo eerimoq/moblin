@@ -15,7 +15,6 @@ private struct InfoView: View {
                 get()
             }, set: { value in
                 set(value)
-                model.store()
                 model.objectWillChange.send()
             }))
         }
@@ -120,7 +119,6 @@ struct LocalOverlaysSettingsView: View {
                     show.zoomPresets
                 }, set: { value in
                     show.zoomPresets = value
-                    model.store()
                 }))
             } header: {
                 Text("Bottom right")

@@ -6,7 +6,6 @@ struct StreamKickSettingsView: View {
 
     func submitChannelName(value: String) {
         stream.kickChannelName = value
-        model.store()
         if stream.enabled {
             model.kickChannelNameUpdated()
         }

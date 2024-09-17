@@ -9,7 +9,6 @@ struct WidgetBrowserSettingsView: View {
             return
         }
         widget.browser.url = value.trim()
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -21,7 +20,6 @@ struct WidgetBrowserSettingsView: View {
             return
         }
         widget.browser.width = width
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -33,13 +31,11 @@ struct WidgetBrowserSettingsView: View {
             return
         }
         widget.browser.height = height
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
     private func submitFps(value: Float) {
         widget.browser.fps = value
-        model.store()
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -54,7 +50,6 @@ struct WidgetBrowserSettingsView: View {
                 widget.browser.audioOnly!
             }, set: { value in
                 widget.browser.audioOnly = value
-                model.store()
                 model.resetSelectedScene(changeScene: false)
             })) {
                 Text("Audio only")
@@ -74,7 +69,6 @@ struct WidgetBrowserSettingsView: View {
                     widget.browser.scaleToFitVideo!
                 }, set: { value in
                     widget.browser.scaleToFitVideo = value
-                    model.store()
                     model.resetSelectedScene(changeScene: false)
                 })) {
                     Text("Scale to fit video width")

@@ -11,7 +11,6 @@ struct DebugSettingsView: View {
             return
         }
         model.database.debug!.maximumLogLines = min(max(1, lines), 100_000)
-        model.store()
     }
 
     var body: some View {
@@ -33,7 +32,6 @@ struct DebugSettingsView: View {
                     } else {
                         model.database.debug!.logLevel = .error
                     }
-                    model.store()
                 })) {
                     Text("Debug logging")
                 }
@@ -52,13 +50,11 @@ struct DebugSettingsView: View {
                     model.database.debug!.srtOverlay
                 }, set: { value in
                     model.database.debug!.srtOverlay = value
-                    model.store()
                 }))
                 Toggle("Let it snow", isOn: Binding(get: {
                     model.database.debug!.letItSnow!
                 }, set: { value in
                     model.database.debug!.letItSnow = value
-                    model.store()
                 }))
             }
             Section {
@@ -106,7 +102,6 @@ struct DebugSettingsView: View {
                     model.database.debug!.useVideoForTimestamps!
                 }, set: { value in
                     model.database.debug!.useVideoForTimestamps = value
-                    model.store()
                     model.setUseVideoForTimestamps()
                 }))
                 HStack {

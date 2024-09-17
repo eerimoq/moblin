@@ -10,7 +10,6 @@ struct DebugAudioSettingsView: View {
                     model.database.debug!.bluetoothOutputOnly!
                 }, set: { value in
                     model.database.debug!.bluetoothOutputOnly = value
-                    model.store()
                 }))
             } footer: {
                 Text("App restart needed to take effect.")
@@ -20,7 +19,6 @@ struct DebugAudioSettingsView: View {
                     model.database.debug!.preferStereoMic!
                 }, set: { value in
                     model.database.debug!.preferStereoMic = value
-                    model.store()
                 }))
             } footer: {
                 Text("Switching between mono and stereo mics may not work.")

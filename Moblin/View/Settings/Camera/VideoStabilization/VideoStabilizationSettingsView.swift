@@ -15,7 +15,6 @@ struct VideoStabilizationSettingsView: View {
             }
             .onChange(of: mode) {
                 model.database.videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: $0)
-                model.store()
                 model.reattachCamera()
             }
         }

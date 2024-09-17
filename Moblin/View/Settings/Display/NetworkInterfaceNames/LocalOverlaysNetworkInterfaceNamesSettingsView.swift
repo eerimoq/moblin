@@ -5,7 +5,6 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
 
     private func onSubmit(interface: SettingsNetworkInterfaceName, value: String) {
         interface.name = value
-        model.store()
     }
 
     var body: some View {
@@ -26,7 +25,6 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                         .onDelete { indexes in
                             model.database.networkInterfaceNames!.remove(atOffsets: indexes)
                             model.networkInterfaceNamesUpdated()
-                            model.store()
                         }
                     }
                 }

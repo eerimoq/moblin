@@ -8,7 +8,6 @@ struct SrtlaServerSettingsView: View {
             return
         }
         model.database.srtlaServer!.srtPort = port
-        model.store()
         model.reloadSrtlaServer()
     }
 
@@ -17,7 +16,6 @@ struct SrtlaServerSettingsView: View {
             return
         }
         model.database.srtlaServer!.srtlaPort = port
-        model.store()
         model.reloadSrtlaServer()
     }
 
@@ -28,7 +26,6 @@ struct SrtlaServerSettingsView: View {
                     model.database.srtlaServer!.enabled
                 }, set: { value in
                     model.database.srtlaServer!.enabled = value
-                    model.store()
                     model.reloadSrtlaServer()
                     model.objectWillChange.send()
                 }))
@@ -85,7 +82,6 @@ struct SrtlaServerSettingsView: View {
                     if !model.srtlaServerEnabled() {
                         list.onDelete(perform: { indexes in
                             model.database.srtlaServer!.streams.remove(atOffsets: indexes)
-                            model.store()
                             model.reloadSrtlaServer()
                         })
                     } else {

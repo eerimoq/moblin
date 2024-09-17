@@ -22,7 +22,6 @@ struct StreamRecordingAudioSettingsView: View {
                                 return
                             }
                             stream.recording!.audioBitrate = calcBitrate()
-                            model.store()
                         }
                     )
                     Text(formatBytesPerSecond(speed: Int64(calcBitrate())))

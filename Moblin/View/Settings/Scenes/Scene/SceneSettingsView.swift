@@ -79,7 +79,7 @@ struct SceneSettingsView: View {
             scene.externalCameraId = cameraId
             scene.externalCameraName = model.getExternalCameraName(cameraId: cameraId)
         }
-        model.sceneUpdated(store: true)
+        model.sceneUpdated()
     }
 
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {

@@ -43,7 +43,6 @@ struct SrtlaServerStreamSettingsView: View {
 
     private func submitName(value: String) {
         stream.name = value.trim()
-        model.store()
         model.objectWillChange.send()
     }
 
@@ -85,7 +84,6 @@ struct SrtlaServerStreamSettingsView: View {
                     stream.autoSelectMic!
                 }, set: { value in
                     stream.autoSelectMic = value
-                    model.store()
                     model.reloadSrtlaServer()
                     model.objectWillChange.send()
                 }))

@@ -7,7 +7,6 @@ struct MediaPlayerFileSettingsView: View {
 
     private func submitName(value: String) {
         file.name = value.trim()
-        model.store()
         model.objectWillChange.send()
         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }

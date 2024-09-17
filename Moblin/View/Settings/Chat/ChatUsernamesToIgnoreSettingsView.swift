@@ -37,7 +37,6 @@ struct ChatUsernamesToIgnoreSettingsView: View {
 
     private func onSubmit(_ username: SettingsChatUsername, _ value: String) {
         username.value = value
-        model.store()
     }
 
     var body: some View {
@@ -52,16 +51,13 @@ struct ChatUsernamesToIgnoreSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         model.database.chat.usernamesToIgnore!.move(fromOffsets: froms, toOffset: to)
-                        model.store()
                     })
                     .onDelete(perform: { offsets in
                         model.database.chat.usernamesToIgnore!.remove(atOffsets: offsets)
-                        model.store()
                     })
                 }
                 AddButtonView(action: {
                     model.database.chat.usernamesToIgnore!.append(SettingsChatUsername())
-                    model.store()
                 })
             } footer: {
                 SwipeLeftToRemoveHelpView(kind: String(localized: "a username"))

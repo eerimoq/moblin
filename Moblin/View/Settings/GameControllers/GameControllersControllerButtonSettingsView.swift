@@ -9,7 +9,6 @@ struct GameControllersControllerButtonSettingsView: View {
     private func onFunctionChange(function: String) {
         selection = function
         button.function = SettingsGameControllerButtonFunction.fromString(value: function)
-        model.store()
     }
 
     var body: some View {
@@ -36,7 +35,6 @@ struct GameControllersControllerButtonSettingsView: View {
                     }
                     .onChange(of: sceneSelection) { sceneId in
                         button.sceneId = sceneId
-                        model.store()
                         model.objectWillChange.send()
                     }
                     .pickerStyle(.inline)

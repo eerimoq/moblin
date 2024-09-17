@@ -12,7 +12,7 @@ struct QuickButtonLutsView: View {
                         lut.enabled!
                     }, set: { value in
                         lut.enabled = value
-                        model.sceneUpdated(store: false)
+                        model.sceneUpdated()
                     })) {
                         Text(lut.name)
                     }

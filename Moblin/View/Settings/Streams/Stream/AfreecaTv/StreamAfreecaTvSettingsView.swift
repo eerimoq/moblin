@@ -6,7 +6,6 @@ struct StreamAfreecaTvSettingsView: View {
 
     func submitChannelName(value: String) {
         stream.afreecaTvChannelName = value
-        model.store()
         if stream.enabled {
             model.afreecaTvChannelNameUpdated()
         }
@@ -14,7 +13,6 @@ struct StreamAfreecaTvSettingsView: View {
 
     func submitStreamId(value: String) {
         stream.afreecaTvStreamId = value
-        model.store()
         if stream.enabled {
             model.afreecaTvStreamIdUpdated()
         }

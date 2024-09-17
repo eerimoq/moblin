@@ -20,7 +20,6 @@ struct CatPrintersSettingsView: View {
                     }
                     .onDelete(perform: { offsets in
                         model.database.catPrinters!.devices.remove(atOffsets: offsets)
-                        model.store()
                     })
                 }
                 CreateButtonView(action: {

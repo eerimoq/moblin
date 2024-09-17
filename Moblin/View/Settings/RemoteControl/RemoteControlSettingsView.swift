@@ -108,7 +108,6 @@ struct RemoteControlSettingsView: View {
 
     private func submitPassword(value: String) {
         model.database.remoteControl!.password = value.trim()
-        model.store()
         model.reloadRemoteControlStreamer()
         model.reloadRemoteControlAssistant()
     }
@@ -118,13 +117,11 @@ struct RemoteControlSettingsView: View {
             return
         }
         model.database.remoteControl!.server.url = value
-        model.store()
         model.reloadRemoteControlStreamer()
     }
 
     private func submitStreamerPreviewFps(value: Float) {
         model.database.remoteControl!.server.previewFps = value
-        model.store()
         model.setLowFpsImage()
     }
 
@@ -137,7 +134,6 @@ struct RemoteControlSettingsView: View {
             return
         }
         model.database.remoteControl!.client.port = port
-        model.store()
         model.reloadRemoteControlAssistant()
     }
 
@@ -165,7 +161,6 @@ struct RemoteControlSettingsView: View {
                     model.database.remoteControl!.server.enabled
                 }, set: { value in
                     model.database.remoteControl!.server.enabled = value
-                    model.store()
                     model.reloadRemoteControlStreamer()
                 })) {
                     Text("Enabled")
@@ -207,7 +202,6 @@ struct RemoteControlSettingsView: View {
                     model.database.remoteControl!.client.enabled
                 }, set: { value in
                     model.database.remoteControl!.client.enabled = value
-                    model.store()
                     model.reloadRemoteControlAssistant()
                 })) {
                     Text("Enabled")

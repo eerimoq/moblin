@@ -35,18 +35,15 @@ struct WidgetsSettingsView: View {
             }
             .onMove(perform: { froms, to in
                 database.widgets.move(fromOffsets: froms, toOffset: to)
-                model.store()
             })
             .onDelete(perform: { offsets in
                 database.widgets.remove(atOffsets: offsets)
                 model.removeDeadWidgetsFromScenes()
-                model.store()
                 model.resetSelectedScene()
             })
             CreateButtonView(action: {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                 model.fixAlertMedias()
-                model.store()
                 model.objectWillChange.send()
             })
         } header: {

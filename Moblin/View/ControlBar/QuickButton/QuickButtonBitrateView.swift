@@ -16,7 +16,6 @@ struct QuickButtonBitrateView: View {
                 }
                 .onChange(of: selection) { bitrate in
                     model.setBitrate(bitrate: bitrate)
-                    model.store()
                     if model.stream.enabled {
                         model.setStreamBitrate(stream: model.stream)
                     }

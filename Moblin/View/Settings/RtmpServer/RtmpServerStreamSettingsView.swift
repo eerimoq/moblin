@@ -43,7 +43,6 @@ struct RtmpServerStreamSettingsView: View {
 
     private func submitName(value: String) {
         stream.name = value.trim()
-        model.store()
         model.objectWillChange.send()
     }
 
@@ -53,7 +52,6 @@ struct RtmpServerStreamSettingsView: View {
             return
         }
         stream.streamKey = streamKey
-        model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
     }
@@ -66,7 +64,6 @@ struct RtmpServerStreamSettingsView: View {
             return
         }
         stream.latency = latency
-        model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
     }
@@ -104,7 +101,6 @@ struct RtmpServerStreamSettingsView: View {
                     stream.autoSelectMic!
                 }, set: { value in
                     stream.autoSelectMic = value
-                    model.store()
                     model.reloadRtmpServer()
                     model.objectWillChange.send()
                 }))

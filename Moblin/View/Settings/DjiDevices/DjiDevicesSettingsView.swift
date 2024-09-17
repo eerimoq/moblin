@@ -19,14 +19,12 @@ struct DjiDevicesSettingsView: View {
                     }
                     .onDelete(perform: { offsets in
                         model.database.djiDevices!.devices.remove(atOffsets: offsets)
-                        model.store()
                     })
                 }
                 CreateButtonView(action: {
                     let device = SettingsDjiDevice()
                     device.name = "My device"
                     model.database.djiDevices!.devices.append(device)
-                    model.store()
                     model.objectWillChange.send()
                 })
             } footer: {

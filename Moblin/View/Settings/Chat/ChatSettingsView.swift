@@ -19,7 +19,6 @@ struct ChatSettingsView: View {
             return
         }
         model.database.chat.maximumAge = maximumAge
-        model.store()
     }
 
     var body: some View {
@@ -29,7 +28,6 @@ struct ChatSettingsView: View {
                     model.database.chat.enabled!
                 }, set: { value in
                     model.database.chat.enabled = value
-                    model.store()
                     model.reloadChats()
                 }))
             }
@@ -45,7 +43,6 @@ struct ChatSettingsView: View {
                                 return
                             }
                             model.database.chat.fontSize = fontSize
-                            model.store()
                             model.reloadChatMessages()
                         }
                     )
@@ -61,7 +58,6 @@ struct ChatSettingsView: View {
                         model.database.chat.timestampColorEnabled
                     }, set: { value in
                         model.database.chat.timestampColorEnabled = value
-                        model.store()
                         model.reloadChatMessages()
                     })) {
                         Text("Timestamp")
@@ -119,7 +115,6 @@ struct ChatSettingsView: View {
                         model.database.chat.textToSpeechEnabled!
                     }, set: { value in
                         model.database.chat.textToSpeechEnabled = value
-                        model.store()
                         if !value {
                             model.chatTextToSpeech.reset(running: true)
                         }
@@ -132,7 +127,6 @@ struct ChatSettingsView: View {
                         model.database.chat.botEnabled!
                     }, set: { value in
                         model.database.chat.botEnabled = value
-                        model.store()
                     })) {
                         Text("Bot")
                     }
@@ -142,7 +136,6 @@ struct ChatSettingsView: View {
                         model.database.chat.mirrored!
                     }, set: { value in
                         model.database.chat.mirrored = value
-                        model.store()
                         model.objectWillChange.send()
                     })) {
                         Text("Mirrored")
@@ -187,7 +180,6 @@ struct ChatSettingsView: View {
                                 return
                             }
                             model.database.chat.width = width
-                            model.store()
                             model.reloadChatMessages()
                         }
                     )
@@ -228,7 +220,6 @@ struct ChatSettingsView: View {
                         model.database.chat.backgroundColorEnabled
                     }, set: { value in
                         model.database.chat.backgroundColorEnabled = value
-                        model.store()
                         model.reloadChatMessages()
                     })) {
                         ColorPicker("Background", selection: $backgroundColor, supportsOpacity: false)
@@ -244,7 +235,6 @@ struct ChatSettingsView: View {
                         model.database.chat.shadowColorEnabled
                     }, set: { value in
                         model.database.chat.shadowColorEnabled = value
-                        model.store()
                         model.reloadChatMessages()
                     })) {
                         ColorPicker("Border", selection: $shadowColor, supportsOpacity: false)
@@ -269,9 +259,6 @@ struct ChatSettingsView: View {
                     Text("Border is fairly CPU intensive. Disable for less power usage.")
                 }
             }
-        }
-        .onDisappear {
-            model.store()
         }
         .navigationTitle("Chat")
         .toolbar {

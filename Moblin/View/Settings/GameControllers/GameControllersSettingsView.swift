@@ -29,12 +29,10 @@ struct GameControllersSettingsView: View {
                     }
                     .onDelete(perform: { indexSet in
                         model.database.gameControllers?.remove(atOffsets: indexSet)
-                        model.store()
                     })
                 }
                 CreateButtonView {
                     model.database.gameControllers?.append(SettingsGameController())
-                    model.store()
                     model.objectWillChange.send()
                 }
             } footer: {

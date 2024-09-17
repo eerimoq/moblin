@@ -22,7 +22,6 @@ struct StreamAudioSettingsView: View {
                                 return
                             }
                             stream.audioBitrate = calcBitrate()
-                            model.store()
                             if stream.enabled {
                                 model.setAudioStreamBitrate(stream: stream)
                             }
