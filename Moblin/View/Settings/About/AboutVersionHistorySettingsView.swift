@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.382.0", date: "2024-09-16", changes: [
+        "• Only save settings when app enters background and terminates."
+    ]),
     Version(version: "0.381.0", date: "2024-09-15", changes: [
         "• Cat printer support.",
         "  • Use bot command !moblin fax <url> to print any image.",
