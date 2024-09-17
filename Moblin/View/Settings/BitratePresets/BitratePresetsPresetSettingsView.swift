@@ -12,6 +12,7 @@ struct BitratePresetsPresetSettingsView: View {
         bitrate = max(bitrate, 0.1)
         bitrate = min(bitrate, 50)
         preset.bitrate = bitrateFromMbps(bitrate: bitrate)
+        model.store()
     }
 
     var body: some View {

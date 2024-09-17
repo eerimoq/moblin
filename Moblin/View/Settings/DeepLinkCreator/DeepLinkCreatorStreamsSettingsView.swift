@@ -18,13 +18,16 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         deepLinkCreator.streams.move(fromOffsets: froms, toOffset: to)
+                        model.store()
                     })
                     .onDelete(perform: { offsets in
                         deepLinkCreator.streams.remove(atOffsets: offsets)
+                        model.store()
                     })
                 }
                 CreateButtonView(action: {
                     deepLinkCreator.streams.append(DeepLinkCreatorStream())
+                    model.store()
                     model.objectWillChange.send()
                 })
             }
