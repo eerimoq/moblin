@@ -56659,6 +56659,9 @@
         }
       }
     },
+    "Main scene" : {
+
+    },
     "Make sure silent mode is off for vibrations to work." : {
       "localizations" : {
         "de" : {
@@ -61470,7 +61473,11 @@
         }
       }
     },
+    "Moblin will periodically try to switch to the BRB scene if the stream is likely broken, and back to the main scene once everything seems to work again." : {
+
+    },
     "Moblin will periodically try to switch to this OBS scene if the stream is likely broken." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

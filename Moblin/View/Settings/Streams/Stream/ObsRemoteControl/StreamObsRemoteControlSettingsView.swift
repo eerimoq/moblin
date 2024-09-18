@@ -31,6 +31,10 @@ struct StreamObsRemoteControlSettingsView: View {
         stream.obsBrbScene = value
     }
 
+    func submitMainScene(value: String) {
+        stream.obsMainScene = value
+    }
+
     var body: some View {
         Form {
             Section {
@@ -52,6 +56,12 @@ struct StreamObsRemoteControlSettingsView: View {
             }
             Section {
                 TextEditNavigationView(
+                    title: String(localized: "Main scene"),
+                    value: stream.obsMainScene!,
+                    onSubmit: submitMainScene,
+                    capitalize: true
+                )
+                TextEditNavigationView(
                     title: String(localized: "BRB scene"),
                     value: stream.obsBrbScene!,
                     onSubmit: submitBrbScene,
@@ -59,8 +69,8 @@ struct StreamObsRemoteControlSettingsView: View {
                 )
             } footer: {
                 Text("""
-                Moblin will periodically try to switch to this OBS scene if the stream is \
-                likely broken.
+                Moblin will periodically try to switch to the BRB scene if the stream is \
+                likely broken, and back to the main scene once everything seems to work again.
                 """)
             }
             if model.database.showAllSettings! {

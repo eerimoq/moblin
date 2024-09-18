@@ -387,6 +387,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
     var obsSourceName: String? = ""
+    var obsMainScene: String? = ""
     var obsBrbScene: String? = ""
     var obsBrbSceneVideoSourceBroken: Bool? = false
     var obsAutoStartStream: Bool? = false
@@ -435,6 +436,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.obsWebSocketPassword = obsWebSocketPassword
         new.obsSourceName = obsSourceName
         new.obsBrbScene = obsBrbScene
+        new.obsMainScene = obsMainScene
         new.obsBrbSceneVideoSourceBroken = obsBrbSceneVideoSourceBroken
         new.obsAutoStartStream = obsAutoStartStream
         new.obsAutoStopStream = obsAutoStopStream
@@ -3769,6 +3771,10 @@ final class Settings {
         let newButtons = realDatabase.globalButtons!.filter { $0.type != .lut }
         if realDatabase.globalButtons!.count != newButtons.count {
             realDatabase.globalButtons = newButtons
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsMainScene == nil {
+            stream.obsMainScene = ""
             store()
         }
     }

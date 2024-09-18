@@ -2007,7 +2007,11 @@ final class Model: NSObject, ObservableObject {
         }
         if isStreamLikelyBroken(now: now) {
             if obsCurrentScene != stream.obsBrbScene! {
-                obsSceneBeforeSwitchToBrbScene = obsCurrentScene
+                if !stream.obsMainScene!.isEmpty {
+                    obsSceneBeforeSwitchToBrbScene = stream.obsMainScene!
+                } else {
+                    obsSceneBeforeSwitchToBrbScene = obsCurrentScene
+                }
                 makeStreamLikelyBrokenToast(scene: stream.obsBrbScene!)
                 setObsScene(name: stream.obsBrbScene!)
             }
