@@ -667,6 +667,11 @@ final class Model: NSObject, ObservableObject {
         media.setAdaptiveBitrateSettings(settings: settings)
     }
 
+    func toggleVerboseStatuses() {
+        verboseStatuses.toggle()
+        database.verboseStatuses!.toggle()
+    }
+
     @MainActor
     private func getProductsFromAppStore() async {
         do {
@@ -962,6 +967,7 @@ final class Model: NSObject, ObservableObject {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
+        verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared

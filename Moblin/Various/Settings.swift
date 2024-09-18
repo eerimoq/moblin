@@ -2225,6 +2225,7 @@ class Database: Codable {
     var djiDevices: SettingsDjiDevices? = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery? = .init()
     var catPrinters: SettingsCatPrinters? = .init()
+    var verboseStatuses: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3775,6 +3776,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsMainScene == nil {
             stream.obsMainScene = ""
+            store()
+        }
+        if realDatabase.verboseStatuses == nil {
+            realDatabase.verboseStatuses = false
             store()
         }
     }

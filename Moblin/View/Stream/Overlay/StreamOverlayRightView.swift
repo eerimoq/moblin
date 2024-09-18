@@ -197,7 +197,7 @@ struct RightOverlayView: View {
                 }
             }
             .onTapGesture {
-                model.verboseStatuses.toggle()
+                model.toggleVerboseStatuses()
             }
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
