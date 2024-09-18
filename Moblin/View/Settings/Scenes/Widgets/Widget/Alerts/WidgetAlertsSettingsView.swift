@@ -301,6 +301,7 @@ private struct AlertPositionView: View {
             .onChange(of: positionType) { _ in
                 alert.positionType = SettingsWidgetAlertPositionType.fromString(value: positionType)
                 model.updateAlertsSettings()
+                model.objectWillChange.send()
             }
         } header: {
             Text("Position")

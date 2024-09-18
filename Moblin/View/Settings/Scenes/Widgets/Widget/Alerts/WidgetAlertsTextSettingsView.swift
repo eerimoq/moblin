@@ -9,49 +9,51 @@ struct AlertFontView: View {
     @State var fontWeight: String
 
     var body: some View {
-        Section {
-            HStack {
-                Text("Size")
-                Slider(
-                    value: $fontSize,
-                    in: 10 ... 80,
-                    step: 5
-                )
-                .onChange(of: fontSize) { value in
-                    alert.fontSize = Int(value)
-                    model.updateAlertsSettings()
+        if alert.positionType == .scene {
+            Section {
+                HStack {
+                    Text("Size")
+                    Slider(
+                        value: $fontSize,
+                        in: 10 ... 80,
+                        step: 5
+                    )
+                    .onChange(of: fontSize) { value in
+                        alert.fontSize = Int(value)
+                        model.updateAlertsSettings()
+                    }
+                    Text(String(Int(fontSize)))
+                        .frame(width: 35)
                 }
-                Text(String(Int(fontSize)))
-                    .frame(width: 35)
-            }
-            HStack {
-                Text("Design")
-                Spacer()
-                Picker("", selection: $fontDesign) {
-                    ForEach(textWidgetFontDesigns, id: \.self) {
-                        Text($0)
+                HStack {
+                    Text("Design")
+                    Spacer()
+                    Picker("", selection: $fontDesign) {
+                        ForEach(textWidgetFontDesigns, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                    .onChange(of: fontDesign) {
+                        alert.fontDesign = SettingsFontDesign.fromString(value: $0)
+                        model.updateAlertsSettings()
                     }
                 }
-                .onChange(of: fontDesign) {
-                    alert.fontDesign = SettingsFontDesign.fromString(value: $0)
-                    model.updateAlertsSettings()
-                }
-            }
-            HStack {
-                Text("Weight")
-                Spacer()
-                Picker("", selection: $fontWeight) {
-                    ForEach(textWidgetFontWeights, id: \.self) {
-                        Text($0)
+                HStack {
+                    Text("Weight")
+                    Spacer()
+                    Picker("", selection: $fontWeight) {
+                        ForEach(textWidgetFontWeights, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                    .onChange(of: fontWeight) {
+                        alert.fontWeight = SettingsFontWeight.fromString(value: $0)
+                        model.updateAlertsSettings()
                     }
                 }
-                .onChange(of: fontWeight) {
-                    alert.fontWeight = SettingsFontWeight.fromString(value: $0)
-                    model.updateAlertsSettings()
-                }
+            } header: {
+                Text("Font")
             }
-        } header: {
-            Text("Font")
         }
     }
 }
@@ -63,25 +65,27 @@ struct AlertColorsView: View {
     @State var accentColor: Color
 
     var body: some View {
-        Section {
-            ColorPicker("Text", selection: $textColor, supportsOpacity: false)
-                .onChange(of: textColor) { color in
-                    guard let color = color.toRgb() else {
-                        return
+        if alert.positionType == .scene {
+            Section {
+                ColorPicker("Text", selection: $textColor, supportsOpacity: false)
+                    .onChange(of: textColor) { color in
+                        guard let color = color.toRgb() else {
+                            return
+                        }
+                        alert.textColor = color
+                        model.updateAlertsSettings()
                     }
-                    alert.textColor = color
-                    model.updateAlertsSettings()
-                }
-            ColorPicker("Accent", selection: $accentColor, supportsOpacity: false)
-                .onChange(of: accentColor) { color in
-                    guard let color = color.toRgb() else {
-                        return
+                ColorPicker("Accent", selection: $accentColor, supportsOpacity: false)
+                    .onChange(of: accentColor) { color in
+                        guard let color = color.toRgb() else {
+                            return
+                        }
+                        alert.accentColor = color
+                        model.updateAlertsSettings()
                     }
-                    alert.accentColor = color
-                    model.updateAlertsSettings()
-                }
-        } header: {
-            Text("Colors")
+            } header: {
+                Text("Colors")
+            }
         }
     }
 }
