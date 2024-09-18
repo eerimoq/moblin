@@ -1,6 +1,34 @@
 import SwiftUI
 import WebKit
 
+private struct CollapsedViewersView: View {
+    @EnvironmentObject var model: Model
+    var show: Bool
+    var color: Color
+
+    var body: some View {
+        if show {
+            HStack(spacing: 1) {
+                Image(systemName: "eye")
+                    .frame(width: 17, height: 17)
+                    .padding([.leading], 2)
+                    .foregroundColor(color)
+                if !model.numberOfViewers.isEmpty {
+                    Text(model.numberOfViewers)
+                        .foregroundColor(.white)
+                        .padding([.leading, .trailing], 2)
+                }
+            }
+            .font(smallFont)
+            .background(backgroundColor)
+            .cornerRadius(5)
+            .padding(20)
+            .contentShape(Rectangle())
+            .padding(-20)
+        }
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -90,13 +118,17 @@ private struct StatusesView: View {
             textPlacement: textPlacement,
             color: chatColor()
         )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusViewers(),
-            icon: "eye",
-            text: model.statusViewersText(),
-            textPlacement: textPlacement,
-            color: viewersColor()
-        )
+        if textPlacement == .hide {
+            CollapsedViewersView(show: model.isShowingStatusViewers(), color: viewersColor())
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusViewers(),
+                icon: "eye",
+                text: model.statusViewersText(),
+                textPlacement: textPlacement,
+                color: viewersColor()
+            )
+        }
     }
 }
 
