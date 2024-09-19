@@ -94,7 +94,7 @@ struct StreamWizardTwitchSettingsView: View {
                     })
                 }
                 ScrollView {
-                    TwitchAuthView()
+                    TwitchAuthView(twitchAuth: model.twitchAuth)
                         .frame(height: 2500)
                 }
             }

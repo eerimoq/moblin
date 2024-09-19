@@ -11,15 +11,16 @@ private let scopes = [
     "channel:read:subscriptions",
     "channel:read:redemptions",
     "channel:read:stream_key",
+    "channel:manage:broadcast",
 ]
 private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"
 
 struct TwitchAuthView: UIViewRepresentable {
-    @EnvironmentObject var model: Model
+    let twitchAuth: TwitchAuth
 
     func makeUIView(context _: Context) -> WKWebView {
-        return model.twitchAuth.getWebBrowser()
+        return twitchAuth.getWebBrowser()
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}

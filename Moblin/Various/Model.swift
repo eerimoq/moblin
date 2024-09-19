@@ -459,7 +459,7 @@ final class Model: NSObject, ObservableObject {
     private var speechToText = SpeechToText()
 
     @Published var showTwitchAuth = false
-    var twitchAuth = TwitchAuth()
+    let twitchAuth = TwitchAuth()
     private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
 
     @Published var bondingPieChartPercentages: [BondingPercentage] = []
