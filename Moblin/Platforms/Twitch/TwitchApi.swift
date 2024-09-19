@@ -112,6 +112,17 @@ class TwitchApi {
         })
     }
 
+    func modifyChannelInformation(userId: String, title: String, onComplete: @escaping (Bool) -> Void) {
+        let body = """
+        {
+           "title": "\(title)"
+        }
+        """
+        doPatch(subPath: "channels?broadcaster_id=\(userId)", body: body.utf8Data, onComplete: { data in
+            onComplete(data != nil)
+        })
+    }
+
     private func doGet(subPath: String, onComplete: @escaping ((Data?) -> Void)) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
@@ -156,6 +167,27 @@ class TwitchApi {
         .resume()
     }
 
+    private func doPatch(subPath: String, body: Data, onComplete: @escaping (Data?) -> Void) {
+        guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
+            return
+        }
+        var request = createPatchRequest(url: url)
+        request.httpBody = body
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil, let data, response?.http?.isSuccessful == true else {
+                    if response?.http?.isUnauthorized == true {
+                        self.delegate?.twitchApiUnauthorized()
+                    }
+                    onComplete(nil)
+                    return
+                }
+                onComplete(data)
+            }
+        }
+        .resume()
+    }
+
     private func createGetRequest(url: URL) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -167,6 +199,15 @@ class TwitchApi {
     private func createPostRequest(url: URL) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.setValue(clientId, forHTTPHeaderField: "client-id")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
+        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        return request
+    }
+
+    private func createPatchRequest(url: URL) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
         request.setValue(clientId, forHTTPHeaderField: "client-id")
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
         request.setValue("application/json", forHTTPHeaderField: "content-type")

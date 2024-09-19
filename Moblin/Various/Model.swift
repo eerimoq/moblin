@@ -3547,6 +3547,19 @@ final class Model: NSObject, ObservableObject {
             }
     }
 
+    func setTwitchStreamTitle(stream: SettingsStream, title: String) {
+        guard stream.twitchLoggedIn! else {
+            makeErrorToast(title: "Not logged in to Twitch")
+            return
+        }
+        TwitchApi(accessToken: stream.twitchAccessToken!)
+            .modifyChannelInformation(userId: stream.twitchChannelId, title: title) { ok in
+                if !ok {
+                    self.makeErrorToast(title: "Failed to set stream title")
+                }
+            }
+    }
+
     func sendChatMessage(message: String) {
         guard isTwitchAccessTokenConfigured() else {
             makeErrorToast(title: "Not logged in to Twitch")

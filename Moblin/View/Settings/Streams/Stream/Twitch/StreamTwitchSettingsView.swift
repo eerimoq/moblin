@@ -78,6 +78,22 @@ struct StreamTwitchSettingsView: View {
                     )
                 }
             }
+            Section {
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Stream title"),
+                    value: "",
+                    onSubmit: { value in
+                        model.setTwitchStreamTitle(stream: stream, title: value)
+                    }
+                )) {
+                    TextItemView(
+                        name: String(localized: "Stream title"),
+                        value: ""
+                    )
+                }
+            } footer: {
+                Text("Cannot yet show current title (but can set it).")
+            }
         }
         .navigationTitle("Twitch")
         .toolbar {

@@ -23751,6 +23751,9 @@
         }
       }
     },
+    "Cannot yet show current title (but can set it)." : {
+
+    },
     "Cat printer" : {
       "localizations" : {
         "de" : {
@@ -91016,6 +91019,9 @@
           }
         }
       }
+    },
+    "Stream title" : {
+
     },
     "Stream URL" : {
       "localizations" : {

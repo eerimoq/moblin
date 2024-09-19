@@ -283,7 +283,7 @@
 		03987B372C8280B300226C03 /* QuickButtonObsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B362C8280B300226C03 /* QuickButtonObsView.swift */; };
 		03987B392C82846F00226C03 /* QuickButtonWidgetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B382C82846F00226C03 /* QuickButtonWidgetsView.swift */; };
 		03987B3C2C82859C00226C03 /* QuickButtonMicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */; };
-		03987B3E2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3D2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift */; };
+		03987B3E2C8285D900226C03 /* QuickButtonStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03987B3D2C8285D900226C03 /* QuickButtonStreamView.swift */; };
 		039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */; };
 		039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */; };
 		039C88DD2C14DC2000682729 /* IsoTypeBufferUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */; };
@@ -817,7 +817,7 @@
 		03987B362C8280B300226C03 /* QuickButtonObsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonObsView.swift; sourceTree = "<group>"; };
 		03987B382C82846F00226C03 /* QuickButtonWidgetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonWidgetsView.swift; sourceTree = "<group>"; };
 		03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonMicView.swift; sourceTree = "<group>"; };
-		03987B3D2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonStreamSwitcherView.swift; sourceTree = "<group>"; };
+		03987B3D2C8285D900226C03 /* QuickButtonStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonStreamView.swift; sourceTree = "<group>"; };
 		039A9E272BAEC5A100A23F97 /* WidgetCropSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCropSettingsView.swift; sourceTree = "<group>"; };
 		039ADE462B55C23600FE0F59 /* RemoteControlStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlStreamer.swift; sourceTree = "<group>"; };
 		039C88DC2C14DC2000682729 /* IsoTypeBufferUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsoTypeBufferUtil.swift; sourceTree = "<group>"; };
@@ -1986,7 +1986,7 @@
 				032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */,
 				03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */,
 				03987B362C8280B300226C03 /* QuickButtonObsView.swift */,
-				03987B3D2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift */,
+				03987B3D2C8285D900226C03 /* QuickButtonStreamView.swift */,
 				03987B382C82846F00226C03 /* QuickButtonWidgetsView.swift */,
 			);
 			path = QuickButton;
@@ -3017,7 +3017,7 @@
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				032F3B3C2C935385002FF97E /* QuickButtonLutsView.swift in Sources */,
-				03987B3E2C8285D900226C03 /* QuickButtonStreamSwitcherView.swift in Sources */,
+				03987B3E2C8285D900226C03 /* QuickButtonStreamView.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,

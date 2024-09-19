@@ -341,7 +341,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        QuickButtonStreamSwitcherView {
+                        QuickButtonStreamView {
                             model.showingStreamSwitcher = false
                         }
                     }
