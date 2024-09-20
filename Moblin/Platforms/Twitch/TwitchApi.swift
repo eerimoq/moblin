@@ -39,6 +39,16 @@ struct TwitchApiChannelPointsCustomRewards: Decodable {
     let data: [TwitchApiChannelPointsCustomRewardsData]
 }
 
+// periphery:ignore
+struct TwitchApiChannelInformationData: Decodable {
+    let title: String
+}
+
+// periphery:ignore
+struct TwitchApiChannelInformation: Decodable {
+    let data: [TwitchApiChannelInformationData]
+}
+
 protocol TwitchApiDelegate: AnyObject {
     func twitchApiUnauthorized()
 }
@@ -109,6 +119,19 @@ class TwitchApi {
                 from: data ?? Data()
             )
             onComplete(data)
+        })
+    }
+
+    func getChannelInformation(
+        userId: String,
+        onComplete: @escaping (TwitchApiChannelInformationData?) -> Void
+    ) {
+        doGet(subPath: "channels?broadcaster_id=\(userId)", onComplete: { data in
+            let data = try? JSONDecoder().decode(
+                TwitchApiChannelInformation.self,
+                from: data ?? Data()
+            )
+            onComplete(data?.data.first)
         })
     }
 

@@ -4,6 +4,7 @@ struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
     @State var loggedIn: Bool
+    @State var streamTitle: String?
 
     func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -21,6 +22,13 @@ struct StreamTwitchSettingsView: View {
 
     func onLoggedIn() {
         loggedIn = true
+        getStreamTitle()
+    }
+
+    private func getStreamTitle() {
+        model.getTwitchChannelInformation(stream: stream) { channelInformation in
+            streamTitle = channelInformation.title
+        }
     }
 
     var body: some View {
@@ -78,21 +86,34 @@ struct StreamTwitchSettingsView: View {
                     )
                 }
             }
-            Section {
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Stream title"),
-                    value: "",
-                    onSubmit: { value in
-                        model.setTwitchStreamTitle(stream: stream, title: value)
+            if loggedIn {
+                Section {
+                    NavigationLink(destination: TextEditView(
+                        title: String(localized: "Stream title"),
+                        value: streamTitle ?? "",
+                        onSubmit: { value in
+                            streamTitle = value
+                            model.setTwitchStreamTitle(stream: stream, title: value)
+                        }
+                    )) {
+                        HStack {
+                            Text("Stream title")
+                            Spacer()
+                            if let streamTitle {
+                                Text(streamTitle)
+                                    .foregroundColor(.gray)
+                                    .lineLimit(1)
+                            } else {
+                                ProgressView()
+                            }
+                        }
                     }
-                )) {
-                    TextItemView(
-                        name: String(localized: "Stream title"),
-                        value: ""
-                    )
                 }
-            } footer: {
-                Text("Cannot yet show current title (but can set it).")
+            }
+        }
+        .onAppear {
+            if loggedIn {
+                getStreamTitle()
             }
         }
         .navigationTitle("Twitch")

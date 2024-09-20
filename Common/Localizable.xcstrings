@@ -23490,6 +23490,7 @@
       }
     },
     "Cannot yet show current title (but can set it)." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

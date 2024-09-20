@@ -3547,6 +3547,23 @@ final class Model: NSObject, ObservableObject {
             }
     }
 
+    func getTwitchChannelInformation(
+        stream: SettingsStream,
+        onComplete: @escaping (TwitchApiChannelInformationData) -> Void
+    ) {
+        guard stream.twitchLoggedIn! else {
+            makeErrorToast(title: "Not logged in to Twitch")
+            return
+        }
+        TwitchApi(accessToken: stream.twitchAccessToken!)
+            .getChannelInformation(userId: stream.twitchChannelId) { channelInformation in
+                guard let channelInformation else {
+                    return
+                }
+                onComplete(channelInformation)
+            }
+    }
+
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
         guard stream.twitchLoggedIn! else {
             makeErrorToast(title: "Not logged in to Twitch")
