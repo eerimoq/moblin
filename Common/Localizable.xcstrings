@@ -5537,268 +5537,6 @@
         }
       }
     },
-    "%@ just followed!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ ist gerade gefolgt!"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ μόλις ακολούθησε!"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ ¡acabo de seguirte!"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ alkoi seurata sinua!"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ vient de suivre !"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ ने अभी-अभी अनुसरण किया!"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ baru saja mengikuti!"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ ha appena seguito!"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ をフォローしました!"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 님이 팔로우했습니다!"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ is zojuist gevolgd!"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ właśnie obserwowano!"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ acabei de seguir!"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ acabei de seguir!"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ только что подписался!"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ följde precis!"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ hemen takip etti!"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ щойно підписався!"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ vừa theo dõi!"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 刚刚关注！"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@剛剛關注！"
-          }
-        }
-      }
-    },
-    "%@ just subscribed!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ hat gerade abonniert!"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ο %@ μόλις εγγράφηκε!"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "¡%@ acaba de suscribirse!"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ teki juuri tilauksen!"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ vient de s'abonner !"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ अभी सदस्यता ली!"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ baru saja berlangganan!"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ mi sono appena iscritto!"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ が登録しました!"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 방금 구독했어요!"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ is zojuist geabonneerd!"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ właśnie się zapisał!"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ acabou de se inscrever!"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ acabou de se inscrever!"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ только что подписался!"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ prenumererade precis!"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ yeni abone oldu!"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ щойно підписався!"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ vừa đăng ký!"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 刚刚订阅！"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@剛剛訂閱！"
-          }
-        }
-      }
-    },
     "%@ s" : {
       "localizations" : {
         "de" : {
@@ -23752,7 +23490,134 @@
       }
     },
     "Cannot yet show current title (but can set it)." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktueller Titel kann noch nicht angezeigt werden (kann ihn aber festlegen)."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δεν είναι ακόμα δυνατή η εμφάνιση του τρέχοντος τίτλου (αλλά μπορεί να οριστεί)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Todavía no se puede mostrar el título actual (pero se puede configurar)."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nykyistä otsikkoa ei voi vielä näyttää (mutta voi asettaa sen)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Impossible d'afficher le titre actuel pour le moment (mais je peux le définir)."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अभी वर्तमान शीर्षक नहीं दिखाया जा सकता (लेकिन इसे सेट किया जा सकता है)."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Belum dapat menampilkan judul saat ini (tetapi dapat mengaturnya)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Non è ancora possibile mostrare il titolo corrente (ma è possibile impostarlo)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "現在のタイトルはまだ表示できません (ただし設定することはできます)。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "아직 현재 제목을 표시할 수 없습니다(하지만 설정할 수는 있습니다)."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De huidige titel kan nog niet worden weergegeven (maar kan wel worden ingesteld)."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nie można jeszcze wyświetlić bieżącego tytułu (ale można go ustawić)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ainda não é possível mostrar o título atual (mas é possível defini-lo)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ainda não é possível mostrar o título atual (mas é possível defini-lo)."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Пока невозможно отобразить текущий заголовок (но можно его задать)."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan ännu inte visa aktuell titel (men kan ställa in den)."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Şu anki başlık henüz gösterilemiyor (ama ayarlanabilir)."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Поки що не можна показати поточний заголовок (але можна встановити)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chưa thể hiển thị tiêu đề hiện tại (nhưng có thể cài đặt)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尚无法显示当前标题（但可以设置）。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尚無法顯示目前標題（但可以設定）。"
+          }
+        }
+      }
     },
     "Cat printer" : {
       "localizations" : {
@@ -24140,137 +24005,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "更改相機並重新啟動串流以使它們正常工作。"
-          }
-        }
-      }
-    },
-    "Change settings in Moblin in iPhone/iPad." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ändere die Einstellungen in Moblin auf dem iPhone/iPad."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αλλάξτε τις ρυθμίσεις στο Moblin στο iPhone/iPad."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar la configuración en Moblin en iPhone/iPad."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muuta asetuksia Moblin:ssa iPhonessa/iPadissa."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Modifiez les paramètres dans Moblin sur iPhone/iPad."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "iPhone/iPad में मोब्लिन में सेटिंग्स बदलें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ubah pengaturan di Moblin di iPhone/iPad."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Modifica le impostazioni in Moblin su iPhone/iPad."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone/iPadのMoblinの設定を変更します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone/iPad에서 Moblin의 설정을 변경합니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wijzig instellingen in Moblin op iPhone/iPad."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zmień ustawienia w Moblin na iPhonie/iPadzie."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Altere as configurações no Moblin no iPhone/iPad."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Altere as configurações no Moblin no iPhone/iPad."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Измените настройки Moblin на iPhone/iPad."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ändra inställningar i Moblin i iPhone/iPad."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "iPhone/iPad'deki Moblin'deki ayarları değiştirin."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Змініть налаштування в Moblin на iPhone/iPad."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Thay đổi cài đặt trong Moblin trên iPhone/iPad."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "更改 iPhone/iPad 中 Moblin 的设置。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "更改 iPhone/iPad 中 Moblin 的設定。"
           }
         }
       }
@@ -25051,137 +24785,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "聊天室一片空白。"
-          }
-        }
-      }
-    },
-    "Chat is hidden" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chat ist ausgeblendet"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Η συνομιλία είναι κρυμμένη"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chat ocultado"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chat on piilotettu"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le chat est caché"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "चैट छिपी हुई है"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obrolan disembunyikan"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La chat è nascosta"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チャットを非表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "채팅창 숨기기"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chat is verborgen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Czat jest ukryty"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O bate-papo está oculto"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O bate-papo está oculto"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Чат скрыт"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chatten är gömd"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sohbet gizlidir"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Чат приховано"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Trò chuyện được ẩn"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "弹幕已隐藏"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "聊天室已隱藏"
           }
         }
       }
@@ -38447,7 +38050,134 @@
       }
     },
     "End workout" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Training beenden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Τέλος προπόνησης"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Finalizar el entrenamiento"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lopeta harjoitus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fin de l'entraînement"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वर्कआउट समाप्त करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akhiri latihan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fine allenamento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "トレーニング終了"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "운동 종료"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Einde training"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zakończ trening"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fim do treino"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fim do treino"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Завершить тренировку"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avsluta träningen"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Antrenmanı bitir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Завершити тренування"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kết thúc tập luyện"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "结束锻炼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "結束鍛鍊"
+          }
+        }
+      }
     },
     "End-user license agreement (EULA)" : {
       "localizations" : {
@@ -38580,7 +38310,134 @@
       }
     },
     "Ending workout" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Training beenden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Τερματισμός προπόνησης"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Finalizando el entrenamiento"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Harjoittelu päättyy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fin de l'entraînement"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वर्कआउट समाप्त करना"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mengakhiri latihan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fine allenamento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "トレーニング終了"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "운동 종료"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beëindigen van de training"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zakończenie treningu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fim do treino"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fim do treino"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Окончание тренировки"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avslutar träningen"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Antrenmanın sonu"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Завершення тренування"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kết thúc tập luyện"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "结束锻炼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "結束鍛鍊"
+          }
+        }
+      }
     },
     "Enter assistant's address and port. For example ws://132.23.43.43:2345." : {
       "localizations" : {
@@ -49112,137 +48969,6 @@
         }
       }
     },
-    "Health (requires Apple Watch)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gesundheit (erfordert Apple Watch)"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Υγεία (απαιτείται Apple Watch)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Salud (requiere Apple Watch)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Terveys (vaatii Apple Watchin)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Santé (nécessite Apple Watch)"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "स्वास्थ्य (एप्पल वॉच की आवश्यकता है)"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kesehatan (memerlukan Apple Watch)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Salute (richiede Apple Watch)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ヘルスケア（Apple Watch が必要）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "건강(Apple Watch 필요)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gezondheid (vereist Apple Watch)"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zdrowie (wymaga Apple Watch)"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saúde (requer Apple Watch)"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saúde (requer Apple Watch)"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Здоровье (требуется Apple Watch)"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hälsa (kräver Apple Watch)"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sağlık (Apple Watch gerektirir)"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Здоров'я (потрібен Apple Watch)"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sức khỏe (yêu cầu Apple Watch)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "健康（需要 Apple Watch）"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "健康（需要 Apple Watch）"
-          }
-        }
-      }
-    },
     "Heart rate" : {
       "localizations" : {
         "de" : {
@@ -49764,7 +49490,134 @@
       }
     },
     "High bitrates may be unstable." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hohe Bitraten können instabil sein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Οι υψηλοί ρυθμοί bit μπορεί να είναι ασταθείς."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Las tasas de bits altas pueden ser inestables."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Suuret bittinopeudet voivat olla epävakaita."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Les débits binaires élevés peuvent être instables."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उच्च बिटरेट अस्थिर हो सकते हैं."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bitrate tinggi mungkin tidak stabil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bitrate elevati potrebbero risultare instabili."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ビットレートが高いと不安定になる可能性があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "높은 비트레이트는 불안정할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hoge bitsnelheden kunnen instabiel zijn."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wysokie szybkości transmisji mogą być niestabilne."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Altas taxas de bits podem ser instáveis."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Altas taxas de bits podem ser instáveis."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Высокие битрейты могут быть нестабильны."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höga bithastigheter kan vara instabila."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yüksek bit hızları kararsız olabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Високі бітрейти можуть бути нестабільними."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tốc độ bit cao có thể không ổn định."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "高比特率可能不稳定。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "高比特率可能不穩定。"
+          }
+        }
+      }
     },
     "Higher data rate limit" : {
       "localizations" : {
@@ -50672,268 +50525,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到主機"
-          }
-        }
-      }
-    },
-    "Icon" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Symbol"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Εικόνισμα"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Icono"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kuvake"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Icône"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "आइकन"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ikon"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Icona"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アイコン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "상"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Icoon"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ikona"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ícone"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ícone"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Иконка"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ikon"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Simge"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "значок"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Biểu tượng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "图标"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "圖示"
-          }
-        }
-      }
-    },
-    "Icons" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Icons"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Εικονίδια"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iconos"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kuvakkeet"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Icônes"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "माउस"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ikon"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Icone"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アイコン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아이콘"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pictogrammen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ikony"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ícones"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ícones"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Иконки"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ikoner"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "İkonlar"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ікони"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Biểu tượng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图标"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "圖示"
           }
         }
       }
@@ -52499,135 +52090,131 @@
       }
     },
     "Install Moblin on your Apple Watch" : {
-
-    },
-    "Interactive chat" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interaktiver Chat"
+            "state" : "needs_review",
+            "value" : "Installieren Sie Moblin auf Ihrer Apple Watch"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Διαδραστική συνομιλία"
+            "value" : "Εγκαταστήστε το Moblin στο Apple Watch σας"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chat interactivo"
+            "state" : "needs_review",
+            "value" : "Instala Moblin en tu Apple Watch"
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interaktiivinen chat"
+            "state" : "needs_review",
+            "value" : "Asenna Moblin Apple Watchiin"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Chat interactif"
+            "value" : "Installer Moblin sur votre Apple Watch"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "इंटरैक्टिव चैट"
+            "value" : "अपने एप्पल वॉच पर मोब्लिन इंस्टॉल करें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Obrolan interaktif"
+            "value" : "Instal Moblin di Apple Watch Anda"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Chat interattiva"
+            "value" : "Installa Moblin sul tuo Apple Watch"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "インタラクティブなチャット"
+            "state" : "needs_review",
+            "value" : "Apple WatchにMoblinをインストールする"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "대화형 채팅"
+            "state" : "needs_review",
+            "value" : "Apple Watch에 Moblin 설치"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Interactief chatten"
+            "value" : "Moblin installeren op je Apple Watch"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Interaktywny czat"
+            "value" : "Zainstaluj Moblin na swoim Apple Watch"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Bate-papo interativo"
+            "value" : "Instale o Moblin no seu Apple Watch"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Bate-papo interativo"
+            "value" : "Instale o Moblin no seu Apple Watch"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Интерактивный чат"
+            "state" : "needs_review",
+            "value" : "Установите Moblin на свои Apple Watch"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interaktiv chat"
+            "value" : "Installera Moblin på din Apple Watch"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Etkileşimli sohbet"
+            "value" : "Moblin'i Apple Watch'unuza yükleyin"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Інтерактивний чат"
+            "state" : "needs_review",
+            "value" : "Встановіть Moblin на Apple Watch"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Trò chuyện tương tác"
+            "value" : "Cài đặt Moblin trên Apple Watch của bạn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "互动聊天"
+            "value" : "在 Apple Watch 上安装 Moblin"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "互動聊天"
+            "value" : "在 Apple Watch 上安裝 Moblin"
           }
         }
       }
@@ -56663,7 +56250,134 @@
       }
     },
     "Main scene" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hauptszene"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Κεντρική σκηνή"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Escena principal"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pääkohtaus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scène principale"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "मुख्य दृश्य"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adegan utama"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scena principale"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "メインシーン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "메인씬"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hoofdscène"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scena główna"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena principal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena principal"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Основная сцена"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Huvudscen"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ana sahne"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Головна сцена"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cảnh chính"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "主场景"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "主場景"
+          }
+        }
+      }
     },
     "Make sure silent mode is off for vibrations to work." : {
       "localizations" : {
@@ -60175,137 +59889,6 @@
         }
       }
     },
-    "Messages" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nachrichten"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μηνύματα"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mensajes"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viestit"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "messages"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "संदेशों"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pesan"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Messaggi"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メッセージ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "메시지"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Berichten"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wiadomości"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mensagens"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mensagens"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сообщения"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meddelanden"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mesajlar"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Повідомлення"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tin nhắn"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "留言"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "留言"
-          }
-        }
-      }
-    },
     "MetalPetal filters" : {
       "localizations" : {
         "de" : {
@@ -61477,135 +61060,131 @@
       }
     },
     "Moblin will periodically try to switch to the BRB scene if the stream is likely broken, and back to the main scene once everything seems to work again." : {
-
-    },
-    "Moblin will periodically try to switch to this OBS scene if the stream is likely broken." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moblin versucht regelmäßig, zu dieser OBS-Szene zu wechseln, wenn der Stream wahrscheinlich unterbrochen ist."
+            "state" : "needs_review",
+            "value" : "Moblin versucht in regelmäßigen Abständen, zur BRB-Szene zu wechseln, wenn der Stream wahrscheinlich unterbrochen ist, und wieder zur Hauptszene, sobald alles wieder zu funktionieren scheint."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Το Moblin θα προσπαθεί περιοδικά να μεταβεί σε αυτήν τη σκηνή OBS, εάν η ροή είναι πιθανό να διακοπεί."
+            "value" : "Το Moblin θα προσπαθεί περιοδικά να μεταβεί στη σκηνή BRB, εάν η ροή είναι πιθανό να διακοπεί, και να επιστρέψει στην κύρια σκηνή μόλις όλα φανούν ότι λειτουργούν ξανά."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin intentará periódicamente cambiar a esta escena de OBS si es probable que la transmisión se interrumpa."
+            "value" : "Moblin intentará periódicamente cambiar a la escena BRB si es probable que la transmisión esté interrumpida, y volver a la escena principal una vez que todo parezca funcionar nuevamente."
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moblin yrittää ajoittain vaihtaa tähän OBS-näkymään, jos lähetys todennäköisesti katkennut."
+            "state" : "needs_review",
+            "value" : "Moblin yrittää ajoittain vaihtaa BRB-kohtaukseen, jos stream todennäköisesti katkeaa, ja takaisin pääkohtaan, kun kaikki näyttää jälleen toimivan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin tentera périodiquement de passer à cette scène OBS si le flux est probablement interrompu."
+            "value" : "Moblin essaiera périodiquement de passer à la scène BRB si le flux est susceptible d'être interrompu, et de revenir à la scène principale une fois que tout semble fonctionner à nouveau."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "यदि स्ट्रीम संभवतः टूट गई है तो मोब्लिन समय-समय पर इस ओबीएस दृश्य पर स्विच करने का प्रयास करेगा।"
+            "value" : "यदि स्ट्रीम संभवतः टूट गई है तो मोब्लिन समय-समय पर बीआरबी दृश्य पर स्विच करने का प्रयास करेगा, तथा जब सब कुछ फिर से काम करने लगेगा तो मुख्य दृश्य पर वापस आ जाएगा।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin secara berkala akan mencoba beralih ke adegan OBS ini jika alirannya kemungkinan besar terputus."
+            "value" : "Moblin secara berkala akan mencoba beralih ke adegan BRB jika alirannya kemungkinan rusak, dan kembali ke adegan utama setelah semuanya tampak berfungsi kembali."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin proverà periodicamente a passare a questa scena OBS se è probabile che lo streaming venga interrotto."
+            "value" : "Moblin proverà periodicamente a passare alla scena BRB se è probabile che lo streaming sia interrotto, e tornerà alla scena principale quando tutto sembrerà funzionare di nuovo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "ストリームが中断される可能性がある場合、Moblin は定期的にこの OBS シーンに切り替えようとします。"
+            "value" : "Moblin は、ストリームが中断される可能性がある場合、定期的に BRB シーンへの切り替えを試み、すべてが再び機能するようになったらメイン シーンに戻ります。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin은 스트림이 끊어질 가능성이 있는 경우 주기적으로 이 OBS 장면으로 전환하려고 시도합니다."
+            "value" : "스트림이 끊어졌을 가능성이 높으면 Moblin은 주기적으로 BRB 장면으로 전환을 시도하고, 모든 것이 다시 정상적으로 작동하면 메인 장면으로 돌아갑니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin zal periodiek proberen over te schakelen naar deze OBS-scène als de stream waarschijnlijk kapot is."
+            "value" : "Moblin probeert periodiek over te schakelen naar de BRB-scène als de stream waarschijnlijk is verbroken, en terug naar de hoofdscène als alles weer lijkt te werken."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin będzie okresowo próbował przełączyć się na tę scenę OBS, jeśli transmisja strumieniowa będzie przerwana."
+            "value" : "Moblin będzie okresowo próbował przełączyć się na scenę BRB, jeśli transmisja strumieniowa ulegnie uszkodzeniu, a następnie powróci do sceny głównej, gdy wszystko znów będzie działać poprawnie."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "O Moblin tentará periodicamente mudar para esta cena OBS se a transmissão estiver interrompida."
+            "value" : "O Moblin tentará alternar periodicamente para a cena BRB se a transmissão estiver provavelmente quebrada, e retornará para a cena principal quando tudo parecer funcionar novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "O Moblin tentará periodicamente mudar para esta cena OBS se a transmissão estiver interrompida."
+            "value" : "O Moblin tentará alternar periodicamente para a cena BRB se a transmissão estiver provavelmente quebrada, e retornará para a cena principal quando tudo parecer funcionar novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moblin будет периодически пытаться переключиться на эту сцену в OBS, если поток, вероятно, прерван."
+            "state" : "needs_review",
+            "value" : "Moblin будет периодически пытаться переключиться на сцену BRB, если поток, вероятно, будет прерван, и возвращаться на основную сцену, как только все снова заработает."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin kommer med jämna mellanrum att försöka byta till denna OBS-scen om strömmen sannolikt är trasig."
+            "value" : "Moblin kommer med jämna mellanrum att försöka byta till BRB-scenen om strömmen sannolikt är trasig, och tillbaka till huvudscenen när allt verkar fungera igen."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Akışın kesilmesi muhtemelse Moblin periyodik olarak bu OBS sahnesine geçmeye çalışacaktır."
+            "value" : "Moblin, yayının kesilmesi durumunda periyodik olarak BRB sahnesine geçmeyi deneyecek ve her şey tekrar çalışır hale geldiğinde ana sahneye geri dönecektir."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin періодично намагатиметься переключитися на цю сцену OBS, якщо потік, ймовірно, буде порушено."
+            "value" : "Moblin періодично намагатиметься переключитися на сцену BRB, якщо потік, ймовірно, зламаний, і повернутися на основну сцену, коли все знову запрацює."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin sẽ định kỳ cố gắng chuyển sang cảnh OBS này nếu luồng có thể bị hỏng."
+            "value" : "Moblin sẽ cố gắng chuyển sang cảnh BRB theo định kỳ nếu luồng có khả năng bị hỏng và quay lại cảnh chính khi mọi thứ dường như hoạt động trở lại."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "如果流可能中断，Moblin 将定期尝试切换到此 OBS 场景。"
+            "value" : "如果流可能中断，Moblin 将定期尝试切换到 BRB 场景，一旦一切似乎恢复正常，则切换回主场景。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "如果串流可能中斷，Moblin 將定期嘗試切換到此 OBS 場景。"
+            "value" : "如果串流可能中斷，Moblin 將定期嘗試切換到 BRB 場景，並在一切似乎恢復正常後返回主場景。"
           }
         }
       }
@@ -63556,137 +63135,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "我的圖片"
-          }
-        }
-      }
-    },
-    "My LUT" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mein LUT "
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUT μου"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mi LUT"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oma LUT"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ma LUT"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "मेरा LUT"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUT saya"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La mia LUT"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "私のLUT"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "내 LUT"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mijn LUT"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mój LUT"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minha LUT"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minha LUT"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Мой LUT"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Min LUT"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUT'um"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Мій LUT"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUT của tôi"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "我的查找表"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "我的查找表"
           }
         }
       }
@@ -67202,7 +66650,134 @@
       }
     },
     "Normally only available for built-in cameras." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalerweise nur für eingebaute Kameras verfügbar."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Συνήθως διατίθεται μόνο για ενσωματωμένες κάμερες."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente sólo disponible para cámaras integradas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normaalisti käytettävissä vain sisäänrakennetuissa kameroissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalement disponible uniquement pour les caméras intégrées."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सामान्यतः यह केवल अंतर्निर्मित कैमरों के लिए ही उपलब्ध है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Biasanya hanya tersedia untuk kamera internal."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente disponibile solo per le fotocamere integrate."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常は内蔵カメラでのみ使用可能です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "일반적으로 내장 카메라에만 사용 가능합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normaal gesproken alleen beschikbaar voor ingebouwde camera's."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zwykle dostępne tylko dla wbudowanych kamer."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente disponível apenas para câmeras integradas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente disponível apenas para câmeras integradas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Обычно доступно только для встроенных камер."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normalt endast tillgänglig för inbyggda kameror."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalde yalnızca dahili kameralar için kullanılabilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Зазвичай доступний лише для вбудованих камер."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thông thường chỉ có ở camera tích hợp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常仅适用于内置摄像头。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常僅適用於內建相機。"
+          }
+        }
+      }
     },
     "North up" : {
       "localizations" : {
@@ -69155,7 +68730,134 @@
       }
     },
     "Open Moblin in your Apple Watch to end it" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Öffnen Sie Moblin auf Ihrer Apple Watch, um es zu beenden"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ανοίξτε το Moblin στο Apple Watch σας για να το τερματίσετε"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre Moblin en tu Apple Watch para finalizarlo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lopeta se avaamalla Moblin Apple Watchissa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ouvrez Moblin sur votre Apple Watch pour y mettre fin"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इसे समाप्त करने के लिए अपने एप्पल वॉच में मोब्लिन खोलें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buka Moblin di Apple Watch Anda untuk mengakhirinya"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apri Moblin sul tuo Apple Watch per terminarlo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apple WatchでMoblinを開いて終了してください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apple Watch에서 Moblin을 열어 종료하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Open Moblin op je Apple Watch om het te beëindigen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aby zakończyć aplikację Moblin, otwórz ją na zegarku Apple Watch"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abra o Moblin no seu Apple Watch para finalizá-lo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abra o Moblin no seu Apple Watch para finalizá-lo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Откройте Moblin на Apple Watch, чтобы завершить его."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öppna Moblin i din Apple Watch för att avsluta det"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin'i sonlandırmak için Apple Watch'unuzda açın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відкрийте Moblin на Apple Watch, щоб завершити його"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mở Moblin trong Apple Watch của bạn để kết thúc nó"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在 Apple Watch 上打开 Moblin 来结束它"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在 Apple Watch 中開啟 Moblin 以結束它"
+          }
+        }
+      }
     },
     "Open Moblin in your Apple Watch to start it" : {
       "localizations" : {
@@ -81249,10 +80951,136 @@
     },
     "Select %@ if you want the DJI camera to stream to Moblin's RTMP server on this device. Select %@ to make the DJI camera stream to any destination." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wählen Sie %@, wenn die DJI-Kamera auf diesem Gerät zum RTMP-Server von Moblin streamen soll. Wählen Sie %@, damit die DJI-Kamera zu einem beliebigen Ziel streamt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Επιλέξτε %@ εάν θέλετε η κάμερα DJI να μεταδίδει ροή στον διακομιστή RTMP της Moblin σε αυτήν τη συσκευή. Επιλέξτε %@ για να κάνετε τη ροή της κάμερας DJI σε οποιονδήποτε προορισμό."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Select %1$@ if you want the DJI camera to stream to Moblin's RTMP server on this device. Select %2$@ to make the DJI camera stream to any destination."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Seleccione %@ si desea que la cámara DJI transmita al servidor RTMP de Moblin en este dispositivo. Seleccione %@ para que la cámara DJI transmita a cualquier destino."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Valitse %@, jos haluat DJI-kameran suoratoiston Moblinin RTMP-palvelimelle tällä laitteella. Valitse %@ siirtääksesi DJI-kameran mihin tahansa kohteeseen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sélectionnez %@ si vous souhaitez que la caméra DJI diffuse vers le serveur RTMP de Moblin sur cet appareil. Sélectionnez %@ pour que la caméra DJI diffuse vers n'importe quelle destination."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यदि आप चाहते हैं कि DJI कैमरा इस डिवाइस पर Moblin के RTMP सर्वर पर स्ट्रीम करे, तो %@ चुनें। DJI कैमरा को किसी भी गंतव्य पर स्ट्रीम करने के लिए %@ चुनें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pilih %@ jika Anda ingin kamera DJI melakukan streaming ke server RTMP Moblin pada perangkat ini. Pilih %@ untuk membuat kamera DJI melakukan streaming ke tujuan mana pun."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Seleziona %@ se vuoi che la telecamera DJI trasmetta in streaming al server RTMP di Moblin su questo dispositivo. Seleziona %@ per far sì che la telecamera DJI trasmetta in streaming a qualsiasi destinazione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI カメラをこのデバイス上の Moblin の RTMP サーバーにストリーミングする場合は、%@ を選択します。DJI カメラを任意の宛先にストリーミングするには、%@ を選択します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI 카메라가 이 기기에서 Moblin의 RTMP 서버로 스트리밍하도록 하려면 %@를 선택하세요. DJI 카메라가 어떤 목적지로든 스트리밍하도록 하려면 %@를 선택하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecteer %@ als u wilt dat de DJI-camera streamt naar de RTMP-server van Moblin op dit apparaat. Selecteer %@ om de DJI-camera naar elke bestemming te laten streamen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wybierz %@, jeśli chcesz, aby kamera DJI przesyłała strumieniowo do serwera RTMP Moblin na tym urządzeniu. Wybierz %@, aby kamera DJI przesyłała strumieniowo do dowolnego miejsca docelowego."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecione %@ se quiser que a câmera DJI transmita para o servidor RTMP do Moblin neste dispositivo. Selecione %@ para fazer a câmera DJI transmitir para qualquer destino."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecione %@ se quiser que a câmera DJI transmita para o servidor RTMP do Moblin neste dispositivo. Selecione %@ para fazer a câmera DJI transmitir para qualquer destino."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Выберите %@, если вы хотите, чтобы камера DJI транслировала на сервер RTMP Moblin на этом устройстве. Выберите %@, чтобы камера DJI транслировала в любое место назначения."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Välj %1$@ om du vill att DJI-kameran ska strömma till Moblins RTMP-server på den här enheten. Välj %2$@ för att få DJI-kameran att strömma till valfri destination."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI kamerasının bu cihazda Moblin'in RTMP sunucusuna akış yapmasını istiyorsanız %@'yi seçin. DJI kamerasının herhangi bir hedefe akış yapmasını istiyorsanız %@'yi seçin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Виберіть %@, якщо ви бажаєте, щоб камера DJI передавала на RTMP-сервер Moblin на цьому пристрої. Виберіть %@, щоб змусити камеру DJI транслювати в будь-яке місце призначення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chọn %@ nếu bạn muốn camera DJI truyền trực tuyến đến máy chủ RTMP của Moblin trên thiết bị này. Chọn %@ để truyền trực tuyến camera DJI đến bất kỳ đích nào."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果您希望 DJI 摄像机流式传输到此设备上的 Moblin RTMP 服务器，请选择 %@。选择 %@ 可让 DJI 摄像机流式传输到任何目的地。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果您希望 DJI 相機串流到該裝置上的 Moblin RTMP 伺服器，請選擇 %@。選擇 %@ 可使 DJI 相機串流到任何目的地。"
           }
         }
       }
@@ -82001,7 +81829,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skicka meddelande om lågt batteri"
           }
         },
@@ -82131,7 +81959,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skicka meddelande"
           }
         },
@@ -88408,7 +88236,134 @@
       }
     },
     "Start cycling workout" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beginnen Sie mit dem Radtraining"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ξεκινήστε την προπόνηση με ποδήλατο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comienza tu entrenamiento de ciclismo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aloita pyöräilyharjoittelu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Commencer l'entraînement à vélo"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "साइकिलिंग वर्कआउट शुरू करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mulai latihan bersepeda"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Inizia l'allenamento in bicicletta"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "サイクリングトレーニングを始める"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "자전거 운동 시작"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Begin met fietsen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozpocznij trening rowerowy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comece o treino de ciclismo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comece o treino de ciclismo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Начать тренировку на велосипеде"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Börja cykelträning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bisiklet antrenmanına başla"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Почніть тренування на велосипеді"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bắt đầu tập luyện đạp xe"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "开始骑行锻炼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開始騎自行車鍛煉"
+          }
+        }
+      }
     },
     "Start live stream" : {
       "localizations" : {
@@ -88671,7 +88626,134 @@
       }
     },
     "Start running workout" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lauftraining starten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ξεκινήστε την προπόνηση τρεξίματος"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comienza a correr entrenamiento"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aloita juoksuharjoittelu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Commencer l'entraînement en course à pied"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "दौड़ना शुरू करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mulai latihan lari"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Inizia l'allenamento di corsa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ランニングトレーニングを始める"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "달리기 운동 시작"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Begin met hardlopen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zacznij biegać trening"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comece o treino de corrida"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comece o treino de corrida"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Начать беговую тренировку"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Börja löpträning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Koşu antrenmanına başla"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Почніть бігове тренування"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bắt đầu chạy tập luyện"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "开始跑步锻炼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開始跑步鍛鍊"
+          }
+        }
+      }
     },
     "Start streaming" : {
       "localizations" : {
@@ -88934,7 +89016,134 @@
       }
     },
     "Start walking workout" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beginnen Sie mit dem Gehtraining"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ξεκινήστε την προπόνηση με τα πόδια"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comience a caminar para hacer ejercicio"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aloita kävelyharjoittelu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Commencer l'entraînement à la marche"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "पैदल चलना शुरू करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mulai latihan jalan kaki"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Inizia l'allenamento di camminata"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ウォーキングトレーニングを始めましょう"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "걷기 운동 시작"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Begin met wandelen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozpocznij trening chodzenia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comece o treino de caminhada"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comece o treino de caminhada"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Начните тренировку по ходьбе"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Börja gåträning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yürüyüş egzersizine başla"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Почніть тренування з ходьби"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bắt đầu tập đi bộ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "开始步行锻炼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開始步行運動"
+          }
+        }
+      }
     },
     "Starting stream" : {
       "localizations" : {
@@ -89067,7 +89276,134 @@
       }
     },
     "Starting workout" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Training beginnen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Έναρξη προπόνησης"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Comenzando el entrenamiento"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Harjoituksen aloittaminen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Début de l'entraînement"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "कसरत शुरू करना"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Memulai latihan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Inizio allenamento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "トレーニング開始"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "운동 시작"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beginnen met trainen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozpoczęcie treningu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Começando o treino"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Começando o treino"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Начинаем тренировку"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Börjar träning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Antrenmana Başlamak"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Початок тренування"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bắt đầu tập luyện"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "开始锻炼"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開始鍛鍊"
+          }
+        }
+      }
     },
     "Starting..." : {
       "localizations" : {
@@ -90369,137 +90705,6 @@
         }
       }
     },
-    "Stream id missing" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stream-ID fehlt"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Λείπει το αναγνωριστικό ροής"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falta el ID de la transmisión"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stream-id puuttuu"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ID de flux manquant"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "स्ट्रीम आईडी गायब है"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ID aliran tidak ada"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ID streaming mancante"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ストリーム ID がありません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "스트림 ID가 없습니다"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stream-ID ontbreekt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Brak identyfikatora strumienia"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ID da transmissão ausente"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ID da transmissão ausente"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Идентификатор стрима отсутствует"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ström-id saknas"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Akış kimliği eksik"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Відсутній ідентифікатор потоку"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Thiếu id luồng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "缺少流 ID"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "流 ID 遺失"
-          }
-        }
-      }
-    },
     "Stream key" : {
       "localizations" : {
         "de" : {
@@ -91021,7 +91226,134 @@
       }
     },
     "Stream title" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stream-Titel"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Τίτλος ροής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Título de la transmisión"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Striimin otsikko"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Titre du flux"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीम शीर्षक"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Judul aliran"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Titolo del flusso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリームタイトル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스트림 제목"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streamtitel"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tytuł strumienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Título do fluxo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Título do fluxo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Название потока"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strömtitel"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akış başlığı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Назва потоку"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tiêu đề luồng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "流标题"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "直播標題"
+          }
+        }
+      }
     },
     "Stream URL" : {
       "localizations" : {
@@ -95704,7 +96036,134 @@
       }
     },
     "The DJI device will connect to and stream RTMP over this WiFi." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Das DJI-Gerät stellt eine Verbindung zu diesem WLAN her und streamt RTMP darüber."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η συσκευή DJI θα συνδεθεί και θα μεταδώσει RTMP μέσω αυτού του WiFi."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El dispositivo DJI se conectará y transmitirá RTMP a través de esta red WiFi."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI-laite muodostaa yhteyden ja suoratoistaa RTMP:tä tämän WiFin kautta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "L'appareil DJI se connectera et diffusera RTMP via ce WiFi."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "डीजेआई डिवाइस इस वाईफाई से कनेक्ट होकर आरटीएमपी स्ट्रीम करेगा।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Perangkat DJI akan terhubung dan melakukan streaming RTMP melalui WiFi ini."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Il dispositivo DJI si collegherà e trasmetterà in streaming RTMP tramite questa rete WiFi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI デバイスはこの WiFi に接続し、RTMP をストリーミングします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI 장치는 이 WiFi에 연결하여 RTMP를 스트리밍합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Het DJI-apparaat maakt verbinding met deze wifi en streamt RTMP via deze wifi."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Urządzenie DJI połączy się z siecią Wi-Fi i będzie przesyłać strumieniowo sygnał RTMP."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O dispositivo DJI se conectará e transmitirá RTMP por meio deste WiFi."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O dispositivo DJI se conectará e transmitirá RTMP por meio deste WiFi."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Устройство DJI подключится к этому WiFi и будет осуществлять потоковую передачу RTMP."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DJI-enheten kommer att ansluta till och strömma RTMP över detta WiFi."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI cihazı bu WiFi'ye bağlanacak ve RTMP akışını bu WiFi üzerinden gerçekleştirecektir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Пристрій DJI підключатиметься до цього Wi-Fi і транслюватиме RTMP."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thiết bị DJI sẽ kết nối và truyền phát RTMP qua WiFi này."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI 设备将通过该 WiFi 连接并传输 RTMP。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "DJI 裝置將透過此 WiFi 連接並傳輸 RTMP。"
+          }
+        }
+      }
     },
     "The log is empty." : {
       "localizations" : {
@@ -99607,7 +100066,134 @@
       }
     },
     "Torch unavailable in this scene." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taschenlampe in dieser Szene nicht verfügbar."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ο φακός δεν είναι διαθέσιμος σε αυτήν τη σκηνή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Antorcha no disponible en esta escena."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taskulamppu ei ole käytettävissä tässä kohtauksessa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Torche indisponible dans cette scène."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इस दृश्य में मशाल उपलब्ध नहीं है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Obor tidak tersedia dalam adegan ini."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Torcia non disponibile in questa scena."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "このシーンではトーチは使用できません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "이 장면에서는 횃불을 사용할 수 없습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toorts niet beschikbaar in deze scène."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pochodnia jest niedostępna w tej scenie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tocha indisponível nesta cena."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tocha indisponível nesta cena."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Факел в этой сцене недоступен."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ficklampan är inte tillgänglig i den här scenen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu sahnede meşale kullanılamaz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Факел недоступний у цій сцені."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Không có đèn pin trong cảnh này."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "此场景中无法使用火炬。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "火炬在此場景中不可用。"
+          }
+        }
+      }
     },
     "Total recordings" : {
       "localizations" : {
@@ -100613,8 +101199,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utlösa varningar med chattbot-kommandon."
+            "state" : "translated",
+            "value" : "Trigga alerts med chattbot-kommandon."
           }
         },
         "tr" : {
@@ -100743,8 +101329,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utlösa varningar. Konfigurera varningsnamn i varningswidgetar."
+            "state" : "translated",
+            "value" : "Trigga alerts. Konfigurera alertnamn i alertswidgetar."
           }
         },
         "tr" : {
@@ -100873,8 +101459,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utlösare med chattmeddelande '!moblin alert %@'"
+            "state" : "translated",
+            "value" : "Trigga med chattmeddelande '!moblin alert %@'"
           }
         },
         "tr" : {
@@ -110103,8 +110689,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Träningspass"
+            "state" : "translated",
+            "value" : "Träning"
           }
         },
         "tr" : {
@@ -110140,397 +110726,131 @@
       }
     },
     "Workout (requires Apple Watch)" : {
-
-    },
-    "Workout requires an Apple Watch" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Für das Training ist eine Apple Watch erforderlich"
+            "value" : "Training (erfordert Apple Watch)"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Η προπόνηση απαιτεί Apple Watch"
+            "value" : "Προπόνηση (απαιτείται Apple Watch)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Para hacer ejercicio se necesita un Apple Watch"
+            "value" : "Entrenamiento (requiere Apple Watch)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Harjoittelu vaatii Apple Watchin"
+            "value" : "Harjoittelu (vaatii Apple Watchin)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "L'entraînement nécessite une Apple Watch"
+            "value" : "Entraînement (nécessite Apple Watch)"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "वर्कआउट के लिए एप्पल वॉच की आवश्यकता होती है"
+            "value" : "वर्कआउट (एप्पल वॉच की आवश्यकता है)"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Latihan memerlukan Apple Watch"
+            "value" : "Latihan (memerlukan Apple Watch)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "L'allenamento richiede un Apple Watch"
+            "value" : "Allenamento (richiede Apple Watch)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "ワークアウトにはApple Watchが必要です"
+            "value" : "ワークアウト（Apple Watch が必要）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "운동에는 Apple Watch가 필요합니다."
+            "value" : "운동(Apple Watch 필요)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voor de training is een Apple Watch vereist"
+            "value" : "Training (Apple Watch vereist)"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Do treningu wymagany jest zegarek Apple Watch"
+            "value" : "Trening (wymaga Apple Watch)"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "O treino requer um Apple Watch"
+            "value" : "Treino (requer Apple Watch)"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "O treino requer um Apple Watch"
+            "value" : "Treino (requer Apple Watch)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Для тренировки требуются Apple Watch"
+            "value" : "Тренировка (требуются Apple Watch)"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Träning kräver en Apple Watch"
+            "state" : "translated",
+            "value" : "Träning (kräver Apple Watch)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Egzersiz için Apple Watch gerekir"
+            "value" : "Egzersiz (Apple Watch gerektirir)"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Для тренування потрібен Apple Watch"
+            "value" : "Тренування (потрібен Apple Watch)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Tập luyện cần có Apple Watch"
+            "value" : "Tập luyện (cần có Apple Watch)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "锻炼需要 Apple Watch"
+            "value" : "锻炼（需要 Apple Watch）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "運動需要 Apple Watch"
-          }
-        }
-      }
-    },
-    "Workout starting" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Trainingsbeginn"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Έναρξη προπόνησης"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Entrenamiento comenzando"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Harjoitus alkaa"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Début de l'entraînement"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "वर्कआउट शुरू करना"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Latihan dimulai"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Inizio allenamento"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "トレーニング開始"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "운동 시작"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Begin van de training"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rozpoczęcie treningu"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Início do treino"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Início do treino"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Начало тренировки"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Träningspasset börjar"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Antrenman başlıyor"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Початок тренування"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bắt đầu tập luyện"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "锻炼开始"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "鍛鍊開始"
-          }
-        }
-      }
-    },
-    "Workout stopped" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Training abgebrochen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Η προπόνηση σταμάτησε"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El entrenamiento se detuvo"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Harjoitus pysähtyi"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Entraînement arrêté"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "वर्कआउट रोक दिया गया"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Latihan dihentikan"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Allenamento interrotto"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "トレーニング中止"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "운동 중단"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Training gestopt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Trening przerwany"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Treino interrompido"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Treino interrompido"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Тренировка остановлена"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Träningen avbröts"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Antrenman durduruldu"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Тренування зупинено"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tập luyện dừng lại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "锻炼已停止"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "鍛鍊停止"
+            "value" : "鍛鍊（需要 Apple Watch）"
           }
         }
       }
