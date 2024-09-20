@@ -8,6 +8,12 @@
             "state" : "translated",
             "value" : " %lld ch"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld кан."
+          }
         }
       }
     },
@@ -18,6 +24,12 @@
             "state" : "translated",
             "value" : "%lld dB,"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld дБ,"
+          }
         }
       }
     },
@@ -27,6 +39,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Host fehlt"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хост не указан"
           }
         }
       }
@@ -41,6 +59,12 @@
             "state" : "translated",
             "value" : "Fehlerhafte IRLToolkit URL"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный URL IRLToolkit"
+          }
         }
       }
     },
@@ -50,6 +74,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte RIST URL"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный RIST URL"
           }
         }
       }
@@ -61,6 +91,12 @@
             "state" : "translated",
             "value" : "Fehlerhafte RTMP URL"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный RTMP URL"
+          }
         }
       }
     },
@@ -70,6 +106,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte SRT(LA) URL"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный SRT(LA) URL"
           }
         }
       }
@@ -81,6 +123,12 @@
             "state" : "translated",
             "value" : "Fehlerhafte URL"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Некорректный URL"
+          }
         }
       }
     },
@@ -90,6 +138,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RIST-Port Nummer fehlt"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отсутствует порт RIST"
           }
         }
       }
@@ -101,6 +155,12 @@
             "state" : "translated",
             "value" : "RTMP Stream Name fehlt"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отсутствует имя RTMP стрима"
+          }
         }
       }
     },
@@ -110,6 +170,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlendes Schema"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Протокол не указан"
           }
         }
       }
@@ -121,6 +187,12 @@
             "state" : "translated",
             "value" : "SRT(LA) Port Nummer fehlt"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Порт SRT(LA) не указан"
+          }
         }
       }
     },
@@ -130,6 +202,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nicht unterstütztes Schema"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Протокол не поддерживается: %@"
           }
         }
       }

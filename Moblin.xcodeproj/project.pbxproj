@@ -584,6 +584,7 @@
 		0333322C2C48A31700C87D62 /* DjiDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
 		033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceTypeSelector.swift; sourceTree = "<group>"; };
 		033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupIrlToolkitSettingsView.swift; sourceTree = "<group>"; };
+		033C97612C9DAB4D002107A4 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0342F1A02C627A70004DD3EA /* IrlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlClient.swift; sourceTree = "<group>"; };
 		0342F1A22C627A87004DD3EA /* IrlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlServer.swift; sourceTree = "<group>"; };
@@ -3213,6 +3214,7 @@
 				03BBAE952B2E5FD20033D425 /* zh-Hans */,
 				03D3C0472B4493AE006BAEAC /* zh-Hant */,
 				03A01ACA2B9F66D200D20AE3 /* de */,
+				033C97612C9DAB4D002107A4 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
