@@ -3555,12 +3555,19 @@ final class Model: NSObject, ObservableObject {
             }
     }
 
+    private func makeNotLoggedInToTwitchToast() {
+        makeErrorToast(
+            title: String(localized: "Not logged in to Twitch"),
+            subTitle: String(localized: "Please login again")
+        )
+    }
+
     func getTwitchChannelInformation(
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
     ) {
         guard stream.twitchLoggedIn! else {
-            makeErrorToast(title: "Not logged in to Twitch")
+            makeNotLoggedInToTwitchToast()
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
@@ -3574,7 +3581,7 @@ final class Model: NSObject, ObservableObject {
 
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
         guard stream.twitchLoggedIn! else {
-            makeErrorToast(title: "Not logged in to Twitch")
+            makeNotLoggedInToTwitchToast()
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
@@ -3587,7 +3594,7 @@ final class Model: NSObject, ObservableObject {
 
     func sendChatMessage(message: String) {
         guard isTwitchAccessTokenConfigured() else {
-            makeErrorToast(title: "Not logged in to Twitch")
+            makeNotLoggedInToTwitchToast()
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
@@ -8058,10 +8065,7 @@ extension Model: ObsWebsocketDelegate {
 extension Model: TwitchApiDelegate {
     func twitchApiUnauthorized() {
         stream.twitchLoggedIn = false
-        makeErrorToast(
-            title: String(localized: "Logged out from Twitch"),
-            subTitle: String(localized: "Please login again")
-        )
+        makeNotLoggedInToTwitchToast()
     }
 }
 

@@ -55081,6 +55081,7 @@
       }
     },
     "Logged out from Twitch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -67039,6 +67040,9 @@
           }
         }
       }
+    },
+    "Not logged in to Twitch" : {
+
     },
     "Not started" : {
       "localizations" : {
