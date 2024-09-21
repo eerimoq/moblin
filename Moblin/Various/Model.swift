@@ -2372,6 +2372,14 @@ final class Model: NSObject, ObservableObject {
                     verticalSpacing: 0,
                     fitContentWidth: true
                 ) {
+                    Text(post.user!)
+                        .lineLimit(1)
+                        .padding([.trailing], 0)
+                    if post.isRedemption() {
+                        Text(" ")
+                    } else {
+                        Text(": ")
+                    }
                     ForEach(post.segments) { segment in
                         if let text = segment.text {
                             Text(text)
@@ -7935,6 +7943,19 @@ extension Model: TwitchEventSubDelegate {
                 text: text,
                 title: String(localized: "Reward redemption"),
                 color: .blue
+            )
+        }
+    }
+
+    func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
+        DispatchQueue.main.async {
+            let text = String(localized: "raided with a party of \(event.viewers)")
+            self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+            self.appendTwitchChatAlertMessage(
+                user: event.from_broadcaster_user_name,
+                text: text,
+                title: String(localized: "Raid"),
+                color: .pink
             )
         }
     }

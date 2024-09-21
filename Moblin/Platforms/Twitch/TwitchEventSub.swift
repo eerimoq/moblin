@@ -125,6 +125,23 @@ private struct NotificationChannelPointsCustomRewardRedemptionAddMessage: Decoda
     var payload: NotificationChannelPointsCustomRewardRedemptionAddPayload
 }
 
+struct TwitchEventSubChannelRaidEvent: Decodable {
+    // periphery:ignore
+    var from_broadcaster_user_name: String
+    // periphery:ignore
+    var viewers: Int
+}
+
+private struct NotificationChannelRaidPayload: Decodable {
+    // periphery:ignore
+    var event: TwitchEventSubChannelRaidEvent
+}
+
+private struct NotificationChannelRaidMessage: Decodable {
+    // periphery:ignore
+    var payload: NotificationChannelRaidPayload
+}
+
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
@@ -133,6 +150,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
+    func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -252,6 +270,19 @@ final class TwitchEventSub: NSObject {
                 logger.info("twitch: event-sub: Failed to setup reward redemption events")
                 return
             }
+            self.subscribeToChannelRaid()
+        }
+    }
+
+    private func subscribeToChannelRaid() {
+        let body = createBody(type: "channel.raid",
+                              version: 1,
+                              condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup raid events")
+                return
+            }
             self.connected = true
         }
     }
@@ -278,6 +309,8 @@ final class TwitchEventSub: NSObject {
             handleNotificationChannelSubscribe(messageData: messageData)
         case "channel.channel_points_custom_reward_redemption.add":
             handleChannelPointsCustomRewardRedemptionAdd(messageData: messageData)
+        case "channel.raid":
+            handleChannelRaid(messageData: messageData)
         default:
             if let type = message.metadata.subscription_type {
                 logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -310,6 +343,18 @@ final class TwitchEventSub: NSObject {
     }
 
     private func handleChannelPointsCustomRewardRedemptionAdd(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelRaidMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("twitch: event-sub: Failed to decode channel.raid (\(data ?? "")).")
+            return
+        }
+        delegate.twitchEventSubChannelRaid(event: message.payload.event)
+    }
+
+    private func handleChannelRaid(messageData: Data) {
         guard let message = try? JSONDecoder().decode(
             NotificationChannelPointsCustomRewardRedemptionAddMessage.self,
             from: messageData
