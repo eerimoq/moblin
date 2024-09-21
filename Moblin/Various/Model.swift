@@ -3578,7 +3578,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .modifyChannelInformation(userId: stream.twitchChannelId, title: title) { ok in
+            .modifyChannelInformation(userId: stream.twitchChannelId, category: nil, title: title) { ok in
                 if !ok {
                     self.makeErrorToast(title: "Failed to set stream title")
                 }

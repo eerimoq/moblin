@@ -135,10 +135,21 @@ class TwitchApi {
         })
     }
 
-    func modifyChannelInformation(userId: String, title: String, onComplete: @escaping (Bool) -> Void) {
+    func modifyChannelInformation(userId: String,
+                                  category: String?,
+                                  title: String?,
+                                  onComplete: @escaping (Bool) -> Void)
+    {
+        var items: [String] = []
+        if let category {
+            items.append("\"game_id\": \"\(category)\"")
+        }
+        if let title {
+            items.append("\"title\": \"\(title)\"")
+        }
         let body = """
         {
-           "title": "\(title)"
+            \(items.joined(separator: ","))
         }
         """
         doPatch(subPath: "channels?broadcaster_id=\(userId)", body: body.utf8Data, onComplete: { data in

@@ -73930,6 +73930,12 @@
         }
       }
     },
+    "Raid" : {
+
+    },
+    "raided with a party of %lld" : {
+
+    },
     "Ratings" : {
       "localizations" : {
         "de" : {
