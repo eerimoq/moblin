@@ -7943,7 +7943,7 @@ extension Model: TwitchEventSubDelegate {
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {
         DispatchQueue.main.async {
-            let text = String(localized: "redeemed \(event.reward.title)")
+            let text = String(localized: "redeemed \(event.reward.title)!")
             self.makeToast(title: "\(event.user_name) \(text)")
             self.appendTwitchChatAlertMessage(
                 user: event.user_name,
@@ -7956,8 +7956,9 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
         DispatchQueue.main.async {
-            let text = String(localized: "raided with a party of \(event.viewers)")
+            let text = String(localized: "raided with a party of \(event.viewers)!")
             self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+            self.playAlert(alert: .twitchRaid(event))
             self.appendTwitchChatAlertMessage(
                 user: event.from_broadcaster_user_name,
                 text: text,

@@ -73937,7 +73937,10 @@
     "Raid" : {
 
     },
-    "raided with a party of %lld" : {
+    "raided with a party of %lld!" : {
+
+    },
+    "Raids" : {
 
     },
     "Ratings" : {
@@ -74981,6 +74984,7 @@
       }
     },
     "redeemed %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -75109,6 +75113,9 @@
           }
         }
       }
+    },
+    "redeemed %@!" : {
+
     },
     "Refresh status" : {
       "localizations" : {
