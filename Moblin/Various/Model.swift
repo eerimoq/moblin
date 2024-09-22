@@ -4570,6 +4570,8 @@ final class Model: NSObject, ObservableObject {
                     alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     enabledAlertsEffects.append(alertsEffect)
                 }
+            case .video:
+                break
             }
         }
     }

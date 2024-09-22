@@ -1015,6 +1015,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case scene = "Scene"
     case qrCode = "QR code"
     case alerts = "Alerts"
+    case video = "Video"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -1041,6 +1042,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .qrCode
         case String(localized: "Alerts"):
             return .alerts
+        case String(localized: "Video"):
+            return .video
         default:
             return .videoEffect
         }
@@ -1066,11 +1069,15 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "QR code")
         case .alerts:
             return String(localized: "Alerts")
+        case .video:
+            return String(localized: "Video")
         }
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }
+let widgetTypes = SettingsWidgetType.allCases
+    .filter { $0 != .videoEffect }
+    .filter { $0 != .video }
     .map { $0.toString() }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
