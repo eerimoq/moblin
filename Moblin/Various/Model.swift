@@ -2372,6 +2372,14 @@ final class Model: NSObject, ObservableObject {
                     verticalSpacing: 0,
                     fitContentWidth: true
                 ) {
+                    Text(post.user!)
+                        .lineLimit(1)
+                        .padding([.trailing], 0)
+                    if post.isRedemption() {
+                        Text(" ")
+                    } else {
+                        Text(": ")
+                    }
                     ForEach(post.segments) { segment in
                         if let text = segment.text {
                             Text(text)
@@ -3547,12 +3555,19 @@ final class Model: NSObject, ObservableObject {
             }
     }
 
+    private func makeNotLoggedInToTwitchToast() {
+        makeErrorToast(
+            title: String(localized: "Not logged in to Twitch"),
+            subTitle: String(localized: "Please login again")
+        )
+    }
+
     func getTwitchChannelInformation(
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
     ) {
         guard stream.twitchLoggedIn! else {
-            makeErrorToast(title: "Not logged in to Twitch")
+            makeNotLoggedInToTwitchToast()
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
@@ -3566,11 +3581,11 @@ final class Model: NSObject, ObservableObject {
 
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
         guard stream.twitchLoggedIn! else {
-            makeErrorToast(title: "Not logged in to Twitch")
+            makeNotLoggedInToTwitchToast()
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .modifyChannelInformation(userId: stream.twitchChannelId, title: title) { ok in
+            .modifyChannelInformation(userId: stream.twitchChannelId, category: nil, title: title) { ok in
                 if !ok {
                     self.makeErrorToast(title: "Failed to set stream title")
                 }
@@ -3579,7 +3594,7 @@ final class Model: NSObject, ObservableObject {
 
     func sendChatMessage(message: String) {
         guard isTwitchAccessTokenConfigured() else {
-            makeErrorToast(title: "Not logged in to Twitch")
+            makeNotLoggedInToTwitchToast()
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
@@ -7928,13 +7943,27 @@ extension Model: TwitchEventSubDelegate {
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {
         DispatchQueue.main.async {
-            let text = String(localized: "redeemed \(event.reward.title)")
+            let text = String(localized: "redeemed \(event.reward.title)!")
             self.makeToast(title: "\(event.user_name) \(text)")
             self.appendTwitchChatAlertMessage(
                 user: event.user_name,
                 text: text,
                 title: String(localized: "Reward redemption"),
                 color: .blue
+            )
+        }
+    }
+
+    func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
+        DispatchQueue.main.async {
+            let text = String(localized: "raided with a party of \(event.viewers)!")
+            self.makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+            self.playAlert(alert: .twitchRaid(event))
+            self.appendTwitchChatAlertMessage(
+                user: event.from_broadcaster_user_name,
+                text: text,
+                title: String(localized: "Raid"),
+                color: .pink
             )
         }
     }
@@ -8037,10 +8066,7 @@ extension Model: ObsWebsocketDelegate {
 extension Model: TwitchApiDelegate {
     func twitchApiUnauthorized() {
         stream.twitchLoggedIn = false
-        makeErrorToast(
-            title: String(localized: "Logged out from Twitch"),
-            subTitle: String(localized: "Please login again")
-        )
+        makeNotLoggedInToTwitchToast()
     }
 }
 

@@ -8,8 +8,20 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.382.0", date: "2024-09-16", changes: [
+    Version(version: "0.382.0", date: "2024-09-22", changes: [
         "• Only save settings when app enters background and terminates.",
+        "• Main OBS scene config.",
+        "  • Scene to switch back to from BRB scene.",
+        "• Settings per position type in alert widget.",
+        "  • For less confusing UI.",
+        "• Remember if the user want collapsed or expanded status icons. 💡 djandrea.",
+        "• Show number of viewers in collapsed status icons view. 💡 JohannvesLiv",
+        "• Set Twitch stream title.",
+        "• Fix Twitch login crash.",
+        "• Russian translation updated. ✍️ Murrito",
+        "• Twitch raid in chat, show toast and alerts. 💡 AgriNorth",
+        "• Polish translation updated. ✍️ Seebuch",
+        "• German translation updated. ✍️ MaurisonX",
     ]),
     Version(version: "0.381.0", date: "2024-09-15", changes: [
         "• Cat printer support.",

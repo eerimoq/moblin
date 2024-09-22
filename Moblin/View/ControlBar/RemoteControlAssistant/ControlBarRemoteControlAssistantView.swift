@@ -463,7 +463,10 @@ struct ControlBarRemoteControlAssistantView: View {
                             NavigationLink(destination: DebugLogSettingsView(
                                 log: model.remoteControlAssistantLog,
                                 formatLog: { model.formatLog(log: model.remoteControlAssistantLog) },
-                                clearLog: { model.clearRemoteControlAssistantLog() },
+                                clearLog: {
+                                    model.clearRemoteControlAssistantLog()
+                                    model.objectWillChange.send()
+                                },
                                 quickDone: done
                             )) {
                                 Text("Log")

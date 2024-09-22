@@ -434,6 +434,59 @@ private struct TwitchSubscriptionsView: View {
     }
 }
 
+private struct TwitchRaidsView: View {
+    @EnvironmentObject var model: Model
+    var alert: SettingsWidgetAlertsAlert
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    alert.enabled
+                }, set: { value in
+                    alert.enabled = value
+                    model.updateAlertsSettings()
+                })) {
+                    Text("Enabled")
+                }
+            }
+            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            AlertColorsView(
+                alert: alert,
+                textColor: alert.textColor.color(),
+                accentColor: alert.accentColor.color()
+            )
+            AlertFontView(
+                alert: alert,
+                fontSize: Float(alert.fontSize),
+                fontDesign: alert.fontDesign.toString(),
+                fontWeight: alert.fontWeight.toString()
+            )
+            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+            Section {
+                Button(action: {
+                    let event = TwitchEventSubChannelRaidEvent(
+                        from_broadcaster_user_name: testNames.randomElement()!,
+                        viewers: .random(in: 1 ..< 1000)
+                    )
+                    model.testAlert(alert: .twitchRaid(event))
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Test")
+                        Spacer()
+                    }
+                })
+            }
+        }
+        .navigationTitle("Raids")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 private struct TwitchRewardView: View {
     @EnvironmentObject var model: Model
     var reward: SettingsStreamTwitchReward
@@ -496,6 +549,9 @@ private struct WidgetAlertsSettingsTwitchView: View {
                 }
                 NavigationLink(destination: TwitchSubscriptionsView(alert: twitch.subscriptions)) {
                     Text("Subscriptions")
+                }
+                NavigationLink(destination: TwitchRaidsView(alert: twitch.raids!)) {
+                    Text("Raids")
                 }
                 if model.database.debug!.twitchRewards! {
                     NavigationLink(destination: TwitchRewardsView()) {

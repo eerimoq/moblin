@@ -330,6 +330,8 @@ extension DjiDevice: CBPeripheralDelegate {
                                              type: configureType,
                                              payload: payload.encode()))
             setState(state: .configuring)
+        case .osmoAction5Pro:
+            sendStartStreaming()
         case .osmoPocket3:
             sendStartStreaming()
         case .unknown:

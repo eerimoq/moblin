@@ -911,11 +911,13 @@ class SettingsWidgetAlertsAlert: Codable {
 class SettingsWidgetAlertsTwitch: Codable {
     var follows: SettingsWidgetAlertsAlert = .init()
     var subscriptions: SettingsWidgetAlertsAlert = .init()
+    var raids: SettingsWidgetAlertsAlert? = .init()
 
     func clone() -> SettingsWidgetAlertsTwitch {
         let new = SettingsWidgetAlertsTwitch()
         new.follows = follows.clone()
         new.subscriptions = subscriptions.clone()
+        new.raids = raids!.clone()
         return new
     }
 }
@@ -1764,6 +1766,7 @@ var djiDeviceResolutions = SettingsDjiDeviceResolution.allCases.map { $0.rawValu
 enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction3
     case osmoAction4
+    case osmoAction5Pro
     case osmoPocket3
     case unknown
 
@@ -3780,6 +3783,10 @@ final class Settings {
         }
         if realDatabase.verboseStatuses == nil {
             realDatabase.verboseStatuses = false
+            store()
+        }
+        for widget in database.widgets where widget.alerts!.twitch!.raids == nil {
+            widget.alerts!.twitch!.raids = .init()
             store()
         }
     }
