@@ -9384,7 +9384,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "7TV emotikony"
+            "value" : "Emotki 7TV"
           }
         },
         "pt-BR" : {
@@ -17060,7 +17060,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatycznie uruchamia się po przełączeniu strumienia."
+            "value" : "Automatycznie uruchamia się podczas przełączania streama."
           }
         },
         "pt-BR" : {
@@ -17580,7 +17580,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "tylny"
+            "value" : "back"
           }
         },
         "pt-BR" : {
@@ -17710,7 +17710,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tylny"
+            "value" : "Back"
           }
         },
         "pt-BR" : {
@@ -18750,7 +18750,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chmura BELABOX"
+            "value" : "BELABOX cloud"
           }
         },
         "pt-BR" : {
@@ -18880,7 +18880,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chmura BELABOX i OBS"
+            "value" : "BELABOX cloud i OBS"
           }
         },
         "pt-BR" : {
@@ -22780,7 +22780,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Emotikony BTTV"
+            "value" : "Emotki BTTV"
           }
         },
         "pt-BR" : {
@@ -26811,7 +26811,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skonfiguruj w Ustawieniach → Strumienie → %@ → Zdalne sterowanie OBS."
+            "value" : "Skonfiguruj w Ustawieniach → Streamy → %@ → Zdalne sterowanie OBS."
           }
         },
         "pt-BR" : {
@@ -26941,7 +26941,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skonfiguruj w Ustawieniach → Strumienie → %@ → Adres URL."
+            "value" : "Skonfiguruj w Ustawieniach → Streamy → %@ → Adres URL."
           }
         },
         "pt-BR" : {
@@ -29671,7 +29671,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skopiuj z OBS Pokaż informacje o połączeniu, jak widać na zrzucie ekranu poniżej. Narzędzia → Ustawienia serwera WebSocket → Pokaż informacje o połączeniu → Hasło serwera."
+            "value" : "Skopiuj z OBS \"Pokaż informacje o połączeniu\", jak widać na zrzucie ekranu poniżej. Narzędzia → Ustawienia serwera WebSocket → Pokaż informacje o połączeniu → Hasło serwera."
           }
         },
         "pt-BR" : {
@@ -43711,7 +43711,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Emotikony FFZ"
+            "value" : "Emotki FFZ"
           }
         },
         "pt-BR" : {
@@ -46571,7 +46571,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "przedni"
+            "value" : "front"
           }
         },
         "pt-BR" : {
@@ -46701,7 +46701,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przedni"
+            "value" : "Front"
           }
         },
         "pt-BR" : {
@@ -48391,7 +48391,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zacznij live"
+            "value" : "Zacznij live'a"
           }
         },
         "pt-BR" : {
@@ -48521,7 +48521,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rozpocznij transmisję na żywo, aby zobaczyć poziom dźwięku."
+            "value" : "Rozpocznij live'a, aby zobaczyć poziom dźwięku."
           }
         },
         "pt-BR" : {
@@ -62432,7 +62432,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Włącz/wyłącz mikrofon"
+            "value" : "Wyciszenie"
           }
         },
         "pt-BR" : {
@@ -63992,7 +63992,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mój_klucz_streama"
+            "value" : "mój_stream_key"
           }
         },
         "pt-BR" : {
@@ -64772,7 +64772,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Potrzebne do emotikon na czacie kanału i liczby widzów."
+            "value" : "Potrzebne do emotek na czacie kanału i liczby widzów."
           }
         },
         "pt-BR" : {
@@ -74271,7 +74271,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nagranie"
+            "value" : "Nagraj"
           }
         },
         "pt-BR" : {
@@ -74401,7 +74401,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nagranie"
+            "value" : "Nagrywanie"
           }
         },
         "pt-BR" : {
@@ -84027,7 +84027,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pokaż poufne informacje"
+            "value" : "Pokaż poufny URL"
           }
         },
         "pt-BR" : {
@@ -90657,7 +90657,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Identyfikator streama"
+            "value" : "ID streama"
           }
         },
         "pt-BR" : {
@@ -90787,7 +90787,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klucz streama"
+            "value" : "Stream key"
           }
         },
         "pt-BR" : {
@@ -90917,7 +90917,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak klucza do transmisji"
+            "value" : "Brak stream key"
           }
         },
         "pt-BR" : {
@@ -92087,7 +92087,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połączenia"
+            "value" : "Streamy"
           }
         },
         "pt-BR" : {
@@ -94297,7 +94297,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teleobiektyw"
+            "value" : "Telephoto"
           }
         },
         "pt-BR" : {
@@ -98067,7 +98067,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ultra szeroki aparat nie działa dobrze w niskich warunkach oświetlenia. Podobnie, tryb automatyczny przy zoomie 0,5-1,0x, ponieważ używany jest ultra szeroka kamera."
+            "value" : "Aparat ultra wide nie działa dobrze w niskich warunkach oświetlenia. Podobnie, tryb automatyczny przy zoomie 0,5-1,0x, ponieważ używana jest kamera ultra wide."
           }
         },
         "pt-BR" : {
@@ -103007,7 +103007,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ultra szeroki"
+            "value" : "Ultra wide"
           }
         },
         "pt-BR" : {
@@ -109377,7 +109377,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Szeroki"
+            "value" : "Wide"
           }
         },
         "pt-BR" : {
@@ -109507,7 +109507,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Szeroki podwójny (auto)"
+            "value" : "Wide dual (auto)"
           }
         },
         "pt-BR" : {
