@@ -22,8 +22,5 @@ struct DeepLinkCreatorWebBrowserSettingsView: View {
             }
         }
         .navigationTitle("Web browser")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

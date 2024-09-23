@@ -2,7 +2,6 @@ import SwiftUI
 
 struct QuickButtonLutsView: View {
     @EnvironmentObject var model: Model
-    var done: () -> Void
 
     var body: some View {
         Form {
@@ -20,8 +19,5 @@ struct QuickButtonLutsView: View {
             }
         }
         .navigationTitle("LUTs")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
     }
 }

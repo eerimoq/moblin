@@ -43,8 +43,5 @@ struct GameControllersControllerSettingsView: View {
             }
         }
         .navigationTitle("Controller")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

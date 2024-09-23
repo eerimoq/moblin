@@ -3,7 +3,6 @@ import SwiftUI
 struct CosmeticsSettingsView: View {
     @EnvironmentObject var model: Model
     @State var disabledPurchaseButtons: Set<String> = []
-    var quickDone: (() -> Void)?
 
     private func setAppIcon(iconImage: String) {
         var iconImage: String? = iconImage
@@ -125,8 +124,5 @@ struct CosmeticsSettingsView: View {
             }
         }
         .navigationTitle("Cosmetics")
-        .toolbar {
-            SettingsToolbar(quickDone: quickDone)
-        }
     }
 }

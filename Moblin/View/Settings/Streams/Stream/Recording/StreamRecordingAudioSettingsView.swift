@@ -37,8 +37,5 @@ struct StreamRecordingAudioSettingsView: View {
             }
         }
         .navigationTitle("Audio")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

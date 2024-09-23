@@ -43,8 +43,5 @@ struct AudioSettingsView: View {
             }
         }
         .navigationTitle("Audio")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

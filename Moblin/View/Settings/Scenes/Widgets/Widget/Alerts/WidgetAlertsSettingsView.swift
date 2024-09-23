@@ -369,9 +369,6 @@ private struct TwitchFollowsView: View {
             }
         }
         .navigationTitle("Follows")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -428,9 +425,6 @@ private struct TwitchSubscriptionsView: View {
             }
         }
         .navigationTitle("Subscriptions")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -481,9 +475,6 @@ private struct TwitchRaidsView: View {
             }
         }
         .navigationTitle("Raids")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -506,9 +497,6 @@ private struct TwitchRewardView: View {
             AlertMediaView(alert: reward.alert, imageId: reward.alert.imageId, soundId: reward.alert.soundId)
         }
         .navigationTitle(reward.title)
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -531,9 +519,6 @@ private struct TwitchRewardsView: View {
             model.fetchTwitchRewards()
         }
         .navigationTitle("Rewards")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -561,9 +546,6 @@ private struct WidgetAlertsSettingsTwitchView: View {
             }
         }
         .navigationTitle("Twitch")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -637,9 +619,6 @@ private struct ChatBotCommandView: View {
             }
         }
         .navigationTitle("Command")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -677,9 +656,6 @@ private struct WidgetAlertsSettingsChatBotView: View {
             }
         }
         .navigationTitle("Chat bot")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -699,8 +675,6 @@ struct WidgetAlertsSettingsView: View {
 }
 
 struct WidgetVideoSettingsView: View {
-    var widget: SettingsWidget
-
     var body: some View {
         Section {
             Text("Video source...")

@@ -141,8 +141,5 @@ struct StreamSettingsView: View {
             }
         }
         .navigationTitle("Stream")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

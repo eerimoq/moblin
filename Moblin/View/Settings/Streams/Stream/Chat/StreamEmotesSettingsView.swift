@@ -34,8 +34,5 @@ struct StreamEmotesSettingsView: View {
             }
         }
         .navigationTitle("Emotes")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -57,12 +57,9 @@ struct WidgetSettingsView: View {
             case .alerts:
                 WidgetAlertsSettingsView(widget: widget)
             case .video:
-                WidgetVideoSettingsView(widget: widget)
+                WidgetVideoSettingsView()
             }
         }
         .navigationTitle("Widget")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

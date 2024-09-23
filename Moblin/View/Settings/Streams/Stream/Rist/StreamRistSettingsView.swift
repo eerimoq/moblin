@@ -24,8 +24,5 @@ struct StreamRistSettingsView: View {
             }
         }
         .navigationTitle("RIST")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

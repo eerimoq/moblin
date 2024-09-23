@@ -98,8 +98,5 @@ struct RtmpServerSettingsView: View {
             }
         }
         .navigationTitle("RTMP server")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

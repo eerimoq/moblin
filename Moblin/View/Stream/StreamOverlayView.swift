@@ -37,17 +37,19 @@ private struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        if model.stream.portrait! || model.database.portrait! {
-            VStack {
-                StreamOverlayChatView()
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(height: 85)
-            }
-        } else {
-            GeometryReader { metrics in
-                StreamOverlayChatView()
-                    .frame(width: metrics.size.width * 0.95)
+        if model.showingPanel != .chat {
+            if model.stream.portrait! || model.database.portrait! {
+                VStack {
+                    StreamOverlayChatView()
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(height: 85)
+                }
+            } else {
+                GeometryReader { metrics in
+                    StreamOverlayChatView()
+                        .frame(width: metrics.size.width * 0.95)
+                }
             }
         }
     }

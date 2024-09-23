@@ -31,8 +31,5 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
             }
         }
         .navigationTitle("Network interface names")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

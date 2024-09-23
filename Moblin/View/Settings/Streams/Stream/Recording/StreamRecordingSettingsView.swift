@@ -100,8 +100,5 @@ struct StreamRecordingSettingsView: View {
             }
         }
         .navigationTitle("Recording")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

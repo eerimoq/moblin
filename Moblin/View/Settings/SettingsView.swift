@@ -2,77 +2,6 @@ import SwiftUI
 
 let settingsHalfWidth = 350.0
 
-enum SettingsLayout {
-    case full
-    case left
-    case right
-}
-
-private struct SettingsLayoutMenuItem {
-    var layout: SettingsLayout
-    var image: String
-    var text: String
-}
-
-private let layoutMenuItems = [
-    SettingsLayoutMenuItem(
-        layout: .right,
-        image: "rectangle.righthalf.filled",
-        text: String(localized: "Right")
-    ),
-    SettingsLayoutMenuItem(
-        layout: .left,
-        image: "rectangle.lefthalf.filled",
-        text: String(localized: "Left")
-    ),
-    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: String(localized: "Full")),
-]
-
-struct SettingsToolbar: ToolbarContent {
-    @EnvironmentObject var model: Model
-    var quickDone: (() -> Void)?
-
-    private func layoutImage() -> String {
-        return layoutMenuItems.first { item in
-            item.layout == model.settingsLayout
-        }!.image
-    }
-
-    var body: some ToolbarContent {
-        if let quickDone {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    quickDone()
-                }, label: {
-                    Text("Close")
-                })
-            }
-        } else {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack {
-                    Menu {
-                        Picker("", selection: $model.settingsLayout) {
-                            ForEach(layoutMenuItems, id: \.layout) { item in
-                                HStack {
-                                    Image(systemName: item.image)
-                                    Text(item.text)
-                                }
-                            }
-                        }
-                    } label: {
-                        Image(systemName: layoutImage())
-                    }
-                    Button(action: {
-                        model.showingSettings = false
-                    }, label: {
-                        Text("Close")
-                    })
-                }
-            }
-        }
-    }
-}
-
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -251,8 +180,5 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

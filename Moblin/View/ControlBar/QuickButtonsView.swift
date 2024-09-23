@@ -161,7 +161,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func streamAction(state _: ButtonState) {
-        model.showingStreamSwitcher = true
+        model.toggleShowingPanel(type: .stream, panel: .streamSwitcher)
     }
 
     private func gridAction(state: ButtonState) {
@@ -184,11 +184,17 @@ struct QuickButtonsInnerView: View {
             )
             return
         }
-        model.showingObs = true
-        model.listObsScenes()
-        model.startObsSourceScreenshot()
-        model.startObsAudioVolume()
-        model.updateObsAudioDelay()
+        if model.showingObs {
+            model.showingObs = false
+            model.stopObsSourceScreenshot()
+            model.stopObsAudioVolume()
+        } else {
+            model.showingObs = true
+            model.listObsScenes()
+            model.startObsSourceScreenshot()
+            model.startObsAudioVolume()
+            model.updateObsAudioDelay()
+        }
     }
 
     private func remoteAction(state _: ButtonState) {
@@ -199,13 +205,22 @@ struct QuickButtonsInnerView: View {
             )
             return
         }
-        model.showingRemoteControl = true
-        model.updateRemoteControlAssistantStatus()
-        model.detachCamera()
-        model.updateScreenAutoOff()
-        if model.remoteControlAssistantShowPreview {
-            model.remoteControlAssistantStartPreview()
+        if model.showingRemoteControl {
+            model.showingRemoteControl = false
+            model.attachCamera()
+            model.updateScreenAutoOff()
+            model.remoteControlAssistantStopPreview()
+        } else {
+            model.showingRemoteControl = true
+            model.updateRemoteControlAssistantStatus()
+            model.detachCamera()
+            model.updateScreenAutoOff()
+            if model.remoteControlAssistantShowPreview {
+                model.remoteControlAssistantStartPreview()
+            }
         }
+        model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
+        model.updateButtonStates()
     }
 
     private func drawAction(state _: ButtonState) {
@@ -250,15 +265,28 @@ struct QuickButtonsInnerView: View {
         model.takeSnapshot()
     }
 
-    private func chatAction(state: ButtonState) {
-        if model.database.debug!.leftOfControlBar! {
-            model.showingChat.toggle()
-            state.button.isOn.toggle()
-            model.setGlobalButtonState(type: .chat, isOn: state.button.isOn)
-            model.updateButtonStates()
-        } else {
-            model.showingChat = true
-        }
+    private func widgetsAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .widgets, panel: .widgets)
+    }
+
+    private func lutsAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .luts, panel: .luts)
+    }
+
+    private func chatAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .chat, panel: .chat)
+    }
+
+    private func micAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .mic, panel: .mic)
+    }
+
+    private func bitrateAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .bitrate, panel: .bitrate)
+    }
+
+    private func recordingsAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .recordings, panel: .recordings)
     }
 
     var body: some View {
@@ -280,7 +308,7 @@ struct QuickButtonsInnerView: View {
                 })
             case .bitrate:
                 Button(action: {
-                    model.showingBitrate = true
+                    bitrateAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
@@ -292,7 +320,7 @@ struct QuickButtonsInnerView: View {
                 })
             case .mic:
                 Button(action: {
-                    model.showingMic = true
+                    micAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
@@ -325,7 +353,7 @@ struct QuickButtonsInnerView: View {
                 }
             case .recordings:
                 Button(action: {
-                    model.showingRecordings = true
+                    recordingsAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
@@ -443,13 +471,13 @@ struct QuickButtonsInnerView: View {
                 })
             case .widgets:
                 Button(action: {
-                    model.showingWidgets = true
+                    widgetsAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
             case .luts:
                 Button(action: {
-                    model.showingLuts = true
+                    lutsAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

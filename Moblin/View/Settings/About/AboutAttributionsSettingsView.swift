@@ -137,9 +137,6 @@ private struct AboutAttributionsSoundsSettingsView: View {
             }
         }
         .navigationTitle("Sounds")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -166,9 +163,6 @@ private struct AboutAttributionsImagesSettingsView: View {
             }
         }
         .navigationTitle("Images")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -183,8 +177,5 @@ struct AboutAttributionsSettingsView: View {
             }
         }
         .navigationTitle("Attributions")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

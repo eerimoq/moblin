@@ -105,8 +105,5 @@ struct CatPrinterSettingsView: View {
             model.setCurrentCatPrinter(device: device)
         }
         .navigationTitle("Cat printer")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

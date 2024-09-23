@@ -35,8 +35,5 @@ struct DebugVideoSettingsView: View {
             }
         }
         .navigationTitle("Video")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

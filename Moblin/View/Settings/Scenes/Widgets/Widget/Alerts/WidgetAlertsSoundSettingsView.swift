@@ -74,9 +74,6 @@ private struct CustomSoundView: View {
             }
         }
         .navigationTitle("Sound")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -119,9 +116,6 @@ private struct SoundGalleryView: View {
             }
         }
         .navigationTitle("My sounds")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -166,8 +160,5 @@ struct AlertSoundSelectorView: View {
             player = nil
         }
         .navigationTitle("Sound")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

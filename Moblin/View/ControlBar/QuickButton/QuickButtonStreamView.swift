@@ -3,7 +3,6 @@ import SwiftUI
 
 struct QuickButtonStreamView: View {
     @EnvironmentObject var model: Model
-    var done: () -> Void
 
     var body: some View {
         Form {
@@ -27,7 +26,6 @@ struct QuickButtonStreamView: View {
                     } else {
                         model.makeErrorToast(title: "Failed to switch scene")
                     }
-                    done()
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
@@ -36,8 +34,5 @@ struct QuickButtonStreamView: View {
             }
         }
         .navigationTitle("Stream")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
     }
 }

@@ -25,9 +25,6 @@ struct DeepLinkCreatorStreamVideoBitrateView: View {
             }
         }
         .navigationTitle("Bitrate")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -123,9 +120,6 @@ private struct DeepLinkCreatorStreamVideoView: View {
             }
         }
         .navigationTitle("Video")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -158,9 +152,6 @@ private struct DeepLinkCreatorStreamAudioView: View {
                         .frame(width: 90)
                 }
                 .navigationTitle("Audio")
-                .toolbar {
-                    SettingsToolbar()
-                }
             }
         }
     }
@@ -206,9 +197,6 @@ private struct DeepLinkCreatorStreamSrtView: View {
             }
         }
         .navigationTitle("SRT(LA)")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -254,9 +242,6 @@ private struct DeepLinkCreatorStreamObsView: View {
             }
         }
         .navigationTitle("OBS remote control")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -291,9 +276,6 @@ struct DeepLinkCreatorStreamTwitchView: View {
             }
         }
         .navigationTitle("Twitch")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -318,9 +300,6 @@ struct DeepLinkCreatorStreamKickView: View {
             }
         }
         .navigationTitle("Kick")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -391,8 +370,5 @@ struct DeepLinkCreatorStreamSettingsView: View {
             }
         }
         .navigationTitle("Stream")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

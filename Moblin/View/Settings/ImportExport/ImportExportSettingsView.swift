@@ -31,8 +31,5 @@ struct ImportExportSettingsView: View {
             }
         }
         .navigationTitle("Import and export settings")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -46633,6 +46633,7 @@
       }
     },
     "Full" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -53261,9 +53262,6 @@
           }
         }
       }
-    },
-    "Left of control bar" : {
-
     },
     "Length" : {
       "localizations" : {

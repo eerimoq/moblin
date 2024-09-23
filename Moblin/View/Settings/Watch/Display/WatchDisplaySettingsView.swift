@@ -10,8 +10,5 @@ struct WatchDisplaySettingsView: View {
             }
         }
         .navigationTitle("Display")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -101,8 +101,5 @@ struct GlobalQuickButtonsSettingsView: View {
             }
         }
         .navigationTitle("Quick buttons")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -23,9 +23,6 @@ private struct PermissionsSettingsView: View {
             })
         }
         .navigationTitle("Permissions")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -82,9 +79,6 @@ struct ChatBotCommandsSettingsView: View {
             }
         }
         .navigationTitle("Commands")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -109,8 +103,5 @@ struct ChatBotSettingsView: View {
             }
         }
         .navigationTitle("Bot")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

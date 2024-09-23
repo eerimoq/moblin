@@ -127,8 +127,5 @@ struct StreamObsRemoteControlSettingsView: View {
             }
         }
         .navigationTitle("OBS remote control")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -26,8 +26,5 @@ struct StreamRealtimeIrlSettingsView: View {
             }
         }
         .navigationTitle("RealtimeIRL")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

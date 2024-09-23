@@ -42,8 +42,5 @@ struct StreamAudioSettingsView: View {
             }
         }
         .navigationTitle("Audio")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

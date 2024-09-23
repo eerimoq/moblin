@@ -64,8 +64,5 @@ struct ChatUsernamesToIgnoreSettingsView: View {
             }
         }
         .navigationTitle("Usernames to ignore")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

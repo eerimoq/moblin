@@ -67,8 +67,5 @@ struct StreamingHistorySettingsView: View {
             }
         }
         .navigationTitle("Streaming history")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -20,6 +20,20 @@ import WatchConnectivity
 import WebKit
 import WrappingHStack
 
+enum ShowingPanel {
+    case none
+    case settings
+    case bitrate
+    case mic
+    case streamSwitcher
+    case luts
+    case obs
+    case widgets
+    case recordings
+    case cosmetics
+    case chat
+}
+
 class Browser: Identifiable {
     var id: UUID = .init()
     var browserEffect: BrowserEffect
@@ -295,10 +309,8 @@ final class Model: NSObject, ObservableObject {
     private var whiteBalanceObservation: NSKeyValueObservation?
 
     private var manualFocusMotionAttitude: CMAttitude?
-    @Published var showingSettings = false
-    @Published var showingCosmetics = false
-    @Published var settingsLayout: SettingsLayout = .right
-    @Published var showingChat = false
+
+    @Published var showingPanel: ShowingPanel = .none
     @Published var blackScreen = false
     @Published var findFace = false
     private var findFaceTimer: Timer?
@@ -410,19 +422,13 @@ final class Model: NSObject, ObservableObject {
     @Published var mediaPlayerFileName = "Media name"
     @Published var mediaPlayerSeeking = false
 
-    @Published var showingBitrate = false
-    @Published var showingMic = false
-    @Published var showingRecordings = false
-    @Published var showingWidgets = false
     @Published var showingCamera = false
     @Published var showingCameraBias = false
     @Published var showingCameraWhiteBalance = false
     @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
-    @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
     @Published var showingObs = false
-    @Published var showingLuts = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
     @Published var obsAudioVolume: String = noValue
@@ -670,6 +676,38 @@ final class Model: NSObject, ObservableObject {
     func toggleVerboseStatuses() {
         verboseStatuses.toggle()
         database.verboseStatuses!.toggle()
+    }
+
+    private func isShowingPanelGlobalButton(type: SettingsButtonType) -> Bool {
+        return [
+            SettingsButtonType.widgets,
+            SettingsButtonType.luts,
+            SettingsButtonType.chat,
+            SettingsButtonType.mic,
+            SettingsButtonType.bitrate,
+        ].contains(type)
+    }
+
+    func toggleShowingPanel(type: SettingsButtonType?, panel: ShowingPanel) {
+        if showingPanel == panel {
+            showingPanel = .none
+        } else {
+            showingPanel = panel
+        }
+        for pair in buttonPairs {
+            if isShowingPanelGlobalButton(type: pair.first.button.type) {
+                setGlobalButtonState(type: pair.first.button.type, isOn: false)
+            }
+            if let state = pair.second {
+                if isShowingPanelGlobalButton(type: state.button.type) {
+                    setGlobalButtonState(type: state.button.type, isOn: false)
+                }
+            }
+        }
+        if let type {
+            setGlobalButtonState(type: type, isOn: showingPanel == panel)
+        }
+        updateButtonStates()
     }
 
     @MainActor

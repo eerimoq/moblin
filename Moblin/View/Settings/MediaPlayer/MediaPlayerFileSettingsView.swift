@@ -23,8 +23,5 @@ struct MediaPlayerFileSettingsView: View {
             }
         }
         .navigationTitle("File")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

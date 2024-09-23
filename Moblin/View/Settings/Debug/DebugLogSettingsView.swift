@@ -5,7 +5,6 @@ struct DebugLogSettingsView: View {
     var log: Deque<LogEntry>
     var formatLog: () -> String
     var clearLog: () -> Void
-    var quickDone: (() -> Void)?
 
     var body: some View {
         VStack {
@@ -34,8 +33,5 @@ struct DebugLogSettingsView: View {
             }
         }
         .navigationTitle("Log")
-        .toolbar {
-            SettingsToolbar(quickDone: quickDone)
-        }
     }
 }

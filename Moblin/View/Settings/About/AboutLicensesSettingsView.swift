@@ -5,8 +5,5 @@ struct AboutLicensesSettingsView: View {
     var body: some View {
         LicenseListView()
             .navigationTitle("Licenses")
-            .toolbar {
-                SettingsToolbar()
-            }
     }
 }

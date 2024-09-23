@@ -3,7 +3,6 @@ import SwiftUI
 struct RecordingsRecordingSettingsView: View {
     @EnvironmentObject var model: Model
     var recording: Recording
-    var quickDone: (() -> Void)?
     @State var description = ""
 
     var body: some View {
@@ -84,8 +83,5 @@ struct RecordingsRecordingSettingsView: View {
             }
         }
         .navigationTitle("Recording")
-        .toolbar {
-            SettingsToolbar(quickDone: quickDone)
-        }
     }
 }

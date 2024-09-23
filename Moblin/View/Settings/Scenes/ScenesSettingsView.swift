@@ -67,8 +67,5 @@ struct ScenesSettingsView: View {
             WidgetsSettingsView()
         }
         .navigationTitle("Scenes")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

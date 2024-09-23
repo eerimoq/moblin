@@ -2436,8 +2436,5 @@ struct AboutVersionHistorySettingsView: View {
             }
         }
         .navigationTitle("Version history")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

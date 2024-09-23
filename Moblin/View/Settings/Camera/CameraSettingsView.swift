@@ -40,9 +40,6 @@ struct CustomLutView: View {
             }
         }
         .navigationTitle("Custom LUT")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -104,9 +101,6 @@ struct CameraSettingsLutsView: View {
             }
         }
         .navigationTitle("LUTs")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -153,9 +147,6 @@ struct CameraSettingsAppleLogLutView: View {
             }
         }
         .navigationTitle("Apple Log LUT")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -229,8 +220,5 @@ struct CameraSettingsView: View {
             }
         }
         .navigationTitle("Camera")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

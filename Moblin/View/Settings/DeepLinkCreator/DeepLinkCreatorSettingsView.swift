@@ -197,9 +197,6 @@ struct DeepLinkCreatorSettingsView: View {
                 updateDeepLink()
             }
             .navigationTitle("Deep link creator")
-            .toolbar {
-                SettingsToolbar()
-            }
         }
     }
 }

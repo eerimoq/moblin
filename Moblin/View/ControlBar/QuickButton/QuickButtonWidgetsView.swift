@@ -179,7 +179,6 @@ struct RatingWidgetView: View {
 
 struct QuickButtonWidgetsView: View {
     @EnvironmentObject var model: Model
-    var done: () -> Void
 
     var body: some View {
         Form {
@@ -240,8 +239,5 @@ struct QuickButtonWidgetsView: View {
             }
         }
         .navigationTitle("Widgets")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
     }
 }

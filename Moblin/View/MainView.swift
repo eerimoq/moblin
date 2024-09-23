@@ -71,14 +71,6 @@ struct MainView: View {
         return scene
     }
 
-    private func settingsWidth(width: Double) -> Double {
-        if model.settingsLayout == .full {
-            return width
-        } else {
-            return settingsHalfWidth
-        }
-    }
-
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
         let sideLength = 70.0
         let x = metrics.size.width * focusPoint.x - sideLength / 2
@@ -173,6 +165,50 @@ struct MainView: View {
                         }
                         if model.showBrowser {
                             webBrowserView
+                        }
+                        switch model.showingPanel {
+                        case .settings:
+                            NavigationStack {
+                                SettingsView()
+                            }
+                        case .bitrate:
+                            NavigationStack {
+                                QuickButtonBitrateView(selection: model.stream.bitrate)
+                            }
+                        case .mic:
+                            NavigationStack {
+                                QuickButtonMicView(selectedMic: model.currentMic)
+                            }
+                        case .streamSwitcher:
+                            NavigationStack {
+                                QuickButtonStreamView()
+                            }
+                        case .luts:
+                            NavigationStack {
+                                QuickButtonLutsView()
+                            }
+                        case .obs:
+                            NavigationStack {
+                                QuickButtonObsView()
+                            }
+                        case .widgets:
+                            NavigationStack {
+                                QuickButtonWidgetsView()
+                            }
+                        case .recordings:
+                            NavigationStack {
+                                RecordingsSettingsView()
+                            }
+                        case .cosmetics:
+                            NavigationStack {
+                                CosmeticsSettingsView()
+                            }
+                        case .chat:
+                            NavigationStack {
+                                QuickButtonChatView()
+                            }
+                        case .none:
+                            EmptyView()
                         }
                     }
                     .gesture(
@@ -271,6 +307,11 @@ struct MainView: View {
                         if model.showBrowser {
                             webBrowserView
                         }
+                        if model.showingRemoteControl {
+                            NavigationStack {
+                                ControlBarRemoteControlAssistantView()
+                            }
+                        }
                     }
                     .gesture(
                         MagnificationGesture()
@@ -281,16 +322,59 @@ struct MainView: View {
                                 model.commitZoomX(amount: Float(amount))
                             }
                     )
-                    if model.database.debug!.leftOfControlBar! && model.showingChat {
-                        HStack {
-                            Spacer()
-                            NavigationStack {
-                                QuickButtonChatView {
-                                    model.showingChat = false
-                                }
-                            }
-                            .frame(width: settingsHalfWidth)
+                    switch model.showingPanel {
+                    case .settings:
+                        NavigationStack {
+                            SettingsView()
                         }
+                        .frame(width: settingsHalfWidth)
+                    case .bitrate:
+                        NavigationStack {
+                            QuickButtonBitrateView(selection: model.stream.bitrate)
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .mic:
+                        NavigationStack {
+                            QuickButtonMicView(selectedMic: model.currentMic)
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .streamSwitcher:
+                        NavigationStack {
+                            QuickButtonStreamView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .luts:
+                        NavigationStack {
+                            QuickButtonLutsView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .obs:
+                        NavigationStack {
+                            QuickButtonObsView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .widgets:
+                        NavigationStack {
+                            QuickButtonWidgetsView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .recordings:
+                        NavigationStack {
+                            RecordingsSettingsView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .cosmetics:
+                        NavigationStack {
+                            CosmeticsSettingsView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .chat:
+                        NavigationStack {
+                            QuickButtonChatView()
+                        }
+                        .frame(width: settingsHalfWidth)
+                    case .none:
+                        EmptyView()
                     }
                     ControlBarLandscapeView()
                 }
@@ -307,134 +391,6 @@ struct MainView: View {
                         .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
                         .allowsHitTesting(false)
                     }
-                }
-            }
-            if model.showingSettings {
-                GeometryReader { metrics in
-                    HStack {
-                        if model.settingsLayout == .right {
-                            Spacer()
-                        }
-                        NavigationStack {
-                            SettingsView()
-                        }
-                        .frame(width: settingsWidth(width: metrics.size.width))
-                        .background(Color(uiColor: .systemGroupedBackground))
-                        if model.settingsLayout == .left {
-                            Spacer()
-                        }
-                    }
-                }
-            }
-            if model.showingBitrate {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonBitrateView(selection: model.stream.bitrate) {
-                            model.showingBitrate = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingMic {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonMicView(selectedMic: model.currentMic) {
-                            model.showingMic = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingStreamSwitcher {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonStreamView {
-                            model.showingStreamSwitcher = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingLuts {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonLutsView {
-                            model.showingLuts = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingObs {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonObsView {
-                            model.showingObs = false
-                            model.stopObsSourceScreenshot()
-                            model.stopObsAudioVolume()
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingWidgets {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonWidgetsView {
-                            model.showingWidgets = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingRemoteControl {
-                NavigationStack {
-                    ControlBarRemoteControlAssistantView {
-                        model.showingRemoteControl = false
-                        model.attachCamera()
-                        model.updateScreenAutoOff()
-                        model.remoteControlAssistantStopPreview()
-                    }
-                }
-            }
-            if model.showingRecordings {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        RecordingsSettingsView(quickDone: {
-                            model.showingRecordings = false
-                        })
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if model.showingCosmetics {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        CosmeticsSettingsView(quickDone: {
-                            model.showingCosmetics = false
-                        })
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
-            if !model.database.debug!.leftOfControlBar! && model.showingChat {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        QuickButtonChatView {
-                            model.showingChat = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
                 }
             }
             if debug.letItSnow! {

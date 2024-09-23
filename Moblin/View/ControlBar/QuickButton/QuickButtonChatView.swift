@@ -330,7 +330,6 @@ private struct ChatAlertsView: View {
 
 struct QuickButtonChatView: View {
     @EnvironmentObject var model: Model
-    var done: () -> Void
     @State var message: String = ""
 
     var body: some View {
@@ -364,8 +363,5 @@ struct QuickButtonChatView: View {
             .padding([.leading, .trailing], 5)
         }
         .navigationTitle("Chat")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
     }
 }

@@ -84,7 +84,7 @@ struct ControlBarLandscapeView: View {
             .padding([.trailing], 5)
             HStack(spacing: 0) {
                 Button {
-                    model.showingCosmetics.toggle()
+                    model.toggleShowingPanel(type: nil, panel: .cosmetics)
                 } label: {
                     Image("\(model.iconImage)NoBackground")
                         .resizable()
@@ -94,7 +94,7 @@ struct ControlBarLandscapeView: View {
                         .frame(width: buttonSize, height: buttonSize)
                 }
                 Button {
-                    model.showingSettings.toggle()
+                    model.toggleShowingPanel(type: nil, panel: .settings)
                 } label: {
                     Image(systemName: "gearshape")
                         .frame(width: buttonSize, height: buttonSize)

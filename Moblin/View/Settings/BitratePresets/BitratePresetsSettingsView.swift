@@ -39,8 +39,5 @@ struct BitratePresetsSettingsView: View {
             }
         }
         .navigationTitle("Bitrate presets")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

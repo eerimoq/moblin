@@ -34,8 +34,5 @@ struct StreamButtonsSettingsView: View {
             }
         }
         .navigationTitle("Stream button")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

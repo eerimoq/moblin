@@ -20,8 +20,5 @@ struct WebBrowserSettingsView: View {
             }
         }
         .navigationTitle("Web browser")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

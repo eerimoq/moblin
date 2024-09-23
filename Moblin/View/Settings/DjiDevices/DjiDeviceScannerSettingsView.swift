@@ -47,8 +47,5 @@ struct DjiDeviceScannerSettingsView: View {
             djiScanner.stopScanningForDevices()
         }
         .navigationTitle("Device")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -3,7 +3,6 @@ import SwiftUI
 struct RecordingsSettingsView: View {
     @EnvironmentObject var model: Model
     @State var isPresentingBrowse = false
-    var quickDone: (() -> Void)?
 
     var recordingsStorage: RecordingsStorage {
         model.recordingsStorage
@@ -87,7 +86,6 @@ struct RecordingsSettingsView: View {
                             NavigationLink(
                                 destination: RecordingsRecordingSettingsView(
                                     recording: recording,
-                                    quickDone: quickDone,
                                     description: recording.description ?? ""
                                 )
                             ) {
@@ -121,8 +119,5 @@ struct RecordingsSettingsView: View {
             }
         }
         .navigationTitle("Recordings")
-        .toolbar {
-            SettingsToolbar(quickDone: quickDone)
-        }
     }
 }

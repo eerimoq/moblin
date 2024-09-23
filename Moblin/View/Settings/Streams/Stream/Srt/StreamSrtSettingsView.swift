@@ -92,8 +92,5 @@ struct StreamSrtSettingsView: View {
             }
         }
         .navigationTitle("SRT(LA)")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -62,8 +62,5 @@ struct DeepLinkCreatorQuickButtonsSettingsView: View {
             }
         }
         .navigationTitle("Quick buttons")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

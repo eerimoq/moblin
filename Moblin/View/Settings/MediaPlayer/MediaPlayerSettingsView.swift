@@ -113,8 +113,5 @@ struct MediaPlayerSettingsView: View {
             }
         }
         .navigationTitle("Media player")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

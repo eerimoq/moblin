@@ -261,8 +261,5 @@ struct ChatSettingsView: View {
             }
         }
         .navigationTitle("Chat")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

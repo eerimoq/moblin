@@ -81,8 +81,5 @@ struct StreamSrtConnectionPriorityView: View {
             }
         }
         .navigationTitle("Connection priorities")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

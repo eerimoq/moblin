@@ -41,8 +41,5 @@ struct CatPrinterScannerSettingsView: View {
             scanner.stopScanningForDevices()
         }
         .navigationTitle("Device")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

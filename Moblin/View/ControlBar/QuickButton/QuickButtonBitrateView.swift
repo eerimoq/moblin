@@ -3,7 +3,6 @@ import SwiftUI
 struct QuickButtonBitrateView: View {
     @EnvironmentObject var model: Model
     @State var selection: UInt32
-    var done: () -> Void
 
     var body: some View {
         Form {
@@ -19,16 +18,11 @@ struct QuickButtonBitrateView: View {
                     if model.stream.enabled {
                         model.setStreamBitrate(stream: model.stream)
                     }
-                    model.makeToast(title: formatBytesPerSecond(speed: Int64(bitrate)))
-                    done()
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
         }
         .navigationTitle("Bitrate")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
     }
 }

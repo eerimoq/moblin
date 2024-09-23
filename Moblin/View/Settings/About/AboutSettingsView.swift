@@ -29,8 +29,5 @@ struct AboutSettingsView: View {
             }
         }
         .navigationTitle("About")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

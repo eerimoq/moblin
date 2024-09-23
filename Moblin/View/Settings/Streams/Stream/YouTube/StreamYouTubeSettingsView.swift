@@ -28,8 +28,5 @@ struct StreamYouTubeSettingsView: View {
             }
         }
         .navigationTitle("YouTube")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

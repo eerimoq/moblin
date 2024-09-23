@@ -31,8 +31,5 @@ struct WatchLocalOverlaysSettingsView: View {
             }
         }
         .navigationTitle("Local overlays")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

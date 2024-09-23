@@ -33,8 +33,5 @@ struct CatPrintersSettingsView: View {
             }
         }
         .navigationTitle("Cat printers")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

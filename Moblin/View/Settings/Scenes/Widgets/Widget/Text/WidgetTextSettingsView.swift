@@ -70,9 +70,6 @@ private struct SuggestionsView: View {
             }
         }
         .navigationTitle("Suggestions")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -257,9 +254,6 @@ private struct TextSelectionView: View {
             }
         }
         .navigationTitle("Text")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 

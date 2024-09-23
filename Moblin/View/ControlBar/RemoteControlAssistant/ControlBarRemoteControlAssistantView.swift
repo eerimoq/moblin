@@ -191,7 +191,6 @@ private struct RemoteControlAudioLevelView: View {
 
 struct ControlBarRemoteControlAssistantView: View {
     @EnvironmentObject var model: Model
-    var done: () -> Void
 
     private func submitZoom(value: String) {
         guard let x = Float(value) else {
@@ -466,8 +465,7 @@ struct ControlBarRemoteControlAssistantView: View {
                                 clearLog: {
                                     model.clearRemoteControlAssistantLog()
                                     model.objectWillChange.send()
-                                },
-                                quickDone: done
+                                }
                             )) {
                                 Text("Log")
                             }
@@ -476,9 +474,6 @@ struct ControlBarRemoteControlAssistantView: View {
                 }
             }
             .navigationTitle("Remote control assistant")
-            .toolbar {
-                SettingsToolbar(quickDone: done)
-            }
         }
     }
 }

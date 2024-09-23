@@ -44,8 +44,5 @@ struct StreamAfreecaTvSettingsView: View {
             }
         }
         .navigationTitle("AfreecaTV")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

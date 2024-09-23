@@ -244,8 +244,5 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
             }
         }
         .navigationTitle("Adaptive bitrate")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

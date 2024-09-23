@@ -32,8 +32,5 @@ struct DjiDevicesSettingsView: View {
             }
         }
         .navigationTitle("DJI devices")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

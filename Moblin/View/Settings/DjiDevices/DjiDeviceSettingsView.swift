@@ -322,8 +322,5 @@ struct DjiDeviceSettingsView: View {
             model.setCurrentDjiDevice(device: device)
         }
         .navigationTitle("DJI device")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

@@ -74,9 +74,6 @@ private struct CustomImageView: View {
             }
         }
         .navigationTitle("Image")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -119,9 +116,6 @@ private struct ImageGalleryView: View {
             }
         }
         .navigationTitle("My images")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -185,8 +179,5 @@ struct AlertImageSelectorView: View {
             }
         }
         .navigationTitle("Image")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

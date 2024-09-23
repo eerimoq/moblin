@@ -141,8 +141,5 @@ struct RtmpServerStreamSettingsView: View {
             }
         }
         .navigationTitle("Stream")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

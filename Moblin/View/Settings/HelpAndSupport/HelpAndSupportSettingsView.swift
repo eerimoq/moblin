@@ -22,8 +22,5 @@ struct HelpAndSupportSettingsView: View {
             }
         }
         .navigationTitle("Help and support")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

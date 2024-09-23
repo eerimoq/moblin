@@ -88,8 +88,5 @@ struct LocationSettingsView: View {
             }
         }
         .navigationTitle("Location")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

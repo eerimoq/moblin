@@ -31,9 +31,6 @@ private struct LanguageView: View {
             }
         }
         .navigationTitle(localize(languageCode))
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -86,8 +83,5 @@ struct VoicesView: View {
             }
         }
         .navigationTitle("Voices")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

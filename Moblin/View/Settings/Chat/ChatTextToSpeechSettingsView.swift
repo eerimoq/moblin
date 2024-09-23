@@ -112,8 +112,5 @@ struct ChatTextToSpeechSettingsView: View {
             }
         }
         .navigationTitle("Text to speech")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

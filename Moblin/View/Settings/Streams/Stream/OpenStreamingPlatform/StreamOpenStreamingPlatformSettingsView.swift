@@ -39,8 +39,5 @@ struct StreamOpenStreamingPlatformSettingsView: View {
             }
         }
         .navigationTitle("Open Streaming Platform")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

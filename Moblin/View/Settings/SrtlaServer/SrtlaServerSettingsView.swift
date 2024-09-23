@@ -111,8 +111,5 @@ struct SrtlaServerSettingsView: View {
             }
         }
         .navigationTitle("SRT(LA) server")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

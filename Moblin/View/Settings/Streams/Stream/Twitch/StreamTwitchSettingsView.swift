@@ -117,8 +117,5 @@ struct StreamTwitchSettingsView: View {
             }
         }
         .navigationTitle("Twitch")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

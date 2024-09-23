@@ -41,8 +41,5 @@ struct InlinePickerView: View {
             }
         }
         .navigationTitle(title)
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

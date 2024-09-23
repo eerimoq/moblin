@@ -97,9 +97,6 @@ private struct PasswordView: View {
             }
         }
         .navigationTitle("Password")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
 
@@ -248,8 +245,5 @@ struct RemoteControlSettingsView: View {
             }
         }
         .navigationTitle("Remote control")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

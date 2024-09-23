@@ -124,8 +124,5 @@ struct SrtlaServerStreamSettingsView: View {
             }
         }
         .navigationTitle("Stream")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

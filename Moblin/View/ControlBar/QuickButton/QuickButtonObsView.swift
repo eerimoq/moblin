@@ -159,7 +159,6 @@ private struct ObsStartStopRecordingView: View {
 
 struct QuickButtonObsView: View {
     @EnvironmentObject var model: Model
-    var done: () -> Void
 
     private func submitAudioDelay(value: String) -> String {
         let offsetDouble = Double(value) ?? 0
@@ -281,8 +280,5 @@ struct QuickButtonObsView: View {
             }
         }
         .navigationTitle("OBS remote control")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
     }
 }

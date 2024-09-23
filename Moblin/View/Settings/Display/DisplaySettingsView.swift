@@ -106,8 +106,5 @@ struct DisplaySettingsView: View {
             }
         }
         .navigationTitle("Display")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

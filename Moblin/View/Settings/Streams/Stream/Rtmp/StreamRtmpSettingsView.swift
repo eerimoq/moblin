@@ -17,8 +17,5 @@ struct StreamRtmpSettingsView: View {
             }
         }
         .navigationTitle("RTMP")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }

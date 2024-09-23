@@ -33,8 +33,5 @@ struct DeepLinkCreatorStreamsSettingsView: View {
             }
         }
         .navigationTitle("Streams")
-        .toolbar {
-            SettingsToolbar()
-        }
     }
 }
