@@ -126,6 +126,11 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.twitchRewards = value
                 }))
+                Toggle("Left of control bar", isOn: Binding(get: {
+                    model.database.debug!.leftOfControlBar!
+                }, set: { value in
+                    model.database.debug!.leftOfControlBar = value
+                }))
             } header: {
                 Text("Experimental")
             }

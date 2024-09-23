@@ -281,6 +281,17 @@ struct MainView: View {
                                 model.commitZoomX(amount: Float(amount))
                             }
                     )
+                    if model.database.debug!.leftOfControlBar! && model.showingChat {
+                        HStack {
+                            Spacer()
+                            NavigationStack {
+                                QuickButtonChatView {
+                                    model.showingChat = false
+                                }
+                            }
+                            .frame(width: settingsHalfWidth)
+                        }
+                    }
                     ControlBarLandscapeView()
                 }
                 .overlay(alignment: .topLeading) {
@@ -415,7 +426,7 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
-            if model.showingChat {
+            if !model.database.debug!.leftOfControlBar! && model.showingChat {
                 HStack {
                     Spacer()
                     NavigationStack {

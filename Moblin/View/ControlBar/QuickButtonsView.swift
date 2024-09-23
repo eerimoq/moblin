@@ -250,6 +250,17 @@ struct QuickButtonsInnerView: View {
         model.takeSnapshot()
     }
 
+    private func chatAction(state: ButtonState) {
+        if model.database.debug!.leftOfControlBar! {
+            model.showingChat.toggle()
+            state.button.isOn.toggle()
+            model.setGlobalButtonState(type: .chat, isOn: state.button.isOn)
+            model.updateButtonStates()
+        } else {
+            model.showingChat = true
+        }
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -287,7 +298,7 @@ struct QuickButtonsInnerView: View {
                 })
             case .chat:
                 Button(action: {
-                    model.showingChat = true
+                    chatAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

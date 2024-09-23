@@ -1556,6 +1556,7 @@ class SettingsDebug: Codable {
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
+    var leftOfControlBar: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -3794,6 +3795,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts!.twitch!.raids == nil {
             widget.alerts!.twitch!.raids = .init()
+            store()
+        }
+        if realDatabase.debug!.leftOfControlBar == nil {
+            realDatabase.debug!.leftOfControlBar = false
             store()
         }
     }
