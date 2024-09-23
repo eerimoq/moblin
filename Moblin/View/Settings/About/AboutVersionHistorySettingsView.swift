@@ -22,6 +22,7 @@ private let versions = [
         "• Twitch raid in chat, show toast and alerts. 💡 AgriNorth",
         "• Polish translation updated. ✍️ Seebuch",
         "• German translation updated. ✍️ MaurisonX",
+        "• Chinese, Simplified, translation updated. ✍️ WanQiyang",
     ]),
     Version(version: "0.381.0", date: "2024-09-15", changes: [
         "• Cat printer support.",
