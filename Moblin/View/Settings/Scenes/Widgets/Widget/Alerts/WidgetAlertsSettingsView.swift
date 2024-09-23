@@ -697,3 +697,13 @@ struct WidgetAlertsSettingsView: View {
         }
     }
 }
+
+struct WidgetVideoSettingsView: View {
+    var widget: SettingsWidget
+
+    var body: some View {
+        Section {
+            Text("Video source...")
+        }
+    }
+}
