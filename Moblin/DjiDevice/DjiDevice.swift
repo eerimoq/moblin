@@ -236,6 +236,7 @@ extension DjiDevice: CBPeripheralDelegate {
             logger.info("dji-device: Discarding corrupt message \(value.hexString())")
             return
         }
+        logger.debug("dji-device: Got \(message.format())")
         switch state {
         case .checkingIfPaired:
             processCheckingIfPaired(response: message)
@@ -324,14 +325,22 @@ extension DjiDevice: CBPeripheralDelegate {
             guard let imageStabilization else {
                 return
             }
-            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization)
+            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization, oa5: false)
             writeMessage(message: DjiMessage(target: configureTarget,
                                              id: configureTransactionId,
                                              type: configureType,
                                              payload: payload.encode()))
             setState(state: .configuring)
         case .osmoAction5Pro:
-            sendStartStreaming()
+            guard let imageStabilization else {
+                return
+            }
+            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization, oa5: true)
+            writeMessage(message: DjiMessage(target: configureTarget,
+                                             id: configureTransactionId,
+                                             type: configureType,
+                                             payload: payload.encode()))
+            setState(state: .configuring)
         case .osmoPocket3:
             sendStartStreaming()
         case .unknown:
@@ -354,7 +363,8 @@ extension DjiDevice: CBPeripheralDelegate {
             rtmpUrl: rtmpUrl,
             resolution: resolution,
             fps: fps,
-            bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF)
+            bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF),
+            oa5: model == .osmoAction5Pro
         )
         writeMessage(message: DjiMessage(target: startStreamingTarget,
                                          id: startStreamingTransactionId,
@@ -391,6 +401,7 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func writeMessage(message: DjiMessage) {
+        logger.debug("dji-device: Send \(message.format())")
         writeValue(value: message.encode())
     }
 

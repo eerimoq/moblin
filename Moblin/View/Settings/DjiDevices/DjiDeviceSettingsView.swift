@@ -226,7 +226,7 @@ struct DjiDeviceSettingsView: View {
                     }
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))
-                if device.model == .osmoAction4 {
+                if device.model == .osmoAction4 || device.model == .osmoAction5Pro {
                     Picker("Image stabilization", selection: Binding(get: {
                         device.imageStabilization!.toString()
                     }, set: { value in

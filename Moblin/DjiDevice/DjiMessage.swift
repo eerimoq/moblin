@@ -143,19 +143,22 @@ class DjiSetupWifiMessagePayload {
 }
 
 class DjiStartStreamingMessagePayload {
-    static let payload1 = Data([0x00, 0x2E, 0x00])
-    static let payload2 = Data([0x02, 0x00])
-    static let payload3 = Data([0x00, 0x00, 0x00])
+    static let payload1 = Data([0x00])
+    static let payload2 = Data([0x00])
+    static let payload3 = Data([0x02, 0x00])
+    static let payload4 = Data([0x00, 0x00, 0x00])
     var rtmpUrl: String
     var resolution: SettingsDjiDeviceResolution
     var bitrateKbps: UInt16
     var fps: Int
+    var oa5: Bool
 
-    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16, oa5: Bool) {
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
         self.fps = fps
         self.bitrateKbps = bitrateKbps
+        self.oa5 = oa5
     }
 
     func encode() -> Data {
@@ -177,13 +180,21 @@ class DjiStartStreamingMessagePayload {
         default:
             fpsByte = 0
         }
+        var byte1: UInt8
+        if oa5 {
+            byte1 = 0x2A
+        } else {
+            byte1 = 0x2E
+        }
         let writer = ByteArray()
         writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
+        writer.writeUInt8(byte1)
+        writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
         writer.writeUInt8(resolutionByte)
         writer.writeUInt16Le(bitrateKbps)
-        writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
-        writer.writeUInt8(fpsByte)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload3)
+        writer.writeUInt8(fpsByte)
+        writer.writeBytes(DjiStartStreamingMessagePayload.payload4)
         writer.writeBytes(djiPackUrl(url: rtmpUrl))
         return writer.data
     }
@@ -198,12 +209,15 @@ class DjiStopStreamingMessagePayload {
 }
 
 class DjiConfigureMessagePayload {
-    static let payload = Data([0x01, 0x01, 0x08, 0x00, 0x01])
+    static let payload1 = Data([0x01, 0x01])
+    static let payload2 = Data([0x00, 0x01])
 
     var imageStabilization: SettingsDjiDeviceImageStabilization
+    var oa5: Bool
 
-    init(imageStabilization: SettingsDjiDeviceImageStabilization) {
+    init(imageStabilization: SettingsDjiDeviceImageStabilization, oa5: Bool) {
         self.imageStabilization = imageStabilization
+        self.oa5 = oa5
     }
 
     func encode() -> Data {
@@ -220,8 +234,16 @@ class DjiConfigureMessagePayload {
         case .horizonSteady:
             imageStabilizationByte = 2
         }
+        var byte1: UInt8
+        if oa5 {
+            byte1 = 0x1A
+        } else {
+            byte1 = 0x08
+        }
         let writer = ByteArray()
-        writer.writeBytes(DjiConfigureMessagePayload.payload)
+        writer.writeBytes(DjiConfigureMessagePayload.payload1)
+        writer.writeUInt8(byte1)
+        writer.writeBytes(DjiConfigureMessagePayload.payload2)
         writer.writeUInt8(imageStabilizationByte)
         return writer.data
     }
