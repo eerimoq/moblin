@@ -166,49 +166,71 @@ struct MainView: View {
                         if model.showBrowser {
                             webBrowserView
                         }
-                        switch model.showingPanel {
-                        case .settings:
-                            NavigationStack {
-                                SettingsView()
+                        ZStack {
+                            switch model.showingPanel {
+                            case .settings:
+                                NavigationStack {
+                                    SettingsView()
+                                }
+                            case .bitrate:
+                                NavigationStack {
+                                    QuickButtonBitrateView(selection: model.stream.bitrate)
+                                }
+                            case .mic:
+                                NavigationStack {
+                                    QuickButtonMicView(selectedMic: model.currentMic)
+                                }
+                            case .streamSwitcher:
+                                NavigationStack {
+                                    QuickButtonStreamView()
+                                }
+                            case .luts:
+                                NavigationStack {
+                                    QuickButtonLutsView()
+                                }
+                            case .obs:
+                                NavigationStack {
+                                    QuickButtonObsView()
+                                }
+                            case .widgets:
+                                NavigationStack {
+                                    QuickButtonWidgetsView()
+                                }
+                            case .recordings:
+                                NavigationStack {
+                                    RecordingsSettingsView()
+                                }
+                            case .cosmetics:
+                                NavigationStack {
+                                    CosmeticsSettingsView()
+                                }
+                            case .chat:
+                                NavigationStack {
+                                    QuickButtonChatView()
+                                }
+                            case .none:
+                                EmptyView()
                             }
-                        case .bitrate:
-                            NavigationStack {
-                                QuickButtonBitrateView(selection: model.stream.bitrate)
+                            if model.showingPanel != .none {
+                                HStack {
+                                    Spacer()
+                                    VStack(alignment: .trailing) {
+                                        Button {
+                                            model.toggleShowingPanel(type: nil, panel: .none)
+                                        } label: {
+                                            Image(systemName: "xmark")
+                                                .frame(width: 30, height: 30)
+                                                .overlay(
+                                                    Circle()
+                                                        .stroke(.secondary)
+                                                )
+                                                .foregroundColor(.primary)
+                                                .padding(7)
+                                        }
+                                        Spacer()
+                                    }
+                                }
                             }
-                        case .mic:
-                            NavigationStack {
-                                QuickButtonMicView(selectedMic: model.currentMic)
-                            }
-                        case .streamSwitcher:
-                            NavigationStack {
-                                QuickButtonStreamView()
-                            }
-                        case .luts:
-                            NavigationStack {
-                                QuickButtonLutsView()
-                            }
-                        case .obs:
-                            NavigationStack {
-                                QuickButtonObsView()
-                            }
-                        case .widgets:
-                            NavigationStack {
-                                QuickButtonWidgetsView()
-                            }
-                        case .recordings:
-                            NavigationStack {
-                                RecordingsSettingsView()
-                            }
-                        case .cosmetics:
-                            NavigationStack {
-                                CosmeticsSettingsView()
-                            }
-                        case .chat:
-                            NavigationStack {
-                                QuickButtonChatView()
-                            }
-                        case .none:
-                            EmptyView()
                         }
                     }
                     .gesture(
@@ -322,59 +344,82 @@ struct MainView: View {
                                 model.commitZoomX(amount: Float(amount))
                             }
                     )
-                    switch model.showingPanel {
-                    case .settings:
-                        NavigationStack {
-                            SettingsView()
+                    ZStack {
+                        switch model.showingPanel {
+                        case .settings:
+                            NavigationStack {
+                                SettingsView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .bitrate:
+                            NavigationStack {
+                                QuickButtonBitrateView(selection: model.stream.bitrate)
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .mic:
+                            NavigationStack {
+                                QuickButtonMicView(selectedMic: model.currentMic)
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .streamSwitcher:
+                            NavigationStack {
+                                QuickButtonStreamView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .luts:
+                            NavigationStack {
+                                QuickButtonLutsView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .obs:
+                            NavigationStack {
+                                QuickButtonObsView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .widgets:
+                            NavigationStack {
+                                QuickButtonWidgetsView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .recordings:
+                            NavigationStack {
+                                RecordingsSettingsView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .cosmetics:
+                            NavigationStack {
+                                CosmeticsSettingsView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .chat:
+                            NavigationStack {
+                                QuickButtonChatView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .none:
+                            EmptyView()
                         }
-                        .frame(width: settingsHalfWidth)
-                    case .bitrate:
-                        NavigationStack {
-                            QuickButtonBitrateView(selection: model.stream.bitrate)
+                        if model.showingPanel != .none {
+                            HStack {
+                                Spacer()
+                                VStack(alignment: .trailing) {
+                                    Button {
+                                        model.toggleShowingPanel(type: nil, panel: .none)
+                                    } label: {
+                                        Image(systemName: "xmark")
+                                            .frame(width: 30, height: 30)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(.secondary)
+                                            )
+                                            .foregroundColor(.primary)
+                                            .padding(7)
+                                    }
+                                    Spacer()
+                                }
+                            }
+                            .frame(width: settingsHalfWidth)
                         }
-                        .frame(width: settingsHalfWidth)
-                    case .mic:
-                        NavigationStack {
-                            QuickButtonMicView(selectedMic: model.currentMic)
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .streamSwitcher:
-                        NavigationStack {
-                            QuickButtonStreamView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .luts:
-                        NavigationStack {
-                            QuickButtonLutsView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .obs:
-                        NavigationStack {
-                            QuickButtonObsView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .widgets:
-                        NavigationStack {
-                            QuickButtonWidgetsView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .recordings:
-                        NavigationStack {
-                            RecordingsSettingsView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .cosmetics:
-                        NavigationStack {
-                            CosmeticsSettingsView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .chat:
-                        NavigationStack {
-                            QuickButtonChatView()
-                        }
-                        .frame(width: settingsHalfWidth)
-                    case .none:
-                        EmptyView()
                     }
                     ControlBarLandscapeView()
                 }
