@@ -685,6 +685,8 @@ final class Model: NSObject, ObservableObject {
             SettingsButtonType.chat,
             SettingsButtonType.mic,
             SettingsButtonType.bitrate,
+            SettingsButtonType.recordings,
+            SettingsButtonType.stream,
         ].contains(type)
     }
 
