@@ -2372,7 +2372,7 @@ final class Model: NSObject, ObservableObject {
                     chatTextToSpeech.say(user: user, message: message, isRedemption: post.isRedemption())
                 }
             }
-            if isCatPrinterConnected() {
+            if isAnyConnectedCatPrinterPrintingChat() {
                 printChatMessage(post: post)
             }
             numberOfChatPostsPerTick += 1
@@ -2451,7 +2451,11 @@ final class Model: NSObject, ObservableObject {
             guard let ciImage = CIImage(image: image) else {
                 return
             }
-            self.printImage(image: ciImage, feedPaperDelay: 3)
+            for catPrinter in self.catPrinters.values
+                where self.getCatPrinterSettings(catPrinter: catPrinter)?.printChat == true
+            {
+                catPrinter.print(image: ciImage, feedPaperDelay: 3)
+            }
         }
     }
 
@@ -8170,14 +8174,10 @@ extension Model {
         }
     }
 
-    private func isCatPrinterConnected() -> Bool {
-        return catPrinters.values.contains(where: { $0.getState() == .connected })
-    }
-
-    private func printImage(image: CIImage, feedPaperDelay: Double? = nil) {
-        for catPrinter in catPrinters.values {
-            catPrinter.print(image: image, feedPaperDelay: feedPaperDelay)
-        }
+    private func isAnyConnectedCatPrinterPrintingChat() -> Bool {
+        return catPrinters.values.contains(where: {
+            $0.getState() == .connected && getCatPrinterSettings(catPrinter: $0)?.printChat == true
+        })
     }
 }
 
@@ -8197,7 +8197,9 @@ extension Model: CatPrinterDelegate {
 extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         DispatchQueue.main.async {
-            self.printImage(image: image)
+            for catPrinter in self.catPrinters.values {
+                catPrinter.print(image: image, feedPaperDelay: nil)
+            }
         }
     }
 }

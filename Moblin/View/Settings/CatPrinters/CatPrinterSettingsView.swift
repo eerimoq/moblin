@@ -64,21 +64,29 @@ struct CatPrinterSettingsView: View {
             } header: {
                 Text("Device")
             }
-            if canEnable() {
-                Section {
-                    Toggle(isOn: Binding(get: {
-                        device.enabled
-                    }, set: { value in
-                        device.enabled = value
-                        if device.enabled {
-                            model.enableCatPrinter(device: device)
-                        } else {
-                            model.disableCatPrinter(device: device)
-                        }
-                    }), label: {
-                        Text("Enabled")
-                    })
-                }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    device.enabled
+                }, set: { value in
+                    device.enabled = value
+                    if device.enabled {
+                        model.enableCatPrinter(device: device)
+                    } else {
+                        model.disableCatPrinter(device: device)
+                    }
+                }), label: {
+                    Text("Enabled")
+                })
+                .disabled(!canEnable())
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    device.printChat!
+                }, set: { value in
+                    device.printChat = value
+                }), label: {
+                    Text("Print chat")
+                })
             }
             if device.enabled {
                 Section {

@@ -1826,6 +1826,7 @@ class SettingsCatPrinter: Codable, Identifiable {
     var enabled: Bool = false
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
+    var printChat: Bool? = true
 }
 
 class SettingsCatPrinters: Codable {
@@ -3795,6 +3796,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts!.twitch!.raids == nil {
             widget.alerts!.twitch!.raids = .init()
+            store()
+        }
+        for device in realDatabase.catPrinters!.devices where device.printChat == nil {
+            device.printChat = true
             store()
         }
     }
