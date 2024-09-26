@@ -23,6 +23,11 @@ private let versions = [
         "• Polish translation updated. ✍️ Seebuch",
         "• German translation updated. ✍️ MaurisonX",
         "• Chinese, Simplified, translation updated. ✍️ WanQiyang",
+        "• Show settings and other panels next to the control bar.",
+        "• Do not show AM/PM to make the clock fit on a single line.",
+        "• Add 10 Mbps bitrate to DJI device settings. 💡 SoWeQ",
+        "• Print chat messages toggle.",
+        "  • Settings -> Cat pritners -> My printer -> Print chat.",
     ]),
     Version(version: "0.381.0", date: "2024-09-15", changes: [
         "• Cat printer support.",
