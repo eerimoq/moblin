@@ -12,6 +12,7 @@ private let scopes = [
     "channel:read:redemptions",
     "channel:read:stream_key",
     "channel:manage:broadcast",
+    "bits:read",
 ]
 private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"

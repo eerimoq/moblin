@@ -142,6 +142,25 @@ private struct NotificationChannelRaidMessage: Decodable {
     var payload: NotificationChannelRaidPayload
 }
 
+struct TwitchEventSubChannelCheerEvent: Decodable {
+    // periphery:ignore
+    var user_name: String?
+    // periphery:ignore
+    var message: String
+    // periphery:ignore
+    var bits: Int
+}
+
+private struct NotificationChannelCheerPayload: Decodable {
+    // periphery:ignore
+    var event: TwitchEventSubChannelCheerEvent
+}
+
+private struct NotificationChannelCheerMessage: Decodable {
+    // periphery:ignore
+    var payload: NotificationChannelCheerPayload
+}
+
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
@@ -151,6 +170,7 @@ protocol TwitchEventSubDelegate: AnyObject {
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent)
+    func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -283,6 +303,19 @@ final class TwitchEventSub: NSObject {
                 logger.info("twitch: event-sub: Failed to setup raid events")
                 return
             }
+            self.subscribeToChannelCheer()
+        }
+    }
+
+    private func subscribeToChannelCheer() {
+        let body = createBody(type: "channel.cheer",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup cheer events")
+                return
+            }
             self.connected = true
         }
     }
@@ -311,6 +344,8 @@ final class TwitchEventSub: NSObject {
             handleChannelPointsCustomRewardRedemptionAdd(messageData: messageData)
         case "channel.raid":
             handleChannelRaid(messageData: messageData)
+        case "channel.cheer":
+            handleChannelCheer(messageData: messageData)
         default:
             if let type = message.metadata.subscription_type {
                 logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -344,18 +379,6 @@ final class TwitchEventSub: NSObject {
 
     private func handleChannelPointsCustomRewardRedemptionAdd(messageData: Data) {
         guard let message = try? JSONDecoder().decode(
-            NotificationChannelRaidMessage.self,
-            from: messageData
-        ) else {
-            let data = String(data: messageData, encoding: .utf8)
-            logger.info("twitch: event-sub: Failed to decode channel.raid (\(data ?? "")).")
-            return
-        }
-        delegate.twitchEventSubChannelRaid(event: message.payload.event)
-    }
-
-    private func handleChannelRaid(messageData: Data) {
-        guard let message = try? JSONDecoder().decode(
             NotificationChannelPointsCustomRewardRedemptionAddMessage.self,
             from: messageData
         ) else {
@@ -367,6 +390,30 @@ final class TwitchEventSub: NSObject {
             return
         }
         delegate.twitchEventSubChannelPointsCustomRewardRedemptionAdd(event: message.payload.event)
+    }
+
+    private func handleChannelRaid(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelRaidMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("twitch: event-sub: Failed to decode channel.raid (\(data ?? "")).")
+            return
+        }
+        delegate.twitchEventSubChannelRaid(event: message.payload.event)
+    }
+
+    private func handleChannelCheer(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelCheerMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("twitch: event-sub: Failed to decode channel.cheer (\(data ?? "")).")
+            return
+        }
+        delegate.twitchEventSubChannelCheer(event: message.payload.event)
     }
 }
 

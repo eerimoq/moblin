@@ -20242,6 +20242,9 @@
         }
       }
     },
+    "Bits" : {
+
+    },
     "Black screen" : {
       "localizations" : {
         "de" : {
@@ -35061,6 +35064,9 @@
           }
         }
       }
+    },
+    "donated %lld bits!" : {
+
     },
     "Done" : {
       "localizations" : {

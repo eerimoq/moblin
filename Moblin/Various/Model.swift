@@ -8014,6 +8014,21 @@ extension Model: TwitchEventSubDelegate {
         }
     }
 
+    func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent) {
+        DispatchQueue.main.async {
+            let user = event.user_name ?? "Anonymous"
+            let text = String(localized: "donated \(event.bits) bits!")
+            self.makeToast(title: "\(user) \(text)")
+            // self.playAlert(alert: .twitchCheer(event))
+            self.appendTwitchChatAlertMessage(
+                user: user,
+                text: event.message,
+                title: String(localized: "Bits"),
+                color: .green
+            )
+        }
+    }
+
     private func appendTwitchChatAlertMessage(user: String, text: String, title: String, color: Color) {
         var id = 0
         appendChatMessage(platform: .twitch,
