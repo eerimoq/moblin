@@ -10,7 +10,11 @@ let maximumNumberOfWatchChatMessages = 50
 let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)
 
-extension String: Error {}
+extension String: @retroactive Error {}
+
+// Do we have a race condition? How to fix?
+extension CMSampleBuffer: @unchecked @retroactive Sendable {}
+extension CVBuffer: @unchecked @retroactive Sendable {}
 
 extension String {
     func trim() -> String {

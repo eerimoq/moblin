@@ -1,7 +1,7 @@
 import AVFoundation
 import Foundation
 
-extension AVCaptureColorSpace: CustomStringConvertible {
+extension AVCaptureColorSpace: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .sRGB:
