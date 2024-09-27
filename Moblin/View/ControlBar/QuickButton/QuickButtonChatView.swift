@@ -53,6 +53,17 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
             }
+            ForEach(post.userBadges, id: \.self) { url in
+                CacheAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    EmptyView()
+                }
+                .padding(2)
+                .frame(height: CGFloat(chat.fontSize * 1.4))
+            }
             Text(post.user!)
                 .foregroundColor(usernameColor)
                 .lineLimit(1)

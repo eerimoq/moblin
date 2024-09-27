@@ -18,6 +18,7 @@ private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var badges: [String: TwitchApiChatBadgesVersion] = [:]
+    private var tryFetchAgainTimer: DispatchSourceTimer?
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId
@@ -25,6 +26,19 @@ private class Badges {
         guard !accessToken.isEmpty else {
             return
         }
+        tryFetch()
+    }
+
+    func stop() {
+        stopTryFetchAgainTimer()
+    }
+
+    func getUrl(badgeId: String) -> String? {
+        return badges[badgeId]?.image_url_2x
+    }
+
+    func tryFetch() {
+        startTryFetchAgainTimer()
         TwitchApi(accessToken: accessToken).getGlobalChatBadges { data in
             guard let data else {
                 return
@@ -38,16 +52,25 @@ private class Badges {
                         }
                         DispatchQueue.main.async {
                             self.addBadges(badges: data)
+                            self.stopTryFetchAgainTimer()
                         }
                     }
             }
         }
     }
 
-    func stop() {}
+    private func startTryFetchAgainTimer() {
+        tryFetchAgainTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        tryFetchAgainTimer!.schedule(deadline: .now() + 30)
+        tryFetchAgainTimer!.setEventHandler { [weak self] in
+            self?.tryFetch()
+        }
+        tryFetchAgainTimer!.activate()
+    }
 
-    func getUrl(badgeId: String) -> String? {
-        return badges[badgeId]?.image_url_2x
+    private func stopTryFetchAgainTimer() {
+        tryFetchAgainTimer?.cancel()
+        tryFetchAgainTimer = nil
     }
 
     private func addBadges(badges: [TwitchApiChatBadgesData]) {
@@ -103,12 +126,16 @@ final class TwitchChatMoblin {
     }
 
     private func handleMessage(message: String) throws {
-        logger.info("xxx \(message)")
         guard let message = try ChatMessage(Message(string: message)) else {
             return
         }
-        logger.info("xxx \(message)")
         let emotes = getEmotes(from: message)
+        var badgeUrls: [URL] = []
+        for badge in message.badges {
+            if let badgeUrl = badges.getUrl(badgeId: badge), let badgeUrl = URL(string: badgeUrl) {
+                badgeUrls.append(badgeUrl)
+            }
+        }
         let text: String
         let isAction = message.isAction()
         if isAction {
@@ -125,6 +152,7 @@ final class TwitchChatMoblin {
             platform: .twitch,
             user: message.sender,
             userColor: message.senderColor,
+            userBadges: badgeUrls,
             segments: segments,
             timestamp: model.digitalClock,
             timestampTime: .now,

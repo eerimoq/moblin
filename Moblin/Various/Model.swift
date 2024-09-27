@@ -198,6 +198,7 @@ struct ChatPost: Identifiable, Equatable {
     var platform: Platform
     var user: String?
     var userColor: String?
+    var userBadges: [URL]
     var segments: [ChatPostSegment]
     var timestamp: String
     var timestampTime: ContinuousClock.Instant
@@ -2304,6 +2305,7 @@ final class Model: NSObject, ObservableObject {
             platform: .unknown,
             user: nil,
             userColor: nil,
+            userBadges: [],
             segments: [],
             timestamp: "",
             timestampTime: .now,
@@ -3980,6 +3982,7 @@ final class Model: NSObject, ObservableObject {
         appendChatMessage(platform: post.platform,
                           user: post.user,
                           userColor: post.userColor,
+                          userBadges: post.userBadges,
                           segments: post.segments,
                           timestamp: post.timestamp,
                           timestampTime: post.timestampTime,
@@ -4183,6 +4186,7 @@ final class Model: NSObject, ObservableObject {
         platform: Platform,
         user: String?,
         userColor: String?,
+        userBadges: [URL],
         segments: [ChatPostSegment],
         timestamp: String,
         timestampTime: ContinuousClock.Instant,
@@ -4205,6 +4209,7 @@ final class Model: NSObject, ObservableObject {
             platform: platform,
             user: user,
             userColor: userColor,
+            userBadges: userBadges,
             segments: segments,
             timestamp: timestamp,
             timestampTime: timestampTime,
@@ -8035,6 +8040,7 @@ extension Model: TwitchEventSubDelegate {
         appendChatMessage(platform: .twitch,
                           user: user,
                           userColor: nil,
+                          userBadges: [],
                           segments: makeChatPostTextSegments(text: text, id: &id),
                           timestamp: digitalClock,
                           timestampTime: .now,

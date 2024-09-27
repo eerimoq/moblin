@@ -222,6 +222,7 @@ class OpenStreamingPlatformChat {
             model.appendChatMessage(platform: .openStreamingPlatform,
                                     user: message.user() ?? "unknown",
                                     userColor: nil,
+                                    userBadges: [],
                                     segments: segments,
                                     timestamp: model.digitalClock,
                                     timestampTime: .now,

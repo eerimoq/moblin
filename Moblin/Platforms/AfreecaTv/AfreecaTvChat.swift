@@ -245,6 +245,7 @@ final class AfreecaTvChat: NSObject {
                 platform: .afreecaTv,
                 user: user,
                 userColor: nil,
+                userBadges: [],
                 segments: segments,
                 timestamp: model.digitalClock,
                 timestampTime: .now,

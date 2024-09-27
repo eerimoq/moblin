@@ -300,6 +300,7 @@ final class YouTubeLiveChat: NSObject {
             model.appendChatMessage(platform: .youTube,
                                     user: chatDescription.authorName.simpleText,
                                     userColor: nil,
+                                    userBadges: [],
                                     segments: nonMutSegments,
                                     timestamp: model.digitalClock,
                                     timestampTime: .now,

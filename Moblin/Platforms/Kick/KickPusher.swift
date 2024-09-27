@@ -182,6 +182,7 @@ final class KickPusher: NSObject {
             platform: .kick,
             user: message.sender.username,
             userColor: message.sender.identity.color,
+            userBadges: [],
             segments: segments,
             timestamp: model.digitalClock,
             timestampTime: .now,
