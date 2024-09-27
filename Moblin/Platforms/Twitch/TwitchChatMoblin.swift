@@ -14,20 +14,67 @@ private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
     return emotes
 }
 
+private class Badges {
+    private var channelId: String = ""
+    private var accessToken: String = ""
+    private var badges: [String: TwitchApiChatBadgesVersion] = [:]
+
+    func start(channelId: String, accessToken: String) {
+        self.channelId = channelId
+        self.accessToken = accessToken
+        guard !accessToken.isEmpty else {
+            return
+        }
+        TwitchApi(accessToken: accessToken).getGlobalChatBadges { data in
+            guard let data else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.addBadges(badges: data)
+                TwitchApi(accessToken: self.accessToken)
+                    .getChannelChatBadges(userId: self.channelId) { data in
+                        guard let data else {
+                            return
+                        }
+                        DispatchQueue.main.async {
+                            self.addBadges(badges: data)
+                        }
+                    }
+            }
+        }
+    }
+
+    func stop() {}
+
+    func getUrl(badgeId: String) -> String? {
+        return badges[badgeId]?.image_url_2x
+    }
+
+    private func addBadges(badges: [TwitchApiChatBadgesData]) {
+        for badge in badges {
+            for version in badge.versions {
+                self.badges["\(badge.set_id)/\(version.id)"] = version
+            }
+        }
+    }
+}
+
 final class TwitchChatMoblin {
     private var model: Model
     private var webSocket: WebSocketClient
     private var emotes: Emotes
+    private var badges: Badges
     private var channelName: String
 
     init(model: Model) {
         self.model = model
         channelName = ""
         emotes = Emotes()
+        badges = Badges()
         webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
     }
 
-    func start(channelName: String, channelId: String, settings: SettingsStreamChat) {
+    func start(channelName: String, channelId: String, settings: SettingsStreamChat, accessToken: String) {
         self.channelName = channelName
         logger.debug("twitch: chat: Start")
         stopInternal()
@@ -38,6 +85,7 @@ final class TwitchChatMoblin {
             onOk: handleOk,
             settings: settings
         )
+        badges.start(channelId: channelId, accessToken: accessToken)
         webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
         webSocket.delegate = self
         webSocket.start()
@@ -50,13 +98,16 @@ final class TwitchChatMoblin {
 
     func stopInternal() {
         emotes.stop()
+        badges.stop()
         webSocket.stop()
     }
 
     private func handleMessage(message: String) throws {
+        logger.info("xxx \(message)")
         guard let message = try ChatMessage(Message(string: message)) else {
             return
         }
+        logger.info("xxx \(message)")
         let emotes = getEmotes(from: message)
         let text: String
         let isAction = message.isAction()

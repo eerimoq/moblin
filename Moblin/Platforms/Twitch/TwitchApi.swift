@@ -49,6 +49,26 @@ struct TwitchApiChannelInformation: Decodable {
     let data: [TwitchApiChannelInformationData]
 }
 
+// periphery:ignore
+struct TwitchApiChatBadgesVersion: Decodable {
+    let id: String
+    let image_url_1x: String
+    let image_url_2x: String
+    let image_url_4x: String
+    let title: String
+}
+
+// periphery:ignore
+struct TwitchApiChatBadgesData: Decodable {
+    let set_id: String
+    let versions: [TwitchApiChatBadgesVersion]
+}
+
+// periphery:ignore
+struct TwitchApiChatBadges: Decodable {
+    let data: [TwitchApiChatBadgesData]
+}
+
 protocol TwitchApiDelegate: AnyObject {
     func twitchApiUnauthorized()
 }
@@ -154,6 +174,29 @@ class TwitchApi {
         """
         doPatch(subPath: "channels?broadcaster_id=\(userId)", body: body.utf8Data, onComplete: { data in
             onComplete(data != nil)
+        })
+    }
+
+    func getGlobalChatBadges(onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void) {
+        doGet(subPath: "chat/badges/global", onComplete: { data in
+            let data = try? JSONDecoder().decode(
+                TwitchApiChatBadges.self,
+                from: data ?? Data()
+            )
+            onComplete(data?.data)
+        })
+    }
+
+    func getChannelChatBadges(
+        userId: String,
+        onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void
+    ) {
+        doGet(subPath: "chat/badges?broadcaster_id=\(userId)", onComplete: { data in
+            let data = try? JSONDecoder().decode(
+                TwitchApiChatBadges.self,
+                from: data ?? Data()
+            )
+            onComplete(data?.data)
         })
     }
 

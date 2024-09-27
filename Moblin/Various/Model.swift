@@ -3554,7 +3554,8 @@ final class Model: NSObject, ObservableObject {
             twitchChat.start(
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,
-                settings: stream.chat!
+                settings: stream.chat!,
+                accessToken: stream.twitchAccessToken!
             )
         }
     }
