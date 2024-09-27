@@ -48,8 +48,8 @@ private struct CollapsedBitrateView: View {
                     .frame(width: 17, height: 17)
                     .padding([.leading], 2)
                     .foregroundColor(color)
-                if !model.speedMbpsNoDecimals.isEmpty {
-                    Text(model.speedMbpsNoDecimals)
+                if !model.speedMbpsOneDecimal.isEmpty {
+                    Text(model.speedMbpsOneDecimal)
                         .foregroundColor(.white)
                         .padding([.trailing], 2)
                 }
