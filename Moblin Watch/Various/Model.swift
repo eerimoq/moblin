@@ -54,6 +54,7 @@ struct ChatPost: Identifiable {
     var kind: ChatPostKind
     var user: String
     var userColor: Color
+    var userBadges: [URL]
     var segments: [ChatPostSegment]
     var timestamp: String
     var highlight: ChatPostHighlight?
@@ -148,6 +149,7 @@ class Model: NSObject, ObservableObject {
                                    kind: .info,
                                    user: "",
                                    userColor: .white,
+                                   userBadges: [],
                                    segments: segments,
                                    timestamp: message.timestamp))
     }
@@ -158,6 +160,7 @@ class Model: NSObject, ObservableObject {
                                    kind: .redLine,
                                    user: "",
                                    userColor: .red,
+                                   userBadges: [],
                                    segments: [],
                                    timestamp: message.timestamp))
     }
@@ -202,6 +205,7 @@ class Model: NSObject, ObservableObject {
                      kind: .normal,
                      user: message.user,
                      userColor: message.userColor.color(),
+                     userBadges: message.userBadges,
                      segments: message.segments.map { ChatPostSegment(
                          text: $0.text,
                          url: makeUrl(url: $0.url)

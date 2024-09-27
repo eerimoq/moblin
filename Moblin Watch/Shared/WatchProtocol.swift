@@ -103,6 +103,7 @@ struct WatchProtocolChatMessage: Codable {
     var timestamp: String
     var user: String
     var userColor: WatchProtocolColor
+    var userBadges: [URL]
     var segments: [WatchProtocolChatSegment]
     var highlight: WatchProtocolChatHighlight?
 }

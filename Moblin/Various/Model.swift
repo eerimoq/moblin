@@ -6193,6 +6193,7 @@ extension Model {
             timestamp: post.timestamp,
             user: user,
             userColor: userColor,
+            userBadges: post.userBadges,
             segments: post.segments
                 .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) },
             highlight: post.highlight?.toWatchProtocol()

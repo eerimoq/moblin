@@ -17,6 +17,15 @@ private struct LineView: View {
                 Text(post.timestamp + " ")
                     .foregroundColor(.gray)
             }
+            ForEach(post.userBadges, id: \.self) { url in
+                CacheImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+                .padding(2)
+                .frame(height: fontSize * 1.3)
+            }
             Text(post.user)
                 .foregroundColor(post.userColor)
             if post.isRedemption() {
