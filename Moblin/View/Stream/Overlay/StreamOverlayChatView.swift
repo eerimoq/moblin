@@ -110,16 +110,18 @@ private struct LineView: View {
                 Text("\(post.timestamp) ")
                     .foregroundColor(timestampColor)
             }
-            ForEach(post.userBadges, id: \.self) { url in
-                CacheAsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    EmptyView()
+            if chat.badges! {
+                ForEach(post.userBadges, id: \.self) { url in
+                    CacheAsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } placeholder: {
+                        EmptyView()
+                    }
+                    .padding(2)
+                    .frame(height: CGFloat(chat.fontSize * 1.4))
                 }
-                .padding(2)
-                .frame(height: CGFloat(chat.fontSize * 1.4))
             }
             Text(post.user!)
                 .foregroundColor(usernameColor)
