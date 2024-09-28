@@ -79,6 +79,14 @@ struct ChatSettingsView: View {
                         Text("Bold message")
                     }
                     Toggle(isOn: Binding(get: {
+                        model.database.chat.badges!
+                    }, set: { value in
+                        model.database.chat.badges = value
+                        model.reloadChatMessages()
+                    })) {
+                        Text("Badges")
+                    }
+                    Toggle(isOn: Binding(get: {
                         model.database.chat.animatedEmotes
                     }, set: { value in
                         model.database.chat.animatedEmotes = value

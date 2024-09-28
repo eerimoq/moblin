@@ -1469,6 +1469,7 @@ class SettingsChat: Codable {
     var botEnabled: Bool? = false
     var botCommandPermissions: SettingsChatBotPermissions? = .init()
     var botSendLowBatteryWarning: Bool? = false
+    var badges: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -3800,6 +3801,14 @@ final class Settings {
         }
         for device in realDatabase.catPrinters!.devices where device.printChat == nil {
             device.printChat = true
+            store()
+        }
+        if realDatabase.chat.badges == nil {
+            realDatabase.chat.badges = true
+            store()
+        }
+        if realDatabase.watch!.chat.badges == nil {
+            realDatabase.watch!.chat.badges = true
             store()
         }
     }

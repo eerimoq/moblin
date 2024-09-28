@@ -36,6 +36,14 @@ struct WatchChatSettingsView: View {
                     Text("Timestamp")
                 }
                 Toggle(isOn: Binding(get: {
+                    model.database.watch!.chat.badges!
+                }, set: { value in
+                    model.database.watch!.chat.badges = value
+                    model.sendSettingsToWatch()
+                })) {
+                    Text("Badges")
+                }
+                Toggle(isOn: Binding(get: {
                     model.database.watch!.chat.notificationOnMessage!
                 }, set: { value in
                     model.database.watch!.chat.notificationOnMessage = value
