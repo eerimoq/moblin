@@ -15,6 +15,13 @@ private struct PermissionsSettingsView: View {
                 Text("Moderators")
             })
             Toggle(isOn: Binding(get: {
+                permissions.subscribersEnabled!
+            }, set: { value in
+                permissions.subscribersEnabled = value
+            }), label: {
+                Text("Subscribers")
+            })
+            Toggle(isOn: Binding(get: {
                 permissions.othersEnabled
             }, set: { value in
                 permissions.othersEnabled = value

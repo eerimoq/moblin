@@ -1147,24 +1147,24 @@
 		0315A34F2AA322ED00295443 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */,
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
-				0315A3792AA39DA800295443 /* TextItemView.swift */,
-				0315A37B2AA439B500295443 /* NameEditView.swift */,
-				0315A37D2AA43DCC00295443 /* TextEditView.swift */,
-				035D37272AB0EBB500045B92 /* IconAndTextView.swift */,
 				031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */,
+				03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */,
+				035D37272AB0EBB500045B92 /* IconAndTextView.swift */,
 				03C088362B0AFFA8000990DA /* InlinePickerView.swift */,
-				032FDBFB2B0B1183007BE85E /* ValueEditView.swift */,
+				0315A37B2AA439B500295443 /* NameEditView.swift */,
 				032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */,
 				032FDC012B0B11C5007BE85E /* SizeEditView.swift */,
-				03D691522B36EDB600038F13 /* TextValueView.swift */,
-				03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */,
 				03C2C2822B5F906E00E2F30B /* SliderView.swift */,
+				03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */,
 				030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */,
 				030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */,
 				03D10E792B64099500B1E436 /* TextEditNavigationView.swift */,
+				0315A37D2AA43DCC00295443 /* TextEditView.swift */,
+				0315A3792AA39DA800295443 /* TextItemView.swift */,
+				03D691522B36EDB600038F13 /* TextValueView.swift */,
+				032FDBFB2B0B1183007BE85E /* ValueEditView.swift */,
 				03980C542C5E74A9000ED476 /* VoicesView.swift */,
 			);
 			path = Utils;

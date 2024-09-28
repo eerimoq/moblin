@@ -20,6 +20,14 @@ import WatchConnectivity
 import WebKit
 import WrappingHStack
 
+private struct ChatBotMessage {
+    let platform: Platform
+    let user: String?
+    let isModerator: Bool
+    let isSubscriber: Bool
+    let segments: [ChatPostSegment]
+}
+
 enum ShowingPanel {
     case none
     case settings
@@ -3992,14 +4000,9 @@ final class Model: NSObject, ObservableObject {
                           highlight: post.highlight)
     }
 
-    private func handleChatBotMessage(
-        platform: Platform,
-        user: String?,
-        isModerator: Bool,
-        segments: [ChatPostSegment]
-    ) {
+    private func handleChatBotMessage(message: ChatBotMessage) {
         var command = ""
-        for segment in segments {
+        for segment in message.segments {
             if let text = segment.text {
                 command += text
             }
@@ -4007,34 +4010,26 @@ final class Model: NSObject, ObservableObject {
         command = command.trim()
         switch command {
         case "!moblin tts on":
-            handleChatBotMessageTtsOn(platform: platform, user: user, isModerator: isModerator)
+            handleChatBotMessageTtsOn(message: message)
         case "!moblin tts off":
-            handleChatBotMessageTtsOff(platform: platform, user: user, isModerator: isModerator)
+            handleChatBotMessageTtsOff(message: message)
         case "!moblin obs fix":
-            handleChatBotMessageObsFix(platform: platform, user: user, isModerator: isModerator)
+            handleChatBotMessageObsFix(message: message)
         case "!moblin map zoom out":
-            handleChatBotMessageMapZoomOut(platform: platform, user: user, isModerator: isModerator)
+            handleChatBotMessageMapZoomOut(message: message)
         default:
             if command.starts(with: "!moblin alert ") {
-                handleChatBotMessageAlert(
-                    platform: platform,
-                    user: user,
-                    isModerator: isModerator,
-                    command: command
-                )
+                handleChatBotMessageAlert(message: message, command: command)
             } else if command.starts(with: "!moblin fax ") {
-                handleChatBotMessageFax(platform: platform, user: user, isModerator: isModerator,
-                                        command: command)
+                handleChatBotMessageFax(message: message, command: command)
             }
         }
     }
 
-    private func handleChatBotMessageTtsOn(platform: Platform, user: String?, isModerator: Bool) {
+    private func handleChatBotMessageTtsOn(message: ChatBotMessage) {
         guard isUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
-            platform: platform,
-            user: user,
-            isModerator: isModerator
+            message: message
         ) else {
             return
         }
@@ -4045,12 +4040,10 @@ final class Model: NSObject, ObservableObject {
         database.chat.textToSpeechEnabled = true
     }
 
-    private func handleChatBotMessageTtsOff(platform: Platform, user: String?, isModerator: Bool) {
+    private func handleChatBotMessageTtsOff(message: ChatBotMessage) {
         guard isUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
-            platform: platform,
-            user: user,
-            isModerator: isModerator
+            message: message
         ) else {
             return
         }
@@ -4062,12 +4055,10 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.reset(running: true)
     }
 
-    private func handleChatBotMessageObsFix(platform: Platform, user: String?, isModerator: Bool) {
+    private func handleChatBotMessageObsFix(message: ChatBotMessage) {
         guard isUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fix,
-            platform: platform,
-            user: user,
-            isModerator: isModerator
+            message: message
         ) else {
             return
         }
@@ -4082,12 +4073,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleChatBotMessageMapZoomOut(platform: Platform, user: String?, isModerator: Bool) {
+    private func handleChatBotMessageMapZoomOut(message: ChatBotMessage) {
         guard isUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.map,
-            platform: platform,
-            user: user,
-            isModerator: isModerator
+            message: message
         ) else {
             return
         }
@@ -4097,17 +4086,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleChatBotMessageAlert(
-        platform: Platform,
-        user: String?,
-        isModerator: Bool,
-        command: String
-    ) {
+    private func handleChatBotMessageAlert(message: ChatBotMessage, command: String) {
         guard isUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.alert!,
-            platform: platform,
-            user: user,
-            isModerator: isModerator
+            message: message
         ) else {
             return
         }
@@ -4116,21 +4098,14 @@ final class Model: NSObject, ObservableObject {
             return
         }
         DispatchQueue.main.async {
-            self.playAlert(alert: .chatBotCommand(parts[2].trim(), user ?? "Unknown"))
+            self.playAlert(alert: .chatBotCommand(parts[2].trim(), message.user ?? "Unknown"))
         }
     }
 
-    private func handleChatBotMessageFax(
-        platform: Platform,
-        user: String?,
-        isModerator: Bool,
-        command: String
-    ) {
+    private func handleChatBotMessageFax(message: ChatBotMessage, command: String) {
         guard isUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fax!,
-            platform: platform,
-            user: user,
-            isModerator: isModerator
+            message: message
         ) else {
             return
         }
@@ -4143,17 +4118,18 @@ final class Model: NSObject, ObservableObject {
 
     private func isUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
-        platform: Platform,
-        user: String?,
-        isModerator: Bool
+        message: ChatBotMessage
     ) -> Bool {
-        if isModerator && permissions.moderatorsEnabled {
+        if message.isModerator && permissions.moderatorsEnabled {
             return true
         }
-        guard let user else {
+        if message.isSubscriber && permissions.subscribersEnabled! {
+            return true
+        }
+        guard let user = message.user else {
             return false
         }
-        switch platform {
+        switch message.platform {
         case .twitch:
             return isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user)
         case .kick:
@@ -4199,7 +4175,13 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
-            handleChatBotMessage(platform: platform, user: user, isModerator: isModerator, segments: segments)
+            handleChatBotMessage(message: ChatBotMessage(
+                platform: platform,
+                user: user,
+                isModerator: isModerator,
+                isSubscriber: isSubscriber,
+                segments: segments
+            ))
         }
         if pollEnabled {
             handlePollVote(vote: segments.first?.text?.trim())

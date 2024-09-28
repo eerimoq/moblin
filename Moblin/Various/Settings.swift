@@ -1423,6 +1423,7 @@ class SettingsChatUsername: Identifiable, Codable {
 
 class SettingsChatBotPermissionsCommand: Codable {
     var moderatorsEnabled: Bool = true
+    var subscribersEnabled: Bool? = false
     var othersEnabled: Bool = false
 }
 
@@ -3809,6 +3810,26 @@ final class Settings {
         }
         if realDatabase.watch!.chat.badges == nil {
             realDatabase.watch!.chat.badges = true
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tts.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions!.tts.subscribersEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fix.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions!.fix.subscribersEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.map.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions!.map.subscribersEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.alert!.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions!.alert!.subscribersEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fax!.subscribersEnabled == nil {
+            realDatabase.chat.botCommandPermissions!.fax!.subscribersEnabled = false
             store()
         }
     }

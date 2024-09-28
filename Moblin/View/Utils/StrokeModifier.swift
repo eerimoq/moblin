@@ -21,7 +21,7 @@ private struct StrokeModifier: ViewModifier {
 
     private func appliedStrokeBackground(content: Content) -> some View {
         content
-            .padding(strokeSize*2)
+            .padding(strokeSize * 2)
             .background(
                 Rectangle()
                     .foregroundColor(strokeColor)
@@ -35,7 +35,7 @@ private struct StrokeModifier: ViewModifier {
         Canvas { context, size in
             context.addFilter(.alphaThreshold(min: 0.01))
             if let resolvedView = context.resolveSymbol(id: id) {
-                context.draw(resolvedView, at: .init(x: size.width/2, y: size.height/2))
+                context.draw(resolvedView, at: .init(x: size.width / 2, y: size.height / 2))
             }
         } symbols: {
             content
