@@ -279,6 +279,17 @@ struct QuickButtonObsView: View {
                 }
             }
         }
+        .onAppear {
+            model.listObsScenes()
+            model.startObsSourceScreenshot()
+            model.startObsAudioVolume()
+            model.updateObsAudioDelay()
+        }
+        .onDisappear {
+            logger.info("xxx stop")
+            model.stopObsSourceScreenshot()
+            model.stopObsAudioVolume()
+        }
         .navigationTitle("OBS remote control")
     }
 }

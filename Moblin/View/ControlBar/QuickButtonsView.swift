@@ -184,17 +184,7 @@ struct QuickButtonsInnerView: View {
             )
             return
         }
-        if model.showingObs {
-            model.showingObs = false
-            model.stopObsSourceScreenshot()
-            model.stopObsAudioVolume()
-        } else {
-            model.showingObs = true
-            model.listObsScenes()
-            model.startObsSourceScreenshot()
-            model.startObsAudioVolume()
-            model.updateObsAudioDelay()
-        }
+        model.toggleShowingPanel(type: .obs, panel: .obs)
     }
 
     private func remoteAction(state _: ButtonState) {

@@ -429,7 +429,6 @@ final class Model: NSObject, ObservableObject {
     @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
     @Published var showingGrid = false
-    @Published var showingObs = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
     @Published var obsAudioVolume: String = noValue
@@ -688,6 +687,7 @@ final class Model: NSObject, ObservableObject {
             SettingsButtonType.bitrate,
             SettingsButtonType.recordings,
             SettingsButtonType.stream,
+            SettingsButtonType.obs,
         ].contains(type)
     }
 
