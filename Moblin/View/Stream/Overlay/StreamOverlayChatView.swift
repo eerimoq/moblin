@@ -42,10 +42,7 @@ private struct HighlightMessageView: View {
             Text(name)
         }
         .foregroundColor(messageColor)
-        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
+        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? 0.5 : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
@@ -163,10 +160,7 @@ private struct LineView: View {
                 }
             }
         }
-        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
-        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
+        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? 0.5 : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())

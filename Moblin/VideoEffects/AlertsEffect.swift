@@ -412,11 +412,7 @@ final class AlertsEffect: VideoEffect {
             weight: settings.fontWeight.toSystem(),
             design: settings.fontDesign.toSystem()
         ))
-        .shadow(color: .black, radius: 0, x: 1, y: 0)
-        .shadow(color: .black, radius: 0, x: -1, y: 0)
-        .shadow(color: .black, radius: 0, x: 0, y: 1)
-        .shadow(color: .black, radius: 0, x: 0, y: -1)
-        .shadow(color: .black, radius: 0, x: -2, y: -2)
+        .stroke(color: .black, width: 2)
         .frame(width: 1000)
         let renderer = ImageRenderer(content: message)
         guard let image = renderer.uiImage else {

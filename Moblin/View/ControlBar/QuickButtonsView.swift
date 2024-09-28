@@ -6,8 +6,6 @@ let singleQuickButtonSize: CGFloat = 45
 private struct QuickButtonImage: View {
     var state: ButtonState
     var buttonSize: CGFloat
-    var slash: Bool = false
-    var pause: Bool = false
     var overlayColor: Color = .white
 
     private func getImage(state: ButtonState) -> String {
@@ -37,27 +35,6 @@ private struct QuickButtonImage: View {
                 )
             } else {
                 image
-            }
-            if slash {
-                // Button press animation not perfect.
-                Image(systemName: "line.diagonal")
-                    .frame(width: buttonSize, height: buttonSize)
-                    .foregroundColor(.white)
-                    .rotationEffect(Angle(degrees: 90))
-                    .shadow(color: backgroundColor, radius: 0, x: 1, y: 0)
-                    .shadow(color: backgroundColor, radius: 0, x: -1, y: 0)
-                    .shadow(color: backgroundColor, radius: 0, x: 0, y: 1)
-                    .shadow(color: backgroundColor, radius: 0, x: 0, y: -1)
-                    .shadow(color: backgroundColor, radius: 0, x: -2, y: -2)
-            }
-            if pause {
-                // Button press animation not perfect.
-                Image(systemName: "pause")
-                    .bold()
-                    .font(.system(size: 9))
-                    .frame(width: buttonSize, height: buttonSize)
-                    .offset(y: -1)
-                    .foregroundColor(overlayColor)
             }
         }
     }

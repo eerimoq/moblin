@@ -381,6 +381,7 @@
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
 		03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */; };
 		03CDEAA22C0AB8DD006121D0 /* IrlToolkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */; };
+		03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
 		03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */; };
@@ -907,6 +908,7 @@
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03CDEAA12C0AB8DD006121D0 /* IrlToolkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlToolkit.swift; sourceTree = "<group>"; };
+		03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModifier.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerSettingsView.swift; sourceTree = "<group>"; };
 		03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerStreamSettingsView.swift; sourceTree = "<group>"; };
@@ -1145,6 +1147,7 @@
 		0315A34F2AA322ED00295443 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */,
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
 				0315A3792AA39DA800295443 /* TextItemView.swift */,
@@ -3006,6 +3009,7 @@
 				0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */,
 				038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */,
 				0359F8DC2BD3DA61005BFDA8 /* ElementaryStreamSpecificData.swift in Sources */,
+				03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */,
 				0359F9022BD3DA61005BFDA8 /* ByteArray.swift in Sources */,
 				0359F8CC2BD3DA61005BFDA8 /* FLVTagType.swift in Sources */,
 				0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */,
