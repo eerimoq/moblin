@@ -286,7 +286,6 @@ struct QuickButtonObsView: View {
             model.updateObsAudioDelay()
         }
         .onDisappear {
-            logger.info("xxx stop")
             model.stopObsSourceScreenshot()
             model.stopObsAudioVolume()
         }
