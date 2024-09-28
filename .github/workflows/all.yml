@@ -17,9 +17,11 @@ jobs:
           touch Config.xcconfig
       - name: Source code styling
         run: |
+          brew install swiftformat
           make style-check
       - name: Linting
         run: |
+          brew install swiftlint
           make lint
       - name: Build
         run: |
