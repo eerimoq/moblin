@@ -380,6 +380,9 @@ final class Model: NSObject, ObservableObject {
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var speedAndTotal = noValue
     @Published var speedMbpsOneDecimal = noValue
+    @Published var bitrateStatusColor: Color = .white
+    private var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
+    private var previousBitrateStatusNumberOfFailedEncodings = 0
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     let streamPreviewView = PreviewView(frame: .zero)
     let cameraPreviewView = CameraPreviewUiView()
@@ -1974,6 +1977,7 @@ final class Model: NSObject, ObservableObject {
             self.updateObsSceneSwitcher(now: monotonicNow)
             self.weatherManager.setLocation(location: self.latestKnownLocation)
             self.geographyManager.setLocation(location: self.latestKnownLocation)
+            self.updateBitrateStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2077,6 +2081,24 @@ final class Model: NSObject, ObservableObject {
             } else if obsCurrentScene == obsSceneBeforeSwitchToBrbScene {
                 self.obsSceneBeforeSwitchToBrbScene = nil
             }
+        }
+    }
+
+    private func updateBitrateStatus() {
+        defer {
+            previousBitrateStatusColorSrtDroppedPacketsTotal = media.srtDroppedPacketsTotal
+            previousBitrateStatusNumberOfFailedEncodings = numberOfFailedEncodings
+        }
+        let newBitrateStatusColor: Color
+        if media.srtDroppedPacketsTotal > previousBitrateStatusColorSrtDroppedPacketsTotal {
+            newBitrateStatusColor = .red
+        } else if numberOfFailedEncodings > previousBitrateStatusNumberOfFailedEncodings {
+            newBitrateStatusColor = .red
+        } else {
+            newBitrateStatusColor = .white
+        }
+        if newBitrateStatusColor != bitrateStatusColor {
+            bitrateStatusColor = newBitrateStatusColor
         }
     }
 

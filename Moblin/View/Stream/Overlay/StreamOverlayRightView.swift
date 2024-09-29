@@ -115,14 +115,14 @@ private struct StatusesView: View {
             color: .white
         )
         if textPlacement == .hide {
-            CollapsedBitrateView(show: model.isShowingStatusBitrate(), color: netStreamColor())
+            CollapsedBitrateView(show: model.isShowingStatusBitrate(), color: model.bitrateStatusColor)
         } else {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusBitrate(),
                 icon: "speedometer",
                 text: model.speedAndTotal,
                 textPlacement: textPlacement,
-                color: netStreamColor()
+                color: model.bitrateStatusColor
             )
         }
         if textPlacement == .hide {
