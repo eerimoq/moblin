@@ -3,6 +3,8 @@ import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
+private let borderWidth = 0.7
+
 private struct HighlightMessageView: View {
     let chat: SettingsChat
     let image: String
@@ -42,7 +44,7 @@ private struct HighlightMessageView: View {
             Text(name)
         }
         .foregroundColor(messageColor)
-        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? 0.5 : 0)
+        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? borderWidth : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
@@ -162,7 +164,7 @@ private struct LineView: View {
                 }
             }
         }
-        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? 0.5 : 0)
+        .stroke(color: shadowColor, width: chat.shadowColorEnabled ? borderWidth : 0)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())

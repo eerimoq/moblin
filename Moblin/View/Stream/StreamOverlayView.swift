@@ -123,9 +123,6 @@ struct StreamOverlayView: View {
                 FrontTorchView()
             }
             ZStack {
-                ChatOverlayView()
-                    .opacity(model.database.chat.enabled! ? 1 : 0)
-                    .allowsHitTesting(false)
                 HStack {
                     LeftOverlayView()
                         .padding([.leading], leadingPadding())
@@ -135,6 +132,9 @@ struct StreamOverlayView: View {
                     Spacer()
                     RightOverlayView(width: width)
                 }
+                ChatOverlayView()
+                    .opacity(model.database.chat.enabled! ? 1 : 0)
+                    .allowsHitTesting(false)
                 HStack {
                     StreamOverlayDebugView()
                         .padding([.leading], leadingPadding())

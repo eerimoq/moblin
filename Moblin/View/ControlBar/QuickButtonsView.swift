@@ -6,7 +6,6 @@ let singleQuickButtonSize: CGFloat = 45
 private struct QuickButtonImage: View {
     var state: ButtonState
     var buttonSize: CGFloat
-    var overlayColor: Color = .white
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
