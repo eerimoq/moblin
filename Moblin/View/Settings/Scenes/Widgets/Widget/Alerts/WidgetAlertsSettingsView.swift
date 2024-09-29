@@ -677,7 +677,7 @@ struct WidgetAlertsSettingsView: View {
 struct WidgetVideoSettingsView: View {
     var body: some View {
         Section {
-            Text("Video source...")
+            Text("")
         }
     }
 }
