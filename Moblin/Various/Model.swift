@@ -8027,7 +8027,7 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent) {
         DispatchQueue.main.async {
-            let user = event.user_name ?? "Anonymous"
+            let user = event.user_name ?? String(localized: "Anonymous")
             let text = String(localized: "donated \(event.bits) bits!")
             self.makeToast(title: "\(user) \(text)")
             // self.playAlert(alert: .twitchCheer(event))
