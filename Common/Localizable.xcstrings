@@ -6340,7 +6340,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lu"
+            "value" : "%llu"
           }
         },
         "fi" : {
@@ -6363,8 +6363,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lu"
+            "state" : "translated",
+            "value" : "%llu"
           }
         },
         "it" : {
@@ -112280,7 +112280,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "x必须为%1$f - %2$@"
+            "value" : "x必须为%1$f - %2$f"
           }
         },
         "zh-Hant" : {
