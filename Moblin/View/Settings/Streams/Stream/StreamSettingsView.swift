@@ -125,6 +125,9 @@ struct StreamSettingsView: View {
                         }))
                     }
                 }
+                NavigationLink(destination: StreamDiscordSettingsView(stream: stream)) {
+                    Text("Discord")
+                }
             }
             if model.database.showAllSettings! {
                 if !ProcessInfo().isiOSAppOnMac {

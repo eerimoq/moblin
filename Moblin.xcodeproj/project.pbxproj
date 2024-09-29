@@ -262,6 +262,7 @@
 		03859D7E2C50183C000EFE43 /* SampleBufferCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */; };
 		038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F622C2D7C6400A258C6 /* LogsStorage.swift */; };
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
+		038C76952CA9BEEA00564200 /* StreamDiscordSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C76942CA9BEE000564200 /* StreamDiscordSettingsView.swift */; };
 		038C912D2C44693B003CAD5F /* DjiMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912C2C44693B003CAD5F /* DjiMessage.swift */; };
 		038C91302C458EB4003CAD5F /* DjiDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */; };
 		038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */; };
@@ -798,6 +799,7 @@
 		0384C0372C10E14900B82216 /* WebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketClient.swift; sourceTree = "<group>"; };
 		038C0F622C2D7C6400A258C6 /* LogsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsStorage.swift; sourceTree = "<group>"; };
 		038C0F682C312C3900A258C6 /* PollEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollEffect.swift; sourceTree = "<group>"; };
+		038C76942CA9BEE000564200 /* StreamDiscordSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDiscordSettingsView.swift; sourceTree = "<group>"; };
 		038C912C2C44693B003CAD5F /* DjiMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiMessage.swift; sourceTree = "<group>"; };
 		038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDevicesSettingsView.swift; sourceTree = "<group>"; };
 		038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardYouTubeSettingsView.swift; sourceTree = "<group>"; };
@@ -1105,6 +1107,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				038C76932CA9BED700564200 /* Discord */,
 				03B7DAB62BA6EE4300CEFC1B /* OpenStreamingPlatform */,
 				03EF34B72B1B027000A19221 /* AfreecaTv */,
 				031A4DC42B2CED2D0053F67D /* Audio */,
@@ -1951,6 +1954,14 @@
 				03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */,
 			);
 			path = Cosmetics;
+			sourceTree = "<group>";
+		};
+		038C76932CA9BED700564200 /* Discord */ = {
+			isa = PBXGroup;
+			children = (
+				038C76942CA9BEE000564200 /* StreamDiscordSettingsView.swift */,
+			);
+			path = Discord;
 			sourceTree = "<group>";
 		};
 		038C912A2C44691F003CAD5F /* DjiDevice */ = {
@@ -2870,6 +2881,7 @@
 				038C91302C458EB4003CAD5F /* DjiDevicesSettingsView.swift in Sources */,
 				0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */,
 				0359F8D52BD3DA61005BFDA8 /* VideoEffect.swift in Sources */,
+				038C76952CA9BEEA00564200 /* StreamDiscordSettingsView.swift in Sources */,
 				03987B372C8280B300226C03 /* QuickButtonObsView.swift in Sources */,
 				03311B8B2C3271B90073F9E2 /* MediaPlayer.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,

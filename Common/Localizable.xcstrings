@@ -85895,6 +85895,9 @@
         }
       }
     },
+    "Snapshot Webhook URL" : {
+
+    },
     "Sound" : {
       "localizations" : {
         "de" : {
@@ -105134,6 +105137,9 @@
           }
         }
       }
+    },
+    "Upload snapshots to Discord using a webhook." : {
+
     },
     "Uptime" : {
       "localizations" : {

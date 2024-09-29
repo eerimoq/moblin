@@ -501,3 +501,22 @@ func emojiFlag(country: String) -> String {
 func isPhone() -> Bool {
     return UIDevice.current.userInterfaceIdiom == .phone
 }
+
+func uploadImage(url: URL, paramName: String, fileName: String, image: Data) {
+    let boundary = UUID().uuidString
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
+    var data = Data()
+    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+    data.append(
+        "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n"
+            .data(using: .utf8)!
+    )
+    data.append("content-type: image/png\r\n\r\n".data(using: .utf8)!)
+    data.append(image)
+    data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+    URLSession.shared.uploadTask(with: request, from: data, completionHandler: { _, _, _ in
+        logger.info("Image upload failed")
+    }).resume()
+}

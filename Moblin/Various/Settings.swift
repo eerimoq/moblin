@@ -394,6 +394,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsAutoStopStream: Bool? = false
     var obsAutoStartRecording: Bool? = false
     var obsAutoStopRecording: Bool? = false
+    var discordSnapshotWebhook: String? = ""
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
     var bitrate: UInt32 = 5_000_000
@@ -442,6 +443,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.obsAutoStopStream = obsAutoStopStream
         new.obsAutoStartRecording = obsAutoStartRecording
         new.obsAutoStopRecording = obsAutoStopRecording
+        new.discordSnapshotWebhook = discordSnapshotWebhook
         new.resolution = resolution
         new.fps = fps
         new.bitrate = bitrate
@@ -3830,6 +3832,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.fax!.subscribersEnabled == nil {
             realDatabase.chat.botCommandPermissions!.fax!.subscribersEnabled = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.discordSnapshotWebhook == nil {
+            stream.discordSnapshotWebhook = ""
             store()
         }
     }
