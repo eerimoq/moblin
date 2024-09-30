@@ -355,6 +355,7 @@ struct QuickButtonChatView: View {
             HStack {
                 TextField("Send message", text: $message)
                     .padding(5)
+                    .foregroundColor(.white)
                 Button(action: {
                     model.sendChatMessage(message: message)
                     message = ""
@@ -372,9 +373,10 @@ struct QuickButtonChatView: View {
                         .padding(5)
                 })
             }
-            .border(.secondary)
+            .border(.gray)
             .padding([.leading, .trailing], 5)
         }
+        .background(.black)
         .navigationTitle("Chat")
     }
 }
