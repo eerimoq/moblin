@@ -4061,6 +4061,8 @@ final class Model: NSObject, ObservableObject {
             handleChatBotMessageObsFix(message: message)
         case "!moblin map zoom out":
             handleChatBotMessageMapZoomOut(message: message)
+        case "!moblin snapshot":
+            handleChatBotMessageSnapshot(message: message)
         default:
             if command.starts(with: "!moblin alert ") {
                 handleChatBotMessageAlert(message: message, command: command)
@@ -4128,6 +4130,16 @@ final class Model: NSObject, ObservableObject {
         for mapEffect in mapEffects.values {
             mapEffect.zoomOutTemporarily()
         }
+    }
+
+    private func handleChatBotMessageSnapshot(message: ChatBotMessage) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.snapshot!,
+            message: message
+        ) else {
+            return
+        }
+        takeSnapshot()
     }
 
     private func handleChatBotMessageAlert(message: ChatBotMessage, command: String) {

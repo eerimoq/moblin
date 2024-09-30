@@ -43,32 +43,11 @@ struct ChatBotCommandsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
-                    Text("!moblin tts on")
-                }
-            } footer: {
-                Text("Turn on chat text to speech.")
-            }
-            Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
-                    Text("!moblin tts off")
-                }
-            } footer: {
-                Text("Turn off chat text to speech.")
-            }
-            Section {
                 NavigationLink(destination: PermissionsSettingsView(permissions: permissions.fix)) {
                     Text("!moblin obs fix")
                 }
             } footer: {
                 Text("Fix OBS input.")
-            }
-            Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.map)) {
-                    Text("!moblin map zoom out")
-                }
-            } footer: {
-                Text("Zoom out map widget temporarily.")
             }
             Section {
                 NavigationLink(destination: PermissionsSettingsView(permissions: permissions.alert!)) {
@@ -83,6 +62,34 @@ struct ChatBotCommandsSettingsView: View {
                 }
             } footer: {
                 Text("Fax the streamer images.")
+            }
+            Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.snapshot!)) {
+                    Text("!moblin snapshot")
+                }
+            } footer: {
+                Text("Take snapshot.")
+            }
+            Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.map)) {
+                    Text("!moblin map zoom out")
+                }
+            } footer: {
+                Text("Zoom out map widget temporarily.")
+            }
+            Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
+                    Text("!moblin tts on")
+                }
+            } footer: {
+                Text("Turn on chat text to speech.")
+            }
+            Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
+                    Text("!moblin tts off")
+                }
+            } footer: {
+                Text("Turn off chat text to speech.")
             }
         }
         .navigationTitle("Commands")

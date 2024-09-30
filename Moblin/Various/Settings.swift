@@ -1437,6 +1437,7 @@ class SettingsChatBotPermissions: Codable {
     var map: SettingsChatBotPermissionsCommand = .init()
     var alert: SettingsChatBotPermissionsCommand? = .init()
     var fax: SettingsChatBotPermissionsCommand? = .init()
+    var snapshot: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -3842,6 +3843,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.discordSnapshotWebhookOnlyWhenLive == nil {
             stream.discordSnapshotWebhookOnlyWhenLive = true
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.snapshot == nil {
+            realDatabase.chat.botCommandPermissions!.snapshot = .init()
             store()
         }
     }
