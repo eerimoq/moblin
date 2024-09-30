@@ -8,6 +8,22 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.383.0", date: "2024-09-30", changes: [
+        "• Cat printer print chat toggle. 💡 FLOSS",
+        "• Fix Twitch raid event.",
+        "• Subscribe for Twitch cheer events (aka bits)?",
+        "• Show bitrate with one decimal when collapsed status icons.",
+        "• Twitch chat user badges.",
+        "  • You must be logged in to Twitch for it to work (I think).",
+        "• Fix OBS quick button.",
+        "• Show chat badges toggles, one for main app and one for Watch companion app.",
+        "  • Enabled by default.",
+        "• Chat message border updates to hopefully make it more efficient.",
+        "• Chat in front of scene switcher and zoom preset selector.",
+        "• Red bitrate icon when video encoding fails or SRT packets are dropped.",
+        "• Optionally upload snapshots to Discord using a webhook.",
+        "  • Create a webhook in your Discord server settings.",
+    ]),
     Version(version: "0.382.0", date: "2024-09-22", changes: [
         "• Only save settings when app enters background and terminates.",
         "• Main OBS scene config.",
