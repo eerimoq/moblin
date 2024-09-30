@@ -901,24 +901,24 @@ final class Model: NSObject, ObservableObject {
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-                if self.isLive, let url = URL(string: self.stream.discordSnapshotWebhook!) {
-                    logger.info("Uploading snapshot of \(imageJpeg).")
-                    uploadImage(url: url,
-                                paramName: "snapshot",
-                                fileName: "snapshot.png",
-                                image: imageJpeg)
-                    { ok in
-                        DispatchQueue.main.async {
-                            if ok {
-                                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
-                            } else {
-                                self
-                                    .makeErrorToast(
-                                        title: String(localized: "Failed to upload snapshot to Discord")
-                                    )
-                            }
-                        }
-                    }
+                self.tryUploadSnapshotToDiscord(image: imageJpeg)
+            }
+        }
+    }
+
+    private func tryUploadSnapshotToDiscord(image: Data) {
+        guard !stream.discordSnapshotWebhookOnlyWhenLive! || isLive,
+              let url = URL(string: stream.discordSnapshotWebhook!)
+        else {
+            return
+        }
+        logger.info("Uploading snapshot of \(image).")
+        uploadImage(url: url, paramName: "snapshot", fileName: "snapshot.jpg", image: image) { ok in
+            DispatchQueue.main.async {
+                if ok {
+                    self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
                 }
             }
         }

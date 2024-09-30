@@ -395,6 +395,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsAutoStartRecording: Bool? = false
     var obsAutoStopRecording: Bool? = false
     var discordSnapshotWebhook: String? = ""
+    var discordSnapshotWebhookOnlyWhenLive: Bool? = true
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
     var bitrate: UInt32 = 5_000_000
@@ -444,6 +445,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.obsAutoStartRecording = obsAutoStartRecording
         new.obsAutoStopRecording = obsAutoStopRecording
         new.discordSnapshotWebhook = discordSnapshotWebhook
+        new.discordSnapshotWebhookOnlyWhenLive = discordSnapshotWebhookOnlyWhenLive
         new.resolution = resolution
         new.fps = fps
         new.bitrate = bitrate
@@ -3836,6 +3838,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.discordSnapshotWebhook == nil {
             stream.discordSnapshotWebhook = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.discordSnapshotWebhookOnlyWhenLive == nil {
+            stream.discordSnapshotWebhookOnlyWhenLive = true
             store()
         }
     }

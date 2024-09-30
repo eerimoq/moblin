@@ -16209,7 +16209,7 @@
         }
       }
     },
-    "Auotmatically upload snapshots to a channel in your Discord server when live." : {
+    "Auotmatically upload snapshots to a channel in your Discord server." : {
 
     },
     "Auto cameras use more energy as multiple cameras are powered on, even if only one is used at a time. This allows the phone to quickly change camera when zooming." : {
@@ -68997,6 +68997,9 @@
           }
         }
       }
+    },
+    "Only when live" : {
+
     },
     "Open Moblin in your Apple Watch to end it" : {
       "localizations" : {

@@ -18,9 +18,16 @@ struct StreamDiscordSettingsView: View {
                     onSubmit: submitSnapshotWebhookUrl,
                     keyboardType: .URL
                 )
+                Toggle(isOn: Binding(get: {
+                    stream.discordSnapshotWebhookOnlyWhenLive!
+                }, set: { value in
+                    stream.discordSnapshotWebhookOnlyWhenLive = value
+                })) {
+                    Text("Only when live")
+                }
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Auotmatically upload snapshots to a channel in your Discord server when live.")
+                    Text("Auotmatically upload snapshots to a channel in your Discord server.")
                     Text("")
                     Text("Create a webhook in your Discord server's settings and paste it's URL above.")
                 }
