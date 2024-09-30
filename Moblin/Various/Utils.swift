@@ -502,7 +502,13 @@ func isPhone() -> Bool {
     return UIDevice.current.userInterfaceIdiom == .phone
 }
 
-func uploadImage(url: URL, paramName: String, fileName: String, image: Data) {
+func uploadImage(
+    url: URL,
+    paramName: String,
+    fileName: String,
+    image: Data,
+    onCompleted: @escaping (Bool) -> Void
+) {
     let boundary = UUID().uuidString
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
@@ -513,10 +519,10 @@ func uploadImage(url: URL, paramName: String, fileName: String, image: Data) {
         "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n"
             .data(using: .utf8)!
     )
-    data.append("content-type: image/png\r\n\r\n".data(using: .utf8)!)
+    data.append("content-type: image/jpeg\r\n\r\n".data(using: .utf8)!)
     data.append(image)
     data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-    URLSession.shared.uploadTask(with: request, from: data, completionHandler: { _, _, _ in
-        logger.info("Image upload failed")
+    URLSession.shared.uploadTask(with: request, from: data, completionHandler: { _, response, _ in
+        onCompleted(response?.http?.isSuccessful == true)
     }).resume()
 }

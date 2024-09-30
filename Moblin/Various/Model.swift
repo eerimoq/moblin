@@ -895,17 +895,30 @@ final class Model: NSObject, ObservableObject {
 
     func takeSnapshot() {
         media.takeSnapshot { image in
-            guard let imagePng = image.pngData() else {
+            guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 if let url = URL(string: self.stream.discordSnapshotWebhook!) {
+                    logger.info("Uploading snapshot of \(imageJpeg).")
                     uploadImage(url: url,
                                 paramName: "snapshot",
                                 fileName: "snapshot.png",
-                                image: imagePng)
+                                image: imageJpeg)
+                    { ok in
+                        DispatchQueue.main.async {
+                            if ok {
+                                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
+                            } else {
+                                self
+                                    .makeErrorToast(
+                                        title: String(localized: "Failed to upload snapshot to Discord")
+                                    )
+                            }
+                        }
+                    }
                 }
             }
         }

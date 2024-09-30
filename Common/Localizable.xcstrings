@@ -43379,6 +43379,9 @@
         }
       }
     },
+    "Failed to upload snapshot to Discord" : {
+
+    },
     "Fast IRL" : {
       "localizations" : {
         "de" : {
@@ -85894,6 +85897,9 @@
           }
         }
       }
+    },
+    "Snapshot uploaded to Discord" : {
+
     },
     "Snapshot Webhook URL" : {
 
