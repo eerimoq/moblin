@@ -16209,6 +16209,9 @@
         }
       }
     },
+    "Auotmatically upload snapshots to a channel in your Discord server when live." : {
+
+    },
     "Auto cameras use more energy as multiple cameras are powered on, even if only one is used at a time. This allows the phone to quickly change camera when zooming." : {
       "localizations" : {
         "de" : {
@@ -30508,6 +30511,9 @@
           }
         }
       }
+    },
+    "Create a webhook in your Discord server's settings and paste it's URL above." : {
+
     },
     "Create stream wizard" : {
       "localizations" : {
@@ -85901,7 +85907,7 @@
     "Snapshot uploaded to Discord" : {
 
     },
-    "Snapshot Webhook URL" : {
+    "Snapshot webhook URL" : {
 
     },
     "Sound" : {
@@ -105143,9 +105149,6 @@
           }
         }
       }
-    },
-    "Upload snapshots to Discord using a webhook." : {
-
     },
     "Uptime" : {
       "localizations" : {

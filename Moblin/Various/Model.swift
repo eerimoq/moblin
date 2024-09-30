@@ -901,7 +901,7 @@ final class Model: NSObject, ObservableObject {
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-                if let url = URL(string: self.stream.discordSnapshotWebhook!) {
+                if self.isLive, let url = URL(string: self.stream.discordSnapshotWebhook!) {
                     logger.info("Uploading snapshot of \(imageJpeg).")
                     uploadImage(url: url,
                                 paramName: "snapshot",

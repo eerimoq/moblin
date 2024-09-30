@@ -13,13 +13,17 @@ struct StreamDiscordSettingsView: View {
         Form {
             Section {
                 TextEditNavigationView(
-                    title: String(localized: "Snapshot Webhook URL"),
+                    title: String(localized: "Snapshot webhook URL"),
                     value: stream.discordSnapshotWebhook!,
                     onSubmit: submitSnapshotWebhookUrl,
                     keyboardType: .URL
                 )
             } footer: {
-                Text("Upload snapshots to Discord using a webhook.")
+                VStack(alignment: .leading) {
+                    Text("Auotmatically upload snapshots to a channel in your Discord server when live.")
+                    Text("")
+                    Text("Create a webhook in your Discord server's settings and paste it's URL above.")
+                }
             }
         }
         .navigationTitle("Discord")
