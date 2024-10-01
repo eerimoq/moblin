@@ -181,7 +181,7 @@ final class KickPusher: NSObject {
         model.appendChatMessage(
             platform: .kick,
             user: message.sender.username,
-            userColor: message.sender.identity.color,
+            userColor: RgbColor.fromHex(string: message.sender.identity.color),
             userBadges: [],
             segments: segments,
             timestamp: model.digitalClock,

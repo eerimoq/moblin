@@ -205,7 +205,7 @@ struct ChatPost: Identifiable, Equatable {
     var id: Int
     var platform: Platform
     var user: String?
-    var userColor: String?
+    var userColor: RgbColor?
     var userBadges: [URL]
     var segments: [ChatPostSegment]
     var timestamp: String
@@ -4217,7 +4217,7 @@ final class Model: NSObject, ObservableObject {
     func appendChatMessage(
         platform: Platform,
         user: String?,
-        userColor: String?,
+        userColor: RgbColor?,
         userBadges: [URL],
         segments: [ChatPostSegment],
         timestamp: String,
@@ -6218,10 +6218,8 @@ extension Model {
             return
         }
         let userColor: WatchProtocolColor
-        if let hexColor = post.userColor,
-           let color = WatchProtocolColor.fromHex(value: hexColor)
-        {
-            userColor = color
+        if let color = post.userColor {
+            userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
         } else {
             let color = database.chat.usernameColor
             userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)

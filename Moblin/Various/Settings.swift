@@ -1400,26 +1400,6 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
 
 var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.toString() }
 
-class RgbColor: Codable, Equatable {
-    static func == (lhs: RgbColor, rhs: RgbColor) -> Bool {
-        return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue && lhs.opacity == rhs
-            .opacity
-    }
-
-    var red: Int = 0
-    var green: Int = 0
-    var blue: Int = 0
-    // May be nil
-    var opacity: Double?
-
-    init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
-        self.red = red
-        self.green = green
-        self.blue = blue
-        self.opacity = opacity
-    }
-}
-
 class SettingsChatUsername: Identifiable, Codable {
     var id = UUID()
     var value: String = ""

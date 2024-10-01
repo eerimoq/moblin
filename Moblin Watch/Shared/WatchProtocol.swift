@@ -147,18 +147,6 @@ struct WatchProtocolWorkoutStats: Codable {
 }
 
 extension WatchProtocolColor {
-    static func fromHex(value: String) -> WatchProtocolColor? {
-        if let colorNumber = Int(value.suffix(6), radix: 16) {
-            return WatchProtocolColor(
-                red: (colorNumber >> 16) & 0xFF,
-                green: (colorNumber >> 8) & 0xFF,
-                blue: colorNumber & 0xFF
-            )
-        } else {
-            return nil
-        }
-    }
-
     // periphery:ignore
     private func colorScale(_ color: Int) -> Double {
         return Double(color) / 255

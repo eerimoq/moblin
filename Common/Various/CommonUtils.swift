@@ -633,3 +633,35 @@ extension String {
         return text
     }
 }
+
+class RgbColor: Codable, Equatable {
+    static func == (lhs: RgbColor, rhs: RgbColor) -> Bool {
+        return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue && lhs.opacity == rhs
+            .opacity
+    }
+
+    var red: Int = 0
+    var green: Int = 0
+    var blue: Int = 0
+    // May be nil
+    var opacity: Double?
+
+    init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.opacity = opacity
+    }
+
+    static func fromHex(string: String) -> RgbColor? {
+        if let colorNumber = Int(string.suffix(6), radix: 16) {
+            return RgbColor(
+                red: (colorNumber >> 16) & 0xFF,
+                green: (colorNumber >> 8) & 0xFF,
+                blue: colorNumber & 0xFF
+            )
+        } else {
+            return nil
+        }
+    }
+}
