@@ -239,14 +239,14 @@ final class MapEffect: VideoEffect {
         return (MKMapSnapshotter(options: options), dotOffsetRatio, forceUpdate)
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         update(size: image.extent.size)
         filter.inputImage = mapQueue.sync { self.overlay }
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         guard let image, let dotImageMetalPetal else {
             return image
         }

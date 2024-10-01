@@ -648,7 +648,7 @@ final class AlertsEffect: VideoEffect {
             .cropped(to: image.extent)
     }
 
-    override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?, _: Bool) -> CIImage {
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let (alertImage, messageImage, x, y, landmarkSettings) = lockQueue.sync {
             getNext(image: image)
         }
@@ -656,13 +656,13 @@ final class AlertsEffect: VideoEffect {
             return image
         }
         if let landmarkSettings {
-            return executePositionFace(image, faceDetections, alertImage, landmarkSettings)
+            return executePositionFace(image, info.faceDetections, alertImage, landmarkSettings)
         } else {
             return executePositionScene(image, alertImage, messageImage, x, y)
         }
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         return lockQueue.sync {
             guard imageIndex < images.count else {
                 self.toBeRemoved = true

@@ -422,29 +422,32 @@ final class VideoUnit: NSObject {
                               _ applyBlur: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
+        let info = VideoEffectInfo(
+            isFirstAfterAttach: isFirstAfterAttach,
+            faceDetections: faceDetections,
+            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
+            videoUnit: self
+        )
         if #available(iOS 17.2, *), colorSpace == .appleLog {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
-                faceDetections,
                 applyBlur,
-                isFirstAfterAttach
+                info
             )
         } else if ioVideoUnitMetalPetal {
             return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
-                faceDetections,
                 applyBlur,
-                isFirstAfterAttach
+                info
             )
         } else {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
-                faceDetections,
                 applyBlur,
-                isFirstAfterAttach
+                info
             )
         }
     }
@@ -491,9 +494,8 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
-                                       _ faceDetections: [VNFaceObservation]?,
                                        _ applyBlur: Bool,
-                                       _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                                       _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
         if imageBuffer.isPortrait() {
@@ -508,7 +510,7 @@ final class VideoUnit: NSObject {
             image = blurImage(image)
         }
         for effect in effects {
-            let effectOutputImage = effect.execute(image, faceDetections, isFirstAfterAttach)
+            let effectOutputImage = effect.execute(image, info)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             } else {
@@ -573,9 +575,8 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
-                                        _ faceDetections: [VNFaceObservation]?,
                                         _ applyBlur: Bool,
-                                        _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         let originalImage = image
@@ -592,7 +593,7 @@ final class VideoUnit: NSObject {
             image = blurImageMetalPetal(image)
         }
         for effect in effects {
-            let effectOutputImage = effect.executeMetalPetal(image, faceDetections, isFirstAfterAttach)
+            let effectOutputImage = effect.executeMetalPetal(image, info)
             if effectOutputImage != nil {
                 image = effectOutputImage
             } else {

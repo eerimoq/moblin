@@ -10,14 +10,14 @@ final class GrayScaleEffect: VideoEffect {
         return "gray scale filter"
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
         filter.color = CIColor(red: 0.75, green: 0.75, blue: 0.75)
         filter.intensity = 1.0
         return filter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         let filter = MTISaturationFilter()
         filter.saturation = 0
         filter.inputImage = image

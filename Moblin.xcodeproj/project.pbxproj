@@ -263,6 +263,7 @@
 		038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F622C2D7C6400A258C6 /* LogsStorage.swift */; };
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
 		038C76952CA9BEEA00564200 /* StreamDiscordSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C76942CA9BEE000564200 /* StreamDiscordSettingsView.swift */; };
+		038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C76962CAC99D900564200 /* VideoSourceEffect.swift */; };
 		038C912D2C44693B003CAD5F /* DjiMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912C2C44693B003CAD5F /* DjiMessage.swift */; };
 		038C91302C458EB4003CAD5F /* DjiDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */; };
 		038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */; };
@@ -800,6 +801,7 @@
 		038C0F622C2D7C6400A258C6 /* LogsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsStorage.swift; sourceTree = "<group>"; };
 		038C0F682C312C3900A258C6 /* PollEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollEffect.swift; sourceTree = "<group>"; };
 		038C76942CA9BEE000564200 /* StreamDiscordSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDiscordSettingsView.swift; sourceTree = "<group>"; };
+		038C76962CAC99D900564200 /* VideoSourceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceEffect.swift; sourceTree = "<group>"; };
 		038C912C2C44693B003CAD5F /* DjiMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiMessage.swift; sourceTree = "<group>"; };
 		038C912F2C458EB4003CAD5F /* DjiDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDevicesSettingsView.swift; sourceTree = "<group>"; };
 		038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardYouTubeSettingsView.swift; sourceTree = "<group>"; };
@@ -2244,6 +2246,7 @@
 				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
+				038C76962CAC99D900564200 /* VideoSourceEffect.swift */,
 			);
 			path = VideoEffects;
 			sourceTree = "<group>";
@@ -3041,6 +3044,7 @@
 				03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
+				038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */,
 				03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */,
 				031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */,
 				032B4EDC2C3491F200204547 /* CameraSettingsControlView.swift in Sources */,

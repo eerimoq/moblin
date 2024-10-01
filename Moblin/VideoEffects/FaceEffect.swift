@@ -207,10 +207,9 @@ final class FaceEffect: VideoEffect {
         settings = safeSettings.value
     }
 
-    override func execute(_ image: CIImage,
-                          _ faceDetections: [VNFaceObservation]?,
-                          _ isFirstAfterAttach: Bool) -> CIImage
-    {
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        let faceDetections = info.faceDetections
+        let isFirstAfterAttach = info.isFirstAfterAttach
         loadSettings()
         updateFindFace(faceDetections)
         updateLastFaceDetectionsBefore(isFirstAfterAttach)
@@ -440,10 +439,9 @@ final class FaceEffect: VideoEffect {
         }
     }
 
-    override func executeMetalPetal(_ image: MTIImage?,
-                                    _ faceDetections: [VNFaceObservation]?,
-                                    _ isFirstAfterAttach: Bool) -> MTIImage?
-    {
+    override func executeMetalPetal(_ image: MTIImage?, _ info: VideoEffectInfo) -> MTIImage? {
+        let faceDetections = info.faceDetections
+        let isFirstAfterAttach = info.isFirstAfterAttach
         loadSettings()
         updateFindFace(faceDetections)
         updateLastFaceDetectionsBefore(isFirstAfterAttach)

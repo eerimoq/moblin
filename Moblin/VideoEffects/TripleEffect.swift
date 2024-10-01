@@ -11,7 +11,7 @@ final class TripleEffect: VideoEffect {
         return "triple filter"
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let size = image.extent.size
         let width = size.width / 3
         let height = size.height
@@ -36,7 +36,7 @@ final class TripleEffect: VideoEffect {
         return rightFilter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         guard let image else {
             return image
         }

@@ -78,14 +78,14 @@ final class PollEffect: VideoEffect {
         overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         updateOverlay(size: image.extent.size)
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         guard let image else {
             return image
         }

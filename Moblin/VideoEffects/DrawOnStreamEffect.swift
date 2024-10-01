@@ -117,7 +117,7 @@ final class DrawOnStreamEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = getOverlay()
         filter.backgroundImage = image
         return filter.outputImage ?? image
@@ -129,7 +129,7 @@ final class DrawOnStreamEffect: VideoEffect {
         }
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         guard let overlay = getOverlayMetalPetal() else {
             return image
         }

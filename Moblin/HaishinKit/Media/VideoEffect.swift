@@ -3,6 +3,13 @@ import CoreImage.CIFilterBuiltins
 import MetalPetal
 import Vision
 
+public struct VideoEffectInfo {
+    let isFirstAfterAttach: Bool
+    let faceDetections: [VNFaceObservation]?
+    let presentationTimeStamp: CMTime
+    let videoUnit: VideoUnit
+}
+
 open class VideoEffect: NSObject {
     open func getName() -> String {
         return ""
@@ -12,11 +19,11 @@ open class VideoEffect: NSObject {
         return false
     }
 
-    open func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
+    open func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
     }
 
-    open func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
+    open func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         return image
     }
 
