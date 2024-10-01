@@ -653,6 +653,10 @@ class RgbColor: Codable, Equatable {
         self.opacity = opacity
     }
 
+    func makeReadableOnDarkBackground() -> RgbColor {
+        return self
+    }
+
     static func fromHex(string: String) -> RgbColor? {
         if let colorNumber = Int(string.suffix(6), radix: 16) {
             return RgbColor(

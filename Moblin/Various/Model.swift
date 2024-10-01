@@ -4246,7 +4246,7 @@ final class Model: NSObject, ObservableObject {
             id: chatPostId,
             platform: platform,
             user: user,
-            userColor: userColor,
+            userColor: userColor?.makeReadableOnDarkBackground(),
             userBadges: userBadges,
             segments: segments,
             timestamp: timestamp,
