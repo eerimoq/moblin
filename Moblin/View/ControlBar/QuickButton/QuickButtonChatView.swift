@@ -44,6 +44,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
+                    .foregroundColor(.gray)
             }
             if chat.badges! {
                 ForEach(post.userBadges, id: \.self) { url in
@@ -94,7 +95,6 @@ private struct LineView: View {
             }
         }
         .padding([.leading], 5)
-        .foregroundColor(.white)
     }
 }
 
@@ -204,6 +204,7 @@ private struct MessagesView: View {
                         .frame(minHeight: metrics.size.height)
                     }
                 }
+                .foregroundColor(.white)
                 .rotationEffect(Angle(degrees: 180))
                 .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
                 .coordinateSpace(name: spaceName)
