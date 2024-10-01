@@ -213,6 +213,14 @@ struct MainView: View {
                         if model.showBrowser {
                             webBrowserView
                         }
+                        if model.showingRemoteControl {
+                            ZStack {
+                                NavigationStack {
+                                    ControlBarRemoteControlAssistantView()
+                                }
+                                CloseButtonRemoteView()
+                            }
+                        }
                         ZStack {
                             switch model.showingPanel {
                             case .settings:
