@@ -94,6 +94,7 @@ private struct LineView: View {
             }
         }
         .padding([.leading], 5)
+        .foregroundColor(.white)
     }
 }
 
@@ -345,9 +346,12 @@ struct QuickButtonChatView: View {
                 ChatAlertsView()
             }
             HStack {
-                TextField("Send message", text: $message)
-                    .padding(5)
-                    .foregroundColor(.white)
+                TextField(text: $message) {
+                    Text("Send message")
+                        .foregroundColor(.gray)
+                }
+                .padding(5)
+                .foregroundColor(.white)
                 Button(action: {
                     model.sendChatMessage(message: message)
                     message = ""
@@ -355,6 +359,7 @@ struct QuickButtonChatView: View {
                     Image(systemName: "paperplane")
                         .font(.title)
                         .padding(5)
+                        .foregroundColor(message.isEmpty ? .gray : .accentColor)
                 })
                 .disabled(message.isEmpty)
                 Button(action: {
