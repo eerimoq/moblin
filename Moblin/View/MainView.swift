@@ -2,6 +2,53 @@ import SpriteKit
 import SwiftUI
 import WebKit
 
+private struct CloseButtonView: View {
+    var onClose: () -> Void
+
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing) {
+                Button {
+                    onClose()
+                } label: {
+                    Image(systemName: "xmark")
+                        .frame(width: 30, height: 30)
+                        .overlay(
+                            Circle()
+                                .stroke(.secondary)
+                        )
+                        .foregroundColor(.primary)
+                        .padding(7)
+                }
+                Spacer()
+            }
+        }
+    }
+}
+
+private struct CloseButtonPanelView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        CloseButtonView {
+            model.toggleShowingPanel(type: nil, panel: .none)
+        }
+    }
+}
+
+private struct CloseButtonRemoteView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        CloseButtonView {
+            model.showingRemoteControl = false
+            model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
+            model.updateButtonStates()
+        }
+    }
+}
+
 struct BrowserWidgetView: UIViewRepresentable {
     var browser: Browser
 
@@ -212,24 +259,7 @@ struct MainView: View {
                                 EmptyView()
                             }
                             if model.showingPanel != .none {
-                                HStack {
-                                    Spacer()
-                                    VStack(alignment: .trailing) {
-                                        Button {
-                                            model.toggleShowingPanel(type: nil, panel: .none)
-                                        } label: {
-                                            Image(systemName: "xmark")
-                                                .frame(width: 30, height: 30)
-                                                .overlay(
-                                                    Circle()
-                                                        .stroke(.secondary)
-                                                )
-                                                .foregroundColor(.primary)
-                                                .padding(7)
-                                        }
-                                        Spacer()
-                                    }
-                                }
+                                CloseButtonPanelView()
                             }
                         }
                     }
@@ -330,8 +360,11 @@ struct MainView: View {
                             webBrowserView
                         }
                         if model.showingRemoteControl {
-                            NavigationStack {
-                                ControlBarRemoteControlAssistantView()
+                            ZStack {
+                                NavigationStack {
+                                    ControlBarRemoteControlAssistantView()
+                                }
+                                CloseButtonRemoteView()
                             }
                         }
                     }
@@ -400,25 +433,8 @@ struct MainView: View {
                             EmptyView()
                         }
                         if model.showingPanel != .none {
-                            HStack {
-                                Spacer()
-                                VStack(alignment: .trailing) {
-                                    Button {
-                                        model.toggleShowingPanel(type: nil, panel: .none)
-                                    } label: {
-                                        Image(systemName: "xmark")
-                                            .frame(width: 30, height: 30)
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(.secondary)
-                                            )
-                                            .foregroundColor(.primary)
-                                            .padding(7)
-                                    }
-                                    Spacer()
-                                }
-                            }
-                            .frame(width: settingsHalfWidth)
+                            CloseButtonPanelView()
+                                .frame(width: settingsHalfWidth)
                         }
                     }
                     ControlBarLandscapeView()

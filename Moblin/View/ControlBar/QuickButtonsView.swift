@@ -171,20 +171,7 @@ struct QuickButtonsInnerView: View {
             )
             return
         }
-        if model.showingRemoteControl {
-            model.showingRemoteControl = false
-            model.attachCamera()
-            model.updateScreenAutoOff()
-            model.remoteControlAssistantStopPreview()
-        } else {
-            model.showingRemoteControl = true
-            model.updateRemoteControlAssistantStatus()
-            model.detachCamera()
-            model.updateScreenAutoOff()
-            if model.remoteControlAssistantShowPreview {
-                model.remoteControlAssistantStartPreview()
-            }
-        }
+        model.showingRemoteControl.toggle()
         model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
         model.updateButtonStates()
     }
