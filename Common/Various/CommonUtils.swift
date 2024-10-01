@@ -654,7 +654,11 @@ class RgbColor: Codable, Equatable {
     }
 
     func makeReadableOnDarkBackground() -> RgbColor {
-        return self
+        let threshold = 100
+        guard red < threshold && green < threshold && blue < threshold else {
+            return self
+        }
+        return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
     }
 
     static func fromHex(string: String) -> RgbColor? {
