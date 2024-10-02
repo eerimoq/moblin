@@ -6719,7 +6719,7 @@
         }
       }
     },
-    "<filter> is movie, grayscale, sepia, triple, pixellate or 4:3" : {
+    "<filter> is movie, grayscale, sepia, triple, pixellate or 4:3." : {
 
     },
     "<on/off> is on or off." : {
