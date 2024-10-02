@@ -18,6 +18,8 @@ private func connect(fd: Int32, addr: sockaddr_un) throws {
 class SampleBufferSender: NSObject {
     private var fd: Int32
     private var videoEncoder: VideoEncoder?
+    private var connectTimer: DispatchSourceTimer?
+    private var appGroup: String?
 
     override init() {
         fd = -1
@@ -25,6 +27,15 @@ class SampleBufferSender: NSObject {
     }
 
     func start(appGroup: String) {
+        self.appGroup = appGroup
+        startInternal()
+    }
+
+    private func startInternal() {
+        guard let appGroup else {
+            return
+        }
+        stopConnectTimer()
         do {
             fd = try createSocket()
             try setIgnoreSigPipe(fd: fd)
@@ -32,17 +43,43 @@ class SampleBufferSender: NSObject {
             let path = createSocketPath(containerDir: containerDir)
             let addr = try createAddr(path: path)
             try connect(fd: fd, addr: addr)
-        } catch {}
+        } catch {
+            stop()
+            startConnectTimer()
+        }
     }
 
     func stop() {
         Darwin.close(fd)
+        fd = -1
+        stopConnectTimer()
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
+        guard isConnected() else {
+            return
+        }
         if type == .video {
             try? sendVideo(sampleBuffer, type)
         }
+    }
+
+    private func isConnected() -> Bool {
+        return fd != -1
+    }
+
+    private func startConnectTimer() {
+        connectTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        connectTimer!.schedule(deadline: .now() + 1)
+        connectTimer!.setEventHandler { [weak self] in
+            self?.startInternal()
+        }
+        connectTimer!.activate()
+    }
+
+    private func stopConnectTimer() {
+        connectTimer?.cancel()
+        connectTimer = nil
     }
 
     private func sendVideo(_ sampleBuffer: CMSampleBuffer, _: RPSampleBufferType) throws {
