@@ -1367,6 +1367,7 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case off = "Off"
     case standard = "Standard"
     case cinematic = "Cinematic"
+    case cinematicExtendedEnhanced = "Cinematic extended enhanced"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsVideoStabilizationMode(rawValue: decoder.singleValueContainer()
@@ -1381,6 +1382,8 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
             return .standard
         case String(localized: "Cinematic"):
             return .cinematic
+        case String(localized: "Cinematic extended enhanced"):
+            return .cinematicExtendedEnhanced
         default:
             return .off
         }
@@ -1394,11 +1397,21 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
             return String(localized: "Standard")
         case .cinematic:
             return String(localized: "Cinematic")
+        case .cinematicExtendedEnhanced:
+            return String(localized: "Cinematic extended enhanced")
         }
     }
 }
 
-var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.toString() }
+var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
+    .filter({
+        if #available(iOS 18.0, *) {
+            return true
+        } else {
+            return $0 != .cinematicExtendedEnhanced
+        }
+    })
+    .map { $0.toString()}
 
 class SettingsChatUsername: Identifiable, Codable {
     var id = UUID()

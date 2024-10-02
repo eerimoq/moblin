@@ -5154,13 +5154,28 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func getVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
-        switch database.videoStabilizationMode {
-        case .off:
-            return .off
-        case .standard:
-            return .standard
-        case .cinematic:
-            return .cinematic
+        if #available(iOS 18.0, *) {
+            switch database.videoStabilizationMode {
+            case .off:
+                return .off
+            case .standard:
+                return .standard
+            case .cinematic:
+                return .cinematic
+            case .cinematicExtendedEnhanced:
+                return .cinematicExtendedEnhanced
+            }
+        } else {
+            switch database.videoStabilizationMode {
+            case .off:
+                return .off
+            case .standard:
+                return .standard
+            case .cinematic:
+                return .cinematic
+            case .cinematicExtendedEnhanced:
+                return .off
+            }
         }
     }
 
