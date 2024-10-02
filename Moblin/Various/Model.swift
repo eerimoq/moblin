@@ -4068,6 +4068,8 @@ final class Model: NSObject, ObservableObject {
                 handleChatBotMessageAlert(message: message, command: command)
             } else if command.starts(with: "!moblin fax ") {
                 handleChatBotMessageFax(message: message, command: command)
+            } else if command.starts(with: "!moblin filter ") {
+                handleChatBotMessageFilter(message: message, command: command)
             }
         }
     }
@@ -4170,6 +4172,39 @@ final class Model: NSObject, ObservableObject {
             return
         }
         faxReceiver.add(url: parts[2].trim())
+    }
+
+    private func handleChatBotMessageFilter(message: ChatBotMessage, command: String) {
+        guard isUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.filter!,
+            message: message
+        ) else {
+            return
+        }
+        let parts = command.split(separator: " ")
+        guard parts.count == 4 else {
+            return
+        }
+        var type: SettingsButtonType
+        switch parts[2].trim() {
+        case "movie":
+            type = .movie
+        case "grayscale":
+            type = .grayScale
+        case "sepia":
+            type = .sepia
+        case "triple":
+            type = .triple
+        case "pixellate":
+            type = .pixellate
+        case "4:3":
+            type = .fourThree
+        default:
+            return
+        }
+        setGlobalButtonState(type: type, isOn: parts[3].trim() == "on")
+        sceneUpdated()
+        updateButtonStates()
     }
 
     private func isUserAllowedToUseChatBot(

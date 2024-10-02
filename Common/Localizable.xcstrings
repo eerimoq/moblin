@@ -945,6 +945,9 @@
         }
       }
     },
+    "!moblin filter <filter> <on/off>" : {
+
+    },
     "!moblin map zoom out" : {
       "localizations" : {
         "de" : {
@@ -6715,6 +6718,12 @@
           }
         }
       }
+    },
+    "<filter> is movie, grayscale, sepia, triple, pixellate or 4:3" : {
+
+    },
+    "<on/off> is on or off." : {
+
     },
     "★" : {
       "localizations" : {
@@ -102818,6 +102827,9 @@
           }
         }
       }
+    },
+    "Turn a filter on or off." : {
+
     },
     "Turn off chat text to speech." : {
       "localizations" : {

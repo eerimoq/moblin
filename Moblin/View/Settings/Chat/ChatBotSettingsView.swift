@@ -71,6 +71,19 @@ struct ChatBotCommandsSettingsView: View {
                 Text("Take snapshot.")
             }
             Section {
+                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.filter!)) {
+                    Text("!moblin filter <filter> <on/off>")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Turn a filter on or off.")
+                    Text("")
+                    Text("<filter> is movie, grayscale, sepia, triple, pixellate or 4:3")
+                    Text("")
+                    Text("<on/off> is on or off.")
+                }
+            }
+            Section {
                 NavigationLink(destination: PermissionsSettingsView(permissions: permissions.map)) {
                     Text("!moblin map zoom out")
                 }
