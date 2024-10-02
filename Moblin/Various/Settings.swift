@@ -1404,14 +1404,14 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
 }
 
 var videoStabilizationModes = SettingsVideoStabilizationMode.allCases
-    .filter({
+    .filter {
         if #available(iOS 18.0, *) {
             return true
         } else {
             return $0 != .cinematicExtendedEnhanced
         }
-    })
-    .map { $0.toString()}
+    }
+    .map { $0.toString() }
 
 class SettingsChatUsername: Identifiable, Codable {
     var id = UUID()
