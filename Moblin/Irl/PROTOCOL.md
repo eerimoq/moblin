@@ -46,6 +46,10 @@ create group  9      both ways         no  (client initiated)
 add to group  10     both ways         no  (client initiated)
 ```
 
+### Flags
+- First. First when set, consecutive otherwise.
+- Id. Id is 0 when this flag is not set. This bit is not yet part of the segments below.
+
 ### Video codecs
 
 ```
