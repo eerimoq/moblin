@@ -78,7 +78,7 @@ struct ChatBotCommandsSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("Turn a filter on or off.")
                     Text("")
-                    Text("<filter> is movie, grayscale, sepia, triple, pixellate or 4:3")
+                    Text("<filter> is movie, grayscale, sepia, triple, pixellate or 4:3.")
                     Text("")
                     Text("<on/off> is on or off.")
                 }
