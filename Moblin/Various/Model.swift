@@ -174,6 +174,7 @@ struct ChatHighlight {
     let color: Color
     let image: String
     let title: String
+    let skipTextToSpeech: Bool
 
     func toWatchProtocol() -> WatchProtocolChatHighlight {
         let watchProtocolKind: WatchProtocolChatHighlightKind
@@ -2521,6 +2522,9 @@ final class Model: NSObject, ObservableObject {
             guard post.isSubscriber else {
                 return false
             }
+        }
+        if post.highlight?.skipTextToSpeech == true {
+            return false
         }
         return true
     }
@@ -8102,12 +8106,19 @@ extension Model: TwitchEventSubDelegate {
                 user: user,
                 text: event.message,
                 title: String(localized: "Bits"),
-                color: .green
+                color: .green,
+                skipTextToSpeech: true
             )
         }
     }
 
-    private func appendTwitchChatAlertMessage(user: String, text: String, title: String, color: Color) {
+    private func appendTwitchChatAlertMessage(
+        user: String,
+        text: String,
+        title: String,
+        color: Color,
+        skipTextToSpeech: Bool = false
+    ) {
         var id = 0
         appendChatMessage(platform: .twitch,
                           user: user,
@@ -8123,7 +8134,8 @@ extension Model: TwitchEventSubDelegate {
                               kind: .redemption,
                               color: color,
                               image: "medal",
-                              title: title
+                              title: title,
+                              skipTextToSpeech: skipTextToSpeech
                           ))
     }
 

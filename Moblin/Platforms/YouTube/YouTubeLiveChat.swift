@@ -13,7 +13,8 @@ private func createPaidMessageHighlight(chatDescription: ChatDescription) -> Cha
         kind: .other,
         color: .orange,
         image: "message",
-        title: String(localized: "Super Chat\(amount)")
+        title: String(localized: "Super Chat\(amount)"),
+        skipTextToSpeech: false
     )
 }
 
@@ -26,12 +27,14 @@ private func createPaidStickerHighlight(chatDescription: ChatDescription) -> Cha
         kind: .other,
         color: .green,
         image: "doc.plaintext",
-        title: String(localized: "Super Sticker\(amount)")
+        title: String(localized: "Super Sticker\(amount)"),
+        skipTextToSpeech: false
     )
 }
 
 private func createMemberHighlight() -> ChatHighlight {
-    return ChatHighlight(kind: .other, color: .blue, image: "medal", title: String(localized: "Member"))
+    return ChatHighlight(kind: .other, color: .blue, image: "medal", title: String(localized: "Member"),
+                         skipTextToSpeech: false)
 }
 
 private struct InvalidationContinuationData: Codable {

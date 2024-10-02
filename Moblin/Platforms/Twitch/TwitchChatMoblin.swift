@@ -169,14 +169,16 @@ final class TwitchChatMoblin {
                 kind: .other,
                 color: .green,
                 image: "horn.blast",
-                title: String(localized: "Announcement")
+                title: String(localized: "Announcement"),
+                skipTextToSpeech: false
             )
         } else if message.firstMessage {
             return .init(
                 kind: .other,
                 color: .yellow,
                 image: "bubble.left",
-                title: String(localized: "First time chatter")
+                title: String(localized: "First time chatter"),
+                skipTextToSpeech: false
             )
         } else {
             return nil
