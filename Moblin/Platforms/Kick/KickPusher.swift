@@ -18,6 +18,10 @@ private struct ChatMessage: Decodable {
     var content: String
     var sender: Sender
 
+    func isModerator() -> Bool {
+        return sender.identity.badges.contains(where: { $0.type == "moderator" })
+    }
+
     func isSubscriber() -> Bool {
         return sender.identity.badges.contains(where: { $0.type == "subscriber" })
     }
@@ -188,7 +192,7 @@ final class KickPusher: NSObject {
             timestampTime: .now,
             isAction: false,
             isSubscriber: message.isSubscriber(),
-            isModerator: false,
+            isModerator: message.isModerator(),
             highlight: nil
         )
     }
