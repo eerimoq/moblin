@@ -36,7 +36,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Announcements.
     - /me styling.
   - Optional login.
-    - Follow and subscribe alerts.
+    - Follow, subscribe and raid alerts.
 - Kick integration.
   - Number of viewers.
   - Chat.
@@ -176,6 +176,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Map zoom out.
     - Trigger alerts.
     - Fax.
+    - Turn filters on and off.
+    - Let chat take snapshot.
   - Send low battery warning to chat periodically.
 - Screen capture as video source.
 - Basic video player as video source and mic.
@@ -190,6 +192,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Focus.
 - Cat printer.
   - Print chat and faxes.
+- Take snapshots.
+  - And optionally upload to your Discord server.
 
 ## Apple Watch companion app
 
