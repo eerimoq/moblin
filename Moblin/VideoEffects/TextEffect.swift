@@ -211,13 +211,14 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
+    // Something is wrong with subtitles.
     func updateSubtitles(position: Int, text: String) {
         let endPosition = position + text.count
         let length = 50
         while lastLinePosition + length < endPosition {
             lastLinePosition += length
         }
-        if lastLinePosition >= endPosition {
+        while lastLinePosition >= endPosition {
             lastLinePosition -= length
             lastLinePosition = max(lastLinePosition, 0)
         }
