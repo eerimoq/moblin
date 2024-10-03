@@ -88,6 +88,16 @@ struct CatPrinterSettingsView: View {
                     Text("Print chat")
                 })
             }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    device.faxMeowSound!
+                }, set: { value in
+                    device.faxMeowSound = value
+                    model.catPrinterSetFaxMeowSound(device: device)
+                }), label: {
+                    Text("Fax meow sound")
+                })
+            }
             if device.enabled {
                 Section {
                     HStack {

@@ -1,6 +1,7 @@
 // Based on https://github.com/rbaron/catprinter
 // MIT License
 
+import AVFoundation
 import Collections
 import CoreBluetooth
 import CoreImage
@@ -90,9 +91,12 @@ class CatPrinter: NSObject {
     weak var delegate: (any CatPrinterDelegate)?
     private var tryWriteNextChunkTimer: DispatchSourceTimer?
     private var feedPaperTimer: DispatchSourceTimer?
+    private var audioPlayer: AVAudioPlayer?
+    private var meowSoundEnabled: Bool = false
 
-    func start(deviceId: UUID?) {
+    func start(deviceId: UUID?, meowSoundEnabled: Bool) {
         catPrinterDispatchQueue.async {
+            self.meowSoundEnabled = meowSoundEnabled
             self.startInternal(deviceId: deviceId)
         }
     }
@@ -100,6 +104,12 @@ class CatPrinter: NSObject {
     func stop() {
         catPrinterDispatchQueue.async {
             self.stopInternal()
+        }
+    }
+
+    func setMeowSoundEnabled(meowSoundEnabled: Bool) {
+        catPrinterDispatchQueue.async {
+            self.meowSoundEnabled = meowSoundEnabled
         }
     }
 
@@ -161,7 +171,18 @@ class CatPrinter: NSObject {
             return
         }
         send(command: CatPrinterCommand.getDeviceState(), peripheral, printCharacteristic)
+        if meowSoundEnabled {
+            playMeowSound()
+        }
         currentJob.setState(state: .waitingForReady)
+    }
+
+    private func playMeowSound() {
+        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Nya", withExtension: "mp3") else {
+            return
+        }
+        audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
+        audioPlayer?.play()
     }
 
     private func send(

@@ -8262,7 +8262,14 @@ extension Model {
             catPrinter.delegate = self
             catPrinters[device.id] = catPrinter
         }
-        catPrinters[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+        catPrinters[device.id]?.start(
+            deviceId: device.bluetoothPeripheralId,
+            meowSoundEnabled: device.faxMeowSound!
+        )
+    }
+
+    func catPrinterSetFaxMeowSound(device: SettingsCatPrinter) {
+        catPrinters[device.id]?.setMeowSoundEnabled(meowSoundEnabled: device.faxMeowSound!)
     }
 
     func disableCatPrinter(device: SettingsCatPrinter) {

@@ -79,6 +79,14 @@ private let soundAttributions: [Attribution] = [
         ]
     ),
     Attribution(
+        name: "Nya",
+        text: [
+            "Nya.wav by Mike_bes",
+            "-- https://freesound.org/s/336012/",
+            "-- License: Creative Commons 0",
+        ]
+    ),
+    Attribution(
         name: "SFX magic",
         text: [
             "SFX Magic by renatalmar",

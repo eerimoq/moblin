@@ -1828,6 +1828,7 @@ class SettingsCatPrinter: Codable, Identifiable {
     var bluetoothPeripheralName: String?
     var bluetoothPeripheralId: UUID?
     var printChat: Bool? = true
+    var faxMeowSound: Bool? = true
 }
 
 class SettingsCatPrinters: Codable {
@@ -3845,6 +3846,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.filter == nil {
             realDatabase.chat.botCommandPermissions!.filter = .init()
+            store()
+        }
+        for device in realDatabase.catPrinters!.devices where device.faxMeowSound == nil {
+            device.faxMeowSound = true
             store()
         }
     }
