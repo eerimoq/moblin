@@ -414,7 +414,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld 个通道"
+            "value" : "%lld 通道"
           }
         },
         "zh-Hant" : {
@@ -673,7 +673,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "："
           }
         },
@@ -1720,7 +1720,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅在横屏推流时才支持“推流时镜像前置相机”，竖屏时不支持。"
+            "value" : "仅在横屏推流时才支持“推流时镜像前置镜头”，竖屏时不支持。"
           }
         },
         "zh-Hant" : {
@@ -5792,7 +5792,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ 源音频电平"
+            "value" : "%@ 源音量"
           }
         },
         "zh-Hant" : {
@@ -7234,7 +7234,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ 音频尚未完全支持，或许会正常工作。"
+            "value" : "⚠️ 音频尚未完全支持（或许能正常工作）。"
           }
         },
         "zh-Hant" : {
@@ -9455,7 +9455,7 @@
         }
       }
     },
-    "128 Kpbs or higher is recommended." : {
+    "128 Kbps or higher is recommended." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9466,7 +9466,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Συνιστάται 128 Kpbs ή υψηλότερη."
+            "value" : "Συνιστάται 128 Kbps ή υψηλότερη."
           }
         },
         "es" : {
@@ -9484,7 +9484,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs ou plus sont recommandés."
+            "value" : "128 Kbps ou plus sont recommandés."
           }
         },
         "hi" : {
@@ -9496,31 +9496,31 @@
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Disarankan 128 Kpbs atau lebih tinggi."
+            "value" : "Disarankan 128 Kbps atau lebih tinggi."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Si consiglia 128 Kpbs o superiore."
+            "value" : "Si consiglia 128 Kbps o superiore."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128 Kpbs 以上を推奨します。"
+            "value" : "128 Kbps 以上を推奨します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128Kpbs 이상이 권장됩니다."
+            "value" : "128Kbps 이상이 권장됩니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs of hoger wordt aanbevolen."
+            "value" : "128 Kbps of hoger wordt aanbevolen."
           }
         },
         "pl" : {
@@ -9532,13 +9532,13 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Recomenda-se 128 Kpbs ou superior."
+            "value" : "Recomenda-se 128 Kbps ou superior."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Recomenda-se 128 Kpbs ou superior."
+            "value" : "Recomenda-se 128 Kbps ou superior."
           }
         },
         "ru" : {
@@ -9550,13 +9550,13 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128 kpbs eller högre rekommenderas."
+            "value" : "128 kbps eller högre rekommenderas."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs veya üzeri önerilir."
+            "value" : "128 Kbps veya üzeri önerilir."
           }
         },
         "uk" : {
@@ -9568,53 +9568,53 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Nên dùng 128 Kpbs hoặc cao hơn."
+            "value" : "Nên dùng 128 Kbps hoặc cao hơn."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "建议 128 Kpbs 或更高。"
+            "value" : "建议 128 Kbps 或更高。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "建議 128 Kpbs 或更高。"
+            "value" : "建議 128 Kbps 或更高。"
           }
         }
       }
     },
-    "128 Kpbs or higher is recommended. Set to 0 for automatic." : {
+    "128 Kbps or higher is recommended. Set to 0 for automatic." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128 Kpbs oder höher werden empfohlen. Für automatisch auf 0 stellen."
+            "value" : "128 Kbps oder höher werden empfohlen. Für automatisch auf 0 stellen."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Συνιστάται 128 Kpbs ή υψηλότερη. Ρυθμίστε στο 0 για αυτόματη."
+            "value" : "Συνιστάται 128 Kbps ή υψηλότερη. Ρυθμίστε στο 0 για αυτόματη."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se recomiendan 128 Kpbs o más. Establezca en 0 para automático."
+            "value" : "Se recomiendan 128 Kbps o más. Establezca en 0 para automático."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128 Kpbs tai suurempi on suositeltu. Aseta arvoon 0 automaattista varten."
+            "value" : "128 Kbps tai suurempi on suositeltu. Aseta arvoon 0 automaattista varten."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs ou plus sont recommandés. Réglez sur 0 pour automatique."
+            "value" : "128 Kbps ou plus sont recommandés. Réglez sur 0 pour automatique."
           }
         },
         "hi" : {
@@ -9626,31 +9626,31 @@
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Disarankan 128 Kpbs atau lebih tinggi. Setel ke 0 untuk otomatis."
+            "value" : "Disarankan 128 Kbps atau lebih tinggi. Setel ke 0 untuk otomatis."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Si consiglia 128 Kpbs o superiore. Impostare su 0 per automatico."
+            "value" : "Si consiglia 128 Kbps o superiore. Impostare su 0 per automatico."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs 以上を推奨します。自動の場合は 0 に設定します。"
+            "value" : "128 Kbps 以上を推奨します。自動の場合は 0 に設定します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128Kpbs 이상이 권장됩니다. 자동으로 설정하려면 0으로 설정하세요."
+            "value" : "128Kbps 이상이 권장됩니다. 자동으로 설정하려면 0으로 설정하세요."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs of hoger wordt aanbevolen. Stel in op 0 voor automatisch."
+            "value" : "128 Kbps of hoger wordt aanbevolen. Stel in op 0 voor automatisch."
           }
         },
         "pl" : {
@@ -9662,13 +9662,13 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Recomenda-se 128 Kpbs ou superior. Defina como 0 para automático."
+            "value" : "Recomenda-se 128 Kbps ou superior. Defina como 0 para automático."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Recomenda-se 128 Kpbs ou superior. Defina como 0 para automático."
+            "value" : "Recomenda-se 128 Kbps ou superior. Defina como 0 para automático."
           }
         },
         "ru" : {
@@ -9680,13 +9680,13 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128 Kpbs eller högre rekommenderas. Sätt till 0 för automatisk."
+            "value" : "128 Kbps eller högre rekommenderas. Sätt till 0 för automatisk."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "128 Kpbs veya üzeri önerilir. Otomatik için 0'a ayarlayın."
+            "value" : "128 Kbps veya üzeri önerilir. Otomatik için 0'a ayarlayın."
           }
         },
         "uk" : {
@@ -9698,19 +9698,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Nên dùng 128 Kpbs hoặc cao hơn. Đặt thành 0 để tự động."
+            "value" : "Nên dùng 128 Kbps hoặc cao hơn. Đặt thành 0 để tự động."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "建议 128 Kpbs 或更高。设置为 0 表示自动。"
+            "value" : "建议 128 Kbps 或更高。设置为 0 表示自动。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "建議 128 Kpbs 或更高。設定為 0 表示自動。"
+            "value" : "建議 128 Kbps 或更高。設定為 0 表示自動。"
           }
         }
       }
@@ -10483,8 +10483,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "一个命令"
+            "state" : "translated",
+            "value" : "任意命令"
           }
         },
         "zh-Hant" : {
@@ -10744,7 +10744,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个控制器"
+            "value" : "任意控制器"
           }
         },
         "zh-Hant" : {
@@ -10874,7 +10874,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个设备"
+            "value" : "任意设备"
           }
         },
         "zh-Hant" : {
@@ -11004,7 +11004,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个预设"
+            "value" : "任意预设"
           }
         },
         "zh-Hant" : {
@@ -11133,8 +11133,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "一个打印机"
+            "state" : "translated",
+            "value" : "任意打印机"
           }
         },
         "zh-Hant" : {
@@ -11264,7 +11264,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐私区域"
+            "value" : "任意隐私区域"
           }
         },
         "zh-Hant" : {
@@ -11394,7 +11394,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当上述设置被修改（且并非全部为默认值）时，这里将显示一个二维码和复制到剪贴板按钮。"
+            "value" : "当上述设置被修改（且并非全部为默认值）时，这里将显示一个二维码和“复制到剪贴板”按钮。"
           }
         },
         "zh-Hant" : {
@@ -11524,7 +11524,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个场景"
+            "value" : "任意场景"
           }
         },
         "zh-Hant" : {
@@ -11784,7 +11784,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个音频"
+            "value" : "任意音频"
           }
         },
         "zh-Hant" : {
@@ -11914,7 +11914,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个直播流"
+            "value" : "任意流"
           }
         },
         "zh-Hant" : {
@@ -12044,7 +12044,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个用户名"
+            "value" : "任意用户名"
           }
         },
         "zh-Hant" : {
@@ -12174,7 +12174,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个小组件"
+            "value" : "任意小组件"
           }
         },
         "zh-Hant" : {
@@ -12304,7 +12304,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一个小组件可以在零个或多个场景中使用。"
+            "value" : "小组件可以在零个或多个场景中使用。"
           }
         },
         "zh-Hant" : {
@@ -12563,7 +12563,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "重音符号"
           }
         },
@@ -13739,7 +13739,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "允许的 RTT 峰值"
           }
         },
@@ -14130,7 +14130,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "动画表情会占用大量CPU，在低性能模式中禁用。"
+            "value" : "动画表情会大量消耗 CPU 资源，在低性能模式中禁用。"
           }
         },
         "zh-Hant" : {
@@ -14389,7 +14389,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "匿名的"
           }
         },
@@ -15040,7 +15040,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "辅助设备"
+            "value" : "助手"
           }
         },
         "zh-Hant" : {
@@ -15170,7 +15170,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "辅助设备和主设备"
+            "value" : "助手和直播者"
           }
         },
         "zh-Hant" : {
@@ -15300,7 +15300,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "辅助 URL"
+            "value" : "助手 URL"
           }
         },
         "zh-Hant" : {
@@ -16342,8 +16342,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "即使在同一时间只使用一个相机，由于多个相机同时启动，自动相机会耗费更多的电量。自动相机使手机在缩放时可以快速切换相机。"
+            "state" : "translated",
+            "value" : "自动镜头功能使手机在变焦时可以快速切换镜头。即使在同一时间只使用一个镜头，由于多个镜头同时启动，开启会耗费更多的电量。"
           }
         },
         "zh-Hant" : {
@@ -17253,7 +17253,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "切换直播流时自动开启推流。"
+            "value" : "切换串流时自动开启推流。"
           }
         },
         "zh-Hant" : {
@@ -17383,7 +17383,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "连接时自动选择直播流的音频作为麦克风。"
+            "value" : "连接时自动选择串流的音频作为麦克风。"
           }
         },
         "zh-Hant" : {
@@ -17773,7 +17773,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "后退"
+            "value" : "后置"
           }
         },
         "zh-Hant" : {
@@ -18033,7 +18033,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "后置相机预设"
+            "value" : "后置镜头预设"
           }
         },
         "zh-Hant" : {
@@ -19332,7 +19332,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX 云 SRT"
           }
         },
@@ -19462,7 +19462,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX 云 SRTLA"
           }
         },
@@ -19593,7 +19593,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "最好的稳定性。或许使用 bonding。最灵活的设置。"
+            "value" : "最好的稳定性。可以使用 bonding。最灵活的设置。"
           }
         },
         "zh-Hant" : {
@@ -20763,7 +20763,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "位"
+            "value" : "Bit"
           }
         },
         "zh-Hant" : {
@@ -21543,7 +21543,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "粗体信息"
+            "value" : "粗体消息"
           }
         },
         "zh-Hant" : {
@@ -21932,7 +21932,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "边框"
           }
         },
@@ -22062,8 +22062,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "边框功能会大量消耗 CPU 资源，禁用以省电"
+            "state" : "translated",
+            "value" : "边框功能会大量消耗 CPU 资源，禁用以省电。"
           }
         },
         "zh-Hant" : {
@@ -23493,7 +23493,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "相机"
+            "value" : "镜头"
           }
         },
         "zh-Hant" : {
@@ -23623,7 +23623,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "切换相机"
+            "value" : "切换镜头"
           }
         },
         "zh-Hant" : {
@@ -24533,7 +24533,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "频道名"
+            "value" : "频道名称"
           }
         },
         "zh-Hant" : {
@@ -26226,7 +26226,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编解码器"
+            "value" : "编码器"
           }
         },
         "zh-Hant" : {
@@ -28696,7 +28696,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此相机不支持连续自动白平衡"
+            "value" : "该相机不支持连续自动白平衡"
           }
         },
         "zh-Hant" : {
@@ -30256,7 +30256,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义（美化）"
+            "value" : "个性化"
           }
         },
         "zh-Hant" : {
@@ -30649,7 +30649,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "创建直播流向导"
+            "value" : "创建串流向导"
           }
         },
         "zh-Hant" : {
@@ -31948,8 +31948,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "深层链接创建者"
+            "state" : "translated",
+            "value" : "创建 DeepLink"
           }
         },
         "zh-Hant" : {
@@ -34418,8 +34418,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "显示"
+            "state" : "translated",
+            "value" : "视图"
           }
         },
         "zh-Hant" : {
@@ -34549,7 +34549,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在主视图中显示并作为 App 图标"
+            "value" : "在主画面显示，并作为 App 图标。"
           }
         },
         "zh-Hant" : {
@@ -35719,7 +35719,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "捐赠了 %lld 位！"
+            "value" : "捐赠了 %lld bit！"
           }
         },
         "zh-Hant" : {
@@ -36239,7 +36239,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "画"
+            "value" : "绘制"
           }
         },
         "zh-Hant" : {
@@ -36369,7 +36369,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "双（自动）"
+            "value" : "双镜头（自动）"
           }
         },
         "zh-Hant" : {
@@ -36759,7 +36759,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每个直播流都可以从一个 RTMP 发布者（通常是无人机）接收视频。"
+            "value" : "每个串流都可以从一个 RTMP 发布者（通常是无人机）接收视频。"
           }
         },
         "zh-Hant" : {
@@ -36889,7 +36889,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每个直播流都可以从一个 SRT(LA) 发布者接收视频。"
+            "value" : "每个串流都可以从一个 SRT(LA) 发布者接收视频。"
           }
         },
         "zh-Hant" : {
@@ -41179,7 +41179,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "试验性的"
+            "value" : "试验功能"
           }
         },
         "zh-Hant" : {
@@ -41568,8 +41568,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "脸"
+            "state" : "translated",
+            "value" : "面部相关"
           }
         },
         "zh-Hant" : {
@@ -44692,7 +44692,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "找到面孔"
+            "value" : "找到面部"
           }
         },
         "zh-Hant" : {
@@ -46382,7 +46382,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "供高级用户或您的平台不在上面的列表中时使用。"
+            "value" : "供高级用户（当您的平台不在上面的列表时）使用。"
           }
         },
         "zh-Hant" : {
@@ -47031,8 +47031,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "正面"
+            "state" : "translated",
+            "value" : "前置"
           }
         },
         "zh-Hant" : {
@@ -47292,7 +47292,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "前置相机预设"
+            "value" : "前置镜头预设"
           }
         },
         "zh-Hant" : {
@@ -49762,7 +49762,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏隐私URL"
+            "value" : "隐藏敏感 URL"
           }
         },
         "zh-Hant" : {
@@ -50282,7 +50282,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "最高热状态"
+            "value" : "最热状态"
           }
         },
         "zh-Hant" : {
@@ -52882,7 +52882,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不建议将设置从一台设备导出并导入另一台设备。某些设置在其他设备上不起作用。但深层链接可以在任何设备上导入。"
+            "value" : "不建议将设置从一台设备导出并导入另一台设备。某些设置在其他设备上不起作用。但 DeepLink 可以在任意设备上导入。"
           }
         },
         "zh-Hant" : {
@@ -54052,7 +54052,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "让它下雪吧"
+            "value" : "下雪吧"
           }
         },
         "zh-Hant" : {
@@ -54312,7 +54312,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "光"
+            "value" : "光照"
           }
         },
         "zh-Hant" : {
@@ -54572,7 +54572,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当应用程序处于后台模式时进行直播和录制。"
+            "value" : "当应用程序处于后台时进行直播和录制。"
           }
         },
         "zh-Hant" : {
@@ -54832,7 +54832,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地覆盖"
+            "value" : "本地图层"
           }
         },
         "zh-Hant" : {
@@ -54962,7 +54962,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地覆盖不在直播流中显示。"
+            "value" : "本地图层不会在直播画面中显示。"
           }
         },
         "zh-Hant" : {
@@ -55092,7 +55092,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "地点"
+            "value" : "定位"
           }
         },
         "zh-Hant" : {
@@ -58862,7 +58862,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大期限"
+            "value" : "消息持续时间"
           }
         },
         "zh-Hant" : {
@@ -59122,7 +59122,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大信息期限（以秒为单位）"
+            "value" : "消息持续时间（以秒为单位）"
           }
         },
         "zh-Hant" : {
@@ -60032,7 +60032,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "信息"
+            "value" : "消息"
           }
         },
         "zh-Hant" : {
@@ -60942,7 +60942,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "推流时镜像前置相机"
+            "value" : "推流时镜像前置镜头"
           }
         },
         "zh-Hant" : {
@@ -61332,7 +61332,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "如果直播流疑似中断，Moblin 将定期尝试切换到 BRB 场景，一旦其恢复正常，则切换回主场景。"
+            "value" : "如果串流疑似中断，Moblin 将定期尝试切换到 BRB 场景，一旦其恢复正常，则切换回主场景。"
           }
         },
         "zh-Hant" : {
@@ -61462,7 +61462,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当当前场景的 SRT(LA) 或 RTMP 视频源断开连接时，Moblin 将切换到上面配置的 BRB 场景。通常在家中使用 Moblin 作为 SRT(LA) 服务器并在同一台计算机上流式传输到 OBS 时启用。"
+            "value" : "当前场景的 SRT(LA) 或 RTMP 视频源断开连接时，Moblin 将切换到上面配置的 BRB 场景。通常在家中使用 Moblin 作为 SRT(LA) 服务器，并在同一台计算机上串流到 OBS 时启用。"
           }
         },
         "zh-Hant" : {
@@ -61592,7 +61592,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "moblin:// 深层链接可用于导入部分设置，可使用二维码或浏览器。参见 https://github.com/eerimoq/moblin 获取更多细节。"
+            "value" : "moblin:// DeepLink 可用于导入部分设置，通常使用二维码或浏览器。参见 https://github.com/eerimoq/moblin 获取更多细节。"
           }
         },
         "zh-Hant" : {
@@ -62372,7 +62372,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "影片"
+            "value" : "视频"
           }
         },
         "zh-Hant" : {
@@ -64192,7 +64192,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "我的串流密钥"
+            "value" : "my_stream_key"
           }
         },
         "zh-Hant" : {
@@ -64582,7 +64582,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "竖屏时不显示姓名。"
+            "value" : "竖屏时不显示名称。"
           }
         },
         "zh-Hant" : {
@@ -64712,7 +64712,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "附近的摄取节点"
+            "value" : "附近的服务器节点"
           }
         },
         "zh-Hant" : {
@@ -64972,7 +64972,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "频道聊天表情和观众数量所必需的。"
+            "value" : "显示频道聊天表情和观众数量所必需的。"
           }
         },
         "zh-Hant" : {
@@ -66922,7 +66922,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通常仅适用于内置相机。"
+            "value" : "通常仅适用于内置镜头。"
           }
         },
         "zh-Hant" : {
@@ -67311,7 +67311,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "未登录 Twitch"
           }
         },
@@ -70174,8 +70174,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "开销带宽"
+            "state" : "translated",
+            "value" : "额外带宽"
           }
         },
         "zh-Hant" : {
@@ -70955,7 +70955,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "像素化"
+            "value" : "马赛克"
           }
         },
         "zh-Hant" : {
@@ -73295,7 +73295,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "打印聊天"
+            "value" : "打印聊天记录"
           }
         },
         "zh-Hant" : {
@@ -74465,7 +74465,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "袭击"
+            "value" : "突袭"
           }
         },
         "zh-Hant" : {
@@ -74595,7 +74595,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "与 %lld! 队伍一起袭击"
+            "value" : "与 %lld! 队伍一起突袭"
           }
         },
         "zh-Hant" : {
@@ -75895,7 +75895,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "已兑换 %@！"
+            "value" : "已兑换%@！"
           }
         },
         "zh-Hant" : {
@@ -76415,7 +76415,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程"
+            "value" : "远程控制"
           }
         },
         "zh-Hant" : {
@@ -77975,7 +77975,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "分辨率和 FPS 与直播相同。"
+            "value" : "分辨率和 FPS 与直播设置相同。"
           }
         },
         "zh-Hant" : {
@@ -81224,8 +81224,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Scheme 缺失"
+            "state" : "translated",
+            "value" : "配置缺失"
           }
         },
         "zh-Hant" : {
@@ -82921,7 +82921,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将您的位置发送到 https://rtirl.com，让您的观众知道您所在的位置。"
+            "value" : "将您的位置发送到 https://rtirl.com ，让您的观众知道您所在的位置。"
           }
         },
         "zh-Hant" : {
@@ -83961,7 +83961,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在直播开启时，部分必须停止直播流才能修改的设置会被禁用。"
+            "value" : "直播时，部分必须停止串流才能修改的设置会被禁用。"
           }
         },
         "zh-Hant" : {
@@ -84871,7 +84871,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "展示隐私 URL"
+            "value" : "显示敏感 URL"
           }
         },
         "zh-Hant" : {
@@ -91247,7 +91247,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "直播流"
+            "value" : "串流"
           }
         },
         "zh-Hant" : {
@@ -92417,7 +92417,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "串流 URL"
+            "value" : "stream_url"
           }
         },
         "zh-Hant" : {
@@ -92937,7 +92937,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "直播流"
+            "value" : "串流"
           }
         },
         "zh-Hant" : {
@@ -94497,7 +94497,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 %@ 上向左滑动即可将其删除。"
+            "value" : "在%@上左滑即可将其删除。"
           }
         },
         "zh-Hant" : {
@@ -95150,7 +95150,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此相机不支持轻触以聚焦"
+            "value" : "此镜头不支持轻触以聚焦"
           }
         },
         "zh-Hant" : {
@@ -96580,7 +96580,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "如果设备不支持，实际比特率可能会较低。"
+            "value" : "如果设备不支持，实际比特率可能会更低。"
           }
         },
         "zh-Hant" : {
@@ -98010,7 +98010,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OBS 中的 BRB 场景的名称。如果流可能中断，Moblin 将定期尝试切换到此场景。"
+            "value" : "OBS 中 BRB 场景的名称。如果串流可能中断，Moblin 将定期尝试切换到此场景。"
           }
         },
         "zh-Hant" : {
@@ -98140,7 +98140,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的频道名"
+            "value" : "你的频道名称。"
           }
         },
         "zh-Hant" : {
@@ -99050,7 +99050,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在弱光条件下，广角相机表现不佳。同样，当变焦为 0.5-1.0 倍时，因为将使用广角相机，自动相机的性能也不佳。"
+            "value" : "在弱光条件下，广角镜头表现不佳。同样，当变焦为 0.5-1.0 倍时，因为将使用广角镜头，自动镜头的性能也不佳。"
           }
         },
         "zh-Hant" : {
@@ -99440,7 +99440,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "转换到该相机并设置放大X倍（在该相机支持该功能的情况下）"
+            "value" : "转换到该镜头并设置缩放X倍（在该镜头支持该功能的情况下）。"
           }
         },
         "zh-Hant" : {
@@ -100220,7 +100220,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "到 %@ 相机"
+            "value" : "到%@镜头"
           }
         },
         "zh-Hant" : {
@@ -100480,7 +100480,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要以竖屏串流，请启用设置 → 流 → %@ → 竖屏。"
+            "value" : "要以竖屏串流，请启用设置 → 串流 → %@ → 竖屏。"
           }
         },
         "zh-Hant" : {
@@ -101260,7 +101260,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "总录制数"
+            "value" : "录制次数"
           }
         },
         "zh-Hant" : {
@@ -101390,7 +101390,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "发送总数"
+            "value" : "上传流量"
           }
         },
         "zh-Hant" : {
@@ -101650,7 +101650,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "流总数"
+            "value" : "串流次数"
           }
         },
         "zh-Hant" : {
@@ -103733,7 +103733,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "两列"
+            "value" : "双列"
           }
         },
         "zh-Hant" : {
@@ -106853,7 +106853,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用外部相机和竖屏手机支架时很有用。"
+            "value" : "在使用外部相机或竖屏手机支架时很有用。"
           }
         },
         "zh-Hant" : {
@@ -107633,7 +107633,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "超级前沿秘密特性！"
+            "value" : "超级前沿秘密特性（试验中）！"
           }
         },
         "zh-Hant" : {
@@ -107763,7 +107763,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "颤动"
+            "value" : "振动"
           }
         },
         "zh-Hant" : {
@@ -110362,8 +110362,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "宽的"
+            "state" : "translated",
+            "value" : "广角"
           }
         },
         "zh-Hant" : {
@@ -110492,8 +110492,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "宽双（自动）"
+            "state" : "translated",
+            "value" : "广角双镜头（自动）"
           }
         },
         "zh-Hant" : {
@@ -112709,7 +112709,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在任何隐私区域内时，您的位置不会与任何服务共享。"
+            "value" : "在任何隐私区域内时，您的位置不会被使用。"
           }
         },
         "zh-Hant" : {
@@ -113359,7 +113359,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "放大"
+            "value" : "缩放"
           }
         },
         "zh-Hant" : {
@@ -113489,7 +113489,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "放大"
+            "value" : "缩放"
           }
         },
         "zh-Hant" : {
@@ -113879,7 +113879,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "预设放大"
+            "value" : "缩放预设"
           }
         },
         "zh-Hant" : {
