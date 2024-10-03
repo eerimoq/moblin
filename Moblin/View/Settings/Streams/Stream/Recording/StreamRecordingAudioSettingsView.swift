@@ -32,7 +32,7 @@ struct StreamRecordingAudioSettingsView: View {
                 Text("Bitrate")
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("128 Kpbs or higher is recommended. Set to 0 for automatic.")
+                    Text("128 Kbps or higher is recommended. Set to 0 for automatic.")
                 }
             }
         }

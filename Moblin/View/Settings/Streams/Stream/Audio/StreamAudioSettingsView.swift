@@ -35,7 +35,7 @@ struct StreamAudioSettingsView: View {
                 Text("Bitrate")
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("128 Kpbs or higher is recommended.")
+                    Text("128 Kbps or higher is recommended.")
                     Text("")
                     Text("The actual bitrate may be lower if the device does not support it.")
                 }
