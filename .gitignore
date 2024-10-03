@@ -90,3 +90,6 @@ fastlane/test_output
 iOSInjectionProject/
 
 Config.xcconfig
+
+# Make macOS happy
+.DS_Store
