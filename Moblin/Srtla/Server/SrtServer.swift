@@ -45,11 +45,14 @@ class SrtServer {
                 continue
             }
             logger.info("srt-server: Accepted client \(stream.name).")
-            srtlaServer?.clientConnected(streamId: acceptedStreamId.value)
-            SrtServerClient(server: self, streamId: acceptedStreamId.value).run(clientSocket: clientSocket)
-            srtlaServer?.clientDisconnected(streamId: acceptedStreamId.value)
+            let streamId = acceptedStreamId.value
+            DispatchQueue(label: "com.eerimoq.Moblin.SrtClient").async {
+                self.srtlaServer?.clientConnected(streamId: streamId)
+                SrtServerClient(server: self, streamId: streamId).run(clientSocket: clientSocket)
+                self.srtlaServer?.clientDisconnected(streamId: streamId)
+                logger.info("srt-server: Closed client.")
+            }
             acceptedStreamId.mutate { $0 = "" }
-            logger.info("srt-server: Closed client.")
         }
     }
 
