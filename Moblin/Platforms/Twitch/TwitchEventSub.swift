@@ -1,14 +1,8 @@
 import Foundation
 
 private struct BasicMetadata: Decodable {
-    // periphery:ignore
-    var message_id: String
     var message_type: String
-    // periphery:ignore
-    var message_timestamp: String
     var subscription_type: String?
-    // periphery:ignore
-    var subscription_version: String?
 }
 
 private struct BasicMessage: Decodable {
@@ -161,6 +155,77 @@ private struct NotificationChannelCheerMessage: Decodable {
     var payload: NotificationChannelCheerPayload
 }
 
+struct TwitchEventSubChannelHypeTrainBeginEvent: Decodable {
+    // periphery:ignore
+    var total: Int
+    // periphery:ignore
+    var progress: Int
+    // periphery:ignore
+    var goal: Int
+    // periphery:ignore
+    var level: Int
+    // periphery:ignore
+    var started_at: String
+    // periphery:ignore
+    var expires_at: String
+}
+
+private struct NotificationChannelHypeTrainBeginPayload: Decodable {
+    // periphery:ignore
+    var event: TwitchEventSubChannelHypeTrainBeginEvent
+}
+
+private struct NotificationChannelHypeTrainBeginMessage: Decodable {
+    // periphery:ignore
+    var payload: NotificationChannelHypeTrainBeginPayload
+}
+
+struct TwitchEventSubChannelHypeTrainProgressEvent: Decodable {
+    // periphery:ignore
+    var total: Int
+    // periphery:ignore
+    var progress: Int
+    // periphery:ignore
+    var goal: Int
+    // periphery:ignore
+    var level: Int
+    // periphery:ignore
+    var started_at: String
+    // periphery:ignore
+    var expires_at: String
+}
+
+private struct NotificationChannelHypeTrainProgressPayload: Decodable {
+    // periphery:ignore
+    var event: TwitchEventSubChannelHypeTrainProgressEvent
+}
+
+private struct NotificationChannelHypeTrainProgressMessage: Decodable {
+    // periphery:ignore
+    var payload: NotificationChannelHypeTrainProgressPayload
+}
+
+struct TwitchEventSubChannelHypeTrainEndEvent: Decodable {
+    // periphery:ignore
+    var total: Int
+    // periphery:ignore
+    var level: Int
+    // periphery:ignore
+    var started_at: String
+    // periphery:ignore
+    var ended_at: String
+}
+
+private struct NotificationChannelHypeTrainEndPayload: Decodable {
+    // periphery:ignore
+    var event: TwitchEventSubChannelHypeTrainEndEvent
+}
+
+private struct NotificationChannelHypeTrainEndMessage: Decodable {
+    // periphery:ignore
+    var payload: NotificationChannelHypeTrainEndPayload
+}
+
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
@@ -171,6 +236,9 @@ protocol TwitchEventSubDelegate: AnyObject {
     )
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent)
     func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent)
+    func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent)
+    func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent)
+    func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -316,6 +384,45 @@ final class TwitchEventSub: NSObject {
                 logger.info("twitch: event-sub: Failed to setup cheer events")
                 return
             }
+            self.subscribeToChannelHypeTrainBegin()
+        }
+    }
+
+    private func subscribeToChannelHypeTrainBegin() {
+        let body = createBody(type: "channel.hype_train.begin",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup hype train begin events")
+                return
+            }
+            self.subscribeToChannelHypeTrainProgress()
+        }
+    }
+
+    private func subscribeToChannelHypeTrainProgress() {
+        let body = createBody(type: "channel.hype_train.progress",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup hype train progress events")
+                return
+            }
+            self.subscribeToChannelHypeTrainEnd()
+        }
+    }
+
+    private func subscribeToChannelHypeTrainEnd() {
+        let body = createBody(type: "channel.hype_train.end",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                logger.info("twitch: event-sub: Failed to setup hype train end events")
+                return
+            }
             self.connected = true
         }
     }
@@ -346,6 +453,12 @@ final class TwitchEventSub: NSObject {
             handleChannelRaid(messageData: messageData)
         case "channel.cheer":
             handleChannelCheer(messageData: messageData)
+        case "channel.hype_train.begin":
+            handleChannelHypeTrainBegin(messageData: messageData)
+        case "channel.hype_train.progress":
+            handleChannelHypeTrainProgress(messageData: messageData)
+        case "channel.hype_train.end":
+            handleChannelHypeTrainEnd(messageData: messageData)
         default:
             if let type = message.metadata.subscription_type {
                 logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -414,6 +527,42 @@ final class TwitchEventSub: NSObject {
             return
         }
         delegate.twitchEventSubChannelCheer(event: message.payload.event)
+    }
+
+    private func handleChannelHypeTrainBegin(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelHypeTrainBeginMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("twitch: event-sub: Failed to decode channel.hype_train.begin (\(data ?? "")).")
+            return
+        }
+        delegate.twitchEventSubChannelHypeTrainBegin(event: message.payload.event)
+    }
+
+    private func handleChannelHypeTrainProgress(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelHypeTrainProgressMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("twitch: event-sub: Failed to decode channel.hype_train.progress (\(data ?? "")).")
+            return
+        }
+        delegate.twitchEventSubChannelHypeTrainProgress(event: message.payload.event)
+    }
+
+    private func handleChannelHypeTrainEnd(messageData: Data) {
+        guard let message = try? JSONDecoder().decode(
+            NotificationChannelHypeTrainEndMessage.self,
+            from: messageData
+        ) else {
+            let data = String(data: messageData, encoding: .utf8)
+            logger.info("twitch: event-sub: Failed to decode channel.hype_train.end (\(data ?? "")).")
+            return
+        }
+        delegate.twitchEventSubChannelHypeTrainEnd(event: message.payload.event)
     }
 }
 

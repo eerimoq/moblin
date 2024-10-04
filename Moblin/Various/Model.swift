@@ -420,6 +420,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    @Published var hypeTrainLevel: Int?
+    @Published var hypeTrainProgress: Int?
+    @Published var hypeTrainGoal: Int?
+
     private var workoutHeartRate: Int?
     private var workoutActiveEnergyBurned: Int?
     private var workoutDistance: Int?
@@ -8125,6 +8129,36 @@ extension Model: TwitchEventSubDelegate {
                 skipTextToSpeech: true
             )
         }
+    }
+
+    func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
+        DispatchQueue.main.async {
+            self.hypeTrainLevel = event.level
+            self.hypeTrainProgress = event.progress
+            self.hypeTrainGoal = event.goal
+        }
+    }
+
+    func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent) {
+        DispatchQueue.main.async {
+            self.hypeTrainLevel = event.level
+            self.hypeTrainProgress = event.progress
+            self.hypeTrainGoal = event.goal
+        }
+    }
+
+    func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
+        DispatchQueue.main.async {
+            self.hypeTrainLevel = event.level
+            self.hypeTrainProgress = 1
+            self.hypeTrainGoal = 1
+        }
+    }
+
+    func removeHypeTrain() {
+        hypeTrainLevel = nil
+        hypeTrainProgress = nil
+        hypeTrainGoal = nil
     }
 
     private func appendTwitchChatAlertMessage(

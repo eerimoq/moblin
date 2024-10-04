@@ -210,7 +210,6 @@ class TwitchApi {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     let status = response?.http?.statusCode ?? -1
                     let body = String(data: data ?? Data(), encoding: .utf8) ?? "-"
-                    logger.info("twitch-api: Response \(status) for \(url) is '\(body)'")
                     if response?.http?.isUnauthorized == true {
                         self.delegate?.twitchApiUnauthorized()
                     }

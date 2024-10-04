@@ -213,6 +213,66 @@ private struct MessagesView: View {
     }
 }
 
+private struct HypeTrainView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .foregroundColor(.clear)
+                .background(.clear)
+                .frame(height: 1)
+            VStack {
+                if let level = model.hypeTrainLevel {
+                    HStack(spacing: 0) {
+                        let train = HStack(spacing: 0) {
+                            Image(systemName: "train.side.rear.car")
+                            Image(systemName: "train.side.middle.car")
+                            Image(systemName: "train.side.middle.car")
+                            Image(systemName: "train.side.middle.car")
+                            Image(systemName: "train.side.front.car")
+                        }
+                        if #available(iOS 18.0, *) {
+                            train
+                                .symbolEffect(
+                                    .wiggle.forward.byLayer,
+                                    options: .repeat(.periodic(delay: 2.0))
+                                )
+                        } else {
+                            train
+                        }
+                        Spacer()
+                        Text("LEVEL \(level)")
+                        Button {
+                            model.removeHypeTrain()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.footnote)
+                                .frame(width: 25, height: 25)
+                                .overlay(
+                                    Circle()
+                                        .stroke(.secondary)
+                                )
+                                .foregroundColor(.primary)
+                                .padding([.leading], 15)
+                        }
+                    }
+                    .padding(10)
+                }
+                if let progress = model.hypeTrainProgress, let goal = model.hypeTrainGoal {
+                    ProgressView(value: Float(progress), total: Float(goal))
+                        .accentColor(.white)
+                        .scaleEffect(x: 1, y: 4, anchor: .center)
+                        .padding([.top, .leading, .trailing], 10)
+                        .padding([.bottom], 20)
+                }
+            }
+            .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())
+            Spacer()
+        }
+    }
+}
+
 private struct ChatView: View {
     @EnvironmentObject var model: Model
 
@@ -227,6 +287,7 @@ private struct ChatView: View {
                 )
                 .padding(2)
             }
+            HypeTrainView()
         }
     }
 }
@@ -332,6 +393,7 @@ private struct ChatAlertsView: View {
                 )
                 .padding(2)
             }
+            HypeTrainView()
         }
     }
 }
