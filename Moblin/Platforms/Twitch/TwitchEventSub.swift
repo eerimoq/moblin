@@ -331,7 +331,9 @@ final class TwitchEventSub: NSObject {
         twitchApi.createEventSubSubscription(body: body) { ok in
             if !ok {
                 self.delegate
-                    .twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch follow events")
+                    .twitchEventSubMakeErrorToast(
+                        title: String(localized: "Failed to subscribe to Twitch follow events")
+                    )
             }
             self.subscribeToChannelSubscribe()
         }
@@ -344,7 +346,9 @@ final class TwitchEventSub: NSObject {
         twitchApi.createEventSubSubscription(body: body) { ok in
             if !ok {
                 self.delegate
-                    .twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch subscription events")
+                    .twitchEventSubMakeErrorToast(
+                        title: String(localized: "Failed to subscribe to Twitch subscription events")
+                    )
             }
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
@@ -358,7 +362,7 @@ final class TwitchEventSub: NSObject {
             if !ok {
                 self.delegate
                     .twitchEventSubMakeErrorToast(
-                        title: "Failed to subscribe to Twitch reward redemption events"
+                        title: String(localized: "Failed to subscribe to Twitch reward redemption events")
                     )
             }
             self.subscribeToChannelRaid()
@@ -371,7 +375,10 @@ final class TwitchEventSub: NSObject {
                               condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
             if !ok {
-                self.delegate.twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch raid events")
+                self.delegate
+                    .twitchEventSubMakeErrorToast(
+                        title: String(localized: "Failed to subscribe to Twitch raid events")
+                    )
             }
             self.subscribeToChannelCheer()
         }
@@ -384,7 +391,9 @@ final class TwitchEventSub: NSObject {
         twitchApi.createEventSubSubscription(body: body) { ok in
             if !ok {
                 self.delegate
-                    .twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch cheer events")
+                    .twitchEventSubMakeErrorToast(
+                        title: String(localized: "Failed to subscribe to Twitch cheer events")
+                    )
             }
             self.subscribeToChannelHypeTrainBegin()
         }
@@ -398,7 +407,7 @@ final class TwitchEventSub: NSObject {
             if !ok {
                 self.delegate
                     .twitchEventSubMakeErrorToast(
-                        title: "Failed to subscribe to Twitch hype train begin events"
+                        title: String(localized: "Failed to subscribe to Twitch hype train begin events")
                     )
             }
             self.subscribeToChannelHypeTrainProgress()
@@ -413,7 +422,7 @@ final class TwitchEventSub: NSObject {
             if !ok {
                 self.delegate
                     .twitchEventSubMakeErrorToast(
-                        title: "Failed to subscribe to Twitch hype train progress events"
+                        title: String(localized: "Failed to subscribe to Twitch hype train progress events")
                     )
             }
             self.subscribeToChannelHypeTrainEnd()
@@ -428,7 +437,7 @@ final class TwitchEventSub: NSObject {
             if !ok {
                 self.delegate
                     .twitchEventSubMakeErrorToast(
-                        title: "Failed to subscribe to Twitch hype train end events"
+                        title: String(localized: "Failed to subscribe to Twitch hype train end events")
                     )
             }
             self.connected = true

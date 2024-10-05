@@ -43400,6 +43400,30 @@
         }
       }
     },
+    "Failed to subscribe to Twitch cheer events" : {
+
+    },
+    "Failed to subscribe to Twitch follow events" : {
+
+    },
+    "Failed to subscribe to Twitch hype train begin events" : {
+
+    },
+    "Failed to subscribe to Twitch hype train end events" : {
+
+    },
+    "Failed to subscribe to Twitch hype train progress events" : {
+
+    },
+    "Failed to subscribe to Twitch raid events" : {
+
+    },
+    "Failed to subscribe to Twitch reward redemption events" : {
+
+    },
+    "Failed to subscribe to Twitch subscription events" : {
+
+    },
     "Failed to upload snapshot to Discord" : {
 
     },
@@ -74871,6 +74895,9 @@
           }
         }
       }
+    },
+    "Re-login to Twitch probably fixes this error" : {
+
     },
     "RealtimeIRL" : {
       "localizations" : {

@@ -8060,7 +8060,10 @@ extension Model {
 extension Model: TwitchEventSubDelegate {
     func twitchEventSubMakeErrorToast(title: String) {
         DispatchQueue.main.async {
-            self.makeErrorToast(title: title)
+            self.makeErrorToast(
+                title: title,
+                subTitle: String(localized: "Re-login to Twitch probably fixes this error")
+            )
         }
     }
 
