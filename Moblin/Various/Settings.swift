@@ -916,12 +916,14 @@ class SettingsWidgetAlertsTwitch: Codable {
     var follows: SettingsWidgetAlertsAlert = .init()
     var subscriptions: SettingsWidgetAlertsAlert = .init()
     var raids: SettingsWidgetAlertsAlert? = .init()
+    var cheers: SettingsWidgetAlertsAlert? = .init()
 
     func clone() -> SettingsWidgetAlertsTwitch {
         let new = SettingsWidgetAlertsTwitch()
         new.follows = follows.clone()
         new.subscriptions = subscriptions.clone()
         new.raids = raids!.clone()
+        new.cheers = cheers!.clone()
         return new
     }
 }
@@ -3879,6 +3881,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier == nil {
             realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier = 1
+            store()
+        }
+        for widget in database.widgets where widget.alerts!.twitch!.cheers == nil {
+            widget.alerts!.twitch!.cheers = .init()
             store()
         }
     }

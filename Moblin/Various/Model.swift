@@ -8173,13 +8173,13 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent) {
         DispatchQueue.main.async {
             let user = event.user_name ?? String(localized: "Anonymous")
-            let text = String(localized: "donated \(event.bits) bits!")
-            self.makeToast(title: "\(user) \(text)")
-            // self.playAlert(alert: .twitchCheer(event))
+            let text = String(localized: "cheered \(event.bits) bits!")
+            self.makeToast(title: "\(user)  \(text)")
+            self.playAlert(alert: .twitchCheer(event))
             self.appendTwitchChatAlertMessage(
                 user: user,
                 text: event.message,
-                title: String(localized: "Bits"),
+                title: String(localized: "Cheer"),
                 color: .green,
                 skipTextToSpeech: true
             )

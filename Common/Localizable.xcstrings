@@ -20645,6 +20645,7 @@
       }
     },
     "Bits" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -25583,6 +25584,15 @@
           }
         }
       }
+    },
+    "Cheer" : {
+
+    },
+    "cheered %lld bits!" : {
+
+    },
+    "Cheers" : {
+
     },
     "Cinematic" : {
       "localizations" : {
@@ -35601,6 +35611,7 @@
       }
     },
     "donated %lld bits!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

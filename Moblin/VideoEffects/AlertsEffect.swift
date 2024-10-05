@@ -71,6 +71,7 @@ enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
+    case twitchCheer(TwitchEventSubChannelCheerEvent)
     case chatBotCommand(String, String)
 }
 
@@ -174,6 +175,7 @@ final class AlertsEffect: VideoEffect {
     private var twitchFollow = Medias()
     private var twitchSubscribe = Medias()
     private var twitchRaid = Medias()
+    private var twitchCheers = Medias()
     private var chatBotCommands: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
@@ -196,6 +198,7 @@ final class AlertsEffect: VideoEffect {
         twitchFollow.fps = self.fps
         twitchSubscribe.fps = self.fps
         twitchRaid.fps = self.fps
+        twitchCheers.fps = self.fps
         audioPlayer = nil
         super.init()
         setSettings(settings: settings)
@@ -228,6 +231,9 @@ final class AlertsEffect: VideoEffect {
         (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids!)
         twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
         twitchRaid.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.cheers!)
+        twitchCheers.updateImages(image: image, loopCount: imageLoopCount)
+        twitchCheers.updateSoundUrl(sound: sound)
         chatBotCommands = []
         for command in settings.chatBot!.commands {
             (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
@@ -272,6 +278,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchSubscribe(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
+        case let .twitchCheer(event):
+            playTwitchCheer(event: event)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
         }
@@ -313,6 +321,19 @@ final class AlertsEffect: VideoEffect {
             username: event.from_broadcaster_user_name,
             message: String(localized: "raided with a party of \(event.viewers)!"),
             settings: settings.twitch!.raids!
+        )
+    }
+
+    @MainActor
+    private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
+        guard settings.twitch!.cheers!.enabled else {
+            return
+        }
+        play(
+            medias: twitchCheers,
+            username: event.user_name ?? "Anonymous",
+            message: String(localized: "cheered \(event.bits) bits!"),
+            settings: settings.twitch!.cheers!
         )
     }
 
