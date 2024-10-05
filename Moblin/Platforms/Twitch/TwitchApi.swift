@@ -50,6 +50,31 @@ struct TwitchApiChannelInformation: Decodable {
 }
 
 // periphery:ignore
+struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
+    let user_id: String
+    let user_login: String
+    let tier: String
+
+    func tierAsNumber() -> Int {
+        switch tier {
+        case "1000":
+            return 1
+        case "2000":
+            return 2
+        case "3000":
+            return 3
+        default:
+            return 1
+        }
+    }
+}
+
+// periphery:ignore
+struct TwitchApiGetBroadcasterSubscriptions: Decodable {
+    let data: [TwitchApiGetBroadcasterSubscriptionsData]
+}
+
+// periphery:ignore
 struct TwitchApiChatBadgesVersion: Decodable {
     let id: String
     let image_url_1x: String
@@ -198,6 +223,23 @@ class TwitchApi {
             )
             onComplete(data?.data)
         })
+    }
+
+    func getBroadcasterSubscriptions(
+        broadcasterId: String,
+        userId: String,
+        onComplete: @escaping (TwitchApiGetBroadcasterSubscriptionsData?) -> Void
+    ) {
+        doGet(
+            subPath: "subscriptions?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
+            onComplete: { data in
+                let data = try? JSONDecoder().decode(
+                    TwitchApiGetBroadcasterSubscriptions.self,
+                    from: data ?? Data()
+                )
+                onComplete(data?.data.first)
+            }
+        )
     }
 
     private func doGet(subPath: String, onComplete: @escaping ((Data?) -> Void)) {

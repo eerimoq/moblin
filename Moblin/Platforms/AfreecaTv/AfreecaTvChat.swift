@@ -244,6 +244,7 @@ final class AfreecaTvChat: NSObject {
             self.model.appendChatMessage(
                 platform: .afreecaTv,
                 user: user,
+                userId: nil,
                 userColor: nil,
                 userBadges: [],
                 segments: segments,

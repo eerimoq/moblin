@@ -4,6 +4,12 @@ private struct PermissionsSettingsView: View {
     // periphery:ignore
     @EnvironmentObject var model: Model
     var permissions: SettingsChatBotPermissionsCommand
+    @State private var minimumSubscriberTier: Int
+
+    init(permissions: SettingsChatBotPermissionsCommand) {
+        self.permissions = permissions
+        minimumSubscriberTier = permissions.minimumSubscriberTier!
+    }
 
     var body: some View {
         Form {
@@ -21,6 +27,16 @@ private struct PermissionsSettingsView: View {
             }), label: {
                 Text("Subscribers")
             })
+            Picker(selection: $minimumSubscriberTier) {
+                ForEach([3, 2, 1], id: \.self) { tier in
+                    Text(String(tier))
+                }
+            } label: {
+                Text("Minimum subscriber tier")
+            }
+            .onChange(of: minimumSubscriberTier) { value in
+                permissions.minimumSubscriberTier = value
+            }
             Toggle(isOn: Binding(get: {
                 permissions.othersEnabled
             }, set: { value in

@@ -221,6 +221,7 @@ class OpenStreamingPlatformChat {
         await MainActor.run {
             model.appendChatMessage(platform: .openStreamingPlatform,
                                     user: message.user() ?? "unknown",
+                                    userId: nil,
                                     userColor: nil,
                                     userBadges: [],
                                     segments: segments,

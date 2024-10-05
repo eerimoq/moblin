@@ -1421,6 +1421,7 @@ class SettingsChatUsername: Identifiable, Codable {
 class SettingsChatBotPermissionsCommand: Codable {
     var moderatorsEnabled: Bool = true
     var subscribersEnabled: Bool? = false
+    var minimumSubscriberTier: Int? = 1
     var othersEnabled: Bool = false
 }
 
@@ -3850,6 +3851,34 @@ final class Settings {
         }
         for device in realDatabase.catPrinters!.devices where device.faxMeowSound == nil {
             device.faxMeowSound = true
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tts.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.tts.minimumSubscriberTier = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fix.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.fix.minimumSubscriberTier = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.map.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.map.minimumSubscriberTier = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.alert!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.alert!.minimumSubscriberTier = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fax!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.fax!.minimumSubscriberTier = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.snapshot!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.snapshot!.minimumSubscriberTier = 1
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier == nil {
+            realDatabase.chat.botCommandPermissions!.filter!.minimumSubscriberTier = 1
             store()
         }
     }

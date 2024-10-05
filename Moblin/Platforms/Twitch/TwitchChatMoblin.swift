@@ -151,6 +151,7 @@ final class TwitchChatMoblin {
         model.appendChatMessage(
             platform: .twitch,
             user: message.sender,
+            userId: message.userId,
             userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
             userBadges: badgeUrls,
             segments: segments,

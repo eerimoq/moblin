@@ -25,6 +25,7 @@ private struct ChatBotMessage {
     let user: String?
     let isModerator: Bool
     let isSubscriber: Bool
+    let userId: String?
     let segments: [ChatPostSegment]
 }
 
@@ -206,6 +207,7 @@ struct ChatPost: Identifiable, Equatable {
     var id: Int
     var platform: Platform
     var user: String?
+    var userId: String?
     var userColor: RgbColor?
     var userBadges: [URL]
     var segments: [ChatPostSegment]
@@ -2361,6 +2363,7 @@ final class Model: NSObject, ObservableObject {
         appendChatMessage(
             platform: .unknown,
             user: nil,
+            userId: nil,
             userColor: nil,
             userBadges: [],
             segments: [],
@@ -4041,6 +4044,7 @@ final class Model: NSObject, ObservableObject {
     private func appendChatPost(post: ChatPost) {
         appendChatMessage(platform: post.platform,
                           user: post.user,
+                          userId: post.userId,
                           userColor: post.userColor,
                           userBadges: post.userBadges,
                           segments: post.segments,
@@ -4083,160 +4087,200 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func handleChatBotMessageTtsOn(message: ChatBotMessage) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
             message: message
-        ) else {
-            return
+        ) {
+            self.makeToast(
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Turning on chat text to speech")
+            )
+            self.database.chat.textToSpeechEnabled = true
         }
-        makeToast(
-            title: String(localized: "Chat bot"),
-            subTitle: String(localized: "Turning on chat text to speech")
-        )
-        database.chat.textToSpeechEnabled = true
     }
 
     private func handleChatBotMessageTtsOff(message: ChatBotMessage) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
             message: message
-        ) else {
-            return
+        ) {
+            self.makeToast(
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Turning off chat text to speech")
+            )
+            self.database.chat.textToSpeechEnabled = false
+            self.chatTextToSpeech.reset(running: true)
         }
-        makeToast(
-            title: String(localized: "Chat bot"),
-            subTitle: String(localized: "Turning off chat text to speech")
-        )
-        database.chat.textToSpeechEnabled = false
-        chatTextToSpeech.reset(running: true)
     }
 
     private func handleChatBotMessageObsFix(message: ChatBotMessage) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fix,
             message: message
-        ) else {
-            return
-        }
-        if obsWebSocket != nil {
-            makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Fixing OBS input"))
-            obsFixStream()
-        } else {
-            makeErrorToast(
-                title: String(localized: "Chat bot"),
-                subTitle: String(localized: "Cannot fix OBS input. OBS remote control is not configured.")
-            )
+        ) {
+            if self.obsWebSocket != nil {
+                self.makeToast(
+                    title: String(localized: "Chat bot"),
+                    subTitle: String(localized: "Fixing OBS input")
+                )
+                self.obsFixStream()
+            } else {
+                self.makeErrorToast(
+                    title: String(localized: "Chat bot"),
+                    subTitle: String(
+                        localized: "Cannot fix OBS input. OBS remote control is not configured."
+                    )
+                )
+            }
         }
     }
 
     private func handleChatBotMessageMapZoomOut(message: ChatBotMessage) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.map,
             message: message
-        ) else {
-            return
-        }
-        makeToast(title: String(localized: "Chat bot"), subTitle: String(localized: "Zooming out map"))
-        for mapEffect in mapEffects.values {
-            mapEffect.zoomOutTemporarily()
+        ) {
+            self.makeToast(
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Zooming out map")
+            )
+            for mapEffect in self.mapEffects.values {
+                mapEffect.zoomOutTemporarily()
+            }
         }
     }
 
     private func handleChatBotMessageSnapshot(message: ChatBotMessage) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.snapshot!,
             message: message
-        ) else {
-            return
+        ) {
+            self.takeSnapshot()
         }
-        takeSnapshot()
     }
 
     private func handleChatBotMessageAlert(message: ChatBotMessage, command: String) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.alert!,
             message: message
-        ) else {
-            return
-        }
-        let parts = command.split(separator: " ")
-        guard parts.count >= 3 else {
-            return
-        }
-        DispatchQueue.main.async {
-            self.playAlert(alert: .chatBotCommand(parts[2].trim(), message.user ?? "Unknown"))
+        ) {
+            let parts = command.split(separator: " ")
+            guard parts.count >= 3 else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.playAlert(alert: .chatBotCommand(parts[2].trim(), message.user ?? "Unknown"))
+            }
         }
     }
 
     private func handleChatBotMessageFax(message: ChatBotMessage, command: String) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fax!,
             message: message
-        ) else {
-            return
+        ) {
+            let parts = command.split(separator: " ")
+            guard parts.count >= 3 else {
+                return
+            }
+            self.faxReceiver.add(url: parts[2].trim())
         }
-        let parts = command.split(separator: " ")
-        guard parts.count >= 3 else {
-            return
-        }
-        faxReceiver.add(url: parts[2].trim())
     }
 
     private func handleChatBotMessageFilter(message: ChatBotMessage, command: String) {
-        guard isUserAllowedToUseChatBot(
+        executeOfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.filter!,
             message: message
-        ) else {
-            return
+        ) {
+            let parts = command.split(separator: " ")
+            guard parts.count == 4 else {
+                return
+            }
+            var type: SettingsButtonType
+            switch parts[2].trim() {
+            case "movie":
+                type = .movie
+            case "grayscale":
+                type = .grayScale
+            case "sepia":
+                type = .sepia
+            case "triple":
+                type = .triple
+            case "pixellate":
+                type = .pixellate
+            case "4:3":
+                type = .fourThree
+            default:
+                return
+            }
+            self.setGlobalButtonState(type: type, isOn: parts[3].trim() == "on")
+            self.sceneUpdated()
+            self.updateButtonStates()
         }
-        let parts = command.split(separator: " ")
-        guard parts.count == 4 else {
-            return
-        }
-        var type: SettingsButtonType
-        switch parts[2].trim() {
-        case "movie":
-            type = .movie
-        case "grayscale":
-            type = .grayScale
-        case "sepia":
-            type = .sepia
-        case "triple":
-            type = .triple
-        case "pixellate":
-            type = .pixellate
-        case "4:3":
-            type = .fourThree
-        default:
-            return
-        }
-        setGlobalButtonState(type: type, isOn: parts[3].trim() == "on")
-        sceneUpdated()
-        updateButtonStates()
     }
 
-    private func isUserAllowedToUseChatBot(
+    private func executeOfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
-        message: ChatBotMessage
-    ) -> Bool {
+        message: ChatBotMessage,
+        onCompleted: @escaping () -> Void
+    ) {
         if message.isModerator && permissions.moderatorsEnabled {
-            return true
+            onCompleted()
+            return
         }
         if message.isSubscriber && permissions.subscribersEnabled! {
-            return true
+            if message.platform == .twitch {
+                if let userId = message.userId {
+                    TwitchApi(accessToken: stream.twitchAccessToken!).getBroadcasterSubscriptions(
+                        broadcasterId: stream.twitchChannelId,
+                        userId: userId
+                    ) { data in
+                        DispatchQueue.main.async {
+                            if let tier = data?.tierAsNumber(), tier >= permissions.minimumSubscriberTier! {
+                                onCompleted()
+                                return
+                            }
+                            self.executeOfUserAllowedToUseChatBotAfterSubscribeCheck(
+                                permissions: permissions,
+                                message: message,
+                                onCompleted: onCompleted
+                            )
+                        }
+                    }
+                    return
+                }
+            } else {
+                onCompleted()
+                return
+            }
         }
+        executeOfUserAllowedToUseChatBotAfterSubscribeCheck(
+            permissions: permissions,
+            message: message,
+            onCompleted: onCompleted
+        )
+    }
+
+    private func executeOfUserAllowedToUseChatBotAfterSubscribeCheck(
+        permissions: SettingsChatBotPermissionsCommand,
+        message: ChatBotMessage,
+        onCompleted: @escaping () -> Void
+    ) {
         guard let user = message.user else {
-            return false
+            return
         }
         switch message.platform {
         case .twitch:
-            return isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user)
+            if isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user) {
+                onCompleted()
+            }
         case .kick:
-            return isKickUserAllowedToUseChatBot(permissions: permissions, user: user)
+            if isKickUserAllowedToUseChatBot(permissions: permissions, user: user) {
+                onCompleted()
+            }
         default:
             break
         }
-        return false
     }
 
     private func isTwitchUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
@@ -4260,6 +4304,7 @@ final class Model: NSObject, ObservableObject {
     func appendChatMessage(
         platform: Platform,
         user: String?,
+        userId: String?,
         userColor: RgbColor?,
         userBadges: [URL],
         segments: [ChatPostSegment],
@@ -4279,6 +4324,7 @@ final class Model: NSObject, ObservableObject {
                 user: user,
                 isModerator: isModerator,
                 isSubscriber: isSubscriber,
+                userId: userId,
                 segments: segments
             ))
         }
@@ -8180,6 +8226,7 @@ extension Model: TwitchEventSubDelegate {
         var id = 0
         appendChatMessage(platform: .twitch,
                           user: user,
+                          userId: nil,
                           userColor: nil,
                           userBadges: [],
                           segments: makeChatPostTextSegments(text: text, id: &id),
