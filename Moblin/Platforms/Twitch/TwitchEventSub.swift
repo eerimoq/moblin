@@ -229,6 +229,7 @@ private struct NotificationChannelHypeTrainEndMessage: Decodable {
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
+    func twitchEventSubMakeErrorToast(title: String)
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent)
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
@@ -328,9 +329,9 @@ final class TwitchEventSub: NSObject {
             condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
         )
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup follow events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch follow events")
             }
             self.subscribeToChannelSubscribe()
         }
@@ -341,9 +342,9 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup subscription events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch subscription events")
             }
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
@@ -354,9 +355,11 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup reward redemption events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(
+                        title: "Failed to subscribe to Twitch reward redemption events"
+                    )
             }
             self.subscribeToChannelRaid()
         }
@@ -367,9 +370,8 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup raid events")
-                return
+            if !ok {
+                self.delegate.twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch raid events")
             }
             self.subscribeToChannelCheer()
         }
@@ -380,9 +382,9 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup cheer events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(title: "Failed to subscribe to Twitch cheer events")
             }
             self.subscribeToChannelHypeTrainBegin()
         }
@@ -393,9 +395,11 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup hype train begin events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(
+                        title: "Failed to subscribe to Twitch hype train begin events"
+                    )
             }
             self.subscribeToChannelHypeTrainProgress()
         }
@@ -406,9 +410,11 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup hype train progress events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(
+                        title: "Failed to subscribe to Twitch hype train progress events"
+                    )
             }
             self.subscribeToChannelHypeTrainEnd()
         }
@@ -419,9 +425,11 @@ final class TwitchEventSub: NSObject {
                               version: 1,
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                logger.info("twitch: event-sub: Failed to setup hype train end events")
-                return
+            if !ok {
+                self.delegate
+                    .twitchEventSubMakeErrorToast(
+                        title: "Failed to subscribe to Twitch hype train end events"
+                    )
             }
             self.connected = true
         }

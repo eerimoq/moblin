@@ -8058,6 +8058,12 @@ extension Model {
 }
 
 extension Model: TwitchEventSubDelegate {
+    func twitchEventSubMakeErrorToast(title: String) {
+        DispatchQueue.main.async {
+            self.makeErrorToast(title: title)
+        }
+    }
+
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
             let text = String(localized: "just followed!")
