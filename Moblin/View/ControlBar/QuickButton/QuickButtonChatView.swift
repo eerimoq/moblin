@@ -253,10 +253,10 @@ private struct HypeTrainView: View {
                                     Circle()
                                         .stroke(.secondary)
                                 )
-                                .foregroundColor(.primary)
                                 .padding([.leading], 15)
                         }
                     }
+                    .foregroundColor(.white)
                     .padding(10)
                 }
                 if let progress = model.hypeTrainProgress, let goal = model.hypeTrainGoal {
