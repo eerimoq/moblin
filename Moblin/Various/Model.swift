@@ -4041,21 +4041,6 @@ final class Model: NSObject, ObservableObject {
         })
     }
 
-    private func appendChatPost(post: ChatPost) {
-        appendChatMessage(platform: post.platform,
-                          user: post.user,
-                          userId: post.userId,
-                          userColor: post.userColor,
-                          userBadges: post.userBadges,
-                          segments: post.segments,
-                          timestamp: post.timestamp,
-                          timestampTime: post.timestampTime,
-                          isAction: post.isAction,
-                          isSubscriber: post.isSubscriber,
-                          isModerator: post.isModerator,
-                          highlight: post.highlight)
-    }
-
     private func handleChatBotMessage(message: ChatBotMessage) {
         guard message.segments.count > 1 else {
             return
@@ -4369,11 +4354,20 @@ final class Model: NSObject, ObservableObject {
     }
 
     func reloadChatMessages() {
-        let posts = chatPosts
-        chatPosts = []
+        chatPosts = newPostIds(posts: chatPosts)
+        interactiveChatPosts = newPostIds(posts: interactiveChatPosts)
+        interactiveChatAlertsPosts = newPostIds(posts: interactiveChatAlertsPosts)
+    }
+
+    private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
+        var newPosts: Deque<ChatPost> = []
         for post in posts {
-            appendChatPost(post: post)
+            var newPost = post
+            newPost.id = chatPostId
+            chatPostId += 1
+            newPosts.append(newPost)
         }
+        return newPosts
     }
 
     func toggleBlackScreen() {
