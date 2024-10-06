@@ -4057,30 +4057,33 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
+        guard message.segments.count > 1 else {
+            return
+        }
         var command = ""
-        for segment in message.segments {
+        for segment in message.segments.suffix(from: 1) {
             if let text = segment.text {
                 command += text
             }
         }
         command = command.trim()
         switch command {
-        case "!moblin tts on":
+        case "tts on":
             handleChatBotMessageTtsOn(message: message)
-        case "!moblin tts off":
+        case "tts off":
             handleChatBotMessageTtsOff(message: message)
-        case "!moblin obs fix":
+        case "obs fix":
             handleChatBotMessageObsFix(message: message)
-        case "!moblin map zoom out":
+        case "map zoom out":
             handleChatBotMessageMapZoomOut(message: message)
-        case "!moblin snapshot":
+        case "snapshot":
             handleChatBotMessageSnapshot(message: message)
         default:
-            if command.starts(with: "!moblin alert ") {
+            if command.starts(with: "alert ") {
                 handleChatBotMessageAlert(message: message, command: command)
-            } else if command.starts(with: "!moblin fax ") {
+            } else if command.starts(with: "fax ") {
                 handleChatBotMessageFax(message: message, command: command)
-            } else if command.starts(with: "!moblin filter ") {
+            } else if command.starts(with: "filter ") {
                 handleChatBotMessageFilter(message: message, command: command)
             }
         }
@@ -4165,11 +4168,11 @@ final class Model: NSObject, ObservableObject {
             message: message
         ) {
             let parts = command.split(separator: " ")
-            guard parts.count >= 3 else {
+            guard parts.count >= 2 else {
                 return
             }
             DispatchQueue.main.async {
-                self.playAlert(alert: .chatBotCommand(parts[2].trim(), message.user ?? "Unknown"))
+                self.playAlert(alert: .chatBotCommand(parts[1].trim(), message.user ?? "Unknown"))
             }
         }
     }
@@ -4180,10 +4183,10 @@ final class Model: NSObject, ObservableObject {
             message: message
         ) {
             let parts = command.split(separator: " ")
-            guard parts.count >= 3 else {
+            guard parts.count >= 2 else {
                 return
             }
-            self.faxReceiver.add(url: parts[2].trim())
+            self.faxReceiver.add(url: parts[1].trim())
         }
     }
 
@@ -4193,11 +4196,11 @@ final class Model: NSObject, ObservableObject {
             message: message
         ) {
             let parts = command.split(separator: " ")
-            guard parts.count == 4 else {
+            guard parts.count == 3 else {
                 return
             }
             var type: SettingsButtonType
-            switch parts[2].trim() {
+            switch parts[1].trim() {
             case "movie":
                 type = .movie
             case "grayscale":
@@ -4213,7 +4216,7 @@ final class Model: NSObject, ObservableObject {
             default:
                 return
             }
-            self.setGlobalButtonState(type: type, isOn: parts[3].trim() == "on")
+            self.setGlobalButtonState(type: type, isOn: parts[2].trim() == "on")
             self.sceneUpdated()
             self.updateButtonStates()
         }
@@ -4318,7 +4321,7 @@ final class Model: NSObject, ObservableObject {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
         }
-        if database.chat.botEnabled!, segments.first?.text?.trim() == "!moblin" {
+        if database.chat.botEnabled!, segments.first?.text?.trim().lowercased() == "!moblin" {
             handleChatBotMessage(message: ChatBotMessage(
                 platform: platform,
                 user: user,
