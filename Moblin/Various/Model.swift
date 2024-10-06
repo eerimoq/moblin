@@ -205,9 +205,7 @@ struct ChatPost: Identifiable, Equatable {
     }
 
     var id: Int
-    var platform: Platform
     var user: String?
-    var userId: String?
     var userColor: RgbColor?
     var userBadges: [URL]
     var segments: [ChatPostSegment]
@@ -215,7 +213,6 @@ struct ChatPost: Identifiable, Equatable {
     var timestampTime: ContinuousClock.Instant
     var isAction: Bool
     var isSubscriber: Bool
-    var isModerator: Bool
     var highlight: ChatHighlight?
 }
 
@@ -4321,7 +4318,6 @@ final class Model: NSObject, ObservableObject {
         }
         let post = ChatPost(
             id: chatPostId,
-            platform: platform,
             user: user,
             userColor: userColor?.makeReadableOnDarkBackground(),
             userBadges: userBadges,
@@ -4330,7 +4326,6 @@ final class Model: NSObject, ObservableObject {
             timestampTime: timestampTime,
             isAction: isAction,
             isSubscriber: isSubscriber,
-            isModerator: isModerator,
             highlight: highlight
         )
         chatPostId += 1
