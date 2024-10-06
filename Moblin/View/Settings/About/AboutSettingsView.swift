@@ -5,13 +5,19 @@ struct AboutSettingsView: View {
         Form {
             Section {
                 TextItemView(name: String(localized: "Version"), value: appVersion())
-                NavigationLink(destination: AboutVersionHistorySettingsView()) {
+                NavigationLink {
+                    AboutVersionHistorySettingsView()
+                } label: {
                     Text("Version history")
                 }
-                NavigationLink(destination: AboutLicensesSettingsView()) {
+                NavigationLink {
+                    AboutLicensesSettingsView()
+                } label: {
                     Text("Licenses")
                 }
-                NavigationLink(destination: AboutAttributionsSettingsView()) {
+                NavigationLink {
+                    AboutAttributionsSettingsView()
+                } label: {
                     Text("Attributions")
                 }
             }

@@ -404,19 +404,17 @@ private struct ControlBarRemoteControlAssistantRightView: View {
                         Text("Bitrate")
                     }
                     .onChange(of: model.remoteControlBitrate) { _ in
-                        guard model.remoteControlBitrate != model.remoteControlState.bitrate
-                        else {
+                        guard model.remoteControlBitrate != model.remoteControlState.bitrate else {
                             return
                         }
-                        model
-                            .remoteControlAssistantSetBitratePreset(id: model
-                                .remoteControlBitrate)
+                        model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
                     }
-                    NavigationLink(destination: RemoteControlSrtConnectionPrioritiesView(
-                        srt: settings
-                            .srt,
-                        enabled: settings.srt.connectionPrioritiesEnabled
-                    )) {
+                    NavigationLink {
+                        RemoteControlSrtConnectionPrioritiesView(
+                            srt: settings.srt,
+                            enabled: settings.srt.connectionPrioritiesEnabled
+                        )
+                    } label: {
                         Text("SRT connection priorities")
                     }
                 } else {
@@ -450,14 +448,16 @@ private struct ControlBarRemoteControlAssistantRightView: View {
                 }
             }
             Section {
-                NavigationLink(destination: DebugLogSettingsView(
-                    log: model.remoteControlAssistantLog,
-                    formatLog: { model.formatLog(log: model.remoteControlAssistantLog) },
-                    clearLog: {
-                        model.clearRemoteControlAssistantLog()
-                        model.objectWillChange.send()
-                    }
-                )) {
+                NavigationLink {
+                    DebugLogSettingsView(
+                        log: model.remoteControlAssistantLog,
+                        formatLog: { model.formatLog(log: model.remoteControlAssistantLog) },
+                        clearLog: {
+                            model.clearRemoteControlAssistantLog()
+                            model.objectWillChange.send()
+                        }
+                    )
+                } label: {
                     Text("Log")
                 }
             }

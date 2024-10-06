@@ -8,9 +8,9 @@ struct BitratePresetsSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.bitratePresets) { preset in
-                        NavigationLink(destination: BitratePresetsPresetSettingsView(
-                            preset: preset
-                        )) {
+                        NavigationLink {
+                            BitratePresetsPresetSettingsView(preset: preset)
+                        } label: {
                             HStack {
                                 DraggableItemPrefixView()
                                 TextItemView(

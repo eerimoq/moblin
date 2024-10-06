@@ -27,11 +27,13 @@ struct ZoomSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.zoom.back) { preset in
-                        NavigationLink(destination: ZoomPresetSettingsView(
-                            preset: preset,
-                            minX: minZoomX,
-                            maxX: model.getMinMaxZoomX(position: .back).1
-                        )) {
+                        NavigationLink {
+                            ZoomPresetSettingsView(
+                                preset: preset,
+                                minX: minZoomX,
+                                maxX: model.getMinMaxZoomX(position: .back).1
+                            )
+                        } label: {
                             HStack {
                                 DraggableItemPrefixView()
                                 TextItemView(
@@ -68,11 +70,13 @@ struct ZoomSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.zoom.front) { preset in
-                        NavigationLink(destination: ZoomPresetSettingsView(
-                            preset: preset,
-                            minX: minZoomX,
-                            maxX: model.getMinMaxZoomX(position: .front).1
-                        )) {
+                        NavigationLink {
+                            ZoomPresetSettingsView(
+                                preset: preset,
+                                minX: minZoomX,
+                                maxX: model.getMinMaxZoomX(position: .front).1
+                            )
+                        } label: {
                             HStack {
                                 DraggableItemPrefixView()
                                 TextItemView(

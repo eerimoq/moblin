@@ -177,10 +177,14 @@ private struct AboutAttributionsImagesSettingsView: View {
 struct AboutAttributionsSettingsView: View {
     var body: some View {
         Form {
-            NavigationLink(destination: AboutAttributionsSoundsSettingsView()) {
+            NavigationLink {
+                AboutAttributionsSoundsSettingsView()
+            } label: {
                 Text("Sounds")
             }
-            NavigationLink(destination: AboutAttributionsImagesSettingsView()) {
+            NavigationLink {
+                AboutAttributionsImagesSettingsView()
+            } label: {
                 Text("Images")
             }
         }
