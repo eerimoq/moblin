@@ -168,6 +168,7 @@ struct FaceView: View {
     @State var crop: Bool
     @State var beauty: Bool
     @State var blur: Bool
+    @State var blurBackground: Bool
     @State var mouth: Bool
 
     private var settings: SettingsDebugBeautyFilter {
@@ -221,6 +222,17 @@ struct FaceView: View {
                         FaceButtonView(
                             title: String(localized: "Blur"),
                             on: blur
+                        )
+                    }
+                    Button {
+                        settings.showBlurBackground!.toggle()
+                        model.sceneUpdated()
+                        model.updateFaceFilterSettings()
+                        blurBackground = settings.showBlurBackground!
+                    } label: {
+                        FaceButtonView(
+                            title: String(localized: "Privacy"),
+                            on: blurBackground
                         )
                     }
                     Button {

@@ -1511,6 +1511,7 @@ let pixelFormatTypes = [
 
 class SettingsDebugBeautyFilter: Codable {
     var showBlur = false
+    var showBlurBackground: Bool? = false
     // periphery:ignore
     var showColors: Bool? = false
     var showMoblin = false
@@ -3885,6 +3886,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.alerts!.twitch!.cheers == nil {
             widget.alerts!.twitch!.cheers = .init()
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.showBlurBackground == nil {
+            realDatabase.debug!.beautyFilterSettings!.showBlurBackground = false
             store()
         }
     }

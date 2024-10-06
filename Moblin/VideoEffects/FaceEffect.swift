@@ -6,6 +6,7 @@ import Vision
 struct FaceEffectSettings {
     var showCrop = true
     var showBlur = true
+    var showBlurBackground = true
     var showMouth = true
     var showBeauty = true
     var shapeRadius: Float = 0.5
@@ -78,6 +79,16 @@ final class FaceEffect: VideoEffect {
         }
     }
 
+    private func addBlur(image: CIImage?) -> CIImage? {
+        guard let image else {
+            return image
+        }
+        return image
+            .clampedToExtent()
+            .applyingGaussianBlur(sigma: image.extent.width / 50.0)
+            .cropped(to: image.extent)
+    }
+
     private func createFacesMaskImage(imageExtent: CGRect, detections: [VNFaceObservation]) -> CIImage? {
         var facesMask = CIImage.empty().cropped(to: imageExtent)
         for detection in detections {
@@ -104,27 +115,34 @@ final class FaceEffect: VideoEffect {
         return facesMask
     }
 
-    private func addBlur(image: CIImage?) -> CIImage? {
-        guard let image else {
-            return image
-        }
-        return image
-            .clampedToExtent()
-            .applyingGaussianBlur(sigma: image.extent.width / 50.0)
-            .cropped(to: image.extent)
-    }
-
-    private func applyFacesMask(backgroundImage: CIImage?, image: CIImage?,
-                                detections: [VNFaceObservation]?) -> CIImage?
+    private func applyFacesMask(image: CIImage?,
+                                detections: [VNFaceObservation]?,
+                                blurFaces: Bool,
+                                blurBackground: Bool) -> CIImage?
     {
         guard let image, let detections else {
             return image
         }
-        let faceBlender = CIFilter.blendWithMask()
-        faceBlender.inputImage = image
-        faceBlender.backgroundImage = backgroundImage
-        faceBlender.maskImage = createFacesMaskImage(imageExtent: image.extent, detections: detections)
-        return faceBlender.outputImage
+        let blurredImage = addBlur(image: image)
+        let mask = createFacesMaskImage(imageExtent: image.extent, detections: detections)
+        var outputImage: CIImage? = blurredImage
+        if blurFaces {
+            let faceBlender = CIFilter.blendWithMask()
+            faceBlender.inputImage = blurredImage
+            faceBlender.backgroundImage = image
+            faceBlender.maskImage = mask
+            outputImage = faceBlender.outputImage
+        } else {
+            outputImage = image
+        }
+        if blurBackground {
+            let faceBlender = CIFilter.blendWithMask()
+            faceBlender.inputImage = outputImage
+            faceBlender.backgroundImage = blurredImage
+            faceBlender.maskImage = mask
+            outputImage = faceBlender.outputImage
+        }
+        return outputImage
     }
 
     private func addMouth(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
@@ -218,14 +236,12 @@ final class FaceEffect: VideoEffect {
             return image
         }
         var outputImage: CIImage? = image
-        if settings.showBlur {
-            outputImage = addBlur(image: outputImage)
-        }
-        if outputImage != image {
+        if settings.showBlur || settings.showBlurBackground {
             outputImage = applyFacesMask(
-                backgroundImage: image,
-                image: outputImage,
-                detections: faceDetections
+                image: image,
+                detections: faceDetections,
+                blurFaces: settings.showBlur,
+                blurBackground: settings.showBlurBackground
             )
         }
         if settings.showBeauty {

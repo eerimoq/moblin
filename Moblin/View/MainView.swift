@@ -207,6 +207,7 @@ struct MainView: View {
                                 crop: debug.beautyFilter!,
                                 beauty: debug.beautyFilterSettings!.showBeauty!,
                                 blur: debug.beautyFilterSettings!.showBlur,
+                                blurBackground: debug.beautyFilterSettings!.showBlurBackground!,
                                 mouth: debug.beautyFilterSettings!.showMoblin
                             )
                         }
@@ -361,6 +362,7 @@ struct MainView: View {
                                 crop: debug.beautyFilter!,
                                 beauty: debug.beautyFilterSettings!.showBeauty!,
                                 blur: debug.beautyFilterSettings!.showBlur,
+                                blurBackground: debug.beautyFilterSettings!.showBlurBackground!,
                                 mouth: debug.beautyFilterSettings!.showMoblin
                             )
                         }

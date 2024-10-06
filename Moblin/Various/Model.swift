@@ -1266,6 +1266,7 @@ final class Model: NSObject, ObservableObject {
         faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
             showCrop: database.debug!.beautyFilter!,
             showBlur: settings.showBlur,
+            showBlurBackground: settings.showBlurBackground!,
             showMouth: settings.showMoblin,
             showBeauty: settings.showBeauty!,
             shapeRadius: settings.shapeRadius!,
@@ -2613,7 +2614,8 @@ final class Model: NSObject, ObservableObject {
 
     private func isFaceEnabled() -> Bool {
         let settings = database.debug!.beautyFilterSettings!
-        return database.debug!.beautyFilter! || settings.showBlur || settings.showMoblin || settings
+        return database.debug!.beautyFilter! || settings.showBlur || settings.showBlurBackground! || settings
+            .showMoblin || settings
             .showBeauty!
     }
 
