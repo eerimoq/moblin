@@ -36,6 +36,41 @@ private struct CollapsedBondingView: View {
     }
 }
 
+private struct CollapsedHypeTrainView: View {
+    @EnvironmentObject var model: Model
+    var show: Bool
+    var color: Color
+
+    var body: some View {
+        if show {
+            HStack(spacing: 1) {
+                let train = Image(systemName: "train.side.front.car")
+                    .frame(width: 17, height: 17)
+                    .padding([.leading, .trailing], 2)
+                    .foregroundColor(color)
+                if #available(iOS 18.0, *) {
+                    train
+                        .symbolEffect(
+                            .wiggle.forward.byLayer,
+                            options: .repeat(.periodic(delay: 2.0))
+                        )
+                } else {
+                    train
+                }
+                Text(model.hypeTrainStatus)
+                    .foregroundColor(.white)
+                    .padding([.leading, .trailing], 2)
+            }
+            .font(smallFont)
+            .background(backgroundColor)
+            .cornerRadius(5)
+            .padding(20)
+            .contentShape(Rectangle())
+            .padding(-20)
+        }
+    }
+}
+
 private struct CollapsedBitrateView: View {
     @EnvironmentObject var model: Model
     var show: Bool
@@ -93,6 +128,17 @@ private struct StatusesView: View {
     }
 
     var body: some View {
+        if textPlacement == .hide {
+            CollapsedHypeTrainView(show: model.isShowingStatusHypeTrain(), color: .white)
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusHypeTrain(),
+                icon: "train.side.front.car",
+                text: model.hypeTrainStatus,
+                textPlacement: textPlacement,
+                color: .white
+            )
+        }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusServers(),
             icon: "server.rack",

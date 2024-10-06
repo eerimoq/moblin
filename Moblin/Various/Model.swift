@@ -422,6 +422,7 @@ final class Model: NSObject, ObservableObject {
     @Published var hypeTrainLevel: Int?
     @Published var hypeTrainProgress: Int?
     @Published var hypeTrainGoal: Int?
+    @Published var hypeTrainStatus = noValue
 
     private var workoutHeartRate: Int?
     private var workoutActiveEnergyBurned: Int?
@@ -5655,6 +5656,10 @@ final class Model: NSObject, ObservableObject {
         return database.show.audioLevel
     }
 
+    func isShowingStatusHypeTrain() -> Bool {
+        return hypeTrainStatus != noValue
+    }
+
     func isShowingStatusServers() -> Bool {
         return database.show.rtmpSpeed! && (rtmpServerEnabled() || srtlaServerEnabled())
     }
@@ -8178,11 +8183,17 @@ extension Model: TwitchEventSubDelegate {
         }
     }
 
+    private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
+        let percentage = Int(100 * Float(progress) / Float(goal))
+        hypeTrainStatus = "LVL \(level), \(percentage)%"
+    }
+
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
         DispatchQueue.main.async {
             self.hypeTrainLevel = event.level
             self.hypeTrainProgress = event.progress
             self.hypeTrainGoal = event.goal
+            self.updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         }
     }
 
@@ -8191,6 +8202,7 @@ extension Model: TwitchEventSubDelegate {
             self.hypeTrainLevel = event.level
             self.hypeTrainProgress = event.progress
             self.hypeTrainGoal = event.goal
+            self.updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         }
     }
 
@@ -8199,6 +8211,7 @@ extension Model: TwitchEventSubDelegate {
             self.hypeTrainLevel = event.level
             self.hypeTrainProgress = 1
             self.hypeTrainGoal = 1
+            self.updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
         }
     }
 
@@ -8206,6 +8219,7 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainLevel = nil
         hypeTrainProgress = nil
         hypeTrainGoal = nil
+        hypeTrainStatus = noValue
     }
 
     private func appendTwitchChatAlertMessage(
