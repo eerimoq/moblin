@@ -63363,8 +63363,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minsta abonnentnivå"
+            "state" : "translated",
+            "value" : "Minsta premumerantnivå"
           }
         },
         "tr" : {
