@@ -59,35 +59,45 @@ struct ChatBotCommandsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.fix)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.fix)
+                } label: {
                     Text("!moblin obs fix")
                 }
             } footer: {
                 Text("Fix OBS input.")
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.alert!)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.alert!)
+                } label: {
                     Text("!moblin alert <name>")
                 }
             } footer: {
                 Text("Trigger alerts. Configure alert names in alert widgets.")
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.fax!)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.fax!)
+                } label: {
                     Text("!moblin fax <url>")
                 }
             } footer: {
                 Text("Fax the streamer images.")
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.snapshot!)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.snapshot!)
+                } label: {
                     Text("!moblin snapshot")
                 }
             } footer: {
                 Text("Take snapshot.")
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.filter!)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.filter!)
+                } label: {
                     Text("!moblin filter <filter> <on/off>")
                 }
             } footer: {
@@ -100,21 +110,27 @@ struct ChatBotCommandsSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.map)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.map)
+                } label: {
                     Text("!moblin map zoom out")
                 }
             } footer: {
                 Text("Zoom out map widget temporarily.")
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.tts)
+                } label: {
                     Text("!moblin tts on")
                 }
             } footer: {
                 Text("Turn on chat text to speech.")
             }
             Section {
-                NavigationLink(destination: PermissionsSettingsView(permissions: permissions.tts)) {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.tts)
+                } label: {
                     Text("!moblin tts off")
                 }
             } footer: {
@@ -131,7 +147,7 @@ struct ChatBotSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: ChatBotCommandsSettingsView()) {
+                NavigationLink { ChatBotCommandsSettingsView() } label: {
                     Text("Commands")
                 }
             }

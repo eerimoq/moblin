@@ -22,7 +22,9 @@ struct CustomLutView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                NavigationLink {
+                    NameEditView(name: name, onSubmit: submitName)
+                } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
                 }
             }
@@ -62,7 +64,9 @@ struct CameraSettingsLutsView: View {
             Section {
                 List {
                     ForEach(model.database.color!.diskLuts!) { lut in
-                        NavigationLink(destination: CustomLutView(lut: lut, name: lut.name)) {
+                        NavigationLink {
+                            CustomLutView(lut: lut, name: lut.name)
+                        } label: {
                             Text(lut.name)
                         }
                         .tag(lut.id)
@@ -157,7 +161,9 @@ struct CameraSettingsView: View {
         Form {
             Section {
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: ZoomSettingsView(speed: model.database.zoom.speed!)) {
+                    NavigationLink {
+                        ZoomSettingsView(speed: model.database.zoom.speed!)
+                    } label: {
                         Text("Zoom")
                     }
                 }
@@ -186,9 +192,11 @@ struct CameraSettingsView: View {
                             }
                         }
                         .disabled(model.isLive || model.isRecording)
-                        NavigationLink(destination: CameraSettingsAppleLogLutView(
-                            selectedId: model.database.color!.lut
-                        )) {
+                        NavigationLink {
+                            CameraSettingsAppleLogLutView(
+                                selectedId: model.database.color!.lut
+                            )
+                        } label: {
                             Text("Apple Log LUT")
                         }
                     } footer: {
@@ -211,7 +219,9 @@ struct CameraSettingsView: View {
                     }
                 }
                 Section {
-                    NavigationLink(destination: CameraSettingsLutsView()) {
+                    NavigationLink {
+                        CameraSettingsLutsView()
+                    } label: {
                         Text("LUTs")
                     }
                 } footer: {

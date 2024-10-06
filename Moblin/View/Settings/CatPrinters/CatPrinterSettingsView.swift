@@ -51,11 +51,12 @@ struct CatPrinterSettingsView: View {
                 })
             }
             Section {
-                NavigationLink(destination: CatPrinterScannerSettingsView(
+                NavigationLink { CatPrinterScannerSettingsView(
                     onChange: onDeviceChange,
                     selectedId: device.bluetoothPeripheralId?
                         .uuidString ?? String(localized: "Select device")
-                )) {
+                )
+                } label: {
                     Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
                         .foregroundColor(.gray)
                         .lineLimit(1)

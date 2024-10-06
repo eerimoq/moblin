@@ -14,7 +14,9 @@ struct CatPrintersSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.catPrinters!.devices) { device in
-                        NavigationLink(destination: CatPrinterSettingsView(device: device)) {
+                        NavigationLink {
+                            CatPrinterSettingsView(device: device)
+                        } label: {
                             Text(device.name)
                         }
                     }

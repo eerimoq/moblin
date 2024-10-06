@@ -94,12 +94,14 @@ struct ChatSettingsView: View {
                     })) {
                         Text("Animated emotes")
                     }
-                    NavigationLink(destination: TextEditView(
-                        title: String(localized: "Maximum age"),
-                        value: String(model.database.chat.maximumAge!),
-                        onSubmit: submitMaximumAge,
-                        footers: [String(localized: "Maximum message age in seconds.")]
-                    )) {
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Maximum age"),
+                            value: String(model.database.chat.maximumAge!),
+                            onSubmit: submitMaximumAge,
+                            footers: [String(localized: "Maximum message age in seconds.")]
+                        )
+                    } label: {
                         Toggle(isOn: Binding(get: {
                             model.database.chat.maximumAgeEnabled!
                         }, set: { value in
@@ -112,13 +114,17 @@ struct ChatSettingsView: View {
                         }
                     }
                 }
-                NavigationLink(destination: ChatUsernamesToIgnoreSettingsView()) {
+                NavigationLink {
+                    ChatUsernamesToIgnoreSettingsView()
+                } label: {
                     Text("Usernames to ignore")
                 }
-                NavigationLink(destination: ChatTextToSpeechSettingsView(
-                    rate: model.database.chat.textToSpeechRate!,
-                    volume: model.database.chat.textToSpeechSayVolume!
-                )) {
+                NavigationLink {
+                    ChatTextToSpeechSettingsView(
+                        rate: model.database.chat.textToSpeechRate!,
+                        volume: model.database.chat.textToSpeechSayVolume!
+                    )
+                } label: {
                     Toggle(isOn: Binding(get: {
                         model.database.chat.textToSpeechEnabled!
                     }, set: { value in
@@ -130,7 +136,9 @@ struct ChatSettingsView: View {
                         Text("Text to speech")
                     }
                 }
-                NavigationLink(destination: ChatBotSettingsView()) {
+                NavigationLink {
+                    ChatBotSettingsView()
+                } label: {
                     Toggle(isOn: Binding(get: {
                         model.database.chat.botEnabled!
                     }, set: { value in
