@@ -73,7 +73,6 @@ struct QuickButtonsInnerView: View {
     private func muteAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleMute()
-        model.updateButtonStates()
     }
 
     private func widgetAction(state: ButtonState) {

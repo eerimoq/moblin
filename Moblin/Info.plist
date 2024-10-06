@@ -28,6 +28,11 @@
 	</dict>
 	<key>NSCameraReactionEffectsEnabled</key>
 	<true/>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>IntentIntent</string>
+		<string>MuteIntent</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

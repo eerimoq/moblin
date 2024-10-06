@@ -72109,6 +72109,12 @@
         }
       }
     },
+    "Opens the app and mutes." : {
+
+    },
+    "Opens the app and unmutes." : {
+
+    },
     "Optional, but simplifies the setup." : {
       "localizations" : {
         "de" : {
@@ -107997,6 +108003,9 @@
           }
         }
       }
+    },
+    "Unmute" : {
+
     },
     "Unsupported scheme %@" : {
       "localizations" : {

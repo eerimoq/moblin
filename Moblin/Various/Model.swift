@@ -1,9 +1,11 @@
 import AlertToast
+import AppIntents
 import Collections
 import Combine
 import CoreMotion
 import GameController
 import HealthKit
+import Intents
 import MapKit
 import NaturalLanguage
 import Network
@@ -284,7 +286,7 @@ enum WizardCustomProtocol {
     }
 }
 
-final class Model: NSObject, ObservableObject {
+final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
         didSet {
@@ -1041,6 +1043,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        AppDependencyManager.shared.add(dependency: self)
         faxReceiver.delegate = self
         fixAlertMedias()
         setMapPitch()
@@ -1184,6 +1187,7 @@ final class Model: NSObject, ObservableObject {
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
+        MoblinShortcuts.updateAppShortcutParameters()
     }
 
     private func isWeatherNeeded() -> Bool {
@@ -1698,7 +1702,7 @@ final class Model: NSObject, ObservableObject {
             setMicFromSettings()
         }
         for device in database.djiDevices!.devices {
-            guard device.rtmpUrlType == .server && device.serverRtmpStreamId! == stream.id else {
+            guard device.rtmpUrlType == .server, device.serverRtmpStreamId! == stream.id else {
                 continue
             }
             restartDjiLiveStreamIfNeededAfterDelay(device: device)
@@ -2141,7 +2145,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func lutEnabledUpdated() {
-        if database.color!.lutEnabled && database.color!.space == .appleLog {
+        if database.color!.lutEnabled, database.color!.space == .appleLog {
             media.registerEffect(lutEffect)
         } else {
             media.unregisterEffect(lutEffect)
@@ -2227,7 +2231,7 @@ final class Model: NSObject, ObservableObject {
         if database.debug!.srtOverlay {
             debugLines = latestDebugLines + latestDebugActions
             debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
-            if logger.debugEnabled && isLive {
+            if logger.debugEnabled, isLive {
                 logger.debug(latestDebugLines.joined(separator: ", "))
             }
         } else if !debugLines.isEmpty {
@@ -2813,7 +2817,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
-        if !enabledScenes.isEmpty && changeScene {
+        if !enabledScenes.isEmpty, changeScene {
             setSceneId(id: enabledScenes[0].id)
             sceneIndex = 0
         }
@@ -3116,7 +3120,7 @@ final class Model: NSObject, ObservableObject {
         guard !streaming else {
             return
         }
-        if delayed && !isLive {
+        if delayed, !isLive {
             return
         }
         guard stream.url != defaultStreamUrl else {
@@ -3164,10 +3168,10 @@ final class Model: NSObject, ObservableObject {
         if stream.recording!.autoStopRecording! {
             stopRecording()
         }
-        if stopObsStreamIfEnabled && stream.obsAutoStopStream! {
+        if stopObsStreamIfEnabled, stream.obsAutoStopStream! {
             obsStopStream()
         }
-        if stopObsRecordingIfEnabled && stream.obsAutoStopRecording! {
+        if stopObsRecordingIfEnabled, stream.obsAutoStopRecording! {
             obsStopRecording()
         }
         stopNetStream()
@@ -3951,7 +3955,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func logStatus() {
-        if logger.debugEnabled && isLive {
+        if logger.debugEnabled, isLive {
             logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(uptime)")
         }
     }
@@ -3971,7 +3975,7 @@ final class Model: NSObject, ObservableObject {
         if isWatchReachable() {
             fps = 1.0
         }
-        if isRemoteControlStreamerConnected() && isRemoteControlAssistantRequestingPreview {
+        if isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingPreview {
             fps = database.remoteControl!.server.previewFps!
         }
         media.setLowFpsImage(fps: fps)
@@ -4212,11 +4216,11 @@ final class Model: NSObject, ObservableObject {
         message: ChatBotMessage,
         onCompleted: @escaping () -> Void
     ) {
-        if message.isModerator && permissions.moderatorsEnabled {
+        if message.isModerator, permissions.moderatorsEnabled {
             onCompleted()
             return
         }
-        if message.isSubscriber && permissions.subscribersEnabled! {
+        if message.isSubscriber, permissions.subscribersEnabled! {
             if message.platform == .twitch {
                 if let userId = message.userId {
                     TwitchApi(accessToken: stream.twitchAccessToken!).getBroadcasterSubscriptions(
@@ -4579,7 +4583,7 @@ final class Model: NSObject, ObservableObject {
 
     private func sceneUpdatedOn(scene: SettingsScene) {
         var effects: [VideoEffect] = []
-        if database.color!.lutEnabled && database.color!.space == .appleLog {
+        if database.color!.lutEnabled, database.color!.space == .appleLog {
             effects.append(lutEffect)
         }
         for lut in allLuts() {
@@ -4843,11 +4847,11 @@ final class Model: NSObject, ObservableObject {
     private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
-        if batteryLevel <= 0.07 && !isBatteryCharging() && !ProcessInfo().isiOSAppOnMac {
+        if batteryLevel <= 0.07, !isBatteryCharging(), !ProcessInfo().isiOSAppOnMac {
             batteryLevelLowCounter += 1
             if (batteryLevelLowCounter % 3) == 0 {
                 makeWarningToast(title: lowBatteryMessage, vibrate: true)
-                if database.chat.botEnabled! && database.chat.botSendLowBatteryWarning! {
+                if database.chat.botEnabled!, database.chat.botSendLowBatteryWarning! {
                     sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
                 }
             }
@@ -4898,7 +4902,7 @@ final class Model: NSObject, ObservableObject {
         guard streamState == .connected else {
             return
         }
-        if speed < 500_000 && now > latestLowBitrateTime + .seconds(15) {
+        if speed < 500_000, now > latestLowBitrateTime + .seconds(15) {
             makeWarningToast(title: lowBitrateMessage, vibrate: true)
             latestLowBitrateTime = now
         }
@@ -5235,6 +5239,11 @@ final class Model: NSObject, ObservableObject {
 
     func toggleMute() {
         isMuteOn.toggle()
+        updateMute()
+    }
+
+    func setMuted(value: Bool) {
+        isMuteOn = value
         updateMute()
     }
 
