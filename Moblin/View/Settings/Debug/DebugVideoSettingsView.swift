@@ -13,12 +13,14 @@ struct DebugVideoSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Pixel format"),
-                    onChange: onPixelFormatChange,
-                    items: InlinePickerItem.fromStrings(values: pixelFormats),
-                    selectedId: model.database.debug!.pixelFormat!
-                )) {
+                NavigationLink {
+                    InlinePickerView(
+                        title: String(localized: "Pixel format"),
+                        onChange: onPixelFormatChange,
+                        items: InlinePickerItem.fromStrings(values: pixelFormats),
+                        selectedId: model.database.debug!.pixelFormat!
+                    )
+                } label: {
                     TextItemView(
                         name: String(localized: "Pixel format"),
                         value: model.database.debug!.pixelFormat!

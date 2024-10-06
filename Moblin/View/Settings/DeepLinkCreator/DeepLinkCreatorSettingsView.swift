@@ -133,10 +133,14 @@ struct DeepLinkCreatorSettingsView: View {
         GeometryReader { metrics in
             Form {
                 Section {
-                    NavigationLink(destination: DeepLinkCreatorStreamsSettingsView()) {
+                    NavigationLink {
+                        DeepLinkCreatorStreamsSettingsView()
+                    } label: {
                         Text("Streams")
                     }
-                    NavigationLink(destination: DeepLinkCreatorQuickButtonsSettingsView()) {
+                    NavigationLink {
+                        DeepLinkCreatorQuickButtonsSettingsView()
+                    } label: {
                         Toggle(isOn: Binding(get: {
                             deepLinkCreator.quickButtonsEnabled!
                         }, set: {
@@ -147,10 +151,9 @@ struct DeepLinkCreatorSettingsView: View {
                             Text("Quick buttons")
                         }
                     }
-                    NavigationLink(
-                        destination: DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator
-                            .webBrowser!)
-                    ) {
+                    NavigationLink {
+                        DeepLinkCreatorWebBrowserSettingsView(webBrowser: deepLinkCreator.webBrowser!)
+                    } label: {
                         Toggle(isOn: Binding(get: {
                             deepLinkCreator.webBrowserEnabled!
                         }, set: {

@@ -16,11 +16,13 @@ struct DebugSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: DebugLogSettingsView(
-                    log: model.log,
-                    formatLog: { model.formatLog(log: model.log) },
-                    clearLog: { model.clearLog() }
-                )) {
+                NavigationLink {
+                    DebugLogSettingsView(
+                        log: model.log,
+                        formatLog: { model.formatLog(log: model.log) },
+                        clearLog: { model.clearLog() }
+                    )
+                } label: {
                     Text("Log")
                 }
                 Toggle(isOn: Binding(get: {
@@ -40,10 +42,14 @@ struct DebugSettingsView: View {
                     value: String(model.database.debug!.maximumLogLines!),
                     onSubmit: submitLogLines
                 )
-                NavigationLink(destination: DebugAudioSettingsView()) {
+                NavigationLink {
+                    DebugAudioSettingsView()
+                } label: {
                     Text("Audio")
                 }
-                NavigationLink(destination: DebugVideoSettingsView()) {
+                NavigationLink {
+                    DebugVideoSettingsView()
+                } label: {
                     Text("Video")
                 }
                 Toggle("Debug overlay", isOn: Binding(get: {

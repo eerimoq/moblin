@@ -14,10 +14,12 @@ struct ChatTextToSpeechSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: VoicesView(
-                    textToSpeechLanguageVoices: model.database.chat.textToSpeechLanguageVoices!,
-                    onVoiceChange: onVoiceChange
-                )) {
+                NavigationLink {
+                    VoicesView(
+                        textToSpeechLanguageVoices: model.database.chat.textToSpeechLanguageVoices!,
+                        onVoiceChange: onVoiceChange
+                    )
+                } label: {
                     Text("Voices")
                 }
                 HStack {
