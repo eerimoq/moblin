@@ -33,7 +33,9 @@ struct StreamWizardCustomRistSettingsView: View {
                 FormFieldError(error: urlError)
             }
             Section {
-                NavigationLink(destination: StreamWizardSummarySettingsView()) {
+                NavigationLink {
+                    StreamWizardSummarySettingsView()
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

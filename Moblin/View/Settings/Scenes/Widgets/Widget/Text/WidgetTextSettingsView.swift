@@ -216,10 +216,12 @@ private struct TextSelectionView: View {
                 }
             }
             Section {
-                NavigationLink(destination: SuggestionsView(onSubmit: { value in
-                    self.value = value
-                    update()
-                })) {
+                NavigationLink {
+                    SuggestionsView(onSubmit: { value in
+                        self.value = value
+                        update()
+                    })
+                } label: {
                     Text("Suggestions")
                 }
             } footer: {
@@ -269,7 +271,9 @@ struct WidgetTextSettingsView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: TextSelectionView(widget: widget, value: widget.text.formatString)) {
+            NavigationLink {
+                TextSelectionView(widget: widget, value: widget.text.formatString)
+            } label: {
                 TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
             }
         }

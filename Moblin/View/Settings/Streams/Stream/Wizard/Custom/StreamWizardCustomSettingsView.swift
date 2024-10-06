@@ -6,20 +6,28 @@ struct StreamWizardCustomSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: StreamWizardCustomSrtSettingsView()) {
+                NavigationLink {
+                    StreamWizardCustomSrtSettingsView()
+                } label: {
                     Text("SRT(LA)")
                 }
-                NavigationLink(destination: StreamWizardCustomRtmpSettingsView()) {
+                NavigationLink {
+                    StreamWizardCustomRtmpSettingsView()
+                } label: {
                     Text("RTMP(S)")
                 }
-                NavigationLink(destination: StreamWizardCustomRistSettingsView()) {
+                NavigationLink {
+                    StreamWizardCustomRistSettingsView()
+                } label: {
                     Text("RIST")
                 }
             } header: {
                 Text("Protocol")
             }
             Section {
-                NavigationLink(destination: StreamWizardSummarySettingsView()) {
+                NavigationLink {
+                    StreamWizardSummarySettingsView()
+                } label: {
                     WizardSkipButtonView()
                 }
             }

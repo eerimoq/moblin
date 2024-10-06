@@ -26,11 +26,13 @@ struct GameControllersControllerSettingsView: View {
         Form {
             Section {
                 ForEach(gameController.buttons) { button in
-                    NavigationLink(destination: GameControllersControllerButtonSettingsView(
-                        button: button,
-                        selection: button.function.toString(),
-                        sceneSelection: button.sceneId
-                    )) {
+                    NavigationLink {
+                        GameControllersControllerButtonSettingsView(
+                            button: button,
+                            selection: button.function.toString(),
+                            sceneSelection: button.sceneId
+                        )
+                    } label: {
                         HStack {
                             Image(systemName: button.name)
                             Text(button.text!)

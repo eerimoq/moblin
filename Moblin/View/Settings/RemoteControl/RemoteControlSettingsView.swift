@@ -140,10 +140,12 @@ struct RemoteControlSettingsView: View {
                 Text("Control and monitor Moblin from another device.")
             }
             Section {
-                NavigationLink(destination: PasswordView(
-                    value: model.database.remoteControl!.password!,
-                    onSubmit: submitPassword
-                )) {
+                NavigationLink {
+                    PasswordView(
+                        value: model.database.remoteControl!.password!,
+                        onSubmit: submitPassword
+                    )
+                } label: {
                     TextItemView(
                         name: String(localized: "Password"),
                         value: model.database.remoteControl!.password!,

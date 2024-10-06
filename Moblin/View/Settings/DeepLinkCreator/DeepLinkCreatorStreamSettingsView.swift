@@ -337,17 +337,23 @@ struct DeepLinkCreatorStreamSettingsView: View {
                         model.store()
                     }
                 )
-                NavigationLink(destination: DeepLinkCreatorStreamVideoView(video: stream.video)) {
+                NavigationLink {
+                    DeepLinkCreatorStreamVideoView(video: stream.video)
+                } label: {
                     Text("Video")
                 }
-                NavigationLink(destination: DeepLinkCreatorStreamAudioView(
-                    audio: stream.audio!,
-                    bitrate: Float(stream.audio!.bitrate / 1000)
-                )) {
+                NavigationLink {
+                    DeepLinkCreatorStreamAudioView(
+                        audio: stream.audio!,
+                        bitrate: Float(stream.audio!.bitrate / 1000)
+                    )
+                } label: {
                     Text("Audio")
                 }
                 if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
-                    NavigationLink(destination: DeepLinkCreatorStreamSrtView(srt: stream.srt)) {
+                    NavigationLink {
+                        DeepLinkCreatorStreamSrtView(srt: stream.srt)
+                    } label: {
                         Text("SRT(LA)")
                     }
                 }
@@ -355,17 +361,23 @@ struct DeepLinkCreatorStreamSettingsView: View {
                 Text("Media")
             }
             Section {
-                NavigationLink(destination: DeepLinkCreatorStreamTwitchView(stream: stream)) {
+                NavigationLink {
+                    DeepLinkCreatorStreamTwitchView(stream: stream)
+                } label: {
                     Text("Twitch")
                 }
-                NavigationLink(destination: DeepLinkCreatorStreamKickView(stream: stream)) {
+                NavigationLink {
+                    DeepLinkCreatorStreamKickView(stream: stream)
+                } label: {
                     Text("Kick")
                 }
             } header: {
                 Text("Chat and viewers")
             }
             Section {
-                NavigationLink(destination: DeepLinkCreatorStreamObsView(obs: stream.obs)) {
+                NavigationLink {
+                    DeepLinkCreatorStreamObsView(obs: stream.obs)
+                } label: {
                     Text("OBS remote control")
                 }
             }

@@ -41,7 +41,9 @@ struct StreamingHistorySettingsView: View {
                 Section {
                     List {
                         ForEach(model.streamingHistory.database.streams) { stream in
-                            NavigationLink(destination: StreamingHistoryStreamSettingsView(stream: stream)) {
+                            NavigationLink {
+                                StreamingHistoryStreamSettingsView(stream: stream)
+                            } label: {
                                 HStack {
                                     if stream.isSuccessful() {
                                         Image(systemName: "checkmark.circle")

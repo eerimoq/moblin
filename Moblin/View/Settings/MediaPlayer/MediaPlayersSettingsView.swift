@@ -17,7 +17,9 @@ struct MediaPlayersSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.mediaPlayers!.players) { player in
-                        NavigationLink(destination: MediaPlayerSettingsView(player: player)) {
+                        NavigationLink {
+                            MediaPlayerSettingsView(player: player)
+                        } label: {
                             HStack {
                                 Text(player.name)
                                 Spacer()

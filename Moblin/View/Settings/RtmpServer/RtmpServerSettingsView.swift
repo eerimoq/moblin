@@ -51,10 +51,12 @@ struct RtmpServerSettingsView: View {
             Section {
                 List {
                     let list = ForEach(model.database.rtmpServer!.streams) { stream in
-                        NavigationLink(destination: RtmpServerStreamSettingsView(
-                            port: model.database.rtmpServer!.port,
-                            stream: stream
-                        )) {
+                        NavigationLink {
+                            RtmpServerStreamSettingsView(
+                                port: model.database.rtmpServer!.port,
+                                stream: stream
+                            )
+                        } label: {
                             HStack {
                                 if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
                                     Image(systemName: "cable.connector")

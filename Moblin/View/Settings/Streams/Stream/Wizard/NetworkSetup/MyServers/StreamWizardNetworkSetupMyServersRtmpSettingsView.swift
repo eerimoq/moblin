@@ -49,7 +49,9 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
                 Text("Stream key")
             }
             Section {
-                NavigationLink(destination: StreamWizardChatSettingsView()) {
+                NavigationLink {
+                    StreamWizardChatSettingsView()
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

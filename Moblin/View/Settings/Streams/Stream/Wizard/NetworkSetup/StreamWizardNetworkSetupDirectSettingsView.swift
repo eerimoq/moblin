@@ -161,7 +161,9 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: StreamWizardChatSettingsView()) {
+                NavigationLink {
+                    StreamWizardChatSettingsView()
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

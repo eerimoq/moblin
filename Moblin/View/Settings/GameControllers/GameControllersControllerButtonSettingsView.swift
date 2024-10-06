@@ -14,14 +14,15 @@ struct GameControllersControllerButtonSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(title: String(localized: "Function"),
-                                                             onChange: onFunctionChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(
-                                                                     values: gameControllerButtonFunctions
-                                                                 ),
-                                                             selectedId: selection))
-                {
+                NavigationLink {
+                    InlinePickerView(
+                        title: String(localized: "Function"),
+                        onChange: onFunctionChange,
+                        items: InlinePickerItem
+                            .fromStrings(values: gameControllerButtonFunctions),
+                        selectedId: selection
+                    )
+                } label: {
                     TextItemView(name: String(localized: "Function"), value: selection)
                 }
             }

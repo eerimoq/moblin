@@ -16,13 +16,15 @@ struct DisplaySettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: GlobalQuickButtonsSettingsView()) {
+                NavigationLink {
+                    GlobalQuickButtonsSettingsView()
+                } label: {
                     Text("Quick buttons")
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: StreamButtonsSettingsView(
-                        background: model.database.streamButtonColor!.color()
-                    )) {
+                    NavigationLink {
+                        StreamButtonsSettingsView(background: model.database.streamButtonColor!.color())
+                    } label: {
                         Text("Stream button")
                     }
                     if !ProcessInfo().isiOSAppOnMac {
@@ -33,7 +35,9 @@ struct DisplaySettingsView: View {
                             model.objectWillChange.send()
                         }))
                     }
-                    NavigationLink(destination: LocalOverlaysSettingsView()) {
+                    NavigationLink {
+                        LocalOverlaysSettingsView()
+                    } label: {
                         Text("Local overlays")
                     }
                     HStack {
@@ -47,7 +51,9 @@ struct DisplaySettingsView: View {
                             }
                         }
                     }
-                    NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
+                    NavigationLink {
+                        LocalOverlaysNetworkInterfaceNamesSettingsView()
+                    } label: {
                         Text("Network interface names")
                     }
                     Toggle("Low bitrate warning", isOn: Binding(get: {

@@ -4,7 +4,9 @@ struct WatchDisplaySettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: WatchLocalOverlaysSettingsView()) {
+                NavigationLink {
+                    WatchLocalOverlaysSettingsView()
+                } label: {
                     Text("Local overlays")
                 }
             }

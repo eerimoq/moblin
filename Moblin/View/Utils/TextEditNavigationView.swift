@@ -13,15 +13,17 @@ struct TextEditNavigationView: View {
     var valueFormat: ((String) -> String)?
 
     var body: some View {
-        NavigationLink(destination: TextEditView(
-            title: title,
-            value: value,
-            onSubmit: onSubmit,
-            footers: footers,
-            capitalize: capitalize,
-            keyboardType: keyboardType,
-            placeholder: placeholder
-        )) {
+        NavigationLink {
+            TextEditView(
+                title: title,
+                value: value,
+                onSubmit: onSubmit,
+                footers: footers,
+                capitalize: capitalize,
+                keyboardType: keyboardType,
+                placeholder: placeholder
+            )
+        } label: {
             TextItemView(name: title, value: valueFormat?(value) ?? value, sensitive: sensitive, color: color)
         }
     }

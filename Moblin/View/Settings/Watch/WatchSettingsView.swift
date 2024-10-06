@@ -6,12 +6,14 @@ struct WatchSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(
-                    destination: WatchChatSettingsView(fontSize: model.database.watch!.chat.fontSize)
-                ) {
+                NavigationLink {
+                    WatchChatSettingsView(fontSize: model.database.watch!.chat.fontSize)
+                } label: {
                     Text("Chat")
                 }
-                NavigationLink(destination: WatchDisplaySettingsView()) {
+                NavigationLink {
+                    WatchDisplaySettingsView()
+                } label: {
                     Text("Display")
                 }
             } footer: {

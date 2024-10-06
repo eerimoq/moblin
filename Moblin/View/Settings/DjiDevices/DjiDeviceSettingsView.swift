@@ -103,10 +103,14 @@ struct DjiDeviceSettingsView: View {
                 })
             }
             Section {
-                NavigationLink(destination: DjiDeviceScannerSettingsView(
-                    onChange: onDeviceChange,
-                    selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
-                )) {
+                NavigationLink {
+                    DjiDeviceScannerSettingsView(
+                        onChange: onDeviceChange,
+                        selectedId: device.bluetoothPeripheralId?.uuidString ?? String(
+                            localized: "Select device"
+                        )
+                    )
+                } label: {
                     Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
                         .foregroundColor(.gray)
                         .lineLimit(1)

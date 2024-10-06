@@ -13,29 +13,39 @@ struct StreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                NavigationLink {
+                    NameEditView(name: name, onSubmit: submitName)
+                } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
                 }
             }
             Section {
-                NavigationLink(destination: StreamUrlSettingsView(
-                    stream: stream,
-                    value: stream.url
-                )) {
+                NavigationLink {
+                    StreamUrlSettingsView(
+                        stream: stream,
+                        value: stream.url
+                    )
+                } label: {
                     TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: stream.url))
                 }
                 .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: StreamVideoSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamVideoSettingsView(stream: stream)
+                } label: {
                     Text("Video")
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: StreamAudioSettingsView(
-                        stream: stream,
-                        bitrate: Float(stream.audioBitrate! / 1000)
-                    )) {
+                    NavigationLink {
+                        StreamAudioSettingsView(
+                            stream: stream,
+                            bitrate: Float(stream.audioBitrate! / 1000)
+                        )
+                    } label: {
                         Text("Audio")
                     }
-                    NavigationLink(destination: StreamRecordingSettingsView(stream: stream)) {
+                    NavigationLink {
+                        StreamRecordingSettingsView(stream: stream)
+                    } label: {
                         Text("Recording")
                     }
                 }
@@ -52,17 +62,23 @@ struct StreamSettingsView: View {
                 }
                 if model.database.showAllSettings! {
                     if stream.getProtocol() == .srt {
-                        NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
+                        NavigationLink {
+                            StreamSrtSettingsView(stream: stream)
+                        } label: {
                             Text("SRT(LA)")
                         }
                     }
                     if stream.getProtocol() == .rtmp {
-                        NavigationLink(destination: StreamRtmpSettingsView(stream: stream)) {
+                        NavigationLink {
+                            StreamRtmpSettingsView(stream: stream)
+                        } label: {
                             Text("RTMP")
                         }
                     }
                     if stream.getProtocol() == .rist {
-                        NavigationLink(destination: StreamRistSettingsView(stream: stream)) {
+                        NavigationLink {
+                            StreamRistSettingsView(stream: stream)
+                        } label: {
                             Text("RIST")
                         }
                     }
@@ -78,32 +94,44 @@ struct StreamSettingsView: View {
                 Text("Widgets will be wrongly rotated when the portrait toggle is enabled.")
             }
             Section {
-                NavigationLink(destination: StreamTwitchSettingsView(
+                NavigationLink { StreamTwitchSettingsView(
                     stream: stream,
                     loggedIn: stream.twitchLoggedIn!
-                )) {
+                ) } label: {
                     Text("Twitch")
                 }
-                NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamKickSettingsView(stream: stream)
+                } label: {
                     Text("Kick")
                 }
-                NavigationLink(destination: StreamYouTubeSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamYouTubeSettingsView(stream: stream)
+                } label: {
                     Text("YouTube")
                 }
-                NavigationLink(destination: StreamAfreecaTvSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamAfreecaTvSettingsView(stream: stream)
+                } label: {
                     Text("AfreecaTV")
                 }
-                NavigationLink(destination: StreamOpenStreamingPlatformSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamOpenStreamingPlatformSettingsView(stream: stream)
+                } label: {
                     Text("Open Streaming Platform")
                 }
-                NavigationLink(destination: StreamEmotesSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamEmotesSettingsView(stream: stream)
+                } label: {
                     Text("Emotes")
                 }
             } header: {
                 Text("Chat and viewers")
             }
             Section {
-                NavigationLink(destination: StreamObsRemoteControlSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamObsRemoteControlSettingsView(stream: stream)
+                } label: {
                     Toggle("OBS remote control", isOn: Binding(get: {
                         stream.obsWebSocketEnabled!
                     }, set: { value in
@@ -114,7 +142,9 @@ struct StreamSettingsView: View {
                     }))
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: StreamRealtimeIrlSettingsView(stream: stream)) {
+                    NavigationLink {
+                        StreamRealtimeIrlSettingsView(stream: stream)
+                    } label: {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
                             stream.realtimeIrlEnabled!
                         }, set: { value in
@@ -125,7 +155,9 @@ struct StreamSettingsView: View {
                         }))
                     }
                 }
-                NavigationLink(destination: StreamDiscordSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamDiscordSettingsView(stream: stream)
+                } label: {
                     Text("Discord")
                 }
             }

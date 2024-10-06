@@ -87,10 +87,12 @@ private struct SoundGalleryView: View {
             Section {
                 List {
                     ForEach(model.database.alertsMediaGallery!.customSounds) { sound in
-                        NavigationLink(destination: CustomSoundView(
-                            media: sound,
-                            audioPlayer: loadSound(model: model, soundId: sound.id)
-                        )) {
+                        NavigationLink {
+                            CustomSoundView(
+                                media: sound,
+                                audioPlayer: loadSound(model: model, soundId: sound.id)
+                            )
+                        } label: {
                             Text(sound.name)
                         }
                     }
@@ -151,7 +153,9 @@ struct AlertSoundSelectorView: View {
                 }
             }
             Section {
-                NavigationLink(destination: SoundGalleryView(alert: alert, soundId: $soundId)) {
+                NavigationLink {
+                    SoundGalleryView(alert: alert, soundId: $soundId)
+                } label: {
                     Text("My sounds")
                 }
             }

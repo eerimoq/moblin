@@ -43,7 +43,9 @@ struct StreamWizardCustomSrtSettingsView: View {
                 Text("Stream id")
             }
             Section {
-                NavigationLink(destination: StreamWizardSummarySettingsView()) {
+                NavigationLink {
+                    StreamWizardSummarySettingsView()
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

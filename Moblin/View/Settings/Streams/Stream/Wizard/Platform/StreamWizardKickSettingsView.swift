@@ -20,9 +20,9 @@ struct StreamWizardKickSettingsView: View {
                 Text("Channel name")
             }
             Section {
-                NavigationLink(
-                    destination: StreamWizardNetworkSetupSettingsView(platform: String(localized: "Kick"))
-                ) {
+                NavigationLink {
+                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "Kick"))
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

@@ -23,88 +23,122 @@ struct SettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: StreamsSettingsView()) {
+                NavigationLink {
+                    StreamsSettingsView()
+                } label: {
                     IconAndTextView(
                         image: "dot.radiowaves.left.and.right",
                         text: String(localized: "Streams")
                     )
                 }
-                NavigationLink(destination: ScenesSettingsView()) {
+                NavigationLink {
+                    ScenesSettingsView()
+                } label: {
                     IconAndTextView(image: "photo.on.rectangle", text: String(localized: "Scenes"))
                 }
-                NavigationLink(destination: ChatSettingsView(
-                    timestampColor: chat.timestampColor.color(),
-                    usernameColor: chat.usernameColor.color(),
-                    messageColor: chat.messageColor.color(),
-                    backgroundColor: chat.backgroundColor.color(),
-                    shadowColor: chat.shadowColor.color(),
-                    height: chat.height!,
-                    width: chat.width!,
-                    fontSize: chat.fontSize
-                )) {
+                NavigationLink {
+                    ChatSettingsView(
+                        timestampColor: chat.timestampColor.color(),
+                        usernameColor: chat.usernameColor.color(),
+                        messageColor: chat.messageColor.color(),
+                        backgroundColor: chat.backgroundColor.color(),
+                        shadowColor: chat.shadowColor.color(),
+                        height: chat.height!,
+                        width: chat.width!,
+                        fontSize: chat.fontSize
+                    )
+                } label: {
                     IconAndTextView(image: "message", text: String(localized: "Chat"))
                 }
-                NavigationLink(destination: DisplaySettingsView()) {
+                NavigationLink {
+                    DisplaySettingsView()
+                } label: {
                     IconAndTextView(
                         image: "rectangle.inset.topright.fill",
                         text: String(localized: "Display")
                     )
                 }
-                NavigationLink(destination: CameraSettingsView()) {
+                NavigationLink {
+                    CameraSettingsView()
+                } label: {
                     IconAndTextView(image: "camera", text: String(localized: "Camera"))
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: AudioSettingsView()) {
+                    NavigationLink {
+                        AudioSettingsView()
+                    } label: {
                         IconAndTextView(image: "waveform", text: String(localized: "Audio"))
                     }
-                    NavigationLink(destination: MediaPlayersSettingsView()) {
+                    NavigationLink {
+                        MediaPlayersSettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "play.rectangle.on.rectangle",
                             text: String(localized: "Media players")
                         )
                     }
-                    NavigationLink(destination: RtmpServerSettingsView()) {
+                    NavigationLink {
+                        RtmpServerSettingsView()
+                    } label: {
                         IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
                     }
-                    NavigationLink(destination: SrtlaServerSettingsView()) {
+                    NavigationLink {
+                        SrtlaServerSettingsView()
+                    } label: {
                         IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                     }
-                    NavigationLink(destination: BitratePresetsSettingsView()) {
+                    NavigationLink {
+                        BitratePresetsSettingsView()
+                    } label: {
                         IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
                     }
-                    NavigationLink(destination: GameControllersSettingsView()) {
+                    NavigationLink {
+                        GameControllersSettingsView()
+                    } label: {
                         IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
                     }
-                    NavigationLink(destination: RemoteControlSettingsView()) {
+                    NavigationLink {
+                        RemoteControlSettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "appletvremote.gen1",
                             text: String(localized: "Remote control")
                         )
                     }
-                    NavigationLink(destination: DjiDevicesSettingsView()) {
+                    NavigationLink {
+                        DjiDevicesSettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "appletvremote.gen1",
                             text: String(localized: "DJI devices")
                         )
                     }
-                    NavigationLink(destination: CatPrintersSettingsView()) {
+                    NavigationLink {
+                        CatPrintersSettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "pawprint",
                             text: String(localized: "Cat printers")
                         )
                     }
                 }
-                NavigationLink(destination: LocationSettingsView()) {
+                NavigationLink {
+                    LocationSettingsView()
+                } label: {
                     IconAndTextView(image: "location", text: String(localized: "Location"))
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: WebBrowserSettingsView()) {
+                    NavigationLink {
+                        WebBrowserSettingsView()
+                    } label: {
                         IconAndTextView(image: "globe", text: String(localized: "Web browser"))
                     }
                 }
             }
             Section {
-                NavigationLink(destination: CosmeticsSettingsView()) {
+                NavigationLink {
+                    CosmeticsSettingsView()
+                } label: {
                     HStack {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
@@ -114,11 +148,15 @@ struct SettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: RecordingsSettingsView()) {
+                NavigationLink {
+                    RecordingsSettingsView()
+                } label: {
                     IconAndTextView(image: "photo.on.rectangle.angled", text: String(localized: "Recordings"))
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: StreamingHistorySettingsView()) {
+                    NavigationLink {
+                        StreamingHistorySettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "text.book.closed",
                             text: String(localized: "Streaming history")
@@ -128,38 +166,48 @@ struct SettingsView: View {
             }
             if model.database.showAllSettings! {
                 Section {
-                    NavigationLink(destination: WatchSettingsView()) {
+                    NavigationLink {
+                        WatchSettingsView()
+                    } label: {
                         IconAndTextView(image: "applewatch", text: String(localized: "Watch"))
                     }
                 }
             }
             Section {
-                NavigationLink(destination: HelpAndSupportSettingsView()) {
+                NavigationLink {
+                    HelpAndSupportSettingsView()
+                } label: {
                     IconAndTextView(image: "questionmark.circle", text: String(localized: "Help and support"))
                 }
                 if model.database.showAllSettings! {
-                    NavigationLink(destination: AboutSettingsView()) {
+                    NavigationLink {
+                        AboutSettingsView()
+                    } label: {
                         IconAndTextView(image: "info.circle", text: String(localized: "About"))
                     }
-                    NavigationLink(
-                        destination: DebugSettingsView(
+                    NavigationLink {
+                        DebugSettingsView(
                             cameraSwitchRemoveBlackish: model.database.debug!.cameraSwitchRemoveBlackish!,
                             maxMapPitch: model.database.debug!.maxMapPitch!
                         )
-                    ) {
+                    } label: {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
                     }
                 }
             }
             if model.database.showAllSettings! {
                 Section {
-                    NavigationLink(destination: ImportExportSettingsView()) {
+                    NavigationLink {
+                        ImportExportSettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "gearshape",
                             text: String(localized: "Import and export settings")
                         )
                     }
-                    NavigationLink(destination: DeepLinkCreatorSettingsView()) {
+                    NavigationLink {
+                        DeepLinkCreatorSettingsView()
+                    } label: {
                         IconAndTextView(
                             image: "link.badge.plus",
                             text: String(localized: "Deep link creator")

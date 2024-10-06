@@ -49,7 +49,9 @@ struct StreamWizardCustomRtmpSettingsView: View {
                 Text("Stream key")
             }
             Section {
-                NavigationLink(destination: StreamWizardSummarySettingsView()) {
+                NavigationLink {
+                    StreamWizardSummarySettingsView()
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

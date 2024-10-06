@@ -21,9 +21,9 @@ struct GameControllersSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.gameControllers!) { gameController in
-                        NavigationLink(
-                            destination: GameControllersControllerSettingsView(gameController: gameController)
-                        ) {
+                        NavigationLink {
+                            GameControllersControllerSettingsView(gameController: gameController)
+                        } label: {
                             Text("Controller \(gameControllerIndex(gameController: gameController))")
                         }
                     }

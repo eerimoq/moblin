@@ -48,12 +48,16 @@ struct GlobalQuickButtonsSettingsView: View {
                 List {
                     ForEach(model.database.globalButtons!) { button in
                         if model.database.showAllSettings! {
-                            NavigationLink(destination: GlobalQuickButtonsButtonSettingsView(
-                                name: button.name,
-                                background: button.backgroundColor!.color(),
-                                onChange: { color in onBackgroundColorChange(button: button, color: color) },
-                                onSubmit: onBackgroundColorSubmit
-                            )) {
+                            NavigationLink {
+                                GlobalQuickButtonsButtonSettingsView(
+                                    name: button.name,
+                                    background: button.backgroundColor!.color(),
+                                    onChange: { color in
+                                        onBackgroundColorChange(button: button, color: color)
+                                    },
+                                    onSubmit: onBackgroundColorSubmit
+                                )
+                            } label: {
                                 Toggle(isOn: Binding(get: {
                                     button.enabled!
                                 }, set: { value in

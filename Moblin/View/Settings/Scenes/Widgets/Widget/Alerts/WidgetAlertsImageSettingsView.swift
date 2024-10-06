@@ -87,10 +87,12 @@ private struct ImageGalleryView: View {
             Section {
                 List {
                     ForEach(model.database.alertsMediaGallery!.customImages) { image in
-                        NavigationLink(destination: CustomImageView(
-                            media: image,
-                            image: loadAlertImage(model: model, imageId: image.id)
-                        )) {
+                        NavigationLink {
+                            CustomImageView(
+                                media: image,
+                                image: loadAlertImage(model: model, imageId: image.id)
+                            )
+                        } label: {
                             Text(image.name)
                         }
                     }
@@ -173,7 +175,9 @@ struct AlertImageSelectorView: View {
                 Text("Number of times the GIF will be played each alert.")
             }
             Section {
-                NavigationLink(destination: ImageGalleryView(alert: alert, imageId: $imageId)) {
+                NavigationLink {
+                    ImageGalleryView(alert: alert, imageId: $imageId)
+                } label: {
                     Text("My images")
                 }
             }

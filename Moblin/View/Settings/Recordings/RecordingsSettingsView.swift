@@ -83,12 +83,12 @@ struct RecordingsSettingsView: View {
                 Section {
                     List {
                         ForEach(recordingsStorage.database.recordings) { recording in
-                            NavigationLink(
-                                destination: RecordingsRecordingSettingsView(
+                            NavigationLink {
+                                RecordingsRecordingSettingsView(
                                     recording: recording,
                                     description: recording.description ?? ""
                                 )
-                            ) {
+                            } label: {
                                 HStack {
                                     if let image = createThumbnail(path: recording.url()) {
                                         Image(uiImage: image)

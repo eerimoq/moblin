@@ -43,23 +43,33 @@ struct StreamWizardSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: StreamWizardTwitchSettingsView()) {
+                NavigationLink {
+                    StreamWizardTwitchSettingsView()
+                } label: {
                     Text("Twitch")
                 }
-                NavigationLink(destination: StreamWizardKickSettingsView()) {
+                NavigationLink {
+                    StreamWizardKickSettingsView()
+                } label: {
                     Text("Kick")
                 }
-                NavigationLink(destination: StreamWizardYouTubeSettingsView()) {
+                NavigationLink {
+                    StreamWizardYouTubeSettingsView()
+                } label: {
                     Text("YouTube")
                 }
-                NavigationLink(destination: StreamWizardAfreecaTvSettingsView()) {
+                NavigationLink {
+                    StreamWizardAfreecaTvSettingsView()
+                } label: {
                     Text("AfreecaTV")
                 }
             } header: {
                 Text("Platform to stream to")
             }
             Section {
-                NavigationLink(destination: StreamWizardCustomSettingsView()) {
+                NavigationLink {
+                    StreamWizardCustomSettingsView()
+                } label: {
                     Text("Custom")
                 }
             } footer: {

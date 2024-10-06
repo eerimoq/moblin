@@ -18,11 +18,15 @@ struct StreamWizardChatSettingsView: View {
             }
             Section {
                 if model.wizardNetworkSetup == .direct {
-                    NavigationLink(destination: StreamWizardSummarySettingsView()) {
+                    NavigationLink {
+                        StreamWizardSummarySettingsView()
+                    } label: {
                         WizardNextButtonView()
                     }
                 } else {
-                    NavigationLink(destination: StreamWizardObsRemoteControlSettingsView()) {
+                    NavigationLink {
+                        StreamWizardObsRemoteControlSettingsView()
+                    } label: {
                         WizardNextButtonView()
                     }
                 }

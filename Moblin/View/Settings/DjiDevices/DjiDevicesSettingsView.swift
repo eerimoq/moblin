@@ -8,7 +8,9 @@ struct DjiDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.djiDevices!.devices) { device in
-                        NavigationLink(destination: DjiDeviceSettingsView(device: device)) {
+                        NavigationLink {
+                            DjiDeviceSettingsView(device: device)
+                        } label: {
                             HStack {
                                 Text(device.name)
                                 Spacer()

@@ -12,7 +12,9 @@ struct DeepLinkCreatorStreamsSettingsView: View {
             Section {
                 List {
                     ForEach(deepLinkCreator.streams) { stream in
-                        NavigationLink(destination: DeepLinkCreatorStreamSettingsView(stream: stream)) {
+                        NavigationLink {
+                            DeepLinkCreatorStreamSettingsView(stream: stream)
+                        } label: {
                             Text(stream.name)
                         }
                     }

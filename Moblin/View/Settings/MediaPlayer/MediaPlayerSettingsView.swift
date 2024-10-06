@@ -61,7 +61,9 @@ struct MediaPlayerSettingsView: View {
             Section {
                 List {
                     ForEach(player.playlist) { file in
-                        NavigationLink(destination: MediaPlayerFileSettingsView(player: player, file: file)) {
+                        NavigationLink {
+                            MediaPlayerFileSettingsView(player: player, file: file)
+                        } label: {
                             HStack {
                                 DraggableItemPrefixView()
                                 if let image = createThumbnail(path: model.mediaStorage

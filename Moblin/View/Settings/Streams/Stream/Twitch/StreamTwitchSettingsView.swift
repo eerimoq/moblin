@@ -88,14 +88,16 @@ struct StreamTwitchSettingsView: View {
             }
             if loggedIn {
                 Section {
-                    NavigationLink(destination: TextEditView(
-                        title: String(localized: "Stream title"),
-                        value: streamTitle ?? "",
-                        onSubmit: { value in
-                            streamTitle = value
-                            model.setTwitchStreamTitle(stream: stream, title: value)
-                        }
-                    )) {
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Stream title"),
+                            value: streamTitle ?? "",
+                            onSubmit: { value in
+                                streamTitle = value
+                                model.setTwitchStreamTitle(stream: stream, title: value)
+                            }
+                        )
+                    } label: {
                         HStack {
                             Text("Stream title")
                             Spacer()

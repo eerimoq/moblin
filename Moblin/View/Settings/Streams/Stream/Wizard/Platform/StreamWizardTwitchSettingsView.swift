@@ -75,9 +75,9 @@ struct StreamWizardTwitchSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(
-                    destination: StreamWizardNetworkSetupSettingsView(platform: String(localized: "Twitch"))
-                ) {
+                NavigationLink {
+                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "Twitch"))
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

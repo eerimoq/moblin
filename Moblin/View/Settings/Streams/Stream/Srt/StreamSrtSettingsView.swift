@@ -42,7 +42,9 @@ struct StreamSrtSettingsView: View {
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: StreamSrtAdaptiveBitrateSettingsView(stream: stream)) {
+                NavigationLink {
+                    StreamSrtAdaptiveBitrateSettingsView(stream: stream)
+                } label: {
                     Toggle("Adaptive bitrate", isOn: Binding(get: {
                         stream.srt.adaptiveBitrateEnabled!
                     }, set: { value in
@@ -51,7 +53,9 @@ struct StreamSrtSettingsView: View {
                     }))
                     .disabled(stream.enabled && model.isLive)
                 }
-                NavigationLink(destination: StreamSrtConnectionPriorityView(stream: stream)) {
+                NavigationLink {
+                    StreamSrtConnectionPriorityView(stream: stream)
+                } label: {
                     Text("Connection priorities")
                 }
                 Toggle("Max bandwidth follows input", isOn: Binding(get: {

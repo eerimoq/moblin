@@ -6,10 +6,14 @@ struct StreamWizardNetworkSetupMyServersSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: StreamWizardNetworkSetupMyServersSrtSettingsView()) {
+                NavigationLink {
+                    StreamWizardNetworkSetupMyServersSrtSettingsView()
+                } label: {
                     Text("SRT(LA)")
                 }
-                NavigationLink(destination: StreamWizardNetworkSetupMyServersRtmpSettingsView()) {
+                NavigationLink {
+                    StreamWizardNetworkSetupMyServersRtmpSettingsView()
+                } label: {
                     Text("RTMP(S)")
                 }
             } header: {

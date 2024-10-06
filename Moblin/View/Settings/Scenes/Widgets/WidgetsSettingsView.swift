@@ -10,11 +10,13 @@ struct WidgetsSettingsView: View {
     var body: some View {
         Section {
             ForEach(database.widgets) { widget in
-                NavigationLink(destination: WidgetSettingsView(
-                    widget: widget,
-                    type: widget.type.toString(),
-                    name: widget.name
-                )) {
+                NavigationLink {
+                    WidgetSettingsView(
+                        widget: widget,
+                        type: widget.type.toString(),
+                        name: widget.name
+                    )
+                } label: {
                     Toggle(isOn: Binding(get: {
                         widget.enabled!
                     }, set: { value in

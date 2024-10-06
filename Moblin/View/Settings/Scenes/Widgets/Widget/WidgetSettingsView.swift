@@ -14,7 +14,9 @@ struct WidgetSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+                NavigationLink {
+                    NameEditView(name: name, onSubmit: submitName)
+                } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
                 }
                 HStack {

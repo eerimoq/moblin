@@ -43,7 +43,9 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
                 Text("Stream id")
             }
             Section {
-                NavigationLink(destination: StreamWizardChatSettingsView()) {
+                NavigationLink {
+                    StreamWizardChatSettingsView()
+                } label: {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

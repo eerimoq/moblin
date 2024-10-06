@@ -88,30 +88,34 @@ struct SceneSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(name: name, onSubmit: submitName)) {
+            NavigationLink {
+                NameEditView(name: name, onSubmit: submitName)
+            } label: {
                 TextItemView(name: String(localized: "Name"), value: name)
             }
             Section {
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Video source"),
-                    onChange: onCameraChange,
-                    footers: [
-                        String(localized: """
-                        The ultra wide camera does not perform well in low light conditions. Likewise, the \
-                        auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
-                        will be used.
-                        """),
-                        "",
-                        String(localized: """
-                        Auto cameras use more energy as multiple cameras are powered on, even if only \
-                        one is used at a time. This allows the phone to quickly change camera when zooming.
-                        """),
-                    ],
-                    items: model.listCameraPositions().map { id, name in
-                        InlinePickerItem(id: id, text: name)
-                    },
-                    selectedId: model.getCameraPositionId(scene: scene)
-                )) {
+                NavigationLink {
+                    InlinePickerView(
+                        title: String(localized: "Video source"),
+                        onChange: onCameraChange,
+                        footers: [
+                            String(localized: """
+                            The ultra wide camera does not perform well in low light conditions. Likewise, the \
+                            auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
+                            will be used.
+                            """),
+                            "",
+                            String(localized: """
+                            Auto cameras use more energy as multiple cameras are powered on, even if only \
+                            one is used at a time. This allows the phone to quickly change camera when zooming.
+                            """),
+                        ],
+                        items: model.listCameraPositions().map { id, name in
+                            InlinePickerItem(id: id, text: name)
+                        },
+                        selectedId: model.getCameraPositionId(scene: scene)
+                    )
+                } label: {
                     HStack {
                         Text(String(localized: "Video source"))
                         Spacer()

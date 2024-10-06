@@ -55,10 +55,12 @@ private struct AlertTextToSpeechView: View {
                 Text(String(formatOneDecimal(value: Float(ttsDelay))))
                     .frame(width: 35)
             }
-            NavigationLink(destination: VoicesView(
-                textToSpeechLanguageVoices: alert.textToSpeechLanguageVoices!,
-                onVoiceChange: onVoiceChange
-            )) {
+            NavigationLink {
+                VoicesView(
+                    textToSpeechLanguageVoices: alert.textToSpeechLanguageVoices!,
+                    onVoiceChange: onVoiceChange
+                )
+            } label: {
                 Text("Voices")
             }
         } header: {
@@ -83,14 +85,18 @@ private struct AlertMediaView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: AlertImageSelectorView(
-                alert: alert,
-                imageId: $imageId,
-                loopCount: Float(alert.imageLoopCount!)
-            )) {
+            NavigationLink {
+                AlertImageSelectorView(
+                    alert: alert,
+                    imageId: $imageId,
+                    loopCount: Float(alert.imageLoopCount!)
+                )
+            } label: {
                 TextItemView(name: "Image", value: getImageName(id: imageId))
             }
-            NavigationLink(destination: AlertSoundSelectorView(alert: alert, soundId: $soundId)) {
+            NavigationLink {
+                AlertSoundSelectorView(alert: alert, soundId: $soundId)
+            } label: {
                 TextItemView(name: "Sound", value: getSoundName(id: soundId))
             }
         } header: {
@@ -560,7 +566,9 @@ private struct TwitchRewardsView: View {
                 Text("No rewards found")
             } else {
                 ForEach(model.stream.twitchRewards!) { reward in
-                    NavigationLink(destination: TwitchRewardView(reward: reward)) {
+                    NavigationLink {
+                        TwitchRewardView(reward: reward)
+                    } label: {
                         Text(reward.title)
                     }
                 }
@@ -580,20 +588,30 @@ private struct WidgetAlertsSettingsTwitchView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TwitchFollowsView(alert: twitch.follows)) {
+                NavigationLink {
+                    TwitchFollowsView(alert: twitch.follows)
+                } label: {
                     Text("Follows")
                 }
-                NavigationLink(destination: TwitchSubscriptionsView(alert: twitch.subscriptions)) {
+                NavigationLink {
+                    TwitchSubscriptionsView(alert: twitch.subscriptions)
+                } label: {
                     Text("Subscriptions")
                 }
-                NavigationLink(destination: TwitchRaidsView(alert: twitch.raids!)) {
+                NavigationLink {
+                    TwitchRaidsView(alert: twitch.raids!)
+                } label: {
                     Text("Raids")
                 }
-                NavigationLink(destination: TwitchCheersView(alert: twitch.cheers!)) {
+                NavigationLink {
+                    TwitchCheersView(alert: twitch.cheers!)
+                } label: {
                     Text("Cheers")
                 }
                 if model.database.debug!.twitchRewards! {
-                    NavigationLink(destination: TwitchRewardsView()) {
+                    NavigationLink {
+                        TwitchRewardsView()
+                    } label: {
                         Text("Rewards")
                     }
                 }
@@ -633,11 +651,13 @@ private struct ChatBotCommandView: View {
                 }
             }
             Section {
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Name"),
-                    value: command.name,
-                    onSubmit: onSubmit
-                )) {
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "Name"),
+                        value: command.name,
+                        onSubmit: onSubmit
+                    )
+                } label: {
                     TextItemView(
                         name: String(localized: "Name"),
                         value: command.name
@@ -685,7 +705,9 @@ private struct WidgetAlertsSettingsChatBotView: View {
             Section {
                 List {
                     ForEach(chatBot.commands) { command in
-                        NavigationLink(destination: ChatBotCommandView(command: command)) {
+                        NavigationLink {
+                            ChatBotCommandView(command: command)
+                        } label: {
                             Text(command.name.capitalized)
                         }
                     }
@@ -718,10 +740,14 @@ struct WidgetAlertsSettingsView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: WidgetAlertsSettingsTwitchView(twitch: widget.alerts!.twitch!)) {
+            NavigationLink {
+                WidgetAlertsSettingsTwitchView(twitch: widget.alerts!.twitch!)
+            } label: {
                 Text("Twitch")
             }
-            NavigationLink(destination: WidgetAlertsSettingsChatBotView(chatBot: widget.alerts!.chatBot!)) {
+            NavigationLink {
+                WidgetAlertsSettingsChatBotView(chatBot: widget.alerts!.chatBot!)
+            } label: {
                 Text("Chat bot")
             }
         }

@@ -94,17 +94,19 @@ struct StreamVideoSettingsView: View {
                             }
                         }
                     }
-                    NavigationLink(destination: TextEditView(
-                        title: String(localized: "Key frame interval"),
-                        value: String(stream.maxKeyFrameInterval!),
-                        onSubmit: submitMaxKeyFrameInterval,
-                        footers: [
-                            String(
-                                localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
-                            ),
-                        ],
-                        keyboardType: .numbersAndPunctuation
-                    )) {
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Key frame interval"),
+                            value: String(stream.maxKeyFrameInterval!),
+                            onSubmit: submitMaxKeyFrameInterval,
+                            footers: [
+                                String(
+                                    localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
+                                ),
+                            ],
+                            keyboardType: .numbersAndPunctuation
+                        )
+                    } label: {
                         TextItemView(
                             name: String(localized: "Key frame interval"),
                             value: "\(stream.maxKeyFrameInterval!) s"

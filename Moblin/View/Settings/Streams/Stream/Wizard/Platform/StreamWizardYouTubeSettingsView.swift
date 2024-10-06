@@ -15,9 +15,9 @@ struct StreamWizardYouTubeSettingsView: View {
                 Text("Only needed for chat.")
             }
             Section {
-                NavigationLink(
-                    destination: StreamWizardNetworkSetupSettingsView(platform: String(localized: "YouTube"))
-                ) {
+                NavigationLink {
+                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "YouTube"))
+                } label: {
                     WizardNextButtonView()
                 }
             }

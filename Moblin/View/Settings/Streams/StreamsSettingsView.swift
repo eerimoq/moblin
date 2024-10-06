@@ -12,10 +12,9 @@ struct StreamsSettingsView: View {
             Section {
                 List {
                     ForEach(database.streams) { stream in
-                        let item = NavigationLink(destination: StreamSettingsView(
-                            stream: stream,
-                            name: stream.name
-                        )) {
+                        let item = NavigationLink {
+                            StreamSettingsView(stream: stream, name: stream.name)
+                        } label: {
                             HStack {
                                 DraggableItemPrefixView()
                                 Toggle(stream.name, isOn: Binding(get: {

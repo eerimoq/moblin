@@ -11,7 +11,9 @@ private struct ScenesListView: View {
         Section {
             List {
                 ForEach(database.scenes) { scene in
-                    NavigationLink(destination: SceneSettingsView(scene: scene, name: scene.name)) {
+                    NavigationLink {
+                        SceneSettingsView(scene: scene, name: scene.name)
+                    } label: {
                         HStack {
                             DraggableItemPrefixView()
                             Toggle(scene.name, isOn: Binding(get: {

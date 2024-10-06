@@ -69,11 +69,13 @@ struct VoicesView: View {
     var body: some View {
         Form {
             ForEach(languages(), id: \.code) { language in
-                NavigationLink(destination: LanguageView(
-                    languageCode: language.code,
-                    voice: language.selectedVoiceIdentifier,
-                    onVoiceChange: onVoiceChange
-                )) {
+                NavigationLink {
+                    LanguageView(
+                        languageCode: language.code,
+                        voice: language.selectedVoiceIdentifier,
+                        onVoiceChange: onVoiceChange
+                    )
+                } label: {
                     HStack {
                         Text(language.name)
                         Spacer()

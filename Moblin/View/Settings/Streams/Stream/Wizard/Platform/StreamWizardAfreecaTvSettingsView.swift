@@ -19,11 +19,9 @@ struct StreamWizardAfreecaTvSettingsView: View {
                 Text("Video id")
             }
             Section {
-                NavigationLink(
-                    destination: StreamWizardNetworkSetupSettingsView(platform: String(
-                        localized: "AfreecaTV"
-                    ))
-                ) {
+                NavigationLink {
+                    StreamWizardNetworkSetupSettingsView(platform: String(localized: "AfreecaTV"))
+                } label: {
                     WizardNextButtonView()
                 }
             }

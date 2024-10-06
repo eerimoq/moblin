@@ -64,10 +64,12 @@ struct SrtlaServerSettingsView: View {
             Section {
                 List {
                     let list = ForEach(model.database.srtlaServer!.streams) { stream in
-                        NavigationLink(destination: SrtlaServerStreamSettingsView(
-                            srtlaPort: model.database.srtlaServer!.srtlaPort,
-                            stream: stream
-                        )) {
+                        NavigationLink {
+                            SrtlaServerStreamSettingsView(
+                                srtlaPort: model.database.srtlaServer!.srtlaPort,
+                                stream: stream
+                            )
+                        } label: {
                             HStack {
                                 if model.isSrtlaStreamConnected(streamId: stream.streamId) {
                                     Image(systemName: "cable.connector")

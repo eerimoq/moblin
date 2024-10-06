@@ -7,7 +7,9 @@ struct StreamWizardNetworkSetupSettingsView: View {
         VStack(alignment: .leading) {
             Form {
                 Section {
-                    NavigationLink(destination: StreamWizardNetworkSetupObsSettingsView()) {
+                    NavigationLink {
+                        StreamWizardNetworkSetupObsSettingsView()
+                    } label: {
                         HStack {
                             Text("Moblin")
                             Image(systemName: "arrow.right")
@@ -20,7 +22,9 @@ struct StreamWizardNetworkSetupSettingsView: View {
                     Text("Good stability in most network conditions.")
                 }
                 Section {
-                    NavigationLink(destination: StreamWizardNetworkSetupBelaboxSettingsView()) {
+                    NavigationLink {
+                        StreamWizardNetworkSetupBelaboxSettingsView()
+                    } label: {
                         HStack {
                             Text("Moblin")
                             Image(systemName: "arrow.right")
@@ -36,7 +40,9 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 if false {
                     Section {
-                        NavigationLink(destination: StreamWizardNetworkSetupIrlToolkitSettingsView()) {
+                        NavigationLink {
+                            StreamWizardNetworkSetupIrlToolkitSettingsView()
+                        } label: {
                             HStack {
                                 Text("Moblin")
                                 Image(systemName: "arrow.right")
@@ -54,7 +60,9 @@ struct StreamWizardNetworkSetupSettingsView: View {
                     }
                 }
                 Section {
-                    NavigationLink(destination: StreamWizardNetworkSetupDirectSettingsView()) {
+                    NavigationLink {
+                        StreamWizardNetworkSetupDirectSettingsView()
+                    } label: {
                         HStack {
                             Text("Moblin")
                             Image(systemName: "arrow.right")
@@ -70,7 +78,9 @@ struct StreamWizardNetworkSetupSettingsView: View {
                     )
                 }
                 Section {
-                    NavigationLink(destination: StreamWizardNetworkSetupMyServersSettingsView()) {
+                    NavigationLink {
+                        StreamWizardNetworkSetupMyServersSettingsView()
+                    } label: {
                         HStack {
                             Text("Moblin")
                             Image(systemName: "arrow.right")
