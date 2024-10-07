@@ -14,6 +14,8 @@ private let suggestionHeartRate = "♥️ {heartRate}"
 private let suggestionSubtitles = "{subtitles}"
 private let suggestionMuted = "{muted}"
 private let suggestionTime = "🕑 {time}"
+private let suggestionDate = "📅 {date}"
+private let suggestionFullDate = "📅 {fullDate}"
 private let suggestionTimer = "⏳ {timer}"
 private let suggestionWeather = "{conditions} {temperature}"
 private let suggestionTravel =
@@ -27,20 +29,22 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 0, name: String(localized: "Travel"), text: suggestionTravel),
         Suggestion(id: 1, name: String(localized: "Weather"), text: suggestionWeather),
         Suggestion(id: 2, name: String(localized: "Time"), text: suggestionTime),
-        Suggestion(id: 3, name: String(localized: "Timer"), text: suggestionTimer),
-        Suggestion(id: 4, name: String(localized: "City"), text: suggestionCity),
-        Suggestion(id: 5, name: String(localized: "Country"), text: suggestionCountry),
-        Suggestion(id: 6, name: String(localized: "Movement"), text: suggestionMovement),
+        Suggestion(id: 3, name: String(localized: "Date"), text: suggestionDate),
+        Suggestion(id: 4, name: String(localized: "Full date"), text: suggestionFullDate),
+        Suggestion(id: 5, name: String(localized: "Timer"), text: suggestionTimer),
+        Suggestion(id: 6, name: String(localized: "City"), text: suggestionCity),
+        Suggestion(id: 7, name: String(localized: "Country"), text: suggestionCountry),
+        Suggestion(id: 8, name: String(localized: "Movement"), text: suggestionMovement),
     ]
     if isPhone() {
         suggestions += [
-            Suggestion(id: 7, name: String(localized: "Heart rate"), text: suggestionHeartRate),
+            Suggestion(id: 9, name: String(localized: "Heart rate"), text: suggestionHeartRate),
         ]
     }
     suggestions += [
-        Suggestion(id: 8, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-        Suggestion(id: 9, name: String(localized: "Muted"), text: suggestionMuted),
-        Suggestion(id: 10, name: String(localized: "Debug"), text: suggestionDebug),
+        Suggestion(id: 10, name: String(localized: "Subtitles"), text: suggestionSubtitles),
+        Suggestion(id: 11, name: String(localized: "Muted"), text: suggestionMuted),
+        Suggestion(id: 12, name: String(localized: "Debug"), text: suggestionDebug),
     ]
     return suggestions
 }
@@ -229,6 +233,8 @@ private struct TextSelectionView: View {
                     Text("")
                     Text("General").bold()
                     Text("{time} - Show time as HH:MM:SS")
+                    Text("{date} - Show date")
+                    Text("{fullDate} - Show full date")
                     Text("{timer} - Show a timer")
                     Text("{checkbox} - Show a checkbox")
                     Text("{rating} - Show a 0-5 rating")

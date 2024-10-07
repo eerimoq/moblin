@@ -8,6 +8,18 @@ import WeatherKit
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
+private var dateFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .short
+    return formatter
+}
+
+private var fullDateFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .full
+    return formatter
+}
+
 struct TextEffectStats {
     let timestamp: ContinuousClock.Instant
     let bitrateAndTotal: String
@@ -281,6 +293,16 @@ final class TextEffect: VideoEffect {
                 parts.append(.init(
                     id: partId,
                     data: .text(stats.date.formatted(.dateTime.hour().minute().second()))
+                ))
+            case .date:
+                parts.append(.init(
+                    id: partId,
+                    data: .text(dateFormatter.string(from: stats.date))
+                ))
+            case .fullDate:
+                parts.append(.init(
+                    id: partId,
+                    data: .text(fullDateFormatter.string(from: stats.date))
                 ))
             case .bitrateAndTotal:
                 parts.append(.init(id: partId, data: .text(stats.bitrateAndTotal)))

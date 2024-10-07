@@ -4,6 +4,8 @@ enum TextFormatPart {
     case text(String)
     case newLine
     case clock
+    case date
+    case fullDate
     case bitrateAndTotal
     case debugOverlay
     case speed
@@ -43,6 +45,10 @@ class TextFormatLoader {
                 let formatFromIndex = format[index ..< format.endIndex].lowercased()
                 if formatFromIndex.hasPrefix("{time}") {
                     loadItem(part: .clock, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{date}") {
+                    loadItem(part: .date, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{fulldate}") {
+                    loadItem(part: .fullDate, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
                     loadItem(part: .bitrateAndTotal, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{debugoverlay}") {

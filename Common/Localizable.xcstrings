@@ -2505,6 +2505,9 @@
         }
       }
     },
+    "{date} - Show date" : {
+
+    },
     "{debugOverlay} - Show debug overlay (if enabled)" : {
       "localizations" : {
         "de" : {
@@ -2764,6 +2767,9 @@
           }
         }
       }
+    },
+    "{fullDate} - Show full date" : {
+
     },
     "{heartRate} - Show heart rate" : {
       "localizations" : {
@@ -32459,6 +32465,9 @@
         }
       }
     },
+    "Date" : {
+
+    },
     "Debug" : {
       "localizations" : {
         "de" : {
@@ -49618,6 +49627,9 @@
           }
         }
       }
+    },
+    "Full date" : {
+
     },
     "Function" : {
       "localizations" : {
