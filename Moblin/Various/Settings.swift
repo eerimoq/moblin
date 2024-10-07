@@ -1544,7 +1544,6 @@ class SettingsDebug: Codable {
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
     var letItSnow: Bool? = false
-    var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
@@ -2954,10 +2953,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.recording == nil {
             stream.recording = .init()
-            store()
-        }
-        if realDatabase.debug!.recordingsFolder == nil {
-            realDatabase.debug!.recordingsFolder = false
             store()
         }
         if realDatabase.show.gameController == nil {
