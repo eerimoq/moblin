@@ -50682,6 +50682,9 @@
         }
       }
     },
+    "Gift subsciptions" : {
+
+    },
     "Github" : {
       "localizations" : {
         "de" : {
@@ -55492,7 +55495,21 @@
         }
       }
     },
+    "just gifted %lld tier %lld subsciptions!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "just gifted %1$lld tier %2$lld subsciptions!"
+          }
+        }
+      }
+    },
+    "just subscribed tier %lld!" : {
+
+    },
     "just subscribed!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

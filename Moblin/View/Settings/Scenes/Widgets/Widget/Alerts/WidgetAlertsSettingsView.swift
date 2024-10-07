@@ -405,7 +405,9 @@ private struct TwitchSubscriptionsView: View {
             Section {
                 Button(action: {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
-                        user_name: testNames.randomElement()!
+                        user_name: testNames.randomElement()!,
+                        tier: "2000",
+                        is_gift: false
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
                 }, label: {

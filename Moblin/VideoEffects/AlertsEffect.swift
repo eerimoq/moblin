@@ -70,6 +70,7 @@ private struct Word: Identifiable {
 enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
+    case twitchSubscrptionGift(TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
     case chatBotCommand(String, String)
@@ -276,6 +277,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchFollow(event: event)
         case let .twitchSubscribe(event):
             playTwitchSubscribe(event: event)
+        case let .twitchSubscrptionGift(event):
+            playTwitchSubscriptionGift(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
@@ -306,7 +309,22 @@ final class AlertsEffect: VideoEffect {
         play(
             medias: twitchSubscribe,
             username: event.user_name,
-            message: String(localized: "just subscribed!"),
+            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
+            settings: settings.twitch!.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
+        guard settings.twitch!.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name ?? "Anomymous",
+            message: String(
+                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subsciptions!"
+            ),
             settings: settings.twitch!.subscriptions
         )
     }

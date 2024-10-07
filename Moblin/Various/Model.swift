@@ -8136,14 +8136,33 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
+        guard !event.is_gift else {
+            return
+        }
         DispatchQueue.main.async {
-            let text = String(localized: "just subscribed!")
+            let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
             self.makeToast(title: "\(event.user_name) \(text)")
             self.playAlert(alert: .twitchSubscribe(event))
             self.appendTwitchChatAlertMessage(
                 user: event.user_name,
                 text: text,
                 title: String(localized: "New subscriber"),
+                color: .cyan
+            )
+        }
+    }
+
+    func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
+        DispatchQueue.main.async {
+            let user = event.user_name ?? String(localized: "Anonymous")
+            let text =
+                String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subsciptions!")
+            self.makeToast(title: "\(user) \(text)")
+            self.playAlert(alert: .twitchSubscrptionGift(event))
+            self.appendTwitchChatAlertMessage(
+                user: user,
+                text: text,
+                title: String(localized: "Gift subsciptions"),
                 color: .cyan
             )
         }

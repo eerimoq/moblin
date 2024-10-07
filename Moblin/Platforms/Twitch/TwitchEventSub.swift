@@ -23,6 +23,21 @@ private struct WelcomeMessage: Decodable {
 
 struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var user_name: String
+    var tier: String
+    var is_gift: Bool
+
+    func tierAsNumber() -> Int {
+        switch tier {
+        case "1000":
+            return 1
+        case "2000":
+            return 2
+        case "3000":
+            return 3
+        default:
+            return 1
+        }
+    }
 }
 
 private struct NotificationChannelSubscribePayload: Decodable {
@@ -31,6 +46,33 @@ private struct NotificationChannelSubscribePayload: Decodable {
 
 private struct NotificationChannelSubscribeMessage: Decodable {
     var payload: NotificationChannelSubscribePayload
+}
+
+struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
+    var user_name: String?
+    var total: Int
+    var tier: String
+
+    func tierAsNumber() -> Int {
+        switch tier {
+        case "1000":
+            return 1
+        case "2000":
+            return 2
+        case "3000":
+            return 3
+        default:
+            return 1
+        }
+    }
+}
+
+private struct NotificationChannelSubscriptionGiftPayload: Decodable {
+    var event: TwitchEventSubNotificationChannelSubscriptionGiftEvent
+}
+
+private struct NotificationChannelSubscriptionGiftMessage: Decodable {
+    var payload: NotificationChannelSubscriptionGiftPayload
 }
 
 struct TwitchEventSubNotificationChannelFollowEvent: Decodable {
@@ -162,6 +204,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubMakeErrorToast(title: String)
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent)
+    func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
@@ -280,6 +323,16 @@ final class TwitchEventSub: NSObject {
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "subscription")
+            self.subscribeToChannelSubscriptionGift()
+        }
+    }
+
+    private func subscribeToChannelSubscriptionGift() {
+        let body = createBody(type: "channel.subscription.gift",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "subscription gift")
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
     }
@@ -365,6 +418,8 @@ final class TwitchEventSub: NSObject {
                 try handleNotificationChannelFollow(messageData: messageData)
             case "channel.subscribe":
                 try handleNotificationChannelSubscribe(messageData: messageData)
+            case "channel.subscription.gift":
+                try handleNotificationChannelSubscriptionGift(messageData: messageData)
             case "channel.channel_points_custom_reward_redemption.add":
                 try handleChannelPointsCustomRewardRedemptionAdd(messageData: messageData)
             case "channel.raid":
@@ -405,6 +460,14 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelSubscribe(event: message.payload.event)
+    }
+
+    private func handleNotificationChannelSubscriptionGift(messageData: Data) throws {
+        let message = try JSONDecoder().decode(
+            NotificationChannelSubscriptionGiftMessage.self,
+            from: messageData
+        )
+        delegate.twitchEventSubChannelSubscriptionGift(event: message.payload.event)
     }
 
     private func handleChannelPointsCustomRewardRedemptionAdd(messageData: Data) throws {
