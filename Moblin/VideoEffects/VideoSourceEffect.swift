@@ -3,6 +3,7 @@ import MetalPetal
 import UIKit
 import Vision
 
+// periphery:ignore
 final class VideoSourceEffect: VideoEffect {
     var x: Float = 0.0
     var y: Float = 0.0

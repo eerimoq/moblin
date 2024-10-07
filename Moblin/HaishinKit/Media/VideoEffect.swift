@@ -6,7 +6,9 @@ import Vision
 public struct VideoEffectInfo {
     let isFirstAfterAttach: Bool
     let faceDetections: [VNFaceObservation]?
+    // periphery:ignore
     let presentationTimeStamp: CMTime
+    // periphery:ignore
     let videoUnit: VideoUnit
 }
 

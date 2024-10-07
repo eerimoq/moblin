@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StreamDiscordSettingsView: View {
+    // periphery:ignore
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 

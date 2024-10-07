@@ -356,13 +356,7 @@ private struct TwitchFollowsView: View {
             Section {
                 Button(action: {
                     let event = TwitchEventSubNotificationChannelFollowEvent(
-                        user_id: "",
-                        user_login: "",
-                        user_name: testNames.randomElement()!,
-                        broadcaster_user_id: "",
-                        broadcaster_user_login: "",
-                        broadcaster_user_name: "",
-                        followed_at: ""
+                        user_name: testNames.randomElement()!
                     )
                     model.testAlert(alert: .twitchFollow(event))
                 }, label: {
@@ -411,14 +405,7 @@ private struct TwitchSubscriptionsView: View {
             Section {
                 Button(action: {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
-                        user_id: "",
-                        user_login: "",
-                        user_name: testNames.randomElement()!,
-                        broadcaster_user_id: "",
-                        broadcaster_user_login: "",
-                        broadcaster_user_name: "",
-                        tier: "",
-                        is_gift: false
+                        user_name: testNames.randomElement()!
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
                 }, label: {

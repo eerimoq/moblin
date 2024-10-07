@@ -44428,7 +44428,11 @@
         }
       }
     },
+    "Failed to subscribe to Twitch %@ event" : {
+
+    },
     "Failed to subscribe to Twitch cheer events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -44559,6 +44563,7 @@
       }
     },
     "Failed to subscribe to Twitch follow events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -44689,6 +44694,7 @@
       }
     },
     "Failed to subscribe to Twitch hype train begin events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -44819,6 +44825,7 @@
       }
     },
     "Failed to subscribe to Twitch hype train end events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -44949,6 +44956,7 @@
       }
     },
     "Failed to subscribe to Twitch hype train progress events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -45079,6 +45087,7 @@
       }
     },
     "Failed to subscribe to Twitch raid events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -45209,6 +45218,7 @@
       }
     },
     "Failed to subscribe to Twitch reward redemption events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -45339,6 +45349,7 @@
       }
     },
     "Failed to subscribe to Twitch subscription events" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
