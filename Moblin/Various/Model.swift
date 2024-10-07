@@ -425,6 +425,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var hypeTrainProgress: Int?
     @Published var hypeTrainGoal: Int?
     @Published var hypeTrainStatus = noValue
+    private var hypeTrainTimer: DispatchSourceTimer?
 
     private var workoutHeartRate: Int?
     private var workoutActiveEnergyBurned: Int?
@@ -8218,12 +8219,27 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainStatus = "LVL \(level), \(percentage)%"
     }
 
+    private func startHypeTrainTimer(deadline: DispatchTime) {
+        hypeTrainTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        hypeTrainTimer!.schedule(deadline: deadline)
+        hypeTrainTimer!.setEventHandler { [weak self] in
+            self?.removeHypeTrain()
+        }
+        hypeTrainTimer!.activate()
+    }
+
+    private func stopHypeTrainTimer() {
+        hypeTrainTimer?.cancel()
+        hypeTrainTimer = nil
+    }
+
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
         DispatchQueue.main.async {
             self.hypeTrainLevel = event.level
             self.hypeTrainProgress = event.progress
             self.hypeTrainGoal = event.goal
             self.updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
+            self.startHypeTrainTimer(deadline: .now() + 600)
         }
     }
 
@@ -8233,6 +8249,7 @@ extension Model: TwitchEventSubDelegate {
             self.hypeTrainProgress = event.progress
             self.hypeTrainGoal = event.goal
             self.updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
+            self.startHypeTrainTimer(deadline: .now() + 600)
         }
     }
 
@@ -8242,6 +8259,7 @@ extension Model: TwitchEventSubDelegate {
             self.hypeTrainProgress = 1
             self.hypeTrainGoal = 1
             self.updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
+            self.startHypeTrainTimer(deadline: .now() + 60)
         }
     }
 
@@ -8250,6 +8268,7 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainProgress = nil
         hypeTrainGoal = nil
         hypeTrainStatus = noValue
+        stopHypeTrainTimer()
     }
 
     private func appendTwitchChatAlertMessage(
