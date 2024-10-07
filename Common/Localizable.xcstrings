@@ -2506,7 +2506,134 @@
       }
     },
     "{date} - Show date" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} – Datum anzeigen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Εμφάνιση ημερομηνίας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Mostrar fecha"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Näytä päivämäärä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Afficher la date"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - तारीख दिखाएँ"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Tampilkan tanggal"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{data} - Mostra data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - 日付を表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - 날짜 표시"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Datum weergeven"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Pokaż datę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Mostrar data"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Mostrar data"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Показать дату"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} – Visa datum"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Tarihi göster"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - Показати дату"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{ngày} - Hiển thị ngày"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - 显示日期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{date} - 顯示日期"
+          }
+        }
+      }
     },
     "{debugOverlay} - Show debug overlay (if enabled)" : {
       "localizations" : {
@@ -2769,7 +2896,134 @@
       }
     },
     "{fullDate} - Show full date" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} – Vollständiges Datum anzeigen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Εμφάνιση πλήρους ημερομηνίας"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Mostrar fecha completa"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Näytä koko päivämäärä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Afficher la date complète"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - पूरी तारीख दिखाएँ"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Tampilkan tanggal lengkap"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Mostra la data completa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - 完全な日付を表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - 전체 날짜 표시"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Toon volledige datum"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Pokaż pełną datę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Mostrar data completa"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Mostrar data completa"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Показать полную дату"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} – Visa fullständigt datum"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Tam tarihi göster"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Показати повну дату"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - Hiển thị ngày đầy đủ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - 显示完整日期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "{fullDate} - 顯示完整日期"
+          }
+        }
+      }
     },
     "{heartRate} - Show heart rate" : {
       "localizations" : {
@@ -32466,7 +32720,134 @@
       }
     },
     "Date" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Datum"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ημερομηνία"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fecha"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Päivämäärä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Date"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "तारीख"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tanggal"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "日付"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "날짜"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Datum"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Дата"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Datum"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tarih"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Дата"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ngày"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "日期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "日期"
+          }
+        }
+      }
     },
     "Debug" : {
       "localizations" : {
@@ -44429,1052 +44810,131 @@
       }
     },
     "Failed to subscribe to Twitch %@ event" : {
-
-    },
-    "Failed to subscribe to Twitch cheer events" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch-Cheer-Events ist fehlgeschlagen."
+            "value" : "Das Abonnieren des Twitch %@-Events ist fehlgeschlagen"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής στις εκδηλώσεις ευθυμίας του Twitch"
+            "value" : "Αποτυχία εγγραφής στο συμβάν Twitch %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de Twitch cheer"
+            "value" : "No se pudo suscribir al evento Twitch %@"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Twitch-cheer-tapahtumien tilaaminen epäonnistui"
+            "value" : "Twitch %@ -tapahtuman tilaaminen epäonnistui"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements de cheerleading de Twitch"
+            "value" : "Impossible de s'abonner à l'événement Twitch %@"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "ट्विच चीयर इवेंट्स की सदस्यता लेने में विफल"
+            "value" : "Twitch %@ ईवेंट की सदस्यता लेने में विफल"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Gagal berlangganan acara sorak Twitch"
+            "value" : "Gagal berlangganan acara Twitch %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di tifo su Twitch"
+            "value" : "Impossibile iscriversi all'evento Twitch %@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Twitch 応援イベントへの登録に失敗しました"
+            "value" : "Twitch %@ イベントへの登録に失敗しました"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "트위치 응원 이벤트 구독에 실패했습니다."
+            "value" : "Twitch %@ 이벤트 구독에 실패했습니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Kan me niet abonneren op Twitch-cheerevenementen"
+            "value" : "Kan niet abonneren op Twitch %@ evenement"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń cheerleadingowych na Twitchu"
+            "value" : "Nie udało się zasubskrybować wydarzenia Twitch %@"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de torcida do Twitch"
+            "value" : "Falha ao se inscrever no evento Twitch %@"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de torcida do Twitch"
+            "value" : "Falha ao se inscrever no evento Twitch %@"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Не удалось подписаться на мероприятия Twitch Cheer"
+            "value" : "Не удалось подписаться на событие Twitch %@"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch cheer events"
+            "value" : "Det gick inte att prenumerera på Twitch %@-evenemanget"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Twitch tezahürat etkinliklerine abone olunamadı"
+            "value" : "Twitch %@ etkinliğine abone olunamadı"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події підтримки Twitch"
+            "value" : "Не вдалося підписатися на подію Twitch %@"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện cổ vũ của Twitch"
+            "value" : "Không đăng ký được sự kiện Twitch %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "无法订阅 Twitch 欢呼活动"
+            "value" : "无法订阅 Twitch %@ 活动"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 加油活動"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch follow events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch-Follow-Events ist fehlgeschlagen."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής στα συμβάντα παρακολούθησης Twitch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de seguimiento de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch-seurantatapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements de suivi de Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch फ़ॉलो इवेंट की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan acara ikuti Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di Twitch Follow"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch フォロー イベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 팔로우 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Het is niet gelukt om je te abonneren op Twitch-evenementen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń Twitch Follow"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de acompanhamento do Twitch"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de acompanhamento do Twitch"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на события Twitch follow"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch-följningsevenemang"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch etkinliklerini takip etme aboneliği başarısız oldu"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події Twitch"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện theo dõi Twitch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch 关注活动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 關注事件"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch hype train begin events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch Hype Train-Beginn-Events ist fehlgeschlagen."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής στα συμβάντα έναρξης του hype train του Twitch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de inicio del tren de publicidad de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitchin hype train start -tapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements de début de train de hype de Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ट्विच हाइप ट्रेन बिगिन इवेंट्स की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan ke acara awal kereta hype Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di inizio del Twitch Hype Train"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch hype train begin イベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 하이프 트레인 시작 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kan me niet abonneren op Twitch hype train begin events"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń rozpoczynających się od Hype Train na Twitchu"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de início do Twitch Hype Train"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de início do Twitch Hype Train"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на события Twitch Hype Train Start"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch-hype train start-evenemang"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch hype train başlangıç ​​etkinliklerine abone olunamadı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події Twitch hype train begin"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện bắt đầu chuyến tàu hype của Twitch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch hype train begin 活动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 宣傳列車開始活動"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch hype train end events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch Hype Train-End-Events ist fehlgeschlagen."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής στα συμβάντα λήξης του τρένου hype του Twitch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de fin del tren de publicidad de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitchin hype-junan lopetustapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements de fin de train de hype de Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ट्विच हाइप ट्रेन समाप्ति ईवेंट की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan acara akhir kereta hype Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di fine dell'hype train di Twitch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch ハイプ トレイン終了イベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 하이프 트레인 종료 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kan me niet abonneren op Twitch hype train end events"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń Twitch Hype Train End"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de encerramento do Twitch Hype Train"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de encerramento do Twitch Hype Train"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на события Twitch Hype Train End"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch-hype-tågslutevenemang"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch hype train bitiş etkinliklerine abone olunamadı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на Twitch hype train end events"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện kết thúc chuyến tàu cường điệu của Twitch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch hype train 结束活动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 宣傳列車結束活動"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch hype train progress events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch Hype Train-Fortschrittsereignisse ist fehlgeschlagen."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής στα συμβάντα προόδου του Twitch hype train"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de progreso del tren de bombo de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitchin hype-junan edistymistapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements de progression du train de hype de Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ट्विच हाइप ट्रेन प्रगति घटनाओं की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan ke acara kemajuan kereta hype Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di avanzamento del treno hype di Twitch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch ハイプ トレインの進行状況イベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 하이프 트레인 진행 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Het lukte niet om je te abonneren op de Twitch Hype Train Progress-evenementen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń postępu Hype Train na Twitchu"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de progresso do Twitch Hype Train"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de progresso do Twitch Hype Train"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на события Twitch Hype Train."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch-hype-tågframstegshändelser"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch hype train ilerleme etkinliklerine abone olunamadı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події Twitch hype train progress"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện tiến trình tàu hỏa Twitch hype"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch hype train 进度事件"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 宣傳列車進度活動"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch raid events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch-Raid-Events ist fehlgeschlagen."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής σε εκδηλώσεις επιδρομής Twitch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de incursión de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch raid -tapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements de raid Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ट्विच रेड इवेंट्स की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan acara raid Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi raid di Twitch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch レイドイベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 레이드 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Het is niet gelukt om je te abonneren op Twitch-raid-evenementen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń rajdowych Twitch"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao se inscrever nos eventos de ataque do Twitch"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao se inscrever nos eventos de ataque do Twitch"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на рейдовые события Twitch"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch raid-händelser"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch raid etkinliklerine abone olunamadı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події рейду Twitch"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện đột kích Twitch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch 突袭活动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 突襲活動"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch reward redemption events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch-Belohnungseinlösungsevents ist fehlgeschlagen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής σε συμβάντα εξαργύρωσης ανταμοιβής Twitch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de canje de recompensas de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch-palkintojen lunastustapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements d'échange de récompenses Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ट्विच रिवॉर्ड रिडेम्पशन इवेंट की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan acara penukaran hadiah Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di riscatto premi Twitch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch 報酬引き換えイベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 리워드 교환 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Het is niet gelukt om je te abonneren op Twitch-beloningsevenementen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń związanych z odbiorem nagród na Twitchu"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de resgate de recompensas do Twitch"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de resgate de recompensas do Twitch"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на события по получению вознаграждения Twitch."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch-belöningsinlösningsevenemang"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch ödül kullanma etkinliklerine abone olunamadı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події обміну винагородами Twitch"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện đổi thưởng của Twitch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch 奖励兑换活动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "訂閱 Twitch 獎勵兌換活動失敗"
-          }
-        }
-      }
-    },
-    "Failed to subscribe to Twitch subscription events" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das Abonnieren der Twitch-Abonnement-Events ist fehlgeschlagen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αποτυχία εγγραφής σε συμβάντα συνδρομής Twitch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se pudo suscribir a los eventos de suscripción de Twitch"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch-tilaustapahtumien tilaaminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossible de s'abonner aux événements d'abonnement Twitch"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch सदस्यता ईवेंट की सदस्यता लेने में विफल"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gagal berlangganan acara langganan Twitch"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Impossibile iscriversi agli eventi di abbonamento Twitch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch サブスクリプション イベントへの登録に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "트위치 구독 이벤트 구독에 실패했습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kan geen abonnement nemen op Twitch-abonnementsevenementen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nie udało się zasubskrybować wydarzeń subskrypcji Twitch"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de assinatura do Twitch"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Falha ao assinar os eventos de assinatura do Twitch"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не удалось подписаться на события подписки Twitch"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att prenumerera på Twitch-prenumerationshändelser"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch abonelik etkinliklerine abone olunamadı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Не вдалося підписатися на події підписки на Twitch"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Không đăng ký được sự kiện đăng ký Twitch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "无法订阅 Twitch 订阅活动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法訂閱 Twitch 訂閱事件"
+            "value" : "訂閱 Twitch %@ 活動失敗"
           }
         }
       }
@@ -49640,7 +49100,134 @@
       }
     },
     "Full date" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vollständiges Datum"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Πλήρης ημερομηνία"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fecha completa"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Täysi päivämäärä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Date complète"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "पूर्ण तिथि"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tanggal lengkap"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data completa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "完全な日付"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "전체 날짜"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Volledige datum"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pełna data"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data completa"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Data completa"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Полная дата"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Helt datum"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tam tarih"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Повна дата"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ngày đầy đủ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "完整日期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "完整日期"
+          }
+        }
+      }
     },
     "Function" : {
       "localizations" : {
@@ -50683,7 +50270,134 @@
       }
     },
     "Gift subsciptions" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geschenkabonnements"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Συνδρομές δώρων"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Suscripciones de regalo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lahjatilaukset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abonnements cadeaux"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उपहार सदस्यता"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Langganan hadiah"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abbonamenti regalo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ギフトサブスクリプション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "기프트 구독"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cadeaubonnen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Subskrypcje prezentów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Assinaturas de presente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Assinaturas de presente"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Подарочные подписки"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Presentprenumerationer"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hediye abonelikleri"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Подарункові підписки"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đăng ký quà tặng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "礼品订阅"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "贈送訂閱"
+          }
+        }
+      }
     },
     "Github" : {
       "localizations" : {
@@ -55497,144 +55211,266 @@
     },
     "just gifted %lld tier %lld subsciptions!" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "just gifted %1$lld tier %2$lld subsciptions!"
-          }
-        }
-      }
-    },
-    "just subscribed tier %lld!" : {
-
-    },
-    "just subscribed!" : {
-      "extractionState" : "stale",
-      "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "gerade abonniert!"
+            "state" : "needs_review",
+            "value" : "gerade %lld Abonnements der Stufe %lld verschenkt!"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "μόλις εγγράφηκα!"
+            "value" : "μόλις χάρισα %lld επίπεδο %lld συνδρομές!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "just gifted %1$lld tier %2$lld subsciptions!"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "¡acabo de suscribirme!"
+            "value" : "¡Acabo de regalar %lld tier %lld suscripciones!"
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "teki juuri tilauksen!"
+            "state" : "needs_review",
+            "value" : "juuri lahjaksi %lld tason %lld tilausta!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "je viens de m'abonner !"
+            "value" : "je viens de recevoir %lld abonnements de niveau %lld !"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "अभी सदस्यता ली!"
+            "value" : "अभी-अभी %lld स्तर %lld सदस्यता उपहार में दी गई!"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "baru saja berlangganan!"
+            "value" : "baru saja menghadiahkan langganan tingkat %lld %lld!"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "appena iscritto!"
+            "value" : "appena regalati abbonamenti di livello %lld %lld!"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "登録しました！"
+            "value" : "%lld ティアの %lld サブスクリプションをギフトとして贈りました!"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "방금 구독했어요!"
+            "state" : "needs_review",
+            "value" : "방금 %lld단계 %lld구독권을 선물했습니다!"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "zojuist geabonneerd!"
+            "value" : "zojuist %lld tier %lld abonnementen geschonken!"
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "właśnie zasubskrybowano!"
+            "state" : "needs_review",
+            "value" : "Właśnie podarowałem %lld subskrypcje poziomu %lld!"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "acabei de me inscrever!"
+            "value" : "acabei de ganhar %lld assinaturas de nível %lld!"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "acabei de me inscrever!"
+            "value" : "acabei de ganhar %lld assinaturas de nível %lld!"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "только что подписался!"
+            "state" : "needs_review",
+            "value" : "только что подарил %lld подписок уровня %lld!"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "prenumererade precis!"
+            "state" : "needs_review",
+            "value" : "precis begåvade %lld nivå %lld prenumerationer!"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "yeni abone oldum!"
+            "value" : "%lld seviye %lld aboneliği hediye edildi!"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "щойно підписався!"
+            "value" : "щойно подарував %lld рівень %lld підписок!"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "vừa đăng ký!"
+            "value" : "vừa tặng %lld gói đăng ký %lld!"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "刚刚订阅！"
+            "state" : "needs_review",
+            "value" : "刚刚赠送了 %lld 个等级 %lld 个订阅！"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "剛剛訂閱！"
+            "value" : "剛剛獲得 %lld 級 %lld 訂閱！"
+          }
+        }
+      }
+    },
+    "just subscribed tier %lld!" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "habe gerade Stufe %lld abonniert!"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "μόλις εγγράφηκα στο επίπεδο %lld!"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "¡Acabo de suscribirme al nivel %lld!"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "juuri tilannut tason %lld!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "je viens de m'abonner au niveau %lld !"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अभी-अभी टियर %lld की सदस्यता ली है!"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "baru saja berlangganan tingkat %lld!"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "appena iscritto al livello %lld!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ティア %lld をサブスクライブしました!"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "방금 %lld 등급을 구독했습니다!"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "zojuist geabonneerd op niveau %lld!"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Właśnie zasubskrybowałem poziom %lld!"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Acabei de assinar o nível %lld!"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Acabei de assinar o nível %lld!"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "только что оформил подписку на уровень %lld!"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "prenumererade precis på nivå %lld!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%lld seviyesine yeni abone oldum!"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "щойно підписався на рівень %lld!"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "vừa đăng ký gói %lld!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "刚刚订阅了 %lld 等级！"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "剛剛訂閱了 %lld 等級！"
           }
         }
       }
@@ -72150,10 +71986,264 @@
       }
     },
     "Opens the app and mutes." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Öffnet die App und schaltet stumm."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ανοίγει την εφαρμογή και κάνει σίγαση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre la aplicación y la silencia."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Avaa sovelluksen ja mykistää."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ouvre l'application et coupe le son."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ऐप खोलें और म्यूट करें."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Membuka aplikasi dan menonaktifkan suara."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apre l'app e disattiva l'audio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "アプリを開いてミュートします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "앱을 열고 음소거합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Opent de app en dempt het geluid."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Otwiera aplikację i wycisza dźwięk."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre o aplicativo e silencia."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre o aplicativo e silencia."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Открывает приложение и отключает звук."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Öppnar appen och tystar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uygulamayı açar ve sesi kapatır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відкриває програму та вимикає звук."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mở ứng dụng và tắt tiếng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "打开应用程序并静音。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "打開應用程式並靜音。"
+          }
+        }
+      }
     },
     "Opens the app and unmutes." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Öffnet die App und hebt die Stummschaltung auf."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ανοίγει την εφαρμογή και καταργεί τη σίγαση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre la aplicación y activa el silencio."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Avaa sovelluksen ja poistaa mykistyksen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ouvre l'application et réactive le son."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ऐप खोलें और अनम्यूट करें."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Membuka aplikasi dan mengaktifkan suaranya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apre l'app e riattiva l'audio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "アプリを開いてミュート解除します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "앱을 열고 음소거를 해제합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Opent de app en schakelt het geluid in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Otwiera aplikację i włącza dźwięk."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre o aplicativo e ativa o som."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abre o aplicativo e ativa o som."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Открывает приложение и включает звук."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Öppnar appen och slår på ljudet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uygulamayı açar ve sesi açar."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відкриває програму та вмикає звук."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mở ứng dụng và bỏ tắt tiếng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "打开应用程序并取消静音。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "打開應用程式並取消靜音。"
+          }
+        }
+      }
     },
     "Optional, but simplifies the setup." : {
       "localizations" : {
@@ -76056,7 +76146,134 @@
       }
     },
     "Privacy" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Privatsphäre"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μυστικότητα"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Privacidad"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yksityisyys"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Confidentialité"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "गोपनीयता"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pribadi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Riservatezza"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "プライバシー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "은둔"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Privacy"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Prywatność"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Privacidade"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Privacidade"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Конфиденциальность"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Privatliv"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mahremiyet"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Конфіденційність"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sự riêng tư"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "隐私"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "隱私"
+          }
+        }
+      }
     },
     "Privacy policy" : {
       "localizations" : {
@@ -108045,7 +108262,134 @@
       }
     },
     "Unmute" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unmute"
+          }
+        }
+      }
     },
     "Unsupported scheme %@" : {
       "localizations" : {
