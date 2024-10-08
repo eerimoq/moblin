@@ -12,6 +12,11 @@ struct WidgetBrowserSettingsView: View {
         model.resetSelectedScene(changeScene: false)
     }
 
+    private func submitStyleSheet(value: String) {
+        widget.browser.styleSheet = value.trim()
+        model.resetSelectedScene(changeScene: false)
+    }
+
     private func submitWidth(value: String) {
         guard let width = Int(value) else {
             return
@@ -46,6 +51,11 @@ struct WidgetBrowserSettingsView: View {
     var body: some View {
         Section {
             TextEditNavigationView(title: "URL", value: widget.browser.url, onSubmit: submitUrl)
+            TextEditNavigationView(
+                title: "Style sheet",
+                value: widget.browser.styleSheet!,
+                onSubmit: submitStyleSheet
+            )
             Toggle(isOn: Binding(get: {
                 widget.browser.audioOnly!
             }, set: { value in

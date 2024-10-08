@@ -33,6 +33,7 @@ final class BrowserEffect: VideoEffect {
 
     init(
         url: URL,
+        styleSheet: String,
         widget: SettingsWidgetBrowser,
         videoSize: CGSize,
         settingName: String
@@ -57,6 +58,19 @@ final class BrowserEffect: VideoEffect {
         configuration.allowsInlineMediaPlayback = true
         configuration.allowsPictureInPictureMediaPlayback = false
         configuration.mediaTypesRequiringUserActionForPlayback = []
+        if !styleSheet.isEmpty, let encodedStyleSheet = styleSheet.data(using: .utf8) {
+            let source = """
+            var style = document.createElement('style');
+            style.type = 'text/css';
+            style.innerHTML = window.atob('\(encodedStyleSheet.base64EncodedString())');
+            document.head.appendChild(style);
+            """
+            configuration.userContentController.addUserScript(.init(
+                source: source,
+                injectionTime: .atDocumentEnd,
+                forMainFrameOnly: false
+            ))
+        }
         webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
                             configuration: configuration)
         webView.isOpaque = false

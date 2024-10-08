@@ -807,6 +807,7 @@ class SettingsWidgetBrowser: Codable {
     var audioOnly: Bool? = false
     var scaleToFitVideo: Bool? = false
     var fps: Float? = 5.0
+    var styleSheet: String? = ""
 }
 
 class SettingsWidgetMap: Codable {
@@ -3885,6 +3886,10 @@ final class Settings {
         }
         if realDatabase.debug!.beautyFilterSettings!.showBlurBackground == nil {
             realDatabase.debug!.beautyFilterSettings!.showBlurBackground = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
+            widget.browser.styleSheet = ""
             store()
         }
     }

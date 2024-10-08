@@ -2856,6 +2856,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             browserEffects[widget.id] = BrowserEffect(
                 url: url,
+                styleSheet: widget.browser.styleSheet!,
                 widget: widget.browser,
                 videoSize: videoSize,
                 settingName: widget.name
