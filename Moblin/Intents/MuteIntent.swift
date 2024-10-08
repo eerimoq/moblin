@@ -2,7 +2,7 @@ import AppIntents
 
 struct MuteIntent: AppIntent {
     static var title: LocalizedStringResource = "Mute"
-    static var description: IntentDescription? = IntentDescription("Opens the app and mutes.")
+    static var description: IntentDescription? = IntentDescription("Mutes audio.")
     static var openAppWhenRun: Bool = false
 
     @MainActor

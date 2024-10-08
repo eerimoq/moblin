@@ -2,7 +2,7 @@ import AppIntents
 
 struct UnmuteIntent: AppIntent {
     static var title: LocalizedStringResource = "Unmute"
-    static var description: IntentDescription? = IntentDescription("Opens the app and unmutes.")
+    static var description: IntentDescription? = IntentDescription("Unmutes audio.")
     static var openAppWhenRun: Bool = false
 
     @MainActor

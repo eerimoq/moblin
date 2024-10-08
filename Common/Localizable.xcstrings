@@ -65355,6 +65355,9 @@
         }
       }
     },
+    "Mutes audio." : {
+
+    },
     "My BRB scene" : {
       "localizations" : {
         "de" : {
@@ -71986,6 +71989,7 @@
       }
     },
     "Opens the app and mutes." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -72116,6 +72120,7 @@
       }
     },
     "Opens the app and unmutes." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -98121,6 +98126,12 @@
         }
       }
     },
+    "Take a snapshot." : {
+
+    },
+    "Take snapshot" : {
+
+    },
     "Take snapshot." : {
       "localizations" : {
         "de" : {
@@ -108390,6 +108401,9 @@
           }
         }
       }
+    },
+    "Unmutes audio." : {
+
     },
     "Unsupported scheme %@" : {
       "localizations" : {

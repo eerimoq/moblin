@@ -6,14 +6,19 @@ class MoblinShortcuts: AppShortcutsProvider {
 
     static var appShortcuts: [AppShortcut] = [
         AppShortcut(intent: MuteIntent(), phrases: [
-            "Mute \(.applicationName)",
+            "\(.applicationName), mute",
         ],
         shortTitle: "Mute",
         systemImageName: "microphone.slash"),
         AppShortcut(intent: UnmuteIntent(), phrases: [
-            "Unmute \(.applicationName)",
+            "\(.applicationName), unmute",
         ],
         shortTitle: "Unmute",
+        systemImageName: "microphone"),
+        AppShortcut(intent: SnapshotIntent(), phrases: [
+            "\(.applicationName), take snapshot",
+        ],
+        shortTitle: "Take snapshot",
         systemImageName: "microphone"),
     ]
 }
