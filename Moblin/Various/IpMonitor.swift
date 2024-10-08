@@ -11,8 +11,6 @@ class IPMonitor {
         var name: String
         var interfaceType: NWInterface.InterfaceType
         var ip: String
-        // periphery:ignore
-        var ipType: IPType
     }
 
     private let monitor = NWPathMonitor()
@@ -26,8 +24,7 @@ class IPMonitor {
                     statuses.append(Status(
                         name: interface.name,
                         interfaceType: interface.type,
-                        ip: ip,
-                        ipType: ipType
+                        ip: ip
                     ))
                 }
             }
