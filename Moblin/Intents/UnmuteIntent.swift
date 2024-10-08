@@ -3,7 +3,7 @@ import AppIntents
 struct UnmuteIntent: AppIntent {
     static var title: LocalizedStringResource = "Unmute"
     static var description: IntentDescription? = IntentDescription("Opens the app and unmutes.")
-    static var openAppWhenRun: Bool = true
+    static var openAppWhenRun: Bool = false
 
     @MainActor
     func perform() async throws -> some IntentResult {

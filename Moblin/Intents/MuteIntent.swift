@@ -3,7 +3,7 @@ import AppIntents
 struct MuteIntent: AppIntent {
     static var title: LocalizedStringResource = "Mute"
     static var description: IntentDescription? = IntentDescription("Opens the app and mutes.")
-    static var openAppWhenRun: Bool = true
+    static var openAppWhenRun: Bool = false
 
     @MainActor
     func perform() async throws -> some IntentResult {
