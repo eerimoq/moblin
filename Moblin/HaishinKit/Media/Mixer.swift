@@ -3,10 +3,8 @@ import SwiftUI
 
 func makeCaptureSession() -> AVCaptureSession {
     let session = AVCaptureSession()
-    if #available(iOS 16.0, *) {
-        if session.isMultitaskingCameraAccessSupported {
-            session.isMultitaskingCameraAccessEnabled = true
-        }
+    if session.isMultitaskingCameraAccessSupported {
+        session.isMultitaskingCameraAccessEnabled = true
     }
     return session
 }

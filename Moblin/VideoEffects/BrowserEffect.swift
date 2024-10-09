@@ -7,6 +7,22 @@ import WebKit
 
 private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
 
+private func createStyleSheetSource(styleSheet: String) -> String? {
+    guard !styleSheet.isEmpty else {
+        return nil
+    }
+    guard let styleSheetData = styleSheet.data(using: .utf8) else {
+        logger.info("Failed to encode browser style sheet to UTF-8.")
+        return nil
+    }
+    return """
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = window.atob('\(styleSheetData.base64EncodedString())');
+    document.head.appendChild(style);
+    """
+}
+
 final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     let webView: WKWebView
@@ -58,13 +74,7 @@ final class BrowserEffect: VideoEffect {
         configuration.allowsInlineMediaPlayback = true
         configuration.allowsPictureInPictureMediaPlayback = false
         configuration.mediaTypesRequiringUserActionForPlayback = []
-        if !styleSheet.isEmpty, let encodedStyleSheet = styleSheet.data(using: .utf8) {
-            let source = """
-            var style = document.createElement('style');
-            style.type = 'text/css';
-            style.innerHTML = window.atob('\(encodedStyleSheet.base64EncodedString())');
-            document.head.appendChild(style);
-            """
+        if let source = createStyleSheetSource(styleSheet: styleSheet) {
             configuration.userContentController.addUserScript(.init(
                 source: source,
                 injectionTime: .atDocumentEnd,

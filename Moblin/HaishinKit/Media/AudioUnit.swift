@@ -386,15 +386,13 @@ extension AudioUnit: ReplaceAudioSampleBufferDelegate {
 
 private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp
-    if #available(iOS 16.0, *) {
-        if let audioClock = mixer.audio.session.synchronizationClock,
-           let videoClock = mixer.video.session.synchronizationClock
-        {
-            let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
-            let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
-            let value = CMTimeValue(seconds * Double(audioTimescale))
-            presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
-        }
+    if let audioClock = mixer.audio.session.synchronizationClock,
+       let videoClock = mixer.video.session.synchronizationClock
+    {
+        let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
+        let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
+        let value = CMTimeValue(seconds * Double(audioTimescale))
+        presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
     }
     return presentationTimeStamp
 }
