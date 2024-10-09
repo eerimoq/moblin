@@ -298,6 +298,16 @@ private struct AlertsMessagesView: View {
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
 
+    private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
+        if highlight.kind == .firstMessage && !model.showFirstTimeChatterMessage {
+            return false
+        }
+        if highlight.kind == .newFollower && !model.showNewFollowerMessage {
+            return false
+        }
+        return true
+    }
+
     var body: some View {
         GeometryReader { metrics in
             ChildSizeReader(size: $wholeSize) {
@@ -308,23 +318,25 @@ private struct AlertsMessagesView: View {
                                 ForEach(model.interactiveChatAlertsPosts) { post in
                                     if post.user != nil {
                                         if let highlight = post.highlight {
-                                            HStack(spacing: 0) {
-                                                Rectangle()
-                                                    .frame(width: 3)
-                                                    .foregroundColor(highlight.color)
-                                                VStack(alignment: .leading, spacing: 1) {
-                                                    HighlightMessageView(
-                                                        image: highlight.image,
-                                                        name: highlight.title
-                                                    )
-                                                    LineView(
-                                                        post: post,
-                                                        chat: model.database.chat
-                                                    )
+                                            if shouldShowMessage(highlight: highlight) {
+                                                HStack(spacing: 0) {
+                                                    Rectangle()
+                                                        .frame(width: 3)
+                                                        .foregroundColor(highlight.color)
+                                                    VStack(alignment: .leading, spacing: 1) {
+                                                        HighlightMessageView(
+                                                            image: highlight.image,
+                                                            name: highlight.title
+                                                        )
+                                                        LineView(
+                                                            post: post,
+                                                            chat: model.database.chat
+                                                        )
+                                                    }
                                                 }
+                                                .rotationEffect(Angle(degrees: 180))
+                                                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
                                             }
-                                            .rotationEffect(Angle(degrees: 180))
-                                            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
                                         } else {
                                             LineView(post: post, chat: model.database.chat)
                                                 .padding([.leading], 3)
@@ -398,6 +410,72 @@ private struct ChatAlertsView: View {
     }
 }
 
+private struct ControlView: View {
+    @EnvironmentObject var model: Model
+    @Binding var message: String
+
+    var body: some View {
+        TextField(text: $message) {
+            Text("Send message")
+                .foregroundColor(.gray)
+        }
+        .padding(5)
+        .foregroundColor(.white)
+        Button(action: {
+            model.sendChatMessage(message: message)
+            message = ""
+        }, label: {
+            Image(systemName: "paperplane")
+                .font(.title)
+                .padding(5)
+                .foregroundColor(message.isEmpty ? .gray : .accentColor)
+        })
+        .disabled(message.isEmpty)
+        Button(action: {
+            model.showAllInteractiveChatMessage.toggle()
+        }, label: {
+            Image(systemName: model
+                .showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
+                .font(.title)
+                .padding(5)
+        })
+    }
+}
+
+private struct AlertsControlView: View {
+    @EnvironmentObject var model: Model
+    @State var message: String = ""
+
+    var body: some View {
+        Button(action: {
+            model.showFirstTimeChatterMessage.toggle()
+            model.database.chat.showFirstTimeChatterMessage = model.showFirstTimeChatterMessage
+        }, label: {
+            Image(systemName: model
+                .showFirstTimeChatterMessage ? "bubble.left.fill" : "bubble.left")
+                .font(.title)
+                .padding(5)
+        })
+        Button(action: {
+            model.showNewFollowerMessage.toggle()
+            model.database.chat.showNewFollowerMessage = model.showNewFollowerMessage
+        }, label: {
+            Image(systemName: model.showNewFollowerMessage ? "medal.fill" : "medal")
+                .font(.title)
+                .padding(5)
+        })
+        Spacer()
+        Button(action: {
+            model.showAllInteractiveChatMessage.toggle()
+        }, label: {
+            Image(systemName: model
+                .showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
+                .font(.title)
+                .padding(5)
+        })
+    }
+}
+
 struct QuickButtonChatView: View {
     @EnvironmentObject var model: Model
     @State var message: String = ""
@@ -410,29 +488,11 @@ struct QuickButtonChatView: View {
                 ChatAlertsView()
             }
             HStack {
-                TextField(text: $message) {
-                    Text("Send message")
-                        .foregroundColor(.gray)
+                if model.showAllInteractiveChatMessage {
+                    ControlView(message: $message)
+                } else {
+                    AlertsControlView()
                 }
-                .padding(5)
-                .foregroundColor(.white)
-                Button(action: {
-                    model.sendChatMessage(message: message)
-                    message = ""
-                }, label: {
-                    Image(systemName: "paperplane")
-                        .font(.title)
-                        .padding(5)
-                        .foregroundColor(message.isEmpty ? .gray : .accentColor)
-                })
-                .disabled(message.isEmpty)
-                Button(action: {
-                    model.showAllInteractiveChatMessage.toggle()
-                }, label: {
-                    Image(systemName: model.showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
-                        .font(.title)
-                        .padding(5)
-                })
             }
             .border(.gray)
             .padding([.leading, .trailing], 5)

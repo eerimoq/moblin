@@ -175,7 +175,7 @@ final class TwitchChatMoblin {
             )
         } else if message.firstMessage {
             return .init(
-                kind: .other,
+                kind: .firstMessage,
                 color: .yellow,
                 image: "bubble.left",
                 title: String(localized: "First time chatter"),

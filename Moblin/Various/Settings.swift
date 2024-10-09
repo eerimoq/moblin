@@ -1474,6 +1474,8 @@ class SettingsChat: Codable {
     var botCommandPermissions: SettingsChatBotPermissions? = .init()
     var botSendLowBatteryWarning: Bool? = false
     var badges: Bool? = true
+    var showFirstTimeChatterMessage: Bool? = true
+    var showNewFollowerMessage: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -3890,6 +3892,14 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
             widget.browser.styleSheet = ""
+            store()
+        }
+        if realDatabase.chat.showFirstTimeChatterMessage == nil {
+            realDatabase.chat.showFirstTimeChatterMessage = true
+            store()
+        }
+        if realDatabase.chat.showNewFollowerMessage == nil {
+            realDatabase.chat.showNewFollowerMessage = true
             store()
         }
     }

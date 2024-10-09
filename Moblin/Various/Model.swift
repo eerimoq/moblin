@@ -170,6 +170,8 @@ func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] 
 enum ChatHighlightKind {
     case redemption
     case other
+    case firstMessage
+    case newFollower
 }
 
 struct ChatHighlight {
@@ -185,6 +187,10 @@ struct ChatHighlight {
         case .redemption:
             watchProtocolKind = .redemption
         case .other:
+            watchProtocolKind = .other
+        case .newFollower:
+            watchProtocolKind = .redemption
+        case .firstMessage:
             watchProtocolKind = .other
         }
         let color = color.toRgb() ?? .init(red: 0, green: 255, blue: 0)
@@ -203,7 +209,7 @@ struct ChatPost: Identifiable, Equatable {
     }
 
     func isRedemption() -> Bool {
-        return highlight?.kind == .redemption
+        return highlight?.kind == .redemption || highlight?.kind == .newFollower
     }
 
     var id: Int
@@ -368,6 +374,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var pausedInteractiveChatPostsCount: Int = 0
     @Published var interactiveChatPaused = false
     @Published var showAllInteractiveChatMessage = true
+    @Published var showFirstTimeChatterMessage = true
+    @Published var showNewFollowerMessage = true
     @Published var interactiveChatAlertsPosts: Deque<ChatPost> = []
     private var newInteractiveChatAlertsPosts: Deque<ChatPost> = []
     private var pausedInteractiveChatAlertsPosts: Deque<ChatPost> = []
@@ -1050,6 +1058,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
+        showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
+        showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
@@ -8132,7 +8142,8 @@ extension Model: TwitchEventSubDelegate {
                 user: event.user_name,
                 text: text,
                 title: String(localized: "New follower"),
-                color: .pink
+                color: .pink,
+                kind: .newFollower
             )
         }
     }
@@ -8149,7 +8160,8 @@ extension Model: TwitchEventSubDelegate {
                 user: event.user_name,
                 text: text,
                 title: String(localized: "New subscriber"),
-                color: .cyan
+                color: .cyan,
+                image: "party.popper"
             )
         }
     }
@@ -8165,7 +8177,8 @@ extension Model: TwitchEventSubDelegate {
                 user: user,
                 text: text,
                 title: String(localized: "Gift subsciptions"),
-                color: .cyan
+                color: .cyan,
+                image: "gift"
             )
         }
     }
@@ -8180,7 +8193,8 @@ extension Model: TwitchEventSubDelegate {
                 user: event.user_name,
                 text: text,
                 title: String(localized: "Reward redemption"),
-                color: .blue
+                color: .blue,
+                image: "medal.star"
             )
         }
     }
@@ -8194,7 +8208,8 @@ extension Model: TwitchEventSubDelegate {
                 user: event.from_broadcaster_user_name,
                 text: text,
                 title: String(localized: "Raid"),
-                color: .pink
+                color: .pink,
+                image: "person.3"
             )
         }
     }
@@ -8203,14 +8218,15 @@ extension Model: TwitchEventSubDelegate {
         DispatchQueue.main.async {
             let user = event.user_name ?? String(localized: "Anonymous")
             let text = String(localized: "cheered \(event.bits) bits!")
-            self.makeToast(title: "\(user)  \(text)")
+            self.makeToast(title: "\(user) \(text)")
             self.playAlert(alert: .twitchCheer(event))
             self.appendTwitchChatAlertMessage(
                 user: user,
-                text: event.message,
+                text: "\(text) \(event.message)",
                 title: String(localized: "Cheer"),
                 color: .green,
-                skipTextToSpeech: true
+                skipTextToSpeech: true,
+                image: "suit.diamond"
             )
         }
     }
@@ -8277,7 +8293,9 @@ extension Model: TwitchEventSubDelegate {
         text: String,
         title: String,
         color: Color,
-        skipTextToSpeech: Bool = false
+        skipTextToSpeech: Bool = false,
+        image: String? = nil,
+        kind: ChatHighlightKind? = nil
     ) {
         var id = 0
         appendChatMessage(platform: .twitch,
@@ -8292,9 +8310,9 @@ extension Model: TwitchEventSubDelegate {
                           isSubscriber: false,
                           isModerator: false,
                           highlight: .init(
-                              kind: .redemption,
+                              kind: kind ?? .redemption,
                               color: color,
-                              image: "medal",
+                              image: image ?? "medal",
                               title: title,
                               skipTextToSpeech: skipTextToSpeech
                           ))
