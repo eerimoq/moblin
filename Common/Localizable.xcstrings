@@ -3201,8 +3201,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{muted} - Mostra disattivato"
+            "state" : "translated",
+            "value" : "{muted} - Muto"
           }
         },
         "ja" : {
@@ -3591,8 +3591,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{subtitles} - Mostra sottotitoli"
+            "state" : "translated",
+            "value" : "{subtitles} - Mostra i sottotitoli"
           }
         },
         "ja" : {
@@ -3721,8 +3721,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{temperature} - Mostra temperatura"
+            "state" : "translated",
+            "value" : "{temperature} - Mostra la temperatura"
           }
         },
         "ja" : {
@@ -8839,8 +8839,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🥳 Lo streaming probabilmente funziona 🥳"
+            "state" : "translated",
+            "value" : "🥳 Lo streaming sembra funzionare 🥳"
           }
         },
         "ja" : {
@@ -8969,8 +8969,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😠 Lo streaming probabilmente è interrotto 😠"
+            "state" : "translated",
+            "value" : "😠 Lo streaming sembra è interrotto 😠"
           }
         },
         "ja" : {
@@ -11959,8 +11959,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "una regione di privacy"
+            "state" : "translated",
+            "value" : "un'area riservata"
           }
         },
         "ja" : {
@@ -12349,8 +12349,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Una piccola stampante in bianco e nero a un prezzo accessibile."
+            "state" : "translated",
+            "value" : "Una piccola stampante in bianco e nero a un piccolo prezzo."
           }
         },
         "ja" : {
@@ -12999,8 +12999,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Un widget può essere utilizzato in zero o più scene."
+            "state" : "translated",
+            "value" : "Un widget può essere utilizzato in nessuna o più scene."
           }
         },
         "ja" : {
@@ -13909,8 +13909,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Avvisi"
+            "state" : "translated",
+            "value" : "Alerts"
           }
         },
         "ja" : {
@@ -17165,8 +17165,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Le fotocamere automatiche consumano più energia quando vengono accese più fotocamere, anche se ne viene utilizzata solo una alla volta. Ciò consente al telefono di cambiare rapidamente fotocamera durante lo zoom."
+            "state" : "translated",
+            "value" : "Camera auto consuma più energia perchè vengono accese più fotocamere, anche se ne viene utilizzata solo una alla volta. Ciò consente al telefono di cambiare rapidamente fotocamera durante lo zoom."
           }
         },
         "ja" : {
@@ -17815,8 +17815,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Arresta automaticamente lo streaming al termine dello streaming"
+            "state" : "translated",
+            "value" : "Arresta automaticamente lo streaming al termine della diretta"
           }
         },
         "ja" : {
@@ -18335,8 +18335,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Velocità in bit media"
+            "state" : "translated",
+            "value" : "Bitrate medio"
           }
         },
         "ja" : {
@@ -18855,8 +18855,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Preimpostazioni della fotocamera posteriore"
+            "state" : "translated",
+            "value" : "Impostazione predefinita fotocamera posteriore"
           }
         },
         "ja" : {
@@ -19245,8 +19245,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Distintivi"
+            "state" : "translated",
+            "value" : "Badges"
           }
         },
         "ja" : {
@@ -19895,8 +19895,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BELABOX nuvola"
+            "state" : "translated",
+            "value" : "BELABOX cloud"
           }
         },
         "ja" : {
@@ -20025,7 +20025,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX cloud e OBS"
           }
         },
@@ -20155,8 +20155,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BELABOX nuvola SRT"
+            "state" : "translated",
+            "value" : "BELABOX cloud SRT"
           }
         },
         "ja" : {
@@ -20285,8 +20285,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BELABOX nuvola SRTLA"
+            "state" : "translated",
+            "value" : "BELABOX cloud SRTLA"
           }
         },
         "ja" : {
@@ -21065,8 +21065,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Velocità in bit"
+            "state" : "translated",
+            "value" : "Bitrate"
           }
         },
         "ja" : {
@@ -21195,8 +21195,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bitrate diminuisce la velocità"
+            "state" : "translated",
+            "value" : "Il Bitrate diminuisce la velocità"
           }
         },
         "ja" : {
@@ -21455,8 +21455,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Preimpostazioni del bitrate"
+            "state" : "translated",
+            "value" : "Impostazioni predefinite bitrate"
           }
         },
         "ja" : {
@@ -22495,8 +22495,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Legame"
+            "state" : "translated",
+            "value" : "Bonding"
           }
         },
         "ja" : {
@@ -22625,8 +22625,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Confine"
+            "state" : "translated",
+            "value" : "Bordo"
           }
         },
         "ja" : {
@@ -23405,8 +23405,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Navigatore"
+            "state" : "translated",
+            "value" : "Browser"
           }
         },
         "ja" : {
@@ -24185,8 +24185,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Telecamera"
+            "state" : "translated",
+            "value" : "Camera"
           }
         },
         "ja" : {
@@ -24315,8 +24315,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Commutazione della fotocamera"
+            "state" : "translated",
+            "value" : "Cambio fotocamera"
           }
         },
         "ja" : {
@@ -25095,8 +25095,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Canale ID"
+            "state" : "translated",
+            "value" : "ID Canale"
           }
         },
         "ja" : {
@@ -25355,8 +25355,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chiacchierata"
+            "state" : "translated",
+            "value" : "Chat"
           }
         },
         "ja" : {
@@ -25615,8 +25615,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bot di chat"
+            "state" : "translated",
+            "value" : "Chat Bot"
           }
         },
         "ja" : {
@@ -25875,8 +25875,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Messaggi di chat"
+            "state" : "translated",
+            "value" : "Messaggi in chat"
           }
         },
         "ja" : {
@@ -26395,8 +26395,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Allegria"
+            "state" : "translated",
+            "value" : "Tifo"
           }
         },
         "ja" : {
@@ -26655,8 +26655,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saluti"
+            "state" : "translated",
+            "value" : "Grazie"
           }
         },
         "ja" : {
@@ -29125,8 +29125,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Collegato"
+            "state" : "translated",
+            "value" : "Connesso"
           }
         },
         "ja" : {
@@ -30295,8 +30295,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Controllore"
+            "state" : "translated",
+            "value" : "Controller"
           }
         },
         "ja" : {
@@ -30425,8 +30425,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Controllore %lld"
+            "state" : "translated",
+            "value" : "Controller %lld"
           }
         },
         "ja" : {
@@ -31725,8 +31725,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Creare"
+            "state" : "translated",
+            "value" : "Crea"
           }
         },
         "ja" : {
@@ -31985,8 +31985,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Creazione guidata flusso"
+            "state" : "translated",
+            "value" : "Creazione guidata del flusso"
           }
         },
         "ja" : {
@@ -32115,8 +32115,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Raccolto"
+            "state" : "translated",
+            "value" : "Taglio"
           }
         },
         "ja" : {
@@ -32375,8 +32375,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Costume"
+            "state" : "translated",
+            "value" : "Personalizzato"
           }
         },
         "ja" : {
@@ -33025,8 +33025,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Registrazione di debug"
+            "state" : "translated",
+            "value" : "Log debug"
           }
         },
         "ja" : {
@@ -33155,8 +33155,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sovrapposizione di debug"
+            "state" : "translated",
+            "value" : "Ovrlay debug"
           }
         },
         "ja" : {
@@ -33805,8 +33805,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Eliminare"
+            "state" : "translated",
+            "value" : "Elimina"
           }
         },
         "ja" : {
@@ -35625,8 +35625,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Discordia"
+            "state" : "translated",
+            "value" : "Discor"
           }
         },
         "ja" : {
@@ -40825,8 +40825,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Eventi (avvisi)"
+            "state" : "translated",
+            "value" : "Eventi (alerts)"
           }
         },
         "ja" : {
@@ -46805,8 +46805,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chiacchiere per la prima volta"
+            "state" : "translated",
+            "value" : "Chatta per la prima volta"
           }
         },
         "ja" : {
@@ -47325,8 +47325,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fissaggio..."
+            "state" : "translated",
+            "value" : "Fix..."
           }
         },
         "ja" : {
@@ -48755,8 +48755,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "davanti"
+            "state" : "translated",
+            "value" : "Fronte"
           }
         },
         "ja" : {
@@ -48885,8 +48885,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Davanti"
+            "state" : "translated",
+            "value" : "Fronte"
           }
         },
         "ja" : {
@@ -49015,8 +49015,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Preimpostazioni della fotocamera anteriore"
+            "state" : "translated",
+            "value" : "Impostazioni predefinite fotocamera frontale"
           }
         },
         "ja" : {
@@ -49145,8 +49145,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Data completa"
+            "state" : "translated",
+            "value" : "Tutti i dati"
           }
         },
         "ja" : {
@@ -50705,8 +50705,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Andare in diretta"
+            "state" : "translated",
+            "value" : "Live"
           }
         },
         "ja" : {
@@ -52395,8 +52395,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Casa"
+            "state" : "translated",
+            "value" : "Home"
           }
         },
         "ja" : {
@@ -52785,8 +52785,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ospite mancante"
+            "state" : "translated",
+            "value" : "Host mancante"
           }
         },
         "ja" : {
@@ -52915,8 +52915,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Icone in negozio"
+            "state" : "translated",
+            "value" : "Icone nello store"
           }
         },
         "ja" : {
@@ -55125,8 +55125,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "appena seguito!"
+            "state" : "translated",
+            "value" : "Nuovo follower!"
           }
         },
         "ja" : {
@@ -55261,8 +55261,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "appena regalati abbonamenti di livello %lld %lld!"
+            "state" : "translated",
+            "value" : "appena regalati abbonamenti livello %lld %lld!"
           }
         },
         "ja" : {
@@ -55391,8 +55391,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "appena iscritto al livello %lld!"
+            "state" : "translated",
+            "value" : "appena iscritto livello %lld!"
           }
         },
         "ja" : {
@@ -57601,8 +57601,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tronco d'albero"
+            "state" : "translated",
+            "value" : "log"
           }
         },
         "ja" : {
@@ -57731,7 +57731,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Login"
           }
         },
@@ -57861,8 +57861,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Disconnettersi"
+            "state" : "translated",
+            "value" : "Logout"
           }
         },
         "ja" : {
@@ -58251,8 +58251,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Avviso di bitrate basso"
+            "state" : "translated",
+            "value" : "Avviso bitrate basso"
           }
         },
         "ja" : {
@@ -58381,8 +58381,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Percentuale di batteria più bassa"
+            "state" : "translated",
+            "value" : "Percentuale batteria più bassa"
           }
         },
         "ja" : {
@@ -61111,8 +61111,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Età massima"
+            "state" : "translated",
+            "value" : "Durata massima"
           }
         },
         "ja" : {
@@ -61631,8 +61631,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Io nel colore del nome utente"
+            "state" : "translated",
+            "value" : "Colore utente nel /me"
           }
         },
         "ja" : {
@@ -61891,8 +61891,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Media Player"
+            "state" : "translated",
+            "value" : "Lettore multimediale"
           }
         },
         "ja" : {
@@ -62931,8 +62931,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Velocità in bit minima"
+            "state" : "translated",
+            "value" : "Bitrate minimo"
           }
         },
         "ja" : {
@@ -63191,8 +63191,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Livello minimo di abbonamento"
+            "state" : "translated",
+            "value" : "Livello minimo abbonamento"
           }
         },
         "ja" : {
@@ -63321,8 +63321,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fotocamera frontale a specchio in streaming"
+            "state" : "translated",
+            "value" : "Fotocamera frontale specchiata in streaming"
           }
         },
         "ja" : {
@@ -64361,8 +64361,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Monospaziato"
+            "state" : "translated",
+            "value" : "Monospazio"
           }
         },
         "ja" : {
@@ -65011,7 +65011,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Muto"
           }
         },
@@ -65356,7 +65356,14 @@
       }
     },
     "Mutes audio." : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio muto."
+          }
+        }
+      }
     },
     "My BRB scene" : {
       "localizations" : {
@@ -70344,8 +70351,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OB"
+            "state" : "translated",
+            "value" : "OBS"
           }
         },
         "ja" : {
@@ -77886,8 +77893,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Un nuovo accesso a Twitch probabilmente risolve questo errore"
+            "state" : "translated",
+            "value" : "Riaccedi a Twitch per provare a risolve questo errore"
           }
         },
         "ja" : {
@@ -79706,8 +79713,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Assistente al controllo remoto"
+            "state" : "translated",
+            "value" : "Assistente controllo remoto"
           }
         },
         "ja" : {
@@ -79836,8 +79843,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Assistente di controllo remoto collegato"
+            "state" : "translated",
+            "value" : "Assistente controllo remoto collegato"
           }
         },
         "ja" : {
@@ -79966,8 +79973,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Assistente di controllo remoto disconnesso"
+            "state" : "translated",
+            "value" : "Assistente controllo remoto scollegato"
           }
         },
         "ja" : {
@@ -80356,8 +80363,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Streamer del telecomando disconnesso"
+            "state" : "translated",
+            "value" : "Streamer del controllo remoto scollegato"
           }
         },
         "ja" : {
@@ -84386,8 +84393,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "È iniziata la cattura dello schermo"
+            "state" : "translated",
+            "value" : "Cattura schermo attivata"
           }
         },
         "ja" : {
@@ -88682,8 +88689,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Liscio"
+            "state" : "translated",
+            "value" : "Fluido"
           }
         },
         "ja" : {
@@ -89982,8 +89989,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Widget di origine"
+            "state" : "translated",
+            "value" : "Widget per la sorgente"
           }
         },
         "ja" : {
@@ -92582,8 +92589,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Avvia lo streaming live"
+            "state" : "translated",
+            "value" : "Avvia la LIVE"
           }
         },
         "ja" : {
@@ -93752,8 +93759,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fermare"
+            "state" : "translated",
+            "value" : "STOP"
           }
         },
         "ja" : {
@@ -96222,8 +96229,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Flussi"
+            "state" : "translated",
+            "value" : "Stream"
           }
         },
         "ja" : {
@@ -99868,8 +99875,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Dal testo alla voce"
+            "state" : "translated",
+            "value" : "Da testo a voce"
           }
         },
         "ja" : {
@@ -102728,8 +102735,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "L'orologio funge da assistente del telecomando quando lo streamer del telecomando è collegato. Tieni presente che in questo caso la chat, il salto del TTS corrente e alcune altre funzionalità non sono (ancora) supportate."
+            "state" : "translated",
+            "value" : "L'orologio agisce da assistente del controllo remoto quando lo streamer del controllo remoto è collegato. Tieni presente che in questo caso la chat, il salto del TTS corrente e alcune altre funzionalità non sono (ancora) supportate."
           }
         },
         "ja" : {
@@ -105978,8 +105985,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Triplicare"
+            "state" : "translated",
+            "value" : "Tripla"
           }
         },
         "ja" : {
@@ -106108,8 +106115,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Triplo (automatico)"
+            "state" : "translated",
+            "value" : "Tripla (auto)"
           }
         },
         "ja" : {
@@ -106628,8 +106635,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Attiva la chat di sintesi vocale."
+            "state" : "translated",
+            "value" : "Attiva la chat TTS."
           }
         },
         "ja" : {
@@ -106758,8 +106765,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Disattivazione della sintesi vocale della chat"
+            "state" : "translated",
+            "value" : "Disattivazione TTS"
           }
         },
         "ja" : {
@@ -106888,8 +106895,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Attivazione della sintesi vocale della chat"
+            "state" : "translated",
+            "value" : "Attivazione TTS"
           }
         },
         "ja" : {
@@ -107018,8 +107025,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Contrazione"
+            "state" : "translated",
+            "value" : "Twitch"
           }
         },
         "ja" : {
@@ -107538,8 +107545,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ultra ampio"
+            "state" : "translated",
+            "value" : "Ultra grandangolo"
           }
         },
         "ja" : {
@@ -108318,8 +108325,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Unmute"
+            "state" : "translated",
+            "value" : "Riattiva audio"
           }
         },
         "ja" : {
@@ -111441,8 +111448,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vibrare"
+            "state" : "translated",
+            "value" : "Vibrazione"
           }
         },
         "ja" : {
@@ -113261,8 +113268,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tempo atmosferico"
+            "state" : "translated",
+            "value" : "Meteo"
           }
         },
         "ja" : {
@@ -114171,8 +114178,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Doppio ampio (automatico)"
+            "state" : "translated",
+            "value" : "Doppia grandangolare (auto)"
           }
         },
         "ja" : {
@@ -114301,8 +114308,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aggeggio"
+            "state" : "translated",
+            "value" : "Widget"
           }
         },
         "ja" : {
@@ -117037,8 +117044,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrandisci"
+            "state" : "translated",
+            "value" : "Zoom"
           }
         },
         "ja" : {
@@ -117167,8 +117174,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrandire"
+            "state" : "translated",
+            "value" : "Aumenta Zoom"
           }
         },
         "ja" : {
@@ -117297,8 +117304,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rimpicciolisci"
+            "state" : "translated",
+            "value" : "Riduci Zoom"
           }
         },
         "ja" : {
@@ -117557,8 +117564,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Preimpostazioni di zoom"
+            "state" : "translated",
+            "value" : "Impostazioni predefinite zoom"
           }
         },
         "ja" : {
