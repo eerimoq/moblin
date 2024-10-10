@@ -12422,7 +12422,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一台小型、价格实惠的黑白打印机。"
+            "value" : "经济实惠的小型黑白打印机。"
           }
         },
         "zh-Hant" : {
@@ -15807,8 +15807,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "助手"
+            "state" : "translated",
+            "value" : "辅助设备"
           }
         },
         "zh-Hant" : {
@@ -15937,8 +15937,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "助手和直播者"
+            "state" : "translated",
+            "value" : "辅助设备和主要设备"
           }
         },
         "zh-Hant" : {
@@ -16068,7 +16068,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "助手 URL"
+            "value" : "辅助设备 URL"
           }
         },
         "zh-Hant" : {
@@ -16327,8 +16327,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "归因"
+            "state" : "translated",
+            "value" : "资源溯源"
           }
         },
         "zh-Hant" : {
@@ -19188,7 +19188,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "后台推流"
+            "value" : "后台模式"
           }
         },
         "zh-Hant" : {
@@ -23348,7 +23348,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在无视频源时的 BRB 场景"
+            "value" : "无视频源时切换到 BRB 场景"
           }
         },
         "zh-Hant" : {
@@ -38038,7 +38038,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "期间"
+            "value" : "持续时长"
           }
         },
         "zh-Hant" : {
@@ -38948,7 +38948,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用以允许一个助手从不同的设备监视和控制该设备。"
+            "value" : "启用以允许辅助设备监视和控制该设备。"
           }
         },
         "zh-Hant" : {
@@ -42978,7 +42978,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "面部相关"
+            "value" : "脸部滤镜"
           }
         },
         "zh-Hant" : {
@@ -64044,7 +64044,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "moblin:// DeepLink 可用于导入部分设置，通常使用二维码或浏览器。参见 https://github.com/eerimoq/moblin 获取更多细节。"
+            "value" : "moblin:// 开头的 DeepLink 可用于导入部分设置，通常使用二维码或浏览器。参见 https://github.com/eerimoq/moblin 获取更多细节。"
           }
         },
         "zh-Hant" : {
@@ -79779,7 +79779,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程控制助手"
+            "value" : "远程控制"
           }
         },
         "zh-Hant" : {
@@ -79909,7 +79909,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程控制助手已连接"
+            "value" : "远程控制已连接"
           }
         },
         "zh-Hant" : {
@@ -80039,7 +80039,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程控制助手已断开连接"
+            "value" : "远程控制已断开连接"
           }
         },
         "zh-Hant" : {
@@ -80169,7 +80169,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "远程控制助手未配置"
+            "value" : "远程控制未配置"
           }
         },
         "zh-Hant" : {
@@ -86155,7 +86155,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "深褐色滤镜"
+            "value" : "怀旧滤镜"
           }
         },
         "zh-Hant" : {
@@ -89405,7 +89405,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "声音"
+            "value" : "音频"
           }
         },
         "zh-Hant" : {
@@ -89535,7 +89535,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "声音"
+            "value" : "音频"
           }
         },
         "zh-Hant" : {
@@ -95385,7 +95385,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "流总结"
+            "value" : "串流摘要"
           }
         },
         "zh-Hant" : {
@@ -95905,7 +95905,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主播"
+            "value" : "主要设备"
           }
         },
         "zh-Hant" : {
@@ -102801,7 +102801,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当远程控制流媒体连接时，手表可充当远程控制助手。请注意，在这种情况下，聊天、跳过当前 TTS 和其他一些功能尚不支持。"
+            "value" : "当远程控制串流设备连接时，手表可充当远程控制辅助设备。请注意，在这种情况下，聊天、跳过当前 TTS 和其他一些功能尚不支持。"
           }
         },
         "zh-Hant" : {
@@ -103060,7 +103060,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "热状态"
           }
         },
@@ -106051,7 +106051,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "三重"
+            "value" : "三重镜头"
           }
         },
         "zh-Hant" : {
@@ -107610,8 +107610,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "广角"
+            "state" : "translated",
+            "value" : "超广角"
           }
         },
         "zh-Hant" : {
@@ -110474,7 +110474,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主播和助手均使用。"
+            "value" : "作为主要设备和辅助设备时均使用该密码。"
           }
         },
         "zh-Hant" : {
@@ -116460,7 +116460,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在任何隐私区域内时，您的位置不会被使用。"
+            "value" : "在任意隐私区域内时，您的位置不会被使用。"
           }
         },
         "zh-Hant" : {
