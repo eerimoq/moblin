@@ -3930,6 +3930,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                       })
     }
 
+    func obsMuteAudio(inputName: String, muted: Bool) {
+        guard let obsWebSocket else {
+            return
+        }
+        obsWebSocket.setInputMute(inputName: inputName,
+                                  muted: muted,
+                                  onSuccess: {
+                                  }, onError: { _ in
+                                  })
+    }
+
     func startObsAudioVolume() {
         obsAudioVolumeLatest = noValue
         obsWebSocket?.startAudioVolume()

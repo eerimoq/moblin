@@ -127,6 +127,7 @@ private enum RequestType: String, Codable {
     case setSceneItemEnabled = "SetSceneItemEnabled"
     case getSceneItemId = "GetSceneItemId"
     case setInputSettings = "SetInputSettings"
+    case setInputMute = "SetInputMute"
 }
 
 private enum EventType: String, Codable {
@@ -234,6 +235,11 @@ struct InputSettings: Codable {}
 struct SetInputSettings: Codable {
     let inputName: String
     let inputSettings: InputSettings
+}
+
+struct SetInputMute: Codable {
+    let inputName: String
+    let inputMuted: Bool
 }
 
 struct SceneChangedEvent: Decodable {
@@ -697,6 +703,25 @@ class ObsWebSocket {
             return
         }
         performRequest(type: .setInputSettings, data: request, onSuccess: { _ in
+            onSuccess()
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
+        })
+    }
+
+    func setInputMute(inputName: String,
+                      muted: Bool,
+                      onSuccess: @escaping () -> Void,
+                      onError: @escaping (String) -> Void)
+    {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(SetInputMute(inputName: inputName, inputMuted: muted))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .setInputMute, data: request, onSuccess: { _ in
             onSuccess()
         }, onError: { requestError in
             self.onRequestError(requestError: requestError, onError: onError)
