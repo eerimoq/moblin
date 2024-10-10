@@ -46,7 +46,7 @@ private class Badges {
             DispatchQueue.main.async {
                 self.addBadges(badges: data)
                 TwitchApi(accessToken: self.accessToken)
-                    .getChannelChatBadges(userId: self.channelId) { data in
+                    .getChannelChatBadges(broadcasterId: self.channelId) { data in
                         guard let data else {
                             return
                         }

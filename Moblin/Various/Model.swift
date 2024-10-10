@@ -3666,7 +3666,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func fetchTwitchRewards() {
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .getChannelPointsCustomRewards(userId: stream.twitchChannelId) { rewards in
+            .getChannelPointsCustomRewards(broadcasterId: stream.twitchChannelId) { rewards in
                 guard let rewards else {
                     logger.info("Failed to get Twitch rewards")
                     return
@@ -3697,7 +3697,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .getChannelInformation(userId: stream.twitchChannelId) { channelInformation in
+            .getChannelInformation(broadcasterId: stream.twitchChannelId) { channelInformation in
                 guard let channelInformation else {
                     return
                 }
@@ -3711,11 +3711,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .modifyChannelInformation(userId: stream.twitchChannelId, category: nil, title: title) { ok in
-                if !ok {
-                    self.makeErrorToast(title: "Failed to set stream title")
-                }
+            .modifyChannelInformation(broadcasterId: stream.twitchChannelId, category: nil,
+                                      title: title)
+        { ok in
+            if !ok {
+                self.makeErrorToast(title: "Failed to set stream title")
             }
+        }
     }
 
     func sendChatMessage(message: String) {
@@ -3724,7 +3726,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .sendChatMessage(userId: stream.twitchChannelId, message: message) { ok in
+            .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
                     self.makeErrorToast(title: "Failed to send chat message")
                 }

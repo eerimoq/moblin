@@ -39,39 +39,71 @@ struct TwitchApiChannelPointsCustomRewards: Decodable {
     let data: [TwitchApiChannelPointsCustomRewardsData]
 }
 
-// periphery:ignore
 struct TwitchApiChannelInformationData: Decodable {
     let title: String
 }
 
-// periphery:ignore
 struct TwitchApiChannelInformation: Decodable {
     let data: [TwitchApiChannelInformationData]
 }
 
-// periphery:ignore
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
+    // periphery:ignore
     let user_id: String
+    // periphery:ignore
     let user_login: String
     let tier: String
 
     func tierAsNumber() -> Int {
-        switch tier {
-        case "1000":
-            return 1
-        case "2000":
-            return 2
-        case "3000":
-            return 3
-        default:
-            return 1
-        }
+        return twitchTierAsNumber(tier: tier)
+    }
+}
+
+struct TwitchApiGetBroadcasterSubscriptions: Decodable {
+    let data: [TwitchApiGetBroadcasterSubscriptionsData]
+}
+
+// periphery:ignore
+struct TwitchApiGetCheermotesDataTiersImagesThemeKind: Decodable {
+    let two: String
+
+    private enum CodingKeys: String, CodingKey {
+        case two = "2"
     }
 }
 
 // periphery:ignore
-struct TwitchApiGetBroadcasterSubscriptions: Decodable {
-    let data: [TwitchApiGetBroadcasterSubscriptionsData]
+struct TwitchApiGetCheermotesDataTiersImagesTheme: Decodable {
+    let static_: TwitchApiGetCheermotesDataTiersImagesThemeKind
+
+    private enum CodingKeys: String, CodingKey {
+        case static_ = "static"
+    }
+}
+
+// periphery:ignore
+struct TwitchApiGetCheermotesDataTiersImages: Decodable {
+    let dark: TwitchApiGetCheermotesDataTiersImagesTheme
+    let light: TwitchApiGetCheermotesDataTiersImagesTheme
+}
+
+// periphery:ignore
+struct TwitchApiGetCheermotesDataTier: Decodable {
+    let min_bits: Int
+    let id: String
+    let color: String
+    let images: TwitchApiGetCheermotesDataTiersImages
+}
+
+// periphery:ignore
+struct TwitchApiGetCheermotesData: Decodable {
+    let prefix: String
+    let tiers: [TwitchApiGetCheermotesDataTier]
+}
+
+// periphery:ignore
+struct TwitchApiGetCheermotes: Decodable {
+    let data: [TwitchApiGetCheermotesData]
 }
 
 // periphery:ignore
@@ -83,8 +115,8 @@ struct TwitchApiChatBadgesVersion: Decodable {
     let title: String
 }
 
-// periphery:ignore
 struct TwitchApiChatBadgesData: Decodable {
+    // periphery:ignore
     let set_id: String
     let versions: [TwitchApiChatBadgesVersion]
 }
@@ -108,11 +140,11 @@ class TwitchApi {
         self.accessToken = accessToken
     }
 
-    func sendChatMessage(userId: String, message: String, onComplete: @escaping (Bool) -> Void) {
+    func sendChatMessage(broadcasterId: String, message: String, onComplete: @escaping (Bool) -> Void) {
         let body = """
         {
-           "broadcaster_id": "\(userId)",
-           "sender_id": "\(userId)",
+           "broadcaster_id": "\(broadcasterId)",
+           "sender_id": "\(broadcasterId)",
            "message": "\(message)"
         }
         """
@@ -146,18 +178,18 @@ class TwitchApi {
         })
     }
 
-    func getStreamKey(userId: String, onComplete: @escaping (String?) -> Void) {
-        doGet(subPath: "streams/key?broadcaster_id=\(userId)", onComplete: { data in
+    func getStreamKey(broadcasterId: String, onComplete: @escaping (String?) -> Void) {
+        doGet(subPath: "streams/key?broadcaster_id=\(broadcasterId)", onComplete: { data in
             let response = try? JSONDecoder().decode(TwitchApiStreamKey.self, from: data ?? Data())
             onComplete(response?.data.first?.stream_key)
         })
     }
 
     func getChannelPointsCustomRewards(
-        userId: String,
+        broadcasterId: String,
         onComplete: @escaping (TwitchApiChannelPointsCustomRewards?) -> Void
     ) {
-        doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(userId)", onComplete: { data in
+        doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(broadcasterId)", onComplete: { data in
             logger.info("Twitch rewards: \(String(data: data ?? Data(), encoding: .utf8))")
             let data = try? JSONDecoder().decode(
                 TwitchApiChannelPointsCustomRewards.self,
@@ -168,10 +200,10 @@ class TwitchApi {
     }
 
     func getChannelInformation(
-        userId: String,
+        broadcasterId: String,
         onComplete: @escaping (TwitchApiChannelInformationData?) -> Void
     ) {
-        doGet(subPath: "channels?broadcaster_id=\(userId)", onComplete: { data in
+        doGet(subPath: "channels?broadcaster_id=\(broadcasterId)", onComplete: { data in
             let data = try? JSONDecoder().decode(
                 TwitchApiChannelInformation.self,
                 from: data ?? Data()
@@ -180,7 +212,7 @@ class TwitchApi {
         })
     }
 
-    func modifyChannelInformation(userId: String,
+    func modifyChannelInformation(broadcasterId: String,
                                   category: String?,
                                   title: String?,
                                   onComplete: @escaping (Bool) -> Void)
@@ -197,9 +229,13 @@ class TwitchApi {
             \(items.joined(separator: ","))
         }
         """
-        doPatch(subPath: "channels?broadcaster_id=\(userId)", body: body.utf8Data, onComplete: { data in
-            onComplete(data != nil)
-        })
+        doPatch(
+            subPath: "channels?broadcaster_id=\(broadcasterId)",
+            body: body.utf8Data,
+            onComplete: { data in
+                onComplete(data != nil)
+            }
+        )
     }
 
     func getGlobalChatBadges(onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void) {
@@ -213,10 +249,10 @@ class TwitchApi {
     }
 
     func getChannelChatBadges(
-        userId: String,
+        broadcasterId: String,
         onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void
     ) {
-        doGet(subPath: "chat/badges?broadcaster_id=\(userId)", onComplete: { data in
+        doGet(subPath: "chat/badges?broadcaster_id=\(broadcasterId)", onComplete: { data in
             let data = try? JSONDecoder().decode(
                 TwitchApiChatBadges.self,
                 from: data ?? Data()
@@ -242,6 +278,22 @@ class TwitchApi {
         )
     }
 
+    func getCheermotes(
+        broadcasterId: String,
+        onComplete: @escaping (TwitchApiGetCheermotesData?) -> Void
+    ) {
+        doGet(
+            subPath: "bits/cheermotes?broadcaster_id=\(broadcasterId)",
+            onComplete: { data in
+                let data = try? JSONDecoder().decode(
+                    TwitchApiGetCheermotes.self,
+                    from: data ?? Data()
+                )
+                onComplete(data?.data.first)
+            }
+        )
+    }
+
     private func doGet(subPath: String, onComplete: @escaping ((Data?) -> Void)) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
@@ -250,8 +302,6 @@ class TwitchApi {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    let status = response?.http?.statusCode ?? -1
-                    let body = String(data: data ?? Data(), encoding: .utf8) ?? "-"
                     if response?.http?.isUnauthorized == true {
                         self.delegate?.twitchApiUnauthorized()
                     }

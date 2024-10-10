@@ -27,16 +27,7 @@ struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var is_gift: Bool
 
     func tierAsNumber() -> Int {
-        switch tier {
-        case "1000":
-            return 1
-        case "2000":
-            return 2
-        case "3000":
-            return 3
-        default:
-            return 1
-        }
+        return twitchTierAsNumber(tier: tier)
     }
 }
 
@@ -54,16 +45,7 @@ struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var tier: String
 
     func tierAsNumber() -> Int {
-        switch tier {
-        case "1000":
-            return 1
-        case "2000":
-            return 2
-        case "3000":
-            return 3
-        default:
-            return 1
-        }
+        return twitchTierAsNumber(tier: tier)
     }
 }
 
