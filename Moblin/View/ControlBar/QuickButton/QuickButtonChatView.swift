@@ -410,6 +410,21 @@ private struct ChatAlertsView: View {
     }
 }
 
+private struct ControlAlertsButtonView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Button(action: {
+            model.showAllInteractiveChatMessage.toggle()
+        }, label: {
+            Image(systemName: model
+                .showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
+                .font(.title)
+                .padding(5)
+        })
+    }
+}
+
 private struct ControlView: View {
     @EnvironmentObject var model: Model
     @Binding var message: String
@@ -431,14 +446,7 @@ private struct ControlView: View {
                 .foregroundColor(message.isEmpty ? .gray : .accentColor)
         })
         .disabled(message.isEmpty)
-        Button(action: {
-            model.showAllInteractiveChatMessage.toggle()
-        }, label: {
-            Image(systemName: model
-                .showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
-                .font(.title)
-                .padding(5)
-        })
+        ControlAlertsButtonView()
     }
 }
 
@@ -465,14 +473,7 @@ private struct AlertsControlView: View {
                 .padding(5)
         })
         Spacer()
-        Button(action: {
-            model.showAllInteractiveChatMessage.toggle()
-        }, label: {
-            Image(systemName: model
-                .showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
-                .font(.title)
-                .padding(5)
-        })
+        ControlAlertsButtonView()
     }
 }
 
