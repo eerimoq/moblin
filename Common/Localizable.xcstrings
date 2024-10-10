@@ -16729,6 +16729,9 @@
         }
       }
     },
+    "Audio inputs" : {
+
+    },
     "Audio level" : {
       "localizations" : {
         "de" : {

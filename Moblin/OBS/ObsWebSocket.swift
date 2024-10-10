@@ -128,6 +128,8 @@ private enum RequestType: String, Codable {
     case getSceneItemId = "GetSceneItemId"
     case setInputSettings = "SetInputSettings"
     case setInputMute = "SetInputMute"
+    case getInputMute = "GetInputMute"
+    case getInputList = "GetInputList"
 }
 
 private enum EventType: String, Codable {
@@ -138,6 +140,7 @@ private enum EventType: String, Codable {
     case recordStateChanged = "RecordStateChanged"
     case inputVolumeMeters = "InputVolumeMeters"
     case inputAudioSyncOffsetChanged = "InputAudioSyncOffsetChanged"
+    case inputMuteStateChanged = "InputMuteStateChanged"
 }
 
 // periphery:ignore
@@ -174,6 +177,14 @@ struct GetSceneListResponseScene: Decodable {
 struct GetSceneListResponse: Decodable {
     let currentProgramSceneName: String
     let scenes: [GetSceneListResponseScene]
+}
+
+struct GetInputListResponseInput: Decodable {
+    let inputName: String
+}
+
+struct GetInputListResponse: Decodable {
+    let inputs: [GetInputListResponseInput]
 }
 
 // periphery:ignore
@@ -242,8 +253,22 @@ struct SetInputMute: Codable {
     let inputMuted: Bool
 }
 
+struct GetInputMute: Codable {
+    let inputName: String
+}
+
+struct GetInputMuteResponse: Codable {
+    let inputMuted: Bool
+}
+
 struct SceneChangedEvent: Decodable {
     let sceneName: String
+}
+
+struct InputMuteStateChangedEvent: Decodable {
+    let inputName: String
+    let inputUuid: String
+    let inputMuted: Bool
 }
 
 enum ObsOutputState: String {
@@ -386,6 +411,7 @@ struct ObsRecordStatus {
 protocol ObsWebsocketDelegate: AnyObject {
     func obsWebsocketConnected()
     func obsWebsocketSceneChanged(sceneName: String)
+    func obsWebsocketInputMuteStateChangedEvent(inputName: String, muted: Bool)
     func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?)
     func obsWebsocketRecordStatusChanged(active: Bool, state: ObsOutputState?)
     func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume])
@@ -446,6 +472,23 @@ class ObsWebSocket {
                     current: response.currentProgramSceneName,
                     scenes: response.scenes.reversed().map { $0.sceneName }
                 ))
+            } catch {
+                onError("JSON decode failed")
+            }
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
+        })
+    }
+
+    func getInputList(onSuccess: @escaping ([String]) -> Void, onError: @escaping (String) -> Void) {
+        performRequest(type: .getInputList, data: nil, onSuccess: { response in
+            guard let response else {
+                onError("No data received")
+                return
+            }
+            do {
+                let response = try JSONDecoder().decode(GetInputListResponse.self, from: response)
+                onSuccess(response.inputs.map { $0.inputName })
             } catch {
                 onError("JSON decode failed")
             }
@@ -728,6 +771,33 @@ class ObsWebSocket {
         })
     }
 
+    func getInputMute(inputName: String,
+                      onSuccess: @escaping (Bool) -> Void,
+                      onError: @escaping (String) -> Void)
+    {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(GetInputMute(inputName: inputName))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .getInputMute, data: request, onSuccess: { response in
+            guard let response else {
+                onError("No data")
+                return
+            }
+            do {
+                let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
+                onSuccess(response.inputMuted)
+            } catch {
+                onError("JSON decode failed")
+            }
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
+        })
+    }
+
     private func performRequest(
         type: RequestType,
         data: Data?,
@@ -818,6 +888,8 @@ class ObsWebSocket {
             handleInputVolumeMeters(data: data)
         case .inputAudioSyncOffsetChanged:
             handleInputAudioSyncOffsetChanged(data: data)
+        case .inputMuteStateChanged:
+            handleInputMuteStateChanged(data: data)
         case nil:
             break
         }
@@ -830,6 +902,19 @@ class ObsWebSocket {
         do {
             let decoded = try JSONDecoder().decode(SceneChangedEvent.self, from: data)
             delegate?.obsWebsocketSceneChanged(sceneName: decoded.sceneName)
+        } catch {}
+    }
+
+    private func handleInputMuteStateChanged(data: Data?) {
+        guard let data else {
+            return
+        }
+        do {
+            let decoded = try JSONDecoder().decode(InputMuteStateChangedEvent.self, from: data)
+            delegate?.obsWebsocketInputMuteStateChangedEvent(
+                inputName: decoded.inputName,
+                muted: decoded.inputMuted
+            )
         } catch {}
     }
 

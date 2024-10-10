@@ -194,6 +194,23 @@ struct QuickButtonObsView: View {
                 } header: {
                     Text("Scenes")
                 }
+                if false {
+                    Section {
+                        ForEach(model.obsInputNames, id: \.self) { inputName in
+                            HStack {
+                                Text(inputName)
+                                Spacer()
+                                Button {
+                                    model.obsMuteAudio(inputName: inputName, muted: true)
+                                } label: {
+                                    Image(systemName: "microphone")
+                                }
+                            }
+                        }
+                    } header: {
+                        Text("Audio inputs")
+                    }
+                }
                 Section {
                     if let image = model.obsScreenshot {
                         Image(image, scale: 1, label: Text(""))
@@ -281,6 +298,7 @@ struct QuickButtonObsView: View {
         }
         .onAppear {
             model.listObsScenes()
+            model.listObsInputs()
             model.startObsSourceScreenshot()
             model.startObsAudioVolume()
             model.updateObsAudioDelay()

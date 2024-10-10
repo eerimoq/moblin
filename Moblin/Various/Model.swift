@@ -458,6 +458,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
+    @Published var obsInputNames: [String] = []
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
     private var obsAudioVolumeLatest: String = ""
@@ -994,6 +995,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         })
     }
 
+    func listObsInputs() {
+        obsWebSocket?.getInputList(onSuccess: { _ in
+            // self.obsInputNames = inputNames
+        }, onError: { _ in
+        })
+    }
+
     func setObsScene(name: String) {
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
             self.obsCurrentScene = name
@@ -1019,6 +1027,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.obsWebsocketRecordStatusChanged(active: false, state: nil)
         })
         listObsScenes()
+        listObsInputs()
     }
 
     func reloadSpeechToText() {
@@ -3936,8 +3945,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         obsWebSocket.setInputMute(inputName: inputName,
                                   muted: muted,
-                                  onSuccess: {
-                                  }, onError: { _ in
+                                  onSuccess: {}, onError: { _ in
                                   })
     }
 
@@ -8364,6 +8372,8 @@ extension Model: ObsWebsocketDelegate {
         obsCurrentScenePicker = sceneName
         obsCurrentScene = sceneName
     }
+
+    func obsWebsocketInputMuteStateChangedEvent(inputName _: String, muted _: Bool) {}
 
     func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?) {
         obsStreaming = active
