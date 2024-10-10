@@ -494,6 +494,7 @@ struct QuickButtonChatView: View {
                     AlertsControlView()
                 }
             }
+            .frame(height: 50)
             .border(.gray)
             .padding([.leading, .trailing], 5)
         }
