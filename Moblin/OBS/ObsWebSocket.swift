@@ -543,7 +543,6 @@ class ObsWebSocket {
             request: GetSceneItemList(sceneName: sceneName),
             onSuccess: { response in
                 do {
-                    logger.info("xxx scene items \(String(bytes: response, encoding: .utf8))")
                     let response = try JSONDecoder().decode(GetSceneItemListResponse.self, from: response)
                     onSuccess(response.sceneItems)
                 } catch {
