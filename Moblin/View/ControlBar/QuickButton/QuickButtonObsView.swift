@@ -178,6 +178,18 @@ struct QuickButtonObsView: View {
                 ObsStartStopStreamingView()
                 ObsStartStopRecordingView()
                 Section {
+                    if let image = model.obsScreenshot {
+                        Image(image, scale: 1, label: Text(""))
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .background(.black)
+                    } else {
+                        Text("No snapshot received yet.")
+                    }
+                } header: {
+                    Text("Current scene snapshot")
+                }
+                Section {
                     Picker("", selection: $model.obsCurrentScenePicker) {
                         ForEach(model.obsScenes, id: \.self) { scene in
                             Text(scene)
@@ -215,18 +227,6 @@ struct QuickButtonObsView: View {
                     }
                 } header: {
                     Text("Scene audio inputs")
-                }
-                Section {
-                    if let image = model.obsScreenshot {
-                        Image(image, scale: 1, label: Text(""))
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .background(.black)
-                    } else {
-                        Text("No snapshot received yet.")
-                    }
-                } header: {
-                    Text("Current scene snapshot")
                 }
                 if !model.stream.obsSourceName!.isEmpty {
                     if !model.obsFixOngoing {
