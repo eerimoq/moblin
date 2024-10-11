@@ -504,11 +504,14 @@ class ObsWebSocket {
                                 onError: @escaping (String) -> Void)
     {
         let request = SetCurrentProgramSceneRequest(sceneName: name)
-        performRequest(type: .setCurrentProgramScene, request: request, onSuccess: { _ in
-            onSuccess()
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequestNoResponse(
+            type: .setCurrentProgramScene,
+            request: request,
+            onSuccess: onSuccess,
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
     }
 
     func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void,
@@ -636,11 +639,14 @@ class ObsWebSocket {
             inputName: name,
             inputAudioSyncOffset: offsetInMs
         )
-        performRequest(type: .setInputAudioSyncOffset, request: request, onSuccess: { _ in
-            onSuccess()
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequestNoResponse(
+            type: .setInputAudioSyncOffset,
+            request: request,
+            onSuccess: onSuccess,
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
     }
 
     func getInputAudioSyncOffset(
@@ -666,11 +672,14 @@ class ObsWebSocket {
                           onError: @escaping (String) -> Void)
     {
         let request = SetInputSettings(inputName: inputName, inputSettings: .init())
-        performRequest(type: .setInputSettings, request: request, onSuccess: { _ in
-            onSuccess()
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequestNoResponse(
+            type: .setInputSettings,
+            request: request,
+            onSuccess: onSuccess,
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
     }
 
     func setInputMute(inputName: String,
@@ -679,11 +688,14 @@ class ObsWebSocket {
                       onError: @escaping (String) -> Void)
     {
         let request = SetInputMute(inputName: inputName, inputMuted: muted)
-        performRequest(type: .setInputMute, request: request, onSuccess: { _ in
-            onSuccess()
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequestNoResponse(
+            type: .setInputMute,
+            request: request,
+            onSuccess: onSuccess,
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
     }
 
     func getInputMute(inputName: String,
@@ -745,6 +757,20 @@ class ObsWebSocket {
             onSuccess: onSuccess,
             onError: onError
         )
+    }
+
+    private func performRequestNoResponse<T>(
+        type: RequestType,
+        request: T?,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (RequestError) -> Void
+    ) where T: Encodable {
+        performRequest(type: type,
+                       request: request,
+                       onSuccess: { _ in
+                           onSuccess()
+                       },
+                       onError: onError)
     }
 
     private func performRequestWithResponse<T>(
