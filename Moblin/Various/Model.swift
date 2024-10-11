@@ -3115,6 +3115,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func startAds(seconds: Int) {
+        TwitchApi(accessToken: stream.twitchAccessToken!)
+            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds)
+    }
+
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
         for button in database.globalButtons! where button.type == type {
             button.isOn = isOn

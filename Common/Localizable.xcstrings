@@ -9443,6 +9443,9 @@
         }
       }
     },
+    "1 minute" : {
+
+    },
     "1. Create a Media Source in OBS and configure it as shown in the image below." : {
       "localizations" : {
         "de" : {
@@ -9573,6 +9576,9 @@
         }
       }
     },
+    "2 minutes" : {
+
+    },
     "2. Replace 7654 with your port." : {
       "localizations" : {
         "de" : {
@@ -9702,6 +9708,9 @@
           }
         }
       }
+    },
+    "3 minutes" : {
+
     },
     "4:3" : {
       "localizations" : {
@@ -10222,6 +10231,9 @@
           }
         }
       }
+    },
+    "30 seconds" : {
+
     },
     "128 Kbps or higher is recommended." : {
       "localizations" : {
@@ -13732,6 +13744,9 @@
           }
         }
       }
+    },
+    "Ads" : {
+
     },
     "AfreecaTV" : {
       "localizations" : {

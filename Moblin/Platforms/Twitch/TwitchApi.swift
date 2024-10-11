@@ -212,6 +212,22 @@ class TwitchApi {
         })
     }
 
+    func startCommercial(broadcasterId: String, length: Int) {
+        let body = """
+        {
+           "broadcaster_id": "\(broadcasterId)",
+           "length": \(length)
+        }
+        """
+        doPost(subPath: "channels/commercial", body: body.utf8Data, onComplete: { data in
+            if let data {
+                logger.info("xxx \(String(bytes: data, encoding: .utf8))")
+            } else {
+                logger.info("xxx no data")
+            }
+        })
+    }
+
     func modifyChannelInformation(broadcasterId: String,
                                   category: String?,
                                   title: String?,
