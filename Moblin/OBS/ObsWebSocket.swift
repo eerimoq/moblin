@@ -113,6 +113,7 @@ private enum RequestError {
 
 private enum RequestType: String, Codable {
     case getSceneList = "GetSceneList"
+    case getSceneItemList = "GetSceneItemList"
     case setCurrentProgramScene = "SetCurrentProgramScene"
     case getStreamStatus = "GetStreamStatus"
     case startStream = "StartStream"
@@ -130,6 +131,8 @@ private enum RequestType: String, Codable {
     case setInputMute = "SetInputMute"
     case getInputMute = "GetInputMute"
     case getInputList = "GetInputList"
+    case getInputSettings = "GetInputSettings"
+    case getSpecialInputs = "GetSpecialInputs"
 }
 
 private enum EventType: String, Codable {
@@ -179,6 +182,48 @@ struct GetSceneListResponseScene: Decodable {
 struct GetSceneListResponse: Decodable {
     let currentProgramSceneName: String
     let scenes: [GetSceneListResponseScene]
+}
+
+// periphery:ignore
+struct GetSceneItemList: Codable {
+    let sceneName: String
+}
+
+struct GetSceneItemListItem: Decodable {
+    let sourceName: String
+    let sceneItemEnabled: Bool
+}
+
+struct GetSceneItemListResponse: Decodable {
+    let sceneItems: [GetSceneItemListItem]
+}
+
+struct GetSpecialInputsResponse: Decodable {
+    // periphery:ignore
+    let desktop1: String?
+    // periphery:ignore
+    let desktop2: String?
+    let mic1: String?
+    let mic2: String?
+    let mic3: String?
+    let mic4: String?
+
+    func mics() -> [String] {
+        var mics: [String] = []
+        if let mic1 {
+            mics.append(mic1)
+        }
+        if let mic2 {
+            mics.append(mic2)
+        }
+        if let mic3 {
+            mics.append(mic3)
+        }
+        if let mic4 {
+            mics.append(mic4)
+        }
+        return mics
+    }
 }
 
 struct GetInputListResponseInput: Decodable {
@@ -250,11 +295,13 @@ struct SetInputSettings: Codable {
     let inputSettings: InputSettings
 }
 
+// periphery:ignore
 struct SetInputMute: Codable {
     let inputName: String
     let inputMuted: Bool
 }
 
+// periphery:ignore
 struct GetInputMute: Codable {
     let inputName: String
 }
@@ -269,7 +316,6 @@ struct SceneChangedEvent: Decodable {
 
 struct InputMuteStateChangedEvent: Decodable {
     let inputName: String
-    let inputUuid: String
     let inputMuted: Bool
 }
 
@@ -479,6 +525,45 @@ class ObsWebSocket {
                     current: response.currentProgramSceneName,
                     scenes: response.scenes.reversed().map { $0.sceneName }
                 ))
+            } catch {
+                onError("JSON decode failed")
+            }
+        }, onError: { requestError in
+            self.onRequestError(requestError: requestError, onError: onError)
+        })
+    }
+
+    func getSceneItemList(
+        sceneName: String,
+        onSuccess: @escaping ([GetSceneItemListItem]) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        performRequestWithResponse(
+            type: .getSceneItemList,
+            request: GetSceneItemList(sceneName: sceneName),
+            onSuccess: { response in
+                do {
+                    logger.info("xxx scene items \(String(bytes: response, encoding: .utf8))")
+                    let response = try JSONDecoder().decode(GetSceneItemListResponse.self, from: response)
+                    onSuccess(response.sceneItems)
+                } catch {
+                    onError("JSON decode failed")
+                }
+            },
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
+    }
+
+    func getSpecialInputs(
+        onSuccess: @escaping (GetSpecialInputsResponse) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        performRequestNoDataWithResponse(type: .getSpecialInputs, onSuccess: { response in
+            do {
+                let response = try JSONDecoder().decode(GetSpecialInputsResponse.self, from: response)
+                onSuccess(response)
             } catch {
                 onError("JSON decode failed")
             }

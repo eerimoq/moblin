@@ -292,6 +292,12 @@ enum WizardCustomProtocol {
     }
 }
 
+struct ObsSceneInput: Identifiable {
+    var id: UUID = .init()
+    var name: String
+    var muted: Bool?
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -458,7 +464,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
-    @Published var obsInputNames: [String] = []
+    @Published var obsSceneInputs: [ObsSceneInput] = []
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
     private var obsAudioVolumeLatest: String = ""
@@ -986,25 +992,69 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return obsWebSocket?.connectionErrorMessage ?? ""
     }
 
-    func listObsScenes() {
+    func listObsScenes(updateAudioInputs: Bool = false) {
         obsWebSocket?.getSceneList(onSuccess: { list in
             self.obsCurrentScenePicker = list.current
             self.obsCurrentScene = list.current
             self.obsScenes = list.scenes
+            if updateAudioInputs {
+                self.updateObsAudioInputs(sceneName: list.current)
+            }
         }, onError: { _ in
         })
     }
 
-    func listObsInputs() {
-        obsWebSocket?.getInputList(onSuccess: { _ in
-            // self.obsInputNames = inputNames
-        }, onError: { _ in
-        })
+    func updateObsAudioInputs(sceneName: String) {
+        obsWebSocket?.getInputList { inputs in
+            self.obsWebSocket?.getSpecialInputs { specialInputs in
+                self.obsWebSocket?.getSceneItemList(sceneName: sceneName, onSuccess: { sceneItems in
+                    guard !sceneItems.isEmpty else {
+                        self.obsSceneInputs = []
+                        return
+                    }
+                    var obsSceneInputs: [ObsSceneInput] = []
+                    for input in inputs {
+                        if specialInputs.mics().contains(input) {
+                            obsSceneInputs.append(ObsSceneInput(name: input))
+                        } else if sceneItems.contains(where: { $0.sourceName == input }) {
+                            if sceneItems.first(where: { $0.sourceName == input })?.sceneItemEnabled == true {
+                                obsSceneInputs.append(ObsSceneInput(name: input))
+                            }
+                        }
+                    }
+                    var numberOfResponses = 0
+                    for sceneInput in obsSceneInputs {
+                        self.obsWebSocket?.getInputMute(inputName: sceneInput.name, onSuccess: { muted in
+                            obsSceneInputs = obsSceneInputs.map { input in
+                                var input = input
+                                if input.name == sceneInput.name {
+                                    input.muted = muted
+                                }
+                                return input
+                            }
+                            numberOfResponses += 1
+                            if numberOfResponses == obsSceneInputs.count {
+                                self.obsSceneInputs = obsSceneInputs
+                            }
+                        }, onError: { _ in
+                            numberOfResponses += 1
+                            if numberOfResponses == obsSceneInputs.count {
+                                self.obsSceneInputs = obsSceneInputs
+                            }
+                        })
+                    }
+                }, onError: { _ in
+                })
+            } onError: { _ in
+            }
+        } onError: { _ in
+        }
     }
 
     func setObsScene(name: String) {
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
             self.obsCurrentScene = name
+            self.updateObsAudioInputs(sceneName: name)
         }, onError: { message in
             self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"),
                                 subTitle: message)
@@ -1027,7 +1077,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.obsWebsocketRecordStatusChanged(active: false, state: nil)
         })
         listObsScenes()
-        listObsInputs()
     }
 
     func reloadSpeechToText() {
@@ -8371,9 +8420,18 @@ extension Model: ObsWebsocketDelegate {
     func obsWebsocketSceneChanged(sceneName: String) {
         obsCurrentScenePicker = sceneName
         obsCurrentScene = sceneName
+        updateObsAudioInputs(sceneName: sceneName)
     }
 
-    func obsWebsocketInputMuteStateChangedEvent(inputName _: String, muted _: Bool) {}
+    func obsWebsocketInputMuteStateChangedEvent(inputName: String, muted: Bool) {
+        obsSceneInputs = obsSceneInputs.map { input in
+            var input = input
+            if input.name == inputName {
+                input.muted = muted
+            }
+            return input
+        }
+    }
 
     func obsWebsocketStreamStatusChanged(active: Bool, state: ObsOutputState?) {
         obsStreaming = active

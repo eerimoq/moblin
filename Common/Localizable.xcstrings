@@ -16729,9 +16729,6 @@
         }
       }
     },
-    "Audio inputs" : {
-
-    },
     "Audio level" : {
       "localizations" : {
         "de" : {
@@ -83827,6 +83824,9 @@
           }
         }
       }
+    },
+    "Scene audio inputs" : {
+
     },
     "Scenes" : {
       "localizations" : {
