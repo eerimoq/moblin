@@ -460,6 +460,15 @@ class ObsWebSocket {
         return connected
     }
 
+    func startAudioVolume() {
+        sendReidentify(eventSubscriptions: EventSubscription.all() | EventSubscription.inputVolumeMeters
+            .rawValue)
+    }
+
+    func stopAudioVolume() {
+        sendReidentify(eventSubscriptions: EventSubscription.all())
+    }
+
     func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .getSceneList, data: nil, onSuccess: { response in
             guard let response else {
@@ -495,26 +504,6 @@ class ObsWebSocket {
         }, onError: { requestError in
             self.onRequestError(requestError: requestError, onError: onError)
         })
-    }
-
-    private func onRequestError(
-        requestError: RequestError,
-        onError: @escaping (String) -> Void,
-        onObsResponseError: ((RequestStatus, String?) -> Bool)? = nil
-    ) {
-        switch requestError {
-        case let .message(message):
-            onError(message)
-        case let .response(code, comment):
-            if let onObsResponseError, onObsResponseError(code, comment) {
-                return
-            }
-            var message = ""
-            if let comment {
-                message = " (\(comment))"
-            }
-            onError("Operation failed with \(code)\(message)")
-        }
     }
 
     func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
@@ -633,15 +622,6 @@ class ObsWebSocket {
                 return true
             }
         })
-    }
-
-    func startAudioVolume() {
-        sendReidentify(eventSubscriptions: EventSubscription.all() | EventSubscription.inputVolumeMeters
-            .rawValue)
-    }
-
-    func stopAudioVolume() {
-        sendReidentify(eventSubscriptions: EventSubscription.all())
     }
 
     func getSourceScreenshot(
@@ -796,6 +776,26 @@ class ObsWebSocket {
         }, onError: { requestError in
             self.onRequestError(requestError: requestError, onError: onError)
         })
+    }
+
+    private func onRequestError(
+        requestError: RequestError,
+        onError: @escaping (String) -> Void,
+        onObsResponseError: ((RequestStatus, String?) -> Bool)? = nil
+    ) {
+        switch requestError {
+        case let .message(message):
+            onError(message)
+        case let .response(code, comment):
+            if let onObsResponseError, onObsResponseError(code, comment) {
+                return
+            }
+            var message = ""
+            if let comment {
+                message = " (\(comment))"
+            }
+            onError("Operation failed with \(code)\(message)")
+        }
     }
 
     private func performRequest(
