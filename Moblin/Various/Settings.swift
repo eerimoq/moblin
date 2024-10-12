@@ -2599,8 +2599,8 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .ads
     button.imageType = "System name"
-    button.systemImageNameOn = "dollarsign.circle.fill"
-    button.systemImageNameOff = "dollarsign.circle"
+    button.systemImageNameOn = "cup.and.saucer"
+    button.systemImageNameOff = "cup.and.saucer"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in

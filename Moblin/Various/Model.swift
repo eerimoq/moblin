@@ -3117,7 +3117,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func startAds(seconds: Int) {
         TwitchApi(accessToken: stream.twitchAccessToken!)
-            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds)
+            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
+                if let data {
+                    self.makeToast(title: data.message)
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to start commercial"))
+                }
+            }
     }
 
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {

@@ -47,6 +47,18 @@ struct TwitchApiChannelInformation: Decodable {
     let data: [TwitchApiChannelInformationData]
 }
 
+struct TwitchApiStartCommercialData: Decodable {
+    let message: String
+    // periphery:ignore
+    let length: Int
+    // periphery:ignore
+    let retry_after: Int
+}
+
+struct TwitchApiStartCommercial: Decodable {
+    let data: [TwitchApiStartCommercialData]
+}
+
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
     // periphery:ignore
     let user_id: String
@@ -212,7 +224,11 @@ class TwitchApi {
         })
     }
 
-    func startCommercial(broadcasterId: String, length: Int) {
+    func startCommercial(
+        broadcasterId: String,
+        length: Int,
+        onComplete: @escaping (TwitchApiStartCommercialData?) -> Void
+    ) {
         let body = """
         {
            "broadcaster_id": "\(broadcasterId)",
@@ -220,12 +236,11 @@ class TwitchApi {
         }
         """
         doPost(subPath: "channels/commercial", body: body.utf8Data, onComplete: { data in
-            // 21:47:29,086 xxx Optional("{\"data\":[{\"message\":\"Starting commercial break. Keep in mind you are still live and not all viewers will receive a commercial.\",\"length\":30,\"retry_after\":480}]}")
-            if let data {
-                logger.info("xxx ok")
-            } else {
-                logger.info("xxx no data")
-            }
+            let data = try? JSONDecoder().decode(
+                TwitchApiStartCommercial.self,
+                from: data ?? Data()
+            )
+            onComplete(data?.data.first)
         })
     }
 
