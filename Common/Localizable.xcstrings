@@ -1902,7 +1902,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La \"fotocamera frontale a specchio in streaming\" è supportata solo durante lo streaming in orizzontale, non in verticale."
+            "value" : "La \"camera frontale a specchio in streaming\" è supportata solo durante lo streaming in orizzontale, non in verticale."
           }
         },
         "ja" : {
@@ -12622,7 +12622,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "un flusso"
+            "value" : "uno stream"
           }
         },
         "ja" : {
@@ -17181,7 +17181,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Camera auto consuma più energia perchè vengono accese più fotocamere, anche se ne viene utilizzata solo una alla volta. Ciò consente al telefono di cambiare rapidamente fotocamera durante lo zoom."
+            "value" : "Camera auto consuma più energia perchè vengono accese più fotocamere, anche se ne viene utilizzata solo una alla volta. Ciò consente al telefono di cambiare rapidamente camera durante lo zoom."
           }
         },
         "ja" : {
@@ -18871,7 +18871,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impostazione predefinita fotocamera Posteriore"
+            "value" : "Impostazione predefinita camera Posteriore"
           }
         },
         "ja" : {
@@ -19391,7 +19391,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Barra"
+            "value" : "Soundbar"
           }
         },
         "ja" : {
@@ -19521,7 +19521,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Percentuale della batteria"
+            "value" : "Percentuale batteria"
           }
         },
         "ja" : {
@@ -19911,7 +19911,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BELABOX cloud"
+            "value" : "Cloud BELABOX"
           }
         },
         "ja" : {
@@ -20041,7 +20041,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BELABOX cloud e OBS"
+            "value" : "Cloud BELABOX e OBS"
           }
         },
         "ja" : {
@@ -20171,7 +20171,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BELABOX cloud SRT"
+            "value" : "Cloud SRT BELABOX"
           }
         },
         "ja" : {
@@ -20301,7 +20301,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BELABOX cloud SRTLA"
+            "value" : "Cloud SRT(LA) BELABOX"
           }
         },
         "ja" : {
@@ -20431,7 +20431,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La migliore stabilità possibile. Può utilizzare il legame. Configurazione più flessibile."
+            "value" : "Stabilità migliore possibile. Può utilizzare il bonding Configurazione più flessibile."
           }
         },
         "ja" : {
@@ -20561,7 +20561,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La migliore stabilità possibile. Utilizza il legame. Servizio gratuito di terze parti fornito a titolo di cortesia da IRLToolkit. Da non utilizzare se si paga IRLToolkit."
+            "value" : "Stabilità migliore possibile. Utilizza il bonding. Servizio gratuito di terze parti fornito a titolo di cortesia da IRLToolkit. Da non utilizzare se si paga IRLToolkit."
           }
         },
         "ja" : {
@@ -20691,7 +20691,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La migliore stabilità possibile. Utilizza il legame. Servizio di terze parti a pagamento."
+            "value" : "Stabilità migliore possibile. Utilizza il bonding Servizio di terze parti a pagamento."
           }
         },
         "ja" : {
@@ -23681,7 +23681,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget del browser ricaricati"
+            "value" : "Browser widget ricaricati"
           }
         },
         "ja" : {
@@ -24331,7 +24331,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cambio fotocamera"
+            "value" : "Cambio camera"
           }
         },
         "ja" : {
@@ -24721,7 +24721,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stampante per gatti"
+            "value" : "Stampante Gatto"
           }
         },
         "ja" : {
@@ -24851,7 +24851,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stampanti per gatti"
+            "value" : "Stampanti Gatto"
           }
         },
         "ja" : {
@@ -29791,7 +29791,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'esposizione automatica continua non è supportata per questa fotocamera"
+            "value" : "L'esposizione automatica continua non è supportata per questa camera"
           }
         },
         "ja" : {
@@ -29921,7 +29921,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il bilanciamento automatico del bianco continuo non è supportato per questa fotocamera"
+            "value" : "Il bilanciamento automatico del bianco continuo non è supportato per questa camera"
           }
         },
         "ja" : {
@@ -31481,7 +31481,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cosmetici"
+            "value" : "Icone"
           }
         },
         "ja" : {
@@ -32001,7 +32001,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Creazione guidata del flusso"
+            "value" : "Creazione guidata dello stream"
           }
         },
         "ja" : {
@@ -32521,7 +32521,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "IRL personalizzato"
+            "value" : "Custom IRL"
           }
         },
         "ja" : {
@@ -33171,7 +33171,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ovrlay debug"
+            "value" : "Overlay debug"
           }
         },
         "ja" : {
@@ -49031,7 +49031,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impostazioni predefinite fotocamera frontale"
+            "value" : "Impostazioni predefinite camera frontale"
           }
         },
         "ja" : {
@@ -50071,7 +50071,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Generare"
+            "value" : "Genera"
           }
         },
         "ja" : {
@@ -55667,7 +55667,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calcio"
+            "value" : "Kick"
           }
         },
         "ja" : {
@@ -57097,7 +57097,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sovrapposizioni locali"
+            "value" : "Overlay locali"
           }
         },
         "ja" : {
@@ -57227,7 +57227,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le sovrapposizioni locali non vengono visualizzate nello streaming."
+            "value" : "Gli overlay locali non vengono visualizzate nello streaming."
           }
         },
         "ja" : {
@@ -60217,7 +60217,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esposizione manuale non supportata per questa fotocamera"
+            "value" : "Esposizione manuale non supportata per questa camera"
           }
         },
         "ja" : {
@@ -60347,7 +60347,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Messa a fuoco manuale non supportata per questa fotocamera"
+            "value" : "Messa a fuoco manuale non supportata per questa camera"
           }
         },
         "ja" : {
@@ -60477,7 +60477,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bilanciamento del bianco manuale non supportato per questa fotocamera"
+            "value" : "Bilanciamento del bianco manuale non supportato per questa camera"
           }
         },
         "ja" : {
@@ -60737,7 +60737,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Carta geografica"
+            "value" : "Mappa"
           }
         },
         "ja" : {
@@ -63467,7 +63467,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rispecchiato"
+            "value" : "Specchiato"
           }
         },
         "ja" : {
@@ -69977,7 +69977,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non supportato per questa fotocamera"
+            "value" : "Non supportato per questa camera"
           }
         },
         "ja" : {
@@ -71927,7 +71927,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri la piattaforma di streaming"
+            "value" : "Open Streaming Platform"
           }
         },
         "ja" : {
@@ -73097,7 +73097,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parola d'ordine"
+            "value" : "Password"
           }
         },
         "ja" : {
@@ -82587,7 +82587,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "server RTMP"
+            "value" : "Server RTMP"
           }
         },
         "ja" : {
@@ -82717,7 +82717,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nome del flusso RTMP mancante"
+            "value" : "Nome dello stream RTMP mancante"
           }
         },
         "ja" : {
@@ -88316,7 +88316,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "IRL lento"
+            "value" : "Slow IRL"
           }
         },
         "ja" : {
@@ -91306,7 +91306,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server SRT(LA)."
+            "value" : "Server SRT(LA)"
           }
         },
         "ja" : {
@@ -91436,7 +91436,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Porto SRTLA"
+            "value" : "Porta SRTLA"
           }
         },
         "ja" : {
@@ -93126,7 +93126,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avvio del flusso"
+            "value" : "Avvio dello stream"
           }
         },
         "ja" : {
@@ -94296,7 +94296,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flusso"
+            "value" : "Stream"
           }
         },
         "ja" : {
@@ -94556,7 +94556,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ID flusso"
+            "value" : "ID streaming"
           }
         },
         "ja" : {
@@ -94686,7 +94686,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiave di flusso"
+            "value" : "Chiave dello streaming"
           }
         },
         "ja" : {
@@ -94946,7 +94946,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nome del flusso"
+            "value" : "Nome dello streaming"
           }
         },
         "ja" : {
@@ -95076,7 +95076,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Riepilogo del flusso"
+            "value" : "Riepilogo dello streaming"
           }
         },
         "ja" : {
@@ -95206,7 +95206,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titolo del flusso"
+            "value" : "Titolo Live"
           }
         },
         "ja" : {
@@ -95596,7 +95596,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stella filante"
+            "value" : "Streamer"
           }
         },
         "ja" : {
@@ -97026,7 +97026,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Riepilogo e nome del flusso"
+            "value" : "Riepilogo e nome dello srtream"
           }
         },
         "ja" : {
@@ -98332,7 +98332,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tocca per mettere a fuoco non supportata per questa fotocamera"
+            "value" : "Tocca per mettere a fuoco non supportata per questa camera"
           }
         },
         "ja" : {
@@ -102232,7 +102232,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La fotocamera ultra grandangolare non funziona bene in condizioni di scarsa illuminazione. Allo stesso modo, le fotocamere automatiche non funzionano bene quando lo zoom è 0,5-1,0x poiché verrà utilizzata la fotocamera ultra grandangolare."
+            "value" : "La camera ultra grandangolare non funziona bene in condizioni di scarsa illuminazione. Allo stesso modo, le fotocamere automatiche non funzionano bene quando lo zoom è 0,5-1,0x poiché verrà utilizzata la camera ultra grandangolare."
           }
         },
         "ja" : {
@@ -103402,7 +103402,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alla fotocamera %@"
+            "value" : "Alla camera %@"
           }
         },
         "ja" : {
@@ -110295,7 +110295,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utile quando si utilizza una fotocamera esterna e un supporto per telefono verticale."
+            "value" : "Utile quando si utilizza una camera esterna e un supporto per telefono verticale."
           }
         },
         "ja" : {
@@ -111725,7 +111725,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "codec Video"
+            "value" : "Codec Video"
           }
         },
         "ja" : {
