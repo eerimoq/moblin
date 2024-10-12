@@ -342,7 +342,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld cap"
+            "value" : " %lld ch"
           }
         },
         "ja" : {
@@ -27334,7 +27334,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vicino"
+            "value" : "Chiudi"
           }
         },
         "ja" : {
@@ -29674,7 +29674,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Priorità di connessione"
+            "value" : "Priorità delle connessioni"
           }
         },
         "ja" : {
@@ -29934,7 +29934,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il bilanciamento automatico del bianco continuo non è supportato per questa camera"
+            "value" : "Il bilanciamento del bianco automatico continuo non è supportato per questa camera"
           }
         },
         "ja" : {
@@ -32144,7 +32144,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taglio"
+            "value" : "Ritaglio"
           }
         },
         "ja" : {
@@ -34354,7 +34354,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rileva la lingua per messaggi"
+            "value" : "Rileva la lingua per ogni messaggio"
           }
         },
         "ja" : {
@@ -35784,7 +35784,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scoprire"
+            "value" : "In ricerca"
           }
         },
         "ja" : {
@@ -36694,7 +36694,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non dire messaggi che potrebbero essere spam o comandi di bot."
+            "value" : "Non pronunciare messaggi che potrebbero essere spam o comandi di bot."
           }
         },
         "ja" : {
@@ -37864,7 +37864,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Duplicare"
+            "value" : "Duplica"
           }
         },
         "ja" : {
@@ -38124,7 +38124,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ogni flusso può ricevere video da un editore RTMP, in genere un drone."
+            "value" : "Ogni flusso può ricevere video da un publisher RTMP, in genere un drone."
           }
         },
         "ja" : {
@@ -38254,7 +38254,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ogni flusso può ricevere video da un editore SRT(LA)."
+            "value" : "Ogni flusso può ricevere video da un publisher SRT(LA)."
           }
         },
         "ja" : {
@@ -39424,7 +39424,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "FINE"
+            "value" : "Termina"
           }
         },
         "ja" : {
@@ -39554,7 +39554,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Termina ma abbandona la registrazione OBS"
+            "value" : "Termina ma lascia attiva la registrazione OBS"
           }
         },
         "ja" : {
@@ -39684,7 +39684,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Termina ma abbandona lo streaming OBS"
+            "value" : "Termina ma lascia attivo lo streaming OBS"
           }
         },
         "ja" : {
@@ -39814,7 +39814,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Termina ma lascia lo streaming e la registrazione di OBS"
+            "value" : "Termina ma lascia attivi lo streaming e la registrazione di OBS"
           }
         },
         "ja" : {
@@ -40594,7 +40594,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inserisci uno degli URL nel dispositivo editore RTMP per inviare video a questo stream. Di solito inserisci l'URL del WiFi o dell'hotspot personale."
+            "value" : "Inserisci uno degli URL nel dispositivo publisher RTMP per inviare video a questo stream. Di solito inserisci l'URL del WiFi o dell'hotspot personale."
           }
         },
         "ja" : {
@@ -40724,7 +40724,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inserisci uno degli URL nel dispositivo editore SRT(LA) per inviare video a questo stream. Di solito inserisci l'URL WiFi o Hotspot personale."
+            "value" : "Inserisci uno degli URL nel dispositivo publisher SRT(LA) per inviare video a questo stream. Di solito inserisci l'URL WiFi o Hotspot personale."
           }
         },
         "ja" : {
