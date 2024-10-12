@@ -12,6 +12,7 @@ private let scopes = [
     "channel:read:redemptions",
     "channel:read:stream_key",
     "channel:read:hype_train",
+    "channel:read:ads",
     "channel:manage:broadcast",
     "channel:edit:commercial",
     "bits:read",

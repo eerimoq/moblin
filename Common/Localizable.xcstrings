@@ -18044,6 +18044,9 @@
         }
       }
     },
+    "automatic" : {
+
+    },
     "Automatically goes live when switching stream." : {
       "localizations" : {
         "de" : {
@@ -60172,6 +60175,9 @@
           }
         }
       }
+    },
+    "manual" : {
+
     },
     "Manual exposure not supported for this camera" : {
       "localizations" : {

@@ -180,6 +180,19 @@ private struct NotificationChannelHypeTrainEndMessage: Decodable {
     var payload: NotificationChannelHypeTrainEndPayload
 }
 
+struct TwitchEventSubChannelAdBreakBeginEvent: Decodable {
+    var duration_seconds: Int
+    var is_automatic: Bool
+}
+
+private struct NotificationChannelAdBreakBeginPayload: Decodable {
+    var event: TwitchEventSubChannelAdBreakBeginEvent
+}
+
+private struct NotificationChannelAdBreakBeginMessage: Decodable {
+    var payload: NotificationChannelAdBreakBeginPayload
+}
+
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
@@ -195,6 +208,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent)
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent)
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent)
+    func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -375,6 +389,16 @@ final class TwitchEventSub: NSObject {
                               condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train end")
+            self.subscribeTochannelAdBreakBegin()
+        }
+    }
+
+    private func subscribeTochannelAdBreakBegin() {
+        let body = createBody(type: "channel.ad_break.begin",
+                              version: 1,
+                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "ad break begin")
             self.connected = true
         }
     }
@@ -414,6 +438,8 @@ final class TwitchEventSub: NSObject {
                 try handleChannelHypeTrainProgress(messageData: messageData)
             case "channel.hype_train.end":
                 try handleChannelHypeTrainEnd(messageData: messageData)
+            case "channel.ad_break.begin":
+                try handleChannelAdBreakBegin(messageData: messageData)
             default:
                 if let type = message.metadata.subscription_type {
                     logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -498,6 +524,14 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelHypeTrainEnd(event: message.payload.event)
+    }
+
+    private func handleChannelAdBreakBegin(messageData: Data) throws {
+        let message = try JSONDecoder().decode(
+            NotificationChannelAdBreakBeginMessage.self,
+            from: messageData
+        )
+        delegate.twitchEventSubChannelAdBreakBegin(event: message.payload.event)
     }
 }
 
