@@ -1022,32 +1022,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                             }
                         }
                     }
-                    var numberOfResponses = 0
-                    for sceneInput in obsSceneInputs {
-                        self.obsWebSocket?.getInputMute(inputName: sceneInput.name, onSuccess: { muted in
-                            obsSceneInputs = obsSceneInputs.map { input in
-                                var input = input
-                                if input.name == sceneInput.name {
-                                    input.muted = muted
-                                }
-                                return input
+                    self.obsWebSocket?.getInputMuteBatch(
+                        inputNames: obsSceneInputs.map { $0.name },
+                        onSuccess: { muteds in
+                            guard muteds.count == obsSceneInputs.count else {
+                                self.obsSceneInputs = []
+                                return
                             }
-                            numberOfResponses += 1
-                            if numberOfResponses == obsSceneInputs.count {
-                                self.obsSceneInputs = obsSceneInputs
+                            for (i, muted) in muteds.enumerated() {
+                                obsSceneInputs[i].muted = muted
                             }
+                            self.obsSceneInputs = obsSceneInputs
                         }, onError: { _ in
-                            numberOfResponses += 1
-                            if numberOfResponses == obsSceneInputs.count {
-                                self.obsSceneInputs = obsSceneInputs
-                            }
-                        })
-                    }
+                            self.obsSceneInputs = []
+                        }
+                    )
                 }, onError: { _ in
+                    self.obsSceneInputs = []
                 })
             } onError: { _ in
+                self.obsSceneInputs = []
             }
         } onError: { _ in
+            self.obsSceneInputs = []
         }
     }
 

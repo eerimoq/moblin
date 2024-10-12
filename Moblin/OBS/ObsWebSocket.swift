@@ -437,9 +437,36 @@ private func unpackRequestResponse(data: Data) throws -> (String, ResponseReques
     return (requestId, status, responseData)
 }
 
+private func unpackRequestBatchResponse(data: Data) throws -> (String, [(ResponseRequestStatus, Data?)]) {
+    let response = try JSONSerialization.jsonObject(
+        with: data,
+        options: JSONSerialization.ReadingOptions.mutableContainers
+    )
+    guard let jsonResult = response as? NSDictionary else {
+        throw "Not a dictionary"
+    }
+    guard let requestId = jsonResult["requestId"] as? Int else {
+        throw "Request batch response request id not a string"
+    }
+    guard let resultsList = jsonResult["results"] as? NSArray else {
+        throw "Request batch response results missing"
+    }
+    var results: [(ResponseRequestStatus, Data?)] = []
+    for resultDict in resultsList {
+        let resultData = try JSONSerialization.data(withJSONObject: resultDict)
+        let (_, status, data) = try unpackRequestResponse(data: resultData)
+        results.append((status, data))
+    }
+    return (String(requestId), results)
+}
+
 private struct Request {
     let onSuccess: (Data?) -> Void
     let onError: (RequestError) -> Void
+}
+
+private struct BatchRequest {
+    let onComplete: ([(ResponseRequestStatus, Data?)]) -> Void
 }
 
 struct ObsSceneList {
@@ -471,6 +498,7 @@ class ObsWebSocket {
     private var webSocket: WebSocketClient
     private var nextId: Int = 0
     private var requests: [String: Request] = [:]
+    private var batchRequests: [String: BatchRequest] = [:]
     var connectionErrorMessage: String = ""
     private var connected = false
     weak var delegate: (any ObsWebsocketDelegate)?
@@ -782,21 +810,52 @@ class ObsWebSocket {
         )
     }
 
-    func getInputMute(inputName: String,
-                      onSuccess: @escaping (Bool) -> Void,
-                      onError: @escaping (String) -> Void)
+    func getInputMuteBatch(inputNames: [String],
+                           onSuccess: @escaping ([Bool?]) -> Void,
+                           onError: @escaping (String) -> Void)
     {
-        let request = GetInputMute(inputName: inputName)
-        performRequestWithResponse(type: .getInputMute, request: request, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
-                onSuccess(response.inputMuted)
-            } catch {
-                onError("JSON decode failed")
+        var requests: [String] = []
+        for inputName in inputNames {
+            guard let (request, _) = try? packRequest(
+                type: .getInputMute,
+                request: GetInputMute(inputName: inputName)
+            ) else {
+                onError("Failed to create OBS message")
+                return
             }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
+            guard let request = String(bytes: request, encoding: .utf8) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            requests.append(request)
+        }
+        guard isConnected() else {
+            onError("Not connected to server")
+            return
+        }
+        let requestId = getNextId()
+        batchRequests[requestId] = BatchRequest(onComplete: { results in
+            onSuccess(results.map { status, response in
+                if status.result, let response {
+                    do {
+                        let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
+                        return response.inputMuted
+                    } catch {
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+            })
         })
+        let requestBatch = """
+        {
+          "requestId": \(requestId),
+          "requests": [\(requests.joined(separator: ","))]
+        }
+        """
+        let message = packMessage(op: .requestBatch, data: requestBatch.utf8Data)
+        webSocket.send(string: message)
     }
 
     private func onRequestError(
@@ -885,17 +944,21 @@ class ObsWebSocket {
             onError(.message("Not connected to server"))
             return
         }
+        guard let (request, requestId) = try? packRequest(type: type, request: request) else {
+            onError(.message("Failed to create OBS message"))
+            return
+        }
+        requests[requestId] = Request(onSuccess: onSuccess, onError: onError)
+        let message = packMessage(op: .request, data: request)
+        webSocket.send(string: message)
+    }
+
+    private func packRequest<T>(type: RequestType, request: T?) throws -> (Data, String) where T: Encodable {
         var data: Data?
         if let request {
-            do {
-                data = try JSONEncoder().encode(request)
-            } catch {
-                onError(.message("JSON encode failed"))
-                return
-            }
+            data = try JSONEncoder().encode(request)
         }
         let requestId = getNextId()
-        requests[requestId] = Request(onSuccess: onSuccess, onError: onError)
         var request: Data
         if let data {
             let requestData = String(bytes: data, encoding: .utf8)!
@@ -916,8 +979,7 @@ class ObsWebSocket {
                 """
                 .utf8)
         }
-        let message = packMessage(op: .request, data: request)
-        webSocket.send(string: message)
+        return (request, requestId)
     }
 
     private func handleMessage(message: String) throws {
@@ -931,6 +993,8 @@ class ObsWebSocket {
             try handleEvent(data: data)
         case .requestResponse:
             try handleRequestResponse(data: data)
+        case .requestBatchResponse:
+            try handleRequestBatchResponse(data: data)
         case nil:
             logger.debug("obs-websocket: Ignoring message nil")
         default:
@@ -1067,6 +1131,15 @@ class ObsWebSocket {
         }
     }
 
+    private func handleRequestBatchResponse(data: Data) throws {
+        let (requestId, results) = try unpackRequestBatchResponse(data: data)
+        guard let batchRequest = batchRequests[requestId] else {
+            logger.debug("Unexpected request id in batch response")
+            return
+        }
+        batchRequest.onComplete(results)
+    }
+
     private func sendIdentify(authentication: String?) {
         let identify = Identify(rpcVersion: rpcVersion, authentication: authentication)
         do {
@@ -1100,6 +1173,10 @@ extension ObsWebSocket: WebSocketClientDelegate {
     }
 
     func webSocketClientReceiveMessage(string: String) {
-        try? handleMessage(message: string)
+        do {
+            try handleMessage(message: string)
+        } catch {
+            logger.info("xxx \(error)")
+        }
     }
 }
