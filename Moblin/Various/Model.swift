@@ -8351,7 +8351,7 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent) {
         let duration = formatCommercialStartedDuration(seconds: event.duration_seconds)
         let kind = event.is_automatic ? String(localized: "automatic") : String(localized: "manual")
-        makeToast(title: "\(duration) \(kind) commercial starting")
+        makeToast(title: String(localized: "\(duration) \(kind) commercial starting"))
     }
 
     func removeHypeTrain() {
