@@ -112,10 +112,7 @@ final class TwitchPubSub: NSObject {
             setNumberOfViewers(value: message.viewers)
         } else {
             logger
-                .debug("""
-                twitch: pubsub: \(channelId): Unsupported message \
-                type \(type) (message: \(message))
-                """)
+                .debug("twitch: pubsub: \(channelId): Unsupported message type \(type) (message: \(message))")
         }
     }
 
