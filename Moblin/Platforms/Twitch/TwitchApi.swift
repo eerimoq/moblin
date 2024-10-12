@@ -220,8 +220,9 @@ class TwitchApi {
         }
         """
         doPost(subPath: "channels/commercial", body: body.utf8Data, onComplete: { data in
+            // 21:47:29,086 xxx Optional("{\"data\":[{\"message\":\"Starting commercial break. Keep in mind you are still live and not all viewers will receive a commercial.\",\"length\":30,\"retry_after\":480}]}")
             if let data {
-                logger.info("xxx \(String(bytes: data, encoding: .utf8))")
+                logger.info("xxx ok")
             } else {
                 logger.info("xxx no data")
             }
