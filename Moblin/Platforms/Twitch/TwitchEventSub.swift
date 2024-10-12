@@ -314,25 +314,22 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelSubscribe() {
-        let body = createBroadcasterUserIdBody(type: "channel.subscribe")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "subscription")
+        subscribeBroadcasterUserId(type: "channel.subscribe", eventType: "subscription") {
             self.subscribeToChannelSubscriptionGift()
         }
     }
 
     private func subscribeToChannelSubscriptionGift() {
-        let body = createBroadcasterUserIdBody(type: "channel.subscription.gift")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "subscription gift")
+        subscribeBroadcasterUserId(type: "channel.subscription.gift", eventType: "subscription gift") {
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
     }
 
     private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
-        let body = createBroadcasterUserIdBody(type: "channel.channel_points_custom_reward_redemption.add")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "reward redemption")
+        subscribeBroadcasterUserId(
+            type: "channel.channel_points_custom_reward_redemption.add",
+            eventType: "reward redemption"
+        ) {
             self.subscribeToChannelRaid()
         }
     }
@@ -348,42 +345,44 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelCheer() {
-        let body = createBroadcasterUserIdBody(type: "channel.cheer")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "cheer")
+        subscribeBroadcasterUserId(type: "channel.cheer", eventType: "cheer") {
             self.subscribeToChannelHypeTrainBegin()
         }
     }
 
     private func subscribeToChannelHypeTrainBegin() {
-        let body = createBroadcasterUserIdBody(type: "channel.hype_train.begin")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train begin")
+        subscribeBroadcasterUserId(type: "channel.hype_train.begin", eventType: "hype train begin") {
             self.subscribeToChannelHypeTrainProgress()
         }
     }
 
     private func subscribeToChannelHypeTrainProgress() {
-        let body = createBroadcasterUserIdBody(type: "channel.hype_train.progress")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train progress")
+        subscribeBroadcasterUserId(type: "channel.hype_train.progress", eventType: "hype train progress") {
             self.subscribeToChannelHypeTrainEnd()
         }
     }
 
     private func subscribeToChannelHypeTrainEnd() {
-        let body = createBroadcasterUserIdBody(type: "channel.hype_train.end")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train end")
+        subscribeBroadcasterUserId(type: "channel.hype_train.end", eventType: "hype train end") {
             self.subscribeTochannelAdBreakBegin()
         }
     }
 
     private func subscribeTochannelAdBreakBegin() {
-        let body = createBroadcasterUserIdBody(type: "channel.ad_break.begin")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "ad break begin")
+        subscribeBroadcasterUserId(type: "channel.ad_break.begin", eventType: "ad break begin") {
             self.connected = true
+        }
+    }
+
+    private func subscribeBroadcasterUserId(
+        type: String,
+        eventType: String,
+        onCompleted: @escaping () -> Void
+    ) {
+        let body = createBroadcasterUserIdBody(type: type)
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: eventType)
+            onCompleted()
         }
     }
 
