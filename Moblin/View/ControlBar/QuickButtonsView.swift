@@ -493,6 +493,8 @@ struct QuickButtonsInnerView: View {
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
                     .foregroundColor(.white)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.5)
                     .font(.system(size: nameSize))
             }
         }
