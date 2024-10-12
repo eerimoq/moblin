@@ -7290,7 +7290,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "<filter> è film, scala di grigi, seppia, triplo, pixellato o 4:3."
+            "value" : "<filter> è film, scala di grigi, seppia, triplo, effetto pixel o 4:3."
           }
         },
         "ja" : {
@@ -17321,7 +17321,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selezione automatica del microfono"
+            "value" : "Selezione automatica del Microfono"
           }
         },
         "ja" : {
@@ -62576,7 +62576,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "microfono"
+            "value" : "Mic"
           }
         },
         "ja" : {
@@ -70646,7 +70646,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Controllo remoto dell'OBS"
+            "value" : "Controllo remoto OBS"
           }
         },
         "ja" : {
@@ -73506,7 +73506,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pixellato"
+            "value" : "Effetto pixel"
           }
         },
         "ja" : {
@@ -79226,7 +79226,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A distanza"
+            "value" : "Remoto"
           }
         },
         "ja" : {
@@ -88595,7 +88595,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Istantanea"
+            "value" : "Snapshot"
           }
         },
         "ja" : {
