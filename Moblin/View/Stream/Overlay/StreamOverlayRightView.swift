@@ -71,6 +71,32 @@ private struct CollapsedHypeTrainView: View {
     }
 }
 
+private struct CollapsedAdsRemainingTimerView: View {
+    @EnvironmentObject var model: Model
+    var show: Bool
+    var color: Color
+
+    var body: some View {
+        if show {
+            HStack(spacing: 1) {
+                Image(systemName: "cup.and.saucer")
+                    .frame(width: 17, height: 17)
+                    .padding([.leading, .trailing], 2)
+                    .foregroundColor(color)
+                Text(model.adsRemainingTimerStatus)
+                    .foregroundColor(.white)
+                    .padding([.leading, .trailing], 2)
+            }
+            .font(smallFont)
+            .background(backgroundColor)
+            .cornerRadius(5)
+            .padding(20)
+            .contentShape(Rectangle())
+            .padding(-20)
+        }
+    }
+}
+
 private struct CollapsedBitrateView: View {
     @EnvironmentObject var model: Model
     var show: Bool
@@ -135,6 +161,17 @@ private struct StatusesView: View {
                 show: model.isShowingStatusHypeTrain(),
                 icon: "train.side.front.car",
                 text: model.hypeTrainStatus,
+                textPlacement: textPlacement,
+                color: .white
+            )
+        }
+        if textPlacement == .hide {
+            CollapsedAdsRemainingTimerView(show: model.isShowingStatusAdsRemainingTimer(), color: .white)
+        } else {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusAdsRemainingTimer(),
+                icon: "cup.and.saucer",
+                text: "\(model.adsRemainingTimerStatus) seconds",
                 textPlacement: textPlacement,
                 color: .white
             )

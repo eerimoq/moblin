@@ -439,6 +439,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var hypeTrainProgress: Int?
     @Published var hypeTrainGoal: Int?
     @Published var hypeTrainStatus = noValue
+    @Published var adsRemainingTimerStatus = noValue
+    private var adsEndDate: Date?
     private var hypeTrainTimer: DispatchSourceTimer?
 
     private var workoutHeartRate: Int?
@@ -2076,6 +2078,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.weatherManager.setLocation(location: self.latestKnownLocation)
             self.geographyManager.setLocation(location: self.latestKnownLocation)
             self.updateBitrateStatus()
+            self.updateAdsRemainingTimer(now: now)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2197,6 +2200,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if newBitrateStatusColor != bitrateStatusColor {
             bitrateStatusColor = newBitrateStatusColor
+        }
+    }
+
+    private func updateAdsRemainingTimer(now: Date) {
+        guard let adsEndDate else {
+            return
+        }
+        let secondsLeft = adsEndDate.timeIntervalSince(now)
+        if secondsLeft < 0 {
+            self.adsEndDate = nil
+            adsRemainingTimerStatus = noValue
+        } else {
+            adsRemainingTimerStatus = String(Int(secondsLeft))
         }
     }
 
@@ -5761,6 +5777,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return hypeTrainStatus != noValue
     }
 
+    func isShowingStatusAdsRemainingTimer() -> Bool {
+        return adsRemainingTimerStatus != noValue
+    }
+
     func isShowingStatusServers() -> Bool {
         return database.show.rtmpSpeed! && (rtmpServerEnabled() || srtlaServerEnabled())
     }
@@ -8349,6 +8369,7 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent) {
+        adsEndDate = Date().advanced(by: Double(event.duration_seconds))
         let duration = formatCommercialStartedDuration(seconds: event.duration_seconds)
         let kind = event.is_automatic ? String(localized: "automatic") : String(localized: "manual")
         makeToast(title: String(localized: "\(duration) \(kind) commercial starting"))
