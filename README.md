@@ -37,6 +37,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - /me styling.
   - Optional login.
     - Follow, subscribe and raid alerts.
+    - Start ads.
+    - Hype train.
+    - Cheered bits in chat.
 - Kick integration.
   - Number of viewers.
   - Chat.
@@ -64,7 +67,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Muted.
     - Checkboxes.
     - Ratings.
+    - Date.
   - Browser widget. Show a web page on stream.
+    - Optional style sheet.
   - Map widget with location.
   - QR code widget.
   - Scene widget.
@@ -93,6 +98,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Snapshot.
   - Audio levels.
   - Set audio sync.
+  - Mute/unmute audio inputs.
 - Make phone screen black by pressing a button.
 - Supports UVC (USB-C) cameras on iPad.
 - Basic support for Mac.
@@ -192,6 +198,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Focus.
 - Cat printer.
   - Print chat and faxes.
+  - Optional meow sound when printing.
 - Take snapshots.
   - And optionally upload to your Discord server.
 
