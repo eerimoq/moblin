@@ -213,6 +213,18 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubNotification(message: String)
 }
 
+private let subTypeChannelFollow = "channel.follow"
+private let subTypeChannelSubscribe = "channel.subscribe"
+private let subTypeChannelSubscriptionGift = "channel.subscription.gift"
+private let subTypeChannelChannelPointsCustomRewardRedemptionAdd =
+    "channel.channel_points_custom_reward_redemption.add"
+private let subTypeChannelRaid = "channel.raid"
+private let subTypeChannelCheer = "channel.cheer"
+private let subTypeChannelHypeTrainBegin = "channel.hype_train.begin"
+private let subTypeChannelHypeTrainProgress = "channel.hype_train.progress"
+private let subTypeChannelHypeTrainEnd = "channel.hype_train.end"
+private let subTypeChannelAdBreakBegin = "channel.ad_break.begin"
+
 final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
     private var remoteControl: Bool
@@ -309,7 +321,7 @@ final class TwitchEventSub: NSObject {
 
     private func subscribeToChannelFollow() {
         let body = createBody(
-            type: "channel.follow",
+            type: subTypeChannelFollow,
             version: 2,
             condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
         )
@@ -320,20 +332,20 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelSubscribe() {
-        subscribeBroadcasterUserId(type: "channel.subscribe", eventType: "subscription") {
+        subscribeBroadcasterUserId(type: subTypeChannelSubscribe, eventType: "subscription") {
             self.subscribeToChannelSubscriptionGift()
         }
     }
 
     private func subscribeToChannelSubscriptionGift() {
-        subscribeBroadcasterUserId(type: "channel.subscription.gift", eventType: "subscription gift") {
+        subscribeBroadcasterUserId(type: subTypeChannelSubscriptionGift, eventType: "subscription gift") {
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
     }
 
     private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
         subscribeBroadcasterUserId(
-            type: "channel.channel_points_custom_reward_redemption.add",
+            type: subTypeChannelChannelPointsCustomRewardRedemptionAdd,
             eventType: "reward redemption"
         ) {
             self.subscribeToChannelRaid()
@@ -341,7 +353,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelRaid() {
-        let body = createBody(type: "channel.raid",
+        let body = createBody(type: subTypeChannelRaid,
                               version: 1,
                               condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
@@ -351,31 +363,31 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelCheer() {
-        subscribeBroadcasterUserId(type: "channel.cheer", eventType: "cheer") {
+        subscribeBroadcasterUserId(type: subTypeChannelCheer, eventType: "cheer") {
             self.subscribeToChannelHypeTrainBegin()
         }
     }
 
     private func subscribeToChannelHypeTrainBegin() {
-        subscribeBroadcasterUserId(type: "channel.hype_train.begin", eventType: "hype train begin") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainBegin, eventType: "hype train begin") {
             self.subscribeToChannelHypeTrainProgress()
         }
     }
 
     private func subscribeToChannelHypeTrainProgress() {
-        subscribeBroadcasterUserId(type: "channel.hype_train.progress", eventType: "hype train progress") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainProgress, eventType: "hype train progress") {
             self.subscribeToChannelHypeTrainEnd()
         }
     }
 
     private func subscribeToChannelHypeTrainEnd() {
-        subscribeBroadcasterUserId(type: "channel.hype_train.end", eventType: "hype train end") {
+        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainEnd, eventType: "hype train end") {
             self.subscribeTochannelAdBreakBegin()
         }
     }
 
     private func subscribeTochannelAdBreakBegin() {
-        subscribeBroadcasterUserId(type: "channel.ad_break.begin", eventType: "ad break begin") {
+        subscribeBroadcasterUserId(type: subTypeChannelAdBreakBegin, eventType: "ad break begin") {
             self.connected = true
         }
     }
@@ -415,25 +427,25 @@ final class TwitchEventSub: NSObject {
     private func handleNotification(message: BasicMessage, messageText: String, messageData: Data) {
         do {
             switch message.metadata.subscription_type {
-            case "channel.follow":
+            case subTypeChannelFollow:
                 try handleNotificationChannelFollow(messageData: messageData)
-            case "channel.subscribe":
+            case subTypeChannelSubscribe:
                 try handleNotificationChannelSubscribe(messageData: messageData)
-            case "channel.subscription.gift":
+            case subTypeChannelSubscriptionGift:
                 try handleNotificationChannelSubscriptionGift(messageData: messageData)
-            case "channel.channel_points_custom_reward_redemption.add":
+            case subTypeChannelChannelPointsCustomRewardRedemptionAdd:
                 try handleChannelPointsCustomRewardRedemptionAdd(messageData: messageData)
-            case "channel.raid":
+            case subTypeChannelRaid:
                 try handleChannelRaid(messageData: messageData)
-            case "channel.cheer":
+            case subTypeChannelCheer:
                 try handleChannelCheer(messageData: messageData)
-            case "channel.hype_train.begin":
+            case subTypeChannelHypeTrainBegin:
                 try handleChannelHypeTrainBegin(messageData: messageData)
-            case "channel.hype_train.progress":
+            case subTypeChannelHypeTrainProgress:
                 try handleChannelHypeTrainProgress(messageData: messageData)
-            case "channel.hype_train.end":
+            case subTypeChannelHypeTrainEnd:
                 try handleChannelHypeTrainEnd(messageData: messageData)
-            case "channel.ad_break.begin":
+            case subTypeChannelAdBreakBegin:
                 try handleChannelAdBreakBegin(messageData: messageData)
             default:
                 if let type = message.metadata.subscription_type {

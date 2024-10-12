@@ -183,13 +183,6 @@ class TwitchApi {
         })
     }
 
-    // periphery:ignore
-    func getEventSubSubscriptions(onComplete: @escaping (Bool) -> Void) {
-        doGet(subPath: "eventsub/subscriptions", onComplete: { data in
-            onComplete(data != nil)
-        })
-    }
-
     func getStreamKey(broadcasterId: String, onComplete: @escaping (String?) -> Void) {
         doGet(subPath: "streams/key?broadcaster_id=\(broadcasterId)", onComplete: { data in
             let response = try? JSONDecoder().decode(TwitchApiStreamKey.self, from: data ?? Data())
