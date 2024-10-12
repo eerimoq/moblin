@@ -1176,7 +1176,7 @@ extension ObsWebSocket: WebSocketClientDelegate {
         do {
             try handleMessage(message: string)
         } catch {
-            logger.info("xxx \(error)")
+            logger.info("obs-websocket: Error: \(error)")
         }
     }
 }
