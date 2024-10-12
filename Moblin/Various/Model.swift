@@ -4169,7 +4169,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageTtsOn(message: ChatBotMessage) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
             message: message
         ) {
@@ -4182,7 +4182,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageTtsOff(message: ChatBotMessage) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
             message: message
         ) {
@@ -4196,7 +4196,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageObsFix(message: ChatBotMessage) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fix,
             message: message
         ) {
@@ -4218,7 +4218,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageMapZoomOut(message: ChatBotMessage) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.map,
             message: message
         ) {
@@ -4233,7 +4233,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageSnapshot(message: ChatBotMessage) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.snapshot!,
             message: message
         ) {
@@ -4242,7 +4242,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageAlert(message: ChatBotMessage, command: String) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.alert!,
             message: message
         ) {
@@ -4257,7 +4257,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageFax(message: ChatBotMessage, command: String) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fax!,
             message: message
         ) {
@@ -4270,7 +4270,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageFilter(message: ChatBotMessage, command: String) {
-        executeOfUserAllowedToUseChatBot(
+        executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.filter!,
             message: message
         ) {
@@ -4301,7 +4301,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func executeOfUserAllowedToUseChatBot(
+    private func executeIfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
         message: ChatBotMessage,
         onCompleted: @escaping () -> Void
@@ -4322,7 +4322,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                 onCompleted()
                                 return
                             }
-                            self.executeOfUserAllowedToUseChatBotAfterSubscribeCheck(
+                            self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
                                 permissions: permissions,
                                 message: message,
                                 onCompleted: onCompleted
@@ -4336,14 +4336,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return
             }
         }
-        executeOfUserAllowedToUseChatBotAfterSubscribeCheck(
+        executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
             permissions: permissions,
             message: message,
             onCompleted: onCompleted
         )
     }
 
-    private func executeOfUserAllowedToUseChatBotAfterSubscribeCheck(
+    private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
         permissions: SettingsChatBotPermissionsCommand,
         message: ChatBotMessage,
         onCompleted: @escaping () -> Void
@@ -4371,7 +4371,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if permissions.othersEnabled {
             return true
         }
-        return user == stream.twitchChannelName
+        return user.lowercased() == stream.twitchChannelName.lowercased()
     }
 
     private func isKickUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
@@ -4380,7 +4380,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if permissions.othersEnabled {
             return true
         }
-        return user == stream.kickChannelName
+        return user.lowercased() == stream.kickChannelName?.lowercased()
     }
 
     func appendChatMessage(
