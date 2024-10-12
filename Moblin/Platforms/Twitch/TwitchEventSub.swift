@@ -221,6 +221,7 @@ final class TwitchEventSub: NSObject {
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
+    private var started = false
 
     init(remoteControl: Bool, userId: String, accessToken: String, delegate: TwitchEventSubDelegate) {
         self.remoteControl = remoteControl
@@ -236,6 +237,7 @@ final class TwitchEventSub: NSObject {
         logger.info("twitch: event-sub: Start")
         stopInternal()
         connect()
+        started = true
     }
 
     private func connect() {
@@ -250,6 +252,7 @@ final class TwitchEventSub: NSObject {
     func stop() {
         logger.info("twitch: event-sub: Stop")
         stopInternal()
+        started = false
     }
 
     func stopInternal() {
@@ -293,6 +296,9 @@ final class TwitchEventSub: NSObject {
 
     private func makeSubscribeErrorToastIfNotOk(ok: Bool, eventType: String) {
         guard !ok else {
+            return
+        }
+        guard started else {
             return
         }
         delegate
