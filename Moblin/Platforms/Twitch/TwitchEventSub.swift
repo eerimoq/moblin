@@ -314,9 +314,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelSubscribe() {
-        let body = createBody(type: "channel.subscribe",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.subscribe")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "subscription")
             self.subscribeToChannelSubscriptionGift()
@@ -324,9 +322,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelSubscriptionGift() {
-        let body = createBody(type: "channel.subscription.gift",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.subscription.gift")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "subscription gift")
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
@@ -334,9 +330,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
-        let body = createBody(type: "channel.channel_points_custom_reward_redemption.add",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.channel_points_custom_reward_redemption.add")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "reward redemption")
             self.subscribeToChannelRaid()
@@ -354,9 +348,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelCheer() {
-        let body = createBody(type: "channel.cheer",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.cheer")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "cheer")
             self.subscribeToChannelHypeTrainBegin()
@@ -364,9 +356,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelHypeTrainBegin() {
-        let body = createBody(type: "channel.hype_train.begin",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.hype_train.begin")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train begin")
             self.subscribeToChannelHypeTrainProgress()
@@ -374,9 +364,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelHypeTrainProgress() {
-        let body = createBody(type: "channel.hype_train.progress",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.hype_train.progress")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train progress")
             self.subscribeToChannelHypeTrainEnd()
@@ -384,9 +372,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeToChannelHypeTrainEnd() {
-        let body = createBody(type: "channel.hype_train.end",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.hype_train.end")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "hype train end")
             self.subscribeTochannelAdBreakBegin()
@@ -394,9 +380,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func subscribeTochannelAdBreakBegin() {
-        let body = createBody(type: "channel.ad_break.begin",
-                              version: 1,
-                              condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        let body = createBroadcasterUserIdBody(type: "channel.ad_break.begin")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "ad break begin")
             self.connected = true
@@ -415,6 +399,12 @@ final class TwitchEventSub: NSObject {
             }
         }
         """
+    }
+
+    private func createBroadcasterUserIdBody(type: String, version: Int = 1) -> String {
+        return createBody(type: type,
+                          version: version,
+                          condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
     }
 
     private func handleNotification(message: BasicMessage, messageText: String, messageData: Data) {
