@@ -8203,12 +8203,10 @@ extension Model {
 
 extension Model: TwitchEventSubDelegate {
     func twitchEventSubMakeErrorToast(title: String) {
-        DispatchQueue.main.async {
-            self.makeErrorToast(
-                title: title,
-                subTitle: String(localized: "Re-login to Twitch probably fixes this error")
-            )
-        }
+        makeErrorToast(
+            title: title,
+            subTitle: String(localized: "Re-login to Twitch probably fixes this error")
+        )
     }
 
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
@@ -8264,17 +8262,15 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {
-        DispatchQueue.main.async {
-            let text = String(localized: "redeemed \(event.reward.title)!")
-            self.makeToast(title: "\(event.user_name) \(text)")
-            self.appendTwitchChatAlertMessage(
-                user: event.user_name,
-                text: text,
-                title: String(localized: "Reward redemption"),
-                color: .blue,
-                image: "medal.star"
-            )
-        }
+        let text = String(localized: "redeemed \(event.reward.title)!")
+        makeToast(title: "\(event.user_name) \(text)")
+        appendTwitchChatAlertMessage(
+            user: event.user_name,
+            text: text,
+            title: String(localized: "Reward redemption"),
+            color: .blue,
+            image: "medal.star"
+        )
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
@@ -8315,7 +8311,7 @@ extension Model: TwitchEventSubDelegate {
     }
 
     private func startHypeTrainTimer(deadline: DispatchTime) {
-        hypeTrainTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        hypeTrainTimer = DispatchSource.makeTimerSource(queue: .main)
         hypeTrainTimer!.schedule(deadline: deadline)
         hypeTrainTimer!.setEventHandler { [weak self] in
             self?.removeHypeTrain()
@@ -8329,41 +8325,33 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
-        DispatchQueue.main.async {
-            self.hypeTrainLevel = event.level
-            self.hypeTrainProgress = event.progress
-            self.hypeTrainGoal = event.goal
-            self.updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
-            self.startHypeTrainTimer(deadline: .now() + 600)
-        }
+        hypeTrainLevel = event.level
+        hypeTrainProgress = event.progress
+        hypeTrainGoal = event.goal
+        updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
+        startHypeTrainTimer(deadline: .now() + 600)
     }
 
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent) {
-        DispatchQueue.main.async {
-            self.hypeTrainLevel = event.level
-            self.hypeTrainProgress = event.progress
-            self.hypeTrainGoal = event.goal
-            self.updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
-            self.startHypeTrainTimer(deadline: .now() + 600)
-        }
+        hypeTrainLevel = event.level
+        hypeTrainProgress = event.progress
+        hypeTrainGoal = event.goal
+        updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
+        startHypeTrainTimer(deadline: .now() + 600)
     }
 
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
-        DispatchQueue.main.async {
-            self.hypeTrainLevel = event.level
-            self.hypeTrainProgress = 1
-            self.hypeTrainGoal = 1
-            self.updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
-            self.startHypeTrainTimer(deadline: .now() + 60)
-        }
+        hypeTrainLevel = event.level
+        hypeTrainProgress = 1
+        hypeTrainGoal = 1
+        updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
+        startHypeTrainTimer(deadline: .now() + 60)
     }
 
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent) {
-        DispatchQueue.main.async {
-            let duration = formatCommercialStartedDuration(seconds: event.duration_seconds)
-            let kind = event.is_automatic ? String(localized: "automatic") : String(localized: "manual")
-            self.makeToast(title: "\(duration) \(kind) commercial starting")
-        }
+        let duration = formatCommercialStartedDuration(seconds: event.duration_seconds)
+        let kind = event.is_automatic ? String(localized: "automatic") : String(localized: "manual")
+        makeToast(title: "\(duration) \(kind) commercial starting")
     }
 
     func removeHypeTrain() {
