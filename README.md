@@ -197,19 +197,19 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - ISO.
   - Focus.
 - Cat printer.
-  - Print chat and faxes.
+  - Print chat and faxes (images).
   - Optional meow sound when printing.
 - Take snapshots.
-  - And optionally upload to your Discord server.
+  - And optionally automatically upload to your Discord server.
 
 ## Apple Watch companion app
 
 - Stream preview.
 - Show audio level.
 - Show bitrate.
-- Show iPhone/iPad thermal state.
+- Show iPhone thermal state.
 - Chat.
-  - Limited to 20 messages.
+  - Limited to 50 messages.
 - Control.
   - Zoom using digital crown and presets.
   - Switch scene.
