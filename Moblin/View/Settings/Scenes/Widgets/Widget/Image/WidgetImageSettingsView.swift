@@ -8,7 +8,7 @@ struct WidgetImageSettingsView: View {
 
     func loadImage() -> UIImage? {
         if let data = model.imageStorage.tryRead(id: widget.id) {
-            return UIImage(data: data)!
+            return UIImage(data: data)
         } else {
             return nil
         }
