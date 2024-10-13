@@ -1198,7 +1198,6 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
-				030C762E2CBBF52B0062D8FD /* VideoSource */,
 				037FE0382C5A04BF0067B5AC /* Alerts */,
 				03403DF32AD05C700079D8E4 /* Browser */,
 				039A9E262BAEC58F00A23F97 /* Crop */,
@@ -1207,6 +1206,7 @@
 				030499602C4038B2003488F4 /* QrCode */,
 				03B2189D2C3E4E3D001FDE57 /* Scene */,
 				037132CC2C29FEED00393605 /* Text */,
+				030C762E2CBBF52B0062D8FD /* VideoSource */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Widget;

@@ -991,6 +991,14 @@ class SettingsWidgetAlerts: Codable {
 
 class SettingsWidgetVideoSource: Codable {
     var cornerRadius: Float = 0
+    var cameraPosition: SettingsSceneCameraPosition? = .screenCapture
+    var backCameraId: String? = getBestBackCameraId()
+    var frontCameraId: String? = getBestFrontCameraId()
+    var rtmpCameraId: UUID? = .init()
+    var srtlaCameraId: UUID? = .init()
+    var mediaPlayerCameraId: UUID? = .init()
+    var externalCameraId: String? = ""
+    var externalCameraName: String? = ""
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -3917,6 +3925,38 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource == nil {
             widget.videoSource = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cameraPosition == nil {
+            widget.videoSource!.cameraPosition = .screenCapture
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.backCameraId == nil {
+            widget.videoSource!.backCameraId = getBestBackCameraId()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.frontCameraId == nil {
+            widget.videoSource!.frontCameraId = getBestFrontCameraId()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.rtmpCameraId == nil {
+            widget.videoSource!.rtmpCameraId = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.srtlaCameraId == nil {
+            widget.videoSource!.srtlaCameraId = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.mediaPlayerCameraId == nil {
+            widget.videoSource!.mediaPlayerCameraId = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.externalCameraId == nil {
+            widget.videoSource!.externalCameraId = ""
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.externalCameraName == nil {
+            widget.videoSource!.externalCameraName = ""
             store()
         }
     }

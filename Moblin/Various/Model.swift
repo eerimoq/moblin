@@ -111,7 +111,7 @@ struct Icon: Identifiable {
 }
 
 private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
-private let screenCaptureCamera = "Screen capture"
+let screenCaptureCamera = "Screen capture"
 
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 private let noMic = Mic(name: "", inputUid: "")
@@ -4562,16 +4562,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func listCameraPositions() -> [(String, String)] {
+    func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
         var cameras: [(String, String)] = []
-        cameras += backCameras.map {
-            ($0.id, "Back \($0.name)")
-        }
-        cameras += frontCameras.map {
-            ($0.id, "Front \($0.name)")
-        }
-        cameras += externalCameras.map {
-            ($0.id, $0.name)
+        if !excludeBuiltin {
+            cameras += backCameras.map {
+                ($0.id, "Back \($0.name)")
+            }
+            cameras += frontCameras.map {
+                ($0.id, "Front \($0.name)")
+            }
+            cameras += externalCameras.map {
+                ($0.id, $0.name)
+            }
         }
         cameras += rtmpCameras().map {
             ($0, $0)
@@ -4620,6 +4622,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func getCameraPositionId(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
+        guard let videoSourceWidget else {
+            return ""
+        }
+        switch videoSourceWidget.cameraPosition! {
+        case .rtmp:
+            return getRtmpStream(id: videoSourceWidget.rtmpCameraId!)?.camera() ?? ""
+        case .srtla:
+            return getSrtlaStream(id: videoSourceWidget.srtlaCameraId!)?.camera() ?? ""
+        case .mediaPlayer:
+            return getMediaPlayer(id: videoSourceWidget.mediaPlayerCameraId!)?.camera() ?? ""
+        case .external:
+            return videoSourceWidget.externalCameraId!
+        case .back:
+            return videoSourceWidget.backCameraId!
+        case .front:
+            return videoSourceWidget.frontCameraId!
+        case .screenCapture:
+            return screenCaptureCamera
+        }
+    }
+
     func getCameraPositionName(scene: SettingsScene?) -> String {
         guard let scene else {
             return "Unknown"
@@ -4645,6 +4669,40 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         case .front:
             if let camera = frontCameras.first(where: { $0.id == scene.frontCameraId! }) {
+                return "Front \(camera.name)"
+            } else {
+                return "Unknown"
+            }
+        case .screenCapture:
+            return screenCaptureCamera
+        }
+    }
+
+    func getCameraPositionName(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
+        guard let videoSourceWidget else {
+            return "Unknown"
+        }
+        switch videoSourceWidget.cameraPosition! {
+        case .rtmp:
+            return getRtmpStream(id: videoSourceWidget.rtmpCameraId!)?.camera() ?? "Unknown"
+        case .srtla:
+            return getSrtlaStream(id: videoSourceWidget.srtlaCameraId!)?.camera() ?? "Unknown"
+        case .mediaPlayer:
+            return getMediaPlayer(id: videoSourceWidget.mediaPlayerCameraId!)?.camera() ?? "Unknown"
+        case .external:
+            if !videoSourceWidget.externalCameraName!.isEmpty {
+                return videoSourceWidget.externalCameraName!
+            } else {
+                return "Unknown"
+            }
+        case .back:
+            if let camera = backCameras.first(where: { $0.id == videoSourceWidget.backCameraId! }) {
+                return "Back \(camera.name)"
+            } else {
+                return "Unknown"
+            }
+        case .front:
+            if let camera = frontCameras.first(where: { $0.id == videoSourceWidget.frontCameraId! }) {
                 return "Front \(camera.name)"
             } else {
                 return "Unknown"
