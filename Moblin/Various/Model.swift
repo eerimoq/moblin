@@ -2747,6 +2747,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return nil
     }
 
+    func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
+        for (videoSourceEffectId, videoSourceEffect) in videoSourceEffects where id == videoSourceEffectId {
+            return videoSourceEffect
+        }
+        return nil
+    }
+
     private func fixAlert(alert: SettingsWidgetAlertsAlert) {
         if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery!.bundledImages[0].id
@@ -4863,6 +4870,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             case .videoSource:
                 if let videoSourceEffect = videoSourceEffects[widget.id] {
                     videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    videoSourceEffect.setRadius(radius: widget.videoSource!.cornerRadius)
                     effects.append(videoSourceEffect)
                 }
             }

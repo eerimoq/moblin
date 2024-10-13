@@ -22,6 +22,7 @@
 		030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030A8B662BC2D38300F149AF /* WebBrowserView.swift */; };
 		030B413A2C24CB83000F7134 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 030B41392C24CB83000F7134 /* InfoPlist.xcstrings */; };
 		030B413C2C24CB83000F7134 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 030B413B2C24CB83000F7134 /* Localizable.xcstrings */; };
+		030C76302CBBF5470062D8FD /* WidgetVideoSourceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030C762F2CBBF5360062D8FD /* WidgetVideoSourceSettingsView.swift */; };
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
@@ -517,6 +518,7 @@
 		030A8B662BC2D38300F149AF /* WebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
 		030B41392C24CB83000F7134 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		030B413B2C24CB83000F7134 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		030C762F2CBBF5360062D8FD /* WidgetVideoSourceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoSourceSettingsView.swift; sourceTree = "<group>"; };
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
@@ -1061,6 +1063,14 @@
 			path = WebBrowser;
 			sourceTree = "<group>";
 		};
+		030C762E2CBBF52B0062D8FD /* VideoSource */ = {
+			isa = PBXGroup;
+			children = (
+				030C762F2CBBF5360062D8FD /* WidgetVideoSourceSettingsView.swift */,
+			);
+			path = VideoSource;
+			sourceTree = "<group>";
+		};
 		030D487F2B35E4AF003B2014 /* Platforms */ = {
 			isa = PBXGroup;
 			children = (
@@ -1188,6 +1198,7 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				030C762E2CBBF52B0062D8FD /* VideoSource */,
 				037FE0382C5A04BF0067B5AC /* Alerts */,
 				03403DF32AD05C700079D8E4 /* Browser */,
 				039A9E262BAEC58F00A23F97 /* Crop */,
@@ -2857,6 +2868,7 @@
 				0359F8D92BD3DA61005BFDA8 /* AvcFormatStream.swift in Sources */,
 				039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */,
 				0359F8BD2BD3DA61005BFDA8 /* CMSampleBuffer+Extension.swift in Sources */,
+				030C76302CBBF5470062D8FD /* WidgetVideoSourceSettingsView.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				031C15B52B93326500BA967D /* WatchChatSettingsView.swift in Sources */,
 				03DBD0FF2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,

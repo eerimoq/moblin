@@ -989,6 +989,10 @@ class SettingsWidgetAlerts: Codable {
     }
 }
 
+class SettingsWidgetVideoSource: Codable {
+    var cornerRadius: Float = 0
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -1107,6 +1111,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var scene: SettingsWidgetScene? = .init()
     var qrCode: SettingsWidgetQrCode? = .init()
     var alerts: SettingsWidgetAlerts? = .init()
+    var videoSource: SettingsWidgetVideoSource? = .init()
     var enabled: Bool? = true
 
     init(name: String) {
@@ -3908,6 +3913,10 @@ final class Settings {
         }
         if realDatabase.chat.showNewFollowerMessage == nil {
             realDatabase.chat.showNewFollowerMessage = true
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource == nil {
+            widget.videoSource = .init()
             store()
         }
     }

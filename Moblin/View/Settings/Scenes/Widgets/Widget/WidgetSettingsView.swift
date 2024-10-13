@@ -59,7 +59,7 @@ struct WidgetSettingsView: View {
             case .alerts:
                 WidgetAlertsSettingsView(widget: widget)
             case .videoSource:
-                WidgetVideoSourceSettingsView()
+                WidgetVideoSourceSettingsView(widget: widget, cornerRadius: widget.videoSource!.cornerRadius)
             }
         }
         .navigationTitle("Widget")
