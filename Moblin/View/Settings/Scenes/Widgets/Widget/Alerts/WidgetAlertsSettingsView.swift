@@ -743,10 +743,10 @@ struct WidgetAlertsSettingsView: View {
     }
 }
 
-struct WidgetVideoSettingsView: View {
+struct WidgetVideoSourceSettingsView: View {
     var body: some View {
         Section {
-            Text("")
+            Text("Will use the scene's video source. The plan is to select any video source here later on.")
         }
     }
 }

@@ -57,7 +57,7 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "qrcode"
     case .alerts:
         return "megaphone"
-    case .video:
+    case .videoSource:
         return "video"
     }
 }

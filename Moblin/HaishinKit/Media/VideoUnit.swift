@@ -237,6 +237,118 @@ final class VideoUnit: NSObject {
         session.stopRunning()
     }
 
+    func getCIImage(_: UUID, _: CMTime) -> CIImage? {
+        guard let imageBuffer = latestSampleBuffer?.imageBuffer else {
+            return nil
+        }
+        return CIImage(cvPixelBuffer: imageBuffer)
+    }
+
+    func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
+        let isOtherReplaceVideo = lockQueue.sync {
+            let oldReplaceVideo = self.selectedReplaceVideoCameraId
+            self.selectedReplaceVideoCameraId = replaceVideo
+            return replaceVideo != oldReplaceVideo
+        }
+        if self.device == device {
+            if isOtherReplaceVideo {
+                lockQueue.async {
+                    self.prepareFirstFrame()
+                }
+            }
+            return
+        }
+        output?.setSampleBufferDelegate(nil, queue: lockQueue)
+        session.beginConfiguration()
+        defer {
+            session.commitConfiguration()
+        }
+        try attachDevice(device, session)
+        lockQueue.async {
+            self.prepareFirstFrame()
+        }
+        self.device = device
+        for connection in output?.connections ?? [] {
+            if connection.isVideoMirroringSupported {
+                connection.isVideoMirrored = isVideoMirrored
+            }
+            if connection.isVideoOrientationSupported {
+                setOrientation(device: device, connection: connection, orientation: videoOrientation)
+            }
+            if connection.isVideoStabilizationSupported {
+                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+            }
+        }
+        setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
+        output?.setSampleBufferDelegate(self, queue: lockQueue)
+    }
+
+    func registerEffect(_ effect: VideoEffect) {
+        lockQueue.sync {
+            self.registerEffectInner(effect)
+        }
+    }
+
+    func unregisterEffect(_ effect: VideoEffect) {
+        lockQueue.sync {
+            self.unregisterEffectInner(effect)
+        }
+    }
+
+    func setPendingAfterAttachEffects(effects: [VideoEffect]) {
+        lockQueue.sync {
+            self.setPendingAfterAttachEffectsInner(effects: effects)
+        }
+    }
+
+    func usePendingAfterAttachEffects() {
+        lockQueue.sync {
+            self.usePendingAfterAttachEffectsInner()
+        }
+    }
+
+    func setLowFpsImage(fps: Float) {
+        lockQueue.async {
+            self.setLowFpsImageInner(fps: fps)
+        }
+    }
+
+    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
+        lockQueue.async {
+            self.takeSnapshotComplete = onComplete
+        }
+    }
+
+    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+        lockQueue.async {
+            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer)
+        }
+    }
+
+    func addReplaceVideo(cameraId: UUID, name: String) {
+        lockQueue.async {
+            self.addReplaceVideoInner(cameraId: cameraId, name: name)
+        }
+    }
+
+    func removeReplaceVideo(cameraId: UUID) {
+        lockQueue.async {
+            self.removeReplaceVideoInner(cameraId: cameraId)
+        }
+    }
+
+    func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
+        addSessionObservers()
+        encoder.delegate = delegate
+        encoder.startRunning()
+    }
+
+    func stopEncoding() {
+        encoder.stopRunning()
+        encoder.delegate = nil
+        removeSessionObservers()
+    }
+
     private func startFrameTimer() {
         let frameInterval = 1 / frameRate
         frameTimer = DispatchSource.makeTimerSource(queue: lockQueue)
@@ -305,45 +417,6 @@ final class VideoUnit: NSObject {
             isFirstAfterAttach: false,
             applyBlur: ioVideoBlurSceneSwitch
         )
-    }
-
-    func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
-        let isOtherReplaceVideo = lockQueue.sync {
-            let oldReplaceVideo = self.selectedReplaceVideoCameraId
-            self.selectedReplaceVideoCameraId = replaceVideo
-            return replaceVideo != oldReplaceVideo
-        }
-        if self.device == device {
-            if isOtherReplaceVideo {
-                lockQueue.async {
-                    self.prepareFirstFrame()
-                }
-            }
-            return
-        }
-        output?.setSampleBufferDelegate(nil, queue: lockQueue)
-        session.beginConfiguration()
-        defer {
-            session.commitConfiguration()
-        }
-        try attachDevice(device, session)
-        lockQueue.async {
-            self.prepareFirstFrame()
-        }
-        self.device = device
-        for connection in output?.connections ?? [] {
-            if connection.isVideoMirroringSupported {
-                connection.isVideoMirrored = isVideoMirrored
-            }
-            if connection.isVideoOrientationSupported {
-                setOrientation(device: device, connection: connection, orientation: videoOrientation)
-            }
-            if connection.isVideoStabilizationSupported {
-                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
-            }
-        }
-        setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
-        output?.setSampleBufferDelegate(self, queue: lockQueue)
     }
 
     private func prepareFirstFrame() {
@@ -635,21 +708,9 @@ final class VideoUnit: NSObject {
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
-    func registerEffect(_ effect: VideoEffect) {
-        lockQueue.sync {
-            self.registerEffectInner(effect)
-        }
-    }
-
     private func registerEffectInner(_ effect: VideoEffect) {
         if !effects.contains(effect) {
             effects.append(effect)
-        }
-    }
-
-    func unregisterEffect(_ effect: VideoEffect) {
-        lockQueue.sync {
-            self.unregisterEffectInner(effect)
         }
     }
 
@@ -660,20 +721,8 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect]) {
-        lockQueue.sync {
-            self.setPendingAfterAttachEffectsInner(effects: effects)
-        }
-    }
-
     private func setPendingAfterAttachEffectsInner(effects: [VideoEffect]) {
         pendingAfterAttachEffects = effects
-    }
-
-    func usePendingAfterAttachEffects() {
-        lockQueue.sync {
-            self.usePendingAfterAttachEffectsInner()
-        }
     }
 
     private func usePendingAfterAttachEffectsInner() {
@@ -686,28 +735,10 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setLowFpsImage(fps: Float) {
-        lockQueue.async {
-            self.setLowFpsImageInner(fps: fps)
-        }
-    }
-
     private func setLowFpsImageInner(fps: Float) {
         lowFpsImageInterval = Double(1 / fps).clamped(to: 0.2 ... 1.0)
         lowFpsImageEnabled = fps != 0.0
         lowFpsImageLatest = 0.0
-    }
-
-    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
-        lockQueue.async {
-            self.takeSnapshotComplete = onComplete
-        }
-    }
-
-    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        lockQueue.async {
-            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer)
-        }
     }
 
     private func addReplaceVideoSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
@@ -717,20 +748,8 @@ final class VideoUnit: NSObject {
         replaceVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceVideo(cameraId: UUID, name: String) {
-        lockQueue.async {
-            self.addReplaceVideoInner(cameraId: cameraId, name: name)
-        }
-    }
-
     private func addReplaceVideoInner(cameraId: UUID, name: String) {
         replaceVideos[cameraId] = ReplaceVideo(name: name)
-    }
-
-    func removeReplaceVideo(cameraId: UUID) {
-        lockQueue.async {
-            self.removeReplaceVideoInner(cameraId: cameraId)
-        }
     }
 
     private func removeReplaceVideoInner(cameraId: UUID) {
@@ -931,18 +950,6 @@ final class VideoUnit: NSObject {
         return false
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
-        addSessionObservers()
-        encoder.delegate = delegate
-        encoder.startRunning()
-    }
-
-    func stopEncoding() {
-        encoder.stopRunning()
-        encoder.delegate = nil
-        removeSessionObservers()
-    }
-
     private func addSessionObservers() {
         NotificationCenter.default.addObserver(
             self,
@@ -1080,15 +1087,15 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func attachDevice(_ device: AVCaptureDevice?, _ captureSession: AVCaptureSession) throws {
-        if let connection, captureSession.connections.contains(connection) {
-            captureSession.removeConnection(connection)
+    private func attachDevice(_ device: AVCaptureDevice?, _ session: AVCaptureSession) throws {
+        if let connection, session.connections.contains(connection) {
+            session.removeConnection(connection)
         }
-        if let input, captureSession.inputs.contains(input) {
-            captureSession.removeInput(input)
+        if let input, session.inputs.contains(input) {
+            session.removeInput(input)
         }
-        if let output, captureSession.outputs.contains(output) {
-            captureSession.removeOutput(output)
+        if let output, session.outputs.contains(output) {
+            session.removeOutput(output)
         }
         if let device {
             input = try AVCaptureDeviceInput(device: device)
@@ -1101,16 +1108,16 @@ final class VideoUnit: NSObject {
             } else {
                 connection = nil
             }
-            if captureSession.canAddInput(input!) {
-                captureSession.addInputWithNoConnections(input!)
+            if session.canAddInput(input!) {
+                session.addInputWithNoConnections(input!)
             }
-            if captureSession.canAddOutput(output!) {
-                captureSession.addOutputWithNoConnections(output!)
+            if session.canAddOutput(output!) {
+                session.addOutputWithNoConnections(output!)
             }
-            if let connection, captureSession.canAddConnection(connection) {
-                captureSession.addConnection(connection)
+            if let connection, session.canAddConnection(connection) {
+                session.addConnection(connection)
             }
-            captureSession.automaticallyConfiguresCaptureDeviceForWideColor = false
+            session.automaticallyConfiguresCaptureDeviceForWideColor = false
         } else {
             input = nil
             output = nil

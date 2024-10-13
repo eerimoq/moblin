@@ -16,20 +16,26 @@ struct SceneSettingsView: View {
         self.name = name
     }
 
+    private let widgetsWithPosition: [SettingsWidgetType] = [
+        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource,
+    ]
+
     private func widgetHasPosition(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
-            return widget.type == .image || widget.type == .browser || widget
-                .type == .text || widget.type == .crop || widget.type == .map || widget
-                .type == .qrCode || widget.type == .alerts
+            return widgetsWithPosition.contains(widget.type)
         } else {
             logger.error("Unable to find widget type")
             return false
         }
     }
 
+    private let widgetsWithSize: [SettingsWidgetType] = [
+        .image, .qrCode, .map, .videoSource,
+    ]
+
     private func widgetHasSize(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
-            return widget.type == .image || widget.type == .qrCode || widget.type == .map
+            return widgetsWithSize.contains(widget.type)
         } else {
             logger.error("Unable to find widget type")
             return false

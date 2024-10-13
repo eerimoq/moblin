@@ -411,6 +411,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var mapEffects: [UUID: MapEffect] = [:]
     private var qrCodeEffects: [UUID: QrCodeEffect] = [:]
     private var alertsEffects: [UUID: AlertsEffect] = [:]
+    private var videoSourceEffects: [UUID: VideoSourceEffect] = [:]
     private var enabledAlertsEffects: [AlertsEffect] = []
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
@@ -2957,6 +2958,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for widget in database.widgets where widget.type == .qrCode {
             qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode!)
         }
+        for videoSourceEffect in videoSourceEffects.values {
+            media.unregisterEffect(videoSourceEffect)
+        }
+        videoSourceEffects.removeAll()
+        for widget in database.widgets where widget.type == .videoSource {
+            videoSourceEffects[widget.id] = VideoSourceEffect()
+        }
         for alertsEffect in alertsEffects.values {
             media.unregisterEffect(alertsEffect)
         }
@@ -4852,8 +4860,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     enabledAlertsEffects.append(alertsEffect)
                 }
-            case .video:
-                break
+            case .videoSource:
+                if let videoSourceEffect = videoSourceEffects[widget.id] {
+                    videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    effects.append(videoSourceEffect)
+                }
             }
         }
     }

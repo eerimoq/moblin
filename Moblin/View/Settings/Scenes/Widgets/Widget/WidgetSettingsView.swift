@@ -58,8 +58,8 @@ struct WidgetSettingsView: View {
                 WidgetQrCodeSettingsView(widget: widget)
             case .alerts:
                 WidgetAlertsSettingsView(widget: widget)
-            case .video:
-                WidgetVideoSettingsView()
+            case .videoSource:
+                WidgetVideoSourceSettingsView()
             }
         }
         .navigationTitle("Widget")
