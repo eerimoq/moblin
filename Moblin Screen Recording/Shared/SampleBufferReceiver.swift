@@ -125,7 +125,7 @@ class SampleBufferReceiver {
             return
         }
         sampleBuffer.isSync = header.isSync
-        videoDecoder?.appendSampleBuffer(sampleBuffer)
+        videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
     private func readHeader(_ senderFd: Int32) throws -> SampleBufferHeader {

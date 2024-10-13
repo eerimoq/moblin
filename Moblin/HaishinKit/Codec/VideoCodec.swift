@@ -15,7 +15,7 @@ class VideoCodec {
         self.lockQueue = lockQueue
     }
 
-    static let defaultAttributes: [NSString: AnyObject]? = [
+    private static let defaultAttributes: [NSString: AnyObject]? = [
         kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
         kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
         kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
@@ -86,7 +86,7 @@ class VideoCodec {
         }
     }
 
-    func appendImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
+    func encodeImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
         guard isRunning else {
             return
         }
@@ -117,7 +117,7 @@ class VideoCodec {
         }
     }
 
-    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+    func decodeSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         guard isRunning else {
             return
         }
@@ -169,7 +169,7 @@ class VideoCodec {
     }
 }
 
-func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
+private func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
     var session: VTCompressionSession?
     for attribute in videoCodec.attributes ?? [:] {
         logger.debug("video: Codec attribute: \(attribute.key) \(attribute.value)")
@@ -203,7 +203,7 @@ func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConv
     return session
 }
 
-func makeVideoDecompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
+private func makeVideoDecompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
     guard let formatDescription = videoCodec.formatDescription else {
         logger.info("video: Failed to create status \(kVTParameterErr)")
         return nil

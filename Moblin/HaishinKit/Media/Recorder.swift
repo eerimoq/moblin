@@ -48,6 +48,24 @@ class Recorder {
         }
     }
 
+    func appendVideo(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
+        lockQueue.async {
+            self.appendVideoInner(pixelBuffer, withPresentationTime: withPresentationTime)
+        }
+    }
+
+    func startRunning() {
+        lockQueue.async {
+            self.startRunningInner()
+        }
+    }
+
+    func stopRunning() {
+        lockQueue.async {
+            self.stopRunningInner()
+        }
+    }
+
     private func appendAudioInner(_ sampleBuffer: CMSampleBuffer) {
         guard let writer else {
             return
@@ -101,12 +119,6 @@ class Recorder {
             }
         } catch {}
         return sampleBuffer
-    }
-
-    func appendVideo(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
-        lockQueue.async {
-            self.appendVideoInner(pixelBuffer, withPresentationTime: withPresentationTime)
-        }
     }
 
     private func appendVideoInner(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
@@ -278,12 +290,6 @@ class Recorder {
         return pixelBufferAdaptor
     }
 
-    func startRunning() {
-        lockQueue.async {
-            self.startRunningInner()
-        }
-    }
-
     private func startRunningInner() {
         guard writer == nil, let url else {
             logger.info("Will not start recording as it is already running or missing URL")
@@ -294,12 +300,6 @@ class Recorder {
             writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
         } catch {
             logger.info("Failed to create asset writer \(error)")
-        }
-    }
-
-    func stopRunning() {
-        lockQueue.async {
-            self.stopRunningInner()
         }
     }
 

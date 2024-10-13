@@ -496,7 +496,7 @@ class RtmpServerChunkStream {
         }
         totalNumberOfVideoFrames += 1
         if let sampleBuffer = makeVideoSampleBuffer(client: client) {
-            videoDecoder?.appendSampleBuffer(sampleBuffer)
+            videoDecoder?.decodeSampleBuffer(sampleBuffer)
         }
     }
 

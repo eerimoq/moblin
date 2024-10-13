@@ -572,7 +572,7 @@ final class RTMPVideoMessage: RTMPMessage {
                 makeFormatDescription(stream, format: .h264)
             case FLVAVCPacketType.nal.rawValue:
                 if let sampleBuffer = makeSampleBuffer(stream, type: type, offset: 0) {
-                    stream.mixer.video.codec.appendSampleBuffer(sampleBuffer)
+                    stream.mixer.video.encoder.decodeSampleBuffer(sampleBuffer)
                 }
             default:
                 break
@@ -587,7 +587,7 @@ final class RTMPVideoMessage: RTMPMessage {
                 makeFormatDescription(stream, format: .hevc)
             case FLVVideoPacketType.codedFrames.rawValue:
                 if let sampleBuffer = makeSampleBuffer(stream, type: type, offset: 3) {
-                    stream.mixer.video.codec.appendSampleBuffer(sampleBuffer)
+                    stream.mixer.video.encoder.decodeSampleBuffer(sampleBuffer)
                 }
             default:
                 break

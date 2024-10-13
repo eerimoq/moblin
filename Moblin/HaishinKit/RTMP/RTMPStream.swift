@@ -258,16 +258,16 @@ open class RTMPStream: NetStream {
     func createMetaData() -> ASObject {
         var metadata: [String: Any] = [:]
         if mixer.video.device != nil {
-            metadata["width"] = mixer.video.codec.settings.videoSize.width
-            metadata["height"] = mixer.video.codec.settings.videoSize.height
+            metadata["width"] = mixer.video.encoder.settings.videoSize.width
+            metadata["height"] = mixer.video.encoder.settings.videoSize.height
             metadata["framerate"] = mixer.video.frameRate
-            switch mixer.video.codec.settings.format {
+            switch mixer.video.encoder.settings.format {
             case .h264:
                 metadata["videocodecid"] = FLVVideoCodec.avc.rawValue
             case .hevc:
                 metadata["videocodecid"] = FLVVideoFourCC.hevc.rawValue
             }
-            metadata["videodatarate"] = mixer.video.codec.settings.bitRate / 1000
+            metadata["videodatarate"] = mixer.video.encoder.settings.bitRate / 1000
         }
         if mixer.audio.device != nil {
             metadata["audiocodecid"] = FLVAudioCodec.aac.rawValue

@@ -140,11 +140,11 @@ final class VideoUnit: NSObject {
 
     var formatDescription: CMVideoFormatDescription? {
         didSet {
-            codec.formatDescription = formatDescription
+            encoder.formatDescription = formatDescription
         }
     }
 
-    lazy var codec = VideoCodec(lockQueue: lockQueue)
+    lazy var encoder = VideoCodec(lockQueue: lockQueue)
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -878,7 +878,7 @@ final class VideoUnit: NSObject {
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
         modSampleBuffer.setAttachmentDisplayImmediately()
         drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
-        codec.appendImageBuffer(
+        encoder.encodeImageBuffer(
             modImageBuffer,
             presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
             duration: modSampleBuffer.duration
@@ -933,13 +933,13 @@ final class VideoUnit: NSObject {
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
         addSessionObservers()
-        codec.delegate = delegate
-        codec.startRunning()
+        encoder.delegate = delegate
+        encoder.startRunning()
     }
 
     func stopEncoding() {
-        codec.stopRunning()
-        codec.delegate = nil
+        encoder.stopRunning()
+        encoder.delegate = nil
         removeSessionObservers()
     }
 

@@ -20,13 +20,8 @@ protocol MixerDelegate: AnyObject {
     func mixerNoTorch()
 }
 
-/// An object that mixies audio and video for streaming.
 class Mixer {
-    private(set) var isRunning: Atomic<Bool> = .init(false)
-    private var isEncoding = false
-
     weak var delegate: (any MixerDelegate)?
-    private var videoTimeStamp = CMTime.zero
 
     let audio = AudioUnit()
     let video = VideoUnit()
@@ -38,15 +33,6 @@ class Mixer {
         recorder.delegate = self
     }
 
-    deinit {
-        if video.session.isRunning {
-            video.session.stopRunning()
-        }
-        if audio.session.isRunning {
-            audio.session.stopRunning()
-        }
-    }
-
     func attachCamera(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
         try video.attach(device, replaceVideo)
     }
@@ -56,40 +42,23 @@ class Mixer {
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
-        guard !isEncoding else {
-            return
-        }
-        isEncoding = true
         video.startEncoding(delegate)
         audio.startEncoding(delegate)
     }
 
     func stopEncoding() {
-        guard isEncoding else {
-            return
-        }
-        videoTimeStamp = CMTime.zero
         video.stopEncoding()
         audio.stopEncoding()
-        isEncoding = false
     }
 
     func startRunning() {
-        guard !isRunning.value else {
-            return
-        }
         video.startRunning()
         audio.startRunning()
-        isRunning.mutate { $0 = audio.session.isRunning }
     }
 
     func stopRunning() {
-        guard isRunning.value else {
-            return
-        }
         video.stopRunning()
         audio.stopRunning()
-        isRunning.mutate { $0 = audio.session.isRunning }
     }
 }
 
