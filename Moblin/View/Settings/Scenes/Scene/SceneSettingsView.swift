@@ -56,6 +56,11 @@ struct SceneSettingsView: View {
         case .map:
             sceneWidget.width = 13
             sceneWidget.height = 23
+        case .videoSource:
+            sceneWidget.x = 72
+            sceneWidget.y = 72
+            sceneWidget.width = 28
+            sceneWidget.height = 28
         default:
             break
         }
