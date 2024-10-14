@@ -13,8 +13,11 @@ struct WidgetVideoSourceSettingsView: View {
 
     var body: some View {
         Section {
-            Text("Will use the scene's video source. The plan is to select any video source here later on.")
-            if false {
+            if true {
+                Text(
+                    "Will use the scene's video source. The plan is to select any video source here later on."
+                )
+            } else {
                 NavigationLink {
                     InlinePickerView(
                         title: String(localized: "Video source"),
@@ -36,18 +39,17 @@ struct WidgetVideoSourceSettingsView: View {
             }
         }
         Section {
-            HStack {
-                Text("Corner radius")
-                Slider(
-                    value: $cornerRadius,
-                    in: 0 ... 1,
-                    step: 0.01
-                )
-                .onChange(of: cornerRadius) { _ in
-                    widget.videoSource!.cornerRadius = cornerRadius
-                    model.getVideoSourceEffect(id: widget.id)?.setRadius(radius: cornerRadius)
-                }
+            Slider(
+                value: $cornerRadius,
+                in: 0 ... 1,
+                step: 0.01
+            )
+            .onChange(of: cornerRadius) { _ in
+                widget.videoSource!.cornerRadius = cornerRadius
+                model.getVideoSourceEffect(id: widget.id)?.setRadius(radius: cornerRadius)
             }
+        } header: {
+            Text("Corner radius")
         }
     }
 }
