@@ -13,28 +13,22 @@ struct WidgetVideoSourceSettingsView: View {
 
     var body: some View {
         Section {
-            if false {
-                Text(
-                    "Will use the scene's video source. The plan is to select any video source here later on."
+            NavigationLink {
+                InlinePickerView(
+                    title: String(localized: "Video source"),
+                    onChange: onCameraChange,
+                    items: model.listCameraPositions(excludeBuiltin: true).map { id, name in
+                        InlinePickerItem(id: id, text: name)
+                    },
+                    selectedId: model.getCameraPositionId(videoSourceWidget: widget.videoSource)
                 )
-            } else {
-                NavigationLink {
-                    InlinePickerView(
-                        title: String(localized: "Video source"),
-                        onChange: onCameraChange,
-                        items: model.listCameraPositions(excludeBuiltin: true).map { id, name in
-                            InlinePickerItem(id: id, text: name)
-                        },
-                        selectedId: model.getCameraPositionId(videoSourceWidget: widget.videoSource)
-                    )
-                } label: {
-                    HStack {
-                        Text(String(localized: "Video source"))
-                        Spacer()
-                        Text(model.getCameraPositionName(videoSourceWidget: widget.videoSource))
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
-                    }
+            } label: {
+                HStack {
+                    Text(String(localized: "Video source"))
+                    Spacer()
+                    Text(model.getCameraPositionName(videoSourceWidget: widget.videoSource))
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
                 }
             }
         }
