@@ -6,28 +6,8 @@ struct WidgetVideoSourceSettingsView: View {
     @State var cornerRadius: Float
 
     private func onCameraChange(cameraId: String) {
-        if isSrtlaCamera(camera: cameraId) {
-            widget.videoSource!.cameraPosition = .srtla
-            widget.videoSource!.srtlaCameraId = model.getSrtlaStream(camera: cameraId)?.id ?? .init()
-        } else if isRtmpCamera(camera: cameraId) {
-            widget.videoSource!.cameraPosition = .rtmp
-            widget.videoSource!.rtmpCameraId = model.getRtmpStream(camera: cameraId)?.id ?? .init()
-        } else if isMediaPlayerCamera(camera: cameraId) {
-            widget.videoSource!.cameraPosition = .mediaPlayer
-            widget.videoSource!.mediaPlayerCameraId = model.getMediaPlayer(camera: cameraId)?.id ?? .init()
-        } else if model.isBackCamera(cameraId: cameraId) {
-            widget.videoSource!.cameraPosition = .back
-            widget.videoSource!.backCameraId = cameraId
-        } else if model.isFrontCamera(cameraId: cameraId) {
-            widget.videoSource!.cameraPosition = .front
-            widget.videoSource!.frontCameraId = cameraId
-        } else if model.isScreenCaptureCamera(cameraId: cameraId) {
-            widget.videoSource!.cameraPosition = .screenCapture
-        } else {
-            widget.videoSource!.cameraPosition = .external
-            widget.videoSource!.externalCameraId = cameraId
-            widget.videoSource!.externalCameraName = model.getExternalCameraName(cameraId: cameraId)
-        }
+        widget.videoSource?
+            .updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated()
     }
 

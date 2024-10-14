@@ -4601,108 +4601,86 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getCameraPositionId(scene: SettingsScene?) -> String {
-        guard let scene else {
-            return ""
-        }
-        switch scene.cameraPosition! {
-        case .rtmp:
-            return getRtmpStream(id: scene.rtmpCameraId!)?.camera() ?? ""
-        case .srtla:
-            return getSrtlaStream(id: scene.srtlaCameraId!)?.camera() ?? ""
-        case .mediaPlayer:
-            return getMediaPlayer(id: scene.mediaPlayerCameraId!)?.camera() ?? ""
-        case .external:
-            return scene.externalCameraId!
-        case .back:
-            return scene.backCameraId!
-        case .front:
-            return scene.frontCameraId!
-        case .screenCapture:
-            return screenCaptureCamera
-        }
+        return getCameraPositionId(settingsCameraId: scene?.toCameraId())
     }
 
     func getCameraPositionId(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
-        guard let videoSourceWidget else {
+        return getCameraPositionId(settingsCameraId: videoSourceWidget?.toCameraId())
+    }
+
+    func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
+        if isSrtlaCamera(camera: cameraId) {
+            return .srtla(id: getSrtlaStream(camera: cameraId)?.id ?? .init())
+        } else if isRtmpCamera(camera: cameraId) {
+            return .rtmp(id: getRtmpStream(camera: cameraId)?.id ?? .init())
+        } else if isMediaPlayerCamera(camera: cameraId) {
+            return .mediaPlayer(id: getMediaPlayer(camera: cameraId)?.id ?? .init())
+        } else if isBackCamera(cameraId: cameraId) {
+            return .back(id: cameraId)
+        } else if isFrontCamera(cameraId: cameraId) {
+            return .front(id: cameraId)
+        } else if isScreenCaptureCamera(cameraId: cameraId) {
+            return .screenCapture
+        } else {
+            return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
+        }
+    }
+
+    private func getCameraPositionId(settingsCameraId: SettingsCameraId?) -> String {
+        guard let settingsCameraId else {
             return ""
         }
-        switch videoSourceWidget.cameraPosition! {
-        case .rtmp:
-            return getRtmpStream(id: videoSourceWidget.rtmpCameraId!)?.camera() ?? ""
-        case .srtla:
-            return getSrtlaStream(id: videoSourceWidget.srtlaCameraId!)?.camera() ?? ""
-        case .mediaPlayer:
-            return getMediaPlayer(id: videoSourceWidget.mediaPlayerCameraId!)?.camera() ?? ""
-        case .external:
-            return videoSourceWidget.externalCameraId!
-        case .back:
-            return videoSourceWidget.backCameraId!
-        case .front:
-            return videoSourceWidget.frontCameraId!
+        switch settingsCameraId {
+        case let .rtmp(id):
+            return getRtmpStream(id: id)?.camera() ?? ""
+        case let .srtla(id):
+            return getSrtlaStream(id: id)?.camera() ?? ""
+        case let .mediaPlayer(id):
+            return getMediaPlayer(id: id)?.camera() ?? ""
+        case let .external(id, _):
+            return id
+        case let .back(id):
+            return id
+        case let .front(id):
+            return id
         case .screenCapture:
             return screenCaptureCamera
         }
     }
 
     func getCameraPositionName(scene: SettingsScene?) -> String {
-        guard let scene else {
-            return "Unknown"
-        }
-        switch scene.cameraPosition! {
-        case .rtmp:
-            return getRtmpStream(id: scene.rtmpCameraId!)?.camera() ?? "Unknown"
-        case .srtla:
-            return getSrtlaStream(id: scene.srtlaCameraId!)?.camera() ?? "Unknown"
-        case .mediaPlayer:
-            return getMediaPlayer(id: scene.mediaPlayerCameraId!)?.camera() ?? "Unknown"
-        case .external:
-            if !scene.externalCameraName!.isEmpty {
-                return scene.externalCameraName!
-            } else {
-                return "Unknown"
-            }
-        case .back:
-            if let camera = backCameras.first(where: { $0.id == scene.backCameraId! }) {
-                return "Back \(camera.name)"
-            } else {
-                return "Unknown"
-            }
-        case .front:
-            if let camera = frontCameras.first(where: { $0.id == scene.frontCameraId! }) {
-                return "Front \(camera.name)"
-            } else {
-                return "Unknown"
-            }
-        case .screenCapture:
-            return screenCaptureCamera
-        }
+        return getCameraPositionName(settingsCameraId: scene?.toCameraId())
     }
 
     func getCameraPositionName(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
-        guard let videoSourceWidget else {
+        return getCameraPositionName(settingsCameraId: videoSourceWidget?.toCameraId())
+    }
+
+    private func getCameraPositionName(settingsCameraId: SettingsCameraId?) -> String {
+        guard let settingsCameraId else {
             return "Unknown"
         }
-        switch videoSourceWidget.cameraPosition! {
-        case .rtmp:
-            return getRtmpStream(id: videoSourceWidget.rtmpCameraId!)?.camera() ?? "Unknown"
-        case .srtla:
-            return getSrtlaStream(id: videoSourceWidget.srtlaCameraId!)?.camera() ?? "Unknown"
-        case .mediaPlayer:
-            return getMediaPlayer(id: videoSourceWidget.mediaPlayerCameraId!)?.camera() ?? "Unknown"
-        case .external:
-            if !videoSourceWidget.externalCameraName!.isEmpty {
-                return videoSourceWidget.externalCameraName!
+        switch settingsCameraId {
+        case let .rtmp(id):
+            return getRtmpStream(id: id)?.camera() ?? "Unknown"
+        case let .srtla(id):
+            return getSrtlaStream(id: id)?.camera() ?? "Unknown"
+        case let .mediaPlayer(id):
+            return getMediaPlayer(id: id)?.camera() ?? "Unknown"
+        case let .external(_, name):
+            if !name.isEmpty {
+                return name
             } else {
                 return "Unknown"
             }
-        case .back:
-            if let camera = backCameras.first(where: { $0.id == videoSourceWidget.backCameraId! }) {
+        case let .back(id):
+            if let camera = backCameras.first(where: { $0.id == id }) {
                 return "Back \(camera.name)"
             } else {
                 return "Unknown"
             }
-        case .front:
-            if let camera = frontCameras.first(where: { $0.id == videoSourceWidget.frontCameraId! }) {
+        case let .front(id):
+            if let camera = frontCameras.first(where: { $0.id == id }) {
                 return "Front \(camera.name)"
             } else {
                 return "Unknown"

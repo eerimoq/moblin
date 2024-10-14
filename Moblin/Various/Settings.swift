@@ -598,6 +598,16 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsCameraId {
+    case back(id: String)
+    case front(id: String)
+    case rtmp(id: UUID)
+    case srtla(id: UUID)
+    case mediaPlayer(id: UUID)
+    case external(id: String, name: String)
+    case screenCapture
+}
+
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
@@ -638,6 +648,51 @@ class SettingsScene: Codable, Identifiable, Equatable {
             new.widgets.append(widget.clone())
         }
         return new
+    }
+
+    func toCameraId() -> SettingsCameraId {
+        switch cameraPosition! {
+        case .back:
+            return .back(id: backCameraId!)
+        case .front:
+            return .front(id: frontCameraId!)
+        case .rtmp:
+            return .rtmp(id: rtmpCameraId!)
+        case .external:
+            return .external(id: externalCameraId!, name: externalCameraName!)
+        case .srtla:
+            return .srtla(id: srtlaCameraId!)
+        case .mediaPlayer:
+            return .mediaPlayer(id: mediaPlayerCameraId!)
+        case .screenCapture:
+            return .screenCapture
+        }
+    }
+
+    func updateCameraId(settingsCameraId: SettingsCameraId) {
+        switch settingsCameraId {
+        case let .back(id: id):
+            cameraPosition = .back
+            backCameraId = id
+        case let .front(id: id):
+            cameraPosition = .front
+            frontCameraId = id
+        case let .rtmp(id: id):
+            cameraPosition = .rtmp
+            rtmpCameraId = id
+        case let .srtla(id: id):
+            cameraPosition = .srtla
+            srtlaCameraId = id
+        case let .mediaPlayer(id: id):
+            cameraPosition = .mediaPlayer
+            mediaPlayerCameraId = id
+        case let .external(id: id, name: name):
+            cameraPosition = .external
+            externalCameraId = id
+            externalCameraName = name
+        case .screenCapture:
+            cameraPosition = .screenCapture
+        }
     }
 }
 
@@ -999,6 +1054,51 @@ class SettingsWidgetVideoSource: Codable {
     var mediaPlayerCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
+
+    func toCameraId() -> SettingsCameraId {
+        switch cameraPosition! {
+        case .back:
+            return .back(id: backCameraId!)
+        case .front:
+            return .front(id: frontCameraId!)
+        case .rtmp:
+            return .rtmp(id: rtmpCameraId!)
+        case .external:
+            return .external(id: externalCameraId!, name: externalCameraName!)
+        case .srtla:
+            return .srtla(id: srtlaCameraId!)
+        case .mediaPlayer:
+            return .mediaPlayer(id: mediaPlayerCameraId!)
+        case .screenCapture:
+            return .screenCapture
+        }
+    }
+
+    func updateCameraId(settingsCameraId: SettingsCameraId) {
+        switch settingsCameraId {
+        case let .back(id: id):
+            cameraPosition = .back
+            backCameraId = id
+        case let .front(id: id):
+            cameraPosition = .front
+            frontCameraId = id
+        case let .rtmp(id: id):
+            cameraPosition = .rtmp
+            rtmpCameraId = id
+        case let .srtla(id: id):
+            cameraPosition = .srtla
+            srtlaCameraId = id
+        case let .mediaPlayer(id: id):
+            cameraPosition = .mediaPlayer
+            mediaPlayerCameraId = id
+        case let .external(id: id, name: name):
+            cameraPosition = .external
+            externalCameraId = id
+            externalCameraName = name
+        case .screenCapture:
+            cameraPosition = .screenCapture
+        }
+    }
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {

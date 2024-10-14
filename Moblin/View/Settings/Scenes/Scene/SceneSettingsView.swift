@@ -68,28 +68,7 @@ struct SceneSettingsView: View {
     }
 
     private func onCameraChange(cameraId: String) {
-        if isSrtlaCamera(camera: cameraId) {
-            scene.cameraPosition = .srtla
-            scene.srtlaCameraId = model.getSrtlaStream(camera: cameraId)?.id ?? .init()
-        } else if isRtmpCamera(camera: cameraId) {
-            scene.cameraPosition = .rtmp
-            scene.rtmpCameraId = model.getRtmpStream(camera: cameraId)?.id ?? .init()
-        } else if isMediaPlayerCamera(camera: cameraId) {
-            scene.cameraPosition = .mediaPlayer
-            scene.mediaPlayerCameraId = model.getMediaPlayer(camera: cameraId)?.id ?? .init()
-        } else if model.isBackCamera(cameraId: cameraId) {
-            scene.cameraPosition = .back
-            scene.backCameraId = cameraId
-        } else if model.isFrontCamera(cameraId: cameraId) {
-            scene.cameraPosition = .front
-            scene.frontCameraId = cameraId
-        } else if model.isScreenCaptureCamera(cameraId: cameraId) {
-            scene.cameraPosition = .screenCapture
-        } else {
-            scene.cameraPosition = .external
-            scene.externalCameraId = cameraId
-            scene.externalCameraName = model.getExternalCameraName(cameraId: cameraId)
-        }
+        scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated()
     }
 
