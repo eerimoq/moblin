@@ -71,6 +71,7 @@ enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
     case twitchSubscrptionGift(TwitchEventSubNotificationChannelSubscriptionGiftEvent)
+    case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
     case chatBotCommand(String, String)
@@ -279,6 +280,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchSubscribe(event: event)
         case let .twitchSubscrptionGift(event):
             playTwitchSubscriptionGift(event: event)
+        case let .twitchResubscribe(event):
+            playTwitchResubscribe(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
@@ -325,6 +328,22 @@ final class AlertsEffect: VideoEffect {
             message: String(
                 localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subsciptions!"
             ),
+            settings: settings.twitch!.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchResubscribe(event: TwitchEventSubNotificationChannelSubscriptionMessageEvent) {
+        guard settings.twitch!.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name,
+            message: String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """),
             settings: settings.twitch!.subscriptions
         )
     }

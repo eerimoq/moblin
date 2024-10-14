@@ -21,6 +21,10 @@ private struct WelcomeMessage: Decodable {
     var payload: WelcomePayload
 }
 
+struct TwitchEventSubMessage: Decodable {
+    var text: String
+}
+
 struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var user_name: String
     var tier: String
@@ -55,6 +59,25 @@ private struct NotificationChannelSubscriptionGiftPayload: Decodable {
 
 private struct NotificationChannelSubscriptionGiftMessage: Decodable {
     var payload: NotificationChannelSubscriptionGiftPayload
+}
+
+struct TwitchEventSubNotificationChannelSubscriptionMessageEvent: Decodable {
+    var user_name: String
+    var cumulative_months: Int
+    var tier: String
+    var message: TwitchEventSubMessage
+
+    func tierAsNumber() -> Int {
+        return twitchTierAsNumber(tier: tier)
+    }
+}
+
+private struct NotificationChannelSubscriptionMessagePayload: Decodable {
+    var event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
+}
+
+private struct NotificationChannelSubscriptionMessageMessage: Decodable {
+    var payload: NotificationChannelSubscriptionMessagePayload
 }
 
 struct TwitchEventSubNotificationChannelFollowEvent: Decodable {
@@ -200,6 +223,9 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent)
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent)
+    func twitchEventSubChannelSubscriptionMessage(
+        event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
+    )
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
@@ -216,6 +242,7 @@ protocol TwitchEventSubDelegate: AnyObject {
 private let subTypeChannelFollow = "channel.follow"
 private let subTypeChannelSubscribe = "channel.subscribe"
 private let subTypeChannelSubscriptionGift = "channel.subscription.gift"
+private let subTypeChannelSubscriptionMessage = "channel.subscription.message"
 private let subTypeChannelChannelPointsCustomRewardRedemptionAdd =
     "channel.channel_points_custom_reward_redemption.add"
 private let subTypeChannelRaid = "channel.raid"
@@ -339,6 +366,15 @@ final class TwitchEventSub: NSObject {
 
     private func subscribeToChannelSubscriptionGift() {
         subscribeBroadcasterUserId(type: subTypeChannelSubscriptionGift, eventType: "subscription gift") {
+            self.subscribeToChannelSubscriptionMessage()
+        }
+    }
+
+    private func subscribeToChannelSubscriptionMessage() {
+        subscribeBroadcasterUserId(
+            type: subTypeChannelSubscriptionMessage,
+            eventType: "Subscription message"
+        ) {
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
     }
@@ -433,6 +469,8 @@ final class TwitchEventSub: NSObject {
                 try handleNotificationChannelSubscribe(messageData: messageData)
             case subTypeChannelSubscriptionGift:
                 try handleNotificationChannelSubscriptionGift(messageData: messageData)
+            case subTypeChannelSubscriptionMessage:
+                try handleNotificationChannelSubscriptionMessage(messageData: messageData)
             case subTypeChannelChannelPointsCustomRewardRedemptionAdd:
                 try handleChannelPointsCustomRewardRedemptionAdd(messageData: messageData)
             case subTypeChannelRaid:
@@ -483,6 +521,14 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelSubscriptionGift(event: message.payload.event)
+    }
+
+    private func handleNotificationChannelSubscriptionMessage(messageData: Data) throws {
+        let message = try JSONDecoder().decode(
+            NotificationChannelSubscriptionMessageMessage.self,
+            from: messageData
+        )
+        delegate.twitchEventSubChannelSubscriptionMessage(event: message.payload.event)
     }
 
     private func handleChannelPointsCustomRewardRedemptionAdd(messageData: Data) throws {

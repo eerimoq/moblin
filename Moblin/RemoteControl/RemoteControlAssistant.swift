@@ -453,6 +453,10 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
         event _: TwitchEventSubNotificationChannelSubscriptionGiftEvent
     ) {}
 
+    func twitchEventSubChannelSubscriptionMessage(
+        event _: TwitchEventSubNotificationChannelSubscriptionMessageEvent
+    ) {}
+
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event _: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {}

@@ -8341,6 +8341,26 @@ extension Model: TwitchEventSubDelegate {
         }
     }
 
+    func twitchEventSubChannelSubscriptionMessage(
+        event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
+    ) {
+        DispatchQueue.main.async {
+            let text = String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """)
+            self.makeToast(title: "\(event.user_name) \(text)")
+            self.playAlert(alert: .twitchResubscribe(event))
+            self.appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New resubscribe"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+    }
+
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {

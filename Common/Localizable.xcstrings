@@ -55389,6 +55389,16 @@
         }
       }
     },
+    "just resubscribed tier %lld for %lld months! %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "just resubscribed tier %1$lld for %2$lld months! %3$@"
+          }
+        }
+      }
+    },
     "just subscribed tier %lld!" : {
       "localizations" : {
         "de" : {
@@ -67881,6 +67891,9 @@
           }
         }
       }
+    },
+    "New resubscribe" : {
+
     },
     "New subscriber" : {
       "localizations" : {
