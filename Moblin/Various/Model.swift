@@ -4343,23 +4343,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if message.isSubscriber, permissions.subscribersEnabled! {
             if message.platform == .twitch {
-                if let userId = message.userId {
-                    TwitchApi(accessToken: stream.twitchAccessToken!).getBroadcasterSubscriptions(
-                        broadcasterId: stream.twitchChannelId,
-                        userId: userId
-                    ) { data in
-                        DispatchQueue.main.async {
-                            if let tier = data?.tierAsNumber(), tier >= permissions.minimumSubscriberTier! {
-                                onCompleted()
-                                return
+                if permissions.minimumSubscriberTier! > 1 {
+                    if let userId = message.userId {
+                        TwitchApi(accessToken: stream.twitchAccessToken!).getBroadcasterSubscriptions(
+                            broadcasterId: stream.twitchChannelId,
+                            userId: userId
+                        ) { data in
+                            DispatchQueue.main.async {
+                                if let tier = data?.tierAsNumber(),
+                                   tier >= permissions.minimumSubscriberTier!
+                                {
+                                    onCompleted()
+                                    return
+                                }
+                                self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
+                                    permissions: permissions,
+                                    message: message,
+                                    onCompleted: onCompleted
+                                )
                             }
-                            self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-                                permissions: permissions,
-                                message: message,
-                                onCompleted: onCompleted
-                            )
                         }
+                        return
                     }
+                } else {
+                    onCompleted()
                     return
                 }
             } else {
