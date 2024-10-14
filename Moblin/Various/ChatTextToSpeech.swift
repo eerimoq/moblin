@@ -36,6 +36,7 @@ class ChatTextToSpeech: NSObject {
     private var synthesizer = AVSpeechSynthesizer()
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
+    private var sayLatestUserThatSaidSomethingAgain = ContinuousClock.now
     private var filterEnabled: Bool = true
     private var filterMentionsEnabled: Bool = true
     private var streamerMentions: [String] = []
@@ -150,10 +151,11 @@ class ChatTextToSpeech: NSObject {
             return
         }
         let text: String
-        if message.user == latestUserThatSaidSomething || !sayUsername {
-            text = message.message
-        } else if message.isRedemption {
+        let now = ContinuousClock.now
+        if message.isRedemption {
             text = "\(message.user) \(message.message)"
+        } else if !shouldSayUser(user: message.user, now: now) || !sayUsername {
+            text = message.message
         } else {
             text = String(localized: "\(message.user) \(says): \(message.message)")
         }
@@ -165,6 +167,17 @@ class ChatTextToSpeech: NSObject {
         utterance.voice = voice
         synthesizer.speak(utterance)
         latestUserThatSaidSomething = message.user
+        sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
+    }
+
+    private func shouldSayUser(user: String, now: ContinuousClock.Instant) -> Bool {
+        if user != latestUserThatSaidSomething {
+            return true
+        }
+        if now > sayLatestUserThatSaidSomethingAgain {
+            return true
+        }
+        return false
     }
 
     func say(user: String, message: String, isRedemption: Bool) {
