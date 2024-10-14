@@ -26637,6 +26637,16 @@
         }
       }
     },
+    "cheered %lld bits! %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "cheered %1$lld bits! %2$@"
+          }
+        }
+      }
+    },
     "Cheers" : {
       "localizations" : {
         "de" : {

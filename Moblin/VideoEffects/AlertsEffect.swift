@@ -350,7 +350,7 @@ final class AlertsEffect: VideoEffect {
         play(
             medias: twitchCheers,
             username: event.user_name ?? "Anonymous",
-            message: String(localized: "cheered \(event.bits) bits!"),
+            message: String(localized: "cheered \(event.bits) bits! \(event.message)"),
             settings: settings.twitch!.cheers!
         )
     }

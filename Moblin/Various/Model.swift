@@ -8367,7 +8367,7 @@ extension Model: TwitchEventSubDelegate {
         DispatchQueue.main.async {
             let user = event.user_name ?? String(localized: "Anonymous")
             let text = String(localized: "cheered \(event.bits) bits!")
-            self.makeToast(title: "\(user) \(text)")
+            self.makeToast(title: "\(user) \(text)", subTitle: event.message)
             self.playAlert(alert: .twitchCheer(event))
             self.appendTwitchChatAlertMessage(
                 user: user,
