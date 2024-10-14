@@ -4912,11 +4912,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             case .videoSource:
                 if let videoSourceEffect = videoSourceEffects[widget.id] {
+                    if let videoSourceId = getVideoSourceId(cameraId: widget.videoSource!.toCameraId()) {
+                        videoSourceEffect.setVideoSourceId(videoSourceId: videoSourceId)
+                    }
                     videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     videoSourceEffect.setRadius(radius: widget.videoSource!.cornerRadius)
                     effects.append(videoSourceEffect)
                 }
             }
+        }
+    }
+
+    private func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
+        switch cameraId {
+        case let .rtmp(id: id):
+            return id
+        case let .srtla(id: id):
+            return id
+        case .screenCapture:
+            return screenCaptureCameraId
+        default:
+            return nil
         }
     }
 

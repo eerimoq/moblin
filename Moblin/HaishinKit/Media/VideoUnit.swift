@@ -237,8 +237,11 @@ final class VideoUnit: NSObject {
         session.stopRunning()
     }
 
-    func getCIImage(_: UUID, _: CMTime) -> CIImage? {
-        guard let imageBuffer = latestSampleBuffer?.imageBuffer else {
+    func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
+        guard let sampleBuffer = replaceVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp) else {
+            return nil
+        }
+        guard let imageBuffer = sampleBuffer.imageBuffer else {
             return nil
         }
         return CIImage(cvPixelBuffer: imageBuffer)

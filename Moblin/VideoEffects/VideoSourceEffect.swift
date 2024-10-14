@@ -3,12 +3,16 @@ import MetalPetal
 import Vision
 
 final class VideoSourceEffect: VideoEffect {
-    private var videoSourceId: UUID = .init()
+    private var videoSourceId: Atomic<UUID> = .init(.init())
     private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
     private var radius: Atomic<Float> = .init(0)
 
     override func getName() -> String {
         return "video source"
+    }
+
+    func setVideoSourceId(videoSourceId: UUID) {
+        self.videoSourceId.mutate { $0 = videoSourceId }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
@@ -24,7 +28,10 @@ final class VideoSourceEffect: VideoEffect {
             return backgroundImage
         }
         let radius = self.radius.value
-        guard var videoSourceImage = info.videoUnit.getCIImage(videoSourceId, info.presentationTimeStamp)
+        guard var videoSourceImage = info.videoUnit.getCIImage(
+            videoSourceId.value,
+            info.presentationTimeStamp
+        )
         else {
             return backgroundImage
         }
