@@ -32,6 +32,21 @@ final class VideoSourceEffect: VideoEffect {
         self.settings.mutate { $0 = settings }
     }
 
+    private func crop(videoSourceImage: CIImage, settings: VideoSourceEffectSettings) -> CIImage {
+        let cropX = toPixels(settings.cropX, videoSourceImage.extent.width)
+        let cropY = toPixels(settings.cropY, videoSourceImage.extent.height)
+        let cropWidth = toPixels(settings.cropWidth, videoSourceImage.extent.width)
+        let cropHeight = toPixels(settings.cropHeight, videoSourceImage.extent.height)
+        return videoSourceImage
+            .cropped(to: .init(
+                x: cropX,
+                y: videoSourceImage.extent.height - cropHeight - cropY,
+                width: cropWidth,
+                height: cropHeight
+            ))
+            .transformed(by: CGAffineTransform(translationX: -cropX, y: -cropY))
+    }
+
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget = sceneWidget.value else {
             return backgroundImage
@@ -45,18 +60,7 @@ final class VideoSourceEffect: VideoEffect {
             return backgroundImage
         }
         if settings.cropEnabled {
-            let cropX = toPixels(settings.cropX, videoSourceImage.extent.width)
-            let cropY = toPixels(settings.cropY, videoSourceImage.extent.height)
-            let cropWidth = toPixels(settings.cropWidth, videoSourceImage.extent.width)
-            let cropHeight = toPixels(settings.cropHeight, videoSourceImage.extent.height)
-            videoSourceImage = videoSourceImage
-                .cropped(to: .init(
-                    x: cropX,
-                    y: videoSourceImage.extent.height - cropHeight - cropY,
-                    width: cropWidth,
-                    height: cropHeight
-                ))
-                .transformed(by: CGAffineTransform(translationX: -cropX, y: -cropY))
+            videoSourceImage = crop(videoSourceImage: videoSourceImage, settings: settings)
         }
         let size = backgroundImage.extent.size
         let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
