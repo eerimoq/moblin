@@ -25,6 +25,10 @@ struct InlinePickerView: View {
                         Text(item.text)
                             .tag(item.id)
                     }
+                    if !items.contains(where: { $0.id == selectedId }) {
+                        Text("Unknown 😢")
+                            .tag(selectedId)
+                    }
                 }
                 .onChange(of: selectedId) { item in
                     onChange(item)

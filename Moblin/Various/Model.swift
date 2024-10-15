@@ -71,6 +71,7 @@ let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
 let lowBatteryMessage = String(localized: "Low battery")
 let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
+let unknownSad = String(localized: "Unknown 😢")
 
 func formatWarning(_ message: String) -> String {
     return "⚠️ \(message) ⚠️"
@@ -4665,32 +4666,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func getCameraPositionName(settingsCameraId: SettingsCameraId?) -> String {
         guard let settingsCameraId else {
-            return "Unknown"
+            return unknownSad
         }
         switch settingsCameraId {
         case let .rtmp(id):
-            return getRtmpStream(id: id)?.camera() ?? "Unknown"
+            return getRtmpStream(id: id)?.camera() ?? unknownSad
         case let .srtla(id):
-            return getSrtlaStream(id: id)?.camera() ?? "Unknown"
+            return getSrtlaStream(id: id)?.camera() ?? unknownSad
         case let .mediaPlayer(id):
-            return getMediaPlayer(id: id)?.camera() ?? "Unknown"
+            return getMediaPlayer(id: id)?.camera() ?? unknownSad
         case let .external(_, name):
             if !name.isEmpty {
                 return name
             } else {
-                return "Unknown"
+                return unknownSad
             }
         case let .back(id):
             if let camera = backCameras.first(where: { $0.id == id }) {
                 return "Back \(camera.name)"
             } else {
-                return "Unknown"
+                return unknownSad
             }
         case let .front(id):
             if let camera = frontCameras.first(where: { $0.id == id }) {
                 return "Front \(camera.name)"
             } else {
-                return "Unknown"
+                return unknownSad
             }
         case .screenCapture:
             return screenCaptureCamera
@@ -4703,7 +4704,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }) {
             return camera.name
         } else {
-            return "Unknown"
+            return unknownSad
         }
     }
 

@@ -24,7 +24,7 @@ struct WidgetVideoSourceSettingsView: View {
                 )
             } label: {
                 HStack {
-                    Text(String(localized: "Video source"))
+                    Text("Video source")
                     Spacer()
                     Text(model.getCameraPositionName(videoSourceWidget: widget.videoSource))
                         .foregroundColor(.gray)

@@ -107,7 +107,7 @@ struct SceneSettingsView: View {
                     )
                 } label: {
                     HStack {
-                        Text(String(localized: "Video source"))
+                        Text("Video source")
                         Spacer()
                         if !model.isSceneActive(scene: scene) {
                             Image(systemName: "cable.connector.slash")
