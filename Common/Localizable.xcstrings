@@ -71535,6 +71535,9 @@
         }
       }
     },
+    "Only RTMP, SRT(LA) and screen capture video sources are currently supported." : {
+
+    },
     "Only when live" : {
       "localizations" : {
         "de" : {
