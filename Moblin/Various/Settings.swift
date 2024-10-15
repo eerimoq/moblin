@@ -1054,6 +1054,20 @@ class SettingsWidgetVideoSource: Codable {
     var mediaPlayerCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
+    var cropEnabled: Bool? = false
+    var cropX: Int? = 25
+    var cropY: Int? = 0
+    var cropWidth: Int? = 50
+    var cropHeight: Int? = 100
+
+    func toEffectSettings() -> VideoSourceEffectSettings {
+        return .init(cornerRadius: cornerRadius,
+                     cropEnabled: cropEnabled!,
+                     cropX: Double(cropX!),
+                     cropY: Double(cropY!),
+                     cropWidth: Double(cropWidth!),
+                     cropHeight: Double(cropHeight!))
+    }
 
     func toCameraId() -> SettingsCameraId {
         switch cameraPosition! {
@@ -4057,6 +4071,26 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.externalCameraName == nil {
             widget.videoSource!.externalCameraName = ""
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropEnabled == nil {
+            widget.videoSource!.cropEnabled = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropX == nil {
+            widget.videoSource!.cropX = 25
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropY == nil {
+            widget.videoSource!.cropY = 0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropWidth == nil {
+            widget.videoSource!.cropWidth = 50
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropHeight == nil {
+            widget.videoSource!.cropHeight = 100
             store()
         }
     }

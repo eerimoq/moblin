@@ -2,10 +2,19 @@ import AVFoundation
 import MetalPetal
 import Vision
 
+struct VideoSourceEffectSettings {
+    var cornerRadius: Float = 0
+    var cropEnabled: Bool = false
+    var cropX: Double = 0
+    var cropY: Double = 0
+    var cropWidth: Double = 100
+    var cropHeight: Double = 100
+}
+
 final class VideoSourceEffect: VideoEffect {
     private var videoSourceId: Atomic<UUID> = .init(.init())
     private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
-    private var radius: Atomic<Float> = .init(0)
+    private var settings: Atomic<VideoSourceEffectSettings> = .init(.init())
 
     override func getName() -> String {
         return "video source"
@@ -19,15 +28,15 @@ final class VideoSourceEffect: VideoEffect {
         self.sceneWidget.mutate { $0 = sceneWidget }
     }
 
-    func setRadius(radius: Float) {
-        self.radius.mutate { $0 = radius }
+    func setSettings(settings: VideoSourceEffectSettings) {
+        self.settings.mutate { $0 = settings }
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget = sceneWidget.value else {
             return backgroundImage
         }
-        let radius = self.radius.value
+        let settings = self.settings.value
         guard var videoSourceImage = info.videoUnit.getCIImage(
             videoSourceId.value,
             info.presentationTimeStamp
@@ -35,13 +44,27 @@ final class VideoSourceEffect: VideoEffect {
         else {
             return backgroundImage
         }
+        if settings.cropEnabled {
+            let cropX = toPixels(settings.cropX, videoSourceImage.extent.width)
+            let cropY = toPixels(settings.cropY, videoSourceImage.extent.height)
+            let cropWidth = toPixels(settings.cropWidth, videoSourceImage.extent.width)
+            let cropHeight = toPixels(settings.cropHeight, videoSourceImage.extent.height)
+            videoSourceImage = videoSourceImage
+                .cropped(to: .init(
+                    x: cropX,
+                    y: videoSourceImage.extent.height - cropHeight - cropY,
+                    width: cropWidth,
+                    height: cropHeight
+                ))
+                .transformed(by: CGAffineTransform(translationX: -cropX, y: -cropY))
+        }
         let size = backgroundImage.extent.size
         let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
         let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
         let scale = min(scaleX, scaleY)
         let x = toPixels(sceneWidget.x, size.width)
         let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scale
-        if radius == 0 {
+        if settings.cornerRadius == 0 {
             return videoSourceImage
                 .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
                 .transformed(by: CGAffineTransform(translationX: x, y: y))
@@ -56,7 +79,7 @@ final class VideoSourceEffect: VideoEffect {
             roundedRectangleGenerator.extent = videoSourceImage.extent
             var radiusPixels = Float(min(videoSourceImage.extent.height, videoSourceImage.extent.width))
             radiusPixels /= 2
-            radiusPixels *= radius
+            radiusPixels *= settings.cornerRadius
             roundedRectangleGenerator.radius = radiusPixels
             guard var roundedRectangleMask = roundedRectangleGenerator.outputImage else {
                 return backgroundImage

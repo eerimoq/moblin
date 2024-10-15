@@ -4917,7 +4917,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                         videoSourceEffect.setVideoSourceId(videoSourceId: videoSourceId)
                     }
                     videoSourceEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
-                    videoSourceEffect.setRadius(radius: widget.videoSource!.cornerRadius)
+                    videoSourceEffect.setSettings(settings: widget.videoSource!.toEffectSettings())
                     effects.append(videoSourceEffect)
                 }
             }
