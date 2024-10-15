@@ -16,6 +16,12 @@
             "state" : "new",
             "value" : "Moblin Widget"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget Moblin"
+          }
         }
       }
     },
@@ -34,6 +40,12 @@
             "state" : "new",
             "value" : "MoblinWidget"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget Moblin"
+          }
         }
       }
     },
@@ -51,6 +63,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
           }
         }
       }
@@ -82,6 +100,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
+          }
         }
       }
     },
@@ -100,6 +124,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
+          }
         }
       }
     },
@@ -117,6 +147,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
           }
         }
       }

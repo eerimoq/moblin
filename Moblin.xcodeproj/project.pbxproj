@@ -415,6 +415,7 @@
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
+		03EC1E792CBEE477009AEAB1 /* AppShortcuts.strings in Resources */ = {isa = PBXBuildFile; fileRef = 03EC1E772CBEE477009AEAB1 /* AppShortcuts.strings */; };
 		03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */; };
 		03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF4A2B8E4E5F00BD920E /* MainView.swift */; };
 		03ECDF4D2B8E4E6000BD920E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */; };
@@ -949,6 +950,8 @@
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
+		03EC1E782CBEE477009AEAB1 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
+		03EC1E7A2CBEE477009AEAB1 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinWatchApp.swift; sourceTree = "<group>"; };
 		03ECDF4A2B8E4E5F00BD920E /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -1744,6 +1747,7 @@
 				03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */,
 				03A173F92B38312E00ACC4F8 /* Snow.sks */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
+				03EC1E772CBEE477009AEAB1 /* AppShortcuts.strings */,
 				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				0397C3602C5C195D00F93E58 /* Alerts.bundle */,
 				038F42F32B685ACF00E68752 /* LUTs.bundle */,
@@ -2791,6 +2795,7 @@
 				0359F90F2BD3E038005BFDA8 /* LICENSE.md in Resources */,
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
 				0359F9122BD3E049005BFDA8 /* README.md in Resources */,
+				03EC1E792CBEE477009AEAB1 /* AppShortcuts.strings in Resources */,
 				03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */,
 				03FB42332C68EE6D0009FB26 /* PROTOCOL.md in Resources */,
 				03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */,
@@ -3275,8 +3280,17 @@
 				03D3C0472B4493AE006BAEAC /* zh-Hant */,
 				03A01ACA2B9F66D200D20AE3 /* de */,
 				033C97612C9DAB4D002107A4 /* ru */,
+				03EC1E7A2CBEE477009AEAB1 /* it */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		03EC1E772CBEE477009AEAB1 /* AppShortcuts.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				03EC1E782CBEE477009AEAB1 /* it */,
+			);
+			name = AppShortcuts.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

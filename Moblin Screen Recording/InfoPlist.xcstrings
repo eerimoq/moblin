@@ -34,6 +34,12 @@
             "state" : "new",
             "value" : "Moblin Screen Recording"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrazione schermo Moblin"
+          }
         }
       }
     },
@@ -51,6 +57,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
           }
         }
       }
@@ -82,6 +94,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
+          }
         }
       }
     },
@@ -100,6 +118,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
+          }
         }
       }
     },
@@ -117,6 +141,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
           }
         }
       }

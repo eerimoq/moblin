@@ -25,6 +25,12 @@
             "value" : "Moblin Widget."
           }
         },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget Moblin."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",

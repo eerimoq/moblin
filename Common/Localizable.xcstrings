@@ -5538,6 +5538,12 @@
             "state" : "new",
             "value" : "%1$@ %2$@ commercial starting"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@ Pubblicità iniziata"
+          }
         }
       }
     },
@@ -9587,7 +9593,14 @@
       }
     },
     "2 minutes" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 minuti"
+          }
+        }
+      }
     },
     "2. Replace 7654 with your port." : {
       "localizations" : {
@@ -9720,7 +9733,14 @@
       }
     },
     "3 minutes" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 minuti"
+          }
+        }
+      }
     },
     "4:3" : {
       "localizations" : {
@@ -10243,7 +10263,14 @@
       }
     },
     "30 seconds" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 secondi"
+          }
+        }
+      }
     },
     "128 Kbps or higher is recommended." : {
       "localizations" : {
@@ -13756,7 +13783,14 @@
       }
     },
     "Ads" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ads"
+          }
+        }
+      }
     },
     "AfreecaTV" : {
       "localizations" : {
@@ -18055,7 +18089,14 @@
       }
     },
     "automatic" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "automatico"
+          }
+        }
+      }
     },
     "Automatically goes live when switching stream." : {
       "localizations" : {
@@ -26644,6 +26685,12 @@
             "state" : "new",
             "value" : "cheered %1$lld bits! %2$@"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tifo con %1$lld bits! %2$@"
+          }
         }
       }
     },
@@ -31458,7 +31505,14 @@
       }
     },
     "Corner radius" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angolo arrotondato"
+          }
+        }
+      }
     },
     "Cosmetics" : {
       "localizations" : {
@@ -44201,7 +44255,14 @@
       }
     },
     "Failed to start commercial" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile avviare la pubblicità"
+          }
+        }
+      }
     },
     "Failed to start live stream from DJI device %@" : {
       "localizations" : {
@@ -55396,6 +55457,12 @@
             "state" : "new",
             "value" : "just resubscribed tier %1$lld for %2$lld months! %3$@"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "solo resub livello %1$lld per %2$lld mesi! %3$@ "
+          }
         }
       }
     },
@@ -60210,7 +60277,14 @@
       }
     },
     "manual" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "manuale"
+          }
+        }
+      }
     },
     "Manual exposure not supported for this camera" : {
       "localizations" : {
@@ -67893,7 +67967,14 @@
       }
     },
     "New resubscribe" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuova resub"
+          }
+        }
+      }
     },
     "New subscriber" : {
       "localizations" : {
@@ -83889,7 +83970,14 @@
       }
     },
     "Scene audio inputs" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scena audio input"
+          }
+        }
+      }
     },
     "Scenes" : {
       "localizations" : {
@@ -97938,10 +98026,24 @@
       }
     },
     "Take a snapshot." : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scatta uno snapshot"
+          }
+        }
+      }
     },
     "Take snapshot" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scattare snapshot"
+          }
+        }
+      }
     },
     "Take snapshot." : {
       "localizations" : {
@@ -108217,7 +108319,14 @@
       }
     },
     "Unmutes audio." : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio attivo"
+          }
+        }
+      }
     },
     "Unsupported scheme %@" : {
       "localizations" : {

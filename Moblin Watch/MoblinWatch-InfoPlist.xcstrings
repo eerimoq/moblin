@@ -34,6 +34,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
+          }
         }
       }
     },
@@ -51,6 +57,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
           }
         }
       }
@@ -70,6 +82,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
+          }
         }
       }
     },
@@ -87,6 +105,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si"
           }
         }
       }
