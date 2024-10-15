@@ -17,6 +17,9 @@ struct WidgetVideoSourceSettingsView: View {
                 InlinePickerView(
                     title: String(localized: "Video source"),
                     onChange: onCameraChange,
+                    footers: [
+                        String(localized: "Only RTMP, SRT(LA) and screen capture video sources are currently supported.")
+                    ],
                     items: model.listCameraPositions(excludeBuiltin: true).map { id, name in
                         InlinePickerItem(id: id, text: name)
                     },
