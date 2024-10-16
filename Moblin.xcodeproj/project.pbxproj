@@ -2509,10 +2509,10 @@
 		03ECDF472B8E4E5F00BD920E /* Moblin Watch */ = {
 			isa = PBXGroup;
 			children = (
-				0312E4442C00F7F500C6F878 /* Shared */,
-				03ECDF632B8E797200BD920E /* View */,
-				03ECDF652B8E798000BD920E /* Various */,
 				03ECDF4E2B8E4E6000BD920E /* Preview Content */,
+				0312E4442C00F7F500C6F878 /* Shared */,
+				03ECDF652B8E798000BD920E /* Various */,
+				03ECDF632B8E797200BD920E /* View */,
 				03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */,
 				032F3B3D2C950F08002FF97E /* MoblinWatch.entitlements */,
 				037CDEB62C9523A6007911A6 /* Info.plist */,
