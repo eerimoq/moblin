@@ -118,6 +118,10 @@ private class ReplaceVideo {
         }
     }
 
+    func setLatestSampleBuffer(sampleBuffer: CMSampleBuffer?) {
+        currentSampleBuffer = sampleBuffer
+    }
+
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
     }
@@ -216,6 +220,7 @@ final class VideoUnit: NSObject {
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
+        replaceVideos[builtinCameraId] = ReplaceVideo(name: "Builtin")
         startFrameTimer()
     }
 
@@ -1166,6 +1171,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        replaceVideos[builtinCameraId]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
         guard selectedReplaceVideoCameraId == nil else {
             return
         }

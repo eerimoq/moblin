@@ -200,7 +200,7 @@ struct WidgetVideoSourceSettingsView: View {
                             localized: "Only RTMP, SRT(LA) and screen capture video sources are currently supported."
                         ),
                     ],
-                    items: model.listCameraPositions(excludeBuiltin: true).map { id, name in
+                    items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
                         InlinePickerItem(id: id, text: name)
                     },
                     selectedId: model.getCameraPositionId(videoSourceWidget: widget.videoSource)

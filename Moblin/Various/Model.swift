@@ -112,6 +112,7 @@ struct Icon: Identifiable {
 }
 
 private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+let builtinCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
 let screenCaptureCamera = "Screen capture"
 
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
@@ -2755,6 +2756,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return nil
     }
 
+    func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
+        return database.widgets.first(where: { $0.id == id })
+    }
+
     private func fixAlert(alert: SettingsWidgetAlertsAlert) {
         if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery!.bundledImages[0].id
@@ -4570,6 +4575,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func getVideoSourceBuiltinCameraDevice() -> AVCaptureDevice? {
+        for widgetId in videoSourceEffects.keys {
+            guard let widget = getVideoSourceSettings(id: widgetId) else {
+                continue
+            }
+            switch widget.videoSource!.cameraPosition! {
+            case .back:
+                return AVCaptureDevice(uniqueID: widget.videoSource!.backCameraId!)
+            case .front:
+                return AVCaptureDevice(uniqueID: widget.videoSource!.frontCameraId!)
+            case .external:
+                return AVCaptureDevice(uniqueID: widget.videoSource!.externalCameraId!)
+            default:
+                break
+            }
+        }
+        return nil
+    }
+
     func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
         var cameras: [(String, String)] = []
         if !excludeBuiltin {
@@ -4935,7 +4959,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .screenCapture:
             return screenCaptureCameraId
         default:
-            return nil
+            return builtinCameraId
         }
     }
 
@@ -5345,7 +5369,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachReplaceCamera(cameraId: cameraId)
+        media.attachReplaceCamera(device: getVideoSourceBuiltinCameraDevice(), cameraId: cameraId)
         media.usePendingAfterAttachEffects()
     }
 
