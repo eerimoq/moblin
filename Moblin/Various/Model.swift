@@ -4930,6 +4930,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case let .srtla(id: id):
             return id
+        case let .mediaPlayer(id: id):
+            return id
         case .screenCapture:
             return screenCaptureCameraId
         default:
