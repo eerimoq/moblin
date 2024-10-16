@@ -7,8 +7,8 @@ struct VideoSourceEffectSettings {
     var cropEnabled: Bool = false
     var cropX: Double = 0
     var cropY: Double = 0
-    var cropWidth: Double = 100
-    var cropHeight: Double = 100
+    var cropWidth: Double = 1
+    var cropHeight: Double = 1
 }
 
 final class VideoSourceEffect: VideoEffect {
@@ -33,18 +33,21 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     private func crop(videoSourceImage: CIImage, settings: VideoSourceEffectSettings) -> CIImage {
-        let cropX = toPixels(settings.cropX, videoSourceImage.extent.width)
-        let cropY = toPixels(settings.cropY, videoSourceImage.extent.height)
-        let cropWidth = toPixels(settings.cropWidth, videoSourceImage.extent.width)
-        let cropHeight = toPixels(settings.cropHeight, videoSourceImage.extent.height)
+        let cropX = toPixels(100 * settings.cropX, videoSourceImage.extent.width)
+        let cropY = toPixels(100 * settings.cropY, videoSourceImage.extent.height)
+        let cropWidth = toPixels(100 * settings.cropWidth, videoSourceImage.extent.width)
+        let cropHeight = toPixels(100 * settings.cropHeight, videoSourceImage.extent.height)
         return videoSourceImage
             .cropped(to: .init(
                 x: cropX,
-                y: videoSourceImage.extent.height - cropHeight - cropY,
+                y: videoSourceImage.extent.height - cropY - cropHeight,
                 width: cropWidth,
                 height: cropHeight
             ))
-            .transformed(by: CGAffineTransform(translationX: -cropX, y: -cropY))
+            .transformed(by: CGAffineTransform(
+                translationX: -cropX,
+                y: -(videoSourceImage.extent.height - cropY - cropHeight)
+            ))
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {

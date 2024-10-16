@@ -1055,18 +1055,18 @@ class SettingsWidgetVideoSource: Codable {
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var cropEnabled: Bool? = false
-    var cropX: Int? = 25
-    var cropY: Int? = 0
-    var cropWidth: Int? = 50
-    var cropHeight: Int? = 100
+    var cropX: Double? = 0.25
+    var cropY: Double? = 0.0
+    var cropWidth: Double? = 0.5
+    var cropHeight: Double? = 1.0
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
                      cropEnabled: cropEnabled!,
-                     cropX: Double(cropX!),
-                     cropY: Double(cropY!),
-                     cropWidth: Double(cropWidth!),
-                     cropHeight: Double(cropHeight!))
+                     cropX: cropX!,
+                     cropY: cropY!,
+                     cropWidth: cropWidth!,
+                     cropHeight: cropHeight!)
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -4078,19 +4078,35 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource!.cropX == nil {
-            widget.videoSource!.cropX = 25
+            widget.videoSource!.cropX = 0.25
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource!.cropY == nil {
-            widget.videoSource!.cropY = 0
+            widget.videoSource!.cropY = 0.0
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource!.cropWidth == nil {
-            widget.videoSource!.cropWidth = 50
+            widget.videoSource!.cropWidth = 0.5
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource!.cropHeight == nil {
-            widget.videoSource!.cropHeight = 100
+            widget.videoSource!.cropHeight = 1.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropX! > 1.0 {
+            widget.videoSource!.cropX = 0.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropY! > 1.0 {
+            widget.videoSource!.cropY = 0.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropWidth! > 1.0 {
+            widget.videoSource!.cropWidth = 1.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.cropHeight! > 1.0 {
+            widget.videoSource!.cropHeight = 1.0
             store()
         }
     }
