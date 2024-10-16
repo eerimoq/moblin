@@ -1059,6 +1059,7 @@ class SettingsWidgetVideoSource: Codable {
     var cropY: Double? = 0.0
     var cropWidth: Double? = 0.5
     var cropHeight: Double? = 1.0
+    var rotation: Double? = 0.0
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
@@ -1066,7 +1067,8 @@ class SettingsWidgetVideoSource: Codable {
                      cropX: cropX!,
                      cropY: cropY!,
                      cropWidth: cropWidth!,
-                     cropHeight: cropHeight!)
+                     cropHeight: cropHeight!,
+                     rotation: rotation!)
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -4107,6 +4109,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.cropHeight! > 1.0 {
             widget.videoSource!.cropHeight = 1.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.rotation == nil {
+            widget.videoSource!.rotation = 0.0
             store()
         }
     }

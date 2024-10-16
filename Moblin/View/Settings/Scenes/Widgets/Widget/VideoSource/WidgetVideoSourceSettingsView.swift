@@ -176,6 +176,7 @@ struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
     var widget: SettingsWidget
     @State var cornerRadius: Float
+    @State var selectedRotation: Double
 
     private func onCameraChange(cameraId: String) {
         widget.videoSource!
@@ -226,6 +227,18 @@ struct WidgetVideoSourceSettingsView: View {
             }
         } header: {
             Text("Corner radius")
+        }
+        Section {
+            Picker("Rotation", selection: $selectedRotation) {
+                ForEach([0.0, 90.0, 180.0, 270.0], id: \.self) { rotation in
+                    Text("\(Int(rotation))°")
+                        .tag(rotation)
+                }
+            }
+            .onChange(of: selectedRotation) { rotation in
+                widget.videoSource!.rotation = rotation
+                setEffectSettings()
+            }
         }
         Section {
             Toggle(isOn: Binding(get: {

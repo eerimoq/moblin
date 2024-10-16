@@ -9,6 +9,7 @@ struct VideoSourceEffectSettings {
     var cropY: Double = 0
     var cropWidth: Double = 1
     var cropHeight: Double = 1
+    var rotation: Double = 0
 }
 
 final class VideoSourceEffect: VideoEffect {
@@ -61,6 +62,19 @@ final class VideoSourceEffect: VideoEffect {
         )
         else {
             return backgroundImage
+        }
+        if videoSourceImage.extent.height > videoSourceImage.extent.width {
+            videoSourceImage = videoSourceImage.oriented(.left)
+        }
+        switch settings.rotation {
+        case 90:
+            videoSourceImage = videoSourceImage.oriented(.right)
+        case 180:
+            videoSourceImage = videoSourceImage.oriented(.down)
+        case 270:
+            videoSourceImage = videoSourceImage.oriented(.left)
+        default:
+            break
         }
         if settings.cropEnabled {
             videoSourceImage = crop(videoSourceImage: videoSourceImage, settings: settings)
