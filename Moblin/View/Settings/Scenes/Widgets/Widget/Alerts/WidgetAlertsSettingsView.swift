@@ -105,14 +105,6 @@ private struct AlertMediaView: View {
     }
 }
 
-private enum AnchorPoint {
-    case topLeft
-    case topRight
-    case bottomLeft
-    case bottomRight
-    case center
-}
-
 private struct AlertPositionFaceView: View {
     @EnvironmentObject var model: Model
     var alert: SettingsWidgetAlertsAlert
@@ -165,63 +157,16 @@ private struct AlertPositionFaceView: View {
     }
 
     private func createFacePositionPathAndUpdateImage(size: CGSize) -> Path {
-        var xTopLeft = alert.facePosition!.x
-        var yTopLeft = alert.facePosition!.y
-        var xBottomRight = xTopLeft + alert.facePosition!.width
-        var yBottomRight = yTopLeft + alert.facePosition!.height
-        let facePositionX = ((facePosition.x) / size.width + facePositionOffset.width)
-            .clamped(to: 0 ... 1)
-        let facePositionY = ((facePosition.y) / size.height + facePositionOffset.height)
-            .clamped(to: 0 ... 1)
-        let minimumWidth = 0.05
-        let minimumHeight = 0.04
-        switch facePositionAnchorPoint {
-        case .topLeft:
-            if facePositionX + minimumWidth < xBottomRight {
-                xTopLeft = facePositionX
-            }
-            if facePositionY + minimumHeight < yBottomRight {
-                yTopLeft = facePositionY
-            }
-        case .topRight:
-            if facePositionX > xTopLeft + minimumWidth {
-                xBottomRight = facePositionX
-            }
-            if facePositionY + minimumHeight < yBottomRight {
-                yTopLeft = facePositionY
-            }
-        case .bottomLeft:
-            if facePositionX + minimumWidth < xBottomRight {
-                xTopLeft = facePositionX
-            }
-            if facePositionY > yTopLeft + minimumHeight {
-                yBottomRight = facePositionY
-            }
-        case .bottomRight:
-            if facePositionX > xTopLeft + minimumWidth {
-                xBottomRight = facePositionX
-            }
-            if facePositionY > yTopLeft + minimumHeight {
-                yBottomRight = facePositionY
-            }
-        case .center:
-            let halfWidth = alert.facePosition!.width / 2
-            let halfHeight = alert.facePosition!.height / 2
-            var x = alert.facePosition!.x
-            var y = alert.facePosition!.y
-            if facePositionX - halfWidth >= 0 && facePositionX + halfWidth <= 1 {
-                x = facePositionX - halfWidth
-            }
-            if facePositionY - halfHeight >= 0 && facePositionY + halfHeight <= 1 {
-                y = facePositionY - halfHeight
-            }
-            xTopLeft = x
-            yTopLeft = y
-            xBottomRight = x + alert.facePosition!.width
-            yBottomRight = y + alert.facePosition!.height
-        case nil:
-            break
-        }
+        let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
+            facePositionAnchorPoint,
+            alert.facePosition!.x,
+            alert.facePosition!.y,
+            alert.facePosition!.width,
+            alert.facePosition!.height,
+            facePosition,
+            size,
+            facePositionOffset
+        )
         alert.facePosition!.x = xTopLeft
         alert.facePosition!.y = yTopLeft
         alert.facePosition!.width = xBottomRight - xTopLeft
@@ -230,21 +175,7 @@ private struct AlertPositionFaceView: View {
         let yPoints = CGFloat(alert.facePosition!.y) * size.height
         let widthPoints = CGFloat(alert.facePosition!.width) * size.width
         let heightPoints = CGFloat(alert.facePosition!.height) * size.height
-        var path = Path()
-        path.move(to: .init(x: xPoints, y: yPoints))
-        path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints))
-        path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints + heightPoints))
-        path.addLine(to: .init(x: xPoints, y: yPoints + heightPoints))
-        path.addLine(to: .init(x: xPoints, y: yPoints))
-        path.addEllipse(in: .init(x: xPoints - 5, y: yPoints - 5, width: 10, height: 10))
-        path.addEllipse(in: .init(x: xPoints + widthPoints - 5, y: yPoints - 5, width: 10, height: 10))
-        path.addEllipse(in: .init(
-            x: xPoints + widthPoints - 5,
-            y: yPoints + heightPoints - 5,
-            width: 10,
-            height: 10
-        ))
-        path.addEllipse(in: .init(x: xPoints - 5, y: yPoints + heightPoints - 5, width: 10, height: 10))
+        let path = drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
         imageWidth = widthPoints
         imageHeight = heightPoints
         imageOffset = .init(

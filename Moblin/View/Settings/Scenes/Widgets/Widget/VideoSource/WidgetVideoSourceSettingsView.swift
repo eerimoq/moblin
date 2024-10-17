@@ -1,11 +1,104 @@
 import SwiftUI
 
-private enum AnchorPoint {
+enum AnchorPoint {
     case topLeft
     case topRight
     case bottomLeft
     case bottomRight
     case center
+}
+
+func calculatePositioningRectangle(_ positionAnchorPoint: AnchorPoint?,
+                                   _ cropX: Double,
+                                   _ cropY: Double,
+                                   _ cropWidth: Double,
+                                   _ cropHeight: Double,
+                                   _ position: CGPoint,
+                                   _ size: CGSize,
+                                   _ positionOffset: CGSize) -> (Double, Double, Double, Double)
+{
+    var xTopLeft = cropX
+    var yTopLeft = cropY
+    var xBottomRight = xTopLeft + cropWidth
+    var yBottomRight = yTopLeft + cropHeight
+    let positionX = ((position.x) / size.width + positionOffset.width)
+        .clamped(to: 0 ... 1)
+    let positionY = ((position.y) / size.height + positionOffset.height)
+        .clamped(to: 0 ... 1)
+    let minimumWidth = 0.05
+    let minimumHeight = 0.04
+    switch positionAnchorPoint {
+    case .topLeft:
+        if positionX + minimumWidth < xBottomRight {
+            xTopLeft = positionX
+        }
+        if positionY + minimumHeight < yBottomRight {
+            yTopLeft = positionY
+        }
+    case .topRight:
+        if positionX > xTopLeft + minimumWidth {
+            xBottomRight = positionX
+        }
+        if positionY + minimumHeight < yBottomRight {
+            yTopLeft = positionY
+        }
+    case .bottomLeft:
+        if positionX + minimumWidth < xBottomRight {
+            xTopLeft = positionX
+        }
+        if positionY > yTopLeft + minimumHeight {
+            yBottomRight = positionY
+        }
+    case .bottomRight:
+        if positionX > xTopLeft + minimumWidth {
+            xBottomRight = positionX
+        }
+        if positionY > yTopLeft + minimumHeight {
+            yBottomRight = positionY
+        }
+    case .center:
+        let halfWidth = cropWidth / 2
+        let halfHeight = cropHeight / 2
+        var x = cropX
+        var y = cropY
+        if positionX - halfWidth >= 0, positionX + halfWidth <= 1 {
+            x = positionX - halfWidth
+        }
+        if positionY - halfHeight >= 0, positionY + halfHeight <= 1 {
+            y = positionY - halfHeight
+        }
+        xTopLeft = x
+        yTopLeft = y
+        xBottomRight = x + cropWidth
+        yBottomRight = y + cropHeight
+    case nil:
+        break
+    }
+    return (xTopLeft, yTopLeft, xBottomRight, yBottomRight)
+}
+
+func drawPositioningRectangle(
+    _ xPoints: CGFloat,
+    _ yPoints: CGFloat,
+    _ widthPoints: CGFloat,
+    _ heightPoints: CGFloat
+) -> Path {
+    var path = Path()
+    path.move(to: .init(x: xPoints, y: yPoints))
+    path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints))
+    path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints + heightPoints))
+    path.addLine(to: .init(x: xPoints, y: yPoints + heightPoints))
+    path.addLine(to: .init(x: xPoints, y: yPoints))
+    path.addEllipse(in: .init(x: xPoints - 5, y: yPoints - 5, width: 10, height: 10))
+    path.addEllipse(in: .init(x: xPoints + widthPoints - 5, y: yPoints - 5, width: 10, height: 10))
+    path.addEllipse(in: .init(
+        x: xPoints + widthPoints - 5,
+        y: yPoints + heightPoints - 5,
+        width: 10,
+        height: 10
+    ))
+    path.addEllipse(in: .init(x: xPoints - 5, y: yPoints + heightPoints - 5, width: 10, height: 10))
+    return path
 }
 
 private struct CropView: View {
@@ -58,63 +151,16 @@ private struct CropView: View {
     }
 
     private func createPositionPath(size: CGSize) -> Path {
-        var xTopLeft = widget.cropX!
-        var yTopLeft = widget.cropY!
-        var xBottomRight = xTopLeft + widget.cropWidth!
-        var yBottomRight = yTopLeft + widget.cropHeight!
-        let positionX = ((position.x) / size.width + positionOffset.width)
-            .clamped(to: 0 ... 1)
-        let positionY = ((position.y) / size.height + positionOffset.height)
-            .clamped(to: 0 ... 1)
-        let minimumWidth = 0.05
-        let minimumHeight = 0.04
-        switch positionAnchorPoint {
-        case .topLeft:
-            if positionX + minimumWidth < xBottomRight {
-                xTopLeft = positionX
-            }
-            if positionY + minimumHeight < yBottomRight {
-                yTopLeft = positionY
-            }
-        case .topRight:
-            if positionX > xTopLeft + minimumWidth {
-                xBottomRight = positionX
-            }
-            if positionY + minimumHeight < yBottomRight {
-                yTopLeft = positionY
-            }
-        case .bottomLeft:
-            if positionX + minimumWidth < xBottomRight {
-                xTopLeft = positionX
-            }
-            if positionY > yTopLeft + minimumHeight {
-                yBottomRight = positionY
-            }
-        case .bottomRight:
-            if positionX > xTopLeft + minimumWidth {
-                xBottomRight = positionX
-            }
-            if positionY > yTopLeft + minimumHeight {
-                yBottomRight = positionY
-            }
-        case .center:
-            let halfWidth = widget.cropWidth! / 2
-            let halfHeight = widget.cropHeight! / 2
-            var x = widget.cropX!
-            var y = widget.cropY!
-            if positionX - halfWidth >= 0 && positionX + halfWidth <= 1 {
-                x = positionX - halfWidth
-            }
-            if positionY - halfHeight >= 0 && positionY + halfHeight <= 1 {
-                y = positionY - halfHeight
-            }
-            xTopLeft = x
-            yTopLeft = y
-            xBottomRight = x + widget.cropWidth!
-            yBottomRight = y + widget.cropHeight!
-        case nil:
-            break
-        }
+        let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
+            positionAnchorPoint,
+            widget.cropX!,
+            widget.cropY!,
+            widget.cropWidth!,
+            widget.cropHeight!,
+            position,
+            size,
+            positionOffset
+        )
         widget.cropX = xTopLeft
         widget.cropY = yTopLeft
         widget.cropWidth = xBottomRight - xTopLeft
@@ -124,22 +170,7 @@ private struct CropView: View {
         let yPoints = CGFloat(widget.cropY!) * size.height
         let widthPoints = CGFloat(widget.cropWidth!) * size.width
         let heightPoints = CGFloat(widget.cropHeight!) * size.height
-        var path = Path()
-        path.move(to: .init(x: xPoints, y: yPoints))
-        path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints))
-        path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints + heightPoints))
-        path.addLine(to: .init(x: xPoints, y: yPoints + heightPoints))
-        path.addLine(to: .init(x: xPoints, y: yPoints))
-        path.addEllipse(in: .init(x: xPoints - 5, y: yPoints - 5, width: 10, height: 10))
-        path.addEllipse(in: .init(x: xPoints + widthPoints - 5, y: yPoints - 5, width: 10, height: 10))
-        path.addEllipse(in: .init(
-            x: xPoints + widthPoints - 5,
-            y: yPoints + heightPoints - 5,
-            width: 10,
-            height: 10
-        ))
-        path.addEllipse(in: .init(x: xPoints - 5, y: yPoints + heightPoints - 5, width: 10, height: 10))
-        return path
+        return drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
     }
 
     var body: some View {
