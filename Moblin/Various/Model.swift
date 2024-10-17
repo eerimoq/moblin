@@ -181,7 +181,6 @@ struct ChatHighlight {
     let color: Color
     let image: String
     let title: String
-    let skipTextToSpeech: Bool
 
     func toWatchProtocol() -> WatchProtocolChatHighlight {
         let watchProtocolKind: WatchProtocolChatHighlightKind
@@ -223,6 +222,7 @@ struct ChatPost: Identifiable, Equatable {
     var timestampTime: ContinuousClock.Instant
     var isAction: Bool
     var isSubscriber: Bool
+    var bits: String?
     var highlight: ChatHighlight?
 }
 
@@ -2460,6 +2460,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isAction: false,
             isSubscriber: false,
             isModerator: false,
+            bits: nil,
             highlight: nil
         )
     }
@@ -2618,7 +2619,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return false
             }
         }
-        if post.highlight?.skipTextToSpeech == true {
+        if post.bits != nil {
             return false
         }
         if isAlertMessage(post: post) && isTextToSpeechEnabledForAnyAlertWidget() {
@@ -4472,6 +4473,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         isAction: Bool,
         isSubscriber: Bool,
         isModerator: Bool,
+        bits: String?,
         highlight: ChatHighlight?
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
@@ -4500,6 +4502,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             timestampTime: timestampTime,
             isAction: isAction,
             isSubscriber: isSubscriber,
+            bits: bits,
             highlight: highlight
         )
         chatPostId += 1
@@ -8477,7 +8480,6 @@ extension Model: TwitchEventSubDelegate {
                 text: "\(text) \(event.message)",
                 title: String(localized: "Cheer"),
                 color: .green,
-                skipTextToSpeech: true,
                 image: "suit.diamond"
             )
         }
@@ -8546,7 +8548,6 @@ extension Model: TwitchEventSubDelegate {
         text: String,
         title: String,
         color: Color,
-        skipTextToSpeech: Bool = false,
         image: String? = nil,
         kind: ChatHighlightKind? = nil
     ) {
@@ -8562,12 +8563,12 @@ extension Model: TwitchEventSubDelegate {
                           isAction: false,
                           isSubscriber: false,
                           isModerator: false,
+                          bits: nil,
                           highlight: .init(
                               kind: kind ?? .redemption,
                               color: color,
                               image: image ?? "medal",
-                              title: title,
-                              skipTextToSpeech: skipTextToSpeech
+                              title: title
                           ))
     }
 

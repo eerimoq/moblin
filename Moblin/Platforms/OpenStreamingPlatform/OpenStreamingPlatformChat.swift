@@ -230,6 +230,7 @@ class OpenStreamingPlatformChat {
                                     isAction: false,
                                     isSubscriber: false,
                                     isModerator: false,
+                                    bits: nil,
                                     highlight: nil)
         }
     }

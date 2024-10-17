@@ -13,8 +13,7 @@ private func createPaidMessageHighlight(chatDescription: ChatDescription) -> Cha
         kind: .other,
         color: .orange,
         image: "message",
-        title: String(localized: "Super Chat\(amount)"),
-        skipTextToSpeech: false
+        title: String(localized: "Super Chat\(amount)")
     )
 }
 
@@ -27,14 +26,12 @@ private func createPaidStickerHighlight(chatDescription: ChatDescription) -> Cha
         kind: .other,
         color: .green,
         image: "doc.plaintext",
-        title: String(localized: "Super Sticker\(amount)"),
-        skipTextToSpeech: false
+        title: String(localized: "Super Sticker\(amount)")
     )
 }
 
 private func createMemberHighlight() -> ChatHighlight {
-    return ChatHighlight(kind: .other, color: .blue, image: "medal", title: String(localized: "Member"),
-                         skipTextToSpeech: false)
+    return ChatHighlight(kind: .other, color: .blue, image: "medal", title: String(localized: "Member"))
 }
 
 private struct InvalidationContinuationData: Codable {
@@ -311,6 +308,7 @@ final class YouTubeLiveChat: NSObject {
                                     isAction: false,
                                     isSubscriber: false,
                                     isModerator: false,
+                                    bits: nil,
                                     highlight: highlight)
         }
         return 1

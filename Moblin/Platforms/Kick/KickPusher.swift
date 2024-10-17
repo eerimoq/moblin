@@ -194,6 +194,7 @@ final class KickPusher: NSObject {
             isAction: false,
             isSubscriber: message.isSubscriber(),
             isModerator: message.isModerator(),
+            bits: nil,
             highlight: nil
         )
     }
