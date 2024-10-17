@@ -33,7 +33,7 @@ final class VideoSourceEffect: VideoEffect {
         self.settings.mutate { $0 = settings }
     }
 
-    private func crop(videoSourceImage: CIImage, settings: VideoSourceEffectSettings) -> CIImage {
+    private func crop(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
         let cropX = toPixels(100 * settings.cropX, videoSourceImage.extent.width)
         let cropY = toPixels(100 * settings.cropY, videoSourceImage.extent.height)
         let cropWidth = toPixels(100 * settings.cropWidth, videoSourceImage.extent.width)
@@ -51,6 +51,27 @@ final class VideoSourceEffect: VideoEffect {
             ))
     }
 
+    private func rotate(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
+        var rotation = 0.0
+        if videoSourceImage.extent.height > videoSourceImage.extent.width {
+            rotation = -90
+        }
+        rotation += settings.rotation
+        if rotation == -90 {
+            rotation = 270
+        }
+        switch rotation {
+        case 90:
+            return videoSourceImage.oriented(.right)
+        case 180:
+            return videoSourceImage.oriented(.down)
+        case 270:
+            return videoSourceImage.oriented(.left)
+        default:
+            return videoSourceImage
+        }
+    }
+
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget = sceneWidget.value else {
             return backgroundImage
@@ -63,21 +84,9 @@ final class VideoSourceEffect: VideoEffect {
         else {
             return backgroundImage
         }
-        if videoSourceImage.extent.height > videoSourceImage.extent.width {
-            videoSourceImage = videoSourceImage.oriented(.left)
-        }
-        switch settings.rotation {
-        case 90:
-            videoSourceImage = videoSourceImage.oriented(.right)
-        case 180:
-            videoSourceImage = videoSourceImage.oriented(.down)
-        case 270:
-            videoSourceImage = videoSourceImage.oriented(.left)
-        default:
-            break
-        }
+        videoSourceImage = rotate(videoSourceImage, settings)
         if settings.cropEnabled {
-            videoSourceImage = crop(videoSourceImage: videoSourceImage, settings: settings)
+            videoSourceImage = crop(videoSourceImage, settings)
         }
         let size = backgroundImage.extent.size
         let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
