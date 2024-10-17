@@ -2621,7 +2621,40 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if post.highlight?.skipTextToSpeech == true {
             return false
         }
+        if isAlertMessage(post: post) && isTextToSpeechEnabledForAnyAlertWidget() {
+            return false
+        }
         return true
+    }
+
+    private func isAlertMessage(post: ChatPost) -> Bool {
+        switch post.highlight?.kind {
+        case .redemption:
+            return true
+        case .newFollower:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func isTextToSpeechEnabledForAnyAlertWidget() -> Bool {
+        for alertEffect in enabledAlertsEffects {
+            let settings = alertEffect.getSettings()
+            if settings.twitch!.follows.isTextToSpeechEnabled() {
+                return true
+            }
+            if settings.twitch!.subscriptions.isTextToSpeechEnabled() {
+                return true
+            }
+            if settings.twitch!.raids!.isTextToSpeechEnabled() {
+                return true
+            }
+            if settings.twitch!.cheers!.isTextToSpeechEnabled() {
+                return true
+            }
+        }
+        return false
     }
 
     private func setTextToSpeechStreamerMentions() {

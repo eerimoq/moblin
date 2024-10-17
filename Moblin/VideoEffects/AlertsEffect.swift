@@ -248,6 +248,10 @@ final class AlertsEffect: VideoEffect {
         self.settings = settings
     }
 
+    func getSettings() -> SettingsWidgetAlerts {
+        return settings
+    }
+
     func setPosition(x: Double, y: Double) {
         lockQueue.sync {
             self.x = x

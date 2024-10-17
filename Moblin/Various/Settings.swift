@@ -948,6 +948,10 @@ class SettingsWidgetAlertsAlert: Codable {
     var positionType: SettingsWidgetAlertPositionType? = .scene
     var facePosition: SettingsWidgetAlertFacePosition? = .init()
 
+    func isTextToSpeechEnabled() -> Bool {
+        return enabled && textToSpeechEnabled!
+    }
+
     func clone() -> SettingsWidgetAlertsAlert {
         let new = SettingsWidgetAlertsAlert()
         new.enabled = enabled
