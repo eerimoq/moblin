@@ -101,6 +101,44 @@ func drawPositioningRectangle(
     return path
 }
 
+func calculatePositioningAnchorPoint(_ location: CGPoint,
+                                     _ size: CGSize,
+                                     _ cropX: Double,
+                                     _ cropY: Double,
+                                     _ cropWidth: Double,
+                                     _ cropHeight: Double) -> (AnchorPoint?, CGSize)
+{
+    let x = location.x / size.width
+    let y = location.y / size.height
+    let xTopLeft = cropX
+    let yTopLeft = cropY
+    let xBottomRight = cropX + cropWidth
+    let yBottomRight = cropY + cropHeight
+    let xCenter = xTopLeft + cropWidth / 2
+    let yCenter = yTopLeft + cropHeight / 2
+    let xCenterTopLeft = xTopLeft + cropWidth / 4
+    let yCenterTopLeft = yTopLeft + cropHeight / 4
+    let xCenterBottomRight = xBottomRight - cropWidth / 4
+    let yCenterBottomRight = yBottomRight - cropHeight / 4
+    if x > xCenterTopLeft && x < xCenterBottomRight && y > yCenterTopLeft && y < yCenterBottomRight {
+        return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
+    } else if x + 0.1 < xTopLeft || x > xBottomRight + 0.1 || y + 0.1 < yTopLeft || y > yBottomRight +
+        0.1
+    {
+        return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
+    } else if x < xCenterTopLeft, y < yCenterTopLeft {
+        return (.topLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yTopLeft - y)))
+    } else if x > xCenterBottomRight, y < yCenterTopLeft {
+        return (.topRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yTopLeft - y)))
+    } else if x < xCenterTopLeft, y > yCenterBottomRight {
+        return (.bottomLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yBottomRight - y)))
+    } else if x > xCenterBottomRight, y > yCenterBottomRight {
+        return (.bottomRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yBottomRight - y)))
+    } else {
+        return (nil, .zero)
+    }
+}
+
 private struct CropView: View {
     @EnvironmentObject var model: Model
     var widgetId: UUID
@@ -109,43 +147,15 @@ private struct CropView: View {
     @State private var positionOffset: CGSize = .init(width: 0, height: 0)
     @State private var positionAnchorPoint: AnchorPoint?
 
-    private func calculatePositionAnchorPoint(location: CGPoint, size: CGSize) -> (AnchorPoint?, CGSize) {
-        let x = location.x / size.width
-        let y = location.y / size.height
-        let xTopLeft = widget.cropX!
-        let yTopLeft = widget.cropY!
-        let xBottomRight = widget.cropX! + widget.cropWidth!
-        let yBottomRight = widget.cropY! + widget.cropHeight!
-        let xCenter = xTopLeft + widget.cropWidth! / 2
-        let yCenter = yTopLeft + widget.cropHeight! / 2
-        let xCenterTopLeft = xTopLeft + widget.cropWidth! / 4
-        let yCenterTopLeft = yTopLeft + widget.cropHeight! / 4
-        let xCenterBottomRight = xBottomRight - widget.cropWidth! / 4
-        let yCenterBottomRight = yBottomRight - widget.cropHeight! / 4
-        if x > xCenterTopLeft && x < xCenterBottomRight && y > yCenterTopLeft && y < yCenterBottomRight {
-            return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
-        } else if x + 0.1 < xTopLeft || x > xBottomRight + 0.1 || y + 0.1 < yTopLeft || y > yBottomRight +
-            0.1
-        {
-            return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
-        } else if x < xCenterTopLeft && y < yCenterTopLeft {
-            return (.topLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yTopLeft - y)))
-        } else if x > xCenterBottomRight && y < yCenterTopLeft {
-            return (.topRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yTopLeft - y)))
-        } else if x < xCenterTopLeft && y > yCenterBottomRight {
-            return (.bottomLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yBottomRight - y)))
-        } else if x > xCenterBottomRight && y > yCenterBottomRight {
-            return (.bottomRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yBottomRight - y)))
-        } else {
-            return (nil, .zero)
-        }
-    }
-
     private func updatePositionAnchorPoint(location: CGPoint, size: CGSize) {
         if positionAnchorPoint == nil {
-            (positionAnchorPoint, positionOffset) = calculatePositionAnchorPoint(
-                location: location,
-                size: size
+            (positionAnchorPoint, positionOffset) = calculatePositioningAnchorPoint(
+                location,
+                size,
+                widget.cropX!,
+                widget.cropY!,
+                widget.cropWidth!,
+                widget.cropHeight!
             )
         }
     }

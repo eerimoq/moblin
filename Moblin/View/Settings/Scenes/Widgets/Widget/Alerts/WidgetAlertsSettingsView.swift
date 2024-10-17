@@ -115,43 +115,15 @@ private struct AlertPositionFaceView: View {
     @State private var imageHeight: CGFloat = 100
     @State private var imageOffset: CGSize = .init(width: 0, height: 0)
 
-    private func calculateFacePositionAnchorPoint(location: CGPoint, size: CGSize) -> (AnchorPoint?, CGSize) {
-        let x = location.x / size.width
-        let y = location.y / size.height
-        let xTopLeft = alert.facePosition!.x
-        let yTopLeft = alert.facePosition!.y
-        let xBottomRight = alert.facePosition!.x + alert.facePosition!.width
-        let yBottomRight = alert.facePosition!.y + alert.facePosition!.height
-        let xCenter = xTopLeft + alert.facePosition!.width / 2
-        let yCenter = yTopLeft + alert.facePosition!.height / 2
-        let xCenterTopLeft = xTopLeft + alert.facePosition!.width / 4
-        let yCenterTopLeft = yTopLeft + alert.facePosition!.height / 4
-        let xCenterBottomRight = xBottomRight - alert.facePosition!.width / 4
-        let yCenterBottomRight = yBottomRight - alert.facePosition!.height / 4
-        if x > xCenterTopLeft && x < xCenterBottomRight && y > yCenterTopLeft && y < yCenterBottomRight {
-            return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
-        } else if x + 0.1 < xTopLeft || x > xBottomRight + 0.1 || y + 0.1 < yTopLeft || y > yBottomRight +
-            0.1
-        {
-            return (.center, .init(width: CGFloat(xCenter - x), height: CGFloat(yCenter - y)))
-        } else if x < xCenterTopLeft && y < yCenterTopLeft {
-            return (.topLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yTopLeft - y)))
-        } else if x > xCenterBottomRight && y < yCenterTopLeft {
-            return (.topRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yTopLeft - y)))
-        } else if x < xCenterTopLeft && y > yCenterBottomRight {
-            return (.bottomLeft, .init(width: CGFloat(xTopLeft - x), height: CGFloat(yBottomRight - y)))
-        } else if x > xCenterBottomRight && y > yCenterBottomRight {
-            return (.bottomRight, .init(width: CGFloat(xBottomRight - x), height: CGFloat(yBottomRight - y)))
-        } else {
-            return (nil, .zero)
-        }
-    }
-
     private func updateFacePositionAnchorPoint(location: CGPoint, size: CGSize) {
         if facePositionAnchorPoint == nil {
-            (facePositionAnchorPoint, facePositionOffset) = calculateFacePositionAnchorPoint(
-                location: location,
-                size: size
+            (facePositionAnchorPoint, facePositionOffset) = calculatePositioningAnchorPoint(
+                location,
+                size,
+                alert.facePosition!.x,
+                alert.facePosition!.y,
+                alert.facePosition!.width,
+                alert.facePosition!.height
             )
         }
     }
