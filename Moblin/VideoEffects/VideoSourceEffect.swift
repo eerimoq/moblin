@@ -52,15 +52,7 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     private func rotate(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
-        var rotation = 0.0
-        if videoSourceImage.extent.height > videoSourceImage.extent.width {
-            rotation = -90
-        }
-        rotation += settings.rotation
-        if rotation == -90 {
-            rotation = 270
-        }
-        switch rotation {
+        switch settings.rotation {
         case 90:
             return videoSourceImage.oriented(.right)
         case 180:
@@ -84,10 +76,13 @@ final class VideoSourceEffect: VideoEffect {
         else {
             return backgroundImage
         }
-        videoSourceImage = rotate(videoSourceImage, settings)
+        if videoSourceImage.extent.height > videoSourceImage.extent.width {
+            videoSourceImage = videoSourceImage.oriented(.left)
+        }
         if settings.cropEnabled {
             videoSourceImage = crop(videoSourceImage, settings)
         }
+        videoSourceImage = rotate(videoSourceImage, settings)
         let size = backgroundImage.extent.size
         let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
         let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
