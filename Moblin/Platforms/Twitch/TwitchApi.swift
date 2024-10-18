@@ -305,7 +305,7 @@ class TwitchApi {
 
     func getCheermotes(
         broadcasterId: String,
-        onComplete: @escaping (TwitchApiGetCheermotesData?) -> Void
+        onComplete: @escaping ([TwitchApiGetCheermotesData]?) -> Void
     ) {
         doGet(
             subPath: "bits/cheermotes?broadcaster_id=\(broadcasterId)",
@@ -314,7 +314,7 @@ class TwitchApi {
                     TwitchApiGetCheermotes.self,
                     from: data ?? Data()
                 )
-                onComplete(data?.data.first)
+                onComplete(data?.data)
             }
         )
     }
