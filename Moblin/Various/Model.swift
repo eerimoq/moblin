@@ -2850,9 +2850,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let location = locationManager.getLatestKnownLocation()
         if let latestKnownLocation {
-            distance += location?.distance(from: latestKnownLocation) ?? 0
+            let distance = location?.distance(from: latestKnownLocation) ?? 0
+            if distance > latestKnownLocation.horizontalAccuracy {
+                self.distance += distance
+                self.latestKnownLocation = location
+            }
+        } else {
+            latestKnownLocation = location
         }
-        latestKnownLocation = location
         let weather = weatherManager.getLatestWeather()
         let placemark = geographyManager.getLatestPlacemark()
         let stats = TextEffectStats(
