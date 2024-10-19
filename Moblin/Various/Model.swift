@@ -8485,7 +8485,8 @@ extension Model: TwitchEventSubDelegate {
                 text: "\(text) \(event.message)",
                 title: String(localized: "Cheer"),
                 color: .green,
-                image: "suit.diamond"
+                image: "suit.diamond",
+                bits: ""
             )
         }
     }
@@ -8554,15 +8555,15 @@ extension Model: TwitchEventSubDelegate {
         title: String,
         color: Color,
         image: String? = nil,
-        kind: ChatHighlightKind? = nil
+        kind: ChatHighlightKind? = nil,
+        bits: String? = nil
     ) {
-        var id = 0
         appendChatMessage(platform: .twitch,
                           user: user,
                           userId: nil,
                           userColor: nil,
                           userBadges: [],
-                          segments: makeChatPostTextSegments(text: text, id: &id),
+                          segments: twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits),
                           timestamp: digitalClock,
                           timestampTime: .now,
                           isAction: false,

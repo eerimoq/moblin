@@ -85,7 +85,7 @@ private class Badges {
 private class Cheermotes {
     private var channelId: String = ""
     private var accessToken: String = ""
-    var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
+    private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
     private var tryFetchAgainTimer: DispatchSourceTimer?
 
     func start(channelId: String, accessToken: String) {
@@ -108,7 +108,9 @@ private class Cheermotes {
                 return
             }
             DispatchQueue.main.async {
-                self.addEmotes(datas: datas)
+                for data in datas {
+                    self.emotes[data.prefix.lowercased()] = data.tiers
+                }
                 self.stopTryFetchAgainTimer()
             }
         }
@@ -128,10 +130,25 @@ private class Cheermotes {
         tryFetchAgainTimer = nil
     }
 
-    private func addEmotes(datas: [TwitchApiGetCheermotesData]) {
-        for data in datas {
-            emotes[data.prefix.lowercased()] = data.tiers
+    func getUrl(word: String) -> URL? {
+        let word = word.lowercased()
+        for (prefix, tiers) in emotes {
+            guard let regex = try? Regex("\(prefix)(\\d+)\\s", as: (Substring, Int).self) else {
+                continue
+            }
+            guard let match = try? regex.wholeMatch(in: word) else {
+                continue
+            }
+            let bits = match.output.1
+            guard let tier = tiers.reversed().first(where: { bits >= $0.min_bits }) else {
+                continue
+            }
+            guard let url = URL(string: tier.images.dark.static_.two) else {
+                continue
+            }
+            return url
         }
+        return nil
     }
 }
 
@@ -221,6 +238,10 @@ final class TwitchChatMoblin {
             bits: message.bits,
             highlight: createHighlight(message: message)
         )
+    }
+
+    func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
+        return createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
     }
 
     private func createHighlight(message: ChatMessage) -> ChatHighlight? {
@@ -341,30 +362,22 @@ final class TwitchChatMoblin {
             }
         }
         if bits != nil {
-            for index in 0 ..< segments.count {
-                guard let text = segments[index].text else {
-                    continue
-                }
-                for (prefix, tiers) in cheermotes.emotes {
-                    guard let regex = try? Regex("\(prefix)(\\d+)\\s", as: (Substring, Substring).self) else {
-                        continue
-                    }
-                    guard let match = try? regex.wholeMatch(in: text.lowercased()) else {
-                        continue
-                    }
-                    guard let bits = Int(match.output.1) else {
-                        continue
-                    }
-                    guard let tier = tiers.reversed().first(where: { bits >= $0.min_bits }) else {
-                        continue
-                    }
-                    if let url = URL(string: tier.images.dark.static_.two) {
-                        segments[index] = .init(id: segments[index].id, text: nil, url: url)
-                    }
-                }
-            }
+            replaceCheermotes(segments: &segments)
         }
         return segments
+    }
+
+    private func replaceCheermotes(segments: inout [ChatPostSegment]) {
+        for index in 0 ..< segments.count {
+            guard let text = segments[index].text else {
+                continue
+            }
+            guard let url = cheermotes.getUrl(word: text) else {
+                continue
+            }
+            segments[index].text = nil
+            segments[index].url = url
+        }
     }
 }
 

@@ -452,7 +452,8 @@ final class AlertsEffect: VideoEffect {
     }
 
     @MainActor
-    private func renderMessage(username: String, message: String,
+    private func renderMessage(username: String,
+                               message: String,
                                settings: SettingsWidgetAlertsAlert) -> CIImage?
     {
         let words = message.split(separator: " ").map { Word(text: String($0)) }
