@@ -130,23 +130,25 @@ private class Cheermotes {
         tryFetchAgainTimer = nil
     }
 
-    func getUrl(word: String) -> URL? {
-        let word = word.lowercased()
+    func getUrlAndBits(word: String) -> (URL, Int)? {
+        let word = word.lowercased().trim()
         for (prefix, tiers) in emotes {
-            guard let regex = try? Regex("\(prefix)(\\d+)\\s", as: (Substring, Int).self) else {
+            guard let regex = try? Regex("\(prefix)(\\d+)", as: (Substring, Substring).self) else {
                 continue
             }
             guard let match = try? regex.wholeMatch(in: word) else {
                 continue
             }
-            let bits = match.output.1
+            guard let bits = Int(match.output.1) else {
+                continue
+            }
             guard let tier = tiers.reversed().first(where: { bits >= $0.min_bits }) else {
                 continue
             }
             guard let url = URL(string: tier.images.dark.static_.two) else {
                 continue
             }
-            return url
+            return (url, bits)
         }
         return nil
     }
@@ -362,22 +364,31 @@ final class TwitchChatMoblin {
             }
         }
         if bits != nil {
-            replaceCheermotes(segments: &segments)
+            segments = replaceCheermotes(segments: segments)
         }
         return segments
     }
 
-    private func replaceCheermotes(segments: inout [ChatPostSegment]) {
-        for index in 0 ..< segments.count {
-            guard let text = segments[index].text else {
-                continue
-            }
-            guard let url = cheermotes.getUrl(word: text) else {
-                continue
-            }
-            segments[index].text = nil
-            segments[index].url = url
+    private func replaceCheermotes(segments: [ChatPostSegment]) -> [ChatPostSegment] {
+        var newSegments: [ChatPostSegment] = []
+        guard var id = segments.last?.id else {
+            return newSegments
         }
+        for segment in segments {
+            guard let text = segment.text else {
+                newSegments.append(segment)
+                continue
+            }
+            guard let (url, bits) = cheermotes.getUrlAndBits(word: text) else {
+                newSegments.append(segment)
+                continue
+            }
+            id += 1
+            newSegments.append(.init(id: id, url: url))
+            id += 1
+            newSegments.append(.init(id: id, text: "\(bits) "))
+        }
+        return newSegments
     }
 }
 
