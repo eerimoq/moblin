@@ -257,14 +257,18 @@ struct WidgetVideoSourceSettingsView: View {
             }
         }
         Section {
-            Slider(
-                value: $cornerRadius,
-                in: 0 ... 1,
-                step: 0.01
-            )
-            .onChange(of: cornerRadius) { _ in
-                widget.videoSource!.cornerRadius = cornerRadius
-                setEffectSettings()
+            HStack {
+                Slider(
+                    value: $cornerRadius,
+                    in: 0 ... 1,
+                    step: 0.01
+                )
+                .onChange(of: cornerRadius) { _ in
+                    widget.videoSource!.cornerRadius = cornerRadius
+                    setEffectSettings()
+                }
+                Text(String(Int(cornerRadius * 100)))
+                    .frame(width: 35)
             }
         } header: {
             Text("Corner radius")
