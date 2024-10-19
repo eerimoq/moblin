@@ -5162,7 +5162,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateSpeed(now: ContinuousClock.Instant) {
         if isLive {
-            let speed = media.streamSpeed()
+            let speed = Int64(media.getVideoStreamBitrate(bitrate: stream.bitrate))
             checkLowBitrate(speed: speed, now: now)
             streamingHistoryStream?.updateBitrate(bitrate: speed)
             speedMbpsOneDecimal = String(format: "%.1f", Double(speed) / 1_000_000)
