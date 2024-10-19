@@ -236,7 +236,7 @@ extension DjiDevice: CBPeripheralDelegate {
             logger.info("dji-device: Discarding corrupt message \(value.hexString())")
             return
         }
-        logger.debug("dji-device: Got \(message.format())")
+        // logger.debug("dji-device: Got \(message.format())")
         switch state {
         case .checkingIfPaired:
             processCheckingIfPaired(response: message)

@@ -46,9 +46,11 @@ private class ReplaceVideo {
     private var currentSampleBuffer: CMSampleBuffer?
     private var timeOffset = 0.0
     private let name: String
+    private let update: Bool
 
-    init(name: String) {
+    init(name: String, update: Bool) {
         self.name = name
+        self.update = update
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -62,6 +64,9 @@ private class ReplaceVideo {
     }
 
     func updateSampleBuffer(_ outputPresentationTimeStamp: Double) {
+        guard update else {
+            return
+        }
         var numberOfBuffersConsumed = 0
         while let inputSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
@@ -107,7 +112,7 @@ private class ReplaceVideo {
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
-                replace-video: \(name): Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
+                replace-video: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output time \(outputPresentationTimeStamp) \
                 Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
@@ -220,7 +225,7 @@ final class VideoUnit: NSObject {
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
-        replaceVideos[builtinCameraId] = ReplaceVideo(name: "Builtin")
+        replaceVideos[builtinCameraId] = ReplaceVideo(name: "Builtin", update: false)
         startFrameTimer()
     }
 
@@ -757,7 +762,7 @@ final class VideoUnit: NSObject {
     }
 
     private func addReplaceVideoInner(cameraId: UUID, name: String) {
-        replaceVideos[cameraId] = ReplaceVideo(name: name)
+        replaceVideos[cameraId] = ReplaceVideo(name: name, update: true)
     }
 
     private func removeReplaceVideoInner(cameraId: UUID) {

@@ -98,7 +98,7 @@ private class ReplaceAudio {
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
-                replace-audio: \(name): Skipping \(numberOfBuffersConsumed - 1) buffer(s). \
+                replace-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output time \(outputPresentationTimeStamp) \
                 Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
