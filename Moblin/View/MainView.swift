@@ -16,9 +16,9 @@ private struct CloseButtonView: View {
                         .frame(width: 30, height: 30)
                         .overlay(
                             Circle()
-                                .stroke(.secondary)
+                                .stroke(.gray)
                         )
-                        .foregroundColor(.primary)
+                        .foregroundColor(.gray)
                         .padding(7)
                 }
                 Spacer()
