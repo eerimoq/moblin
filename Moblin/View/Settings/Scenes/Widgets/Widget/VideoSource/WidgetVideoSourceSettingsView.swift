@@ -185,7 +185,7 @@ private struct CropView: View {
 
     var body: some View {
         ZStack {
-            Image("AlertFace")
+            Image("GamlaLinkoping")
                 .resizable()
                 .aspectRatio(16 / 9, contentMode: .fit)
             GeometryReader { reader in
