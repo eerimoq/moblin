@@ -2326,6 +2326,8 @@ private let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Coin dropping"),
     SettingsAlertsMediaGalleryItem(name: "Fart"),
     SettingsAlertsMediaGalleryItem(name: "Fart 2"),
+    SettingsAlertsMediaGalleryItem(name: "Bad chili fart"),
+    SettingsAlertsMediaGalleryItem(name: "Perfect fart"),
     SettingsAlertsMediaGalleryItem(name: "Silence"),
 ]
 

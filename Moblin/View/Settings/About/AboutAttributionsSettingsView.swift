@@ -7,6 +7,14 @@ private struct Attribution {
 
 private let soundAttributions: [Attribution] = [
     Attribution(
+        name: "Bad chili fart",
+        text: [
+            "Bad Chili Fart.wav by deleted_user_1391979",
+            "-- https://freesound.org/s/94989/",
+            "-- License: Creative Commons 0",
+        ]
+    ),
+    Attribution(
         name: "Boing",
         text: [
             "Boing.wav by juskiddink",
@@ -83,6 +91,14 @@ private let soundAttributions: [Attribution] = [
         text: [
             "Nya.wav by Mike_bes",
             "-- https://freesound.org/s/336012/",
+            "-- License: Creative Commons 0",
+        ]
+    ),
+    Attribution(
+        name: "Perfect fart",
+        text: [
+            "perfect-fart.mp3 by TV_LING",
+            "-- https://freesound.org/s/523467/",
             "-- License: Creative Commons 0",
         ]
     ),
