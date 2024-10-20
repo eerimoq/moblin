@@ -29,7 +29,7 @@ struct WidgetSettingsView: View {
                     }
                     .onChange(of: type) {
                         widget.type = SettingsWidgetType.fromString(value: $0)
-                        model.resetSelectedScene()
+                        model.resetSelectedScene(changeScene: false)
                     }
                 }
             }
