@@ -48,7 +48,10 @@ struct StreamSettingsView: View {
                         Text("Audio")
                     }
                     NavigationLink {
-                        StreamRecordingSettingsView(stream: stream)
+                        StreamRecordingSettingsView(
+                            stream: stream,
+                            videoCodec: stream.recording!.videoCodec.rawValue
+                        )
                     } label: {
                         Text("Recording")
                     }

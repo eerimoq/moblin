@@ -3,12 +3,14 @@ import SwiftUI
 struct StreamRecordingSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
+    @State var videoCodec: String
 
     private var recording: SettingsStreamRecording {
         return stream.recording!
     }
 
     private func onVideoCodecChange(codec: String) {
+        videoCodec = codec
         recording.videoCodec = SettingsStreamCodec(rawValue: codec)!
     }
 
@@ -38,7 +40,7 @@ struct StreamRecordingSettingsView: View {
                     Text("Video codec")
                     Spacer()
                     Picker("", selection: Binding(get: {
-                        recording.videoCodec.rawValue
+                        videoCodec
                     }, set: onVideoCodecChange)) {
                         ForEach(codecs, id: \.self) {
                             Text($0)
