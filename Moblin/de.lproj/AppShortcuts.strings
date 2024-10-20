@@ -1,0 +1,9 @@
+/* No comment provided by engineer. */
+"${applicationName}, mute" = "${applicationName}, stumm";
+
+/* No comment provided by engineer. */
+"${applicationName}, take snapshot" = "${applicationName}, Schnappschuss machen";
+
+/* No comment provided by engineer. */
+"${applicationName}, unmute" = "${applicationName}, Stummschaltung aufheben";
+

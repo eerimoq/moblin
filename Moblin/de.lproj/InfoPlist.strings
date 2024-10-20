@@ -4,8 +4,20 @@
 /* Bundle name */
 "CFBundleName" = "Moblin";
 
+/* Privacy - Bluetooth Always Usage Description */
+"NSBluetoothAlwaysUsageDescription" = "Moblin kommuniziert mit DJI-Kameras über Bluetooth.";
+
 /* Privacy - Camera Usage Description */
 "NSCameraUsageDescription" = "Moblin streamt live Videos von der Kamera.";
+
+/* Privacy - Health Records Usage Description */
+"NSHealthClinicalHealthRecordsShareUsageDescription" = "Moblin kann deine Herzfrequenz im Stream anzeigen.";
+
+/* Privacy - Health Share Usage Description */
+"NSHealthShareUsageDescription" = "Moblin kann deine Herzfrequenz im Stream anzeigen.";
+
+/* Privacy - Health Update Usage Description */
+"NSHealthUpdateUsageDescription" = "Moblin kann deine Herzfrequenz im Stream anzeigen.";
 
 /* Privacy - Local Network Usage Description */
 "NSLocalNetworkUsageDescription" = "Moblin verwendet Localhost als Eingabe und Ausgabe für die SRT-Bibliothek.";
@@ -21,4 +33,7 @@
 
 /* Privacy - Photo Library Usage Description */
 "NSPhotoLibraryUsageDescription" = "Moblin zeigt ausgewählte Bilder als Overlays an.";
+
+/* Privacy - Speech Recognition Usage Description */
+"NSSpeechRecognitionUsageDescription" = "Moblin kann dem Stream eine Transkription hinzufügen.";
 

@@ -559,8 +559,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : ": "
+            "state" : "translated",
+            "value" : ":"
           }
         },
         "el" : {
@@ -949,7 +949,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin filter <filter> <on/off>"
           }
         },
@@ -1339,7 +1339,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin snapshot"
           }
         },
@@ -2509,7 +2509,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{date} – Datum anzeigen"
           }
         },
@@ -2899,7 +2899,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{fullDate} – Vollständiges Datum anzeigen"
           }
         },
@@ -5533,6 +5533,12 @@
     },
     "%@ %@ commercial starting" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@ Werbung startet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -7269,7 +7275,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "<filter> ist Film, Graustufen, Sepia, Dreifach, Pixelliert oder 4:3."
           }
         },
@@ -7399,7 +7405,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "<on/off> ist ein oder aus."
           }
         },
@@ -9477,6 +9483,12 @@
     },
     "1 minute" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Minute"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9617,6 +9629,12 @@
     },
     "2 minutes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Minuten"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9763,6 +9781,12 @@
     },
     "3 minutes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Minuten"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10299,6 +10323,12 @@
     },
     "30 seconds" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Sekunden"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13825,6 +13855,12 @@
     },
     "Ads" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werbungen"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15149,7 +15185,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Anonym"
           }
         },
@@ -17099,8 +17135,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Laden Sie Schnappschüsse automatisch in einen Kanal auf Ihrem Discord-Server hoch."
+            "state" : "translated",
+            "value" : "Lade Schnappschüsse automatisch in einen Kanal auf deinen Discord-Server hoch."
           }
         },
         "el" : {
@@ -18137,6 +18173,12 @@
     },
     "automatic" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "automatisch"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19325,7 +19367,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Abzeichen"
           }
         },
@@ -26476,8 +26518,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jubeln"
+            "state" : "translated",
+            "value" : "Cheer"
           }
         },
         "el" : {
@@ -26606,8 +26648,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "habe %lld Bits angefeuert!"
+            "state" : "translated",
+            "value" : "hat %lld Bits gecheert!"
           }
         },
         "el" : {
@@ -26734,6 +26776,12 @@
     },
     "cheered %lld bits! %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld bits gecheert! %2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -26758,8 +26806,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prost"
+            "state" : "translated",
+            "value" : "Cheers"
           }
         },
         "el" : {
@@ -27018,7 +27066,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Erweiterte Kinofassungen"
           }
         },
@@ -31566,6 +31614,12 @@
     },
     "Corner radius" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eckenradius"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31974,8 +32028,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Erstellen Sie einen Webhook in den Einstellungen Ihres Discord-Servers und fügen Sie dessen URL oben ein."
+            "state" : "translated",
+            "value" : "Erstelle einen Webhook in den Einstellungen deines Discord-Servers und füge die URL oben ein."
           }
         },
         "el" : {
@@ -32884,7 +32938,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Datum"
           }
         },
@@ -44322,6 +44376,12 @@
     },
     "Failed to start commercial" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werbung schalten fehlgeschlagen"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -44990,7 +45050,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das Abonnieren des Twitch %@-Events ist fehlgeschlagen"
           }
         },
@@ -45120,7 +45180,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das Hochladen des Snapshots auf Discord ist fehlgeschlagen."
           }
         },
@@ -45380,7 +45440,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fax-Miau-Ton"
           }
         },
@@ -49280,7 +49340,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vollständiges Datum"
           }
         },
@@ -50450,7 +50510,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Geschenkabonnements"
           }
         },
@@ -55390,8 +55450,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "gerade %lld Abonnements der Stufe %lld verschenkt!"
+            "state" : "translated",
+            "value" : "hat gerade %lld Abonnements der Stufe %lld verschenkt!"
           }
         },
         "el" : {
@@ -55524,6 +55584,12 @@
     },
     "just resubscribed tier %lld for %lld months! %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hat gerade auf Stufe %1$lld für %2$lld Monate abonniert! %3$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -55548,8 +55614,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "habe gerade Stufe %lld abonniert!"
+            "state" : "translated",
+            "value" : "hat gerade auf Stufe %lld abonniert!"
           }
         },
         "el" : {
@@ -56458,7 +56524,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "STUFE %lld"
           }
         },
@@ -60356,6 +60422,12 @@
     },
     "manual" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "manuell"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -63364,7 +63436,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mindestabonnentenstufe"
           }
         },
@@ -65572,6 +65644,12 @@
     },
     "Mutes audio." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stellt den Ton stumm."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -68058,6 +68136,12 @@
     },
     "New resubscribe" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neu abonniert"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -69896,7 +69980,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht bei Twitch angemeldet"
           }
         },
@@ -71726,7 +71810,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nur wenn live"
           }
         },
@@ -76016,7 +76100,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat drucken"
           }
         },
@@ -76146,7 +76230,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Privatsphäre"
           }
         },
@@ -77316,8 +77400,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Überfall"
+            "state" : "translated",
+            "value" : "Raid"
           }
         },
         "el" : {
@@ -77446,8 +77530,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "mit einer Gruppe von %lld überfallen!"
+            "state" : "translated",
+            "value" : "mit einer Gruppe von %lld geraidet!"
           }
         },
         "el" : {
@@ -77576,8 +77660,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schlachtzüge"
+            "state" : "translated",
+            "value" : "Raids"
           }
         },
         "el" : {
@@ -77836,7 +77920,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Eine erneute Anmeldung bei Twitch behebt diesen Fehler wahrscheinlich"
           }
         },
@@ -78876,8 +78960,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "eingelöst %@!"
+            "state" : "translated",
+            "value" : "%@ eingelöst!"
           }
         },
         "el" : {
@@ -84084,6 +84168,12 @@
     },
     "Scene audio inputs" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szenen Audio-Eingang"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -89048,7 +89138,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auf Discord hochgeladener Schnappschuss"
           }
         },
@@ -89178,8 +89268,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Snapshot-Webhook-URL"
+            "state" : "translated",
+            "value" : "Snapshot webhook URL"
           }
         },
         "el" : {
@@ -96458,7 +96548,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Abonnenten"
           }
         },
@@ -98146,6 +98236,12 @@
     },
     "Take a snapshot." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mach einen Schnappschuss."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -98162,6 +98258,12 @@
     },
     "Take snapshot" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schnappschuss machen"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -98180,8 +98282,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Machen Sie einen Schnappschuss."
+            "state" : "translated",
+            "value" : "Mache einen Schnappschuss."
           }
         },
         "el" : {
@@ -106370,8 +106472,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schalten Sie einen Filter ein oder aus."
+            "state" : "translated",
+            "value" : "Schalte einen Filter ein oder aus."
           }
         },
         "el" : {
@@ -108330,8 +108432,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Unmute"
+            "state" : "translated",
+            "value" : "Stummschaltung aufheben"
           }
         },
         "el" : {
@@ -108458,6 +108560,12 @@
     },
     "Unmutes audio." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hebt die Stummschaltung des Audios auf."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
