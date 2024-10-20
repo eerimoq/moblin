@@ -184,7 +184,7 @@ struct QuickButtonWidgetsView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.widgets) { widget in
+                    ForEach(model.widgetsInCurrentScene) { widget in
                         Toggle(isOn: Binding(get: {
                             widget.enabled!
                         }, set: { value in

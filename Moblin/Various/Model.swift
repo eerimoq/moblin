@@ -644,6 +644,38 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.scenes.filter { scene in scene.enabled }
     }
 
+    var widgetsInCurrentScene: [SettingsWidget] {
+        guard let scene = getSelectedScene() else {
+            return []
+        }
+        var found: [UUID] = []
+        return getSceneWidgets(scene: scene).filter {
+            if found.contains($0.id) {
+                return false
+            } else {
+                found.append($0.id)
+                return true
+            }
+        }
+    }
+
+    private func getSceneWidgets(scene: SettingsScene) -> [SettingsWidget] {
+        var widgets: [SettingsWidget] = []
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
+                continue
+            }
+            widgets.append(widget)
+            guard widget.type == .scene else {
+                continue
+            }
+            if let scene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                widgets += getSceneWidgets(scene: scene)
+            }
+        }
+        return widgets
+    }
+
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     private var appStoreUpdateListenerTask: Task<Void, Error>?
