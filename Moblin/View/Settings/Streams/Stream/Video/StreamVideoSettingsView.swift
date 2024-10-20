@@ -3,6 +3,8 @@ import SwiftUI
 struct StreamVideoSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
+    @State var codec: String
+    @State var bitrate: UInt32
 
     private func onResolutionChange(resolution: String) {
         stream.resolution = SettingsStreamResolution(rawValue: resolution)!
@@ -19,6 +21,7 @@ struct StreamVideoSettingsView: View {
     }
 
     private func onBitrateChange(bitrate: UInt32) {
+        self.bitrate = bitrate
         stream.bitrate = bitrate
         if stream.enabled {
             model.setStreamBitrate(stream: stream)
@@ -26,6 +29,7 @@ struct StreamVideoSettingsView: View {
     }
 
     private func onCodecChange(codec: String) {
+        self.codec = codec
         stream.codec = SettingsStreamCodec(rawValue: codec)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
     }
@@ -74,7 +78,7 @@ struct StreamVideoSettingsView: View {
                         Text("Codec")
                         Spacer()
                         Picker("", selection: Binding(get: {
-                            stream.codec.rawValue
+                            codec
                         }, set: onCodecChange)) {
                             ForEach(codecs, id: \.self) {
                                 Text($0)
@@ -86,7 +90,7 @@ struct StreamVideoSettingsView: View {
                         Text("Bitrate")
                         Spacer()
                         Picker("", selection: Binding(get: {
-                            stream.bitrate
+                            bitrate
                         }, set: onBitrateChange)) {
                             ForEach(model.database.bitratePresets) { preset in
                                 Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
