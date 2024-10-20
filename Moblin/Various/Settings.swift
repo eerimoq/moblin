@@ -1329,6 +1329,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case luts = "LUTs"
     case workout = "Workout"
     case ads = "Ads"
+    case skipCurrentTts = "Skip current TTS"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2735,6 +2736,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "cup.and.saucer"
     button.systemImageNameOff = "cup.and.saucer"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Skip current TTS"))
+    button.id = UUID()
+    button.type = .skipCurrentTts
+    button.imageType = "System name"
+    button.systemImageNameOn = "waveform.slash"
+    button.systemImageNameOff = "waveform.slash"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in

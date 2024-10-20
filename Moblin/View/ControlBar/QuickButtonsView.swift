@@ -243,6 +243,10 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .recordings, panel: .recordings)
     }
 
+    private func skipCurrentTtsAction(state _: ButtonState) {
+        model.chatTextToSpeech.skipCurrentMessage()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -485,6 +489,12 @@ struct QuickButtonsInnerView: View {
                         model.startAds(seconds: 180)
                     }
                 }
+            case .skipCurrentTts:
+                Button(action: {
+                    skipCurrentTtsAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
             }
             if model.database.quickButtons!
                 .showName && !(model.stream.portrait! || model.database.portrait!)
