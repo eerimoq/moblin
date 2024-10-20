@@ -1,5 +1,41 @@
 import SwiftUI
 
+private struct NumberView: View {
+    @Binding var value: Int
+
+    var body: some View {
+        VStack {
+            Text(String(value))
+            Button {
+                value += 1
+            } label: {
+                Text("+")
+            }
+            Button {
+                if value > 0 {
+                    value -= 1
+                }
+            } label: {
+                Text("-")
+            }
+        }
+    }
+}
+
+private struct NumberPairView: View {
+    @Binding var title: String
+    @Binding var numbers: [TextWidgetNumber]
+
+    var body: some View {
+        Text(title)
+        HStack(spacing: 5) {
+            ForEach($numbers) { number in
+                NumberView(value: number.value)
+            }
+        }
+    }
+}
+
 struct ControlView: View {
     @EnvironmentObject var model: Model
     @State private var isPresentingIsLiveConfirm: Bool = false
@@ -55,6 +91,11 @@ struct ControlView: View {
                     model.skipCurrentChatTextToSpeechMessage()
                 } label: {
                     Text("Skip current TTS")
+                }
+                if false {
+                    ForEach($model.numberPairs) { pair in
+                        NumberPairView(title: pair.title, numbers: pair.numbers)
+                    }
                 }
                 Spacer()
             }

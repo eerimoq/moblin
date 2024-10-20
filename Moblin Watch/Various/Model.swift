@@ -7,6 +7,17 @@ import WatchConnectivity
 // Remote control assistant polls status every 5 seconds.
 private let previewTimeout = Duration.seconds(6)
 
+struct TextWidgetNumber: Identifiable {
+    var id: UUID = .init()
+    var value: Int
+}
+
+struct TextWidgetNumberPair: Identifiable {
+    var id: UUID = .init()
+    var title: String
+    var numbers: [TextWidgetNumber]
+}
+
 struct ChatPostSegment: Identifiable {
     var id = UUID()
     var text: String?
@@ -101,6 +112,10 @@ class Model: NSObject, ObservableObject {
     private var workoutBuilder: HKLiveWorkoutBuilder?
     @Published var workoutType = noValue
     @Published var viewerCount = noValue
+    @Published var numberPairs: [TextWidgetNumberPair] = [
+        .init(title: "Sets", numbers: [.init(value: 1), .init(value: 0)]),
+        .init(title: "Games", numbers: [.init(value: 3), .init(value: 5)]),
+    ]
 
     func setup() {
         if WCSession.isSupported() {
