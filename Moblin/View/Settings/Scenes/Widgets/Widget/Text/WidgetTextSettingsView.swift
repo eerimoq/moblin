@@ -21,6 +21,7 @@ private let suggestionWeather = "{conditions} {temperature}"
 private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
+private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
 
 private let suggestions = createSuggestions()
 
@@ -45,6 +46,7 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 10, name: String(localized: "Subtitles"), text: suggestionSubtitles),
         Suggestion(id: 11, name: String(localized: "Muted"), text: suggestionMuted),
         Suggestion(id: 12, name: String(localized: "Debug"), text: suggestionDebug),
+        Suggestion(id: 13, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
     ]
     return suggestions
 }
