@@ -19,6 +19,7 @@ enum WatchMessageToWatch: String {
     case scene
     case startWorkout
     case stopWorkout
+    case viewerCount
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [

@@ -66,8 +66,14 @@ struct PreviewView: View {
                     .frame(maxWidth: .infinity)
                 }
                 HStack {
-                    VStack(alignment: .trailing, spacing: 1) {
+                    VStack(alignment: .leading, spacing: 1) {
                         Spacer()
+                        StreamOverlayIconAndTextView(
+                            show: model.viewerCount != noValue,
+                            icon: "eye",
+                            text: model.viewerCount,
+                            textPlacement: .afterIcon
+                        )
                         StreamOverlayIconAndTextView(
                             show: true,
                             icon: "magnifyingglass",

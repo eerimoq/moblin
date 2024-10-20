@@ -2369,6 +2369,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if newValue != numberOfViewers {
             numberOfViewers = newValue
+            sendViewerCountWatch()
         }
     }
 
@@ -6570,6 +6571,13 @@ extension Model {
         }
     }
 
+    private func sendViewerCountWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .viewerCount, data: numberOfViewers)
+    }
+
     private func resetWorkoutStats() {
         workoutHeartRate = nil
         workoutActiveEnergyBurned = nil
@@ -6784,6 +6792,7 @@ extension Model: WCSessionDelegate {
                 self.sendIsLiveToWatch(isLive: self.isLive)
                 self.sendIsRecordingToWatch(isRecording: self.isRecording)
                 self.sendIsMutedToWatch(isMuteOn: self.isMuteOn)
+                self.sendViewerCountWatch()
             }
         }
     }

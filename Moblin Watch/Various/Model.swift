@@ -100,6 +100,7 @@ class Model: NSObject, ObservableObject {
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
     @Published var workoutType = noValue
+    @Published var viewerCount = noValue
 
     func setup() {
         if WCSession.isSupported() {
@@ -401,6 +402,13 @@ class Model: NSObject, ObservableObject {
         workoutSession?.end()
     }
 
+    private func handleViewerCount(_ data: Any) {
+        guard let value = data as? String else {
+            return
+        }
+        viewerCount = value
+    }
+
     private func isWorkoutRunning() -> Bool {
         return workoutSession?.state == .running
     }
@@ -523,6 +531,8 @@ extension Model: WCSessionDelegate {
                     try self.handleStartWorkout(data)
                 case .stopWorkout:
                     self.handleStopWorkout()
+                case .viewerCount:
+                    self.handleViewerCount(data)
                 }
             } catch {}
         }
