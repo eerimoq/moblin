@@ -20,7 +20,7 @@ struct DjiDevicesSettingsView: View {
                         }
                     }
                     .onDelete(perform: { offsets in
-                        model.database.djiDevices!.devices.remove(atOffsets: offsets)
+                        model.removeDjiDevices(offsets: offsets)
                     })
                 }
                 CreateButtonView(action: {

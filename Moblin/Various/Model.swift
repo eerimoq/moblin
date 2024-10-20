@@ -8329,6 +8329,15 @@ extension Model {
     func getDjiDeviceState(device: SettingsDjiDevice) -> DjiDeviceState? {
         return djiDeviceWrappers[device.id]?.device.getState()
     }
+
+    func removeDjiDevices(offsets: IndexSet) {
+        for offset in offsets {
+            let device = database.djiDevices!.devices[offset]
+            stopDjiDeviceLiveStream(device: device)
+            djiDeviceWrappers.removeValue(forKey: device.id)
+        }
+        database.djiDevices!.devices.remove(atOffsets: offsets)
+    }
 }
 
 extension Model {
