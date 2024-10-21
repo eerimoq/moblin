@@ -23,6 +23,15 @@ struct DebugAudioSettingsView: View {
             } footer: {
                 Text("Switching between mono and stereo mics may not work.")
             }
+            Section {
+                Toggle("Remove wind noise", isOn: Binding(get: {
+                    model.database.debug!.removeWindNoise!
+                }, set: { value in
+                    model.database.debug!.removeWindNoise = value
+                }))
+            } footer: {
+                Text("App restart needed to take effect.")
+            }
         }
         .navigationTitle("Audio")
     }

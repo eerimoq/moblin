@@ -1150,6 +1150,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
+        audioUnitRemoveWindNoise = database.debug!.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses!

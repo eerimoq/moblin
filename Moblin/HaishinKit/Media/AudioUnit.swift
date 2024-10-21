@@ -7,6 +7,7 @@ private let lockQueue = DispatchQueue(
 )
 
 private let deltaLimit = 0.03
+var audioUnitRemoveWindNoise = false
 
 func makeChannelMap(
     numberOfInputChannels: Int,
@@ -200,7 +201,7 @@ private class ReplaceAudio {
 final class AudioUnit: NSObject {
     lazy var codec: AudioCodec = .init(lockQueue: lockQueue)
     private(set) var device: AVCaptureDevice?
-    private var input: AVCaptureInput?
+    private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
     weak var mixer: Mixer?
@@ -285,6 +286,22 @@ final class AudioUnit: NSObject {
         }
         if let device {
             input = try AVCaptureDeviceInput(device: device)
+            if audioUnitRemoveWindNoise {
+                if #available(iOS 18.0, *) {
+                    if input!.isWindNoiseRemovalSupported {
+                        input!.multichannelAudioMode = .stereo
+                        input!.isWindNoiseRemovalEnabled = true
+                        logger
+                            .info(
+                                "audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)"
+                            )
+                    } else {
+                        logger.info("audio-unit: Wind noise removal is not supported on this device")
+                    }
+                } else {
+                    logger.info("audio-unit: Wind noise removal needs iOS 18+")
+                }
+            }
             if captureSession.canAddInput(input!) {
                 captureSession.addInput(input!)
             }

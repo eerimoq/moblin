@@ -1697,6 +1697,7 @@ class SettingsDebug: Codable {
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
+    var removeWindNoise: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -4128,6 +4129,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.rotation == nil {
             widget.videoSource!.rotation = 0.0
+            store()
+        }
+        if realDatabase.debug!.removeWindNoise == nil {
+            realDatabase.debug!.removeWindNoise = false
             store()
         }
     }
