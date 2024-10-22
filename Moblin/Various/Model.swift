@@ -2821,8 +2821,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         //     .init(name: "🇸🇪 HERMANSSON"),
         //     .init(name: "🇸🇪 DAHLIN"),
         // ]), scores: [
-        //     PadelScoreboardScore(home: 6, away: 4),
-        //     PadelScoreboardScore(home: 3, away: 5),
+        //     PadelScoreboardScore(home: 0, away: 0),
         // ]))
         return effects
     }
@@ -7021,6 +7020,25 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func handleUpdatePadelScoreboard(_ data: Any) {
+        guard let data = data as? Data else {
+            return
+        }
+        guard let scoreBoard = try? JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data) else {
+            return
+        }
+        DispatchQueue.main.async {
+            let home = PadelScoreboardTeam(players: scoreBoard.home.map { .init(name: $0) })
+            let away = PadelScoreboardTeam(players: scoreBoard.away.map { .init(name: $0) })
+            let scores = scoreBoard.scores.map { PadelScoreboardScore(home: $0.home, away: $0.away) }
+            self.padelScoreboardEffect.update(scoreBoard: PadelScoreboard(
+                home: home,
+                away: away,
+                scores: scores
+            ))
+        }
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -7063,6 +7081,8 @@ extension Model: WCSessionDelegate {
             handleSetSceneMessage(data)
         case .updateWorkoutStats:
             handleUpdateWorkoutStats(data)
+        case .updatePadelScoreboard:
+            handleUpdatePadelScoreboard(data)
         default:
             break
         }

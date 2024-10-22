@@ -437,6 +437,13 @@ class Model: NSObject, ObservableObject {
         viewerCount = value
     }
 
+    private func handlePadelScoreboard(_ data: Any) throws {
+        guard let data = data as? Data else {
+            return
+        }
+        _ = try JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data)
+    }
+
     private func isWorkoutRunning() -> Bool {
         return workoutSession?.state == .running
     }
@@ -512,11 +519,13 @@ class Model: NSObject, ObservableObject {
     func padelScoreboardIncrementHomeScore() {
         if padelScoreboardIncrementTintColor == nil {
             guard !isMatchCompleted() else {
+                updatePadelScoreboard()
                 return
             }
             padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home += 1
             padelScoreboardScoreChanges.append(.home)
             guard let score = padelScoreBoard.scores.last else {
+                updatePadelScoreboard()
                 return
             }
             if isSetCompleted(score: score) {
@@ -526,16 +535,19 @@ class Model: NSObject, ObservableObject {
             padelScoreboardUpdateSetCompleted()
             padelScoreboardIncrementTintColor = nil
         }
+        updatePadelScoreboard()
     }
 
     func padelScoreboardIncrementAwayScore() {
         if padelScoreboardIncrementTintColor == nil {
             guard !isMatchCompleted() else {
+                updatePadelScoreboard()
                 return
             }
             padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away += 1
             padelScoreboardScoreChanges.append(.away)
             guard let score = padelScoreBoard.scores.last else {
+                updatePadelScoreboard()
                 return
             }
             if isSetCompleted(score: score) {
@@ -545,6 +557,46 @@ class Model: NSObject, ObservableObject {
             padelScoreboardUpdateSetCompleted()
             padelScoreboardIncrementTintColor = nil
         }
+        updatePadelScoreboard()
+    }
+
+    func padelScoreboardUndoScore() {
+        guard let team = padelScoreboardScoreChanges.popLast() else {
+            updatePadelScoreboard()
+            return
+        }
+        guard let score = padelScoreBoard.scores.last else {
+            updatePadelScoreboard()
+            return
+        }
+        if score.home == 0 && score.away == 0 && padelScoreBoard.scores.count > 1 {
+            padelScoreBoard.scores.removeLast()
+        }
+        switch team {
+        case .home:
+            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home -= 1
+        case .away:
+            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away -= 1
+        }
+        guard let score = padelScoreBoard.scores.last else {
+            updatePadelScoreboard()
+            return
+        }
+        if isSetCompleted(score: score) {
+            padelScoreboardIncrementTintColor = .green
+        } else {
+            padelScoreboardIncrementTintColor = nil
+        }
+        updatePadelScoreboard()
+    }
+
+    func resetPadelScoreBoard() {
+        padelScoreBoard.scores = [
+            .init(home: 0, away: 0),
+        ]
+        padelScoreboardScoreChanges.removeAll()
+        padelScoreboardIncrementTintColor = nil
+        updatePadelScoreboard()
     }
 
     private func padelScoreboardUpdateSetCompleted() {
@@ -558,6 +610,21 @@ class Model: NSObject, ObservableObject {
             return
         }
         padelScoreBoard.scores.append(.init(home: 0, away: 0))
+    }
+
+    private func updatePadelScoreboard() {
+        let home = padelScoreBoard.home.players.map { $0.name }
+        let away = padelScoreBoard.away.players.map { $0.name }
+        let scores: [WatchProtocolPadelScoreboardScore] = padelScoreBoard.scores.map { .init(
+            home: $0.home,
+            away: $0.away
+        ) }
+        let scoreBoard = WatchProtocolPadelScoreboard(home: home, away: away, scores: scores)
+        guard let scoreBoard = try? JSONEncoder().encode(scoreBoard) else {
+            return
+        }
+        let message = WatchMessageFromWatch.pack(type: .updatePadelScoreboard, data: scoreBoard)
+        WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
     private func isSetCompleted(score: PadelScoreboardScore) -> Bool {
@@ -580,40 +647,6 @@ class Model: NSObject, ObservableObject {
             return false
         }
         return isSetCompleted(score: score)
-    }
-
-    func padelScoreboardUndoScore() {
-        guard let team = padelScoreboardScoreChanges.popLast() else {
-            return
-        }
-        guard let score = padelScoreBoard.scores.last else {
-            return
-        }
-        if score.home == 0 && score.away == 0 && padelScoreBoard.scores.count > 1 {
-            padelScoreBoard.scores.removeLast()
-        }
-        switch team {
-        case .home:
-            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home -= 1
-        case .away:
-            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away -= 1
-        }
-        guard let score = padelScoreBoard.scores.last else {
-            return
-        }
-        if isSetCompleted(score: score) {
-            padelScoreboardIncrementTintColor = .green
-        } else {
-            padelScoreboardIncrementTintColor = nil
-        }
-    }
-
-    func resetPadelScoreBoard() {
-        padelScoreBoard.scores = [
-            .init(home: 0, away: 0),
-        ]
-        padelScoreboardScoreChanges.removeAll()
-        padelScoreboardIncrementTintColor = nil
     }
 }
 
@@ -668,6 +701,8 @@ extension Model: WCSessionDelegate {
                     self.handleStopWorkout()
                 case .viewerCount:
                     self.handleViewerCount(data)
+                case .padelScoreboard:
+                    try self.handlePadelScoreboard(data)
                 }
             } catch {}
         }

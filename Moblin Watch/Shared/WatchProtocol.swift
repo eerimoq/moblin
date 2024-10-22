@@ -20,6 +20,7 @@ enum WatchMessageToWatch: String {
     case startWorkout
     case stopWorkout
     case viewerCount
+    case padelScoreboard
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -54,6 +55,7 @@ enum WatchMessageFromWatch: String {
     case setZoomPreset
     case setScene
     case updateWorkoutStats
+    case updatePadelScoreboard
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {
@@ -145,6 +147,17 @@ struct WatchProtocolWorkoutStats: Codable {
     var distance: Int?
     var stepCount: Int?
     var power: Int?
+}
+
+struct WatchProtocolPadelScoreboardScore: Codable {
+    var home: Int
+    var away: Int
+}
+
+struct WatchProtocolPadelScoreboard: Codable {
+    var home: [String]
+    var away: [String]
+    var scores: [WatchProtocolPadelScoreboardScore]
 }
 
 extension WatchProtocolColor {
