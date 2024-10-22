@@ -24,6 +24,8 @@ class MpegTsWriter {
     var expectedMedias: Set<AVMediaType> = []
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
+    private var patContinuityCounter: UInt8 = 0
+    private var pmtContinuityCounter: UInt8 = 0
     private var rotatedTimestamp = CMTime.zero
     private let outputLock = DispatchQueue(
         label: "com.haishinkit.HaishinKit.MpegTsWriter",
@@ -67,6 +69,8 @@ class MpegTsWriter {
         }
         audioContinuityCounter = 0
         videoContinuityCounter = 0
+        patContinuityCounter = 0
+        pmtContinuityCounter = 0
         programAssociationTable.programs.removeAll()
         programAssociationTable.programs = [1: MpegTsWriter.programMappingTablePacketId]
         programMappingTable = MpegTsProgramMapping()
@@ -74,6 +78,8 @@ class MpegTsWriter {
         videoConfig = nil
         baseAudioTimestamp = .invalid
         baseVideoTimestamp = .invalid
+        videoDataOffset = 0
+        videoData = [nil, nil]
         programClockReferenceTimestamp = .zero
         isRunning.mutate { $0 = false }
     }
@@ -135,6 +141,18 @@ class MpegTsWriter {
                 videoContinuityCounter &= 0x0F
             }
             return videoContinuityCounter
+        case MpegTsWriter.programAssociationTablePacketId:
+            defer {
+                patContinuityCounter += 1
+                patContinuityCounter &= 0x0F
+            }
+            return patContinuityCounter
+        case MpegTsWriter.programMappingTablePacketId:
+            defer {
+                pmtContinuityCounter += 1
+                pmtContinuityCounter &= 0x0F
+            }
+            return pmtContinuityCounter
         default:
             return 0
         }
@@ -226,8 +244,12 @@ class MpegTsWriter {
 
     private func writeProgram() {
         programMappingTable.programClockReferencePacketId = mpegTsWriterProgramClockReferencePacketId
-        write(programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId).encode()
-            + programMappingTable.packet(MpegTsWriter.programMappingTablePacketId).encode())
+
+        var patPacket = programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId)
+        var pmtPacket = programMappingTable.packet(MpegTsWriter.programMappingTablePacketId)
+        patPacket.continuityCounter = nextContinuityCounter(packetId: MpegTsWriter.programAssociationTablePacketId)
+        pmtPacket.continuityCounter = nextContinuityCounter(packetId: MpegTsWriter.programMappingTablePacketId)
+        write(patPacket.encode() + pmtPacket.encode())
     }
 
     private func writeProgramIfNeeded() {
