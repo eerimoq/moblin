@@ -75446,6 +75446,9 @@
         }
       }
     },
+    "Powered by Moblin" : {
+
+    },
     "Prefer stereo mic" : {
       "localizations" : {
         "de" : {
@@ -80778,6 +80781,9 @@
           }
         }
       }
+    },
+    "Reset scores" : {
+
     },
     "Reset settings" : {
       "localizations" : {

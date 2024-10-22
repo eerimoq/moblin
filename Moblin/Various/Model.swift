@@ -417,6 +417,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var enabledAlertsEffects: [AlertsEffect] = []
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
+    private var padelScoreboardEffect = PadelScoreboardEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     @Published var isTorchOn = false
@@ -2753,6 +2754,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
         media.unregisterEffect(pollEffect)
+        media.unregisterEffect(padelScoreboardEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -2761,6 +2763,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         tripleEffect = TripleEffect()
         pixellateEffect = PixellateEffect()
         pollEffect = PollEffect()
+        padelScoreboardEffect = PadelScoreboardEffect()
     }
 
     private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
@@ -2799,6 +2802,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isGlobalButtonOn(type: .pixellate) {
             effects.append(pixellateEffect)
         }
+        // effects.append(padelScoreboardEffect)
+        // padelScoreboardEffect.update(scoreBoard: PadelScoreboard(home: .init(players: [
+        //     .init(name: "🇸🇪 MOQVIST"),
+        //     .init(name: "🇸🇪 EKBÄCK"),
+        // ]), away: .init(players: [
+        //     .init(name: "🇸🇪 HERMANSSON"),
+        //     .init(name: "🇸🇪 DAHLIN"),
+        // ]), scores: [
+        //     PadelScoreboardScore(home: 6, away: 4),
+        //     PadelScoreboardScore(home: 3, away: 5),
+        // ]))
         return effects
     }
 

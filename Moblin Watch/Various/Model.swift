@@ -75,6 +75,11 @@ struct ChatPost: Identifiable {
     }
 }
 
+enum PadelScoreboardScoreIncrement {
+    case home
+    case away
+}
+
 class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
@@ -112,10 +117,18 @@ class Model: NSObject, ObservableObject {
     private var workoutBuilder: HKLiveWorkoutBuilder?
     @Published var workoutType = noValue
     @Published var viewerCount = noValue
-    @Published var numberPairs: [TextWidgetNumberPair] = [
-        .init(title: "Sets", numbers: [.init(value: 1), .init(value: 0)]),
-        .init(title: "Games", numbers: [.init(value: 3), .init(value: 5)]),
-    ]
+    @Published var showPadelScoreBoard = false
+    @Published var padelScoreBoard: PadelScoreboard = .init(home: .init(players: [
+        .init(name: "🇸🇪 MOQVIST"),
+        .init(name: "🇸🇪 EKBÄCK"),
+    ]), away: .init(players: [
+        .init(name: "🇸🇪 HERMANSSON"),
+        .init(name: "🇸🇪 DAHLIN"),
+    ]), scores: [
+        PadelScoreboardScore(home: 0, away: 0),
+    ])
+    private var padelScoreboardScoreChanges: [PadelScoreboardScoreIncrement] = []
+    @Published var padelScoreboardIncrementTintColor: Color?
 
     func setup() {
         if WCSession.isSupported() {
@@ -494,6 +507,113 @@ class Model: NSObject, ObservableObject {
 
     func isShowingWorkout() -> Bool {
         return isWorkoutRunning()
+    }
+
+    func padelScoreboardIncrementHomeScore() {
+        if padelScoreboardIncrementTintColor == nil {
+            guard !isMatchCompleted() else {
+                return
+            }
+            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home += 1
+            padelScoreboardScoreChanges.append(.home)
+            guard let score = padelScoreBoard.scores.last else {
+                return
+            }
+            if isSetCompleted(score: score) {
+                padelScoreboardIncrementTintColor = .green
+            }
+        } else {
+            padelScoreboardUpdateSetCompleted()
+            padelScoreboardIncrementTintColor = nil
+        }
+    }
+
+    func padelScoreboardIncrementAwayScore() {
+        if padelScoreboardIncrementTintColor == nil {
+            guard !isMatchCompleted() else {
+                return
+            }
+            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away += 1
+            padelScoreboardScoreChanges.append(.away)
+            guard let score = padelScoreBoard.scores.last else {
+                return
+            }
+            if isSetCompleted(score: score) {
+                padelScoreboardIncrementTintColor = .green
+            }
+        } else {
+            padelScoreboardUpdateSetCompleted()
+            padelScoreboardIncrementTintColor = nil
+        }
+    }
+
+    private func padelScoreboardUpdateSetCompleted() {
+        guard let score = padelScoreBoard.scores.last else {
+            return
+        }
+        guard isSetCompleted(score: score) else {
+            return
+        }
+        guard !isMatchCompleted() else {
+            return
+        }
+        padelScoreBoard.scores.append(.init(home: 0, away: 0))
+    }
+
+    private func isSetCompleted(score: PadelScoreboardScore) -> Bool {
+        let maxScore = max(score.home, score.away)
+        let minScore = min(score.home, score.away)
+        if maxScore == 6 && minScore <= 4 {
+            return true
+        }
+        if maxScore == 7 {
+            return true
+        }
+        return false
+    }
+
+    private func isMatchCompleted() -> Bool {
+        if padelScoreBoard.scores.count < 5 {
+            return false
+        }
+        guard let score = padelScoreBoard.scores.last else {
+            return false
+        }
+        return isSetCompleted(score: score)
+    }
+
+    func padelScoreboardUndoScore() {
+        guard let team = padelScoreboardScoreChanges.popLast() else {
+            return
+        }
+        guard let score = padelScoreBoard.scores.last else {
+            return
+        }
+        if score.home == 0 && score.away == 0 && padelScoreBoard.scores.count > 1 {
+            padelScoreBoard.scores.removeLast()
+        }
+        switch team {
+        case .home:
+            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home -= 1
+        case .away:
+            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away -= 1
+        }
+        guard let score = padelScoreBoard.scores.last else {
+            return
+        }
+        if isSetCompleted(score: score) {
+            padelScoreboardIncrementTintColor = .green
+        } else {
+            padelScoreboardIncrementTintColor = nil
+        }
+    }
+
+    func resetPadelScoreBoard() {
+        padelScoreBoard.scores = [
+            .init(home: 0, away: 0),
+        ]
+        padelScoreboardScoreChanges.removeAll()
+        padelScoreboardIncrementTintColor = nil
     }
 }
 

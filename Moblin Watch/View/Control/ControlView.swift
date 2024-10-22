@@ -1,37 +1,108 @@
 import SwiftUI
 
-private struct NumberView: View {
-    @Binding var value: Int
+struct PadelScoreboardScore: Identifiable {
+    let id: UUID = .init()
+    var home: Int
+    var away: Int
+}
+
+struct PadelScoreboardPlayer: Identifiable {
+    let id: UUID = .init()
+    var name: String
+}
+
+struct PadelScoreboardTeam {
+    var players: [PadelScoreboardPlayer]
+}
+
+struct PadelScoreboard {
+    var home: PadelScoreboardTeam
+    var away: PadelScoreboardTeam
+    var scores: [PadelScoreboardScore]
+}
+
+private struct ScoreboardView: View {
+    @Binding var scoreBoard: PadelScoreboard
 
     var body: some View {
-        VStack {
-            Text(String(value))
-            Button {
-                value += 1
-            } label: {
-                Text("+")
-            }
-            Button {
-                if value > 0 {
-                    value -= 1
+        HStack(alignment: .center) {
+            VStack(alignment: .leading) {
+                VStack(alignment: .leading) {
+                    ForEach(scoreBoard.home.players) { player in
+                        Text(player.name.prefix(5))
+                    }
                 }
-            } label: {
-                Text("-")
+                VStack(alignment: .leading) {
+                    ForEach(scoreBoard.away.players) { player in
+                        Text(player.name.prefix(5))
+                    }
+                }
             }
+            .font(.system(size: 15))
+            ForEach(scoreBoard.scores) { score in
+                VStack {
+                    VStack {
+                        Spacer(minLength: 0)
+                        Text(String(score.home))
+                        Spacer(minLength: 0)
+                    }
+                    VStack {
+                        Spacer(minLength: 0)
+                        Text(String(score.away))
+                        Spacer(minLength: 0)
+                    }
+                }
+                .frame(width: 17)
+                .font(.system(size: 30))
+            }
+            Spacer()
         }
+        .padding([.leading, .trailing], 2)
+        .padding([.top], 2)
+        .background(.blue)
+        .foregroundColor(.white)
     }
 }
 
-private struct NumberPairView: View {
-    @Binding var title: String
-    @Binding var numbers: [TextWidgetNumber]
+private struct PadelScoreboardView: View {
+    @EnvironmentObject var model: Model
+    @State var isPresentingResetConfirimation = false
 
     var body: some View {
-        Text(title)
-        HStack(spacing: 5) {
-            ForEach($numbers) { number in
-                NumberView(value: number.value)
+        Divider()
+        ScoreboardView(scoreBoard: $model.padelScoreBoard)
+        HStack {
+            Button {
+                model.padelScoreboardUndoScore()
+            } label: {
+                Image(systemName: "arrow.uturn.backward")
             }
+            Button {
+                model.padelScoreboardIncrementHomeScore()
+            } label: {
+                Image(systemName: "plus")
+            }
+            .tint(model.padelScoreboardIncrementTintColor)
+        }
+        HStack {
+            Button {
+                isPresentingResetConfirimation = true
+            } label: {
+                Image(systemName: "trash")
+            }
+            .confirmationDialog("", isPresented: $isPresentingResetConfirimation) {
+                Button("Reset scores") {
+                    model.resetPadelScoreBoard()
+                }
+                Button("Cancel") {}
+            }
+            .tint(.red)
+            Button {
+                model.padelScoreboardIncrementAwayScore()
+            } label: {
+                Image(systemName: "plus")
+            }
+            .tint(model.padelScoreboardIncrementTintColor)
         }
     }
 }
@@ -57,11 +128,8 @@ struct ControlView: View {
                 .confirmationDialog("", isPresented: $isPresentingIsLiveConfirm) {
                     Button(pendingLiveValue ? String(localized: "Go Live") : String(localized: "End")) {
                         model.setIsLive(value: pendingLiveValue)
-                        isPresentingIsLiveConfirm = false
                     }
-                    Button("Cancel") {
-                        isPresentingIsLiveConfirm = false
-                    }
+                    Button("Cancel") {}
                 }
                 Toggle(isOn: Binding(get: {
                     model.isRecording
@@ -74,11 +142,8 @@ struct ControlView: View {
                 .confirmationDialog("", isPresented: $isPresentingIsRecordingConfirm) {
                     Button(pendingRecordingValue ? String(localized: "Start") : String(localized: "Stop")) {
                         model.setIsRecording(value: pendingRecordingValue)
-                        isPresentingIsRecordingConfirm = false
                     }
-                    Button("Cancel") {
-                        isPresentingIsRecordingConfirm = false
-                    }
+                    Button("Cancel") {}
                 }
                 Toggle(isOn: Binding(get: {
                     model.isMuted
@@ -92,10 +157,8 @@ struct ControlView: View {
                 } label: {
                     Text("Skip current TTS")
                 }
-                if false {
-                    ForEach($model.numberPairs) { pair in
-                        NumberPairView(title: pair.title, numbers: pair.numbers)
-                    }
+                if model.showPadelScoreBoard {
+                    PadelScoreboardView()
                 }
                 Spacer()
             }
