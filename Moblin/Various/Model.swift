@@ -785,6 +785,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateButtonStates()
     }
 
+    func createStreamMarker() {
+        TwitchApi(accessToken: stream.twitchAccessToken!)
+            .createStreamMarker(userId: stream.twitchChannelId) { data in
+                if data != nil {
+                    self.makeToast(title: String(localized: "Stream marker created"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
+                }
+            }
+    }
+
     @MainActor
     private func getProductsFromAppStore() async {
         do {

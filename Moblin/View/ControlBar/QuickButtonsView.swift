@@ -247,6 +247,10 @@ struct QuickButtonsInnerView: View {
         model.chatTextToSpeech.skipCurrentMessage()
     }
 
+    private func streamMarkerAction(state _: ButtonState) {
+        model.createStreamMarker()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -492,6 +496,12 @@ struct QuickButtonsInnerView: View {
             case .skipCurrentTts:
                 Button(action: {
                     skipCurrentTtsAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .streamMarker:
+                Button(action: {
+                    streamMarkerAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

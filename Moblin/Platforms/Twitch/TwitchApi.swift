@@ -59,6 +59,12 @@ struct TwitchApiStartCommercial: Decodable {
     let data: [TwitchApiStartCommercialData]
 }
 
+struct TwitchApiCreateStreamMarkerData: Decodable {}
+
+struct TwitchApiCreateStreamMarker: Decodable {
+    let data: [TwitchApiCreateStreamMarkerData]
+}
+
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
     // periphery:ignore
     let user_id: String
@@ -237,6 +243,24 @@ class TwitchApi {
         })
     }
 
+    func createStreamMarker(
+        userId: String,
+        onComplete: @escaping (TwitchApiCreateStreamMarkerData?) -> Void
+    ) {
+        let body = """
+        {
+           "user_id": "\(userId)"
+        }
+        """
+        doPost(subPath: "streams/markers", body: body.utf8Data, onComplete: { data in
+            let data = try? JSONDecoder().decode(
+                TwitchApiCreateStreamMarker.self,
+                from: data ?? Data()
+            )
+            onComplete(data?.data.first)
+        })
+    }
+
     func modifyChannelInformation(broadcasterId: String,
                                   category: String?,
                                   title: String?,
@@ -350,6 +374,9 @@ class TwitchApi {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     if response?.http?.isUnauthorized == true {
                         self.delegate?.twitchApiUnauthorized()
+                    }
+                    if let data, let data = String(bytes: data, encoding: .utf8) {
+                        logger.info("twitch-api: Error response body: \(data)")
                     }
                     onComplete(nil)
                     return

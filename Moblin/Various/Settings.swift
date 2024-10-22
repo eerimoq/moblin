@@ -1330,6 +1330,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case workout = "Workout"
     case ads = "Ads"
     case skipCurrentTts = "Skip current TTS"
+    case streamMarker = "Stream marker"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2731,6 +2732,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "figure.run"
     updateGlobalButton(database: database, button: button)
 
+    button = SettingsButton(name: String(localized: "Skip current TTS"))
+    button.id = UUID()
+    button.type = .skipCurrentTts
+    button.imageType = "System name"
+    button.systemImageNameOn = "waveform.slash"
+    button.systemImageNameOff = "waveform.slash"
+    updateGlobalButton(database: database, button: button)
+
     button = SettingsButton(name: String(localized: "Ads"))
     button.id = UUID()
     button.type = .ads
@@ -2739,12 +2748,12 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "cup.and.saucer"
     updateGlobalButton(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Skip current TTS"))
+    button = SettingsButton(name: String(localized: "Stream marker"))
     button.id = UUID()
-    button.type = .skipCurrentTts
+    button.type = .streamMarker
     button.imageType = "System name"
-    button.systemImageNameOn = "waveform.slash"
-    button.systemImageNameOff = "waveform.slash"
+    button.systemImageNameOn = "bookmark"
+    button.systemImageNameOff = "bookmark"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in

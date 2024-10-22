@@ -43334,6 +43334,9 @@
         }
       }
     },
+    "Failed to create stream marker" : {
+
+    },
     "Failed to fix OBS input" : {
       "localizations" : {
         "de" : {
@@ -95252,6 +95255,12 @@
           }
         }
       }
+    },
+    "Stream marker" : {
+
+    },
+    "Stream marker created" : {
+
     },
     "Stream name" : {
       "localizations" : {
