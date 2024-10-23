@@ -22,43 +22,49 @@ struct PadelScoreboard {
     var score: [PadelScoreboardScore]
 }
 
+private struct TeamPlayersView: View {
+    var players: [PadelScoreboardPlayer]
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Spacer(minLength: 0)
+            ForEach(players) { player in
+                Text(player.name.prefix(5))
+            }
+            Spacer(minLength: 0)
+        }
+        .font(.system(size: 15))
+    }
+}
+
+private struct TeamScoreView: View {
+    var score: Int
+
+    var body: some View {
+        VStack {
+            Spacer(minLength: 0)
+            Text(String(score))
+            Spacer(minLength: 0)
+        }
+        .font(.system(size: 30))
+    }
+}
+
 private struct ScoreboardView: View {
     @Binding var scoreboard: PadelScoreboard
 
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading) {
-                VStack(alignment: .leading) {
-                    Spacer(minLength: 0)
-                    ForEach(scoreboard.home.players) { player in
-                        Text(player.name.prefix(5))
-                    }
-                    Spacer(minLength: 0)
-                }
-                VStack(alignment: .leading) {
-                    Spacer(minLength: 0)
-                    ForEach(scoreboard.away.players) { player in
-                        Text(player.name.prefix(5))
-                    }
-                    Spacer(minLength: 0)
-                }
+                TeamPlayersView(players: scoreboard.home.players)
+                TeamPlayersView(players: scoreboard.away.players)
             }
-            .font(.system(size: 15))
             ForEach(scoreboard.score) { score in
                 VStack {
-                    VStack {
-                        Spacer(minLength: 0)
-                        Text(String(score.home))
-                        Spacer(minLength: 0)
-                    }
-                    VStack {
-                        Spacer(minLength: 0)
-                        Text(String(score.away))
-                        Spacer(minLength: 0)
-                    }
+                    TeamScoreView(score: score.home)
+                    TeamScoreView(score: score.away)
                 }
                 .frame(width: 17)
-                .font(.system(size: 30))
             }
             Spacer()
         }

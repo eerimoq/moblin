@@ -156,7 +156,9 @@ struct WatchProtocolPadelScoreboardScore: Codable {
 
 struct WatchProtocolPadelScoreboard: Codable {
     var id: UUID
+    // periphery:ignore
     var home: [String]
+    // periphery:ignore
     var away: [String]
     var score: [WatchProtocolPadelScoreboardScore]
 }

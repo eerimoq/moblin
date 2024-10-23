@@ -45,11 +45,46 @@ private struct PlayersView: View {
     }
 }
 
+private struct PlayerView: View {
+    @EnvironmentObject var model: Model
+    @Binding var playerId: UUID
+
+    var body: some View {
+        NavigationLink {
+            InlinePickerView(title: String(localized: "Name"),
+                             onChange: {
+                                 playerId = UUID(uuidString: $0) ?? .init()
+                             },
+                             items: model.database.scoreboardPlayers!.map { .init(
+                                 id: $0.id.uuidString, text: $0.name
+                             ) },
+                             selectedId: playerId.uuidString)
+        } label: {
+            Text(model.findScoreboardPlayer(id: playerId))
+        }
+    }
+}
+
 struct WidgetScoreboardSettingsView: View {
     @EnvironmentObject var model: Model
-    var widget: SettingsWidget
-    @State var type: String
-    @State var gameType: String
+    private var widget: SettingsWidget
+    @State private var type: String
+    @State private var gameType: String
+    @State private var homePlayer1: UUID
+    @State private var homePlayer2: UUID
+    @State private var awayPlayer1: UUID
+    @State private var awayPlayer2: UUID
+
+    init(widget: SettingsWidget, type: String) {
+        self.widget = widget
+        self.type = type
+        let padel = widget.scoreboard!.padel
+        gameType = padel.type.rawValue
+        homePlayer1 = padel.homePlayer1
+        homePlayer2 = padel.homePlayer2
+        awayPlayer1 = padel.awayPlayer1
+        awayPlayer2 = padel.awayPlayer2
+    }
 
     var body: some View {
         Section {
@@ -84,69 +119,29 @@ struct WidgetScoreboardSettingsView: View {
             Text("General")
         }
         Section {
-            NavigationLink {
-                InlinePickerView(title: String(localized: "Name"),
-                                 onChange: { value in
-                                     widget.scoreboard!.padel
-                                         .homePlayer1 = UUID(uuidString: value) ?? .init()
-                                     model.resetSelectedScene(changeScene: false)
-                                 },
-                                 items: model.database.scoreboardPlayers!.map { .init(
-                                     id: $0.id.uuidString, text: $0.name
-                                 ) },
-                                 selectedId: widget.scoreboard!.padel.homePlayer1.uuidString)
-            } label: {
-                Text(model.findScoreboardPlayer(id: widget.scoreboard!.padel.homePlayer1))
-            }
-            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
-                NavigationLink {
-                    InlinePickerView(title: String(localized: "Name"),
-                                     onChange: { value in
-                                         widget.scoreboard!.padel
-                                             .homePlayer2 = UUID(uuidString: value) ?? .init()
-                                         model.resetSelectedScene(changeScene: false)
-                                     },
-                                     items: model.database.scoreboardPlayers!.map { .init(
-                                         id: $0.id.uuidString, text: $0.name
-                                     ) },
-                                     selectedId: widget.scoreboard!.padel.homePlayer2.uuidString)
-                } label: {
-                    Text(model.findScoreboardPlayer(id: widget.scoreboard!.padel.homePlayer2))
+            PlayerView(playerId: $homePlayer1)
+                .onChange(of: homePlayer1) { _ in
+                    widget.scoreboard!.padel.homePlayer1 = homePlayer1
                 }
+            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
+                PlayerView(playerId: $homePlayer2)
+                    .onChange(of: homePlayer2) { _ in
+                        widget.scoreboard!.padel.homePlayer2 = homePlayer2
+                    }
             }
         } header: {
             Text("Home")
         }
         Section {
-            NavigationLink {
-                InlinePickerView(title: String(localized: "Name"),
-                                 onChange: { value in
-                                     widget.scoreboard!.padel
-                                         .awayPlayer1 = UUID(uuidString: value) ?? .init()
-                                     model.resetSelectedScene(changeScene: false)
-                                 },
-                                 items: model.database.scoreboardPlayers!.map { .init(
-                                     id: $0.id.uuidString, text: $0.name
-                                 ) },
-                                 selectedId: widget.scoreboard!.padel.awayPlayer1.uuidString)
-            } label: {
-                Text(model.findScoreboardPlayer(id: widget.scoreboard!.padel.awayPlayer1))
-            }
-            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
-                NavigationLink {
-                    InlinePickerView(title: String(localized: "Name"),
-                                     onChange: { value in
-                                         widget.scoreboard!.padel
-                                             .awayPlayer2 = UUID(uuidString: value) ?? .init()
-                                         model.resetSelectedScene(changeScene: false)
-                                     },
-                                     items: model.database.scoreboardPlayers!.map { .init(
-                                         id: $0.id.uuidString, text: $0.name
-                                     ) },
-                                     selectedId: widget.scoreboard!.padel.awayPlayer2.uuidString)
-                } label: {
-                    Text(model.findScoreboardPlayer(id: widget.scoreboard!.padel.awayPlayer2))
+            PlayerView(playerId: $awayPlayer1)
+                .onChange(of: awayPlayer1) { _ in
+                    widget.scoreboard!.padel.awayPlayer1 = awayPlayer1
                 }
+            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
+                PlayerView(playerId: $awayPlayer2)
+                    .onChange(of: awayPlayer2) { _ in
+                        widget.scoreboard!.padel.awayPlayer2 = awayPlayer2
+                    }
             }
         } header: {
             Text("Away")

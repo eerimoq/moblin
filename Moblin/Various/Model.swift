@@ -7088,13 +7088,20 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
+            guard let widget = self.findWidget(id: scoreboard.id) else {
+                return
+            }
             guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
                 return
             }
-            let home = PadelScoreboardTeam(players: scoreboard.home.map { .init(name: $0) })
-            let away = PadelScoreboardTeam(players: scoreboard.away.map { .init(name: $0) })
-            let score = scoreboard.score.map { PadelScoreboardScore(home: $0.home, away: $0.away) }
-            padelScoreboardEffect.update(scoreBoard: PadelScoreboard(home: home, away: away, score: score))
+            widget.scoreboard!.padel.score = scoreboard.score.map {
+                let score = SettingsWidgetScoreboardScore()
+                score.home = $0.home
+                score.away = $0.away
+                return score
+            }
+            padelScoreboardEffect
+                .update(scoreBoard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))
         }
     }
 
