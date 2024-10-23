@@ -118,15 +118,12 @@ class Model: NSObject, ObservableObject {
     @Published var workoutType = noValue
     @Published var viewerCount = noValue
     @Published var showPadelScoreBoard = false
-    @Published var padelScoreBoard: PadelScoreboard = .init(home: .init(players: [
-        .init(name: "🇸🇪 MOQVIST"),
-        .init(name: "🇸🇪 EKBÄCK"),
-    ]), away: .init(players: [
-        .init(name: "🇸🇪 HERMANSSON"),
-        .init(name: "🇸🇪 DAHLIN"),
-    ]), scores: [
-        PadelScoreboardScore(home: 0, away: 0),
-    ])
+    @Published var padelScoreboard: PadelScoreboard = .init(
+        id: .init(),
+        home: .init(players: []),
+        away: .init(players: []),
+        score: []
+    )
     private var padelScoreboardScoreChanges: [PadelScoreboardScoreIncrement] = []
     @Published var padelScoreboardIncrementTintColor: Color?
 
@@ -441,7 +438,12 @@ class Model: NSObject, ObservableObject {
         guard let data = data as? Data else {
             return
         }
-        _ = try JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data)
+        let scoreboard = try JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data)
+        padelScoreboard.id = scoreboard.id
+        padelScoreboard.home = .init(players: scoreboard.home.map { .init(name: $0) })
+        padelScoreboard.away = .init(players: scoreboard.away.map { .init(name: $0) })
+        padelScoreboard.score = scoreboard.score.map { .init(home: $0.home, away: $0.away) }
+        showPadelScoreBoard = true
     }
 
     private func isWorkoutRunning() -> Bool {
@@ -522,9 +524,9 @@ class Model: NSObject, ObservableObject {
                 updatePadelScoreboard()
                 return
             }
-            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home += 1
+            padelScoreboard.score[padelScoreboard.score.count - 1].home += 1
             padelScoreboardScoreChanges.append(.home)
-            guard let score = padelScoreBoard.scores.last else {
+            guard let score = padelScoreboard.score.last else {
                 updatePadelScoreboard()
                 return
             }
@@ -544,9 +546,9 @@ class Model: NSObject, ObservableObject {
                 updatePadelScoreboard()
                 return
             }
-            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away += 1
+            padelScoreboard.score[padelScoreboard.score.count - 1].away += 1
             padelScoreboardScoreChanges.append(.away)
-            guard let score = padelScoreBoard.scores.last else {
+            guard let score = padelScoreboard.score.last else {
                 updatePadelScoreboard()
                 return
             }
@@ -565,20 +567,20 @@ class Model: NSObject, ObservableObject {
             updatePadelScoreboard()
             return
         }
-        guard let score = padelScoreBoard.scores.last else {
+        guard let score = padelScoreboard.score.last else {
             updatePadelScoreboard()
             return
         }
-        if score.home == 0 && score.away == 0 && padelScoreBoard.scores.count > 1 {
-            padelScoreBoard.scores.removeLast()
+        if score.home == 0 && score.away == 0 && padelScoreboard.score.count > 1 {
+            padelScoreboard.score.removeLast()
         }
         switch team {
         case .home:
-            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].home -= 1
+            padelScoreboard.score[padelScoreboard.score.count - 1].home -= 1
         case .away:
-            padelScoreBoard.scores[padelScoreBoard.scores.count - 1].away -= 1
+            padelScoreboard.score[padelScoreboard.score.count - 1].away -= 1
         }
-        guard let score = padelScoreBoard.scores.last else {
+        guard let score = padelScoreboard.score.last else {
             updatePadelScoreboard()
             return
         }
@@ -591,7 +593,7 @@ class Model: NSObject, ObservableObject {
     }
 
     func resetPadelScoreBoard() {
-        padelScoreBoard.scores = [
+        padelScoreboard.score = [
             .init(home: 0, away: 0),
         ]
         padelScoreboardScoreChanges.removeAll()
@@ -600,7 +602,7 @@ class Model: NSObject, ObservableObject {
     }
 
     private func padelScoreboardUpdateSetCompleted() {
-        guard let score = padelScoreBoard.scores.last else {
+        guard let score = padelScoreboard.score.last else {
             return
         }
         guard isSetCompleted(score: score) else {
@@ -609,17 +611,22 @@ class Model: NSObject, ObservableObject {
         guard !isMatchCompleted() else {
             return
         }
-        padelScoreBoard.scores.append(.init(home: 0, away: 0))
+        padelScoreboard.score.append(.init(home: 0, away: 0))
     }
 
     private func updatePadelScoreboard() {
-        let home = padelScoreBoard.home.players.map { $0.name }
-        let away = padelScoreBoard.away.players.map { $0.name }
-        let scores: [WatchProtocolPadelScoreboardScore] = padelScoreBoard.scores.map { .init(
+        let home = padelScoreboard.home.players.map { $0.name }
+        let away = padelScoreboard.away.players.map { $0.name }
+        let score: [WatchProtocolPadelScoreboardScore] = padelScoreboard.score.map { .init(
             home: $0.home,
             away: $0.away
         ) }
-        let scoreBoard = WatchProtocolPadelScoreboard(home: home, away: away, scores: scores)
+        let scoreBoard = WatchProtocolPadelScoreboard(
+            id: padelScoreboard.id,
+            home: home,
+            away: away,
+            score: score
+        )
         guard let scoreBoard = try? JSONEncoder().encode(scoreBoard) else {
             return
         }
@@ -640,10 +647,10 @@ class Model: NSObject, ObservableObject {
     }
 
     private func isMatchCompleted() -> Bool {
-        if padelScoreBoard.scores.count < 5 {
+        if padelScoreboard.score.count < 5 {
             return false
         }
-        guard let score = padelScoreBoard.scores.last else {
+        guard let score = padelScoreboard.score.last else {
             return false
         }
         return isSetCompleted(score: score)

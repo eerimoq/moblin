@@ -16,30 +16,31 @@ struct PadelScoreboardTeam {
 }
 
 struct PadelScoreboard {
+    var id: UUID
     var home: PadelScoreboardTeam
     var away: PadelScoreboardTeam
-    var scores: [PadelScoreboardScore]
+    var score: [PadelScoreboardScore]
 }
 
 private struct ScoreboardView: View {
-    @Binding var scoreBoard: PadelScoreboard
+    @Binding var scoreboard: PadelScoreboard
 
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
-                    ForEach(scoreBoard.home.players) { player in
+                    ForEach(scoreboard.home.players) { player in
                         Text(player.name.prefix(5))
                     }
                 }
                 VStack(alignment: .leading) {
-                    ForEach(scoreBoard.away.players) { player in
+                    ForEach(scoreboard.away.players) { player in
                         Text(player.name.prefix(5))
                     }
                 }
             }
             .font(.system(size: 15))
-            ForEach(scoreBoard.scores) { score in
+            ForEach(scoreboard.score) { score in
                 VStack {
                     VStack {
                         Spacer(minLength: 0)
@@ -70,7 +71,7 @@ private struct PadelScoreboardView: View {
 
     var body: some View {
         Divider()
-        ScoreboardView(scoreBoard: $model.padelScoreBoard)
+        ScoreboardView(scoreboard: $model.padelScoreboard)
         HStack {
             Button {
                 model.padelScoreboardUndoScore()
@@ -91,7 +92,7 @@ private struct PadelScoreboardView: View {
                 Image(systemName: "trash")
             }
             .confirmationDialog("", isPresented: $isPresentingResetConfirimation) {
-                Button("Reset scores") {
+                Button("Reset score") {
                     model.resetPadelScoreBoard()
                 }
                 Button("Cancel") {}

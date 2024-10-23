@@ -1121,6 +1121,55 @@ class SettingsWidgetVideoSource: Codable {
     }
 }
 
+enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
+    case padel = "Padel"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .padel
+    }
+
+    static func fromString(value: String) -> SettingsWidgetScoreboardType {
+        switch value {
+        case String(localized: "Padel"):
+            return .padel
+        default:
+            return .padel
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .padel:
+            return String(localized: "Padel")
+        }
+    }
+}
+
+let scoreboardTypes = SettingsWidgetScoreboardType.allCases.map { $0.toString() }
+
+class SettingsWidgetScoreboardPlayer: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "🇸🇪 Moblin"
+}
+
+class SettingsWidgetScoreboardScore: Codable, Identifiable {
+    var home: Int = 0
+    var away: Int = 0
+}
+
+class SettingsWidgetPadelScoreboard: Codable {
+    var home: [UUID] = .init()
+    var away: [UUID] = .init()
+    var score: [SettingsWidgetScoreboardScore] = [.init()]
+}
+
+class SettingsWidgetScoreboard: Codable {
+    var type: SettingsWidgetScoreboardType = .padel
+    var padel: SettingsWidgetPadelScoreboard = .init()
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -1155,6 +1204,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case qrCode = "QR code"
     case alerts = "Alerts"
     case videoSource = "Video source"
+    case scoreboard = "Scoreboard"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -1183,6 +1233,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .alerts
         case String(localized: "Video source"):
             return .videoSource
+        case String(localized: "Scoreboard"):
+            return .scoreboard
         default:
             return .videoEffect
         }
@@ -1210,6 +1262,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Alerts")
         case .videoSource:
             return String(localized: "Video source")
+        case .scoreboard:
+            return String(localized: "Scoreboard")
         }
     }
 }
@@ -1240,6 +1294,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var qrCode: SettingsWidgetQrCode? = .init()
     var alerts: SettingsWidgetAlerts? = .init()
     var videoSource: SettingsWidgetVideoSource? = .init()
+    var scoreboard: SettingsWidgetScoreboard? = .init()
     var enabled: Bool? = true
 
     init(name: String) {
@@ -2384,6 +2439,7 @@ class Database: Codable {
     var alertsMediaGallery: SettingsAlertsMediaGallery? = .init()
     var catPrinters: SettingsCatPrinters? = .init()
     var verboseStatuses: Bool? = false
+    var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4142,6 +4198,14 @@ final class Settings {
         }
         if realDatabase.debug!.removeWindNoise == nil {
             realDatabase.debug!.removeWindNoise = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.scoreboard == nil {
+            widget.scoreboard = .init()
+            store()
+        }
+        if realDatabase.scoreboardPlayers == nil {
+            realDatabase.scoreboardPlayers = .init()
             store()
         }
     }

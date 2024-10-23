@@ -103,6 +103,7 @@
 		033BEACA2C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */; };
 		033C92FF2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033C92FE2C0A29B800161DFC /* StreamWizardNetworkSetupIrlToolkitSettingsView.swift */; };
 		033FD71B2CC622D80073C6EC /* PadelScoreboardEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033FD71A2CC622D40073C6EC /* PadelScoreboardEffect.swift */; };
+		033FD71E2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033FD71D2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0342F1A12C627A70004DD3EA /* IrlClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A02C627A70004DD3EA /* IrlClient.swift */; };
 		0342F1A32C627A87004DD3EA /* IrlServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A22C627A87004DD3EA /* IrlServer.swift */; };
@@ -599,6 +600,7 @@
 		033C97612C9DAB4D002107A4 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		033FD7182CC52E1D0073C6EC /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		033FD71A2CC622D40073C6EC /* PadelScoreboardEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelScoreboardEffect.swift; sourceTree = "<group>"; };
+		033FD71D2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetScoreboardSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0342F1A02C627A70004DD3EA /* IrlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlClient.swift; sourceTree = "<group>"; };
 		0342F1A22C627A87004DD3EA /* IrlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrlServer.swift; sourceTree = "<group>"; };
@@ -1211,6 +1213,7 @@
 				03828C2E2C3B09FF00F5A8AC /* Map */,
 				030499602C4038B2003488F4 /* QrCode */,
 				03B2189D2C3E4E3D001FDE57 /* Scene */,
+				033FD71C2CC8A4940073C6EC /* Scoreboard */,
 				037132CC2C29FEED00393605 /* Text */,
 				030C762E2CBBF52B0062D8FD /* VideoSource */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
@@ -1379,6 +1382,14 @@
 				033FD71A2CC622D40073C6EC /* PadelScoreboardEffect.swift */,
 			);
 			path = Scoreboards;
+			sourceTree = "<group>";
+		};
+		033FD71C2CC8A4940073C6EC /* Scoreboard */ = {
+			isa = PBXGroup;
+			children = (
+				033FD71D2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift */,
+			);
+			path = Scoreboard;
 			sourceTree = "<group>";
 		};
 		03403DF32AD05C700079D8E4 /* Browser */ = {
@@ -2857,6 +2868,7 @@
 			files = (
 				032BAEF12C0C78FF005D5DA7 /* DeepLinkCreatorSettingsView.swift in Sources */,
 				0359F8F52BD3DA61005BFDA8 /* RTMPStreamInfo.swift in Sources */,
+				033FD71E2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift in Sources */,
 				0359F8C12BD3DA61005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,
 				0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */,
 				0359F8AC2BD3DA61005BFDA8 /* AudioCodecOutputSettings.swift in Sources */,

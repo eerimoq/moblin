@@ -155,9 +155,10 @@ struct WatchProtocolPadelScoreboardScore: Codable {
 }
 
 struct WatchProtocolPadelScoreboard: Codable {
+    var id: UUID
     var home: [String]
     var away: [String]
-    var scores: [WatchProtocolPadelScoreboardScore]
+    var score: [WatchProtocolPadelScoreboardScore]
 }
 
 extension WatchProtocolColor {

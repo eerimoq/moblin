@@ -11773,6 +11773,9 @@
         }
       }
     },
+    "a player" : {
+
+    },
     "a preset" : {
       "localizations" : {
         "de" : {
@@ -73239,6 +73242,9 @@
         }
       }
     },
+    "Padel" : {
+
+    },
     "Pairing" : {
       "localizations" : {
         "de" : {
@@ -80785,7 +80791,7 @@
         }
       }
     },
-    "Reset scores" : {
+    "Reset score" : {
 
     },
     "Reset settings" : {
@@ -84459,6 +84465,9 @@
           }
         }
       }
+    },
+    "Scoreboard" : {
+
     },
     "Screen capture started" : {
       "localizations" : {

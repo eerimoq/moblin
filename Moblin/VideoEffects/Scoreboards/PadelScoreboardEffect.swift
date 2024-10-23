@@ -22,14 +22,19 @@ struct PadelScoreboardTeam {
 struct PadelScoreboard {
     let home: PadelScoreboardTeam
     let away: PadelScoreboardTeam
-    let scores: [PadelScoreboardScore]
+    let score: [PadelScoreboardScore]
 }
 
 final class PadelScoreboardEffect: VideoEffect {
     private var scoreBoard: Atomic<CIImage?> = .init(nil)
+    private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
 
     override func getName() -> String {
         return "padel scoreboard"
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+        self.sceneWidget.mutate { $0 = sceneWidget }
     }
 
     func update(scoreBoard: PadelScoreboard) {
@@ -49,7 +54,7 @@ final class PadelScoreboardEffect: VideoEffect {
                         }
                     }
                     .font(.system(size: 25))
-                    ForEach(scoreBoard.scores) { score in
+                    ForEach(scoreBoard.score) { score in
                         VStack {
                             VStack {
                                 Spacer(minLength: 0)
@@ -64,6 +69,7 @@ final class PadelScoreboardEffect: VideoEffect {
                         }
                         .font(.system(size: 45))
                     }
+                    Spacer()
                 }
                 .padding([.leading, .trailing], 10)
                 .padding([.top], 3)

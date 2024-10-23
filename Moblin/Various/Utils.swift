@@ -59,6 +59,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "megaphone"
     case .videoSource:
         return "video"
+    case .scoreboard:
+        return "rectangle.split.2x1"
     }
 }
 

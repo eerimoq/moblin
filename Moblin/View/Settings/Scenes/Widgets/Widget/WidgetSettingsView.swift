@@ -62,6 +62,8 @@ struct WidgetSettingsView: View {
                 WidgetVideoSourceSettingsView(widget: widget,
                                               cornerRadius: widget.videoSource!.cornerRadius,
                                               selectedRotation: widget.videoSource!.rotation!)
+            case .scoreboard:
+                WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard!.type.rawValue)
             }
         }
         .navigationTitle("Widget")

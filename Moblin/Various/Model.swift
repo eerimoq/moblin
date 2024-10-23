@@ -417,7 +417,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var enabledAlertsEffects: [AlertsEffect] = []
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
-    private var padelScoreboardEffect = PadelScoreboardEffect()
+    private var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     @Published var isTorchOn = false
@@ -2765,7 +2765,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
         media.unregisterEffect(pollEffect)
-        media.unregisterEffect(padelScoreboardEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -2774,7 +2773,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         tripleEffect = TripleEffect()
         pixellateEffect = PixellateEffect()
         pollEffect = PollEffect()
-        padelScoreboardEffect = PadelScoreboardEffect()
     }
 
     private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
@@ -2813,16 +2811,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isGlobalButtonOn(type: .pixellate) {
             effects.append(pixellateEffect)
         }
-        // effects.append(padelScoreboardEffect)
-        // padelScoreboardEffect.update(scoreBoard: PadelScoreboard(home: .init(players: [
-        //     .init(name: "🇸🇪 MOQVIST"),
-        //     .init(name: "🇸🇪 EKBÄCK"),
-        // ]), away: .init(players: [
-        //     .init(name: "🇸🇪 HERMANSSON"),
-        //     .init(name: "🇸🇪 DAHLIN"),
-        // ]), scores: [
-        //     PadelScoreboardScore(home: 0, away: 0),
-        // ]))
         return effects
     }
 
@@ -3074,6 +3062,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         videoSourceEffects.removeAll()
         for widget in database.widgets where widget.type == .videoSource {
             videoSourceEffects[widget.id] = VideoSourceEffect()
+        }
+        for padelScoreboardEffect in padelScoreboardEffects.values {
+            media.unregisterEffect(padelScoreboardEffect)
+        }
+        padelScoreboardEffects.removeAll()
+        for widget in database.widgets where widget.type == .scoreboard {
+            padelScoreboardEffects[widget.id] = PadelScoreboardEffect()
         }
         for alertsEffect in alertsEffects.values {
             media.unregisterEffect(alertsEffect)
@@ -5043,8 +5038,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     videoSourceEffect.setSettings(settings: widget.videoSource!.toEffectSettings())
                     effects.append(videoSourceEffect)
                 }
+            case .scoreboard:
+                if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
+                    padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
+                    let scoreboard = widget.scoreboard!
+                    let home = PadelScoreboardTeam(players: scoreboard.padel.home.map {
+                        .init(name: findScoreboardPlayer(id: $0))
+                    })
+                    let away = PadelScoreboardTeam(players: scoreboard.padel.away.map {
+                        .init(name: findScoreboardPlayer(id: $0))
+                    })
+                    let score = scoreboard.padel.score
+                        .map { PadelScoreboardScore(home: $0.home, away: $0.away) }
+                    padelScoreboardEffect.update(scoreBoard: PadelScoreboard(
+                        home: home,
+                        away: away,
+                        score: score
+                    ))
+                    sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
+                    effects.append(padelScoreboardEffect)
+                }
             }
         }
+    }
+
+    private func findScoreboardPlayer(id: UUID) -> String {
+        return database.scoreboardPlayers!.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
     private func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
@@ -6635,6 +6654,26 @@ extension Model {
         sendMessageToWatch(type: .viewerCount, data: numberOfViewers)
     }
 
+    private func sendUpdatePadelScoreboardToWatch(id: UUID, scoreboard: SettingsWidgetScoreboard) {
+        guard isWatchReachable() else {
+            return
+        }
+        var data: Data
+        do {
+            let home = scoreboard.padel.home.map { findScoreboardPlayer(id: $0) }
+            let away = scoreboard.padel.away.map { findScoreboardPlayer(id: $0) }
+            let score = scoreboard.padel.score.map { WatchProtocolPadelScoreboardScore(
+                home: $0.home,
+                away: $0.away
+            ) }
+            let message = WatchProtocolPadelScoreboard(id: id, home: home, away: away, score: score)
+            data = try JSONEncoder().encode(message)
+        } catch {
+            return
+        }
+        sendMessageToWatch(type: .padelScoreboard, data: data)
+    }
+
     private func resetWorkoutStats() {
         workoutHeartRate = nil
         workoutActiveEnergyBurned = nil
@@ -6850,6 +6889,11 @@ extension Model: WCSessionDelegate {
                 self.sendIsRecordingToWatch(isRecording: self.isRecording)
                 self.sendIsMutedToWatch(isMuteOn: self.isMuteOn)
                 self.sendViewerCountWatch()
+                for id in self.padelScoreboardEffects.keys {
+                    if let scoreboard = self.findWidget(id: id)?.scoreboard {
+                        self.sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
+                    }
+                }
             }
         }
     }
@@ -7024,18 +7068,17 @@ extension Model: WCSessionDelegate {
         guard let data = data as? Data else {
             return
         }
-        guard let scoreBoard = try? JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data) else {
+        guard let scoreboard = try? JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data) else {
             return
         }
         DispatchQueue.main.async {
-            let home = PadelScoreboardTeam(players: scoreBoard.home.map { .init(name: $0) })
-            let away = PadelScoreboardTeam(players: scoreBoard.away.map { .init(name: $0) })
-            let scores = scoreBoard.scores.map { PadelScoreboardScore(home: $0.home, away: $0.away) }
-            self.padelScoreboardEffect.update(scoreBoard: PadelScoreboard(
-                home: home,
-                away: away,
-                scores: scores
-            ))
+            guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
+                return
+            }
+            let home = PadelScoreboardTeam(players: scoreboard.home.map { .init(name: $0) })
+            let away = PadelScoreboardTeam(players: scoreboard.away.map { .init(name: $0) })
+            let score = scoreboard.score.map { PadelScoreboardScore(home: $0.home, away: $0.away) }
+            padelScoreboardEffect.update(scoreBoard: PadelScoreboard(home: home, away: away, score: score))
         }
     }
 
