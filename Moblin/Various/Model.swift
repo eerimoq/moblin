@@ -5042,34 +5042,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
                     padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     let scoreboard = widget.scoreboard!
-                    var homePlayers = [
-                        PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel.homePlayer1)),
-                    ]
-                    var awayPlayers = [
-                        PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel.awayPlayer1)),
-                    ]
-                    if widget.scoreboard!.padel.type == .double {
-                        homePlayers
-                            .append(PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel
-                                    .homePlayer2)))
-                        awayPlayers
-                            .append(PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel
-                                    .awayPlayer2)))
-                    }
-                    let home = PadelScoreboardTeam(players: homePlayers)
-                    let away = PadelScoreboardTeam(players: awayPlayers)
-                    let score = scoreboard.padel.score
-                        .map { PadelScoreboardScore(home: $0.home, away: $0.away) }
-                    padelScoreboardEffect.update(scoreBoard: PadelScoreboard(
-                        home: home,
-                        away: away,
-                        score: score
-                    ))
+                    padelScoreboardEffect
+                        .update(scoreBoard: padelScoreboardSettingsToEffect(scoreboard.padel))
                     sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
                     effects.append(padelScoreboardEffect)
                 }
             }
         }
+    }
+
+    private func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelScoreboard)
+        -> PadelScoreboard    {
+        var homePlayers = [createPadelPlayer(id: scoreboard.homePlayer1)]
+        var awayPlayers = [createPadelPlayer(id: scoreboard.awayPlayer1)]
+        if scoreboard.type == .double {
+            homePlayers.append(createPadelPlayer(id: scoreboard.homePlayer2))
+            awayPlayers.append(createPadelPlayer(id: scoreboard.awayPlayer2))
+        }
+        let home = PadelScoreboardTeam(players: homePlayers)
+        let away = PadelScoreboardTeam(players: awayPlayers)
+        let score = scoreboard.score.map { PadelScoreboardScore(home: $0.home, away: $0.away) }
+        return PadelScoreboard(home: home, away: away, score: score)
+    }
+
+    private func createPadelPlayer(id: UUID) -> PadelScoreboardPlayer {
+        return PadelScoreboardPlayer(name: findScoreboardPlayer(id: id))
     }
 
     func findScoreboardPlayer(id: UUID) -> String {
