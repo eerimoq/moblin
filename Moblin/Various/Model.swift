@@ -5052,7 +5052,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelScoreboard)
-        -> PadelScoreboard    {
+        -> PadelScoreboard
+    {
         var homePlayers = [createPadelPlayer(id: scoreboard.homePlayer1)]
         var awayPlayers = [createPadelPlayer(id: scoreboard.awayPlayer1)]
         if scoreboard.type == .double {

@@ -78,7 +78,7 @@ final class PadelScoreboardEffect: VideoEffect {
                 }
                 .padding([.leading, .trailing], 3)
                 .padding([.top], 3)
-                .background(.blue)
+                .background(RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color())
                 HStack {
                     Text("Powered by Moblin")
                         .fontDesign(.monospaced)

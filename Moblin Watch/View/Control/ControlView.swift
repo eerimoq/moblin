@@ -64,7 +64,7 @@ private struct ScoreboardView: View {
         }
         .padding([.leading, .trailing], 2)
         .padding([.top], 2)
-        .background(.blue)
+        .background(RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color())
         .foregroundColor(.white)
     }
 }

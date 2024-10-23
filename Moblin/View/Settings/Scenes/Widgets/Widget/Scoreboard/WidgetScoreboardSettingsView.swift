@@ -11,14 +11,18 @@ private struct PlayersView: View {
         Section {
             List {
                 ForEach(model.database.scoreboardPlayers!) { player in
-                    TextEditNavigationView(
-                        title: String(localized: "Name"),
-                        value: player.name,
-                        onSubmit: {
-                            submitName(player: player, value: $0)
-                            model.resetSelectedScene(changeScene: false)
-                        }
-                    )
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Name"),
+                            value: player.name,
+                            onSubmit: {
+                                submitName(player: player, value: $0)
+                                model.resetSelectedScene(changeScene: false)
+                            }
+                        )
+                    } label: {
+                        Text(player.name)
+                    }
                 }
                 .onMove(perform: { froms, to in
                     model.database.scoreboardPlayers!.move(fromOffsets: froms, toOffset: to)
@@ -31,6 +35,7 @@ private struct PlayersView: View {
             }
             CreateButtonView(action: {
                 model.database.scoreboardPlayers!.append(.init())
+                model.objectWillChange.send()
             })
         } header: {
             Text("Players")
