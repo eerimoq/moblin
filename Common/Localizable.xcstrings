@@ -18586,6 +18586,9 @@
         }
       }
     },
+    "Away" : {
+
+    },
     "B-frames" : {
       "localizations" : {
         "de" : {
@@ -37487,6 +37490,9 @@
         }
       }
     },
+    "Double" : {
+
+    },
     "Double tap to return to main view" : {
       "localizations" : {
         "de" : {
@@ -50121,6 +50127,9 @@
           }
         }
       }
+    },
+    "Game type" : {
+
     },
     "General" : {
       "localizations" : {
@@ -74155,6 +74164,9 @@
         }
       }
     },
+    "Players" : {
+
+    },
     "Playlist" : {
       "localizations" : {
         "de" : {
@@ -88114,6 +88126,9 @@
           }
         }
       }
+    },
+    "Single" : {
+
     },
     "Size" : {
       "localizations" : {

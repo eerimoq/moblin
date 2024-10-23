@@ -40,17 +40,21 @@ final class PadelScoreboardEffect: VideoEffect {
     func update(scoreBoard: PadelScoreboard) {
         DispatchQueue.main.async {
             let scoreBoard = VStack(alignment: .leading) {
-                HStack(alignment: .center, spacing: 25) {
+                HStack(alignment: .center, spacing: 18) {
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading) {
+                            Spacer(minLength: 0)
                             ForEach(scoreBoard.home.players) { player in
                                 Text(player.name)
                             }
+                            Spacer(minLength: 0)
                         }
                         VStack(alignment: .leading) {
+                            Spacer(minLength: 0)
                             ForEach(scoreBoard.away.players) { player in
                                 Text(player.name)
                             }
+                            Spacer(minLength: 0)
                         }
                     }
                     .font(.system(size: 25))
@@ -67,11 +71,12 @@ final class PadelScoreboardEffect: VideoEffect {
                                 Spacer(minLength: 0)
                             }
                         }
+                        .frame(width: 25)
                         .font(.system(size: 45))
                     }
                     Spacer()
                 }
-                .padding([.leading, .trailing], 10)
+                .padding([.leading, .trailing], 3)
                 .padding([.top], 3)
                 .background(.blue)
                 HStack {
@@ -81,7 +86,7 @@ final class PadelScoreboardEffect: VideoEffect {
                         .bold()
                     Spacer()
                 }
-                .padding([.leading, .trailing], 10)
+                .padding([.leading, .trailing], 3)
                 .padding([.bottom], 3)
                 .background(RgbColor(red: 0, green: 3, blue: 0x5B).color())
             }

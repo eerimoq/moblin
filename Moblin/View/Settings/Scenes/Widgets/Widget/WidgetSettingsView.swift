@@ -19,18 +19,22 @@ struct WidgetSettingsView: View {
                 } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
                 }
-                HStack {
-                    Text("Type")
-                    Spacer()
-                    Picker("", selection: $type) {
-                        ForEach(widgetTypes, id: \.self) {
-                            Text($0)
-                        }
-                    }
-                    .onChange(of: type) {
-                        widget.type = SettingsWidgetType.fromString(value: $0)
-                        model.resetSelectedScene(changeScene: false)
-                    }
+                NavigationLink {
+                    InlinePickerView(title: String(localized: "Type"),
+                                     onChange: {
+                                         widget.type = SettingsWidgetType.fromString(value: $0)
+                                         model.resetSelectedScene(changeScene: false)
+                                     },
+                                     items: widgetTypes.map { .init(
+                                         id: SettingsWidgetType.fromString(value: $0).rawValue,
+                                         text: $0
+                                     ) },
+                                     selectedId: widget.type.rawValue)
+                } label: {
+                    TextItemView(
+                        name: String(localized: "Type"),
+                        value: widget.type.rawValue
+                    )
                 }
             }
             switch widget.type {
@@ -63,7 +67,11 @@ struct WidgetSettingsView: View {
                                               cornerRadius: widget.videoSource!.cornerRadius,
                                               selectedRotation: widget.videoSource!.rotation!)
             case .scoreboard:
-                WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard!.type.rawValue)
+                WidgetScoreboardSettingsView(
+                    widget: widget,
+                    type: widget.scoreboard!.type.rawValue,
+                    gameType: widget.scoreboard!.padel.type.toString()
+                )
             }
         }
         .navigationTitle("Widget")

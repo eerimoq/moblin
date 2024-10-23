@@ -29,14 +29,18 @@ private struct ScoreboardView: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
+                    Spacer(minLength: 0)
                     ForEach(scoreboard.home.players) { player in
                         Text(player.name.prefix(5))
                     }
+                    Spacer(minLength: 0)
                 }
                 VStack(alignment: .leading) {
+                    Spacer(minLength: 0)
                     ForEach(scoreboard.away.players) { player in
                         Text(player.name.prefix(5))
                     }
+                    Spacer(minLength: 0)
                 }
             }
             .font(.system(size: 15))

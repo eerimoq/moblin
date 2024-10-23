@@ -5042,12 +5042,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if let padelScoreboardEffect = padelScoreboardEffects[widget.id] {
                     padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     let scoreboard = widget.scoreboard!
-                    let home = PadelScoreboardTeam(players: scoreboard.padel.home.map {
-                        .init(name: findScoreboardPlayer(id: $0))
-                    })
-                    let away = PadelScoreboardTeam(players: scoreboard.padel.away.map {
-                        .init(name: findScoreboardPlayer(id: $0))
-                    })
+                    var homePlayers = [
+                        PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel.homePlayer1)),
+                    ]
+                    var awayPlayers = [
+                        PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel.awayPlayer1)),
+                    ]
+                    if widget.scoreboard!.padel.type == .double {
+                        homePlayers
+                            .append(PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel
+                                    .homePlayer2)))
+                        awayPlayers
+                            .append(PadelScoreboardPlayer(name: findScoreboardPlayer(id: scoreboard.padel
+                                    .awayPlayer2)))
+                    }
+                    let home = PadelScoreboardTeam(players: homePlayers)
+                    let away = PadelScoreboardTeam(players: awayPlayers)
                     let score = scoreboard.padel.score
                         .map { PadelScoreboardScore(home: $0.home, away: $0.away) }
                     padelScoreboardEffect.update(scoreBoard: PadelScoreboard(
@@ -5062,8 +5072,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func findScoreboardPlayer(id: UUID) -> String {
-        return database.scoreboardPlayers!.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
+    func findScoreboardPlayer(id: UUID) -> String {
+        return database.scoreboardPlayers!.first(where: { $0.id == id })?.name.uppercased() ?? "🇸🇪 MOBLIN"
     }
 
     private func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
@@ -6660,8 +6670,16 @@ extension Model {
         }
         var data: Data
         do {
-            let home = scoreboard.padel.home.map { findScoreboardPlayer(id: $0) }
-            let away = scoreboard.padel.away.map { findScoreboardPlayer(id: $0) }
+            var home = [
+                findScoreboardPlayer(id: scoreboard.padel.homePlayer1),
+            ]
+            var away = [
+                findScoreboardPlayer(id: scoreboard.padel.awayPlayer1),
+            ]
+            if scoreboard.padel.type == .double {
+                home.append(findScoreboardPlayer(id: scoreboard.padel.homePlayer2))
+                away.append(findScoreboardPlayer(id: scoreboard.padel.awayPlayer2))
+            }
             let score = scoreboard.padel.score.map { WatchProtocolPadelScoreboardScore(
                 home: $0.home,
                 away: $0.away

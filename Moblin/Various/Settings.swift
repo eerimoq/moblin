@@ -1159,9 +1159,45 @@ class SettingsWidgetScoreboardScore: Codable, Identifiable {
     var away: Int = 0
 }
 
+enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
+    case double = "Double"
+    case single = "Single"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetPadelScoreboardGameType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .double
+    }
+
+    static func fromString(value: String) -> SettingsWidgetPadelScoreboardGameType {
+        switch value {
+        case String(localized: "Double"):
+            return .double
+        case String(localized: "Single"):
+            return .single
+        default:
+            return .double
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .double:
+            return String(localized: "Double")
+        case .single:
+            return String(localized: "Single")
+        }
+    }
+}
+
+let scoreboardGameTypes = SettingsWidgetPadelScoreboardGameType.allCases.map { $0.toString() }
+
 class SettingsWidgetPadelScoreboard: Codable {
-    var home: [UUID] = .init()
-    var away: [UUID] = .init()
+    var type: SettingsWidgetPadelScoreboardGameType = .double
+    var homePlayer1: UUID = .init()
+    var homePlayer2: UUID = .init()
+    var awayPlayer1: UUID = .init()
+    var awayPlayer2: UUID = .init()
     var score: [SettingsWidgetScoreboardScore] = [.init()]
 }
 
@@ -1270,7 +1306,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
 
 let widgetTypes = SettingsWidgetType.allCases
     .filter { $0 != .videoEffect }
-    .filter { $0 != .scoreboard }
     .map { $0.toString() }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
