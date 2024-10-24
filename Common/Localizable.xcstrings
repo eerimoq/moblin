@@ -9511,7 +9511,7 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 minuto"
-            }
+          }
         },
         "ja" : {
           "stringUnit" : {
@@ -11821,8 +11821,8 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "un giocatore"
-            }
-            },
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18658,7 +18658,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lontano"}},
+            "value" : "Lontano"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -42583,7 +42585,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：srtla://uk.srt.belabox.net:5000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "例：srtla://uk.srt.belabox.net:5000？streamid=ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ko" : {
@@ -43445,7 +43447,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Creazione stream maker non riuscito"}},
+            "value" : "Creazione stream maker non riuscito"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -50247,7 +50251,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Categoria"}},
+            "value" : "Categoria"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -71971,7 +71977,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Attualmente sono supportate solo le sorgenti video RTMP, SRT(LA) e cattura schermo."}},
+            "value" : "Attualmente sono supportate solo le sorgenti video RTMP, SRT(LA) e cattura schermo."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -74335,7 +74343,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giocatori"}},
+            "value" : "Giocatori"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -80729,7 +80739,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rimuovi riduzione vento"}},
+            "value" : "Rimuovi riduzione vento"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -81003,7 +81015,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reset punteggio"}},
+            "value" : "Reset punteggio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -82843,7 +82857,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rotazione"}},
+            "value" : "Rotazione"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -84705,7 +84721,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Segnapunti" }},
+            "value" : "Segnapunti"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -95535,7 +95553,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stream marked creato"}},
+            "value" : "Stream marked creato"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -108351,7 +108371,9 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sconosciuto 😢"}},
+            "value" : "Sconosciuto 😢"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
