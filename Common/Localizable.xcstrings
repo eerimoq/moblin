@@ -9574,7 +9574,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "q"
+            "value" : "1. OBS上でメディアソースを作成し、下部に表示されている図の通り設定します。"
           }
         },
         "ko" : {
@@ -107763,7 +107763,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "5列"
+            "value" : "2列"
           }
         },
         "ko" : {
