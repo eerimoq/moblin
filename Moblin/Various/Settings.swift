@@ -1160,32 +1160,32 @@ class SettingsWidgetScoreboardScore: Codable, Identifiable {
 }
 
 enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
-    case double = "Double"
-    case single = "Single"
+    case doubles = "Double"
+    case singles = "Single"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetPadelScoreboardGameType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
-            .double
+            .doubles
     }
 
     static func fromString(value: String) -> SettingsWidgetPadelScoreboardGameType {
         switch value {
-        case String(localized: "Double"):
-            return .double
-        case String(localized: "Single"):
-            return .single
+        case String(localized: "Doubles"):
+            return .doubles
+        case String(localized: "Singles"):
+            return .singles
         default:
-            return .double
+            return .doubles
         }
     }
 
     func toString() -> String {
         switch self {
-        case .double:
-            return String(localized: "Double")
-        case .single:
-            return String(localized: "Single")
+        case .doubles:
+            return String(localized: "Doubles")
+        case .singles:
+            return String(localized: "Singles")
         }
     }
 }
@@ -1193,7 +1193,7 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
 let scoreboardGameTypes = SettingsWidgetPadelScoreboardGameType.allCases.map { $0.toString() }
 
 class SettingsWidgetPadelScoreboard: Codable {
-    var type: SettingsWidgetPadelScoreboardGameType = .double
+    var type: SettingsWidgetPadelScoreboardGameType = .doubles
     var homePlayer1: UUID = .init()
     var homePlayer2: UUID = .init()
     var awayPlayer1: UUID = .init()

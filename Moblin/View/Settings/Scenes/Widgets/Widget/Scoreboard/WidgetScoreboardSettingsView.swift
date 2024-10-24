@@ -79,7 +79,7 @@ struct WidgetScoreboardSettingsView: View {
         self.widget = widget
         self.type = type
         let padel = widget.scoreboard!.padel
-        gameType = padel.type.rawValue
+        gameType = padel.type.toString()
         homePlayer1 = padel.homePlayer1
         homePlayer2 = padel.homePlayer2
         awayPlayer1 = padel.awayPlayer1
@@ -124,7 +124,7 @@ struct WidgetScoreboardSettingsView: View {
                     widget.scoreboard!.padel.homePlayer1 = homePlayer1
                     model.resetSelectedScene(changeScene: false)
                 }
-            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
+            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .doubles {
                 PlayerView(playerId: $homePlayer2)
                     .onChange(of: homePlayer2) { _ in
                         widget.scoreboard!.padel.homePlayer2 = homePlayer2
@@ -140,7 +140,7 @@ struct WidgetScoreboardSettingsView: View {
                     widget.scoreboard!.padel.awayPlayer1 = awayPlayer1
                     model.resetSelectedScene(changeScene: false)
                 }
-            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
+            if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .doubles {
                 PlayerView(playerId: $awayPlayer2)
                     .onChange(of: awayPlayer2) { _ in
                         widget.scoreboard!.padel.awayPlayer2 = awayPlayer2

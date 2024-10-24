@@ -5056,7 +5056,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     {
         var homePlayers = [createPadelPlayer(id: scoreboard.homePlayer1)]
         var awayPlayers = [createPadelPlayer(id: scoreboard.awayPlayer1)]
-        if scoreboard.type == .double {
+        if scoreboard.type == .doubles {
             homePlayers.append(createPadelPlayer(id: scoreboard.homePlayer2))
             awayPlayers.append(createPadelPlayer(id: scoreboard.awayPlayer2))
         }
@@ -6674,7 +6674,7 @@ extension Model {
             var away = [
                 findScoreboardPlayer(id: scoreboard.padel.awayPlayer1),
             ]
-            if scoreboard.padel.type == .double {
+            if scoreboard.padel.type == .doubles {
                 home.append(findScoreboardPlayer(id: scoreboard.padel.homePlayer2))
                 away.append(findScoreboardPlayer(id: scoreboard.padel.awayPlayer2))
             }

@@ -37490,9 +37490,6 @@
         }
       }
     },
-    "Double" : {
-
-    },
     "Double tap to return to main view" : {
       "localizations" : {
         "de" : {
@@ -37622,6 +37619,9 @@
           }
         }
       }
+    },
+    "Doubles" : {
+
     },
     "Down" : {
       "localizations" : {
@@ -88127,7 +88127,7 @@
         }
       }
     },
-    "Single" : {
+    "Singles" : {
 
     },
     "Size" : {
