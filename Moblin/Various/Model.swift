@@ -22,6 +22,9 @@ import WatchConnectivity
 import WebKit
 import WrappingHStack
 
+private let noBackZoomPresetId = UUID()
+private let noFrontZoomPresetId = UUID()
+
 private struct ChatBotMessage {
     let platform: Platform
     let user: String?
@@ -5663,9 +5666,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func clearZoomId() {
         switch cameraPosition {
         case .back:
-            backZoomPresetId = UUID()
+            backZoomPresetId = noBackZoomPresetId
         case .front:
-            frontZoomPresetId = UUID()
+            frontZoomPresetId = noFrontZoomPresetId
         default:
             break
         }
