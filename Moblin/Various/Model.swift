@@ -574,6 +574,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var remoteControlMic = ""
     @Published var remoteControlBitrate = UUID()
     @Published var remoteControlZoom = ""
+    @Published var remoteControlDebugLogging = false
 
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
@@ -3635,6 +3636,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         remoteControlStreamer?.stateChanged(state: RemoteControlState(bitrate: preset.id))
     }
 
+    func setDebugLogging(on: Bool) {
+        logger.debugEnabled = on
+        if on {
+            database.debug!.logLevel = .debug
+        } else {
+            database.debug!.logLevel = .error
+        }
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(debugLogging: on))
+    }
+
     func setAudioStreamBitrate(stream: SettingsStream) {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
     }
@@ -6067,6 +6078,7 @@ extension Model: RemoteControlStreamerDelegate {
             state.bitrate = preset.id
         }
         state.zoom = zoomX
+        state.debugLogging = database.debug!.logLevel == .debug
         remoteControlStreamer?.stateChanged(state: state)
     }
 
@@ -6245,6 +6257,11 @@ extension Model: RemoteControlStreamerDelegate {
             stopStream()
         }
         updateButtonStates()
+        onComplete()
+    }
+
+    func remoteControlStreamerSetDebugLogging(on: Bool, onComplete: @escaping () -> Void) {
+        setDebugLogging(on: on)
         onComplete()
     }
 
@@ -6502,6 +6519,10 @@ extension Model {
         remoteControlAssistant?.setBitratePreset(id: id) {}
     }
 
+    func remoteControlAssistantSetDebugLogging(on: Bool) {
+        remoteControlAssistant?.setDebugLogging(on: on) {}
+    }
+
     func remoteControlAssistantReloadBrowserWidgets() {
         remoteControlAssistant?.reloadBrowserWidgets {
             DispatchQueue.main.async {
@@ -6563,6 +6584,10 @@ extension Model: RemoteControlAssistantDelegate {
         if let zoom = state.zoom {
             remoteControlState.zoom = zoom
             remoteControlZoom = String(zoom)
+        }
+        if let debugLogging = state.debugLogging {
+            remoteControlState.debugLogging = debugLogging
+            remoteControlDebugLogging = debugLogging
         }
     }
 

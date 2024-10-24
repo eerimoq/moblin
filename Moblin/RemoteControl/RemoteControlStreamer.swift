@@ -15,6 +15,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetBitratePreset(id: UUID, onComplete: @escaping () -> Void)
     func remoteControlStreamerSetRecord(on: Bool, onComplete: @escaping () -> Void)
     func remoteControlStreamerSetStream(on: Bool, onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetDebugLogging(on: Bool, onComplete: @escaping () -> Void)
     func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void)
     func remoteControlStreamerSetMute(on: Bool, onComplete: @escaping () -> Void)
     func remoteControlStreamerSetTorch(on: Bool, onComplete: @escaping () -> Void)
@@ -235,6 +236,10 @@ class RemoteControlStreamer {
             }
         case .stopPreview:
             delegate.remoteControlStreamerStopPreview {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case let .setDebugLogging(on: on):
+            delegate.remoteControlStreamerSetDebugLogging(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         }

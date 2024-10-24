@@ -28,12 +28,7 @@ struct DebugSettingsView: View {
                 Toggle(isOn: Binding(get: {
                     model.database.debug!.logLevel == .debug
                 }, set: { value in
-                    logger.debugEnabled = value
-                    if value {
-                        model.database.debug!.logLevel = .debug
-                    } else {
-                        model.database.debug!.logLevel = .error
-                    }
+                    model.setDebugLogging(on: value)
                 })) {
                     Text("Debug logging")
                 }

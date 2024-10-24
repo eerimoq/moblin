@@ -394,8 +394,7 @@ private struct ControlBarRemoteControlAssistantRightView: View {
                     }
                     Picker(selection: $model.remoteControlBitrate) {
                         ForEach(settings.bitratePresets) { preset in
-                            Text(preset
-                                .bitrate > 0 ?
+                            Text(preset.bitrate > 0 ?
                                 formatBytesPerSecond(speed: Int64(preset.bitrate)) :
                                 "Unknown")
                                 .tag(preset.id)
@@ -416,6 +415,17 @@ private struct ControlBarRemoteControlAssistantRightView: View {
                         )
                     } label: {
                         Text("SRT connection priorities")
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.remoteControlDebugLogging
+                    }, set: { value in
+                        model.remoteControlDebugLogging = value
+                        guard model.remoteControlDebugLogging != model.remoteControlState.debugLogging else {
+                            return
+                        }
+                        model.remoteControlAssistantSetDebugLogging(on: model.remoteControlDebugLogging)
+                    })) {
+                        Text("Debug logging")
                     }
                 } else {
                     Text("No settings received yet.")

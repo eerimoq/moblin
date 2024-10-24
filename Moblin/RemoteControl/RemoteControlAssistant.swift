@@ -138,6 +138,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setBitratePreset(id: id), onSuccess: onSuccess)
     }
 
+    func setDebugLogging(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setDebugLogging(on: on), onSuccess: onSuccess)
+    }
+
     func reloadBrowserWidgets(onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }
