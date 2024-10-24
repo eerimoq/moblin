@@ -218,7 +218,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(ログインが必要です)。"
+            "value" : "(ログインが必要です)"
           }
         },
         "ko" : {
@@ -2167,8 +2167,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{bitrateAndTotal} - ビットレートと送信されたバイトの合計数を表示します"
+            "state" : "translated",
+            "value" : "{bitrateAndTotal} - ビットレートと送信されたバイトの合計数を表示"
           }
         },
         "ko" : {
@@ -2297,8 +2297,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{checkbox} - チェックボックスを表示する"
+            "state" : "translated",
+            "value" : "{checkbox} - チェックボックスを表示"
           }
         },
         "ko" : {
@@ -2687,8 +2687,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{debugOverlay} - デバッグオーバーレイを表示する（有効な場合）"
+            "state" : "translated",
+            "value" : "{debugOverlay} - デバッグオーバーレイを表示（有効な場合）"
           }
         },
         "ko" : {
@@ -3597,8 +3597,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{subtitles} - 字幕を表示する"
+            "state" : "translated",
+            "value" : "{subtitles} - 字幕を表示"
           }
         },
         "ko" : {
@@ -3987,8 +3987,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{timer} - タイマーを表示する"
+            "state" : "translated",
+            "value" : "{timer} - タイマーを表示"
           }
         },
         "ko" : {
@@ -4248,7 +4248,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "/アプリ/"
+            "value" : "/app/"
           }
         },
         "ko" : {
@@ -4644,7 +4644,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%.1f/min"
+            "value" : "%.1f/分"
           }
         },
         "ko" : {
@@ -5046,7 +5046,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ （%2$@ 合計）"
+            "value" : "%1$@ （合計%2$@ ）"
           }
         },
         "ko" : {
@@ -5555,6 +5555,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ %2$@ Pubblicità iniziata"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@ 広告が開始"
           }
         }
       }
@@ -6138,7 +6144,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@s"
+            "value" : "%@秒"
           }
         },
         "ko" : {
@@ -6874,6 +6880,12 @@
     "%lld°" : {
       "localizations" : {
         "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld°"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld°"
@@ -7844,7 +7856,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "ko" : {
@@ -9274,7 +9286,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "😢fffff😢"
+            "value" : "😢FFFFF😢"
           }
         },
         "ko" : {
@@ -9499,6 +9511,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 minuto"
+            }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1分"
           }
         }
       }
@@ -9556,7 +9574,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1. OBS でメディア ソースを作成し、以下の図に示すように構成します。"
+            "value" : "q"
           }
         },
         "ko" : {
@@ -9651,6 +9669,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "2 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2分"
           }
         }
       }
@@ -9803,6 +9827,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3分"
           }
         }
       }
@@ -10345,6 +10375,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "30 secondi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30秒"
           }
         }
       }
@@ -11785,6 +11821,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "un giocatore"
+            }
+            },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレイヤー"
           }
         }
       }
@@ -12231,8 +12273,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "上記の設定が変更されている場合（すべてデフォルト値ではない場合）、ここに QR コードとクリップボードにコピーするボタンが表示されます。"
+            "state" : "translated",
+            "value" : "上記の設定が変更されている場合（すべてデフォルト値ではない場合）、ここにQR コードとクリップボードにコピーするボタンが表示されます。"
           }
         },
         "ko" : {
@@ -13142,7 +13184,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウィジェットは 複数のシーンで使用できます。"
+            "value" : "ウィジェットは複数のシーンで使用できます。"
           }
         },
         "ko" : {
@@ -13888,6 +13930,12 @@
             "state" : "translated",
             "value" : "Ads"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広告"
+          }
         }
       }
     },
@@ -13944,7 +13992,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "afreecatv"
+            "value" : "AfreecaTV"
           }
         },
         "ko" : {
@@ -14990,7 +15038,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アニメーション化された感情は、かなりCPU集中的です。電力使用量を減らすために無効にします。"
+            "value" : "アニメーションエモートはCPUを激しく使います。電力使用量を減らすためには無効にします。"
           }
         },
         "ko" : {
@@ -17330,7 +17378,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一度に1つだけが使用されていても、複数のカメラが電源を入れているため、自動カメラはより多くのエネルギーを使用します。これにより、ズームするときに電話がカメラをすばやく変更できます。"
+            "value" : "自動カメラは、複数のカメラを同時に使用することでスムーズにズームすることができますが、電力の消費が激しくなります。"
           }
         },
         "ko" : {
@@ -17590,7 +17638,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ライブ開始時に自動的に録画を開始します"
+            "value" : "開始時に自動的に録画を開始"
           }
         },
         "ko" : {
@@ -17719,8 +17767,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ライブ配信時に自動的にストリーミングを開始する"
+            "state" : "translated",
+            "value" : "開始時に自動的に配信を開始"
           }
         },
         "ko" : {
@@ -17850,7 +17898,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ストリーム終了時に録画を自動停止"
+            "value" : "終了時に録画を自動停止"
           }
         },
         "ko" : {
@@ -17979,8 +18027,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ストリーミング終了時にストリーミングを自動停止する"
+            "state" : "translated",
+            "value" : "終了時に配信を自動停止"
           }
         },
         "ko" : {
@@ -18109,8 +18157,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "中断時にライブストリームを自動的に再開する"
+            "state" : "translated",
+            "value" : "中断時に配信を自動的に再開"
           }
         },
         "ko" : {
@@ -18205,6 +18253,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "automatico"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動"
           }
         }
       }
@@ -18604,7 +18658,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lontano"
+            "value" : "Lontano"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Away"
           }
         }
       }
@@ -18662,7 +18720,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bフレーム"
+            "value" : "B-frames"
           }
         },
         "ko" : {
@@ -18922,7 +18980,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "戻る"
+            "value" : "背面"
           }
         },
         "ko" : {
@@ -19052,7 +19110,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックカメラプリセット"
+            "value" : "背面カメラプリセット"
           }
         },
         "ko" : {
@@ -19311,8 +19369,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "バックグラウンドストリーミング"
+            "state" : "translated",
+            "value" : "バックグラウンド配信"
           }
         },
         "ko" : {
@@ -19961,8 +20019,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ベラボックス"
+            "state" : "translated",
+            "value" : "BELABOX"
           }
         },
         "ko" : {
@@ -20092,7 +20150,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ベラボックスクラウド"
+            "value" : "BELABOX cloud"
           }
         },
         "ko" : {
@@ -20222,7 +20280,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BELABOX クラウドと OBS"
+            "value" : "BELABOX cloud と OBS"
           }
         },
         "ko" : {
@@ -20612,7 +20670,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能な限り最高の安定性。ボンディングを使用する場合があります。最も柔軟なセットアップ。"
+            "value" : "可能な限り最高の安定性で、ボンディングを使用する場合があります。最もフレキシブルな設定です。"
           }
         },
         "ko" : {
@@ -20741,8 +20799,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最高の安定性。ボンディングを使用します。IRLToolkit の好意により提供される無料のサードパーティ サービスです。IRLToolkit の料金を支払った場合は使用しないでください。"
+            "state" : "translated",
+            "value" : "最高の安定性で、ボンディングを使用します。IRLToolkit の好意により提供される無料のサードパーティサービスです。IRLToolkitの料金を支払った場合は使用しないでください。"
           }
         },
         "ko" : {
@@ -20872,7 +20930,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能な限り最高の安定性。ボンディングを使用しております。有料のサードパーティサービス。"
+            "value" : "可能な限り最高の安定性で、ボンディングを使用します。有料のサードパーティサービスです。"
           }
         },
         "ko" : {
@@ -21002,7 +21060,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大きなパケット"
+            "value" : "ビッグパケット"
           }
         },
         "ko" : {
@@ -21132,7 +21190,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大きなパケットは、SRTパケットごとに7つのMPEG-TSパケット、6つの場合は6つのMPEG-TSパケットを意味します。Androidホットスポットが大きなパケットで動作しない場合があります。"
+            "value" : "ビッグパケットは、SRTでは7 MPEG-TSパケット、それ以外は6MPEG-TSパケットということを意味します。Androidのホットスポットではビッグパケットで動作しない場合があります。"
           }
         },
         "ko" : {
@@ -21522,7 +21580,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ビットレート増加速度"
+            "value" : "ビットレートの増加速度"
           }
         },
         "ko" : {
@@ -21782,7 +21840,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "黒いスクリーン"
+            "value" : "黒い画面"
           }
         },
         "ko" : {
@@ -22171,8 +22229,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ブラーシーンスイッチ"
+            "state" : "translated",
+            "value" : "ぼかしシーンスイッチ"
           }
         },
         "ko" : {
@@ -22301,8 +22359,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "大胆な"
+            "state" : "translated",
+            "value" : "太字"
           }
         },
         "ko" : {
@@ -22822,7 +22880,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "境界線"
+            "value" : "ボーダー"
           }
         },
         "ko" : {
@@ -22952,7 +23010,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "国境はかなりCPU集中的です。電力使用量を減らすために無効にします。"
+            "value" : "ボーダーはかなりCPUを使用します。電力使用量を減らすためには無効にします。"
           }
         },
         "ko" : {
@@ -23471,8 +23529,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ビデオソースが壊れたときのBRBシーン"
+            "state" : "translated",
+            "value" : "ビデオソースが壊れている時のBRBシーン"
           }
         },
         "ko" : {
@@ -24122,7 +24180,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BTTVエモート"
+            "value" : "BTTV エモート"
           }
         },
         "ko" : {
@@ -26592,8 +26650,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "応援する"
+            "state" : "translated",
+            "value" : "チアー"
           }
         },
         "ko" : {
@@ -26722,8 +26780,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld ビットを応援しました!"
+            "state" : "translated",
+            "value" : "%lld ビッツで応援されました!"
           }
         },
         "ko" : {
@@ -26825,6 +26883,12 @@
             "state" : "translated",
             "value" : "tifo con %1$lld bits! %2$@"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld ビッツで応援されました! %2$@"
+          }
         }
       }
     },
@@ -26880,8 +26944,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "乾杯"
+            "state" : "translated",
+            "value" : "チアー"
           }
         },
         "ko" : {
@@ -27011,7 +27075,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "映画のような"
+            "value" : "シネマティック"
           }
         },
         "ko" : {
@@ -27140,8 +27204,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "シネマティック拡張強化"
+            "state" : "translated",
+            "value" : "シネマティック（拡張）"
           }
         },
         "ko" : {
@@ -28180,8 +28244,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "指示"
+            "state" : "translated",
+            "value" : "コマンド"
           }
         },
         "ko" : {
@@ -28831,7 +28895,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "コンピューターで OBS を構成する"
+            "value" : "コンピューターで OBS を設定する"
           }
         },
         "ko" : {
@@ -29350,8 +29414,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "接続"
+            "state" : "translated",
+            "value" : "接続済み"
           }
         },
         "ko" : {
@@ -30001,7 +30065,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このカメラでは連続自動露出はサポートされていません"
+            "value" : "このカメラでは自動露出はサポートされていません"
           }
         },
         "ko" : {
@@ -30131,7 +30195,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このカメラでは連続オートホワイトバランスはサポートされていません"
+            "value" : "このカメラではオートホワイトバランスはサポートされていません"
           }
         },
         "ko" : {
@@ -31657,6 +31721,12 @@
             "state" : "translated",
             "value" : "Angolo arrotondato"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "角丸"
+          }
         }
       }
     },
@@ -31713,7 +31783,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "化粧品"
+            "value" : "コスメ"
           }
         },
         "ko" : {
@@ -32233,7 +32303,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ストリーム作成ウィザード"
+            "value" : "ストリーム設定ウィザード"
           }
         },
         "ko" : {
@@ -32363,7 +32433,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "作物"
+            "value" : "クロップ"
           }
         },
         "ko" : {
@@ -33922,8 +33992,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "遅れ"
+            "state" : "translated",
+            "value" : "遅延"
           }
         },
         "ko" : {
@@ -34053,7 +34123,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "消去"
+            "value" : "削除"
           }
         },
         "ko" : {
@@ -34963,7 +35033,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "寸法"
+            "value" : "サイズ"
           }
         },
         "ko" : {
@@ -35742,8 +35812,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "切断（リモコン）"
+            "state" : "translated",
+            "value" : "切断されました（リモコン）"
           }
         },
         "ko" : {
@@ -36002,8 +36072,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "発見する"
+            "state" : "translated",
+            "value" : "検出中"
           }
         },
         "ko" : {
@@ -36913,7 +36983,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スパムまたはボット コマンドの可能性があるメッセージを言わないでください。"
+            "value" : "スパムまたはボットコマンドの可能性があるメッセージを読み上げない"
           }
         },
         "ko" : {
@@ -37042,8 +37112,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自分がメンションされた場合を除いて、メンションを含むメッセージを言わないでください。"
+            "state" : "translated",
+            "value" : "自分がメンションされた場合を除いて、メンションを含むメッセージを読み上げない"
           }
         },
         "ko" : {
@@ -37432,8 +37502,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "終わり"
+            "state" : "translated",
+            "value" : "終了"
           }
         },
         "ko" : {
@@ -37563,7 +37633,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダブルタップしてメインビューに戻ります"
+            "value" : "ダブルタップしてメインビューに戻る"
           }
         },
         "ko" : {
@@ -37641,7 +37711,14 @@
       }
     },
     "Doubles" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブル"
+          }
+        }
+      }
     },
     "Down" : {
       "localizations" : {
@@ -37696,7 +37773,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下"
+            "value" : "下部"
           }
         },
         "ko" : {
@@ -38216,7 +38293,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "間隔"
+            "value" : "長さ"
           }
         },
         "ko" : {
@@ -38346,7 +38423,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "各ストリームは、1 つの RTMP パブリッシャー (通常はドローン) からビデオを受信できます。"
+            "value" : "各ストリームは1 つの RTMP パブリッシャー (ドローンなど) からビデオを受信できます。"
           }
         },
         "ko" : {
@@ -39775,8 +39852,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "終了するがOBS録画は残る"
+            "state" : "translated",
+            "value" : "終了するがOBSの録画状態を継続する"
           }
         },
         "ko" : {
@@ -39905,8 +39982,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "終了するがOBSストリーミングは残る"
+            "state" : "translated",
+            "value" : "終了するがOBSの配信状態を継続する"
           }
         },
         "ko" : {
@@ -40035,8 +40112,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBSストリーミングと録画は終了するが、そのまま残す"
+            "state" : "translated",
+            "value" : "終了するがOBSの配信と録画を継続する"
           }
         },
         "ko" : {
@@ -40165,8 +40242,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "トレーニング終了"
+            "state" : "translated",
+            "value" : "ワークアウト終了"
           }
         },
         "ko" : {
@@ -40425,8 +40502,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "トレーニング終了"
+            "state" : "translated",
+            "value" : "ワークアウト終了中"
           }
         },
         "ko" : {
@@ -41206,7 +41283,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URLの例：https：//play.afreecatv.com/mychannelname/myvideoid"
+            "value" : "URLの例：https://play.afreecatv.com/mychannelname/myvideoid"
           }
         },
         "ko" : {
@@ -41336,7 +41413,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：rtmp：//arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+            "value" : "例：rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "ko" : {
@@ -41466,7 +41543,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：rtmp：//foobar.org：3321/5678"
+            "value" : "例：rtmp://foobar.org:3321/5678"
           }
         },
         "ko" : {
@@ -41596,7 +41673,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：rtmps：//fa723fc1b171.global-contibute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+            "value" : "例：rtmps://fa723fc1b171.global-contibute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
         "ko" : {
@@ -41856,7 +41933,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：srt://134.20.342.12：5000"
+            "value" : "例：srt://134.20.342.12:5000"
           }
         },
         "ko" : {
@@ -41986,7 +42063,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：srtla://foobar.org：4432"
+            "value" : "例：srtla://foobar.org:4432"
           }
         },
         "ko" : {
@@ -42116,7 +42193,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：rtmp：//a.rtmp.youtube.com/live2/1bk2-03-9683-7k65-e4d3"
+            "value" : "例：rtmp://a.rtmp.youtube.com/live2/1bk2-03-9683-7k65-e4d3"
           }
         },
         "ko" : {
@@ -42246,7 +42323,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：rtmps：//live-api-s.facebook.com：443/rtmp/fb-111522212251115-0-bctncp9jzzz-aaa"
+            "value" : "例：rtmps://live-api-s.facebook.com:443/rtmp/fb-111522212251115-0-bctncp9jzzz-aaa"
           }
         },
         "ko" : {
@@ -42376,7 +42453,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：srt://uk.srt.belabox.net：4000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "例：srt://uk.srt.belabox.net:4000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ko" : {
@@ -42506,7 +42583,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：srtla://uk.srt.belabox.net：5000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "例：srtla://uk.srt.belabox.net:5000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ko" : {
@@ -43368,7 +43445,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Creazione stream maker non riuscito"
+            "value" : "Creazione stream maker non riuscito"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ストリームまーかの作成に失敗しました"
           }
         }
       }
@@ -43816,7 +43897,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "bttv エモートを取得できませんでした"
+            "value" : "BTTV エモートを取得できませんでした"
           }
         },
         "ko" : {
@@ -44432,6 +44513,12 @@
             "state" : "translated",
             "value" : "Impossibile avviare la pubblicità"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広告の開始に失敗しました"
+          }
         }
       }
     },
@@ -44617,8 +44704,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS録画を開始できませんでした"
+            "state" : "translated",
+            "value" : "OBS録画を開始に失敗しました"
           }
         },
         "ko" : {
@@ -44877,8 +44964,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS 録画を停止できませんでした"
+            "state" : "translated",
+            "value" : "OBS 録画を停止に失敗しました"
           }
         },
         "ko" : {
@@ -45137,8 +45224,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch %@ イベントへの登録に失敗しました"
+            "state" : "translated",
+            "value" : "Twitchの %@ イベントへの登録に失敗しました"
           }
         },
         "ko" : {
@@ -45398,7 +45485,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高速IRL"
+            "value" : "ファストIRL"
           }
         },
         "ko" : {
@@ -45527,8 +45614,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ファックスニャー音"
+            "state" : "translated",
+            "value" : "ファックスの猫の声"
           }
         },
         "ko" : {
@@ -46567,8 +46654,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "言及をフィルターする"
+            "state" : "translated",
+            "value" : "メンションをフィルターする"
           }
         },
         "ko" : {
@@ -46697,8 +46784,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "顔を見つけてください"
+            "state" : "translated",
+            "value" : "顔を見つける"
           }
         },
         "ko" : {
@@ -48518,7 +48605,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "たとえば、WS：//232.32.45.332：4567。"
+            "value" : "例: ws://232.32.45.332:4567"
           }
         },
         "ko" : {
@@ -48647,8 +48734,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "前景"
+            "state" : "translated",
+            "value" : "フォアグラウンド"
           }
         },
         "ko" : {
@@ -49168,7 +49255,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "フロント"
+            "value" : "前面"
           }
         },
         "ko" : {
@@ -49298,7 +49385,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "フロントカメラプリセット"
+            "value" : "前面カメラプリセット"
           }
         },
         "ko" : {
@@ -50160,7 +50247,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Categoria"
+            "value" : "Categoria"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームタイプ"
           }
         }
       }
@@ -50218,7 +50309,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一般的な"
+            "value" : "一般"
           }
         },
         "ko" : {
@@ -50348,7 +50439,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "生成する"
+            "value" : "生成"
           }
         },
         "ko" : {
@@ -50478,7 +50569,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "幾何学"
+            "value" : "ジオメトリ"
           }
         },
         "ko" : {
@@ -50607,8 +50698,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ギフトサブスクリプション"
+            "state" : "translated",
+            "value" : "サブスクギフト"
           }
         },
         "ko" : {
@@ -50738,7 +50829,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "github"
+            "value" : "Github"
           }
         },
         "ko" : {
@@ -51128,7 +51219,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ライブ配信してオーディオレベルを確認してください。"
+            "value" : "ライブ配信をして音声レベルを確認してください。"
           }
         },
         "ko" : {
@@ -51647,8 +51738,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "心拍"
+            "state" : "translated",
+            "value" : "心拍数"
           }
         },
         "ko" : {
@@ -52297,8 +52388,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "データレート制限の上昇"
+            "state" : "translated",
+            "value" : "高いデータレート制限"
           }
         },
         "ko" : {
@@ -52817,8 +52908,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ホライゾンバランス"
+            "state" : "translated",
+            "value" : "水平バランス"
           }
         },
         "ko" : {
@@ -52947,8 +53038,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ホライゾンステディ"
+            "state" : "translated",
+            "value" : "水平安定"
           }
         },
         "ko" : {
@@ -53208,7 +53299,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "店内のアイコン"
+            "value" : "ストアのアイコン"
           }
         },
         "ko" : {
@@ -53597,8 +53688,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "画像安定化"
+            "state" : "translated",
+            "value" : "手振れ補正"
           }
         },
         "ko" : {
@@ -55553,8 +55644,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld ティアの %lld サブスクリプションをギフトとして贈りました!"
+            "state" : "translated",
+            "value" : "ティア%lld の %lld サブスクをギフトとして贈りました!"
           }
         },
         "ko" : {
@@ -55656,6 +55747,12 @@
             "state" : "translated",
             "value" : "solo resub livello %1$lld per %2$lld mesi! %3$@ "
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ティア%1$lld のサブスクを %2$lldヶ月再サブスクしました %3$@"
+          }
         }
       }
     },
@@ -55711,8 +55808,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ティア %lld をサブスクライブしました!"
+            "state" : "translated",
+            "value" : "ティア %lld をサブスクしました!"
           }
         },
         "ko" : {
@@ -55972,7 +56069,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "キック"
+            "value" : "Kick"
           }
         },
         "ko" : {
@@ -56492,7 +56589,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "雪を降らせてください"
+            "value" : "雪を降らせる"
           }
         },
         "ko" : {
@@ -57141,8 +57238,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "アプリがバックグラウンド モードのときにライブ ストリームと録画を実行します。"
+            "state" : "translated",
+            "value" : "アプリがバックグラウンドモードのときにライブ ストリームと録画を実行する。"
           }
         },
         "ko" : {
@@ -58572,7 +58669,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "低ビットレートの警告"
+            "value" : "低ビットレート警告"
           }
         },
         "ko" : {
@@ -59222,7 +59319,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バイブレーションを機能させるには、サイレント モードがオフになっていることを確認してください。"
+            "value" : "バイブレーションを機能させるには、サイレントモードがオフになっていることを確認してください。"
           }
         },
         "ko" : {
@@ -59741,8 +59838,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "不正な形式の RIST URL"
+            "state" : "translated",
+            "value" : "不正な RIST URL"
           }
         },
         "ko" : {
@@ -59872,7 +59969,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不正なRTMP URL"
+            "value" : "不正な RTMP URL"
           }
         },
         "ko" : {
@@ -60132,7 +60229,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "奇形のSRT(LA）URL"
+            "value" : "不正なSRT(LA）URL"
           }
         },
         "ko" : {
@@ -60261,8 +60358,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ストリーム URL が不正です"
+            "state" : "translated",
+            "value" : "不正なストリーム URL"
           }
         },
         "ko" : {
@@ -60488,6 +60585,12 @@
             "state" : "translated",
             "value" : "manuale"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マニュアル"
+          }
         }
       }
     },
@@ -60544,7 +60647,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このカメラでは手動露出がサポートされていません"
+            "value" : "このカメラではマニュアル露出がサポートされていません"
           }
         },
         "ko" : {
@@ -60674,7 +60777,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このカメラではマニュアル フォーカスがサポートされていません"
+            "value" : "このカメラではマニュアルフォーカスがサポートされていません"
           }
         },
         "ko" : {
@@ -60804,7 +60907,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このカメラではマニュアル ホワイト バランスがサポートされていません"
+            "value" : "このカメラではマニュアルホワイトバランスがサポートされていません"
           }
         },
         "ko" : {
@@ -60934,7 +61037,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "モブリンの開発者から感謝します！"
+            "value" : "Moblinの開発者から感謝します！"
           }
         },
         "ko" : {
@@ -61063,8 +61166,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "地図"
+            "state" : "translated",
+            "value" : "マップ"
           }
         },
         "ko" : {
@@ -61454,7 +61557,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大チャット数。"
+            "value" : "最大チャット数"
           }
         },
         "ko" : {
@@ -61584,7 +61687,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "秒単位での最大キーフレーム間隔。自動用に0に設定します。"
+            "value" : "秒単位での最大キーフレーム間隔。自動は0に設定します。"
           }
         },
         "ko" : {
@@ -63533,8 +63636,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最低加入者層"
+            "state" : "translated",
+            "value" : "最低サブスクティア"
           }
         },
         "ko" : {
@@ -63663,8 +63766,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ストリーム中のフロントカメラをミラーリングする"
+            "state" : "translated",
+            "value" : "ストリーム中の前面カメラを反転する"
           }
         },
         "ko" : {
@@ -63794,7 +63897,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ミラーリング"
+            "value" : "反転"
           }
         },
         "ko" : {
@@ -64314,7 +64417,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin：//深いリンクを使用して、QRコードまたはブラウザを使用して、一部の設定をインポートできます。詳細については、https：//github.com/eerimoq/moblinを参照してください。"
+            "value" : "Moblin:// ディープリンクを使用して、QRコードまたはブラウザを使用して、一部の設定をインポートできます。詳細については、https://github.com/eerimoq/moblinを参照してください。"
           }
         },
         "ko" : {
@@ -65094,7 +65197,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "映画"
+            "value" : "ムービー"
           }
         },
         "ko" : {
@@ -65710,6 +65813,12 @@
             "state" : "translated",
             "value" : "Audio muto,"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声をミュート"
+          }
         }
       }
     },
@@ -65765,8 +65874,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "私のBRBシーン"
+            "state" : "translated",
+            "value" : "マイBRBシーン"
           }
         },
         "ko" : {
@@ -65896,7 +66005,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のアイコン"
+            "value" : "マイアイコン"
           }
         },
         "ko" : {
@@ -66025,8 +66134,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "私の画像"
+            "state" : "translated",
+            "value" : "マイ画像"
           }
         },
         "ko" : {
@@ -66155,8 +66264,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "私のLUT"
+            "state" : "translated",
+            "value" : "マイLUT"
           }
         },
         "ko" : {
@@ -66286,7 +66395,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のシーン"
+            "value" : "マイシーン"
           }
         },
         "ko" : {
@@ -66416,7 +66525,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のサーバー"
+            "value" : "マイサーバー"
           }
         },
         "ko" : {
@@ -66545,8 +66654,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "私の音"
+            "state" : "translated",
+            "value" : "マイサウンド"
           }
         },
         "ko" : {
@@ -66676,7 +66785,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のソース"
+            "value" : "マイソース"
           }
         },
         "ko" : {
@@ -66806,7 +66915,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のウィジェット"
+            "value" : "マイウィジェット"
           }
         },
         "ko" : {
@@ -67066,7 +67175,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "私のチャンネル"
+            "value" : "マイチャンネル"
           }
         },
         "ko" : {
@@ -67456,7 +67565,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "近くの取り込みエンドポイント"
+            "value" : "近くの受信エンドポイント"
           }
         },
         "ko" : {
@@ -67586,7 +67695,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nearby_ingest_endpoint"
+            "value" : "nearby_ingest_endpoint"
           }
         },
         "ko" : {
@@ -67716,7 +67825,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "チャンネルチャットのエモートと視聴者数に必要です。"
+            "value" : "チャットのエモートと視聴者数に必要です。"
           }
         },
         "ko" : {
@@ -67976,7 +68085,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ネットワークセットアップ"
+            "value" : "ネットワーク設定"
           }
         },
         "ko" : {
@@ -68202,6 +68311,12 @@
             "state" : "translated",
             "value" : "Nuova resub"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい再サブスク"
+          }
         }
       }
     },
@@ -68257,8 +68372,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "新規加入者"
+            "state" : "translated",
+            "value" : "新しいサブスク"
           }
         },
         "ko" : {
@@ -69817,8 +69932,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "北を上に"
+            "state" : "translated",
+            "value" : "ノースアップ"
           }
         },
         "ko" : {
@@ -69948,7 +70063,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "構成されていません"
+            "value" : "設定されていません"
           }
         },
         "ko" : {
@@ -70207,8 +70322,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "始まっていない"
+            "state" : "translated",
+            "value" : "開始していません"
           }
         },
         "ko" : {
@@ -71378,7 +71493,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ネットワーク接続が不安定な場合、安定性が低下することがよくあります。サーバー側の切断保護は不可能です"
+            "value" : "ネットワーク接続が不安定な場合、安定性が低下することがよくあります。サーバー側の切断保護は使用できません。"
           }
         },
         "ko" : {
@@ -71856,7 +71971,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Attualmente sono supportate solo le sorgenti video RTMP, SRT(LA) e cattura schermo."
+            "value" : "Attualmente sono supportate solo le sorgenti video RTMP, SRT(LA) e cattura schermo."}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP、SRT(LA)、スクリーンキャプチャのみがサポートされています。"
           }
         }
       }
@@ -72304,7 +72423,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "オープンストリーミングプラットフォーム"
+            "value" : "Open Streaming Platform"
           }
         },
         "ko" : {
@@ -72563,8 +72682,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "他の"
+            "state" : "translated",
+            "value" : "その他"
           }
         },
         "ko" : {
@@ -73214,7 +73333,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "送信中のパケットのしきい値が減少します"
+            "value" : "送信パケット減少しきい値"
           }
         },
         "ko" : {
@@ -73292,7 +73411,14 @@
       }
     },
     "Padel" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パデル"
+          }
+        }
+      }
     },
     "Pairing" : {
       "localizations" : {
@@ -73867,7 +73993,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ピクセル化"
+            "value" : "モザイク"
           }
         },
         "ko" : {
@@ -73997,7 +74123,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ストリーミング先のプラットフォーム"
+            "value" : "ストリーム先のプラットフォーム"
           }
         },
         "ko" : {
@@ -74126,8 +74252,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "遊ぶ"
+            "state" : "translated",
+            "value" : "再生"
           }
         },
         "ko" : {
@@ -74209,7 +74335,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giocatori"
+            "value" : "Giocatori"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレイヤー"
           }
         }
       }
@@ -75515,7 +75645,14 @@
       }
     },
     "Powered by Moblin" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powered by Moblin"
+          }
+        }
+      }
     },
     "Prefer stereo mic" : {
       "localizations" : {
@@ -77649,8 +77786,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld のパーティーで襲撃しました!"
+            "state" : "translated",
+            "value" : "%lld人でレイドしました!"
           }
         },
         "ko" : {
@@ -77779,8 +77916,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "襲撃"
+            "state" : "translated",
+            "value" : "レイド"
           }
         },
         "ko" : {
@@ -78170,7 +78307,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "リアルタイムIRL"
+            "value" : "RealtimeIRL"
           }
         },
         "ko" : {
@@ -78300,7 +78437,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "録音記録"
+            "value" : "録画記録"
           }
         },
         "ko" : {
@@ -78430,7 +78567,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "録音"
+            "value" : "録画"
           }
         },
         "ko" : {
@@ -78560,7 +78697,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "録音確認"
+            "value" : "録画確認"
           }
         },
         "ko" : {
@@ -78689,8 +78826,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "録音開始"
+            "state" : "translated",
+            "value" : "録画開始"
           }
         },
         "ko" : {
@@ -78819,8 +78956,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "録音停止"
+            "state" : "translated",
+            "value" : "録画停止"
           }
         },
         "ko" : {
@@ -78950,7 +79087,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "録音"
+            "value" : "録画"
           }
         },
         "ko" : {
@@ -79079,8 +79216,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ を利用しました!"
+            "state" : "translated",
+            "value" : "%@ 引き換えました!"
           }
         },
         "ko" : {
@@ -80592,7 +80729,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rimuovi riduzione vento"
+            "value" : "Rimuovi riduzione vento"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "風切り音を除去"
           }
         }
       }
@@ -80649,8 +80790,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "繰り返す"
+            "state" : "translated",
+            "value" : "リピート"
           }
         },
         "ko" : {
@@ -80862,7 +81003,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reset punteggio"
+            "value" : "Reset punteggio"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スコアをリセット"
           }
         }
       }
@@ -82089,8 +82234,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "リスト"
+            "state" : "translated",
+            "value" : "RIST"
           }
         },
         "ko" : {
@@ -82349,8 +82494,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "リスト://120.35.234.2:2030"
+            "state" : "translated",
+            "value" : "RIST://120.35.234.2:2030"
           }
         },
         "ko" : {
@@ -82479,8 +82624,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "しっかりとした"
+            "state" : "translated",
+            "value" : "RockSteady"
           }
         },
         "ko" : {
@@ -82609,8 +82754,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ロックステディ+"
+            "state" : "translated",
+            "value" : "RockSteady+"
           }
         },
         "ko" : {
@@ -82698,7 +82843,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rotazione"
+            "value" : "Rotazione"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回転"
           }
         }
       }
@@ -82755,8 +82904,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "丸みを帯びた"
+            "state" : "translated",
+            "value" : "丸い"
           }
         },
         "ko" : {
@@ -83666,7 +83815,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RTMP"
+            "value" : "RTMP(S)"
           }
         },
         "ko" : {
@@ -83926,7 +84075,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ユーザー名を言う"
+            "value" : "ユーザー名を読み上げる"
           }
         },
         "ko" : {
@@ -84282,6 +84431,12 @@
             "state" : "translated",
             "value" : "Scena audio input"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オーディオ入力シーン"
+          }
         }
       }
     },
@@ -84550,7 +84705,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Segnapunti"
+            "value" : "Segnapunti" }},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スコアボード"
           }
         }
       }
@@ -84998,7 +85157,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Googleで検索するか、住所を入力してください"
+            "value" : "Googleで検索するか、アドレスを入力してください"
           }
         },
         "ko" : {
@@ -86433,8 +86592,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "セリフ"
+            "state" : "translated",
+            "value" : "明朝体"
           }
         },
         "ko" : {
@@ -87473,8 +87632,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "形"
+            "state" : "translated",
+            "value" : "シェイプ"
           }
         },
         "ko" : {
@@ -88202,7 +88361,14 @@
       }
     },
     "Singles" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シングル"
+          }
+        }
+      }
     },
     "Size" : {
       "localizations" : {
@@ -88647,7 +88813,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "現在の TTS をスキップする"
+            "value" : "現在の読み上げをスキップする"
           }
         },
         "ko" : {
@@ -88777,7 +88943,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "遅い IRL"
+            "value" : "スローIRL"
           }
         },
         "ko" : {
@@ -89556,8 +89722,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "音"
+            "state" : "translated",
+            "value" : "サウンド"
           }
         },
         "ko" : {
@@ -90467,7 +90633,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四角"
+            "value" : "スクエア"
           }
         },
         "ko" : {
@@ -90597,7 +90763,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "srt connectは%@で失敗しました"
+            "value" : "SRT接続は%@で失敗しました"
           }
         },
         "ko" : {
@@ -90727,7 +90893,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SRT 接続の優先順位"
+            "value" : "SRT接続の優先順位"
           }
         },
         "ko" : {
@@ -90857,7 +91023,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SRTが切断されました"
+            "value" : "SRが切断されました"
           }
         },
         "ko" : {
@@ -90987,7 +91153,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SRTエラー：%@"
+            "value" : "SRエラー:%@"
           }
         },
         "ko" : {
@@ -92286,8 +92452,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "パスワード"
+            "state" : "translated",
+            "value" : "SSID"
           }
         },
         "ko" : {
@@ -92547,7 +92713,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ストリーム開始"
+            "value" : "開始"
           }
         },
         "ko" : {
@@ -92676,8 +92842,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "サイクリングトレーニングを始める"
+            "state" : "translated",
+            "value" : "サイクリングワークアウトを開始"
           }
         },
         "ko" : {
@@ -92936,8 +93102,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "録音を開始"
+            "state" : "translated",
+            "value" : "録画を開始"
           }
         },
         "ko" : {
@@ -93066,8 +93232,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ランニングトレーニングを始める"
+            "state" : "translated",
+            "value" : "ランニングワークアウトを開始"
           }
         },
         "ko" : {
@@ -93456,8 +93622,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ウォーキングトレーニングを始めましょう"
+            "state" : "translated",
+            "value" : "ウォーキングワークアウトを開始"
           }
         },
         "ko" : {
@@ -93847,7 +94013,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起動..."
+            "value" : "起動中…"
           }
         },
         "ko" : {
@@ -94367,7 +94533,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ストリーミングを停止する"
+            "value" : "ストリーミングを停止"
           }
         },
         "ko" : {
@@ -95355,14 +95521,25 @@
       }
     },
     "Stream marker" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ストリームマーカー"
+          }
+        }
+      }
     },
     "Stream marker created" : {
       "localizations" : {
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stream marked creato"
+            "value" : "Stream marked creato"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ストリームマーカーが作成されました"
           }
         }
       }
@@ -95940,7 +96117,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stream_url"
+            "value" : "stream_url"
           }
         },
         "ko" : {
@@ -96719,8 +96896,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "購読者"
+            "state" : "translated",
+            "value" : "サブスクライバー"
           }
         },
         "ko" : {
@@ -97109,8 +97286,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "サブスクリプション"
+            "state" : "translated",
+            "value" : "サブスク"
           }
         },
         "ko" : {
@@ -97890,7 +98067,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アイコンを購入して、モブリンの開発者をサポートします。"
+            "value" : "アイコンを購入して、Moblinの開発者をサポートします。"
           }
         },
         "ko" : {
@@ -98376,6 +98553,12 @@
             "state" : "translated",
             "value" : "Scatta uno snapshot"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スナップショットを撮る"
+          }
         }
       }
     },
@@ -98397,6 +98580,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scattare snapshot"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スナップショットを撮る"
           }
         }
       }
@@ -98453,8 +98642,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "スナップショットを撮ります。"
+            "state" : "translated",
+            "value" : "スナップショットを撮る"
           }
         },
         "ko" : {
@@ -98844,7 +99033,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このカメラではタップしてフォーカスは利用できません"
+            "value" : "このカメラではタップしてフォーカスを利用できません"
           }
         },
         "ko" : {
@@ -99104,7 +99293,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "テンプレート：rtmp：//"
+            "value" : "テンプレート: rtmp://"
           }
         },
         "ko" : {
@@ -99234,7 +99423,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "テンプレート：rtmp：// my_public_ip：my_public_port/my_stream_key"
+            "value" : "テンプレート: rtmp:// my_public_ip:my_public_port/my_stream_key"
           }
         },
         "ko" : {
@@ -99494,7 +99683,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "テンプレート：srt：// my_public_ip：my_public_port"
+            "value" : "テンプレート: srt:// my_public_ip:my_public_port"
           }
         },
         "ko" : {
@@ -99624,7 +99813,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "テンプレート：srt：// my_public_ip：my_public_port？streamid = publish/live/my_key"
+            "value" : "テンプレート: srt:// my_public_ip:my_public_port?streamid=publish/live/my_key"
           }
         },
         "ko" : {
@@ -99754,7 +99943,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "テンプレート：srtla：// my_public_ip：my_public_port"
+            "value" : "テンプレート: srtla:// my_public_ip:my_public_port"
           }
         },
         "ko" : {
@@ -100013,8 +100202,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "文章"
+            "state" : "translated",
+            "value" : "テキスト"
           }
         },
         "ko" : {
@@ -100144,7 +100333,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "コメント読み上げ(日本語未対応)"
+            "value" : "コメント読み上げ"
           }
         },
         "ko" : {
@@ -101443,8 +101632,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最小エンコーダー ビットレート。"
+            "state" : "translated",
+            "value" : "最小エンコードビットレート。"
           }
         },
         "ko" : {
@@ -102224,7 +102413,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ストリーミング (および録画) ビデオは、縦方向の切り替えが有効になっている場合でも、常に横方向になります。 OBS で回転させて縦向きにします。今後改善予定。"
+            "value" : "ストリーミング (および録画) ビデオは、ポートレートへの切り替えが有効になっている場合でも、常にランドスケープになります。 OBS で回転させて縦向きにします。今後改善予定。"
           }
         },
         "ko" : {
@@ -102744,7 +102933,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウルトラワイドカメラは、低光の状態ではうまく機能しません。同様に、ウルトラワイドカメラが使用されるため、ズームが0.5〜1.0倍である場合、自動カメラはうまく機能しません。"
+            "value" : "暗所では超広角カメラがうまく動作しません。そのため、ズームが0.5〜1.0倍である場合は自動カメラはうまく機能しません。"
           }
         },
         "ko" : {
@@ -103003,8 +103192,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "リモート コントロール ストリーマーが接続されると、時計はリモート コントロール アシスタントとして機能します。この場合、チャット、現在の TTS のスキップ、およびその他のいくつかの機能は (まだ) サポートされていないことに注意してください。"
+            "state" : "translated",
+            "value" : "リモートコントロールストリーマーが接続されると、時計はリモートコントロールアシスタントとして機能します。この場合、チャット、現在の TTS のスキップ、およびその他のいくつかの機能は (まだ) サポートされていないことに注意してください。"
           }
         },
         "ko" : {
@@ -103134,7 +103323,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ズーム（x）が有効になっている場合は、指定されたカメラに切り替えるときに設定します。"
+            "value" : "ズームが有効になっている場合は、指定されたカメラに切り替えるときに設定します。"
           }
         },
         "ko" : {
@@ -104173,8 +104362,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "縦向きでストリーミングするには、「設定」→「ストリーム」→「%@」→「縦向き」を有効にします。"
+            "state" : "translated",
+            "value" : "縦向きでストリーミングするには、「設定」→「ストリーム」→「%@」→「ポートレート」を有効にします。"
           }
         },
         "ko" : {
@@ -104303,8 +104492,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "録音が多すぎます。最も古い録音を削除します。"
+            "state" : "translated",
+            "value" : "録画が多すぎます。最も古い録画を削除します。"
           }
         },
         "ko" : {
@@ -104823,8 +105012,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "このシーンではトーチは使用できません。"
+            "state" : "translated",
+            "value" : "このシーンではライトは使用できません。"
           }
         },
         "ko" : {
@@ -104954,7 +105143,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "総録音数"
+            "value" : "総録画数"
           }
         },
         "ko" : {
@@ -105084,7 +105273,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "送信された合計"
+            "value" : "送信合計"
           }
         },
         "ko" : {
@@ -105214,7 +105403,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全体の大きさ"
+            "value" : "合計サイズ"
           }
         },
         "ko" : {
@@ -105603,8 +105792,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "旅行"
+            "state" : "translated",
+            "value" : "トラベル"
           }
         },
         "ko" : {
@@ -105734,7 +105923,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "三角形"
+            "value" : "トライアングル"
           }
         },
         "ko" : {
@@ -105863,8 +106052,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "チャット ボット コマンドを使用してアラートをトリガーします。"
+            "state" : "translated",
+            "value" : "チャットボットコマンドを使用してアラートをトリガーします。"
           }
         },
         "ko" : {
@@ -107423,8 +107612,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitchの報酬"
+            "state" : "translated",
+            "value" : "Twitch報酬"
           }
         },
         "ko" : {
@@ -107554,7 +107743,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "2 つの列"
+            "value" : "5列"
           }
         },
         "ko" : {
@@ -107814,7 +108003,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウルトラワイド"
+            "value" : "超広角"
           }
         },
         "ko" : {
@@ -107944,7 +108133,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OBSサーバーに接続できません。 5 秒ごとに再試行します。"
+            "value" : "OBSサーバーに接続できません。5秒ごとに再試行します。"
           }
         },
         "ko" : {
@@ -108162,7 +108351,11 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sconosciuto 😢"
+            "value" : "Sconosciuto 😢"}},
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明😢"
           }
         }
       }
@@ -108480,7 +108673,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不明,"
+            "value" : "不明、"
           }
         },
         "ko" : {
@@ -108609,8 +108802,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Unmute"
+            "state" : "translated",
+            "value" : "ミュート解除"
           }
         },
         "ko" : {
@@ -108705,6 +108898,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio attivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声のミュート解除"
           }
         }
       }
@@ -109282,7 +109481,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "累計配信時間"
+            "value" : "累計時間"
           }
         },
         "ko" : {
@@ -109672,7 +109871,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URLのインポートが失敗しました"
+            "value" : "URLのインポートに失敗しました"
           }
         },
         "ko" : {
@@ -109801,8 +110000,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL のインポートに成功しました"
+            "state" : "translated",
+            "value" : "URLのインポートに成功しました"
           }
         },
         "ko" : {
@@ -109931,8 +110130,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "メディア プレーヤーをシーン内のビデオ ソースとして使用し、録画やその他の MP4 ファイルをストリーミングするためのマイクとして使用します。"
+            "state" : "translated",
+            "value" : "メディアプレーヤーをシーン内のビデオ ソースとして使用し、録画やその他の MP4 ファイルをストリーミングするためのマイクとして使用します。"
           }
         },
         "ko" : {
@@ -110322,7 +110521,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "よくわからない場合はFast IRL アルゴリズムを使用してください。"
+            "value" : "よくわからない場合はファスト IRL アルゴリズムを使用してください。"
           }
         },
         "ko" : {
@@ -112142,7 +112341,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ビデオが黒っぽい"
+            "value" : "ビデオの黒み"
           }
         },
         "ko" : {
@@ -112792,7 +112991,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手ブレ補正"
+            "value" : "手振れ補正"
           }
         },
         "ko" : {
@@ -113962,7 +114161,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウェブソケット"
+            "value" : "WebSocket"
           }
         },
         "ko" : {
@@ -114091,8 +114290,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "重さ"
+            "state" : "translated",
+            "value" : "ウェイト"
           }
         },
         "ko" : {
@@ -114352,7 +114551,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ワイド"
+            "value" : "広角"
           }
         },
         "ko" : {
@@ -114482,7 +114681,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ワイドデュアル（自動）"
+            "value" : "広角デュアル（自動）"
           }
         },
         "ko" : {
@@ -115651,8 +115850,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "いい結果"
+            "state" : "translated",
+            "value" : "ワークアウト"
           }
         },
         "ko" : {
@@ -115860,7 +116059,14 @@
       }
     },
     "Workout test" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ワークアウトテスト"
+          }
+        }
+      }
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {
@@ -116175,7 +116381,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "×マーク"
+            "value" : "Xマーク"
           }
         },
         "ko" : {
@@ -116311,7 +116517,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "xは%1$f -%$fでなければなりません"
+            "value" : "Xは%1$f -%$fでなければなりません"
           }
         },
         "ko" : {
@@ -116571,7 +116777,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "あなたはすでにすべてを購入しました！"
+            "value" : "あなたは既にすべてを購入しています！"
           }
         },
         "ko" : {
@@ -117611,7 +117817,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ズームアウトする"
+            "value" : "ズームアウト"
           }
         },
         "ko" : {
