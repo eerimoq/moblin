@@ -122,11 +122,13 @@ struct WidgetScoreboardSettingsView: View {
             PlayerView(playerId: $homePlayer1)
                 .onChange(of: homePlayer1) { _ in
                     widget.scoreboard!.padel.homePlayer1 = homePlayer1
+                    model.resetSelectedScene(changeScene: false)
                 }
             if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
                 PlayerView(playerId: $homePlayer2)
                     .onChange(of: homePlayer2) { _ in
                         widget.scoreboard!.padel.homePlayer2 = homePlayer2
+                        model.resetSelectedScene(changeScene: false)
                     }
             }
         } header: {
@@ -136,11 +138,13 @@ struct WidgetScoreboardSettingsView: View {
             PlayerView(playerId: $awayPlayer1)
                 .onChange(of: awayPlayer1) { _ in
                     widget.scoreboard!.padel.awayPlayer1 = awayPlayer1
+                    model.resetSelectedScene(changeScene: false)
                 }
             if SettingsWidgetPadelScoreboardGameType.fromString(value: gameType) == .double {
                 PlayerView(playerId: $awayPlayer2)
                     .onChange(of: awayPlayer2) { _ in
                         widget.scoreboard!.padel.awayPlayer2 = awayPlayer2
+                        model.resetSelectedScene(changeScene: false)
                     }
             }
         } header: {
