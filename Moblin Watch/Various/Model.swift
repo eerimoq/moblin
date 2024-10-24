@@ -574,11 +574,16 @@ class Model: NSObject, ObservableObject {
         if score.home == 0 && score.away == 0 && padelScoreboard.score.count > 1 {
             padelScoreboard.score.removeLast()
         }
+        let index = padelScoreboard.score.count - 1
         switch team {
         case .home:
-            padelScoreboard.score[padelScoreboard.score.count - 1].home -= 1
+            if padelScoreboard.score[index].home > 0 {
+                padelScoreboard.score[index].home -= 1
+            }
         case .away:
-            padelScoreboard.score[padelScoreboard.score.count - 1].away -= 1
+            if padelScoreboard.score[index].away > 0 {
+                padelScoreboard.score[index].away -= 1
+            }
         }
         guard let score = padelScoreboard.score.last else {
             updatePadelScoreboard()
