@@ -9494,6 +9494,12 @@
             "state" : "translated",
             "value" : "1 minuutti"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 minuto"
+          }
         }
       }
     },
@@ -11774,7 +11780,14 @@
       }
     },
     "a player" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "un giocatore"
+          }
+        }
+      }
     },
     "a preset" : {
       "localizations" : {
@@ -18587,7 +18600,14 @@
       }
     },
     "Away" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lontano"
+          }
+        }
+      }
     },
     "B-frames" : {
       "localizations" : {
@@ -43344,7 +43364,14 @@
       }
     },
     "Failed to create stream marker" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creazione stream maker non riuscito"
+          }
+        }
+      }
     },
     "Failed to fix OBS input" : {
       "localizations" : {
@@ -50129,7 +50156,14 @@
       }
     },
     "Game type" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoria"
+          }
+        }
+      }
     },
     "General" : {
       "localizations" : {
@@ -71818,6 +71852,12 @@
             "state" : "translated",
             "value" : "Vain RTMP, SRT(LA) ja ruudunkaappaus on tuettuja viedeolähteitä tällä hetkellä."
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attualmente sono supportate solo le sorgenti video RTMP, SRT(LA) e cattura schermo."
+          }
         }
       }
     },
@@ -74165,7 +74205,14 @@
       }
     },
     "Players" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giocatori"
+          }
+        }
+      }
     },
     "Playlist" : {
       "localizations" : {
@@ -80541,7 +80588,14 @@
       }
     },
     "Remove wind noise" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi riduzione vento"
+          }
+        }
+      }
     },
     "Repeat" : {
       "localizations" : {
@@ -80804,7 +80858,14 @@
       }
     },
     "Reset score" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset punteggio"
+          }
+        }
+      }
     },
     "Reset settings" : {
       "localizations" : {
@@ -82632,6 +82693,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kääntö"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rotazione"
           }
         }
       }
@@ -84479,7 +84546,14 @@
       }
     },
     "Scoreboard" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segnapunti"
+          }
+        }
+      }
     },
     "Screen capture started" : {
       "localizations" : {
@@ -95284,7 +95358,14 @@
 
     },
     "Stream marker created" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream marked creato"
+          }
+        }
+      }
     },
     "Stream name" : {
       "localizations" : {
@@ -108076,6 +108157,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tuntematon 😢"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sconosciuto 😢"
           }
         }
       }
