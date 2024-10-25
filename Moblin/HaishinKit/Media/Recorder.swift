@@ -199,7 +199,6 @@ class Recorder {
                                  sourceFormatHint: CMFormatDescription?) -> AVAssetWriterInput?
     {
         var input: AVAssetWriterInput?
-        // nstry {
         input = AVAssetWriterInput(
             mediaType: mediaType,
             outputSettings: outputSettings,
@@ -209,9 +208,6 @@ class Recorder {
         if let input {
             writer?.add(input)
         }
-        // } _: { exception in
-        //    logger.warn("Failed to create asset writer input \(exception)")
-        // }
         return input
     }
 
