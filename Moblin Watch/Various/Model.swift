@@ -446,6 +446,10 @@ class Model: NSObject, ObservableObject {
         showPadelScoreBoard = true
     }
 
+    private func handleRemovePadelScoreboard(_: Any) throws {
+        showPadelScoreBoard = false
+    }
+
     private func isWorkoutRunning() -> Bool {
         return workoutSession?.state == .running
     }
@@ -715,6 +719,8 @@ extension Model: WCSessionDelegate {
                     self.handleViewerCount(data)
                 case .padelScoreboard:
                     try self.handlePadelScoreboard(data)
+                case .removePadelScoreboard:
+                    try self.handleRemovePadelScoreboard(data)
                 }
             } catch {}
         }

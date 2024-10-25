@@ -4658,6 +4658,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for lutEffect in lutEffects.values {
             media.unregisterEffect(lutEffect)
         }
+        for padelScoreboardEffect in padelScoreboardEffects.values {
+            media.unregisterEffect(padelScoreboardEffect)
+        }
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
@@ -4895,6 +4898,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         effects += registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         var usedMapEffects: [MapEffect] = []
+        var usedPadelScoreboardEffects: [PadelScoreboardEffect] = []
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
         enabledAlertsEffects = []
@@ -4903,6 +4907,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             &effects,
             &usedBrowserEffects,
             &usedMapEffects,
+            &usedPadelScoreboardEffects,
             &addedScenes,
             &enabledAlertsEffects,
             &needsSpeechToText
@@ -4917,6 +4922,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         for mapEffect in mapEffects.values where !usedMapEffects.contains(mapEffect) {
             mapEffect.setSceneWidget(sceneWidget: nil)
+        }
+        for (id, padelScoreboardEffect) in padelScoreboardEffects
+            where !usedPadelScoreboardEffects.contains(padelScoreboardEffect)
+        {
+            sendRemovePadelScoreboardToWatch(id: id)
         }
         media.setSpeechToText(enabled: needsSpeechToText)
         attachSingleLayout(scene: scene)
@@ -4956,6 +4966,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         _ effects: inout [VideoEffect],
         _ usedBrowserEffects: inout [BrowserEffect],
         _ usedMapEffects: inout [MapEffect],
+        _ usedPadelScoreboardEffects: inout [PadelScoreboardEffect],
         _ addedScenes: inout [SettingsScene],
         _ enabledAlertsEffects: inout [AlertsEffect],
         _ needsSpeechToText: inout Bool
@@ -5025,6 +5036,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                         &effects,
                         &usedBrowserEffects,
                         &usedMapEffects,
+                        &usedPadelScoreboardEffects,
                         &addedScenes,
                         &enabledAlertsEffects,
                         &needsSpeechToText
@@ -5060,6 +5072,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                         .update(scoreBoard: padelScoreboardSettingsToEffect(scoreboard.padel))
                     sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
                     effects.append(padelScoreboardEffect)
+                    usedPadelScoreboardEffects.append(padelScoreboardEffect)
                 }
             }
         }
@@ -6718,6 +6731,13 @@ extension Model {
         sendMessageToWatch(type: .padelScoreboard, data: data)
     }
 
+    private func sendRemovePadelScoreboardToWatch(id: UUID) {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .removePadelScoreboard, data: id.uuidString)
+    }
+
     private func resetWorkoutStats() {
         workoutHeartRate = nil
         workoutActiveEnergyBurned = nil
@@ -6933,9 +6953,15 @@ extension Model: WCSessionDelegate {
                 self.sendIsRecordingToWatch(isRecording: self.isRecording)
                 self.sendIsMutedToWatch(isMuteOn: self.isMuteOn)
                 self.sendViewerCountWatch()
+                let sceneWidgets = self.getSelectedScene()?.widgets ?? []
                 for id in self.padelScoreboardEffects.keys {
-                    if let scoreboard = self.findWidget(id: id)?.scoreboard {
+                    if let sceneWidget = sceneWidgets.first(where: { $0.widgetId == id }),
+                       sceneWidget.enabled,
+                       let scoreboard = self.findWidget(id: id)?.scoreboard
+                    {
                         self.sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
+                    } else {
+                        self.sendRemovePadelScoreboardToWatch(id: id)
                     }
                 }
             }
@@ -7119,14 +7145,14 @@ extension Model: WCSessionDelegate {
             guard let widget = self.findWidget(id: scoreboard.id) else {
                 return
             }
-            guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
-                return
-            }
             widget.scoreboard!.padel.score = scoreboard.score.map {
                 let score = SettingsWidgetScoreboardScore()
                 score.home = $0.home
                 score.away = $0.away
                 return score
+            }
+            guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
+                return
             }
             padelScoreboardEffect
                 .update(scoreBoard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))

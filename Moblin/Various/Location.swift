@@ -20,7 +20,7 @@ private class BackgroundActivity {
 }
 
 class Location: NSObject {
-    private var manager: CLLocationManager = .init()
+    private var manager = CLLocationManager()
     private var onUpdate: ((CLLocation) -> Void)?
     private var latestLocation: CLLocation?
     private var backgroundActivity = BackgroundActivity()

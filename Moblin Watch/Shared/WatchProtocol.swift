@@ -21,6 +21,7 @@ enum WatchMessageToWatch: String {
     case stopWorkout
     case viewerCount
     case padelScoreboard
+    case removePadelScoreboard
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
