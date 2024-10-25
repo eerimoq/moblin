@@ -6879,6 +6879,12 @@
     },
     "%lld°" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld°"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11817,6 +11823,12 @@
     },
     "a player" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ein Spieler"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18655,6 +18667,12 @@
     },
     "Away" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "weg"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -37714,6 +37732,12 @@
     },
     "Doubles" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doppelt"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -43444,6 +43468,12 @@
     },
     "Failed to create stream marker" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream Marker konnte nicht erstellt werden"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -50248,6 +50278,12 @@
     },
     "Game type" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spieltyp"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -71968,6 +72004,12 @@
     },
     "Only RTMP, SRT(LA) and screen capture video sources are currently supported." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derzeit werden nur RTMP, SRT(LA) und Screen-Capture-Videoquellen unterstützt."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -73420,6 +73462,12 @@
     },
     "Padel" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padel"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -74340,6 +74388,12 @@
     },
     "Players" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spieler"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -75656,6 +75710,12 @@
     },
     "Powered by Moblin" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterstützt von Moblin"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -80736,6 +80796,12 @@
     },
     "Remove wind noise" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Windgeräusche entfernen"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -81012,6 +81078,12 @@
     },
     "Reset score" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Punkte zurücksetzen"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -82848,6 +82920,12 @@
     },
     "Rotation" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drehung"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -84718,6 +84796,12 @@
     },
     "Scoreboard" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzeigetafel"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -88380,6 +88464,12 @@
     },
     "Singles" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einzeln"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -95540,6 +95630,12 @@
     },
     "Stream marker" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream Marker"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -95550,6 +95646,12 @@
     },
     "Stream marker created" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream Marker erstellt"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -108362,6 +108464,12 @@
     },
     "Unknown 😢" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannt 😢"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -116082,6 +116190,12 @@
     },
     "Workout test" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trainingstest"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
