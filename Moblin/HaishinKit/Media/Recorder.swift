@@ -34,7 +34,6 @@ class Recorder {
     private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
     private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
-    private var dimensions: CMVideoDimensions = .init(width: 0, height: 0)
 
     func setAudioChannelsMap(map: [Int: Int]) {
         lockQueue.async {
@@ -125,11 +124,8 @@ class Recorder {
         guard let writer else {
             return
         }
-        if dimensions.width != pixelBuffer.width || dimensions.height != pixelBuffer.height {
-            dimensions = .init(width: Int32(pixelBuffer.width), height: Int32(pixelBuffer.height))
-        }
         guard
-            let input = makeVideoWriterInput(),
+            let input = makeVideoWriterInput(width: pixelBuffer.width, height: pixelBuffer.height),
             let adaptor = makePixelBufferAdaptor(input),
             isReadyForStartWriting()
         else {
@@ -172,14 +168,14 @@ class Recorder {
         return audioWriterInput
     }
 
-    private func createVideoWriterInput() -> AVAssetWriterInput? {
+    private func createVideoWriterInput(width: Int, height: Int) -> AVAssetWriterInput? {
         var outputSettings: [String: Any] = [:]
         for (key, value) in videoOutputSettings {
             switch key {
             case AVVideoHeightKey:
-                outputSettings[key] = isZero(value) ? Int(dimensions.height) : value
+                outputSettings[key] = isZero(value) ? height : value
             case AVVideoWidthKey:
-                outputSettings[key] = isZero(value) ? Int(dimensions.width) : value
+                outputSettings[key] = isZero(value) ? width : value
             default:
                 outputSettings[key] = value
             }
@@ -187,9 +183,9 @@ class Recorder {
         return makeWriterInput(.video, outputSettings, sourceFormatHint: nil)
     }
 
-    private func makeVideoWriterInput() -> AVAssetWriterInput? {
+    private func makeVideoWriterInput(width: Int, height: Int) -> AVAssetWriterInput? {
         if videoWriterInput == nil {
-            videoWriterInput = createVideoWriterInput()
+            videoWriterInput = createVideoWriterInput(width: width, height: height)
         }
         return videoWriterInput
     }
@@ -324,6 +320,5 @@ class Recorder {
         audioWriterInput = nil
         videoWriterInput = nil
         pixelBufferAdaptor = nil
-        dimensions = .init(width: 0, height: 0)
     }
 }
