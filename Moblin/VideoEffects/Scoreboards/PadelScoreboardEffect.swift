@@ -8,6 +8,14 @@ struct PadelScoreboardScore: Identifiable {
     let id: UUID = .init()
     let home: Int
     let away: Int
+
+    func isHomeWin() -> Bool {
+        return isSetWin(first: home, second: away)
+    }
+
+    func isAwayWin() -> Bool {
+        return isSetWin(first: away, second: home)
+    }
 }
 
 struct PadelScoreboardPlayer: Identifiable {
@@ -72,15 +80,10 @@ final class PadelScoreboardEffect: VideoEffect {
                     .font(.system(size: 25))
                     ForEach(scoreboard.score) { score in
                         VStack {
-                            if score.id == scoreboard.score.last?.id {
-                                TeamScoreView(score: score.home)
-                                TeamScoreView(score: score.away)
-                            } else {
-                                TeamScoreView(score: score.home)
-                                    .bold(score.home > score.away)
-                                TeamScoreView(score: score.away)
-                                    .bold(score.away > score.home)
-                            }
+                            TeamScoreView(score: score.home)
+                                .bold(score.isHomeWin())
+                            TeamScoreView(score: score.away)
+                                .bold(score.isAwayWin())
                         }
                         .frame(width: 28)
                         .font(.system(size: 45))

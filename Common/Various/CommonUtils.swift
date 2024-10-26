@@ -707,3 +707,13 @@ extension Color {
         )
     }
 }
+
+func isSetWin(first: Int, second: Int) -> Bool {
+    if first == 7 {
+        return true
+    }
+    if first == 6 && second <= 4 {
+        return true
+    }
+    return false
+}
