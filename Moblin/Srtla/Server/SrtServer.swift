@@ -7,6 +7,7 @@ class SrtServer {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     var acceptedStreamId: Atomic<String> = .init("")
+    var connectedStreamIds: Atomic<[String]> = .init(.init())
     var running: Bool = false
 
     func start() {
@@ -38,7 +39,8 @@ class SrtServer {
             logger.info("srt-server: Waiting for client to connect.")
             let clientSocket = try accept()
             guard let stream = srtlaServer?.settings.streams
-                .first(where: { $0.streamId == acceptedStreamId.value })
+                .first(where: { $0.streamId == acceptedStreamId.value }),
+                  !connectedStreamIds.value.contains(acceptedStreamId.value)
             else {
                 srt_close(clientSocket)
                 logger.info("srt-server: Client with stream id \(acceptedStreamId) denied.")
@@ -47,10 +49,12 @@ class SrtServer {
             logger.info("srt-server: Accepted client \(stream.name).")
             let streamId = acceptedStreamId.value
             DispatchQueue(label: "com.eerimoq.Moblin.SrtClient").async {
+                self.connectedStreamIds.mutate({ $0.append(streamId)})
                 self.srtlaServer?.clientConnected(streamId: streamId)
                 SrtServerClient(server: self, streamId: streamId).run(clientSocket: clientSocket)
                 self.srtlaServer?.clientDisconnected(streamId: streamId)
                 logger.info("srt-server: Closed client.")
+                self.connectedStreamIds.mutate({ $0.removeAll(where: {$0 == streamId})})
             }
             acceptedStreamId.mutate { $0 = "" }
         }

@@ -56,7 +56,7 @@ class SrtlaServer {
     }
 
     func isStreamConnected(streamId: String) -> Bool {
-        return srtServer.acceptedStreamId.value == streamId
+        return srtServer.connectedStreamIds.value.contains(streamId)
     }
 
     func updateStats() -> SrtlaServerStats {
