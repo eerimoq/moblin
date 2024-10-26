@@ -25,6 +25,18 @@ struct PadelScoreboard {
     let score: [PadelScoreboardScore]
 }
 
+private struct TeamScoreView: View {
+    var score: Int
+
+    var body: some View {
+        VStack {
+            Spacer(minLength: 0)
+            Text(String(score))
+            Spacer(minLength: 0)
+        }
+    }
+}
+
 final class PadelScoreboardEffect: VideoEffect {
     private var scoreBoard: Atomic<CIImage?> = .init(nil)
     private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
@@ -60,15 +72,14 @@ final class PadelScoreboardEffect: VideoEffect {
                     .font(.system(size: 25))
                     ForEach(scoreBoard.score) { score in
                         VStack {
-                            VStack {
-                                Spacer(minLength: 0)
-                                Text(String(score.home))
-                                Spacer(minLength: 0)
-                            }
-                            VStack {
-                                Spacer(minLength: 0)
-                                Text(String(score.away))
-                                Spacer(minLength: 0)
+                            if score.id == scoreBoard.score.last?.id {
+                                TeamScoreView(score: score.home)
+                                TeamScoreView(score: score.away)
+                            } else {
+                                TeamScoreView(score: score.home)
+                                    .foregroundColor(score.home > score.away ? .white : .gray)
+                                TeamScoreView(score: score.away)
+                                    .foregroundColor(score.away > score.home ? .white : .gray)
                             }
                         }
                         .frame(width: 25)

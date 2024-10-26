@@ -61,8 +61,15 @@ private struct ScoreboardView: View {
             }
             ForEach(scoreboard.score) { score in
                 VStack {
-                    TeamScoreView(score: score.home)
-                    TeamScoreView(score: score.away)
+                    if score.id == scoreboard.score.last?.id {
+                        TeamScoreView(score: score.home)
+                        TeamScoreView(score: score.away)
+                    } else {
+                        TeamScoreView(score: score.home)
+                            .foregroundColor(score.home > score.away ? .white : .gray)
+                        TeamScoreView(score: score.away)
+                            .foregroundColor(score.away > score.home ? .white : .gray)
+                    }
                 }
                 .frame(width: 17)
             }
