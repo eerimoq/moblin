@@ -5083,7 +5083,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     padelScoreboardEffect.setSceneWidget(sceneWidget: sceneWidget.clone())
                     let scoreboard = widget.scoreboard!
                     padelScoreboardEffect
-                        .update(scoreBoard: padelScoreboardSettingsToEffect(scoreboard.padel))
+                        .update(scoreboard: padelScoreboardSettingsToEffect(scoreboard.padel))
                     sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
                     effects.append(padelScoreboardEffect)
                     usedPadelScoreboardEffects.append(padelScoreboardEffect)
@@ -7169,7 +7169,7 @@ extension Model: WCSessionDelegate {
                 return
             }
             padelScoreboardEffect
-                .update(scoreBoard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))
+                .update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))
         }
     }
 

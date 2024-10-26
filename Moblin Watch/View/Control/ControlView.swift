@@ -66,9 +66,9 @@ private struct ScoreboardView: View {
                         TeamScoreView(score: score.away)
                     } else {
                         TeamScoreView(score: score.home)
-                            .foregroundColor(score.home > score.away ? .white : .gray)
+                            .bold(score.home > score.away)
                         TeamScoreView(score: score.away)
-                            .foregroundColor(score.away > score.home ? .white : .gray)
+                            .bold(score.away > score.home)
                     }
                 }
                 .frame(width: 17)
@@ -77,7 +77,7 @@ private struct ScoreboardView: View {
         }
         .padding([.leading, .trailing], 2)
         .padding([.top], 2)
-        .background(RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color())
+        .background(scoreboardBlueColor)
         .foregroundColor(.white)
     }
 }

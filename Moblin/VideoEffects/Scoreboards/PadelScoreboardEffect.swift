@@ -49,47 +49,47 @@ final class PadelScoreboardEffect: VideoEffect {
         self.sceneWidget.mutate { $0 = sceneWidget }
     }
 
-    func update(scoreBoard: PadelScoreboard) {
+    func update(scoreboard: PadelScoreboard) {
         DispatchQueue.main.async {
             let scoreBoard = VStack(alignment: .leading) {
                 HStack(alignment: .center, spacing: 18) {
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading) {
                             Spacer(minLength: 0)
-                            ForEach(scoreBoard.home.players) { player in
+                            ForEach(scoreboard.home.players) { player in
                                 Text(player.name)
                             }
                             Spacer(minLength: 0)
                         }
                         VStack(alignment: .leading) {
                             Spacer(minLength: 0)
-                            ForEach(scoreBoard.away.players) { player in
+                            ForEach(scoreboard.away.players) { player in
                                 Text(player.name)
                             }
                             Spacer(minLength: 0)
                         }
                     }
                     .font(.system(size: 25))
-                    ForEach(scoreBoard.score) { score in
+                    ForEach(scoreboard.score) { score in
                         VStack {
-                            if score.id == scoreBoard.score.last?.id {
+                            if score.id == scoreboard.score.last?.id {
                                 TeamScoreView(score: score.home)
                                 TeamScoreView(score: score.away)
                             } else {
                                 TeamScoreView(score: score.home)
-                                    .foregroundColor(score.home > score.away ? .white : .gray)
+                                    .bold(score.home > score.away)
                                 TeamScoreView(score: score.away)
-                                    .foregroundColor(score.away > score.home ? .white : .gray)
+                                    .bold(score.away > score.home)
                             }
                         }
-                        .frame(width: 25)
+                        .frame(width: 28)
                         .font(.system(size: 45))
                     }
                     Spacer()
                 }
                 .padding([.leading, .trailing], 3)
                 .padding([.top], 3)
-                .background(RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color())
+                .background(scoreboardBlueColor)
                 HStack {
                     Text("Powered by Moblin")
                         .fontDesign(.monospaced)
@@ -99,7 +99,7 @@ final class PadelScoreboardEffect: VideoEffect {
                 }
                 .padding([.leading, .trailing], 3)
                 .padding([.bottom], 3)
-                .background(RgbColor(red: 0, green: 3, blue: 0x5B).color())
+                .background(scoreboardDarkBlueColor)
             }
             .foregroundColor(.white)
             let renderer = ImageRenderer(content: scoreBoard)
