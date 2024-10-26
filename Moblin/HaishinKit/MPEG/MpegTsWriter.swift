@@ -4,6 +4,7 @@ import Foundation
 
 var payloadSize: Int = 1316
 var mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
+var mpegTsWriterKeepTimestamps = false
 
 protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutput data: Data)
@@ -261,7 +262,8 @@ class MpegTsWriter {
         writeProgram()
     }
 
-    private func split(_ packetId: UInt16, PES: MpegTsPacketizedElementaryStream,
+    private func split(_ packetId: UInt16,
+                       PES: MpegTsPacketizedElementaryStream,
                        timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
@@ -310,6 +312,9 @@ extension MpegTsWriter: AudioCodecDelegate {
         }
         if baseAudioTimestamp == .invalid {
             baseAudioTimestamp = presentationTimeStamp
+            if mpegTsWriterKeepTimestamps {
+                baseAudioTimestamp = .zero
+            }
             if mpegTsWriterProgramClockReferencePacketId == MpegTsWriter.audioPacketId {
                 programClockReferenceTimestamp = baseAudioTimestamp
             }
@@ -374,6 +379,9 @@ extension MpegTsWriter: VideoCodecDelegate {
         }
         if baseVideoTimestamp == .invalid {
             baseVideoTimestamp = sampleBuffer.presentationTimeStamp
+            if mpegTsWriterKeepTimestamps {
+                baseVideoTimestamp = .zero
+            }
             if mpegTsWriterProgramClockReferencePacketId == MpegTsWriter.videoPacketId {
                 programClockReferenceTimestamp = baseVideoTimestamp
             }

@@ -1793,6 +1793,7 @@ class SettingsDebug: Codable {
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
+    var keepTimestamps: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -4248,6 +4249,10 @@ final class Settings {
         }
         if realDatabase.scoreboardPlayers == nil {
             realDatabase.scoreboardPlayers = .init()
+            store()
+        }
+        if realDatabase.debug!.keepTimestamps == nil {
+            realDatabase.debug!.keepTimestamps = false
             store()
         }
     }
