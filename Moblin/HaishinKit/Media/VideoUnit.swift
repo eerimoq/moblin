@@ -144,7 +144,8 @@ final class VideoUnit: NSObject {
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
-    var preset: AVCaptureSession.Preset = .hd1280x720
+    var captureSize = CGSize(width: 1920, height: 1080)
+    var outputSize = CGSize(width: 1920, height: 1080)
     let session = makeCaptureSession()
 
     var formatDescription: CMVideoFormatDescription? {
@@ -446,8 +447,8 @@ final class VideoUnit: NSObject {
             kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-            kCVPixelBufferWidthKey: NSNumber(value: preset.width),
-            kCVPixelBufferHeightKey: NSNumber(value: preset.height),
+            kCVPixelBufferWidthKey: NSNumber(value: outputSize.width),
+            kCVPixelBufferHeightKey: NSNumber(value: outputSize.height),
         ]
         poolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
@@ -559,23 +560,26 @@ final class VideoUnit: NSObject {
 
     private func scaleImage(_ image: CIImage) -> CIImage {
         let imageRatio = image.extent.height / image.extent.width
-        let presetRatio = Double(preset.height) / Double(preset.width)
+        let outputRatio = outputSize.height / outputSize.width
         var scaleFactor: Double
         var x: Double
         var y: Double
-        if presetRatio > imageRatio {
-            scaleFactor = Double(preset.width) / image.extent.width
+        if outputRatio > imageRatio {
+            scaleFactor = Double(outputSize.width) / image.extent.width
             x = 0
-            y = (Double(preset.height) - image.extent.height * scaleFactor) / 2
+            y = (Double(outputSize.height) - image.extent.height * scaleFactor) / 2
         } else {
-            scaleFactor = Double(preset.height) / image.extent.height
-            x = (Double(preset.width) - image.extent.width * scaleFactor) / 2
+            scaleFactor = Double(outputSize.height) / image.extent.height
+            x = (Double(outputSize.width) - image.extent.width * scaleFactor) / 2
             y = 0
         }
         return image
             .transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
             .transformed(by: CGAffineTransform(translationX: x, y: y))
-            .composited(over: getBlackImage(width: Double(preset.width), height: Double(preset.height)))
+            .composited(over: getBlackImage(
+                width: Double(outputSize.width),
+                height: Double(outputSize.height)
+            ))
     }
 
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
@@ -587,7 +591,7 @@ final class VideoUnit: NSObject {
         if imageBuffer.isPortrait() {
             image = image.oriented(.left)
         }
-        if Int32(image.extent.width) != preset.width || Int32(image.extent.height) != preset.height {
+        if image.extent.size != outputSize {
             image = scaleImage(image)
         }
         let extent = image.extent
@@ -629,7 +633,7 @@ final class VideoUnit: NSObject {
 
     private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image = image?.resized(
-            to: CGSize(width: Double(preset.width), height: Double(preset.height)),
+            to: CGSize(width: Double(outputSize.width), height: Double(outputSize.height)),
             resizingMode: .aspect
         ) else {
             return image
@@ -638,12 +642,12 @@ final class VideoUnit: NSObject {
         filter.inputBackgroundImage = MTIImage(
             color: .black,
             sRGB: false,
-            size: .init(width: CGFloat(preset.width), height: CGFloat(preset.height))
+            size: .init(width: CGFloat(outputSize.width), height: CGFloat(outputSize.height))
         )
         filter.layers = [
             .init(
                 content: image,
-                position: .init(x: CGFloat(preset.width / 2), y: CGFloat(preset.height / 2))
+                position: .init(x: CGFloat(outputSize.width / 2), y: CGFloat(outputSize.height / 2))
             ),
         ]
         return filter.outputImage
@@ -670,9 +674,7 @@ final class VideoUnit: NSObject {
         if imageBuffer.isPortrait() {
             image = image?.oriented(.left)
         }
-        if let imageToScale = image,
-           Int32(imageToScale.size.width) != preset.width || Int32(imageToScale.size.height) != preset.height
-        {
+        if let imageToScale = image, imageToScale.size != outputSize {
             image = scaleImageMetalPetal(image)
         }
         if applyBlur {
@@ -775,8 +777,8 @@ final class VideoUnit: NSObject {
         decodeTimeStamp: CMTime
     ) -> CMSampleBuffer? {
         if blackImageBuffer == nil || blackFormatDescription == nil {
-            let width = preset.width
-            let height = preset.height
+            let width = outputSize.width
+            let height = outputSize.height
             let pixelBufferAttributes: [NSString: AnyObject] = [
                 kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
                 kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
@@ -894,9 +896,7 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInner()
         }
-        if !effects.isEmpty || applyBlur || imageBuffer.width != preset.width || imageBuffer.height != preset
-            .height
-        {
+        if !effects.isEmpty || applyBlur || imageBuffer.size != outputSize {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,
@@ -1067,8 +1067,8 @@ final class VideoUnit: NSObject {
         }
         let (format, error) = findVideoFormat(
             device: device,
-            width: preset.width,
-            height: preset.height,
+            width: Int32(captureSize.width),
+            height: Int32(captureSize.height),
             frameRate: frameRate,
             colorSpace: colorSpace
         )

@@ -50,9 +50,10 @@ open class NetStream: NSObject {
         }
     }
 
-    func setSessionPreset(preset: AVCaptureSession.Preset) {
+    func setVideoSize(capture: CGSize, output: CGSize) {
         netStreamLockQueue.async {
-            self.mixer.video.preset = preset
+            self.mixer.video.captureSize = capture
+            self.mixer.video.outputSize = output
         }
     }
 
@@ -75,7 +76,7 @@ open class NetStream: NSObject {
         }
     }
 
-    var videoSettings: VideoCodecSettings {
+    var videoEncodecSettings: VideoCodecSettings {
         get {
             mixer.video.encoder.settings
         }

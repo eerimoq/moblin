@@ -103,15 +103,16 @@ final class PadelScoreboardEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        guard let scoreBoard = scoreBoard.value else {
+        guard var scoreBoard = scoreBoard.value else {
             return image
         }
         let scale = image.extent.height / 1080
-        return scoreBoard
+        scoreBoard = scoreBoard
             .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        return scoreBoard
             .transformed(by: CGAffineTransform(
-                translationX: 10,
-                y: image.extent.height - scoreBoard.extent.height - 10
+                translationX: 10 * scale,
+                y: image.extent.height - scoreBoard.extent.height - 10 * scale
             ))
             .composited(over: image)
     }

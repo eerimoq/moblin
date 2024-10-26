@@ -10,6 +10,10 @@ extension CVPixelBuffer {
         CVPixelBufferGetHeight(self)
     }
 
+    var size: CGSize {
+        .init(width: width, height: height)
+    }
+
     func isPortrait() -> Bool {
         return height > width
     }
