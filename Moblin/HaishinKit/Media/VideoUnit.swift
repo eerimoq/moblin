@@ -205,7 +205,7 @@ final class VideoUnit: NSObject {
     private var frameTimer: DispatchSourceTimer?
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
-    private var latestSampleBufferAppendTime = CMTime.zero
+    private var latestSampleBufferAppendTime: CMTime = .zero
     private var lowFpsImageEnabled: Bool = false
     private var lowFpsImageInterval: Double = 1.0
     private var lowFpsImageLatest: Double = 0.0

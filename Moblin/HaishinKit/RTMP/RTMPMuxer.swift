@@ -28,8 +28,8 @@ extension RTMPMuxer: AudioCodecDelegate {
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        let delta = (audioTimeStamp == CMTime.zero ? 0 : presentationTimeStamp.seconds - audioTimeStamp
-            .seconds) * 1000
+        let delta = (audioTimeStamp == .zero ? 0 : presentationTimeStamp.seconds - audioTimeStamp.seconds) *
+            1000
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }

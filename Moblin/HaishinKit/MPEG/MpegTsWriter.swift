@@ -27,7 +27,7 @@ class MpegTsWriter {
     private var videoContinuityCounter: UInt8 = 0
     private var patContinuityCounter: UInt8 = 0
     private var pmtContinuityCounter: UInt8 = 0
-    private var rotatedTimestamp = CMTime.zero
+    private var rotatedTimestamp: CMTime = .zero
     private let outputLock = DispatchQueue(
         label: "com.haishinkit.HaishinKit.MpegTsWriter",
         qos: .userInitiated
@@ -54,9 +54,7 @@ class MpegTsWriter {
         }
     }
 
-    private var baseVideoTimestamp: CMTime = .invalid
-    private var baseAudioTimestamp: CMTime = .invalid
-    private var programClockReferenceTimestamp = CMTime.zero
+    private var programClockReferenceTimestamp: CMTime?
 
     init() {}
 
@@ -77,11 +75,9 @@ class MpegTsWriter {
         programMappingTable = MpegTsProgramMapping()
         audioConfig = nil
         videoConfig = nil
-        baseAudioTimestamp = .invalid
-        baseVideoTimestamp = .invalid
         videoDataOffset = 0
         videoData = [nil, nil]
-        programClockReferenceTimestamp = .zero
+        programClockReferenceTimestamp = nil
         isRunning.mutate { $0 = false }
     }
 
@@ -92,12 +88,17 @@ class MpegTsWriter {
 
     private func encode(_ packetId: UInt16,
                         presentationTimeStamp: CMTime,
-                        decodeTimeStamp: CMTime,
                         randomAccessIndicator: Bool,
-                        PES: MpegTsPacketizedElementaryStream) -> Data
+                        PES: MpegTsPacketizedElementaryStream,
+                        programClockReferenceTimestamp: CMTime) -> Data
     {
-        let timestamp = decodeTimeStamp == .invalid ? presentationTimeStamp : decodeTimeStamp
-        let packets = split(packetId, PES: PES, timestamp: timestamp)
+        let timestamp = presentationTimeStamp
+        let packets = split(
+            packetId,
+            PES: PES,
+            programClockReferenceTimestamp: programClockReferenceTimestamp,
+            timestamp: timestamp
+        )
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
         let count = packets.count * MpegTsPacket.size
@@ -264,20 +265,14 @@ class MpegTsWriter {
 
     private func split(_ packetId: UInt16,
                        PES: MpegTsPacketizedElementaryStream,
+                       programClockReferenceTimestamp: CMTime,
                        timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
-        let timeSinceLatestProgramClockReference = timestamp.seconds - programClockReferenceTimestamp.seconds
-        if mpegTsWriterProgramClockReferencePacketId == packetId,
-           timeSinceLatestProgramClockReference >= 0.02
-        {
-            let baseTimestamp = (packetId == MpegTsWriter
-                .videoPacketId ? baseVideoTimestamp : baseAudioTimestamp)
-            let delta = timestamp.seconds - baseTimestamp.seconds
-            // Negative delta handling is not correct, but makes the app not crash. Improve
-            // timestamp handling in general at some point. How?
-            programClockReference = UInt64(max(delta, 0) * TSTimestamp.resolution)
-            programClockReferenceTimestamp = timestamp
+        let delta = timestamp.seconds - programClockReferenceTimestamp.seconds
+        if mpegTsWriterProgramClockReferencePacketId == packetId, delta >= 0.02 {
+            programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
+            self.programClockReferenceTimestamp = timestamp
         }
         return PES.arrayOfPackets(packetId, programClockReference)
     }
@@ -310,23 +305,18 @@ extension MpegTsWriter: AudioCodecDelegate {
         guard canWriteFor() else {
             return
         }
-        if baseAudioTimestamp == .invalid {
-            baseAudioTimestamp = presentationTimeStamp
-            if mpegTsWriterKeepTimestamps {
-                baseAudioTimestamp = .zero
-            }
-            if mpegTsWriterProgramClockReferencePacketId == MpegTsWriter.audioPacketId {
-                programClockReferenceTimestamp = baseAudioTimestamp
-            }
+        if programClockReferenceTimestamp == nil && mpegTsWriterProgramClockReferencePacketId == MpegTsWriter
+            .audioPacketId
+        {
+            programClockReferenceTimestamp = presentationTimeStamp
         }
-        guard let audioConfig else {
+        guard let audioConfig, let programClockReferenceTimestamp else {
             return
         }
         guard let PES = MpegTsPacketizedElementaryStream(
             bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: audioBuffer.byteLength,
             presentationTimeStamp: presentationTimeStamp,
-            baseTimestamp: baseAudioTimestamp,
             config: audioConfig,
             streamID: MpegTsWriter.audioStreamId
         ) else {
@@ -335,9 +325,9 @@ extension MpegTsWriter: AudioCodecDelegate {
         writeAudio(data: encode(
             MpegTsWriter.audioPacketId,
             presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: .invalid,
             randomAccessIndicator: true,
-            PES: PES
+            PES: PES,
+            programClockReferenceTimestamp: programClockReferenceTimestamp
         ))
     }
 }
@@ -377,16 +367,12 @@ extension MpegTsWriter: VideoCodecDelegate {
         guard canWriteFor() else {
             return
         }
-        if baseVideoTimestamp == .invalid {
-            baseVideoTimestamp = sampleBuffer.presentationTimeStamp
-            if mpegTsWriterKeepTimestamps {
-                baseVideoTimestamp = .zero
-            }
-            if mpegTsWriterProgramClockReferencePacketId == MpegTsWriter.videoPacketId {
-                programClockReferenceTimestamp = baseVideoTimestamp
-            }
+        if programClockReferenceTimestamp == nil && mpegTsWriterProgramClockReferencePacketId == MpegTsWriter
+            .videoPacketId
+        {
+            programClockReferenceTimestamp = sampleBuffer.presentationTimeStamp
         }
-        guard let videoConfig else {
+        guard let videoConfig, let programClockReferenceTimestamp else {
             return
         }
         let randomAccessIndicator = sampleBuffer.isSync
@@ -398,7 +384,6 @@ extension MpegTsWriter: VideoCodecDelegate {
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
-                baseTimestamp: baseVideoTimestamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamID: MpegTsWriter.videoStreamId
             )
@@ -408,7 +393,6 @@ extension MpegTsWriter: VideoCodecDelegate {
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
-                baseTimestamp: baseVideoTimestamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamID: MpegTsWriter.videoStreamId
             )
@@ -418,9 +402,9 @@ extension MpegTsWriter: VideoCodecDelegate {
         writeVideo(data: encode(
             MpegTsWriter.videoPacketId,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-            decodeTimeStamp: sampleBuffer.decodeTimeStamp,
             randomAccessIndicator: randomAccessIndicator,
-            PES: PES
+            PES: PES,
+            programClockReferenceTimestamp: programClockReferenceTimestamp
         ))
     }
 }
