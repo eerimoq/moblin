@@ -57098,6 +57098,9 @@
         }
       }
     },
+    "Limitation: At most one built-in or USB camera is supported at a time in a scene." : {
+
+    },
     "Live" : {
       "localizations" : {
         "de" : {
@@ -72003,6 +72006,7 @@
       }
     },
     "Only RTMP, SRT(LA) and screen capture video sources are currently supported." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

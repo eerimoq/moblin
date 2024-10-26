@@ -237,9 +237,10 @@ struct WidgetVideoSourceSettingsView: View {
                     title: String(localized: "Video source"),
                     onChange: onCameraChange,
                     footers: [
-                        String(
-                            localized: "Only RTMP, SRT(LA) and screen capture video sources are currently supported."
-                        ),
+                        String(localized: """
+                        Limitation: At most one built-in or USB camera is \
+                        supported at a time in a scene.
+                        """),
                     ],
                     items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
                         InlinePickerItem(id: id, text: name)
