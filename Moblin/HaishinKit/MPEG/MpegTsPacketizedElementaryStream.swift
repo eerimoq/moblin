@@ -47,11 +47,11 @@ private struct OptionalHeader {
     }
 
     mutating func setTimestamp(
-        _ timestamp: CMTime,
+        _ baseTimestamp: CMTime,
         _ presentationTimeStamp: CMTime,
         _ decodeTimeStamp: CMTime
     ) {
-        let base = Double(timestamp.seconds)
+        let baseTimestamp = Double(baseTimestamp.seconds)
         if presentationTimeStamp != CMTime.invalid {
             ptsDtsIndicator |= 0x02
         }
@@ -59,11 +59,11 @@ private struct OptionalHeader {
             ptsDtsIndicator |= 0x01
         }
         if (ptsDtsIndicator & 0x02) == 0x02 {
-            let pts = Int64((presentationTimeStamp.seconds - base) * Double(TSTimestamp.resolution))
+            let pts = Int64((presentationTimeStamp.seconds - baseTimestamp) * Double(TSTimestamp.resolution))
             optionalFields += TSTimestamp.encode(pts, ptsDtsIndicator << 4)
         }
         if (ptsDtsIndicator & 0x01) == 0x01 {
-            let dts = Int64((decodeTimeStamp.seconds - base) * Double(TSTimestamp.resolution))
+            let dts = Int64((decodeTimeStamp.seconds - baseTimestamp) * Double(TSTimestamp.resolution))
             optionalFields += TSTimestamp.encode(dts, 0x01 << 4)
         }
         pesHeaderLength = UInt8(optionalFields.count)
@@ -132,14 +132,14 @@ struct MpegTsPacketizedElementaryStream {
         bytes: UnsafePointer<UInt8>,
         count: UInt32,
         presentationTimeStamp: CMTime,
-        timestamp: CMTime,
+        baseTimestamp: CMTime,
         config: MpegTsAudioConfig,
         streamID: UInt8
     ) {
         data.append(contentsOf: config.makeHeader(Int(count)))
         data.append(bytes, count: Int(count))
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(timestamp, presentationTimeStamp, CMTime.invalid)
+        optionalHeader.setTimestamp(baseTimestamp, presentationTimeStamp, CMTime.invalid)
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
@@ -154,7 +154,7 @@ struct MpegTsPacketizedElementaryStream {
         count: Int,
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
-        timestamp: CMTime,
+        baseTimestamp: CMTime,
         config: MpegTsVideoConfigAvc?,
         streamID: UInt8
     ) {
@@ -171,7 +171,7 @@ struct MpegTsPacketizedElementaryStream {
         let stream = AvcFormatStream(bytes: bytes, count: count)
         data.append(stream.toByteStream())
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(timestamp, presentationTimeStamp, decodeTimeStamp)
+        optionalHeader.setTimestamp(baseTimestamp, presentationTimeStamp, decodeTimeStamp)
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
@@ -184,7 +184,7 @@ struct MpegTsPacketizedElementaryStream {
         count: Int,
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
-        timestamp: CMTime,
+        baseTimestamp: CMTime,
         config: MpegTsVideoConfigHevc?,
         streamID: UInt8
     ) {
@@ -205,7 +205,7 @@ struct MpegTsPacketizedElementaryStream {
         let stream = AvcFormatStream(bytes: bytes, count: count)
         data.append(stream.toByteStream())
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(timestamp, presentationTimeStamp, decodeTimeStamp)
+        optionalHeader.setTimestamp(baseTimestamp, presentationTimeStamp, decodeTimeStamp)
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)

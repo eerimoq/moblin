@@ -321,7 +321,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: audioBuffer.byteLength,
             presentationTimeStamp: presentationTimeStamp,
-            timestamp: baseAudioTimestamp,
+            baseTimestamp: baseAudioTimestamp,
             config: audioConfig,
             streamID: MpegTsWriter.audioStreamId
         ) else {
@@ -390,7 +390,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
-                timestamp: baseVideoTimestamp,
+                baseTimestamp: baseVideoTimestamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamID: MpegTsWriter.videoStreamId
             )
@@ -400,7 +400,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
-                timestamp: baseVideoTimestamp,
+                baseTimestamp: baseVideoTimestamp,
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamID: MpegTsWriter.videoStreamId
             )
