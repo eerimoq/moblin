@@ -26748,166 +26748,172 @@
         }
       }
     },
-    "cheered %lld bits!" : {
+    "cheered %@ bits!" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "hat %lld Bits gecheert!"
+            "value" : "hat %@ Bits gecheert!"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "επευφημούσαν %lld bits!"
+            "value" : "επευφημούσαν %@ bits!"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "¡Aplaudieron %lld bits!"
+            "value" : "¡Aplaudieron %@ bits!"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "rohkaisi %lld bittiä!"
+            "value" : "rohkaisi %@ bittiä!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "applaudi %lld morceaux!"
+            "value" : "applaudi %@ morceaux!"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "जयकार %lld बिट्स!"
+            "value" : "जयकार %@ बिट्स!"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "bersorak %lld bit!"
+            "value" : "bersorak %@ bit!"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "tifato %lld bits!"
+            "value" : "tifato %@ bits!"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ビッツで応援されました!"
+            "value" : "%@ ビッツで応援されました!"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%lld 비트를 응원해요!"
+            "value" : "%@ 비트를 응원해요!"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%lld stukjes gejuicht!"
+            "value" : "%@ stukjes gejuicht!"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "wiwatowało %lld bitów!"
+            "value" : "wiwatowało %@ bitów!"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "aplaudiu %lld bits!"
+            "value" : "aplaudiu %@ bits!"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "aplaudiu %lld bits!"
+            "value" : "aplaudiu %@ bits!"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "поприветствовал %lld битов!"
+            "value" : "поприветствовал %@ битов!"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "hurrade %lld bitar!"
+            "value" : "hurrade %@ bitar!"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%lld bit'e tezahürat!"
+            "value" : "%@ bit'e tezahürat!"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "підбадьорив %lld біт!"
+            "value" : "підбадьорив %@ біт!"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "hoan hô %lld bit!"
+            "value" : "hoan hô %@ bit!"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "欢呼%lld 位！"
+            "value" : "欢呼%@ 位！"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "歡呼 %lld 位！"
+            "value" : "歡呼 %@ 位！"
           }
         }
       }
     },
-    "cheered %lld bits! %@" : {
+    "cheered %@ bits! %@" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "cheered %1$@ bits! %2$@"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld bits gecheert! %2$@"
+            "value" : "%1$@ bits gecheert! %2$@"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "cheered %1$lld bits! %2$@"
+            "value" : "cheered %1$@ bits! %2$@"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "rohkaisi %1$lld bittiä! %2$@"
+            "value" : "rohkaisi %1$@ bittiä! %2$@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "tifo con %1$lld bits! %2$@"
+            "value" : "tifo con %1$@ bits! %2$@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld ビッツで応援されました! %2$@"
+            "value" : "%1$@ ビッツで応援されました! %2$@"
           }
         }
       }

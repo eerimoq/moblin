@@ -376,9 +376,27 @@ private struct TwitchRaidsView: View {
     }
 }
 
-private struct TwitchCheersView: View {
+private func formatTitle(cheerBit: SettingsWidgetAlertsCheerBitsAlert) -> String {
+    let bits = countFormatter.format(cheerBit.bits)
+    switch cheerBit.comparisonOperator {
+    case .equal:
+        if cheerBit.bits == 1 {
+            return "Cheer \(bits) bit"
+        } else {
+            return "Cheer \(bits) bits"
+        }
+    case .greaterEqual:
+        return "Cheer \(bits)+ bits"
+    }
+}
+
+private struct TwitchCheerView: View {
     @EnvironmentObject var model: Model
-    var alert: SettingsWidgetAlertsAlert
+    var cheerBit: SettingsWidgetAlertsCheerBitsAlert
+
+    private var alert: SettingsWidgetAlertsAlert {
+        return cheerBit.alert
+    }
 
     var body: some View {
         Form {
@@ -411,7 +429,7 @@ private struct TwitchCheersView: View {
                     let event = TwitchEventSubChannelCheerEvent(
                         user_name: testNames.randomElement()!,
                         message: "A test message!",
-                        bits: .random(in: 1 ..< 1000)
+                        bits: cheerBit.bits
                     )
                     model.testAlert(alert: .twitchCheer(event))
                 }, label: {
@@ -421,6 +439,25 @@ private struct TwitchCheersView: View {
                         Spacer()
                     }
                 })
+            }
+        }
+        .navigationTitle(formatTitle(cheerBit: cheerBit))
+    }
+}
+
+private struct TwitchCheerBitsView: View {
+    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert]
+
+    var body: some View {
+        Form {
+            List {
+                ForEach(cheerBits) { cheerBit in
+                    NavigationLink {
+                        TwitchCheerView(cheerBit: cheerBit)
+                    } label: {
+                        Text(formatTitle(cheerBit: cheerBit))
+                    }
+                }
             }
         }
         .navigationTitle("Cheers")
@@ -496,7 +533,7 @@ private struct WidgetAlertsSettingsTwitchView: View {
                     Text("Raids")
                 }
                 NavigationLink {
-                    TwitchCheersView(alert: twitch.cheers!)
+                    TwitchCheerBitsView(cheerBits: twitch.cheerBits!)
                 } label: {
                     Text("Cheers")
                 }

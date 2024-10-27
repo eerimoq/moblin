@@ -975,11 +975,49 @@ class SettingsWidgetAlertsAlert: Codable {
     }
 }
 
+enum SettingsWidgetAlertsCheerBitsAlertOperator: String, Codable, CaseIterable {
+    case equal = "="
+    case greaterEqual = ">="
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .equal
+    }
+}
+
+class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
+    var id: UUID = .init()
+    var bits: Int = 1
+    var comparisonOperator: SettingsWidgetAlertsCheerBitsAlertOperator = .greaterEqual
+    var alert: SettingsWidgetAlertsAlert = .init()
+
+    func clone() -> SettingsWidgetAlertsCheerBitsAlert {
+        let new = SettingsWidgetAlertsCheerBitsAlert()
+        new.bits = bits
+        new.comparisonOperator = comparisonOperator
+        new.alert = alert
+        return new
+    }
+}
+
+private func createDefaultCheerBits() -> [SettingsWidgetAlertsCheerBitsAlert] {
+    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = []
+    for (index, bits) in [1].enumerated() {
+        let cheer = SettingsWidgetAlertsCheerBitsAlert()
+        cheer.bits = bits
+        cheer.alert.enabled = index == 0
+        cheerBits.append(cheer)
+    }
+    return cheerBits
+}
+
 class SettingsWidgetAlertsTwitch: Codable {
     var follows: SettingsWidgetAlertsAlert = .init()
     var subscriptions: SettingsWidgetAlertsAlert = .init()
     var raids: SettingsWidgetAlertsAlert? = .init()
     var cheers: SettingsWidgetAlertsAlert? = .init()
+    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert]? = createDefaultCheerBits()
 
     func clone() -> SettingsWidgetAlertsTwitch {
         let new = SettingsWidgetAlertsTwitch()
@@ -987,6 +1025,7 @@ class SettingsWidgetAlertsTwitch: Codable {
         new.subscriptions = subscriptions.clone()
         new.raids = raids!.clone()
         new.cheers = cheers!.clone()
+        new.cheerBits = cheerBits!.map { $0.clone() }
         return new
     }
 }
@@ -4248,6 +4287,11 @@ final class Settings {
         }
         if realDatabase.scoreboardPlayers == nil {
             realDatabase.scoreboardPlayers = .init()
+            store()
+        }
+        for widget in database.widgets where widget.alerts!.twitch!.cheerBits == nil {
+            widget.alerts!.twitch!.cheerBits = createDefaultCheerBits()
+            widget.alerts!.twitch!.cheerBits![0].alert = widget.alerts!.twitch!.cheers!.clone()
             store()
         }
     }
