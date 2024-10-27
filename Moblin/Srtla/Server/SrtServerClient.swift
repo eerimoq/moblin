@@ -10,7 +10,8 @@ class SrtServerClient {
     private var packetizedElementaryStreams: [UInt16: MpegTsPacketizedElementaryStream] = [:]
     private var formatDescriptions: [UInt16: CMFormatDescription] = [:]
     private var nalUnitReader = NALUnitReader()
-    private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
+    private var firstReceivedPresentationTimeStamp: CMTime?
+    private var previousReceivedPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var basePresentationTimeStamp: CMTime = .invalid
     private var audioBuffer: AVAudioCompressedBuffer?
     private var latestAudioBufferPresentationTimeStamp: CMTime?
@@ -305,16 +306,20 @@ class SrtServerClient {
             formatDescriptions[packetId] = formatDescription
             handleAudioFormatDescription(formatDescription)
         }
-        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+        guard let (sampleBuffer,
+                   firstReceivedPresentationTimeStamp,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
             getBasePresentationTimeStamp(),
-            previousPresentationTimeStamps[packetId] ?? .invalid,
+            firstReceivedPresentationTimeStamp,
+            previousReceivedPresentationTimeStamps[packetId],
             formatDescriptions[packetId]
         ) else {
             return nil
         }
         sampleBuffer.isSync = true
-        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
+        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (sampleBuffer, data.streamType)
     }
 
@@ -334,16 +339,20 @@ class SrtServerClient {
             formatDescriptions[packetId] = formatDescription
             handleVideoFormatDescription(formatDescription)
         }
-        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+        guard let (sampleBuffer,
+                   firstReceivedPresentationTimeStamp,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
             getBasePresentationTimeStamp(),
-            previousPresentationTimeStamps[packetId] ?? .invalid,
+            firstReceivedPresentationTimeStamp,
+            previousReceivedPresentationTimeStamps[packetId],
             formatDescriptions[packetId]
         ) else {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.type == .idr }
-        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
+        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (sampleBuffer, data.streamType)
     }
 
@@ -358,16 +367,20 @@ class SrtServerClient {
             formatDescriptions[packetId] = formatDescription
             handleVideoFormatDescription(formatDescription)
         }
-        guard let sampleBuffer = packetizedElementaryStream.makeSampleBuffer(
+        guard let (sampleBuffer,
+                   firstReceivedPresentationTimeStamp,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
             data.streamType,
             getBasePresentationTimeStamp(),
-            previousPresentationTimeStamps[packetId] ?? .invalid,
+            firstReceivedPresentationTimeStamp,
+            previousReceivedPresentationTimeStamps[packetId],
             formatDescriptions[packetId]
         ) else {
             return nil
         }
         sampleBuffer.isSync = units.contains { $0.type == .sps }
-        previousPresentationTimeStamps[packetId] = sampleBuffer.presentationTimeStamp
+        self.firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
+        previousReceivedPresentationTimeStamps[packetId] = previousReceivedPresentationTimeStamp
         return (sampleBuffer, data.streamType)
     }
 

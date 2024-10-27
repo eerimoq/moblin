@@ -127,12 +127,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.twitchRewards = value
                 }))
-                Toggle("Keep timestamps", isOn: Binding(get: {
-                    model.database.debug!.keepTimestamps!
-                }, set: { value in
-                    model.database.debug!.keepTimestamps = value
-                    model.setKeepTimestamps()
-                }))
             } header: {
                 Text("Experimental")
             }

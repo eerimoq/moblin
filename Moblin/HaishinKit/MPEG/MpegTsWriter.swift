@@ -4,7 +4,6 @@ import Foundation
 
 var payloadSize: Int = 1316
 var mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
-var mpegTsWriterKeepTimestamps = false
 
 protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutput data: Data)
@@ -89,16 +88,10 @@ class MpegTsWriter {
     private func encode(_ packetId: UInt16,
                         presentationTimeStamp: CMTime,
                         randomAccessIndicator: Bool,
-                        PES: MpegTsPacketizedElementaryStream,
-                        programClockReferenceTimestamp: CMTime) -> Data
+                        PES: MpegTsPacketizedElementaryStream) -> Data
     {
         let timestamp = presentationTimeStamp
-        let packets = split(
-            packetId,
-            PES: PES,
-            programClockReferenceTimestamp: programClockReferenceTimestamp,
-            timestamp: timestamp
-        )
+        let packets = split(packetId, PES: PES, timestamp: timestamp)
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
         let count = packets.count * MpegTsPacket.size
@@ -265,14 +258,14 @@ class MpegTsWriter {
 
     private func split(_ packetId: UInt16,
                        PES: MpegTsPacketizedElementaryStream,
-                       programClockReferenceTimestamp: CMTime,
                        timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
-        let delta = timestamp.seconds - programClockReferenceTimestamp.seconds
-        if mpegTsWriterProgramClockReferencePacketId == packetId, delta >= 0.02 {
-            programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
-            self.programClockReferenceTimestamp = timestamp
+        if mpegTsWriterProgramClockReferencePacketId == packetId {
+            if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.02 {
+                programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
+                programClockReferenceTimestamp = timestamp
+            }
         }
         return PES.arrayOfPackets(packetId, programClockReference)
     }
@@ -305,12 +298,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         guard canWriteFor() else {
             return
         }
-        if programClockReferenceTimestamp == nil && mpegTsWriterProgramClockReferencePacketId == MpegTsWriter
-            .audioPacketId
-        {
-            programClockReferenceTimestamp = presentationTimeStamp
-        }
-        guard let audioConfig, let programClockReferenceTimestamp else {
+        guard let audioConfig else {
             return
         }
         guard let PES = MpegTsPacketizedElementaryStream(
@@ -326,8 +314,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             MpegTsWriter.audioPacketId,
             presentationTimeStamp: presentationTimeStamp,
             randomAccessIndicator: true,
-            PES: PES,
-            programClockReferenceTimestamp: programClockReferenceTimestamp
+            PES: PES
         ))
     }
 }
@@ -367,12 +354,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         guard canWriteFor() else {
             return
         }
-        if programClockReferenceTimestamp == nil && mpegTsWriterProgramClockReferencePacketId == MpegTsWriter
-            .videoPacketId
-        {
-            programClockReferenceTimestamp = sampleBuffer.presentationTimeStamp
-        }
-        guard let videoConfig, let programClockReferenceTimestamp else {
+        guard let videoConfig else {
             return
         }
         let randomAccessIndicator = sampleBuffer.isSync
@@ -403,8 +385,7 @@ extension MpegTsWriter: VideoCodecDelegate {
             MpegTsWriter.videoPacketId,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             randomAccessIndicator: randomAccessIndicator,
-            PES: PES,
-            programClockReferenceTimestamp: programClockReferenceTimestamp
+            PES: PES
         ))
     }
 }

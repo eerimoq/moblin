@@ -139,9 +139,7 @@ extension CMSampleBuffer {
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: decodeTimeStamp
         )
-
         var newSampleBuffer: CMSampleBuffer?
-
         CMSampleBufferCreateCopyWithNewTiming(
             allocator: kCFAllocatorDefault,
             sampleBuffer: self,
@@ -149,7 +147,6 @@ extension CMSampleBuffer {
             sampleTimingArray: &timingInfo,
             sampleBufferOut: &newSampleBuffer
         )
-
         guard let newSampleBuffer else {
             return nil
         }

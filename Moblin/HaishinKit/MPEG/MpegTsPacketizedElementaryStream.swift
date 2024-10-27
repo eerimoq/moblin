@@ -87,30 +87,26 @@ private struct OptionalHeader {
             .data
     }
 
-    func makeSampleTimingInfo(_ baseTimeStamp: CMTime,
-                              _ previousPresentationTimeStamp: CMTime) -> CMSampleTimingInfo?
-    {
+    func getPresentationTimeStamp() -> CMTime {
         var presentationTimeStamp: CMTime = .invalid
-        var decodeTimeStamp: CMTime = .invalid
         if ptsDtsIndicator & 0x02 == 0x02 {
-            let pts = TSTimestamp.decode(optionalFields, offset: 0)
-            presentationTimeStamp = baseTimeStamp + .init(
-                value: pts,
+            presentationTimeStamp = .init(
+                value: TSTimestamp.decode(optionalFields, offset: 0),
                 timescale: CMTimeScale(TSTimestamp.resolution)
             )
         }
+        return presentationTimeStamp
+    }
+
+    func getDecodeTimeStamp() -> CMTime {
+        var decodeTimeStamp: CMTime = .invalid
         if ptsDtsIndicator & 0x01 == 0x01 {
-            let dts = TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize)
-            decodeTimeStamp = baseTimeStamp + .init(
-                value: dts,
+            decodeTimeStamp = .init(
+                value: TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize),
                 timescale: CMTimeScale(TSTimestamp.resolution)
             )
         }
-        return CMSampleTimingInfo(
-            duration: presentationTimeStamp - previousPresentationTimeStamp,
-            presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: decodeTimeStamp
-        )
+        return decodeTimeStamp
     }
 }
 
@@ -286,9 +282,10 @@ struct MpegTsPacketizedElementaryStream {
     mutating func makeSampleBuffer(
         _ streamType: ElementaryStreamType,
         _ basePresentationTimeStamp: CMTime,
-        _ previousPresentationTimeStamp: CMTime,
+        _ firstReceivedPresentationTimeStamp: CMTime?,
+        _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?
-    ) -> CMSampleBuffer? {
+    ) -> (CMSampleBuffer, CMTime, CMTime)? {
         var blockBuffer: CMBlockBuffer?
         var sampleSizes: [Int] = []
         switch streamType {
@@ -308,10 +305,25 @@ struct MpegTsPacketizedElementaryStream {
             break
         }
         var sampleBuffer: CMSampleBuffer?
-        var timing = optionalHeader.makeSampleTimingInfo(
-            basePresentationTimeStamp,
-            previousPresentationTimeStamp
-        ) ?? .invalid
+        let receivedPresentationTimeStamp = optionalHeader.getPresentationTimeStamp()
+        let receivedDecodeTimeStamp = optionalHeader.getDecodeTimeStamp()
+        var timing = CMSampleTimingInfo()
+        var firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
+        if let firstReceivedPresentationTimeStamp {
+            let basePresentationTimeStamp = basePresentationTimeStamp - firstReceivedPresentationTimeStamp
+            timing.presentationTimeStamp = basePresentationTimeStamp + receivedPresentationTimeStamp
+            timing.decodeTimeStamp = basePresentationTimeStamp + receivedDecodeTimeStamp
+            if let previousReceivedPresentationTimeStamp {
+                timing.duration = timing.presentationTimeStamp - previousReceivedPresentationTimeStamp
+            } else {
+                timing.duration = .invalid
+            }
+        } else {
+            timing.presentationTimeStamp = basePresentationTimeStamp
+            timing.decodeTimeStamp = basePresentationTimeStamp
+            timing.duration = .invalid
+            firstReceivedPresentationTimeStamp = receivedPresentationTimeStamp
+        }
         guard let blockBuffer, CMSampleBufferCreate(
             allocator: kCFAllocatorDefault,
             dataBuffer: blockBuffer,
@@ -328,6 +340,9 @@ struct MpegTsPacketizedElementaryStream {
         ) == noErr else {
             return nil
         }
-        return sampleBuffer
+        guard let sampleBuffer else {
+            return nil
+        }
+        return (sampleBuffer, firstReceivedPresentationTimeStamp!, timing.presentationTimeStamp)
     }
 }

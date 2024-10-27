@@ -915,10 +915,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         ioVideoBlurSceneSwitch = database.debug!.blurSceneSwitch!
     }
 
-    func setKeepTimestamps() {
-        mpegTsWriterKeepTimestamps = database.debug!.keepTimestamps!
-    }
-
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
@@ -1170,7 +1166,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
-        setKeepTimestamps()
         audioUnitRemoveWindNoise = database.debug!.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
