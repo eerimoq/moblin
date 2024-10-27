@@ -97,6 +97,14 @@ private struct StatusesView: View {
             text: model.currentMic.name,
             textPlacement: textPlacement
         )
+        if textPlacement != .hide {
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusZoom(),
+                icon: "magnifyingglass",
+                text: model.statusZoomText(),
+                textPlacement: textPlacement
+            )
+        }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusObs(),
             icon: "xserve",

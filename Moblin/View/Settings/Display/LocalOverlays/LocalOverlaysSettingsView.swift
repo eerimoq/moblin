@@ -46,6 +46,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.microphone = value
                 }
+                InfoView(icon: "magnifyingglass", text: String(localized: "Zoom")) {
+                    show.zoom
+                } set: { value in
+                    show.zoom = value
+                }
                 InfoView(icon: "xserve", text: String(localized: "OBS remote control")) {
                     show.obsStatus!
                 } set: { value in
