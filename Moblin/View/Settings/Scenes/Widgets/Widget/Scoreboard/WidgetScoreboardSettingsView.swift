@@ -64,7 +64,7 @@ private struct PlayerView: View {
                              ) },
                              selectedId: playerId.uuidString)
         } label: {
-            Text(model.findScoreboardPlayer(id: playerId).uppercased())
+            Text(model.findScoreboardPlayer(id: playerId))
         }
     }
 }

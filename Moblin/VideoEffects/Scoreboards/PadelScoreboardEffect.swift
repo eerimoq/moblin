@@ -65,14 +65,14 @@ final class PadelScoreboardEffect: VideoEffect {
                         VStack(alignment: .leading) {
                             Spacer(minLength: 0)
                             ForEach(scoreboard.home.players) { player in
-                                Text(player.name)
+                                Text(player.name.uppercased())
                             }
                             Spacer(minLength: 0)
                         }
                         VStack(alignment: .leading) {
                             Spacer(minLength: 0)
                             ForEach(scoreboard.away.players) { player in
-                                Text(player.name)
+                                Text(player.name.uppercased())
                             }
                             Spacer(minLength: 0)
                         }

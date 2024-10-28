@@ -15,8 +15,12 @@ struct PadelScoreboardScore: Identifiable {
 }
 
 struct PadelScoreboardPlayer: Identifiable {
-    let id: UUID = .init()
-    var name: String
+    var id: UUID
+}
+
+struct PadelScoreboardPlayersPlayer: Identifiable {
+    let id: UUID
+    let name: String
 }
 
 struct PadelScoreboardTeam {
@@ -31,13 +35,14 @@ struct PadelScoreboard {
 }
 
 private struct TeamPlayersView: View {
-    var players: [PadelScoreboardPlayer]
+    @EnvironmentObject var model: Model
+    @Binding var players: [PadelScoreboardPlayer]
 
     var body: some View {
         VStack(alignment: .leading) {
             Spacer(minLength: 0)
             ForEach(players) { player in
-                Text(player.name.prefix(5).uppercased())
+                Text(model.findScoreboardPlayer(id: player.id).prefix(5).uppercased())
             }
             Spacer(minLength: 0)
         }
@@ -64,8 +69,8 @@ private struct ScoreboardView: View {
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading) {
-                TeamPlayersView(players: scoreboard.home.players)
-                TeamPlayersView(players: scoreboard.away.players)
+                TeamPlayersView(players: $scoreboard.home.players)
+                TeamPlayersView(players: $scoreboard.away.players)
             }
             ForEach(scoreboard.score) { score in
                 VStack {
@@ -94,22 +99,21 @@ private struct PlayerPickerView: View {
         Button {
             isPresentingPlayerPicker = true
         } label: {
-            Text(player.name)
+            Text(model.findScoreboardPlayer(id: player.id))
         }
         .sheet(isPresented: $isPresentingPlayerPicker) {
             List {
-                Picker("", selection: $player.name) {
+                Picker("", selection: $player.id) {
                     ForEach(model.scoreboardPlayers) { player in
                         Text(player.name)
-                            .tag(player.name)
                     }
-                }
-                .onChange(of: player.name) { _, _ in
-                    isPresentingPlayerPicker = false
-                    model.updatePadelScoreboard()
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+            }
+            .onChange(of: player.id) { _, _ in
+                isPresentingPlayerPicker = false
+                model.updatePadelScoreboard()
             }
         }
     }
@@ -118,8 +122,6 @@ private struct PlayerPickerView: View {
 private struct PadelScoreboardView: View {
     @EnvironmentObject var model: Model
     @State var isPresentingResetConfirimation = false
-    @State var isPresentingPlayerPicker = false
-    @State var homePlayer1 = "1"
 
     var body: some View {
         Divider()
@@ -157,16 +159,16 @@ private struct PadelScoreboardView: View {
             }
             .tint(model.padelScoreboardIncrementTintColor)
         }
-        if false {
-            VStack {
-                Text("Home")
-                ForEach($model.padelScoreboard.home.players) { player in
-                    PlayerPickerView(player: player)
-                }
-                Text("Away")
-                ForEach($model.padelScoreboard.away.players) { player in
-                    PlayerPickerView(player: player)
-                }
+        VStack {
+            Text("Home")
+            PlayerPickerView(player: $model.padelScoreboard.home.players[0])
+            if model.padelScoreboard.home.players.count > 1 {
+                PlayerPickerView(player: $model.padelScoreboard.home.players[1])
+            }
+            Text("Away")
+            PlayerPickerView(player: $model.padelScoreboard.away.players[0])
+            if model.padelScoreboard.away.players.count > 1 {
+                PlayerPickerView(player: $model.padelScoreboard.away.players[1])
             }
         }
     }

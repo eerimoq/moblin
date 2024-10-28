@@ -159,15 +159,17 @@ struct WatchProtocolPadelScoreboardScore: Codable {
 struct WatchProtocolPadelScoreboard: Codable {
     var id: UUID
     // periphery:ignore
-    var home: [String]
+    var home: [UUID]
     // periphery:ignore
-    var away: [String]
+    var away: [UUID]
     var score: [WatchProtocolPadelScoreboardScore]
 }
 
-struct WatchProtocolScoreboardPlayers: Codable {
+struct WatchProtocolScoreboardPlayer: Codable {
     // periphery:ignore
-    var names: [String]
+    var id: UUID
+    // periphery:ignore
+    var name: String
 }
 
 extension WatchProtocolColor {

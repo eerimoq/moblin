@@ -124,7 +124,7 @@ class Model: NSObject, ObservableObject {
         away: .init(players: []),
         score: []
     )
-    @Published var scoreboardPlayers: [PadelScoreboardPlayer] = []
+    @Published var scoreboardPlayers: [PadelScoreboardPlayersPlayer] = []
     private var padelScoreboardScoreChanges: [PadelScoreboardScoreIncrement] = []
     @Published var padelScoreboardIncrementTintColor: Color?
 
@@ -441,10 +441,14 @@ class Model: NSObject, ObservableObject {
         }
         let scoreboard = try JSONDecoder().decode(WatchProtocolPadelScoreboard.self, from: data)
         padelScoreboard.id = scoreboard.id
-        padelScoreboard.home = .init(players: scoreboard.home.map { .init(name: $0) })
-        padelScoreboard.away = .init(players: scoreboard.away.map { .init(name: $0) })
+        padelScoreboard.home = .init(players: scoreboard.home.map { .init(id: $0) })
+        padelScoreboard.away = .init(players: scoreboard.away.map { .init(id: $0) })
         padelScoreboard.score = scoreboard.score.map { .init(home: $0.home, away: $0.away) }
         showPadelScoreBoard = true
+    }
+
+    func findScoreboardPlayer(id: UUID) -> String {
+        return scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
     private func handleRemovePadelScoreboard(_: Any) throws {
@@ -455,8 +459,8 @@ class Model: NSObject, ObservableObject {
         guard let data = data as? Data else {
             return
         }
-        let players = try JSONDecoder().decode(WatchProtocolScoreboardPlayers.self, from: data)
-        scoreboardPlayers = players.names.map { .init(name: $0) }
+        let players = try JSONDecoder().decode([WatchProtocolScoreboardPlayer].self, from: data)
+        scoreboardPlayers = players.map { .init(id: $0.id, name: $0.name) }
     }
 
     private func isWorkoutRunning() -> Bool {
@@ -633,8 +637,8 @@ class Model: NSObject, ObservableObject {
     }
 
     func updatePadelScoreboard() {
-        let home = padelScoreboard.home.players.map { $0.name }
-        let away = padelScoreboard.away.players.map { $0.name }
+        let home = padelScoreboard.home.players.map { $0.id }
+        let away = padelScoreboard.away.players.map { $0.id }
         let score: [WatchProtocolPadelScoreboardScore] = padelScoreboard.score.map { .init(
             home: $0.home,
             away: $0.away

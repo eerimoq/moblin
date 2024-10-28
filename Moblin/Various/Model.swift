@@ -6723,15 +6723,11 @@ extension Model {
         }
         var data: Data
         do {
-            var home = [
-                findScoreboardPlayer(id: scoreboard.padel.homePlayer1),
-            ]
-            var away = [
-                findScoreboardPlayer(id: scoreboard.padel.awayPlayer1),
-            ]
+            var home = [scoreboard.padel.homePlayer1]
+            var away = [scoreboard.padel.awayPlayer1]
             if scoreboard.padel.type == .doubles {
-                home.append(findScoreboardPlayer(id: scoreboard.padel.homePlayer2))
-                away.append(findScoreboardPlayer(id: scoreboard.padel.awayPlayer2))
+                home.append(scoreboard.padel.homePlayer2)
+                away.append(scoreboard.padel.awayPlayer2)
             }
             let score = scoreboard.padel.score.map { WatchProtocolPadelScoreboardScore(
                 home: $0.home,
@@ -6758,8 +6754,10 @@ extension Model {
         }
         var data: Data
         do {
-            let names = database.scoreboardPlayers!.map { $0.name }
-            let message = WatchProtocolScoreboardPlayers(names: names)
+            let message = database.scoreboardPlayers!.map { WatchProtocolScoreboardPlayer(
+                id: $0.id,
+                name: $0.name
+            ) }
             data = try JSONEncoder().encode(message)
         } catch {
             return
@@ -7180,6 +7178,14 @@ extension Model: WCSessionDelegate {
                 score.home = $0.home
                 score.away = $0.away
                 return score
+            }
+            widget.scoreboard!.padel.homePlayer1 = scoreboard.home[0]
+            if scoreboard.home.count > 1 {
+                widget.scoreboard!.padel.homePlayer2 = scoreboard.home[1]
+            }
+            widget.scoreboard!.padel.awayPlayer1 = scoreboard.away[0]
+            if scoreboard.away.count > 1 {
+                widget.scoreboard!.padel.awayPlayer2 = scoreboard.away[1]
             }
             guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
                 return
