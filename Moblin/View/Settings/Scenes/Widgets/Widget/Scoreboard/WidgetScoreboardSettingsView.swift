@@ -18,6 +18,7 @@ private struct PlayersView: View {
                             onSubmit: {
                                 submitName(player: player, value: $0)
                                 model.resetSelectedScene(changeScene: false)
+                                model.sendScoreboardPlayersToWatch()
                             }
                         )
                     } label: {
@@ -27,14 +28,17 @@ private struct PlayersView: View {
                 .onMove(perform: { froms, to in
                     model.database.scoreboardPlayers!.move(fromOffsets: froms, toOffset: to)
                     model.resetSelectedScene(changeScene: false)
+                    model.sendScoreboardPlayersToWatch()
                 })
                 .onDelete(perform: { offsets in
                     model.database.scoreboardPlayers!.remove(atOffsets: offsets)
                     model.resetSelectedScene(changeScene: false)
+                    model.sendScoreboardPlayersToWatch()
                 })
             }
             CreateButtonView(action: {
                 model.database.scoreboardPlayers!.append(.init())
+                model.sendScoreboardPlayersToWatch()
                 model.objectWillChange.send()
             })
         } header: {
@@ -60,7 +64,7 @@ private struct PlayerView: View {
                              ) },
                              selectedId: playerId.uuidString)
         } label: {
-            Text(model.findScoreboardPlayer(id: playerId))
+            Text(model.findScoreboardPlayer(id: playerId).uppercased())
         }
     }
 }

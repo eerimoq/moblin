@@ -22,6 +22,7 @@ enum WatchMessageToWatch: String {
     case viewerCount
     case padelScoreboard
     case removePadelScoreboard
+    case scoreboardPlayers
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -162,6 +163,11 @@ struct WatchProtocolPadelScoreboard: Codable {
     // periphery:ignore
     var away: [String]
     var score: [WatchProtocolPadelScoreboardScore]
+}
+
+struct WatchProtocolScoreboardPlayers: Codable {
+    // periphery:ignore
+    var names: [String]
 }
 
 extension WatchProtocolColor {

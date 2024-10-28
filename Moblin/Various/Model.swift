@@ -5112,7 +5112,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func findScoreboardPlayer(id: UUID) -> String {
-        return database.scoreboardPlayers!.first(where: { $0.id == id })?.name.uppercased() ?? "🇸🇪 MOBLIN"
+        return database.scoreboardPlayers!.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
     private func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
@@ -6752,6 +6752,21 @@ extension Model {
         sendMessageToWatch(type: .removePadelScoreboard, data: id.uuidString)
     }
 
+    func sendScoreboardPlayersToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        var data: Data
+        do {
+            let names = database.scoreboardPlayers!.map { $0.name }
+            let message = WatchProtocolScoreboardPlayers(names: names)
+            data = try JSONEncoder().encode(message)
+        } catch {
+            return
+        }
+        sendMessageToWatch(type: .scoreboardPlayers, data: data)
+    }
+
     private func resetWorkoutStats() {
         workoutHeartRate = nil
         workoutActiveEnergyBurned = nil
@@ -6967,6 +6982,7 @@ extension Model: WCSessionDelegate {
                 self.sendIsRecordingToWatch(isRecording: self.isRecording)
                 self.sendIsMutedToWatch(isMuteOn: self.isMuteOn)
                 self.sendViewerCountWatch()
+                self.sendScoreboardPlayersToWatch()
                 let sceneWidgets = self.getSelectedScene()?.widgets ?? []
                 for id in self.padelScoreboardEffects.keys {
                     if let sceneWidget = sceneWidgets.first(where: { $0.widgetId == id }),

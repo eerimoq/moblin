@@ -124,6 +124,7 @@ class Model: NSObject, ObservableObject {
         away: .init(players: []),
         score: []
     )
+    @Published var scoreboardPlayers: [PadelScoreboardPlayer] = []
     private var padelScoreboardScoreChanges: [PadelScoreboardScoreIncrement] = []
     @Published var padelScoreboardIncrementTintColor: Color?
 
@@ -450,6 +451,14 @@ class Model: NSObject, ObservableObject {
         showPadelScoreBoard = false
     }
 
+    private func handleScoreboardPlayers(_ data: Any) throws {
+        guard let data = data as? Data else {
+            return
+        }
+        let players = try JSONDecoder().decode(WatchProtocolScoreboardPlayers.self, from: data)
+        scoreboardPlayers = players.names.map { .init(name: $0) }
+    }
+
     private func isWorkoutRunning() -> Bool {
         return workoutSession?.state == .running
     }
@@ -623,7 +632,7 @@ class Model: NSObject, ObservableObject {
         padelScoreboard.score.append(.init(home: 0, away: 0))
     }
 
-    private func updatePadelScoreboard() {
+    func updatePadelScoreboard() {
         let home = padelScoreboard.home.players.map { $0.name }
         let away = padelScoreboard.away.players.map { $0.name }
         let score: [WatchProtocolPadelScoreboardScore] = padelScoreboard.score.map { .init(
@@ -721,6 +730,8 @@ extension Model: WCSessionDelegate {
                     try self.handlePadelScoreboard(data)
                 case .removePadelScoreboard:
                     try self.handleRemovePadelScoreboard(data)
+                case .scoreboardPlayers:
+                    try self.handleScoreboardPlayers(data)
                 }
             } catch {}
         }

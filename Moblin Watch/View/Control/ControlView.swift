@@ -37,7 +37,7 @@ private struct TeamPlayersView: View {
         VStack(alignment: .leading) {
             Spacer(minLength: 0)
             ForEach(players) { player in
-                Text(player.name.prefix(5))
+                Text(player.name.prefix(5).uppercased())
             }
             Spacer(minLength: 0)
         }
@@ -85,9 +85,41 @@ private struct ScoreboardView: View {
     }
 }
 
+private struct PlayerPickerView: View {
+    @EnvironmentObject var model: Model
+    @Binding var player: PadelScoreboardPlayer
+    @State var isPresentingPlayerPicker = false
+
+    var body: some View {
+        Button {
+            isPresentingPlayerPicker = true
+        } label: {
+            Text(player.name)
+        }
+        .sheet(isPresented: $isPresentingPlayerPicker) {
+            List {
+                Picker("", selection: $player.name) {
+                    ForEach(model.scoreboardPlayers) { player in
+                        Text(player.name)
+                            .tag(player.name)
+                    }
+                }
+                .onChange(of: player.name) { _, _ in
+                    isPresentingPlayerPicker = false
+                    model.updatePadelScoreboard()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+    }
+}
+
 private struct PadelScoreboardView: View {
     @EnvironmentObject var model: Model
     @State var isPresentingResetConfirimation = false
+    @State var isPresentingPlayerPicker = false
+    @State var homePlayer1 = "1"
 
     var body: some View {
         Divider()
@@ -124,6 +156,18 @@ private struct PadelScoreboardView: View {
                 Image(systemName: "plus")
             }
             .tint(model.padelScoreboardIncrementTintColor)
+        }
+        if false {
+            VStack {
+                Text("Home")
+                ForEach($model.padelScoreboard.home.players) { player in
+                    PlayerPickerView(player: player)
+                }
+                Text("Away")
+                ForEach($model.padelScoreboard.away.players) { player in
+                    PlayerPickerView(player: player)
+                }
+            }
         }
     }
 }
