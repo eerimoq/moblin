@@ -7195,6 +7195,10 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func handleCreateStreamMarker() {
+        createStreamMarker()
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -7239,6 +7243,8 @@ extension Model: WCSessionDelegate {
             handleUpdateWorkoutStats(data)
         case .updatePadelScoreboard:
             handleUpdatePadelScoreboard(data)
+        case .createStreamMarker:
+            handleCreateStreamMarker()
         default:
             break
         }

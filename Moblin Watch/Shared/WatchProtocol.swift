@@ -58,6 +58,7 @@ enum WatchMessageFromWatch: String {
     case setScene
     case updateWorkoutStats
     case updatePadelScoreboard
+    case createStreamMarker
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {

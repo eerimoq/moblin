@@ -7593,7 +7593,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "<filter> är film, gråskala, sepia, trippel, pixel eller 4:3."
           }
         },
@@ -10063,7 +10063,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "2 minuter"
           }
         },
@@ -10323,7 +10323,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "3 minuter"
           }
         },
@@ -19169,7 +19169,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "automatisk"
           }
         },
@@ -33507,6 +33507,136 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "在 Discord 伺服器的設定中建立一個 webhook 並將其 URL 貼到上面。"
+          }
+        }
+      }
+    },
+    "Create stream marker" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streammarker erstellen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δημιουργία δείκτη ροής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Crear marcador de flujo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Luo stream-merkki"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Créer un marqueur de flux"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीम मार्कर बनाएं"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buat penanda aliran"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Crea un marcatore di flusso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリームマーカーを作成"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스트림 마커 생성"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Maak een streammarkering"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utwórz znacznik strumienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Criar marcador de fluxo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Criar marcador de fluxo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Создать маркер потока"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Skapa strömmarkör"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akış işaretçisi oluştur"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Створити маркер потоку"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tạo đánh dấu luồng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "创建流标记"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "建立流標記"
           }
         }
       }
@@ -57401,8 +57531,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "precis begåvade %lld nivå %lld prenumerationer!"
+            "state" : "translated",
+            "value" : "precis begåvade %1$lld nivå %2$lld prenumerationer!"
           }
         },
         "tr" : {
@@ -75868,7 +75998,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Padel"
           }
         },
@@ -83538,7 +83668,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ta bort vindbrus"
           }
         },
@@ -102394,8 +102524,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ta ögonblicksbild"
+            "state" : "translated",
+            "value" : "Ta foto"
           }
         },
         "tr" : {

@@ -72,6 +72,18 @@ private struct ControlSkipCurrentTtsView: View {
     }
 }
 
+private struct ControlCreateStreamMarkersView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Button {
+            model.createStreamMarker()
+        } label: {
+            Text("Create stream marker")
+        }
+    }
+}
+
 struct ControlView: View {
     @EnvironmentObject var model: Model
 
@@ -82,6 +94,7 @@ struct ControlView: View {
                 ControlRecordingView()
                 ControlMutedView()
                 ControlSkipCurrentTtsView()
+                ControlCreateStreamMarkersView()
                 Spacer()
             }
             .padding()

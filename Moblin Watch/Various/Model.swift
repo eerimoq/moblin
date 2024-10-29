@@ -656,6 +656,11 @@ class Model: NSObject, ObservableObject {
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
+    func createStreamMarker() {
+        let message = WatchMessageFromWatch.pack(type: .createStreamMarker, data: true)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
     private func isSetCompleted(score: PadelScoreboardScore) -> Bool {
         let maxScore = max(score.home, score.away)
         let minScore = min(score.home, score.away)
