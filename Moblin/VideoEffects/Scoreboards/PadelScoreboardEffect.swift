@@ -59,7 +59,7 @@ final class PadelScoreboardEffect: VideoEffect {
 
     func update(scoreboard: PadelScoreboard) {
         DispatchQueue.main.async {
-            let scoreBoard = VStack(alignment: .leading) {
+            let scoreBoard = VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center, spacing: 18) {
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading) {

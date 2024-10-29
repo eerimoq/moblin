@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let teamRowHeight: CGFloat = 32
+
 struct PadelScoreboardScore: Identifiable {
     let id: UUID = .init()
     var home: Int
@@ -47,6 +49,7 @@ private struct TeamPlayersView: View {
             Spacer(minLength: 0)
         }
         .font(.system(size: 15))
+        .frame(height: teamRowHeight)
     }
 }
 
@@ -60,6 +63,7 @@ private struct TeamScoreView: View {
             Spacer(minLength: 0)
         }
         .font(.system(size: 30))
+        .frame(height: teamRowHeight)
     }
 }
 
@@ -72,6 +76,7 @@ private struct ScoreboardView: View {
                 TeamPlayersView(players: $scoreboard.home.players)
                 TeamPlayersView(players: $scoreboard.away.players)
             }
+            .padding([.bottom], 2)
             ForEach(scoreboard.score) { score in
                 VStack {
                     TeamScoreView(score: score.home)
@@ -80,6 +85,7 @@ private struct ScoreboardView: View {
                         .bold(score.isAwayWin())
                 }
                 .frame(width: 17)
+                .padding([.bottom], 2)
             }
             Spacer()
         }
@@ -124,10 +130,13 @@ private struct TeamPickerView: View {
     @Binding var team: PadelScoreboardTeam
 
     var body: some View {
-        Text(side)
-        PlayerPickerView(player: $team.players[0])
-        if team.players.count > 1 {
-            PlayerPickerView(player: $team.players[1])
+        VStack {
+            Text(side)
+            PlayerPickerView(player: $team.players[0])
+            if team.players.count > 1 {
+                PlayerPickerView(player: $team.players[1])
+            }
+            Spacer()
         }
     }
 }
@@ -194,8 +203,8 @@ struct PadelScoreboardView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 10) {
+        TabView {
+            VStack(spacing: 5) {
                 ScoreboardView(scoreboard: $model.padelScoreboard)
                 HStack {
                     PadelScoreboardUndoButtonView()
@@ -205,12 +214,11 @@ struct PadelScoreboardView: View {
                     PadelScoreboardResetScoreButtonView()
                     PadelScoreboardIncrementAwayButtonView()
                 }
-                TeamPickerView(side: String(localized: "Home"), team: $model.padelScoreboard.home)
-                TeamPickerView(side: String(localized: "Away"), team: $model.padelScoreboard.away)
                 Spacer()
             }
-            .padding()
+            TeamPickerView(side: String(localized: "Home"), team: $model.padelScoreboard.home)
+            TeamPickerView(side: String(localized: "Away"), team: $model.padelScoreboard.away)
         }
-        .ignoresSafeArea()
+        .tabViewStyle(.verticalPage)
     }
 }
