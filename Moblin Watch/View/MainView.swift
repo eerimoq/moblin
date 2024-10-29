@@ -7,6 +7,9 @@ struct MainView: View {
         TabView {
             PreviewView()
             ChatView()
+            if model.showPadelScoreBoard {
+                PadelScoreboardView()
+            }
             ControlView()
         }
         .onAppear {

@@ -82,9 +82,6 @@ struct ControlView: View {
                 ControlRecordingView()
                 ControlMutedView()
                 ControlSkipCurrentTtsView()
-                if model.showPadelScoreBoard {
-                    PadelScoreboardView()
-                }
                 Spacer()
             }
             .padding()

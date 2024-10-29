@@ -194,17 +194,23 @@ struct PadelScoreboardView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        Divider()
-        ScoreboardView(scoreboard: $model.padelScoreboard)
-        HStack {
-            PadelScoreboardUndoButtonView()
-            PadelScoreboardIncrementHomeButtonView()
+        ScrollView {
+            VStack(spacing: 10) {
+                ScoreboardView(scoreboard: $model.padelScoreboard)
+                HStack {
+                    PadelScoreboardUndoButtonView()
+                    PadelScoreboardIncrementHomeButtonView()
+                }
+                HStack {
+                    PadelScoreboardResetScoreButtonView()
+                    PadelScoreboardIncrementAwayButtonView()
+                }
+                TeamPickerView(side: String(localized: "Home"), team: $model.padelScoreboard.home)
+                TeamPickerView(side: String(localized: "Away"), team: $model.padelScoreboard.away)
+                Spacer()
+            }
+            .padding()
         }
-        HStack {
-            PadelScoreboardResetScoreButtonView()
-            PadelScoreboardIncrementAwayButtonView()
-        }
-        TeamPickerView(side: String(localized: "Home"), team: $model.padelScoreboard.home)
-        TeamPickerView(side: String(localized: "Away"), team: $model.padelScoreboard.away)
+        .ignoresSafeArea()
     }
 }
