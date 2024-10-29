@@ -346,6 +346,7 @@
 		03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */; };
 		03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */; };
 		03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */; };
+		03B21A3B2CD09A6200E22590 /* PadelScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
@@ -887,6 +888,7 @@
 		03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettingsView.swift; sourceTree = "<group>"; };
 		03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSceneSettingsView.swift; sourceTree = "<group>"; };
+		03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelScoreboardView.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarLandscapeView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
@@ -1264,6 +1266,7 @@
 		031C15BC2B9336C700BA967D /* Control */ = {
 			isa = PBXGroup;
 			children = (
+				03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */,
 				031C15BE2B9336D200BA967D /* ControlView.swift */,
 			);
 			path = Control;
@@ -3257,6 +3260,7 @@
 				03A01ACE2B9F738200D20AE3 /* CacheImage.swift in Sources */,
 				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */,
+				03B21A3B2CD09A6200E22590 /* PadelScoreboardView.swift in Sources */,
 				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
 				03DC9DB02C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
