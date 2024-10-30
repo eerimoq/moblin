@@ -4,6 +4,13 @@ import UIKit
 import VideoToolbox
 
 var numberOfFailedEncodings = 0
+var videoCodecAdaptiveEncoderFps = false
+var videoCodecAdaptiveEncoderResolution = false
+var videoCodecLowAdaptiveEncoderResolution = false
+private let lowFpsBitrateLimit = 100_000.0
+private let highFpsBitrateLimit = 750_000.0
+private let lowFps = 15.0
+private let highFps = 30.0
 
 protocol VideoCodecDelegate: AnyObject {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription)
@@ -69,6 +76,8 @@ class VideoCodec {
 
     private var invalidateSession = true
     private var currentBitrate: UInt32 = 0
+    private var oldBitrateVideoSize: VideoSize = .init(width: 0, height: 0)
+    private var latestEncodedPresentationTimeStamp: CMTime = .zero
 
     private func updateBitrate() {
         guard currentBitrate != settings.bitRate else {
@@ -86,14 +95,72 @@ class VideoCodec {
         }
     }
 
+    private func updateResolution() -> VideoSize {
+        var videoSize: VideoSize
+        if videoCodecAdaptiveEncoderResolution {
+            if videoCodecLowAdaptiveEncoderResolution {
+                if currentBitrate <= 250_000 {
+                    videoSize = .init(width: 284, height: 160)
+                } else if currentBitrate <= 500_000 {
+                    videoSize = .init(width: 640, height: 360)
+                } else if currentBitrate <= 750_000 {
+                    videoSize = .init(width: 854, height: 480)
+                } else {
+                    videoSize = settings.videoSize
+                }
+            } else {
+                if currentBitrate <= 250_000 {
+                    videoSize = .init(width: 640, height: 360)
+                } else if currentBitrate <= 500_000 {
+                    videoSize = .init(width: 854, height: 480)
+                } else if currentBitrate <= 750_000 {
+                    videoSize = .init(width: 1280, height: 720)
+                } else {
+                    videoSize = settings.videoSize
+                }
+            }
+        } else {
+            videoSize = settings.videoSize
+        }
+        if videoSize.height > settings.videoSize.height {
+            videoSize = settings.videoSize
+        }
+        return videoSize
+    }
+
+    private func shouldDropFrame(_ presentationTimeStamp: CMTime) -> Bool {
+        if currentBitrate <= UInt32(highFpsBitrateLimit) {
+            let highLowDelta = highFpsBitrateLimit - lowFpsBitrateLimit
+            let factor = max(Double(currentBitrate) - lowFpsBitrateLimit, 0) / highLowDelta
+            let frameRateLimit = lowFps + (highFps - lowFps) * factor
+            let secondsSinceLatestEncodedFrame = (presentationTimeStamp - latestEncodedPresentationTimeStamp)
+                .seconds
+            if secondsSinceLatestEncodedFrame < 1 / frameRateLimit {
+                return true
+            }
+        }
+        return false
+    }
+
     func encodeImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
         guard isRunning else {
             return
+        }
+        let newBitrateVideoSize = updateResolution()
+        if newBitrateVideoSize != oldBitrateVideoSize {
+            session = makeVideoCompressionSession(self, videoSize: newBitrateVideoSize)
+            oldBitrateVideoSize = newBitrateVideoSize
         }
         if invalidateSession {
             session = makeVideoCompressionSession(self)
         }
         updateBitrate()
+        if videoCodecAdaptiveEncoderFps {
+            guard !shouldDropFrame(presentationTimeStamp) else {
+                return
+            }
+            latestEncodedPresentationTimeStamp = presentationTimeStamp
+        }
         let err = session?.encodeFrame(
             imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
@@ -114,6 +181,7 @@ class VideoCodec {
             logger.info("video: Encode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
+            latestEncodedPresentationTimeStamp = .zero
         }
     }
 
@@ -169,15 +237,17 @@ class VideoCodec {
     }
 }
 
-private func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
+private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
+                                         videoSize: VideoSize? = nil) -> (any VTSessionConvertible)?
+{
     var session: VTCompressionSession?
     for attribute in videoCodec.attributes ?? [:] {
         logger.debug("video: Codec attribute: \(attribute.key) \(attribute.value)")
     }
     var status = VTCompressionSessionCreate(
         allocator: kCFAllocatorDefault,
-        width: videoCodec.settings.videoSize.width,
-        height: videoCodec.settings.videoSize.height,
+        width: videoSize?.width ?? videoCodec.settings.videoSize.width,
+        height: videoSize?.height ?? videoCodec.settings.videoSize.height,
         codecType: videoCodec.settings.format.codecType,
         encoderSpecification: nil,
         imageBufferAttributes: videoCodec.attributes as CFDictionary?,

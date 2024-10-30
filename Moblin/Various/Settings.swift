@@ -1832,6 +1832,9 @@ class SettingsDebug: Codable {
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
+    var adaptiveEncoderResolution: Bool? = false
+    var lowAdaptiveEncoderResolution: Bool? = false
+    var adaptiveEncoderFps: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -4292,6 +4295,18 @@ final class Settings {
         for widget in database.widgets where widget.alerts!.twitch!.cheerBits == nil {
             widget.alerts!.twitch!.cheerBits = createDefaultCheerBits()
             widget.alerts!.twitch!.cheerBits![0].alert = widget.alerts!.twitch!.cheers!.clone()
+            store()
+        }
+        if realDatabase.debug!.adaptiveEncoderResolution == nil {
+            realDatabase.debug!.adaptiveEncoderResolution = false
+            store()
+        }
+        if realDatabase.debug!.lowAdaptiveEncoderResolution == nil {
+            realDatabase.debug!.lowAdaptiveEncoderResolution = false
+            store()
+        }
+        if realDatabase.debug!.adaptiveEncoderFps == nil {
+            realDatabase.debug!.adaptiveEncoderFps = false
             store()
         }
     }

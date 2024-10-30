@@ -331,7 +331,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 return
             }
             data.streamType = .h264
-            programMappingTable.elementaryStreamSpecificDatas.append(data)
+            addVideoSpecificDatas(data: data)
             videoConfig = MpegTsVideoConfigAvc(data: avcC)
         case .hevc:
             guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
@@ -339,8 +339,18 @@ extension MpegTsWriter: VideoCodecDelegate {
                 return
             }
             data.streamType = .h265
-            programMappingTable.elementaryStreamSpecificDatas.append(data)
+            addVideoSpecificDatas(data: data)
             videoConfig = MpegTsVideoConfigHevc(data: hvcC)
+        }
+    }
+
+    private func addVideoSpecificDatas(data: ElementaryStreamSpecificData) {
+        if let index = programMappingTable.elementaryStreamSpecificDatas.firstIndex(where: {
+            $0.elementaryPacketId == MpegTsWriter.videoPacketId
+        }) {
+            programMappingTable.elementaryStreamSpecificDatas[index] = data
+        } else {
+            programMappingTable.elementaryStreamSpecificDatas.append(data)
         }
     }
 

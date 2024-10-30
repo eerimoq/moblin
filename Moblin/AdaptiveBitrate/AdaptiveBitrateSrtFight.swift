@@ -236,7 +236,10 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
                 currentMaximumBitrate = maximumBitrate
             }
         }
-        let minimumBitrate = max(250_000, settings.minimumBitrate)
+        let minimumBitrate = max(
+            videoCodecAdaptiveEncoderResolution ? 50000 : 250_000,
+            settings.minimumBitrate
+        )
         if currentMaximumBitrate < minimumBitrate {
             currentMaximumBitrate = minimumBitrate
         }

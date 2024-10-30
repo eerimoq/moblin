@@ -7025,8 +7025,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%ild°"
+            "state" : "translated",
+            "value" : "%lld°"
           }
         },
         "ja" : {
@@ -14388,6 +14388,12 @@
           }
         }
       }
+    },
+    "Adaptive encoder FPS" : {
+
+    },
+    "Adaptive encoder resolution" : {
+
     },
     "Add" : {
       "localizations" : {
@@ -60432,6 +60438,9 @@
           }
         }
       }
+    },
+    "Low adaptive encoder resolution" : {
+
     },
     "Low battery" : {
       "localizations" : {
