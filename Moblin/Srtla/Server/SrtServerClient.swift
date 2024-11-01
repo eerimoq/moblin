@@ -212,7 +212,9 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        videoDecoder?.decodeSampleBuffer(sampleBuffer)
+        videoCodecLockQueue.async {
+            self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
+        }
     }
 
     private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {

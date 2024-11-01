@@ -21,8 +21,8 @@ struct WidgetSettingsView: View {
                 }
                 NavigationLink {
                     InlinePickerView(title: String(localized: "Type"),
-                                     onChange: {
-                                         widget.type = SettingsWidgetType.fromString(value: $0)
+                                     onChange: { id in
+                                         widget.type = SettingsWidgetType(rawValue: id) ?? .browser
                                          model.resetSelectedScene(changeScene: false)
                                      },
                                      items: widgetTypes.map { .init(
@@ -33,7 +33,7 @@ struct WidgetSettingsView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Type"),
-                        value: widget.type.rawValue
+                        value: widget.type.toString()
                     )
                 }
             }
