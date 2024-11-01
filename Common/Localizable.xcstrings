@@ -2599,7 +2599,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{date} – Visa datum"
           }
         },
@@ -2989,7 +2989,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{fullDate} – Visa fullständigt datum"
           }
         },
@@ -5631,8 +5631,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ %@ kommersiell start"
+            "state" : "translated",
+            "value" : "%1$@ %2$@ reklam startar"
           }
         },
         "tr" : {
@@ -7723,8 +7723,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "<on/off> är på eller av."
+            "state" : "translated",
+            "value" : "<on/off> är on eller off."
           }
         },
         "tr" : {
@@ -10973,7 +10973,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "30 sekunder"
           }
         },
@@ -14390,10 +14390,264 @@
       }
     },
     "Adaptive encoder FPS" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptiver Encoder FPS"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προσαρμοστικός κωδικοποιητής FPS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codificador adaptativo FPS"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mukautuva FPS-enkooderi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codeur adaptatif FPS"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अनुकूली एनकोडर FPS"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pengkode adaptif FPS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codificatore adattivo FPS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "アダプティブエンコーダFPS"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "적응형 인코더 FPS"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptieve encoder FPS"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptacyjny enkoder FPS"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codificador adaptativo FPS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codificador adaptativo FPS"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивный кодер FPS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptiv kodare FPS"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uyarlanabilir kodlayıcı FPS"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивний кодер FPS"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bộ mã hóa thích ứng FPS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自适应编码器 FPS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自適應編碼器 FPS"
+          }
+        }
+      }
     },
     "Adaptive encoder resolution" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptive Encoderauflösung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προσαρμοστική ανάλυση κωδικοποιητή"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolución del codificador adaptativo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mukautuva kooderin resoluutio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Résolution du codeur adaptatif"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अनुकूली एनकोडर रिज़ॉल्यूशन"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolusi encoder adaptif"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Risoluzione dell'encoder adattivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "適応型エンコーダ解像度"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "적응형 인코더 해상도"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptieve encoderresolutie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozdzielczość adaptacyjnego enkodera"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolução do codificador adaptável"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolução do codificador adaptável"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивное разрешение кодера"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptiv encoderupplösning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uyarlanabilir kodlayıcı çözünürlüğü"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивна роздільна здатність кодера"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Độ phân giải mã hóa thích ứng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自适应编码器分辨率"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自適應編碼器分辨率"
+          }
+        }
+      }
     },
     "Add" : {
       "localizations" : {
@@ -19695,8 +19949,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bort"
+            "state" : "translated",
+            "value" : "Borta"
           }
         },
         "tr" : {
@@ -27885,8 +28139,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "hurrade %@ bitar!"
+            "state" : "translated",
+            "value" : "hejade %@ bitar!"
           }
         },
         "tr" : {
@@ -28021,8 +28275,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "hurrade %@ bitar! %@"
+            "state" : "translated",
+            "value" : "hurrade %1$@ bitar! %2$@"
           }
         },
         "tr" : {
@@ -32961,7 +33215,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hörnradie"
           }
         },
@@ -33611,7 +33865,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skapa strömmarkör"
           }
         },
@@ -46221,8 +46475,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att starta reklam"
+            "state" : "translated",
+            "value" : "Det gick inte att starta reklamen"
           }
         },
         "tr" : {
@@ -47391,7 +47645,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Faxmjauljud"
           }
         },
@@ -51291,8 +51545,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Helt datum"
+            "state" : "translated",
+            "value" : "Fullständingt datum"
           }
         },
         "tr" : {
@@ -52071,7 +52325,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Speltyp"
           }
         },
@@ -52591,7 +52845,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Presentprenumerationer"
           }
         },
@@ -57673,8 +57927,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "nyss prenumererade på nivån %lld i %lld månader! %@"
+            "state" : "translated",
+            "value" : "prenumererade precis på nivån %1$lld i %2$lld månader! %3$@"
           }
         },
         "tr" : {
@@ -60440,7 +60694,134 @@
       }
     },
     "Low adaptive encoder resolution" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Niedrige adaptive Encoderauflösung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χαμηλή προσαρμοστική ανάλυση κωδικοποιητή"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Baja resolución del codificador adaptativo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Matala adaptiivinen kooderiresoluutio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Faible résolution du codeur adaptatif"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "कम अनुकूली एनकोडर रिज़ॉल्यूशन"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolusi encoder adaptif rendah"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bassa risoluzione adattiva dell'encoder"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "適応エンコーダ解像度が低い"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "낮은 적응형 인코더 해상도"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lage adaptieve encoderresolutie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Niska rozdzielczość adaptacyjnego enkodera"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Baixa resolução do codificador adaptativo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Baixa resolução do codificador adaptativo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Низкое разрешение адаптивного энкодера"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Låg adaptiv encoderupplösning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Düşük adaptif kodlayıcı çözünürlüğü"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Низька роздільна здатність адаптивного кодера"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Độ phân giải bộ mã hóa thích ứng thấp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "低自适应编码器分辨率"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "低自適應編碼器分辨率"
+          }
+        }
+      }
     },
     "Low battery" : {
       "localizations" : {
@@ -62746,7 +63127,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "manuell"
           }
         },
@@ -68076,7 +68457,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stänger av ljudet."
           }
         },
@@ -70676,8 +71057,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ny prenumeration"
+            "state" : "translated",
+            "value" : "Ny prenumerant"
           }
         },
         "tr" : {
@@ -74352,137 +74733,6 @@
         }
       }
     },
-    "Only RTMP, SRT(LA) and screen capture video sources are currently supported." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Derzeit werden nur RTMP, SRT(LA) und Screen-Capture-Videoquellen unterstützt."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Προς το παρόν υποστηρίζονται μόνο πηγές βίντεο RTMP, SRT(LA) και λήψης οθόνης."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Actualmente solo se admiten fuentes de video RTMP, SRT(LA) y captura de pantalla."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vain RTMP, SRT(LA) ja ruudunkaappaus on tuettuja viedeolähteitä tällä hetkellä."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Seules les sources vidéo RTMP, SRT(LA) et de capture d'écran sont actuellement prises en charge."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "वर्तमान में केवल RTMP, SRT(LA) और स्क्रीन कैप्चर वीडियो स्रोत ही समर्थित हैं।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saat ini, hanya sumber RTMP, SRT(LA), dan video tangkapan layar yang didukung."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attualmente sono supportate solo le sorgenti video RTMP, SRT(LA) e cattura schermo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RTMP、SRT(LA)、スクリーンキャプチャのみがサポートされています。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "현재는 RTMP, SRT(LA) 및 화면 캡처 비디오 소스만 지원됩니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Momenteel worden alleen RTMP-, SRT(LA)- en schermopnamevideobronnen ondersteund."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obecnie obsługiwane są tylko źródła wideo RTMP, SRT(LA) i przechwytywanie ekranu."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Atualmente, apenas fontes de vídeo RTMP, SRT(LA) e captura de tela são suportadas."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Atualmente, apenas fontes de vídeo RTMP, SRT(LA) e captura de tela são suportadas."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "В настоящее время поддерживаются только источники видео RTMP, SRT(LA) и захват экрана."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Endast RTMP, SRT(LA) och skärmdumpsvideokällor stöds för närvarande."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Şu anda yalnızca RTMP, SRT(LA) ve ekran yakalama video kaynakları destekleniyor."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Наразі підтримуються лише джерела відео RTMP, SRT(LA) і знімки екрана."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hiện tại chỉ hỗ trợ các nguồn video RTMP, SRT(LA) và chụp màn hình."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "目前仅支持 RTMP、SRT(LA) 和屏幕捕获视频源。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "目前僅支援 RTMP、SRT(LA) 和螢幕截圖視訊來源。"
-          }
-        }
-      }
-    },
     "Only when live" : {
       "localizations" : {
         "de" : {
@@ -74577,8 +74827,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bara när man lever"
+            "state" : "translated",
+            "value" : "Bara när man är live"
           }
         },
         "tr" : {
@@ -78477,8 +78727,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Drivs av Moblin"
+            "state" : "translated",
+            "value" : "Powered by Moblin"
           }
         },
         "tr" : {
@@ -79387,8 +79637,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Privatliv"
+            "state" : "translated",
+            "value" : "Privat"
           }
         },
         "tr" : {
@@ -81077,8 +81327,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Återinloggning till Twitch fixar förmodligen detta fel"
+            "state" : "translated",
+            "value" : "Logga in till Twitch igen fixar förmodligen detta fel"
           }
         },
         "tr" : {
@@ -84067,7 +84317,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Återställ poäng"
           }
         },
@@ -86017,7 +86267,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rotation"
           }
         },
@@ -87707,7 +87957,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Scenljudingångar"
           }
         },
@@ -91873,7 +92123,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Singel"
           }
         },
@@ -93173,7 +93423,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Webbhook-URL för ögonblicksbild"
           }
         },
@@ -99283,7 +99533,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Strömmarkör skapad"
           }
         },
@@ -102663,7 +102913,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ta ögonblicksbild."
           }
         },
