@@ -34,12 +34,13 @@ class VideoCodec {
                 if self.settings.shouldInvalidateSession(oldValue) {
                     self.invalidateSession = true
                     self.currentBitrate = 0
+                    self.latestEncodedPresentationTimeStamp = .zero
                 }
             }
         }
     }
 
-    private var isRunning: Bool = false
+    private var isRunning = false
     private let lockQueue: DispatchQueue
     var formatDescription: CMFormatDescription? {
         didSet {

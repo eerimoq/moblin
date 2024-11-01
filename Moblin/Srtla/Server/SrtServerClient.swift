@@ -248,9 +248,7 @@ class SrtServerClient {
     }
 
     private func handleVideoFormatDescription(_ formatDescription: CMFormatDescription) {
-        guard videoDecoder == nil else {
-            return
-        }
+        videoDecoder?.stopRunning()
         videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
         videoDecoder?.formatDescription = formatDescription
         videoDecoder?.delegate = self
