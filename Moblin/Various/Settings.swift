@@ -404,6 +404,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var bitrate: UInt32 = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
+    var adaptiveEncoderResolution: Bool? = false
+    var adaptiveEncoderFps: Bool? = false
     var adaptiveBitrate: Bool? = true
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp? = .init()
@@ -1832,9 +1834,7 @@ class SettingsDebug: Codable {
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
-    var adaptiveEncoderResolution: Bool? = false
     var lowAdaptiveEncoderResolution: Bool? = false
-    var adaptiveEncoderFps: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -4297,16 +4297,16 @@ final class Settings {
             widget.alerts!.twitch!.cheerBits![0].alert = widget.alerts!.twitch!.cheers!.clone()
             store()
         }
-        if realDatabase.debug!.adaptiveEncoderResolution == nil {
-            realDatabase.debug!.adaptiveEncoderResolution = false
+        for stream in database.streams where stream.adaptiveEncoderResolution == nil {
+            stream.adaptiveEncoderResolution = false
+            store()
+        }
+        for stream in database.streams where stream.adaptiveEncoderFps == nil {
+            stream.adaptiveEncoderFps = false
             store()
         }
         if realDatabase.debug!.lowAdaptiveEncoderResolution == nil {
             realDatabase.debug!.lowAdaptiveEncoderResolution = false
-            store()
-        }
-        if realDatabase.debug!.adaptiveEncoderFps == nil {
-            realDatabase.debug!.adaptiveEncoderFps = false
             store()
         }
     }

@@ -127,23 +127,11 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.twitchRewards = value
                 }))
-                Toggle("Adaptive encoder resolution", isOn: Binding(get: {
-                    model.database.debug!.adaptiveEncoderResolution!
-                }, set: { value in
-                    model.database.debug!.adaptiveEncoderResolution = value
-                    model.setAdaptiveEncoderResolution()
-                }))
                 Toggle("Low adaptive encoder resolution", isOn: Binding(get: {
                     model.database.debug!.lowAdaptiveEncoderResolution!
                 }, set: { value in
                     model.database.debug!.lowAdaptiveEncoderResolution = value
                     model.setLowAdaptiveEncoderResolution()
-                }))
-                Toggle("Adaptive encoder FPS", isOn: Binding(get: {
-                    model.database.debug!.adaptiveEncoderFps!
-                }, set: { value in
-                    model.database.debug!.adaptiveEncoderFps = value
-                    model.setAdaptiveEncoderFps()
                 }))
             } header: {
                 Text("Experimental")

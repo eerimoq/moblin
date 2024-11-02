@@ -73,7 +73,11 @@ struct StreamVideoSettingsView: View {
                     }
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
-                if model.database.showAllSettings! {
+            } footer: {
+                Text("Lower FPS generally gives brighter image in low light conditions.")
+            }
+            if model.database.showAllSettings! {
+                Section {
                     HStack {
                         Text("Codec")
                         Spacer()
@@ -86,6 +90,13 @@ struct StreamVideoSettingsView: View {
                         }
                     }
                     .disabled(stream.enabled && model.isLive)
+                } footer: {
+                    Text("""
+                    H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP \
+                    generally only supports H.264/AVC.
+                    """)
+                }
+                Section {
                     HStack {
                         Text("Bitrate")
                         Spacer()
@@ -98,6 +109,10 @@ struct StreamVideoSettingsView: View {
                             }
                         }
                     }
+                } footer: {
+                    Text("About 5-8 Mbps is usually enough for decent image quality.")
+                }
+                Section {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Key frame interval"),
@@ -124,6 +139,27 @@ struct StreamVideoSettingsView: View {
                         model.storeAndReloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)
+                }
+                Section {
+                    Toggle("Adaptive resolution", isOn: Binding(get: {
+                        stream.adaptiveEncoderResolution!
+                    }, set: { value in
+                        stream.adaptiveEncoderResolution = value
+                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                    }))
+                    .disabled(stream.enabled && model.isLive)
+                    Toggle("Adaptive FPS", isOn: Binding(get: {
+                        stream.adaptiveEncoderFps!
+                    }, set: { value in
+                        stream.adaptiveEncoderFps = value
+                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                    }))
+                    .disabled(stream.enabled && model.isLive)
+                } footer: {
+                    Text("""
+                    Automatically lower resolution and/or FPS when the available bandwidth is \
+                    low. Generally gives better image quality at low (<750 Kbps) bitrates.
+                    """)
                 }
             }
         }

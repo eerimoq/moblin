@@ -14129,6 +14129,9 @@
         }
       }
     },
+    "About 5-8 Mbps is usually enough for decent image quality." : {
+
+    },
     "Accent" : {
       "localizations" : {
         "de" : {
@@ -14389,265 +14392,11 @@
         }
       }
     },
-    "Adaptive encoder FPS" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptiver Encoder FPS"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Προσαρμοστικός κωδικοποιητής FPS"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Codificador adaptativo FPS"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mukautuva FPS-enkooderi"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Codeur adaptatif FPS"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "अनुकूली एनकोडर FPS"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pengkode adaptif FPS"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Codificatore adattivo FPS"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "アダプティブエンコーダFPS"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "적응형 인코더 FPS"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptieve encoder FPS"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptacyjny enkoder FPS"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Codificador adaptativo FPS"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Codificador adaptativo FPS"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Адаптивный кодер FPS"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptiv kodare FPS"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uyarlanabilir kodlayıcı FPS"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Адаптивний кодер FPS"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bộ mã hóa thích ứng FPS"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自适应编码器 FPS"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自適應編碼器 FPS"
-          }
-        }
-      }
+    "Adaptive FPS" : {
+
     },
-    "Adaptive encoder resolution" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptive Encoderauflösung"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Προσαρμοστική ανάλυση κωδικοποιητή"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resolución del codificador adaptativo"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mukautuva kooderin resoluutio"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Résolution du codeur adaptatif"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "अनुकूली एनकोडर रिज़ॉल्यूशन"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resolusi encoder adaptif"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Risoluzione dell'encoder adattivo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "適応型エンコーダ解像度"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "적응형 인코더 해상도"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptieve encoderresolutie"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rozdzielczość adaptacyjnego enkodera"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resolução do codificador adaptável"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resolução do codificador adaptável"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Адаптивное разрешение кодера"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adaptiv encoderupplösning"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uyarlanabilir kodlayıcı çözünürlüğü"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Адаптивна роздільна здатність кодера"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Độ phân giải mã hóa thích ứng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自适应编码器分辨率"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自適應編碼器分辨率"
-          }
-        }
-      }
+    "Adaptive resolution" : {
+
     },
     "Add" : {
       "localizations" : {
@@ -19594,6 +19343,9 @@
           }
         }
       }
+    },
+    "Automatically lower resolution and/or FPS when the available bandwidth is low. Generally gives better image quality at low (<750 Kbps) bitrates." : {
+
     },
     "Automatically select the stream's audio as mic when connected." : {
       "localizations" : {
@@ -53791,6 +53543,9 @@
         }
       }
     },
+    "H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
+
+    },
     "Heart rate" : {
       "localizations" : {
         "de" : {
@@ -61212,6 +60967,9 @@
           }
         }
       }
+    },
+    "Lower FPS generally gives brighter image in low light conditions." : {
+
     },
     "Lowest battery percentage" : {
       "localizations" : {

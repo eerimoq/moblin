@@ -227,10 +227,7 @@ class AdaptiveBitrateRistExperiment: AdaptiveBitrate {
                 currentMaximumBitrate = maximumBitrate
             }
         }
-        let minimumBitrate = max(
-            videoCodecAdaptiveEncoderResolution ? 50000 : 250_000,
-            settings.minimumBitrate
-        )
+        let minimumBitrate = max(50000, settings.minimumBitrate)
         if currentMaximumBitrate < minimumBitrate {
             currentMaximumBitrate = minimumBitrate
         }

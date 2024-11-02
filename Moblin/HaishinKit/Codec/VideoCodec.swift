@@ -4,8 +4,6 @@ import UIKit
 import VideoToolbox
 
 var numberOfFailedEncodings = 0
-var videoCodecAdaptiveEncoderFps = false
-var videoCodecAdaptiveEncoderResolution = false
 var videoCodecLowAdaptiveEncoderResolution = false
 private let lowFpsBitrateLimit = 100_000.0
 private let highFpsBitrateLimit = 750_000.0
@@ -99,7 +97,7 @@ class VideoCodec {
 
     private func updateAdaptiveResolution(settings: VideoCodecSettings) -> VideoSize {
         var videoSize: VideoSize
-        if videoCodecAdaptiveEncoderResolution {
+        if settings.adaptiveResolution {
             if videoCodecLowAdaptiveEncoderResolution {
                 if currentBitrate < 250_000 {
                     videoSize = .init(width: 284, height: 160)
@@ -160,7 +158,7 @@ class VideoCodec {
             session = makeVideoCompressionSession(self, settings: settings)
         }
         updateBitrate(settings: settings)
-        if videoCodecAdaptiveEncoderFps {
+        if settings.adaptiveFps {
             guard !shouldDropFrameDueToAdaptiveFps(presentationTimeStamp) else {
                 return
             }
