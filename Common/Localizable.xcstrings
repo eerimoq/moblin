@@ -14130,7 +14130,134 @@
       }
     },
     "About 5-8 Mbps is usually enough for decent image quality." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Für eine ordentliche Bildqualität reichen in der Regel etwa 5–8 Mbit/s aus."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Περίπου 5-8 Mbps είναι συνήθως αρκετά για αξιοπρεπή ποιότητα εικόνας."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Generalmente entre 5 y 8 Mbps es suficiente para una calidad de imagen decente."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Noin 5-8 Mbps riittää yleensä kunnolliseen kuvanlaatuun."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Environ 5 à 8 Mbps sont généralement suffisants pour une qualité d'image décente."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अच्छी छवि गुणवत्ता के लिए आमतौर पर 5-8 एमबीपीएस पर्याप्त होती है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sekitar 5-8 Mbps biasanya cukup untuk kualitas gambar yang layak."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Di solito, per ottenere una qualità d'immagine decente sono sufficienti circa 5-8 Mbps."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常、適切な画質を得るには約 5 ～ 8 Mbps で十分です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "일반적으로 5~8Mbps 정도면 괜찮은 이미지 품질에 충분합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meestal is 5-8 Mbps voldoende voor een redelijke beeldkwaliteit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zazwyczaj do uzyskania przyzwoitej jakości obrazu wystarcza transfer danych wynoszący 5–8 Mb/s."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cerca de 5 a 8 Mbps geralmente são suficientes para uma qualidade de imagem decente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cerca de 5 a 8 Mbps geralmente são suficientes para uma qualidade de imagem decente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Для достойного качества изображения обычно достаточно скорости 5–8 Мбит/с."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cirka 5-8 Mbps brukar räcka för hyfsad bildkvalitet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Genellikle 5-8 Mbps civarı bir hız, iyi bir görüntü kalitesi için yeterlidir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Близько 5-8 Мбіт/с зазвичай достатньо для пристойної якості зображення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Khoảng 5-8 Mbps thường đủ để có chất lượng hình ảnh tốt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常大约 5-8 Mbps 就足以获得不错的图像质量。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "大約 5-8 Mbps 通常足以獲得良好的影像品質。"
+          }
+        }
+      }
     },
     "Accent" : {
       "localizations" : {
@@ -14393,10 +14520,264 @@
       }
     },
     "Adaptive FPS" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptive FPS"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προσαρμοστικό FPS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS adaptativo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mukautuva FPS"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS adaptatif"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अनुकूली एफपीएस"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS Adaptif"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS adattivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "アダプティブFPS"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "적응형 FPS"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptieve FPS"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptacyjny FPS"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS adaptável"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS adaptável"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивный FPS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptiv FPS"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uyarlanabilir FPS"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивний FPS"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS thích ứng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自适应 FPS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自適應FPS"
+          }
+        }
+      }
     },
     "Adaptive resolution" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptive Auflösung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προσαρμοστική ανάλυση"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolución adaptativa"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mukautuva resoluutio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Résolution adaptative"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अनुकूली संकल्प"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolusi adaptif"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Risoluzione adattiva"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "適応解像度"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "적응형 해상도"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adaptieve resolutie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozdzielczość adaptacyjna"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolução adaptável"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolução adaptável"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивное разрешение"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptiv upplösning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uyarlanabilir çözünürlük"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Адаптивна роздільна здатність"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Độ phân giải thích ứng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自适应分辨率"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "自適應分辨率"
+          }
+        }
+      }
     },
     "Add" : {
       "localizations" : {
@@ -18138,8 +18519,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ladda automatiskt upp ögonblicksbilder till en kanal på din Discord-server."
+            "state" : "translated",
+            "value" : "Ladda automatiskt upp foton till en kanal på din Discord-server."
           }
         },
         "tr" : {
@@ -19345,7 +19726,134 @@
       }
     },
     "Automatically lower resolution and/or FPS when the available bandwidth is low. Generally gives better image quality at low (<750 Kbps) bitrates." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Automatische Reduzierung der Auflösung und/oder FPS bei geringer verfügbarer Bandbreite. Im Allgemeinen ergibt sich bei niedrigen Bitraten (<750 Kbps) eine bessere Bildqualität."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Αυτόματη χαμηλότερη ανάλυση ή/και FPS όταν το διαθέσιμο εύρος ζώνης είναι χαμηλό. Γενικά δίνει καλύτερη ποιότητα εικόνας σε χαμηλούς ρυθμούς bit (<750 Kbps)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reduce automáticamente la resolución y/o los FPS cuando el ancho de banda disponible es bajo. Generalmente ofrece una mejor calidad de imagen a velocidades de bits bajas (<750 Kbps)."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pienennä automaattisesti resoluutiota ja/tai FPS:ää, kun käytettävissä oleva kaistanleveys on pieni. Yleensä antaa paremman kuvanlaadun alhaisilla (<750 Kbps) bittinopeuksilla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Réduit automatiquement la résolution et/ou le nombre d'images par seconde lorsque la bande passante disponible est faible. Donne généralement une meilleure qualité d'image à des débits binaires faibles (< 750 Kbps)."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उपलब्ध बैंडविड्थ कम होने पर स्वचालित रूप से रिज़ॉल्यूशन और/या FPS कम करें। आम तौर पर कम (<750 Kbps) बिटरेट पर बेहतर छवि गुणवत्ता देता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Secara otomatis menurunkan resolusi dan/atau FPS saat bandwidth yang tersedia rendah. Umumnya memberikan kualitas gambar yang lebih baik pada bitrate rendah (<750 Kbps)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abbassa automaticamente la risoluzione e/o gli FPS quando la larghezza di banda disponibile è bassa. In genere offre una migliore qualità dell'immagine a bassi bitrate (<750 Kbps)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "利用可能な帯域幅が低い場合、解像度や FPS を自動的に下げます。通常、低い (<750 Kbps) ビットレートでは、画像品質が向上します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "사용 가능한 대역폭이 낮을 때 자동으로 해상도 및/또는 FPS를 낮춥니다. 일반적으로 낮은(<750Kbps) 비트레이트에서 더 나은 이미지 품질을 제공합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Automatisch lagere resolutie en/of FPS wanneer de beschikbare bandbreedte laag is. Geeft over het algemeen betere beeldkwaliteit bij lage (<750 Kbps) bitrates."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Automatycznie obniż rozdzielczość i/lub FPS, gdy dostępna przepustowość jest niska. Generalnie daje lepszą jakość obrazu przy niskich (<750 Kbps) przepływnościach bitowych."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reduz automaticamente a resolução e/ou FPS quando a largura de banda disponível é baixa. Geralmente oferece melhor qualidade de imagem em taxas de bits baixas (<750 Kbps)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reduz automaticamente a resolução e/ou FPS quando a largura de banda disponível é baixa. Geralmente oferece melhor qualidade de imagem em taxas de bits baixas (<750 Kbps)."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Автоматически понижать разрешение и/или FPS при низкой доступной полосе пропускания. Обычно обеспечивает лучшее качество изображения при низких (<750 Кбит/с) битрейтах."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sänk automatiskt upplösning och/eller FPS när den tillgängliga bandbredden är låg. Ger generellt bättre bildkvalitet vid låga (<750 Kbps) bithastigheter."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mevcut bant genişliği düşük olduğunda çözünürlüğü ve/veya FPS'yi otomatik olarak düşürür. Genellikle düşük (<750 Kbps) bit hızlarında daha iyi görüntü kalitesi verir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Автоматичне зниження роздільної здатності та/або FPS, коли доступна пропускна здатність низька. Зазвичай забезпечує кращу якість зображення за низьких (<750 Кбіт/с) бітрейтів."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tự động giảm độ phân giải và/hoặc FPS khi băng thông khả dụng thấp. Nói chung mang lại chất lượng hình ảnh tốt hơn ở tốc độ bit thấp (<750 Kbps)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "当可用带宽较低时，自动降低分辨率和/或 FPS。通常在低比特率（<750 Kbps）下提供更好的图像质量。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "當可用頻寬較低時，自動降低解析度和/或 FPS。通常以低位元速率 (<750 Kbps) 提供更好的影像品質。"
+          }
+        }
+      }
     },
     "Automatically select the stream's audio as mic when connected." : {
       "localizations" : {
@@ -33487,7 +33995,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skapa en webhook i din Discord-servers inställningar och klistra in dess URL ovan."
           }
         },
@@ -47137,8 +47645,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det gick inte att ladda upp ögonblicksbilden till Discord"
+            "state" : "translated",
+            "value" : "Det gick inte att ladda upp fotot till Discord"
           }
         },
         "tr" : {
@@ -53544,7 +54052,134 @@
       }
     },
     "H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC erfordert im Allgemeinen weniger Bandbreite für dieselbe Bildqualität. RTMP unterstützt im Allgemeinen nur H.264/AVC."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το H.265/HEVC γενικά απαιτεί λιγότερο εύρος ζώνης για την ίδια ποιότητα εικόνας. Το RTMP γενικά υποστηρίζει μόνο H.264/AVC."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC generalmente requiere menos ancho de banda para la misma calidad de imagen. RTMP generalmente solo admite H.264/AVC."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC vaatii yleensä vähemmän kaistanleveyttä samaan kuvanlaatuun. RTMP tukee yleensä vain H.264/AVC:tä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le H.265/HEVC nécessite généralement moins de bande passante pour une qualité d'image identique. Le RTMP ne prend généralement en charge que le H.264/AVC."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC को समान छवि गुणवत्ता के लिए आम तौर पर कम बैंडविड्थ की आवश्यकता होती है। RTMP आम तौर पर केवल H.264/AVC का समर्थन करता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC umumnya membutuhkan bandwidth yang lebih sedikit untuk kualitas gambar yang sama. RTMP umumnya hanya mendukung H.264/AVC."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC in genere richiede meno larghezza di banda per la stessa qualità dell'immagine. RTMP in genere supporta solo H.264/AVC."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC は通常、同じ画質でより少ない帯域幅を必要とします。RTMP は通常、H.264/AVC のみをサポートします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC는 일반적으로 동일한 이미지 품질에 대해 더 적은 대역폭을 요구합니다. RTMP는 일반적으로 H.264/AVC만 지원합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC vereist over het algemeen minder bandbreedte voor dezelfde beeldkwaliteit. RTMP ondersteunt over het algemeen alleen H.264/AVC."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Standard H.265/HEVC wymaga zazwyczaj mniejszej przepustowości, aby uzyskać tę samą jakość obrazu. Standard RTMP obsługuje zazwyczaj tylko standard H.264/AVC."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC geralmente requer menos largura de banda para a mesma qualidade de imagem. RTMP geralmente suporta apenas H.264/AVC."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC geralmente requer menos largura de banda para a mesma qualidade de imagem. RTMP geralmente suporta apenas H.264/AVC."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC обычно требует меньшей полосы пропускания для того же качества изображения. RTMP обычно поддерживает только H.264/AVC."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H.265/HEVC kräver i allmänhet mindre bandbredd för samma bildkvalitet. RTMP stöder i allmänhet bara H.264/AVC."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC genellikle aynı görüntü kalitesi için daha az bant genişliği gerektirir. RTMP genellikle yalnızca H.264/AVC'yi destekler."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC зазвичай вимагає меншої пропускної здатності для тієї самої якості зображення. RTMP зазвичай підтримує лише H.264/AVC."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC thường yêu cầu ít băng thông hơn cho cùng chất lượng hình ảnh. RTMP thường chỉ hỗ trợ H.264/AVC."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "H.265/HEVC 通常需要较少的带宽才能实现相同的图像质量。RTMP 通常仅支持 H.264/AVC。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "對於相同的影像質量，H.265/HEVC 通常需要較少的頻寬。 RTMP一般只支援H.264/AVC。"
+          }
+        }
+      }
     },
     "Heart rate" : {
       "localizations" : {
@@ -57812,7 +58447,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "prenumererade precis på nivå %lld!"
           }
         },
@@ -59112,7 +59747,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Begränsning: Högst en inbyggd kamera eller USB-kamera stöds åt gången i en scen."
           }
         },
@@ -60969,7 +61604,134 @@
       }
     },
     "Lower FPS generally gives brighter image in low light conditions." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Niedrigere FPS führen bei schlechten Lichtverhältnissen im Allgemeinen zu einem helleren Bild."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το χαμηλότερο FPS δίνει γενικά φωτεινότερη εικόνα σε συνθήκες χαμηλού φωτισμού."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Los FPS más bajos generalmente dan como resultado una imagen más brillante en condiciones de poca luz."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Matala FPS antaa yleensä kirkkaamman kuvan heikossa valaistuksessa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Un FPS inférieur donne généralement une image plus lumineuse dans des conditions de faible luminosité."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "कम एफपीएस आमतौर पर कम रोशनी की स्थिति में उज्जवल छवि देता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS yang lebih rendah umumnya menghasilkan gambar yang lebih cerah dalam kondisi cahaya redup."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "In genere, un FPS più basso produce immagini più luminose in condizioni di scarsa illuminazione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "一般的に、FPS が低いほど、暗い場所では画像が明るくなります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "일반적으로 낮은 FPS는 낮은 조명 조건에서 더 밝은 이미지를 제공합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Een lagere FPS zorgt doorgaans voor een helderder beeld bij weinig licht."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Niższa liczba klatek na sekundę (FPS) zazwyczaj zapewnia jaśniejszy obraz w warunkach słabego oświetlenia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS mais baixo geralmente produz imagens mais brilhantes em condições de pouca luz."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS mais baixo geralmente produz imagens mais brilhantes em condições de pouca luz."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Более низкая частота кадров обычно обеспечивает более яркое изображение в условиях низкой освещенности."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägre FPS ger generellt en ljusare bild i svagt ljus."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Düşük FPS genellikle düşük ışık koşullarında daha parlak görüntü verir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Низький FPS зазвичай дає яскравіше зображення в умовах слабкого освітлення."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FPS thấp hơn thường cho hình ảnh sáng hơn trong điều kiện ánh sáng yếu."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在弱光条件下，较低的 FPS 通常能产生较亮的图像。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "較低的 FPS 通常會在低光源條件下提供更明亮的影像。"
+          }
+        }
+      }
     },
     "Lowest battery percentage" : {
       "localizations" : {
@@ -93051,8 +93813,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ögonblicksbild laddad upp till Discord"
+            "state" : "translated",
+            "value" : "Foto uppladdat till Discord"
           }
         },
         "tr" : {
@@ -112941,7 +113703,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unmute"
           }
         },
@@ -120351,7 +121113,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Träningstest"
           }
         },
