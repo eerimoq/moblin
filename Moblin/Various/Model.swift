@@ -3510,6 +3510,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setStreamFPS()
         setColorSpace()
         setStreamCodec()
+        setStreamAdaptiveResolution()
+        setStreamAdaptiveFps()
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
         setAudioStreamBitrate(stream: stream)
@@ -3688,6 +3690,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
         }
         media.setAllowFrameReordering(value: stream.bFrames!)
+    }
+
+    private func setStreamAdaptiveResolution() {
+        media.setStreamAdaptiveResolution(value: stream.adaptiveEncoderResolution!)
+    }
+
+    private func setStreamAdaptiveFps() {
+        media.setStreamAdaptiveFps(value: stream.adaptiveEncoderFps!)
     }
 
     private func setStreamKeyFrameInterval() {

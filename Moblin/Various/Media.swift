@@ -720,6 +720,14 @@ final class Media: NSObject {
         netStream?.videoEncodecSettings.maxKeyFrameIntervalDuration = seconds
     }
 
+    func setStreamAdaptiveResolution(value: Bool) {
+        netStream?.videoEncodecSettings.adaptiveResolution = value
+    }
+
+    func setStreamAdaptiveFps(value: Bool) {
+        netStream?.videoEncodecSettings.adaptiveFps = value
+    }
+
     func setAudioStreamBitrate(bitrate: Int) {
         netStream?.audioSettings.bitRate = bitrate
     }
