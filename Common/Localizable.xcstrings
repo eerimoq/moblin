@@ -72524,6 +72524,7 @@
       }
     },
     "No settings received yet." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

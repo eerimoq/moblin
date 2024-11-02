@@ -157,6 +157,8 @@ struct RemoteControlState: Codable {
     var bitrate: UUID?
     var zoom: Float?
     var debugLogging: Bool?
+    var streaming: Bool?
+    var recording: Bool?
 }
 
 struct RemoteControlAuthentication: Codable {

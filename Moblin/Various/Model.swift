@@ -3310,6 +3310,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if !isRemoteControlAssistantConnected() {
             sendIsLiveToWatch(isLive: isLive)
         }
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(streaming: isLive))
     }
 
     func setIsRecording(value: Bool) {
@@ -3319,6 +3320,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if !isRemoteControlAssistantConnected() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(recording: isRecording))
     }
 
     func setIsWorkout(type: WatchProtocolWorkoutType?) {
@@ -6633,6 +6635,12 @@ extension Model: RemoteControlAssistantDelegate {
         if let debugLogging = state.debugLogging {
             remoteControlState.debugLogging = debugLogging
             remoteControlDebugLogging = debugLogging
+        }
+        if let streaming = state.streaming {
+            remoteControlState.streaming = streaming
+        }
+        if let recording = state.recording {
+            remoteControlState.recording = recording
         }
     }
 

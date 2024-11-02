@@ -330,7 +330,51 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
     }
 }
 
-private struct ControlBarRemoteControlAssistantRightView: View {
+private struct LiveView: View {
+    @EnvironmentObject var model: Model
+    @State private var isPresentingConfirm: Bool = false
+    @State private var pendingValue = false
+
+    var body: some View {
+        Toggle(isOn: Binding(get: {
+            model.remoteControlState.streaming ?? false
+        }, set: { value in
+            pendingValue = value
+            isPresentingConfirm = true
+        })) {
+            Text("Live")
+        }
+        .confirmationDialog("", isPresented: $isPresentingConfirm) {
+            Button(pendingValue ? String(localized: "Go Live") : String(localized: "End")) {
+                model.remoteControlAssistantSetStream(on: pendingValue, onSuccess: {})
+            }
+        }
+    }
+}
+
+private struct RecordingView: View {
+    @EnvironmentObject var model: Model
+    @State private var isPresentingConfirm: Bool = false
+    @State private var pendingValue = false
+
+    var body: some View {
+        Toggle(isOn: Binding(get: {
+            model.remoteControlState.recording ?? false
+        }, set: { value in
+            pendingValue = value
+            isPresentingConfirm = true
+        })) {
+            Text("Recording")
+        }
+        .confirmationDialog("", isPresented: $isPresentingConfirm) {
+            Button(pendingValue ? String(localized: "Start") : String(localized: "Stop")) {
+                model.remoteControlAssistantSetRecord(on: pendingValue, onSuccess: {})
+            }
+        }
+    }
+}
+
+private struct ZoomView: View {
     @EnvironmentObject var model: Model
 
     private func submitZoom(value: String) {
@@ -344,91 +388,147 @@ private struct ControlBarRemoteControlAssistantRightView: View {
     }
 
     var body: some View {
+        HStack {
+            Text("Zoom")
+            Spacer()
+            TextField("", text: $model.remoteControlZoom)
+                .multilineTextAlignment(.trailing)
+                .disableAutocorrection(true)
+                .onSubmit {
+                    guard let zoom = model.remoteControlState.zoom else {
+                        return
+                    }
+                    guard model.remoteControlZoom != String(zoom) else {
+                        return
+                    }
+                    submitZoom(value: model.remoteControlZoom)
+                }
+        }
+    }
+}
+
+private struct ScenePickerView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Picker(selection: $model.remoteControlScene) {
+            ForEach(model.remoteControlSettings?.scenes ?? []) { scene in
+                Text(scene.name)
+                    .tag(scene.id)
+            }
+        } label: {
+            Text("Scene")
+        }
+        .onChange(of: model.remoteControlScene) { _ in
+            guard model.remoteControlScene != model.remoteControlState.scene
+            else {
+                return
+            }
+            model.remoteControlAssistantSetScene(id: model.remoteControlScene)
+        }
+    }
+}
+
+private struct MicView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Picker(selection: $model.remoteControlMic) {
+            ForEach(model.remoteControlSettings?.mics ?? []) { mic in
+                Text(mic.name)
+                    .tag(mic.id)
+            }
+        } label: {
+            Text("Mic")
+        }
+        .onChange(of: model.remoteControlMic) { _ in
+            guard model.remoteControlMic != model.remoteControlState.mic else {
+                return
+            }
+            model.remoteControlAssistantSetMic(id: model.remoteControlMic)
+        }
+    }
+}
+
+private struct BitrateView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Picker(selection: $model.remoteControlBitrate) {
+            ForEach(model.remoteControlSettings?.bitratePresets ?? []) { preset in
+                Text(preset.bitrate > 0 ?
+                    formatBytesPerSecond(speed: Int64(preset.bitrate)) :
+                    "Unknown")
+                    .tag(preset.id)
+            }
+        } label: {
+            Text("Bitrate")
+        }
+        .onChange(of: model.remoteControlBitrate) { _ in
+            guard model.remoteControlBitrate != model.remoteControlState.bitrate else {
+                return
+            }
+            model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
+        }
+    }
+}
+
+private struct SrtConnectionPrioritiesView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        if let settings = model.remoteControlSettings {
+            NavigationLink {
+                RemoteControlSrtConnectionPrioritiesView(
+                    srt: settings.srt,
+                    enabled: settings.srt.connectionPrioritiesEnabled
+                )
+            } label: {
+                Text("SRT connection priorities")
+            }
+        }
+    }
+}
+
+private struct DebugLoggingView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Toggle(isOn: Binding(get: {
+            model.remoteControlDebugLogging
+        }, set: { value in
+            model.remoteControlDebugLogging = value
+            guard model.remoteControlDebugLogging != model.remoteControlState.debugLogging else {
+                return
+            }
+            model.remoteControlAssistantSetDebugLogging(on: model.remoteControlDebugLogging)
+        })) {
+            Text("Debug logging")
+        }
+    }
+}
+
+private struct ControlBarRemoteControlAssistantRightView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
         Form {
             Section {
-                if let settings = model.remoteControlSettings {
-                    HStack {
-                        Text("Zoom")
-                        Spacer()
-                        TextField("", text: $model.remoteControlZoom)
-                            .multilineTextAlignment(.trailing)
-                            .disableAutocorrection(true)
-                            .onSubmit {
-                                guard let zoom = model.remoteControlState.zoom else {
-                                    return
-                                }
-                                guard model.remoteControlZoom != String(zoom) else {
-                                    return
-                                }
-                                submitZoom(value: model.remoteControlZoom)
-                            }
-                    }
-                    Picker(selection: $model.remoteControlScene) {
-                        ForEach(settings.scenes) { scene in
-                            Text(scene.name)
-                                .tag(scene.id)
-                        }
-                    } label: {
-                        Text("Scene")
-                    }
-                    .onChange(of: model.remoteControlScene) { _ in
-                        guard model.remoteControlScene != model.remoteControlState.scene
-                        else {
-                            return
-                        }
-                        model.remoteControlAssistantSetScene(id: model.remoteControlScene)
-                    }
-                    Picker(selection: $model.remoteControlMic) {
-                        ForEach(settings.mics) { mic in
-                            Text(mic.name)
-                                .tag(mic.id)
-                        }
-                    } label: {
-                        Text("Mic")
-                    }
-                    .onChange(of: model.remoteControlMic) { _ in
-                        guard model.remoteControlMic != model.remoteControlState.mic else {
-                            return
-                        }
-                        model.remoteControlAssistantSetMic(id: model.remoteControlMic)
-                    }
-                    Picker(selection: $model.remoteControlBitrate) {
-                        ForEach(settings.bitratePresets) { preset in
-                            Text(preset.bitrate > 0 ?
-                                formatBytesPerSecond(speed: Int64(preset.bitrate)) :
-                                "Unknown")
-                                .tag(preset.id)
-                        }
-                    } label: {
-                        Text("Bitrate")
-                    }
-                    .onChange(of: model.remoteControlBitrate) { _ in
-                        guard model.remoteControlBitrate != model.remoteControlState.bitrate else {
-                            return
-                        }
-                        model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
-                    }
-                    NavigationLink {
-                        RemoteControlSrtConnectionPrioritiesView(
-                            srt: settings.srt,
-                            enabled: settings.srt.connectionPrioritiesEnabled
-                        )
-                    } label: {
-                        Text("SRT connection priorities")
-                    }
-                    Toggle(isOn: Binding(get: {
-                        model.remoteControlDebugLogging
-                    }, set: { value in
-                        model.remoteControlDebugLogging = value
-                        guard model.remoteControlDebugLogging != model.remoteControlState.debugLogging else {
-                            return
-                        }
-                        model.remoteControlAssistantSetDebugLogging(on: model.remoteControlDebugLogging)
-                    })) {
-                        Text("Debug logging")
-                    }
+                if model.remoteControlSettings != nil {
+                    LiveView()
+                    RecordingView()
+                    ZoomView()
+                    ScenePickerView()
+                    MicView()
+                    BitrateView()
+                    SrtConnectionPrioritiesView()
+                    DebugLoggingView()
                 } else {
-                    Text("No settings received yet.")
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
                 }
             } header: {
                 Text("Control")
