@@ -324,7 +324,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         var data = ElementaryStreamSpecificData()
         data.elementaryPacketId = MpegTsWriter.videoPacketId
         videoContinuityCounter = 0
-        switch codec.settings.format {
+        switch codec.settings.value.format {
         case .h264:
             guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create avcC")

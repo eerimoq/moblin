@@ -78,10 +78,10 @@ open class NetStream: NSObject {
 
     var videoEncodecSettings: VideoCodecSettings {
         get {
-            mixer.video.encoder.settings
+            mixer.video.encoder.settings.value
         }
         set {
-            mixer.video.encoder.settings = newValue
+            mixer.video.encoder.settings.mutate { $0 = newValue }
         }
     }
 

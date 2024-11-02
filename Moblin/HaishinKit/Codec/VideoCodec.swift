@@ -28,10 +28,10 @@ class VideoCodec {
         kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
     ]
 
-    var settings: VideoCodecSettings = .init() {
+    var settings: Atomic<VideoCodecSettings> = .init(.init()) {
         didSet {
             lockQueue.async {
-                if self.settings.shouldInvalidateSession(oldValue) {
+                if self.settings.value.shouldInvalidateSession(oldValue.value) {
                     self.invalidateSession = true
                     self.currentBitrate = 0
                     self.latestEncodedPresentationTimeStamp = .zero
@@ -62,6 +62,7 @@ class VideoCodec {
         for (key, value) in VideoCodec.defaultAttributes ?? [:] {
             attributes[key] = value
         }
+        let settings = self.settings.value
         attributes[kCVPixelBufferWidthKey] = NSNumber(value: settings.videoSize.width)
         attributes[kCVPixelBufferHeightKey] = NSNumber(value: settings.videoSize.height)
         return attributes
@@ -80,7 +81,7 @@ class VideoCodec {
     private var oldBitrateVideoSize: VideoSize = .init(width: 0, height: 0)
     private var latestEncodedPresentationTimeStamp: CMTime = .zero
 
-    private func updateBitrate() {
+    private func updateBitrate(settings: VideoCodecSettings) {
         guard currentBitrate != settings.bitRate else {
             return
         }
@@ -96,7 +97,7 @@ class VideoCodec {
         }
     }
 
-    private func updateAdaptiveResolution() -> VideoSize {
+    private func updateAdaptiveResolution(settings: VideoCodecSettings) -> VideoSize {
         var videoSize: VideoSize
         if videoCodecAdaptiveEncoderResolution {
             if videoCodecLowAdaptiveEncoderResolution {
@@ -149,15 +150,16 @@ class VideoCodec {
         guard isRunning else {
             return
         }
-        let newBitrateVideoSize = updateAdaptiveResolution()
+        let settings = self.settings.value
+        let newBitrateVideoSize = updateAdaptiveResolution(settings: settings)
         if newBitrateVideoSize != oldBitrateVideoSize {
-            session = makeVideoCompressionSession(self, videoSize: newBitrateVideoSize)
+            session = makeVideoCompressionSession(self, settings: settings, videoSize: newBitrateVideoSize)
             oldBitrateVideoSize = newBitrateVideoSize
         }
         if invalidateSession {
-            session = makeVideoCompressionSession(self)
+            session = makeVideoCompressionSession(self, settings: settings)
         }
-        updateBitrate()
+        updateBitrate(settings: settings)
         if videoCodecAdaptiveEncoderFps {
             guard !shouldDropFrameDueToAdaptiveFps(presentationTimeStamp) else {
                 return
@@ -241,6 +243,7 @@ class VideoCodec {
 }
 
 private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
+                                         settings: VideoCodecSettings,
                                          videoSize: VideoSize? = nil) -> (any VTSessionConvertible)?
 {
     var session: VTCompressionSession?
@@ -249,9 +252,9 @@ private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
     }
     var status = VTCompressionSessionCreate(
         allocator: kCFAllocatorDefault,
-        width: videoSize?.width ?? videoCodec.settings.videoSize.width,
-        height: videoSize?.height ?? videoCodec.settings.videoSize.height,
-        codecType: videoCodec.settings.format.codecType,
+        width: videoSize?.width ?? settings.videoSize.width,
+        height: videoSize?.height ?? settings.videoSize.height,
+        codecType: settings.format.codecType,
         encoderSpecification: nil,
         imageBufferAttributes: videoCodec.attributes as CFDictionary?,
         compressedDataAllocator: nil,
@@ -263,7 +266,7 @@ private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
         logger.info("video: Failed to create status \(status)")
         return nil
     }
-    status = session.setOptions(videoCodec.settings.options(videoCodec))
+    status = session.setOptions(settings.options(videoCodec))
     guard status == noErr else {
         logger.info("video: Failed to prepare status \(status)")
         return nil
