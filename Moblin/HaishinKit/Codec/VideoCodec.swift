@@ -96,25 +96,27 @@ class VideoCodec {
         }
     }
 
-    private func updateResolution() -> VideoSize {
+    private func updateAdaptiveResolution() -> VideoSize {
         var videoSize: VideoSize
         if videoCodecAdaptiveEncoderResolution {
             if videoCodecLowAdaptiveEncoderResolution {
-                if currentBitrate <= 250_000 {
+                if currentBitrate < 250_000 {
                     videoSize = .init(width: 284, height: 160)
-                } else if currentBitrate <= 500_000 {
+                } else if currentBitrate < 500_000 {
                     videoSize = .init(width: 640, height: 360)
-                } else if currentBitrate <= 750_000 {
+                } else if currentBitrate < 750_000 {
                     videoSize = .init(width: 854, height: 480)
                 } else {
                     videoSize = settings.videoSize
                 }
             } else {
-                if currentBitrate <= 250_000 {
+                if currentBitrate < 100_000 {
+                    videoSize = .init(width: 284, height: 160)
+                } else if currentBitrate < 250_000 {
                     videoSize = .init(width: 640, height: 360)
-                } else if currentBitrate <= 500_000 {
+                } else if currentBitrate < 500_000 {
                     videoSize = .init(width: 854, height: 480)
-                } else if currentBitrate <= 750_000 {
+                } else if currentBitrate < 750_000 {
                     videoSize = .init(width: 1280, height: 720)
                 } else {
                     videoSize = settings.videoSize
@@ -129,7 +131,7 @@ class VideoCodec {
         return videoSize
     }
 
-    private func shouldDropFrame(_ presentationTimeStamp: CMTime) -> Bool {
+    private func shouldDropFrameDueToAdaptiveFps(_ presentationTimeStamp: CMTime) -> Bool {
         if currentBitrate <= UInt32(highFpsBitrateLimit) {
             let highLowDelta = highFpsBitrateLimit - lowFpsBitrateLimit
             let factor = max(Double(currentBitrate) - lowFpsBitrateLimit, 0) / highLowDelta
@@ -147,7 +149,7 @@ class VideoCodec {
         guard isRunning else {
             return
         }
-        let newBitrateVideoSize = updateResolution()
+        let newBitrateVideoSize = updateAdaptiveResolution()
         if newBitrateVideoSize != oldBitrateVideoSize {
             session = makeVideoCompressionSession(self, videoSize: newBitrateVideoSize)
             oldBitrateVideoSize = newBitrateVideoSize
@@ -157,7 +159,7 @@ class VideoCodec {
         }
         updateBitrate()
         if videoCodecAdaptiveEncoderFps {
-            guard !shouldDropFrame(presentationTimeStamp) else {
+            guard !shouldDropFrameDueToAdaptiveFps(presentationTimeStamp) else {
                 return
             }
             latestEncodedPresentationTimeStamp = presentationTimeStamp
