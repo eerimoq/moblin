@@ -192,12 +192,15 @@ class VideoEncoder {
             duration: .invalid,
             frameProperties: nil,
             infoFlagsOut: nil,
-            outputHandler: { [unowned self] status, _, sampleBuffer in
+            outputHandler: { [weak self] status, _, sampleBuffer in
+                guard let self else {
+                    return
+                }
                 guard let sampleBuffer, status == noErr else {
                     return
                 }
-                formatDescription = sampleBuffer.formatDescription
-                delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
+                self.formatDescription = sampleBuffer.formatDescription
+                self.delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
             }
         )
     }

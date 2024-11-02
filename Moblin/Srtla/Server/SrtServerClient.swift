@@ -56,8 +56,10 @@ class SrtServerClient {
             }
         }
         srt_close(clientSocket)
-        videoDecoder?.stopRunning()
-        videoDecoder = nil
+        videoCodecLockQueue.async {
+            self.videoDecoder?.stopRunning()
+            self.videoDecoder = nil
+        }
     }
 
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
@@ -212,8 +214,8 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        videoCodecLockQueue.async {
-            self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
+        videoCodecLockQueue.async { [self] in
+            videoDecoder?.decodeSampleBuffer(sampleBuffer)
         }
     }
 
@@ -250,11 +252,13 @@ class SrtServerClient {
     }
 
     private func handleVideoFormatDescription(_ formatDescription: CMFormatDescription) {
-        videoDecoder?.stopRunning()
-        videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
-        videoDecoder?.formatDescription = formatDescription
-        videoDecoder?.delegate = self
-        videoDecoder?.startRunning()
+        videoCodecLockQueue.async { [self] in
+            videoDecoder?.stopRunning()
+            videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+            videoDecoder?.formatDescription = formatDescription
+            videoDecoder?.delegate = self
+            videoDecoder?.startRunning()
+        }
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16,

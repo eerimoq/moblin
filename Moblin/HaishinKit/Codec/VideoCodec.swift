@@ -168,7 +168,10 @@ class VideoCodec {
             imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
             duration: duration
-        ) { [unowned self] status, _, sampleBuffer in
+        ) { [weak self] status, _, sampleBuffer in
+            guard let self else {
+                return
+            }
             guard let sampleBuffer, status == noErr else {
                 logger
                     .info(
@@ -195,26 +198,30 @@ class VideoCodec {
         if invalidateSession {
             session = makeVideoDecompressionSession(self)
         }
-        let err = session?.decodeFrame(sampleBuffer) { [
-            unowned self
-        ] status, _, imageBuffer, presentationTimeStamp, duration in
-            guard let imageBuffer, status == noErr else {
-                logger.info("video: Failed to decode frame status \(status)")
-                return
+        let err = session?
+            .decodeFrame(sampleBuffer) { [
+                weak self
+            ] status, _, imageBuffer, presentationTimeStamp, duration in
+                guard let self else {
+                    return
+                }
+                guard let imageBuffer, status == noErr else {
+                    logger.info("video: Failed to decode frame status \(status)")
+                    return
+                }
+                guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
+                    return
+                }
+                guard let sampleBuffer = CMSampleBuffer.create(imageBuffer,
+                                                               formatDescription,
+                                                               duration,
+                                                               presentationTimeStamp,
+                                                               sampleBuffer.decodeTimeStamp)
+                else {
+                    return
+                }
+                delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
             }
-            guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
-                return
-            }
-            guard let sampleBuffer = CMSampleBuffer.create(imageBuffer,
-                                                           formatDescription,
-                                                           duration,
-                                                           presentationTimeStamp,
-                                                           sampleBuffer.decodeTimeStamp)
-            else {
-                return
-            }
-            delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
-        }
         if err == kVTInvalidSessionErr {
             logger.info("video: Decode failed. Resetting session.")
             invalidateSession = true

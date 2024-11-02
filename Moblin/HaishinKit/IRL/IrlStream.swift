@@ -2,10 +2,10 @@ import AVFoundation
 import Foundation
 
 class IrlStream: NetStream {
-    var client: IrlClient?
+    var client: MoblinkClient?
 
     override init() {
-        client = IrlClient()
+        client = MoblinkClient()
         super.init()
     }
 
