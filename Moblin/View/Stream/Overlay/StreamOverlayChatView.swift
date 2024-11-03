@@ -3,7 +3,7 @@ import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
-private let borderWidth = 0.7
+private let borderWidth = 1.5
 
 private struct HighlightMessageView: View {
     let chat: SettingsChat
