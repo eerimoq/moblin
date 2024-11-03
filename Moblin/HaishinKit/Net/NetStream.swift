@@ -15,7 +15,8 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, failedEffect: String?)
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
-    func stream(_ stream: NetStream, recorderFinishWriting writer: AVAssetWriter)
+    func streamRecorderFinished()
+    func streamRecorderError()
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
 }
@@ -224,8 +225,12 @@ extension NetStream: MixerDelegate {
         delegate?.streamVideo(self, findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
     }
 
-    func mixer(recorderFinishWriting writer: AVAssetWriter) {
-        delegate?.stream(self, recorderFinishWriting: writer)
+    func mixerRecorderFinished() {
+        delegate?.streamRecorderFinished()
+    }
+
+    func mixerRecorderError() {
+        delegate?.streamRecorderError()
     }
 
     func mixer(audioSampleBuffer: CMSampleBuffer) {

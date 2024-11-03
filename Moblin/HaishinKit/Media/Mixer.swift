@@ -14,7 +14,8 @@ protocol MixerDelegate: AnyObject {
     func mixerVideo(presentationTimestamp: Double)
     func mixerVideo(failedEffect: String?)
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
-    func mixer(recorderFinishWriting writer: AVAssetWriter)
+    func mixerRecorderFinished()
+    func mixerRecorderError()
     func mixer(findVideoFormatError: String, activeFormat: String)
     func mixer(audioSampleBuffer: CMSampleBuffer)
     func mixerNoTorch()
@@ -63,7 +64,11 @@ class Mixer {
 }
 
 extension Mixer: IORecorderDelegate {
-    func recorder(_: Recorder, finishWriting writer: AVAssetWriter) {
-        delegate?.mixer(recorderFinishWriting: writer)
+    func recorderFinished() {
+        delegate?.mixerRecorderFinished()
+    }
+
+    func recorderError() {
+        delegate?.mixerRecorderError()
     }
 }

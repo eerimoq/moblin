@@ -1194,6 +1194,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.onAudioBuffer = handleAudioBuffer
         media.onLowFpsImage = handleLowFpsImage
         media.onFindVideoFormatError = handleFindVideoFormatError
+        media.onRecorderFinished = handleRecorderFinished
+        media.onRecorderError = handleRecorderError
         media.onNoTorch = handleNoTorch
         setPixelFormat()
         setMetalPetalFilters()
@@ -5773,6 +5775,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleFindVideoFormatError(findVideoFormatError: String, activeFormat: String) {
         DispatchQueue.main.async {
             self.makeErrorToast(title: findVideoFormatError, subTitle: activeFormat)
+        }
+    }
+
+    private func handleRecorderFinished() {}
+
+    private func handleRecorderError() {
+        DispatchQueue.main.async {
+            guard self.isRecording else {
+                return
+            }
+            self.makeErrorToast(
+                title: String(localized: "Recording error."),
+                subTitle: String(localized: "Starting a new recording.")
+            )
+            self.suspendRecording()
+            self.startRecording()
         }
     }
 

@@ -47,6 +47,8 @@ final class Media: NSObject {
     var onAudioBuffer: ((CMSampleBuffer) -> Void)!
     var onLowFpsImage: ((Data?, UInt64) -> Void)!
     var onFindVideoFormatError: ((String, String) -> Void)!
+    var onRecorderFinished: (() -> Void)!
+    var onRecorderError: (() -> Void)!
     var onNoTorch: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
@@ -928,12 +930,16 @@ extension Media: NetStreamDelegate {
         onFindVideoFormatError(findVideoFormatError, activeFormat)
     }
 
-    func stream(_: NetStream, recorderFinishWriting _: AVAssetWriter) {
-        logger.info("stream: Recording finished")
-    }
-
     func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
         onAudioBuffer(sampleBuffer)
+    }
+
+    func streamRecorderFinished() {
+        onRecorderFinished()
+    }
+
+    func streamRecorderError() {
+        onRecorderError()
     }
 
     func streamNoTorch() {

@@ -914,10 +914,7 @@ final class VideoUnit: NSObject {
             presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
             duration: modSampleBuffer.duration
         )
-        mixer?.recorder.appendVideo(
-            modImageBuffer,
-            withPresentationTime: modSampleBuffer.presentationTimeStamp
-        )
+        mixer?.recorder.appendVideo(modSampleBuffer)
         if lowFpsImageEnabled {
             let presentationTimeStamp = modSampleBuffer.presentationTimeStamp.seconds
             if lowFpsImageLatest + lowFpsImageInterval < presentationTimeStamp {

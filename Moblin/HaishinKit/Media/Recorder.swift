@@ -1,7 +1,8 @@
 import AVFoundation
 
 protocol IORecorderDelegate: AnyObject {
-    func recorder(_ recorder: Recorder, finishWriting writer: AVAssetWriter)
+    func recorderFinished()
+    func recorderError()
 }
 
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
@@ -49,9 +50,9 @@ class Recorder: NSObject, AVAssetWriterDelegate {
         }
     }
 
-    func appendVideo(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
         lockQueue.async {
-            self.appendVideoInner(pixelBuffer, withPresentationTime: withPresentationTime)
+            self.appendVideoInner(sampleBuffer)
         }
     }
 
@@ -126,26 +127,30 @@ class Recorder: NSObject, AVAssetWriterDelegate {
         }
     }
 
-    private func appendVideoInner(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
+    private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
         guard let writer else {
+            return
+        }
+        guard let pixelBuffer = sampleBuffer.imageBuffer else {
             return
         }
         guard
             let input = makeVideoWriterInput(width: pixelBuffer.width, height: pixelBuffer.height),
-            let adaptor = makePixelBufferAdaptor(input),
             isReadyForStartWriting()
         else {
             return
         }
-        start(writer: writer, presentationTimeStamp: withPresentationTime)
+        start(writer: writer, presentationTimeStamp: sampleBuffer.presentationTimeStamp)
         guard input.isReadyForMoreMediaData else {
             logger.info("recorder: video: Not ready")
             return
         }
-        if !adaptor.append(
-            pixelBuffer,
-            withPresentationTime: withPresentationTime - basePresentationTimeStamp
-        ) {
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        else {
+            return
+        }
+        if !input.append(sampleBuffer) {
             logger.info("""
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
@@ -281,18 +286,6 @@ class Recorder: NSObject, AVAssetWriterDelegate {
         return .init(streamDescription: &basicDescription)
     }
 
-    private func makePixelBufferAdaptor(_ writerInput: AVAssetWriterInput)
-        -> AVAssetWriterInputPixelBufferAdaptor?
-    {
-        if pixelBufferAdaptor == nil {
-            pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(
-                assetWriterInput: writerInput,
-                sourcePixelBufferAttributes: [:]
-            )
-        }
-        return pixelBufferAdaptor
-    }
-
     private func startRunningInner() {
         guard writer == nil, let url else {
             logger.info("recorder: Will not start recording as it is already running or missing URL")
@@ -312,12 +305,13 @@ class Recorder: NSObject, AVAssetWriterDelegate {
         guard writer.status == .writing else {
             logger.info("recorder: Failed to finish writing \(writer.error?.localizedDescription ?? "")")
             reset()
+            delegate?.recorderError()
             return
         }
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         writer.finishWriting {
-            self.delegate?.recorder(self, finishWriting: writer)
+            self.delegate?.recorderFinished()
             self.reset()
             dispatchGroup.leave()
         }
