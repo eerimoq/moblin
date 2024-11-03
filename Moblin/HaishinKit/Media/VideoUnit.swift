@@ -240,6 +240,7 @@ final class VideoUnit: NSObject {
     }
 
     func startRunning() {
+        addSessionObservers()
         session.startRunning()
     }
 
@@ -352,7 +353,6 @@ final class VideoUnit: NSObject {
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
-        addSessionObservers()
         encoder.delegate = delegate
         encoder.startRunning()
     }
@@ -360,7 +360,6 @@ final class VideoUnit: NSObject {
     func stopEncoding() {
         encoder.stopRunning()
         encoder.delegate = nil
-        removeSessionObservers()
     }
 
     private func startFrameTimer() {

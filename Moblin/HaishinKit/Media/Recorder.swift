@@ -6,7 +6,7 @@ protocol IORecorderDelegate: AnyObject {
 
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
 
-class Recorder {
+class Recorder: NSObject, AVAssetWriterDelegate {
     private static let defaultAudioOutputSettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 0,
@@ -23,6 +23,7 @@ class Recorder {
     var audioOutputSettings = Recorder.defaultAudioOutputSettings
     var videoOutputSettings = Recorder.defaultVideoOutputSettings
     var url: URL?
+    private var fileHandle: FileHandle?
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
 
     private func isReadyForStartWriting() -> Bool {
@@ -34,6 +35,7 @@ class Recorder {
     private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
     private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
+    private var basePresentationTimeStamp: CMTime = .zero
 
     func setAudioChannelsMap(map: [Int: Int]) {
         lockQueue.async {
@@ -69,55 +71,59 @@ class Recorder {
         guard let writer else {
             return
         }
-        let sampleBuffer = convert(sampleBuffer)
+        guard let sampleBuffer = convert(sampleBuffer) else {
+            return
+        }
         guard
             let input = makeAudioWriterInput(sourceFormatHint: sampleBuffer.formatDescription),
             isReadyForStartWriting()
         else {
             return
         }
-        if writer.status == .unknown {
-            writer.startWriting()
-            writer.startSession(atSourceTime: sampleBuffer.presentationTimeStamp)
-        }
+        start(writer: writer, presentationTimeStamp: sampleBuffer.presentationTimeStamp)
         guard input.isReadyForMoreMediaData else {
             return
         }
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        else {
+            return
+        }
         if !input.append(sampleBuffer) {
-            logger.info("Failed to append audio \(writer.error?.localizedDescription ?? "")")
+            logger.info("""
+            recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
+            (status: \(writer.status))
+            """)
+            stopRunningInner()
         }
     }
 
-    private func convert(_ sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
-        var sampleBuffer = sampleBuffer
-        guard
-            let converter = makeAudioConverter(sampleBuffer.formatDescription)
-        else {
-            return sampleBuffer
+    private func convert(_ sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        guard let converter = makeAudioConverter(sampleBuffer.formatDescription) else {
+            return nil
         }
         guard let outputBuffer = AVAudioPCMBuffer(
             pcmFormat: converter.outputFormat,
             frameCapacity: UInt32(sampleBuffer.numSamples)
         ) else {
-            return sampleBuffer
+            return nil
         }
-        do {
-            try sampleBuffer.withAudioBufferList { list, _ in
-                guard #available(iOS 15.0, *) else {
-                    return
-                }
-                guard let inputBuffer = AVAudioPCMBuffer(
-                    pcmFormat: converter.inputFormat,
-                    bufferListNoCopy: list.unsafePointer
-                ) else {
-                    return
-                }
-                try converter.convert(to: outputBuffer, from: inputBuffer)
-                sampleBuffer = outputBuffer
-                    .makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)!
+        return try? sampleBuffer.withAudioBufferList { list, _ in
+            guard let inputBuffer = AVAudioPCMBuffer(
+                pcmFormat: converter.inputFormat,
+                bufferListNoCopy: list.unsafePointer
+            ) else {
+                logger.info("recorder: Failed to create input buffer")
+                return nil
             }
-        } catch {}
-        return sampleBuffer
+            do {
+                try converter.convert(to: outputBuffer, from: inputBuffer)
+            } catch {
+                logger.info("recorder: audio: Convert failed with \(error.localizedDescription)")
+                return nil
+            }
+            return outputBuffer.makeSampleBuffer(presentationTimeStamp: sampleBuffer.presentationTimeStamp)
+        }
     }
 
     private func appendVideoInner(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
@@ -131,15 +137,20 @@ class Recorder {
         else {
             return
         }
-        if writer.status == .unknown {
-            writer.startWriting()
-            writer.startSession(atSourceTime: withPresentationTime)
-        }
+        start(writer: writer, presentationTimeStamp: withPresentationTime)
         guard input.isReadyForMoreMediaData else {
+            logger.info("recorder: video: Not ready")
             return
         }
-        if !adaptor.append(pixelBuffer, withPresentationTime: withPresentationTime) {
-            logger.info("Failed to append video \(writer.error?.localizedDescription ?? "")")
+        if !adaptor.append(
+            pixelBuffer,
+            withPresentationTime: withPresentationTime - basePresentationTimeStamp
+        ) {
+            logger.info("""
+            recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
+            (status: \(writer.status))
+            """)
+            stopRunningInner()
         }
     }
 
@@ -284,24 +295,22 @@ class Recorder {
 
     private func startRunningInner() {
         guard writer == nil, let url else {
-            logger.info("Will not start recording as it is already running or missing URL")
+            logger.info("recorder: Will not start recording as it is already running or missing URL")
             return
         }
         reset()
-        do {
-            writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
-        } catch {
-            logger.info("Failed to create asset writer \(error)")
-        }
+        writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
+        try? Data().write(to: url)
+        fileHandle = FileHandle(forWritingAtPath: url.path)
     }
 
     private func stopRunningInner() {
         guard let writer else {
-            logger.info("Will not stop recording as it is not running")
+            logger.info("recorder: Will not stop recording as it is not running")
             return
         }
         guard writer.status == .writing else {
-            logger.info("Failed to finish writing \(writer.error?.localizedDescription ?? "")")
+            logger.info("recorder: Failed to finish writing \(writer.error?.localizedDescription ?? "")")
             reset()
             return
         }
@@ -320,5 +329,30 @@ class Recorder {
         audioWriterInput = nil
         videoWriterInput = nil
         pixelBufferAdaptor = nil
+    }
+
+    private func start(writer: AVAssetWriter, presentationTimeStamp: CMTime) {
+        guard writer.status == .unknown else {
+            return
+        }
+        writer.outputFileTypeProfile = .mpeg4AppleHLS
+        writer.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
+        writer.delegate = self
+        writer.initialSegmentStartTime = .zero
+        writer.startWriting()
+        writer.startSession(atSourceTime: .zero)
+        basePresentationTimeStamp = presentationTimeStamp
+    }
+}
+
+extension Recorder {
+    func assetWriter(
+        _: AVAssetWriter,
+        didOutputSegmentData segmentData: Data,
+        segmentType _: AVAssetSegmentType
+    ) {
+        lockQueue.async {
+            self.fileHandle?.write(segmentData)
+        }
     }
 }

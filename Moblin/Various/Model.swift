@@ -1654,7 +1654,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if !shouldStreamInBackground() {
-            reloadStream()
+            reloadStream(continueRecording: isRecording)
             sceneUpdated()
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
@@ -3503,9 +3503,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func reloadStream() {
+    func reloadStream(continueRecording: Bool = false) {
         cameraPosition = nil
-        stopRecording()
+        if !continueRecording {
+            stopRecording()
+        }
         stopStream()
         setNetStream()
         setStreamResolution()
