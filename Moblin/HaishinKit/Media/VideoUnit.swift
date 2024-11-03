@@ -992,7 +992,7 @@ final class VideoUnit: NSObject {
 
     @objc
     private func sessionWasInterrupted(_: Notification) {
-        logger.info("Video session interruption started")
+        logger.debug("Video session interruption started")
         lockQueue.async {
             self.prepareFirstFrame()
         }
@@ -1000,7 +1000,7 @@ final class VideoUnit: NSObject {
 
     @objc
     private func sessionInterruptionEnded(_: Notification) {
-        logger.info("Video session interruption ended")
+        logger.debug("Video session interruption ended")
     }
 
     var isVideoMirrored = false
