@@ -19170,7 +19170,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stoppa inspelningen automatiskt när streamen avslutas"
+            "value" : "Stoppa inspelning automatiskt när streamen avslutas"
           }
         },
         "tr" : {
@@ -82499,7 +82499,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inspelningen startade"
+            "value" : "Inspelning startad"
           }
         },
         "tr" : {
@@ -82629,7 +82629,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inspelningen stoppad"
+            "value" : "Inspelning stoppad"
           }
         },
         "tr" : {
