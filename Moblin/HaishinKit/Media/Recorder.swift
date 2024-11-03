@@ -35,7 +35,6 @@ class Recorder: NSObject, AVAssetWriterDelegate {
     private var audioWriterInput: AVAssetWriterInput?
     private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
-    private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
     private var basePresentationTimeStamp: CMTime = .zero
 
     func setAudioChannelsMap(map: [Int: Int]) {
@@ -322,7 +321,6 @@ class Recorder: NSObject, AVAssetWriterDelegate {
         writer = nil
         audioWriterInput = nil
         videoWriterInput = nil
-        pixelBufferAdaptor = nil
     }
 
     private func start(writer: AVAssetWriter, presentationTimeStamp: CMTime) {

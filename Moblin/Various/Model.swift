@@ -3193,12 +3193,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
     }
 
-    func stopRecording() {
+    func stopRecording(showToast: Bool = true) {
         guard isRecording else {
             return
         }
         setIsRecording(value: false)
-        makeToast(title: String(localized: "Recording stopped"))
+        if showToast {
+            makeToast(title: String(localized: "Recording stopped"))
+        }
         suspendRecording()
     }
 
@@ -5780,17 +5782,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleRecorderFinished() {}
 
+    private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
+
     private func handleRecorderError() {
         DispatchQueue.main.async {
             guard self.isRecording else {
                 return
             }
-            self.makeErrorToast(
-                title: String(localized: "Recording error."),
-                subTitle: String(localized: "Starting a new recording.")
-            )
-            self.suspendRecording()
-            self.startRecording()
+            if self.latestRecordingErrorRestart.duration(to: .now) > .seconds(60) {
+                self.makeErrorToast(
+                    title: String(localized: "Recording error"),
+                    subTitle: String(localized: "Starting a new recording")
+                )
+                self.suspendRecording()
+                self.startRecording()
+            } else {
+                self.stopRecording(showToast: false)
+                self.makeErrorToast(
+                    title: String(localized: "Recording error"),
+                    subTitle: String(localized: "Recording stopped")
+                )
+            }
+            self.latestRecordingErrorRestart = .now
         }
     }
 

@@ -51,7 +51,7 @@ struct QuickButtonPlaceholderImage: View {
 }
 
 private func startStopText(button: ButtonState) -> String {
-    return button.isOn ? "Stop" : "Start"
+    return button.isOn ? String(localized: "Stop") : String(localized: "Start")
 }
 
 struct QuickButtonsInnerView: View {
