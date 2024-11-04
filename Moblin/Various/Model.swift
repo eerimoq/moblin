@@ -5764,7 +5764,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let image else {
             return
         }
-        DispatchQueue.main.async {[self] in
+        DispatchQueue.main.async { [self] in
             if frameNumber % lowFpsImageFps == 0 {
                 if !isRemoteControlAssistantConnected() {
                     sendPreviewToWatch(image: image)
@@ -5785,7 +5785,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
 
     private func handleRecorderError() {
-        DispatchQueue.main.async {[self] in
+        DispatchQueue.main.async { [self] in
             guard isRecording else {
                 return
             }
@@ -5808,7 +5808,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleNoTorch() {
-        DispatchQueue.main.async {[self] in
+        DispatchQueue.main.async { [self] in
             if !isFrontCameraSelected {
                 makeErrorToast(
                     title: String(localized: "Torch unavailable in this scene."),
