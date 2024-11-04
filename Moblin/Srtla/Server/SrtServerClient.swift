@@ -43,6 +43,8 @@ class SrtServerClient {
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
                     let packet = try MpegTsPacket(reader: reader)
+                    // logger.info("srt-server: Packet random access \(packet.adaptationField?.randomAccessIndicator)
+                    // payload start \(packet.payloadUnitStartIndicator)")
                     if packet.id == MpegTsPacket.programAssociationTableId {
                         try handleProgramAssociationTable(packet: packet)
                     } else if let programNumber = programs[packet.id] {
@@ -214,6 +216,8 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        // logger.info("srt-server: Decoding sample buffer with sync \(sampleBuffer.isSync)
+        // data size \(sampleBuffer.dataBuffer?.dataLength ?? -1)")
         videoCodecLockQueue.async { [self] in
             videoDecoder?.decodeSampleBuffer(sampleBuffer)
         }
@@ -398,9 +402,14 @@ class SrtServerClient {
 }
 
 extension SrtServerClient: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
+    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {
+        // logger.info("srt-server: Decoded format description
+        // \(CMVideoFormatDescriptionGetDimensions(formatDescription))")
+    }
 
     func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        // logger.info("srt-server: Decoded frame dimensions
+        // \(sampleBuffer.imageBuffer?.width ?? -1) \(sampleBuffer.imageBuffer?.height ?? -1)")
         server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
             streamId: streamId,
             sampleBuffer: sampleBuffer
