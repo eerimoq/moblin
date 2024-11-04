@@ -7,7 +7,7 @@ protocol IORecorderDelegate: AnyObject {
 
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
 
-class Recorder: NSObject, AVAssetWriterDelegate {
+class Recorder: NSObject {
     private static let defaultAudioOutputSettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 0,
@@ -337,7 +337,7 @@ class Recorder: NSObject, AVAssetWriterDelegate {
     }
 }
 
-extension Recorder {
+extension Recorder: AVAssetWriterDelegate {
     func assetWriter(
         _: AVAssetWriter,
         didOutputSegmentData segmentData: Data,
