@@ -28,7 +28,7 @@ struct VideoCodecSettings {
         }
     }
 
-    var videoSize: VideoSize
+    var videoSize: CMVideoDimensions
     var bitRate: UInt32
     var maxKeyFrameIntervalDuration: Int32
     var allowFrameReordering: Bool

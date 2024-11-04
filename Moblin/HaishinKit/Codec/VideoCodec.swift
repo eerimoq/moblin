@@ -76,7 +76,7 @@ class VideoCodec {
 
     private var invalidateSession = true
     private var currentBitrate: UInt32 = 0
-    private var oldBitrateVideoSize: VideoSize = .init(width: 0, height: 0)
+    private var oldBitrateVideoSize: CMVideoDimensions = .init(width: 0, height: 0)
     private var latestEncodedPresentationTimeStamp: CMTime = .zero
 
     private func updateBitrate(settings: VideoCodecSettings) {
@@ -95,8 +95,8 @@ class VideoCodec {
         }
     }
 
-    private func updateAdaptiveResolution(settings: VideoCodecSettings) -> VideoSize {
-        var videoSize: VideoSize
+    private func updateAdaptiveResolution(settings: VideoCodecSettings) -> CMVideoDimensions {
+        var videoSize: CMVideoDimensions
         if settings.adaptiveResolution {
             if videoCodecLowAdaptiveEncoderResolution {
                 if currentBitrate < 250_000 {
@@ -249,7 +249,7 @@ class VideoCodec {
 
 private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
                                          settings: VideoCodecSettings,
-                                         videoSize: VideoSize? = nil) -> (any VTSessionConvertible)?
+                                         videoSize: CMVideoDimensions? = nil) -> (any VTSessionConvertible)?
 {
     var session: VTCompressionSession?
     for attribute in videoCodec.attributes ?? [:] {

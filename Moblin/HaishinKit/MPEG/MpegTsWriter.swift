@@ -239,7 +239,6 @@ class MpegTsWriter {
 
     private func writeProgram() {
         programMappingTable.programClockReferencePacketId = mpegTsWriterProgramClockReferencePacketId
-
         var patPacket = programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId)
         var pmtPacket = programMappingTable.packet(MpegTsWriter.programMappingTablePacketId)
         patPacket.continuityCounter =
