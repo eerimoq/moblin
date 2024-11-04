@@ -9,7 +9,7 @@ struct BitratePresetsPresetSettingsView: View {
         guard var bitrate = Float(bitrate) else {
             return
         }
-        bitrate = max(bitrate, 0.1)
+        bitrate = max(bitrate, 0.05)
         bitrate = min(bitrate, 50)
         preset.bitrate = bitrateFromMbps(bitrate: bitrate)
         model.store()

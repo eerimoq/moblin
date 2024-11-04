@@ -1983,7 +1983,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if let fps = video.fps, fpss.contains(String(fps)) {
                     newStream.fps = fps
                 }
-                if let bitrate = video.bitrate, bitrate >= 100_000, bitrate <= 50_000_000 {
+                if let bitrate = video.bitrate, bitrate >= 50000, bitrate <= 50_000_000 {
                     newStream.bitrate = bitrate
                 }
                 if let codec = video.codec {
