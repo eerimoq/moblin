@@ -99,23 +99,23 @@ class VideoCodec {
         var videoSize: CMVideoDimensions
         if settings.adaptiveResolution {
             if videoCodecLowAdaptiveEncoderResolution {
-                if currentBitrate < 250_000 {
+                if settings.bitRate < 250_000 {
                     videoSize = .init(width: 284, height: 160)
-                } else if currentBitrate < 500_000 {
+                } else if settings.bitRate < 500_000 {
                     videoSize = .init(width: 640, height: 360)
-                } else if currentBitrate < 750_000 {
+                } else if settings.bitRate < 750_000 {
                     videoSize = .init(width: 854, height: 480)
                 } else {
                     videoSize = settings.videoSize
                 }
             } else {
-                if currentBitrate < 100_000 {
+                if settings.bitRate < 100_000 {
                     videoSize = .init(width: 284, height: 160)
-                } else if currentBitrate < 250_000 {
+                } else if settings.bitRate < 250_000 {
                     videoSize = .init(width: 640, height: 360)
-                } else if currentBitrate < 500_000 {
+                } else if settings.bitRate < 500_000 {
                     videoSize = .init(width: 854, height: 480)
-                } else if currentBitrate < 750_000 {
+                } else if settings.bitRate < 750_000 {
                     videoSize = .init(width: 1280, height: 720)
                 } else {
                     videoSize = settings.videoSize
