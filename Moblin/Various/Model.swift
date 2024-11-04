@@ -5764,13 +5764,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let image else {
             return
         }
-        DispatchQueue.main.async {
-            if frameNumber % self.lowFpsImageFps == 0 {
-                if !self.isRemoteControlAssistantConnected() {
-                    self.sendPreviewToWatch(image: image)
+        DispatchQueue.main.async {[self] in
+            if frameNumber % lowFpsImageFps == 0 {
+                if !isRemoteControlAssistantConnected() {
+                    sendPreviewToWatch(image: image)
                 }
             }
-            self.sendPreviewToRemoteControlAssistant(preview: image)
+            sendPreviewToRemoteControlAssistant(preview: image)
         }
     }
 
@@ -5785,20 +5785,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
 
     private func handleRecorderError() {
-        DispatchQueue.main.async {
-            guard self.isRecording else {
+        DispatchQueue.main.async {[self] in
+            guard isRecording else {
                 return
             }
             if self.latestRecordingErrorRestart.duration(to: .now) > .seconds(60) {
-                self.makeErrorToast(
+                makeErrorToast(
                     title: String(localized: "Recording error"),
                     subTitle: String(localized: "Starting a new recording")
                 )
-                self.suspendRecording()
-                self.startRecording()
+                suspendRecording()
+                startRecording()
             } else {
-                self.stopRecording(showToast: false)
-                self.makeErrorToast(
+                stopRecording(showToast: false)
+                makeErrorToast(
                     title: String(localized: "Recording error"),
                     subTitle: String(localized: "Recording stopped")
                 )
@@ -5808,9 +5808,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleNoTorch() {
-        DispatchQueue.main.async {
-            if !self.isFrontCameraSelected {
-                self.makeErrorToast(
+        DispatchQueue.main.async {[self] in
+            if !isFrontCameraSelected {
+                makeErrorToast(
                     title: String(localized: "Torch unavailable in this scene."),
                     subTitle: String(localized: "Normally only available for built-in cameras.")
                 )
