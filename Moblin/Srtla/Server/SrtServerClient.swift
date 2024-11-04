@@ -58,10 +58,8 @@ class SrtServerClient {
             }
         }
         srt_close(clientSocket)
-        videoCodecLockQueue.async {
-            self.videoDecoder?.stopRunning()
-            self.videoDecoder = nil
-        }
+        videoDecoder?.stopRunning()
+        videoDecoder = nil
     }
 
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
@@ -256,13 +254,13 @@ class SrtServerClient {
     }
 
     private func handleVideoFormatDescription(_ formatDescription: CMFormatDescription) {
-        videoCodecLockQueue.async { [self] in
-            videoDecoder?.stopRunning()
-            videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
-            videoDecoder?.formatDescription = formatDescription
-            videoDecoder?.delegate = self
-            videoDecoder?.startRunning()
-        }
+        let dimentions = CMVideoFormatDescriptionGetDimensions(formatDescription)
+        logger.info("srt-server: Got new video dimensions \(dimentions)")
+        videoDecoder?.stopRunning()
+        videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+        videoDecoder?.formatDescription = formatDescription
+        videoDecoder?.delegate = self
+        videoDecoder?.startRunning()
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16,
