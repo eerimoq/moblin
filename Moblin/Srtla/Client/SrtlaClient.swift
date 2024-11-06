@@ -369,12 +369,14 @@ class SrtlaClient {
     }
 
     private func handleSrtAck(sn: UInt32) {
+        // logger.info("xxx got SRT ACK SN \(sn)")
         for connection in remoteConnections {
             connection.handleSrtAckSn(sn: sn)
         }
     }
 
     private func handleSrtNak(sn: UInt32) {
+        // logger.info("xxx got SRT NAK SN \(sn)")
         for connection in remoteConnections {
             connection.handleSrtNakSn(sn: sn)
         }
