@@ -223,14 +223,10 @@ final class Media: NSObject {
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities
         )
-        switch adaptiveBitrateAlgorithm {
-        case .fastIrl, .slowIrl, .customIrl:
-            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
-        case .belabox:
-            adaptiveBitrate = AdaptiveBitrateSrtBela(targetBitrate: targetBitrate, delegate: self)
-        case nil:
-            adaptiveBitrate = nil
-        }
+        srtSetAdaptiveBitrateAlgorithm(
+            targetBitrate: targetBitrate,
+            adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm
+        )
     }
 
     func srtStopStream() {
@@ -239,6 +235,20 @@ final class Media: NSObject {
         srtlaClient = nil
         srtConnectedObservation = nil
         adaptiveBitrate = nil
+    }
+
+    func srtSetAdaptiveBitrateAlgorithm(
+        targetBitrate: UInt32,
+        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?
+    ) {
+        switch adaptiveBitrateAlgorithm {
+        case .fastIrl, .slowIrl, .customIrl:
+            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
+        case .belabox:
+            adaptiveBitrate = AdaptiveBitrateSrtBela(targetBitrate: targetBitrate, delegate: self)
+        case nil:
+            adaptiveBitrate = nil
+        }
     }
 
     func setNetworkInterfaceNames(networkInterfaceNames: [SettingsNetworkInterfaceName]) {
@@ -706,8 +716,11 @@ final class Media: NSObject {
     }
 
     func setVideoStreamBitrate(bitrate: UInt32) {
-        adaptiveBitrate?.setTargetBitrate(bitrate: bitrate)
-        netStream?.videoEncodecSettings.bitRate = bitrate
+        if let adaptiveBitrate {
+            adaptiveBitrate.setTargetBitrate(bitrate: bitrate)
+        } else {
+            netStream?.videoEncodecSettings.bitRate = bitrate
+        }
     }
 
     func setVideoProfile(profile: CFString) {

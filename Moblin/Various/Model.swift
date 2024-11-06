@@ -710,7 +710,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var healthStore = HKHealthStore()
 
-    func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
+    func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
+        media.srtSetAdaptiveBitrateAlgorithm(
+            targetBitrate: stream.bitrate,
+            adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrate!.algorithm
+        )
+    }
+
+    func updateAdaptiveBitrateSrt(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
@@ -3439,7 +3446,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
             )
-            updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+            updateAdaptiveBitrateSrt(stream: stream)
         case .irltk:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
             media.irlToolkitStartStream(
@@ -3455,7 +3462,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
             )
-            updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+            updateAdaptiveBitrateSrt(stream: stream)
         case .rist:
             media.ristStartStream(url: stream.url,
                                   bonding: stream.rist!.bonding,

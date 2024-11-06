@@ -216,8 +216,11 @@ class SrtServerClient {
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         // logger.info("srt-server: Decoding sample buffer with sync \(sampleBuffer.isSync)
         // data size \(sampleBuffer.dataBuffer?.dataLength ?? -1)")
-        videoCodecLockQueue.async { [self] in
-            videoDecoder?.decodeSampleBuffer(sampleBuffer)
+        guard let videoDecoder else {
+            return
+        }
+        videoCodecLockQueue.async {
+            videoDecoder.decodeSampleBuffer(sampleBuffer)
         }
     }
 
