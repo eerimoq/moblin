@@ -137,10 +137,7 @@ class RemoteConnection {
 
     func stop(reason: String) {
         let sent = sizeFormatter.string(fromByteCount: Int64(totalDataSentByteCount))
-        logger
-            .info(
-                "srtla: \(typeString): Stop with reason: \(reason) (\(sent) sent)"
-            )
+        logger.info("srtla: \(typeString): Stop with reason: \(reason) (\(sent) sent)")
         connection?.cancel()
         connection = nil
         cancelAllTimers()
@@ -315,14 +312,13 @@ class RemoteConnection {
             offset += 4
             if isSnRange(sn: nakSn) {
                 guard offset <= packet.count - 4 else {
-                    logger
-                        .error(
-                            """
-                            srtla: \(typeString): Missing second sequence number in \
-                            range nak at offset \(offset) with packet length \(packet
-                                .count)
-                            """
-                        )
+                    logger.error(
+                        """
+                        srtla: \(typeString): Missing second sequence number in \
+                        range nak at offset \(offset) with packet length \(packet
+                            .count)
+                        """
+                    )
                     return
                 }
                 let upToNakSn = packet.getUInt32Be(offset: offset)
