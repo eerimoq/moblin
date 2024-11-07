@@ -143,7 +143,7 @@ class SrtlaServer {
 
     private func handleNewListenerConnection(connection: NWConnection) {
         logger.info("srtla-server: Client \(connection.endpoint) connected")
-        connection.start(queue: srtlaDispatchQueue)
+        connection.start(queue: srtlaServerQueue)
         receivePacket(connection: connection)
     }
 

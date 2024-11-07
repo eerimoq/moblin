@@ -43,7 +43,7 @@ class SrtlaServerClient {
 
     private func startPeriodicNakTimer() {
         periodicNakTimer = DispatchSource.makeTimerSource(queue: srtlaServerQueue)
-        periodicNakTimer!.schedule(deadline: .now() + 0.1, repeating: 0.05)
+        periodicNakTimer!.schedule(deadline: .now() + 0.1, repeating: 0.1)
         periodicNakTimer!.setEventHandler { [weak self] in
             self?.handlePeriodicNakTimer()
         }
@@ -116,10 +116,6 @@ class SrtlaServerClient {
         }
     }
 
-    private func sendPacketOnLatestConnection(packet: Data) {
-        latestConnection?.sendPacket(packet: packet)
-    }
-
     private func handleAckPacketFromLocalSrtServer(packet: Data) {
         sendPacketOnAllConnections(packet: packet)
         guard packet.count >= 20 else {
@@ -145,6 +141,10 @@ class SrtlaServerClient {
         }
         latestNakTimestamp = packet.getUInt32Be(offset: 8)
         latestNakDestinationSrtSocketId = packet.getUInt32Be(offset: 12)
+    }
+
+    private func sendPacketOnLatestConnection(packet: Data) {
+        latestConnection?.sendPacket(packet: packet)
     }
 
     private func sendPacketOnAllConnections(packet: Data) {
@@ -173,6 +173,10 @@ class SrtlaServerClient {
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
     func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data) {
+        // let sn = getSequenceNumber(packet: packet)
+        // if let index = naks.firstIndex(where: { $0 == sn }) {
+        //     naks.remove(at: index)
+        // }
         latestConnection = connection
         localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }
