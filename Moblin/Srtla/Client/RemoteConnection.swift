@@ -306,29 +306,8 @@ class RemoteConnection {
     }
 
     private func handleSrtNak(packet: Data) {
-        var offset = 16
-        while offset <= packet.count - 4 {
-            let nakSn = packet.getUInt32Be(offset: offset)
-            offset += 4
-            if isSnRange(sn: nakSn) {
-                guard offset <= packet.count - 4 else {
-                    logger.error(
-                        """
-                        srtla: \(typeString): Missing second sequence number in \
-                        range nak at offset \(offset) with packet length \(packet
-                            .count)
-                        """
-                    )
-                    return
-                }
-                let upToNakSn = packet.getUInt32Be(offset: offset)
-                for sn in stride(from: nakSn & 0x7FFF_FFFF, through: upToNakSn, by: 1) {
-                    onSrtNak?(sn)
-                }
-                offset += 4
-            } else {
-                onSrtNak?(nakSn)
-            }
+        processSrtNak(packet: packet) { sn in
+            self.onSrtNak?(sn)
         }
     }
 
@@ -444,9 +423,8 @@ class RemoteConnection {
             handleSrtAck(packet: packet)
         case .nak:
             handleSrtNak(packet: packet)
-//         case .handshake:
-//             logger.info("xxx got handshake \(packet.hexString())")
-//             logHandshake(packet: packet)
+//        case .handshake:
+//            logHandshake(packet: packet)
         default:
             break
         }

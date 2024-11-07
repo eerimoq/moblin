@@ -12,13 +12,19 @@ class SrtlaServerClient {
     private var connections: [SrtlaServerClientConnection] = []
     private var latestConnection: SrtlaServerClientConnection?
     let createdAt: ContinuousClock.Instant = .now
+    private var naks: [UInt32] = []
+    private var periodicNakTimer: DispatchSourceTimer?
+    private var latestNakTimestamp: UInt32?
+    private var latestNakDestinationSrtSocketId: UInt32?
 
     init(srtPort: UInt16) {
         logger.info("srtla-server-client: Creating local SRT server connection.")
         createLocalSrtServerConnection(srtPort: srtPort)
+        startPeriodicNakTimer()
     }
 
     func stop() {
+        stopPeriodicNakTimer()
         localSrtServerConnection?.cancel()
         localSrtServerConnection = nil
     }
@@ -33,6 +39,38 @@ class SrtlaServerClient {
         localSrtServerConnection!.stateUpdateHandler = handleStateUpdate(to:)
         localSrtServerConnection!.start(queue: srtlaServerQueue)
         receivePacket()
+    }
+
+    private func startPeriodicNakTimer() {
+        periodicNakTimer = DispatchSource.makeTimerSource(queue: srtlaServerQueue)
+        periodicNakTimer!.schedule(deadline: .now() + 0.1, repeating: 0.05)
+        periodicNakTimer!.setEventHandler { [weak self] in
+            self?.handlePeriodicNakTimer()
+        }
+        periodicNakTimer!.activate()
+    }
+
+    private func stopPeriodicNakTimer() {
+        periodicNakTimer?.cancel()
+        periodicNakTimer = nil
+    }
+
+    private func handlePeriodicNakTimer() {
+        guard !naks.isEmpty, let latestNakTimestamp, let latestNakDestinationSrtSocketId else {
+            return
+        }
+        let writer = ByteArray()
+        writer.writeUInt16(SrtPacketType.nak.rawValue | srtControlPacketTypeBit)
+        writer.writeUInt16(0)
+        writer.writeUInt32(0)
+        writer.writeUInt32(latestNakTimestamp)
+        writer.writeUInt32(latestNakDestinationSrtSocketId)
+        for sn in naks.prefix(1300 / 4) {
+            writer.writeUInt32(sn)
+        }
+        let packet = writer.data
+        // logger.info("xxx nak packet \(packet)")
+        sendPacketOnLatestConnection(packet: packet)
     }
 
     private func handleStateUpdate(to state: NWConnection.State) {
@@ -64,14 +102,54 @@ class SrtlaServerClient {
     }
 
     private func handlePacketFromLocalSrtServer(packet: Data) {
-        if !isDataPacket(packet: packet),
-           SrtPacketType(rawValue: getControlPacketType(packet: packet)) == .ack
-        {
-            for connection in connections {
-                connection.sendPacket(packet: packet)
-            }
+        if isDataPacket(packet: packet) {
+            sendPacketOnLatestConnection(packet: packet)
         } else {
-            latestConnection?.sendPacket(packet: packet)
+            switch SrtPacketType(rawValue: getControlPacketType(packet: packet)) {
+            case .ack:
+                handleAckPacketFromLocalSrtServer(packet: packet)
+            case .nak:
+                handleNakPacketFromLocalSrtServer(packet: packet)
+            default:
+                sendPacketOnLatestConnection(packet: packet)
+            }
+        }
+    }
+
+    private func sendPacketOnLatestConnection(packet: Data) {
+        latestConnection?.sendPacket(packet: packet)
+    }
+
+    private func handleAckPacketFromLocalSrtServer(packet: Data) {
+        sendPacketOnAllConnections(packet: packet)
+        guard packet.count >= 20 else {
+            return
+        }
+        let ackSn = getSequenceNumber(packet: packet[16 ..< 20])
+        naks = naks.filter { sn in !isSnAcked(sn: sn, ackSn: ackSn) }
+    }
+
+    private func handleNakPacketFromLocalSrtServer(packet: Data) {
+        sendPacketOnAllConnections(packet: packet)
+        guard packet.count >= 16 else {
+            return
+        }
+        processSrtNak(packet: packet) { sn in
+            if let index = naks.firstIndex(where: { $0 >= sn }) {
+                if naks[index] != sn {
+                    naks.insert(sn, at: index)
+                }
+            } else {
+                naks.append(sn)
+            }
+        }
+        latestNakTimestamp = packet.getUInt32Be(offset: 8)
+        latestNakDestinationSrtSocketId = packet.getUInt32Be(offset: 12)
+    }
+
+    private func sendPacketOnAllConnections(packet: Data) {
+        for connection in connections {
+            connection.sendPacket(packet: packet)
         }
     }
 

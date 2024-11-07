@@ -38,3 +38,23 @@ func isSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
 func isSnRange(sn: UInt32) -> Bool {
     return (sn & 0x8000_0000) == 0x8000_0000
 }
+
+func processSrtNak(packet: Data, onNak: (UInt32) -> Void) {
+    var offset = 16
+    while offset <= packet.count - 4 {
+        let nakSn = packet.getUInt32Be(offset: offset)
+        offset += 4
+        if isSnRange(sn: nakSn) {
+            guard offset <= packet.count - 4 else {
+                return
+            }
+            let upToNakSn = packet.getUInt32Be(offset: offset)
+            for sn in stride(from: nakSn & 0x7FFF_FFFF, through: upToNakSn, by: 1) {
+                onNak(sn)
+            }
+            offset += 4
+        } else {
+            onNak(nakSn)
+        }
+    }
+}
