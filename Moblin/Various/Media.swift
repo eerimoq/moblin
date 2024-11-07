@@ -974,7 +974,7 @@ extension Media: SrtlaDelegate {
                         maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
                     )) { data in
                         if let srtla = self.srtlaClient {
-                            srtlaDispatchQueue.async {
+                            srtlaClientQueue.async {
                                 srtla.handleLocalPacket(packet: data)
                             }
                         }

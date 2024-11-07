@@ -23,7 +23,7 @@ class SrtlaNetworkInterfaces {
     var names: [String: String] = [:]
 }
 
-let srtlaDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla")
+let srtlaClientQueue = DispatchQueue(label: "com.eerimoq.srtla-client")
 
 class SrtlaClient {
     private var remoteConnections: [RemoteConnection] = []
@@ -93,10 +93,10 @@ class SrtlaClient {
     }
 
     func start(uri: String, timeout: Double) {
-        srtlaDispatchQueue.async {
+        srtlaClientQueue.async {
             if !self.passThrough {
                 self.networkPathMonitor.pathUpdateHandler = self.handleNetworkPathUpdate(path:)
-                self.networkPathMonitor.start(queue: srtlaDispatchQueue)
+                self.networkPathMonitor.start(queue: srtlaClientQueue)
             }
             self.totalByteCount = 0
             guard let url = URL(string: uri), let host = url.host, let port = url.port else {
@@ -108,7 +108,7 @@ class SrtlaClient {
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection, host: host, port: port)
             }
-            self.connectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+            self.connectTimer = DispatchSource.makeTimerSource(queue: srtlaClientQueue)
             logger.info("srtla: Setting connect timer to \(timeout) seconds")
             self.connectTimer!.schedule(deadline: .now() + timeout)
             self.connectTimer!.setEventHandler {
@@ -121,7 +121,7 @@ class SrtlaClient {
     }
 
     func stop() {
-        srtlaDispatchQueue.async {
+        srtlaClientQueue.async {
             for connection in self.remoteConnections {
                 self.stopRemote(connection: connection)
             }
@@ -134,7 +134,7 @@ class SrtlaClient {
     }
 
     func setNetworkInterfaceNames(networkInterfaceNames: [SettingsNetworkInterfaceName]) {
-        srtlaDispatchQueue.async {
+        srtlaClientQueue.async {
             self.networkInterfaces.names.removeAll()
             for interface in networkInterfaceNames {
                 self.networkInterfaces.names[interface.interfaceName] = interface.name
@@ -164,7 +164,7 @@ class SrtlaClient {
     }
 
     func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
-        srtlaDispatchQueue.async {
+        srtlaClientQueue.async {
             self.updateConnectionPriorities(connectionPriorities: connectionPriorities)
             for connection in self.remoteConnections {
                 var name: String
@@ -235,7 +235,7 @@ class SrtlaClient {
 
     func connectionStatistics() -> [BondingConnection] {
         var connections: [BondingConnection] = []
-        srtlaDispatchQueue.sync {
+        srtlaClientQueue.sync {
             for connection in remoteConnections where connection.isEnabled() {
                 guard let byteCount = connection.getDataSentDelta() else {
                     continue
@@ -250,7 +250,7 @@ class SrtlaClient {
     }
 
     func logStatistics() {
-        srtlaDispatchQueue.async {
+        srtlaClientQueue.async {
             for connection in self.remoteConnections {
                 connection.logStatistics()
             }
@@ -258,7 +258,7 @@ class SrtlaClient {
     }
 
     func getTotalByteCount() -> Int64 {
-        srtlaDispatchQueue.sync {
+        srtlaClientQueue.sync {
             totalByteCount
         }
     }

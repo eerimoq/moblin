@@ -130,7 +130,7 @@ class RemoteConnection {
             using: params
         )
         connection!.stateUpdateHandler = handleStateUpdate(to:)
-        connection!.start(queue: srtlaDispatchQueue)
+        connection!.start(queue: srtlaClientQueue)
         receivePacket()
         state = .socketConnecting
     }
@@ -183,7 +183,7 @@ class RemoteConnection {
         switch state {
         case .ready:
             cancelAllTimers()
-            connectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+            connectTimer = DispatchSource.makeTimerSource(queue: srtlaClientQueue)
             connectTimer!.schedule(deadline: .now() + 5)
             connectTimer!.setEventHandler {
                 self.reconnect(reason: "Connection timeout")
@@ -365,7 +365,7 @@ class RemoteConnection {
         onRegistered?()
         connectTimer?.cancel()
         connectTimer = nil
-        keepaliveTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+        keepaliveTimer = DispatchSource.makeTimerSource(queue: srtlaClientQueue)
         keepaliveTimer!.schedule(deadline: .now() + 1, repeating: 1)
         keepaliveTimer!.setEventHandler {
             let now = ContinuousClock.now
