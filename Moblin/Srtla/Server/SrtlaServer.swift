@@ -25,10 +25,10 @@ protocol SrtlaServerDelegate: AnyObject {
 class SrtlaServer {
     private var listener: NWListener?
     private var clients: [Data: SrtlaServerClient] = [:]
-    var settings: SettingsSrtlaServer
-    private var srtServer: SrtServer
+    let settings: SettingsSrtlaServer
+    private let srtServer: SrtServer
     weak var delegate: (any SrtlaServerDelegate)?
-    private var periodicTimer: DispatchSourceTimer?
+    private let periodicTimer = SimpleTimer(queue: srtlaServerQueue)
     private var prevTotalBytesReceived: UInt64 = 0
     var totalBytesReceived: Atomic<UInt64> = .init(0)
     private var numberOfClients: Atomic<Int> = .init(0)
@@ -81,17 +81,13 @@ class SrtlaServer {
     }
 
     private func startPeriodicTimer() {
-        periodicTimer = DispatchSource.makeTimerSource(queue: srtlaServerQueue)
-        periodicTimer!.schedule(deadline: .now() + periodicTimerTimeout, repeating: periodicTimerTimeout)
-        periodicTimer!.setEventHandler { [weak self] in
+        periodicTimer.startPeriodic(interval: periodicTimerTimeout) { [weak self] in
             self?.handlePeriodicTimer()
         }
-        periodicTimer!.activate()
     }
 
     private func stopPeriodicTimer() {
-        periodicTimer?.cancel()
-        periodicTimer = nil
+        periodicTimer.stop()
     }
 
     private func handlePeriodicTimer() {

@@ -89,8 +89,8 @@ class CatPrinter: NSObject {
     private var deviceId: UUID?
     private let ditheringAlgorithm: DitheringAlgorithm = .atkinson
     weak var delegate: (any CatPrinterDelegate)?
-    private var tryWriteNextChunkTimer: DispatchSourceTimer?
-    private var feedPaperTimer: DispatchSourceTimer?
+    private var tryWriteNextChunkTimer = SimpleTimer(queue: catPrinterDispatchQueue)
+    private var feedPaperTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var audioPlayer: AVAudioPlayer?
     private var meowSoundEnabled: Bool = false
 
@@ -307,31 +307,23 @@ class CatPrinter: NSObject {
     }
 
     private func startTryWriteNextChunkTimer() {
-        tryWriteNextChunkTimer = DispatchSource.makeTimerSource(queue: catPrinterDispatchQueue)
-        tryWriteNextChunkTimer!.schedule(deadline: .now() + 0.1)
-        tryWriteNextChunkTimer!.setEventHandler { [weak self] in
+        tryWriteNextChunkTimer.startSingleShot(timeout: 0.1) { [weak self] in
             self?.tryWriteNextChunk()
         }
-        tryWriteNextChunkTimer!.activate()
     }
 
     private func stopTryWriteNextChunkTimer() {
-        tryWriteNextChunkTimer?.cancel()
-        tryWriteNextChunkTimer = nil
+        tryWriteNextChunkTimer.stop()
     }
 
     private func startFeedPaperTimer(delay: Double) {
-        feedPaperTimer = DispatchSource.makeTimerSource(queue: catPrinterDispatchQueue)
-        feedPaperTimer!.schedule(deadline: .now() + delay)
-        feedPaperTimer!.setEventHandler { [weak self] in
+        feedPaperTimer.startSingleShot(timeout: delay) { [weak self] in
             self?.feedPaper()
         }
-        feedPaperTimer!.activate()
     }
 
     private func stopFeedPaperTimer() {
-        feedPaperTimer?.cancel()
-        feedPaperTimer = nil
+        feedPaperTimer.stop()
     }
 
     private func feedPaper() {

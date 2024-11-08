@@ -62,8 +62,8 @@ class DjiDevice: NSObject {
     private var fff5Characteristic: CBCharacteristic?
     private var state: DjiDeviceState = .idle
     weak var delegate: (any DjiDeviceDelegate)?
-    private var startStreamingTimer: DispatchSourceTimer?
-    private var stopStreamingTimer: DispatchSourceTimer?
+    private var startStreamingTimer = SimpleTimer(queue: .main)
+    private var stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
     // periphery:ignore
     private var batteryPercentage: UInt8?
@@ -117,17 +117,13 @@ class DjiDevice: NSObject {
     }
 
     private func startStartStreamingTimer() {
-        startStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
-        startStreamingTimer!.schedule(deadline: .now() + 60)
-        startStreamingTimer!.setEventHandler { [weak self] in
+        startStreamingTimer.startSingleShot(timeout: 60) { [weak self] in
             self?.startStreamingTimerExpired()
         }
-        startStreamingTimer!.activate()
     }
 
     private func stopStartStreamingTimer() {
-        startStreamingTimer?.cancel()
-        startStreamingTimer = nil
+        startStreamingTimer.stop()
     }
 
     private func startStreamingTimerExpired() {
@@ -135,17 +131,13 @@ class DjiDevice: NSObject {
     }
 
     private func startStopStreamingTimer() {
-        stopStreamingTimer = DispatchSource.makeTimerSource(queue: .main)
-        stopStreamingTimer!.schedule(deadline: .now() + 10)
-        stopStreamingTimer!.setEventHandler { [weak self] in
+        stopStreamingTimer.startSingleShot(timeout: 10) { [weak self] in
             self?.stopStreamingTimerExpired()
         }
-        stopStreamingTimer!.activate()
     }
 
     private func stopStopStreamingTimer() {
-        stopStreamingTimer?.cancel()
-        stopStreamingTimer = nil
+        stopStreamingTimer.stop()
     }
 
     private func stopStreamingTimerExpired() {

@@ -24,7 +24,7 @@ class RtmpServer {
     var onFrame: (String, CMSampleBuffer) -> Void
     var onAudioBuffer: (String, CMSampleBuffer) -> Void
     var settings: SettingsRtmpServer
-    private var periodicTimer: DispatchSourceTimer?
+    private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
 
@@ -57,8 +57,7 @@ class RtmpServer {
             self.clients.removeAll()
             self.listener?.cancel()
             self.listener = nil
-            self.periodicTimer?.cancel()
-            self.periodicTimer = nil
+            self.periodicTimer.stop()
         }
     }
 
@@ -113,9 +112,7 @@ class RtmpServer {
     }
 
     private func setupPeriodicTimer() {
-        periodicTimer = DispatchSource.makeTimerSource(queue: rtmpServerDispatchQueue)
-        periodicTimer!.schedule(deadline: .now() + 3, repeating: 3)
-        periodicTimer!.setEventHandler {
+        periodicTimer.startPeriodic(interval: 3) {
             self.cleanupClients()
             switch self.listener.state {
             case .failed:
@@ -124,7 +121,6 @@ class RtmpServer {
                 break
             }
         }
-        periodicTimer!.activate()
     }
 
     private func cleanupClients() {

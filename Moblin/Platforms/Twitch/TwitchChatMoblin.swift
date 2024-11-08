@@ -18,7 +18,7 @@ private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var badges: [String: TwitchApiChatBadgesVersion] = [:]
-    private var tryFetchAgainTimer: DispatchSourceTimer?
+    private var tryFetchAgainTimer = SimpleTimer(queue: .main)
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId
@@ -60,17 +60,13 @@ private class Badges {
     }
 
     private func startTryFetchAgainTimer() {
-        tryFetchAgainTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
-        tryFetchAgainTimer!.schedule(deadline: .now() + 30)
-        tryFetchAgainTimer!.setEventHandler { [weak self] in
+        tryFetchAgainTimer.startSingleShot(timeout: 30) { [weak self] in
             self?.tryFetch()
         }
-        tryFetchAgainTimer!.activate()
     }
 
     private func stopTryFetchAgainTimer() {
-        tryFetchAgainTimer?.cancel()
-        tryFetchAgainTimer = nil
+        tryFetchAgainTimer.stop()
     }
 
     private func addBadges(badges: [TwitchApiChatBadgesData]) {
@@ -86,7 +82,7 @@ private class Cheermotes {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
-    private var tryFetchAgainTimer: DispatchSourceTimer?
+    private var tryFetchAgainTimer = SimpleTimer(queue: .main)
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId
@@ -117,17 +113,13 @@ private class Cheermotes {
     }
 
     private func startTryFetchAgainTimer() {
-        tryFetchAgainTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
-        tryFetchAgainTimer!.schedule(deadline: .now() + 30)
-        tryFetchAgainTimer!.setEventHandler { [weak self] in
+        tryFetchAgainTimer.startSingleShot(timeout: 30) { [weak self] in
             self?.tryFetch()
         }
-        tryFetchAgainTimer!.activate()
     }
 
     private func stopTryFetchAgainTimer() {
-        tryFetchAgainTimer?.cancel()
-        tryFetchAgainTimer = nil
+        tryFetchAgainTimer.stop()
     }
 
     func getUrlAndBits(word: String) -> (URL, Int)? {

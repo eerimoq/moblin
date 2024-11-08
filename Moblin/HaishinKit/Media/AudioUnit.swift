@@ -35,7 +35,7 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var outputTimer: DispatchSourceTimer?
+    private var outputTimer = SimpleTimer(queue: lockQueue)
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?
@@ -139,18 +139,14 @@ private class ReplaceAudio {
         replace-audio: \(name): Start output with sample rate \(sampleRate) and \
         frame length \(frameLength)
         """)
-        outputTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        outputTimer?.schedule(deadline: .now(), repeating: 1 / (sampleRate / frameLength))
-        outputTimer?.setEventHandler { [weak self] in
+        outputTimer.startPeriodic(interval: 1 / (sampleRate / frameLength), initial: 0.0) { [weak self] in
             self?.output()
         }
-        outputTimer?.activate()
     }
 
     func stopOutput() {
         logger.info("replace-audio: \(name): Stopping output.")
-        outputTimer?.cancel()
-        outputTimer = nil
+        outputTimer.stop()
     }
 
     private func calcPresentationTimeStamp() -> CMTime {

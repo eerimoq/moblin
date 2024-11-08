@@ -448,7 +448,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var hypeTrainStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
     private var adsEndDate: Date?
-    private var hypeTrainTimer: DispatchSourceTimer?
+    private var hypeTrainTimer = SimpleTimer(queue: .main)
 
     private var workoutHeartRate: Int?
     private var workoutActiveEnergyBurned: Int?
@@ -8818,18 +8818,14 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainStatus = "LVL \(level), \(percentage)%"
     }
 
-    private func startHypeTrainTimer(deadline: DispatchTime) {
-        hypeTrainTimer = DispatchSource.makeTimerSource(queue: .main)
-        hypeTrainTimer!.schedule(deadline: deadline)
-        hypeTrainTimer!.setEventHandler { [weak self] in
+    private func startHypeTrainTimer(timeout: Double) {
+        hypeTrainTimer.startSingleShot(timeout: timeout) { [weak self] in
             self?.removeHypeTrain()
         }
-        hypeTrainTimer!.activate()
     }
 
     private func stopHypeTrainTimer() {
-        hypeTrainTimer?.cancel()
-        hypeTrainTimer = nil
+        hypeTrainTimer.stop()
     }
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
@@ -8837,7 +8833,7 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainProgress = event.progress
         hypeTrainGoal = event.goal
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
-        startHypeTrainTimer(deadline: .now() + 600)
+        startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent) {
@@ -8845,7 +8841,7 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainProgress = event.progress
         hypeTrainGoal = event.goal
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
-        startHypeTrainTimer(deadline: .now() + 600)
+        startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
@@ -8853,7 +8849,7 @@ extension Model: TwitchEventSubDelegate {
         hypeTrainProgress = 1
         hypeTrainGoal = 1
         updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
-        startHypeTrainTimer(deadline: .now() + 60)
+        startHypeTrainTimer(timeout: 60)
     }
 
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent) {

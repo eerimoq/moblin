@@ -17,7 +17,7 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     var stats: RistSenderStats?
     var adaptiveWeight: AdaptiveBitrateRistExperiment?
     private var state: RistPeerState = .connecting
-    private var connectingTimer: DispatchSourceTimer?
+    private var connectingTimer = SimpleTimer(queue: ristQueue)
     weak var stream: RistStream?
 
     init(interfaceName: String, peer: RistPeer, stream: RistStream) {
@@ -26,9 +26,7 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
         self.stream = stream
         adaptiveWeight = nil
         adaptiveWeight = AdaptiveBitrateRistExperiment(targetBitrate: weigthTargetBitrate, delegate: self)
-        connectingTimer = DispatchSource.makeTimerSource(queue: ristQueue)
-        connectingTimer!.schedule(deadline: .now() + 5)
-        connectingTimer!.setEventHandler { [weak self] in
+        connectingTimer.startSingleShot(timeout: 5) { [weak self] in
             guard let self else {
                 return
             }
@@ -36,7 +34,6 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
             self.state = .disconnected
             self.stream?.checkDisconnected()
         }
-        connectingTimer!.activate()
     }
 
     func setConnected() {
@@ -57,8 +54,7 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     }
 
     private func stopConnectingTimer() {
-        connectingTimer?.cancel()
-        connectingTimer = nil
+        connectingTimer.stop()
     }
 
     deinit {

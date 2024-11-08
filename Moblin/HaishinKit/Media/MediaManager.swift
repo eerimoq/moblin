@@ -75,7 +75,7 @@ class MediaManager {
     private var absolutePresentationTimeStamp = 0.0
     private var fps = 30.0
     private var sources: [MediaManagerSource] = []
-    private var timer: DispatchSourceTimer?
+    private var timer = SimpleTimer(queue: lockQueue)
 
     deinit {
         stop()
@@ -88,13 +88,10 @@ class MediaManager {
     }
 
     private func startInner() {
-        timer = DispatchSource.makeTimerSource(queue: lockQueue)
         let interval = 1 / fps
-        timer!.schedule(deadline: .now() + interval, repeating: interval)
-        timer!.setEventHandler { [weak self] in
+        timer.startPeriodic(interval: interval) { [weak self] in
             self?.handleTimeout()
         }
-        timer!.activate()
     }
 
     func stop() {
@@ -104,8 +101,7 @@ class MediaManager {
     }
 
     private func stopInner() {
-        timer?.cancel()
-        timer = nil
+        timer.stop()
     }
 
     func addSource(source: MediaManagerSource) {

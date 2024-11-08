@@ -25,7 +25,7 @@ class MediaPlayer {
     private var latestVideoTime: CMTime = .zero
     private var startAudioTime: CMTime = .zero
     private var latestAudioTime: CMTime = .zero
-    private var outputTimer: DispatchSourceTimer?
+    private var outputTimer = SimpleTimer(queue: mediaPlayerQueue)
     private var active = false
     private var filename = ""
     var delegate: (any MediaPlayerDelegate)?
@@ -269,17 +269,13 @@ class MediaPlayer {
     }
 
     private func startOutputTimer() {
-        outputTimer = DispatchSource.makeTimerSource(queue: mediaPlayerQueue)
-        outputTimer?.schedule(deadline: .now(), repeating: 0.3)
-        outputTimer?.setEventHandler { [weak self] in
+        outputTimer.startPeriodic(interval: 0.3, initial: 0) { [weak self] in
             self?.handleOutputTimer()
         }
-        outputTimer?.activate()
     }
 
     private func stopOutputTimer() {
-        outputTimer?.cancel()
-        outputTimer = nil
+        outputTimer.stop()
     }
 
     private func handleOutputTimer() {

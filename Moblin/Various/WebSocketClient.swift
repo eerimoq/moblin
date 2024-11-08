@@ -14,9 +14,9 @@ protocol WebSocketClientDelegate: AnyObject {
 
 final class WebSocketClient {
     private var webSocket: NWWebSocket
-    private var connectTimer: DispatchSourceTimer?
+    private var connectTimer = SimpleTimer(queue: .main)
     private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
-    private var pingTimer: DispatchSourceTimer?
+    private var pingTimer = SimpleTimer(queue: .main)
     private var pongReceived: Bool = true
     var delegate: (any WebSocketClientDelegate)?
     private let url: URL
@@ -68,28 +68,22 @@ final class WebSocketClient {
 
     private func startConnectTimer() {
         connected = false
-        connectTimer = DispatchSource.makeTimerSource(queue: .main)
-        connectTimer!.schedule(deadline: .now().advanced(by: .milliseconds(connectDelayMs)))
+        connectTimer.startSingleShot(timeout: Double(connectDelayMs) / 1000) { [weak self] in
+            self?.startInternal()
+        }
         connectDelayMs *= 2
         if connectDelayMs > longestDelayMs {
             connectDelayMs = longestDelayMs
         }
-        connectTimer!.setEventHandler { [weak self] in
-            self?.startInternal()
-        }
-        connectTimer!.activate()
     }
 
     private func stopConnectTimer() {
-        connectTimer?.cancel()
-        connectTimer = nil
+        connectTimer.stop()
     }
 
     private func startPingTimer() {
         pongReceived = true
-        pingTimer = DispatchSource.makeTimerSource(queue: .main)
-        pingTimer!.schedule(deadline: .now(), repeating: 5)
-        pingTimer!.setEventHandler { [weak self] in
+        pingTimer.startPeriodic(interval: 5, initial: 0) { [weak self] in
             guard let self else {
                 return
             }
@@ -101,12 +95,10 @@ final class WebSocketClient {
                 self.delegate?.webSocketClientDisconnected()
             }
         }
-        pingTimer!.activate()
     }
 
     private func stopPingTimer() {
-        pingTimer?.cancel()
-        pingTimer = nil
+        pingTimer.stop()
     }
 }
 

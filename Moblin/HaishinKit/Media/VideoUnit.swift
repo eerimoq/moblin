@@ -202,7 +202,7 @@ final class VideoUnit: NSObject {
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
     private var latestSampleBufferTime: ContinuousClock.Instant?
-    private var frameTimer: DispatchSourceTimer?
+    private var frameTimer = SimpleTimer(queue: lockQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
     private var latestSampleBufferAppendTime: CMTime = .zero
@@ -364,17 +364,13 @@ final class VideoUnit: NSObject {
 
     private func startFrameTimer() {
         let frameInterval = 1 / frameRate
-        frameTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        frameTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
-        frameTimer!.setEventHandler { [weak self] in
+        frameTimer.startPeriodic(interval: frameInterval) { [weak self] in
             self?.handleFrameTimer()
         }
-        frameTimer!.activate()
     }
 
     private func stopFrameTimer() {
-        frameTimer?.cancel()
-        frameTimer = nil
+        frameTimer.stop()
     }
 
     private func handleFrameTimer() {

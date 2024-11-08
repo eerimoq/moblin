@@ -24,7 +24,7 @@ class RemoteControlAssistant: NSObject {
     private var server: Server
     var connectionErrorMessage: String = ""
     private var streamerWebSocket: Telegraph.WebSocket?
-    private var retryStartTimer: DispatchSourceTimer?
+    private var retryStartTimer = SimpleTimer(queue: .main)
     private weak var delegate: (any RemoteControlAssistantDelegate)?
     private var streamerIdentified: Bool = false
     private var challenge: String = ""
@@ -198,17 +198,13 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func startRetryStartTimer() {
-        retryStartTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
-        retryStartTimer!.schedule(deadline: .now() + 5)
-        retryStartTimer!.setEventHandler {
+        retryStartTimer.startSingleShot(timeout: 5) {
             self.startInternal()
         }
-        retryStartTimer!.activate()
     }
 
     private func stopRetryStartTimer() {
-        retryStartTimer?.cancel()
-        retryStartTimer = nil
+        retryStartTimer.stop()
     }
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {

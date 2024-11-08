@@ -340,6 +340,7 @@
 		03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */; };
 		03AD38D22C5280B300824980 /* TextFormatStringLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */; };
 		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
+		03ADC6FD2CDDE01100E625BF /* SimpleTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */; };
 		03AE56142BEA74D500FE8427 /* Rist in Frameworks */ = {isa = PBXBuildFile; productRef = 03AE56132BEA74D500FE8427 /* Rist */; };
 		03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
 		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
@@ -883,6 +884,7 @@
 		03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationSettingsView.swift; sourceTree = "<group>"; };
 		03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormatStringLoader.swift; sourceTree = "<group>"; };
 		03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButtonsSettingsView.swift; sourceTree = "<group>"; };
+		03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTimer.swift; sourceTree = "<group>"; };
 		03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsSettingsView.swift; sourceTree = "<group>"; };
 		03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsRecordingSettingsView.swift; sourceTree = "<group>"; };
 		03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettingsView.swift; sourceTree = "<group>"; };
@@ -2431,6 +2433,7 @@
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
+				03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */,
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03510DDB2C7661A400FD3A27 /* SpeechToText.swift */,
@@ -3087,6 +3090,7 @@
 				03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */,
 				0391D2052CB30029008AB44B /* UnmuteIntent.swift in Sources */,
 				03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */,
+				03ADC6FD2CDDE01100E625BF /* SimpleTimer.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0359F8F22BD3DA61005BFDA8 /* RTMPSocket.swift in Sources */,
 				0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */,

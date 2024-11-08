@@ -31,8 +31,8 @@ class RemoteConnection {
         }
     }
 
-    private var connectTimer: DispatchSourceTimer?
-    private var keepaliveTimer: DispatchSourceTimer?
+    private var connectTimer = SimpleTimer(queue: srtlaClientQueue)
+    private var keepaliveTimer = SimpleTimer(queue: srtlaClientQueue)
     private var latestReceivedTime = ContinuousClock.now
     private var latestSentTime = ContinuousClock.now
     private var packetsInFlight: Set<UInt32> = []
@@ -172,10 +172,8 @@ class RemoteConnection {
     }
 
     private func cancelAllTimers() {
-        keepaliveTimer?.cancel()
-        keepaliveTimer = nil
-        connectTimer?.cancel()
-        connectTimer = nil
+        keepaliveTimer.stop()
+        connectTimer.stop()
     }
 
     private func handleStateUpdate(to state: NWConnection.State) {
@@ -183,12 +181,9 @@ class RemoteConnection {
         switch state {
         case .ready:
             cancelAllTimers()
-            connectTimer = DispatchSource.makeTimerSource(queue: srtlaClientQueue)
-            connectTimer!.schedule(deadline: .now() + 5)
-            connectTimer!.setEventHandler {
+            connectTimer.startSingleShot(timeout: 5) {
                 self.reconnect(reason: "Connection timeout")
             }
-            connectTimer!.activate()
             latestReceivedTime = .now
             latestSentTime = .now
             packetsInFlight.removeAll()
@@ -196,8 +191,7 @@ class RemoteConnection {
             windowSize = windowDefault * windowMultiply
             if type == nil {
                 self.state = .registered
-                connectTimer?.cancel()
-                connectTimer = nil
+                connectTimer.stop()
             } else if self.state == .shouldSendRegisterRequest || hasGroupId {
                 sendSrtlaReg2()
             } else {
@@ -363,11 +357,8 @@ class RemoteConnection {
         }
         state = .registered
         onRegistered?()
-        connectTimer?.cancel()
-        connectTimer = nil
-        keepaliveTimer = DispatchSource.makeTimerSource(queue: srtlaClientQueue)
-        keepaliveTimer!.schedule(deadline: .now() + 1, repeating: 1)
-        keepaliveTimer!.setEventHandler {
+        connectTimer.stop()
+        keepaliveTimer.startPeriodic(interval: 1) {
             let now = ContinuousClock.now
             if self.latestSentTime < now - .seconds(0.5) {
                 self.sendSrtlaKeepalive()
@@ -376,7 +367,6 @@ class RemoteConnection {
                 self.reconnect(reason: "No packet received in 5 seconds")
             }
         }
-        keepaliveTimer!.activate()
     }
 
     private func handleSrtlaRegErr() {

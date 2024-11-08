@@ -13,7 +13,7 @@ class SrtlaServerClient {
     private var latestConnection: SrtlaServerClientConnection?
     let createdAt: ContinuousClock.Instant = .now
     private var naks: [UInt32] = []
-    private var periodicNakTimer: DispatchSourceTimer?
+    private var periodicNakTimer = SimpleTimer(queue: srtlaServerQueue)
     private var latestNakTimestamp: UInt32?
     private var latestNakDestinationSrtSocketId: UInt32?
 
@@ -42,17 +42,13 @@ class SrtlaServerClient {
     }
 
     private func startPeriodicNakTimer() {
-        periodicNakTimer = DispatchSource.makeTimerSource(queue: srtlaServerQueue)
-        periodicNakTimer!.schedule(deadline: .now() + 0.1, repeating: 0.1)
-        periodicNakTimer!.setEventHandler { [weak self] in
+        periodicNakTimer.startPeriodic(interval: 0.1) { [weak self] in
             self?.handlePeriodicNakTimer()
         }
-        periodicNakTimer!.activate()
     }
 
     private func stopPeriodicNakTimer() {
-        periodicNakTimer?.cancel()
-        periodicNakTimer = nil
+        periodicNakTimer.stop()
     }
 
     private func handlePeriodicNakTimer() {
