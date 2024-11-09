@@ -137,7 +137,9 @@ class RtmpServer {
         logger.info("rtmp-server: State change to \(state)")
         switch state {
         case .ready:
-            logger.info("rtmp-server: Listening on port \(listener.port!.rawValue)")
+            if let port = listener.port {
+                logger.info("rtmp-server: Listening on port \(port.rawValue)")
+            }
         default:
             break
         }
