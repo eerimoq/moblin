@@ -18,6 +18,7 @@ private struct RemoteControlRequestResponse {
 class RemoteControlAssistant: NSObject {
     private let port: UInt16
     private let password: String
+    private let httpProxy: HttpProxy?
     private var connected: Bool = false
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
@@ -39,11 +40,13 @@ class RemoteControlAssistant: NSObject {
     init(
         port: UInt16,
         password: String,
-        delegate: RemoteControlAssistantDelegate
+        delegate: RemoteControlAssistantDelegate,
+        httpProxy: HttpProxy?
     ) {
         self.port = port
         self.password = password
         self.delegate = delegate
+        self.httpProxy = httpProxy
         encryption = RemoteControlEncryption(password: password)
         server = Server()
         super.init()
@@ -244,7 +247,7 @@ class RemoteControlAssistant: NSObject {
             case let .preview(preview: preview):
                 try handlePreview(preview: preview)
             case let .twitchStart(channelId: channelId, accessToken: accessToken):
-                try handleTwitchStart(channelId: channelId, accessToken: accessToken)
+                try handleTwitchStart(channelId: channelId, accessToken: accessToken, httpProxy: httpProxy)
             case .twitchStop:
                 try handleTwitchStop()
             }
@@ -316,7 +319,7 @@ class RemoteControlAssistant: NSObject {
         delegate?.remoteControlAssistantPreview(preview: preview)
     }
 
-    private func handleTwitchStart(channelId: String, accessToken: String) throws {
+    private func handleTwitchStart(channelId: String, accessToken: String, httpProxy: HttpProxy?) throws {
         guard streamerIdentified else {
             throw "Streamer not identified"
         }
@@ -341,6 +344,7 @@ class RemoteControlAssistant: NSObject {
             remoteControl: false,
             userId: channelId,
             accessToken: accessToken,
+            httpProxy: httpProxy,
             delegate: self
         )
         twitchEventSub?.start()

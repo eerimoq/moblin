@@ -133,6 +133,11 @@ struct DebugSettingsView: View {
                     model.database.debug!.lowAdaptiveEncoderResolution = value
                     model.setLowAdaptiveEncoderResolution()
                 }))
+                NavigationLink {
+                    DebugHttpProxySettingsView()
+                } label: {
+                    Text("HTTP proxy")
+                }
             } header: {
                 Text("Experimental")
             }

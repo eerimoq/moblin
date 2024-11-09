@@ -1171,6 +1171,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        // let parameters = NWParameters.tls
+        // if #available(iOS 17.0, *) {
+        //     let endpoint = NWEndpoint.hostPort(host: "mys-lang.org", port: 8889)
+        //     let proxyConfiguration = ProxyConfiguration.init(httpCONNECTProxy: endpoint)
+        //     let context = NWParameters.PrivacyContext(description: "HTTP Proxy")
+        //     context.proxyConfigurations = [proxyConfiguration]
+        //     parameters.setPrivacyContext(context)
+        // }
+        // let connection = NWConnection(to: .url(URL(string: "https://afekoge.com/asd")!), using: parameters)
+        // let configuration = URLSessionConfiguration.default
+        // if #available(iOS 17, *) {
+        //     configuration.proxyConfigurations = [
+        //         .init(httpCONNECTProxy: .hostPort(host: "mys-lang.org", port: 10000))
+        //     ]
+        // }
+        // let session = URLSession(configuration: configuration)
+        // Task {
+        //     do {
+        //         let a = try await httpGet(from: URL(string: "https://mys-lang.org/asdf")!, session:
+        //         session)
+        //         logger.info("xxx ok: \(a)")
+        //     } catch {
+        //         logger.info("xxx error: \(error)")
+        //     }
+        // }
         AppDependencyManager.shared.add(dependency: self)
         faxReceiver.delegate = self
         fixAlertMedias()
@@ -3549,7 +3574,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadOpenStreamingPlatformChat()
     }
 
-    private func reloadConnections() {
+    func reloadConnections() {
         reloadChats()
         reloadTwitchPubSub()
         reloadTwitchEventSub()
@@ -3889,9 +3914,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,
                 settings: stream.chat!,
-                accessToken: stream.twitchAccessToken!
+                accessToken: stream.twitchAccessToken!,
+                httpProxy: httpProxy()
             )
         }
+    }
+
+    private func httpProxy() -> HttpProxy? {
+        return settings.database.debug!.httpProxy!.toHttpProxy()
     }
 
     private func reloadTwitchPubSub() {
@@ -3910,6 +3940,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 remoteControl: isRemoteControlStreamerConnected(),
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken!,
+                httpProxy: httpProxy(),
                 delegate: self
             )
             twitchEventSub!.start()
@@ -4056,7 +4087,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let url = URL(string: stream.obsWebSocketUrl!) else {
             return
         }
-        obsWebSocket = ObsWebSocket(url: url, password: stream.obsWebSocketPassword!, delegate: self)
+        obsWebSocket = ObsWebSocket(
+            url: url,
+            password: stream.obsWebSocketPassword!,
+            delegate: self
+        )
         obsWebSocket!.start()
     }
 
@@ -6521,7 +6556,8 @@ extension Model {
         remoteControlAssistant = RemoteControlAssistant(
             port: database.remoteControl!.client.port,
             password: database.remoteControl!.password!,
-            delegate: self
+            delegate: self,
+            httpProxy: httpProxy()
         )
         remoteControlAssistant!.start()
     }

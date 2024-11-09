@@ -1812,6 +1812,20 @@ class SettingsDebugBeautyFilter: Codable {
     var smoothRadius: Float? = 20.0
 }
 
+class SettingsHttpProxy: Codable {
+    var enabled: Bool = false
+    var host: String = ""
+    var port: UInt16 = 3128
+
+    func toHttpProxy() -> HttpProxy? {
+        if enabled {
+            return .init(host: host, port: port)
+        } else {
+            return nil
+        }
+    }
+}
+
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
@@ -1835,6 +1849,7 @@ class SettingsDebug: Codable {
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
     var lowAdaptiveEncoderResolution: Bool? = false
+    var httpProxy: SettingsHttpProxy? = .init()
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -4307,6 +4322,10 @@ final class Settings {
         }
         if realDatabase.debug!.lowAdaptiveEncoderResolution == nil {
             realDatabase.debug!.lowAdaptiveEncoderResolution = false
+            store()
+        }
+        if realDatabase.debug!.httpProxy == nil {
+            realDatabase.debug!.httpProxy = .init()
             store()
         }
     }

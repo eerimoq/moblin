@@ -509,3 +509,8 @@ func formatCommercialStartedDuration(seconds: Int) -> String {
         return "\(seconds) seconds"
     }
 }
+
+struct HttpProxy {
+    var host: String
+    var port: UInt16
+}

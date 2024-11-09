@@ -256,18 +256,26 @@ final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
     private var remoteControl: Bool
     private let userId: String
+    private let httpProxy: HttpProxy?
     private var sessionId: String = ""
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
     private var started = false
 
-    init(remoteControl: Bool, userId: String, accessToken: String, delegate: TwitchEventSubDelegate) {
+    init(
+        remoteControl: Bool,
+        userId: String,
+        accessToken: String,
+        httpProxy: HttpProxy?,
+        delegate: TwitchEventSubDelegate
+    ) {
         self.remoteControl = remoteControl
         self.userId = userId
+        self.httpProxy = httpProxy
         self.delegate = delegate
         twitchApi = TwitchApi(accessToken: accessToken)
-        webSocket = .init(url: url)
+        webSocket = .init(url: url, httpProxy: httpProxy)
         super.init()
         twitchApi.delegate = self
     }
@@ -281,7 +289,7 @@ final class TwitchEventSub: NSObject {
 
     private func connect() {
         connected = false
-        webSocket = .init(url: url)
+        webSocket = .init(url: url, httpProxy: httpProxy)
         webSocket.delegate = self
         if !remoteControl {
             webSocket.start()

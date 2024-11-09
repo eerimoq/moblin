@@ -163,7 +163,13 @@ final class TwitchChatMoblin {
         webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
     }
 
-    func start(channelName: String, channelId: String, settings: SettingsStreamChat, accessToken: String) {
+    func start(
+        channelName: String,
+        channelId: String,
+        settings: SettingsStreamChat,
+        accessToken: String,
+        httpProxy: HttpProxy?
+    ) {
         self.channelName = channelName
         logger.debug("twitch: chat: Start")
         stopInternal()
@@ -176,7 +182,7 @@ final class TwitchChatMoblin {
         )
         badges.start(channelId: channelId, accessToken: accessToken)
         cheermotes.start(channelId: channelId, accessToken: accessToken)
-        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!)
+        webSocket = .init(url: URL(string: "wss://irc-ws.chat.twitch.tv")!, httpProxy: httpProxy)
         webSocket.delegate = self
         webSocket.start()
     }

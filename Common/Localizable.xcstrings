@@ -34551,6 +34551,9 @@
         }
       }
     },
+    "Currently only used for Twitch websockets. Authentication may be added later." : {
+
+    },
     "Custom" : {
       "localizations" : {
         "de" : {
@@ -55611,6 +55614,9 @@
         }
       }
     },
+    "Host" : {
+
+    },
     "Host missing" : {
       "localizations" : {
         "de" : {
@@ -55740,6 +55746,9 @@
           }
         }
       }
+    },
+    "HTTP proxy" : {
+
     },
     "Icons in store" : {
       "localizations" : {

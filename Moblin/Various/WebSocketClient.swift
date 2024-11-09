@@ -22,9 +22,18 @@ final class WebSocketClient {
     private let url: URL
     private var connected = false
     private var connectDelayMs = shortestDelayMs
+    private let proxyConfig: NWWebSocketProxyConfig?
 
-    init(url: URL) {
+    init(url: URL, httpProxy: HttpProxy? = nil) {
         self.url = url
+        if let httpProxy {
+            proxyConfig = NWWebSocketProxyConfig(endpoint: .hostPort(
+                host: .init(httpProxy.host),
+                port: .init(integerLiteral: httpProxy.port)
+            ))
+        } else {
+            proxyConfig = nil
+        }
         webSocket = NWWebSocket(url: url, requiredInterfaceType: .cellular)
     }
 
@@ -47,7 +56,7 @@ final class WebSocketClient {
     private func startInternal() {
         stopInternal()
         if let interfaceType = networkInterfaceTypeSelector.getNextType() {
-            webSocket = NWWebSocket(url: url, requiredInterfaceType: interfaceType)
+            webSocket = NWWebSocket(url: url, requiredInterfaceType: interfaceType, proxyConfig: proxyConfig)
             logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
             webSocket.connect()
