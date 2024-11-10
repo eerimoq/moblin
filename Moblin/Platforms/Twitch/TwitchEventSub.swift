@@ -268,13 +268,14 @@ final class TwitchEventSub: NSObject {
         userId: String,
         accessToken: String,
         httpProxy: HttpProxy?,
+        urlSession: URLSession,
         delegate: TwitchEventSubDelegate
     ) {
         self.remoteControl = remoteControl
         self.userId = userId
         self.httpProxy = httpProxy
         self.delegate = delegate
-        twitchApi = TwitchApi(accessToken: accessToken)
+        twitchApi = TwitchApi(accessToken, urlSession)
         webSocket = .init(url: url, httpProxy: httpProxy)
         super.init()
         twitchApi.delegate = self

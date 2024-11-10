@@ -449,6 +449,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var adsRemainingTimerStatus = noValue
     private var adsEndDate: Date?
     private var hypeTrainTimer = SimpleTimer(queue: .main)
+    var urlSession = URLSession.shared
 
     private var workoutHeartRate: Int?
     private var workoutActiveEnergyBurned: Int?
@@ -799,7 +800,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func createStreamMarker() {
-        TwitchApi(accessToken: stream.twitchAccessToken!)
+        TwitchApi(stream.twitchAccessToken!, urlSession)
             .createStreamMarker(userId: stream.twitchChannelId) { data in
                 if data != nil {
                     self.makeToast(title: String(localized: "Stream marker created"))
@@ -1169,31 +1170,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
-        // let parameters = NWParameters.tls
-        // if #available(iOS 17.0, *) {
-        //     let endpoint = NWEndpoint.hostPort(host: "mys-lang.org", port: 8889)
-        //     let proxyConfiguration = ProxyConfiguration.init(httpCONNECTProxy: endpoint)
-        //     let context = NWParameters.PrivacyContext(description: "HTTP Proxy")
-        //     context.proxyConfigurations = [proxyConfiguration]
-        //     parameters.setPrivacyContext(context)
-        // }
-        // let connection = NWConnection(to: .url(URL(string: "https://afekoge.com/asd")!), using: parameters)
-        // let configuration = URLSessionConfiguration.default
-        // if #available(iOS 17, *) {
-        //     configuration.proxyConfigurations = [
-        //         .init(httpCONNECTProxy: .hostPort(host: "mys-lang.org", port: 10000))
-        //     ]
-        // }
-        // let session = URLSession(configuration: configuration)
-        // Task {
-        //     do {
-        //         let a = try await httpGet(from: URL(string: "https://mys-lang.org/asdf")!, session:
-        //         session)
-        //         logger.info("xxx ok: \(a)")
-        //     } catch {
-        //         logger.info("xxx error: \(error)")
-        //     }
-        // }
+        createUrlSession()
         AppDependencyManager.shared.add(dependency: self)
         faxReceiver.delegate = self
         fixAlertMedias()
@@ -3293,7 +3270,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startAds(seconds: Int) {
-        TwitchApi(accessToken: stream.twitchAccessToken!)
+        TwitchApi(stream.twitchAccessToken!, urlSession)
             .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
                 if let data {
                     self.makeToast(title: data.message)
@@ -3588,6 +3565,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRemoteControlStreamer()
         reloadRemoteControlAssistant()
         reloadKickViewers()
+    }
+
+    func createUrlSession() {
+        urlSession = URLSession.create(httpProxy: httpProxy())
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -3921,7 +3902,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 channelId: stream.twitchChannelId,
                 settings: stream.chat!,
                 accessToken: stream.twitchAccessToken!,
-                httpProxy: httpProxy()
+                httpProxy: httpProxy(),
+                urlSession: urlSession
             )
         }
     }
@@ -3947,6 +3929,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken!,
                 httpProxy: httpProxy(),
+                urlSession: urlSession,
                 delegate: self
             )
             twitchEventSub!.start()
@@ -3955,7 +3938,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func fetchTwitchRewards() {
-        TwitchApi(accessToken: stream.twitchAccessToken!)
+        TwitchApi(stream.twitchAccessToken!, urlSession)
             .getChannelPointsCustomRewards(broadcasterId: stream.twitchChannelId) { rewards in
                 guard let rewards else {
                     logger.info("Failed to get Twitch rewards")
@@ -3986,7 +3969,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(accessToken: stream.twitchAccessToken!)
+        TwitchApi(stream.twitchAccessToken!, urlSession)
             .getChannelInformation(broadcasterId: stream.twitchChannelId) { channelInformation in
                 guard let channelInformation else {
                     return
@@ -4000,7 +3983,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(accessToken: stream.twitchAccessToken!)
+        TwitchApi(stream.twitchAccessToken!, urlSession)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId, category: nil,
                                       title: title)
         { ok in
@@ -4015,7 +3998,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             makeNotLoggedInToTwitchToast()
             return
         }
-        TwitchApi(accessToken: stream.twitchAccessToken!)
+        TwitchApi(stream.twitchAccessToken!, urlSession)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
                     self.makeErrorToast(title: "Failed to send chat message")
@@ -4542,7 +4525,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if message.platform == .twitch {
                 if permissions.minimumSubscriberTier! > 1 {
                     if let userId = message.userId {
-                        TwitchApi(accessToken: stream.twitchAccessToken!).getBroadcasterSubscriptions(
+                        TwitchApi(stream.twitchAccessToken!, urlSession).getBroadcasterSubscriptions(
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in
@@ -6563,7 +6546,8 @@ extension Model {
             port: database.remoteControl!.client.port,
             password: database.remoteControl!.password!,
             delegate: self,
-            httpProxy: httpProxy()
+            httpProxy: httpProxy(),
+            urlSession: urlSession
         )
         remoteControlAssistant!.start()
     }
@@ -8702,7 +8686,7 @@ extension Model {
             stream.twitchAccessToken = accessToken
             self.showTwitchAuth = false
             self.wizardShowTwitchAuth = false
-            TwitchApi(accessToken: accessToken).getUserInfo { info in
+            TwitchApi(accessToken, self.urlSession).getUserInfo { info in
                 guard let info else {
                     return
                 }

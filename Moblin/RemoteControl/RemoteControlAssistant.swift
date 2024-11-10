@@ -19,6 +19,7 @@ class RemoteControlAssistant: NSObject {
     private let port: UInt16
     private let password: String
     private let httpProxy: HttpProxy?
+    private let urlSession: URLSession
     private var connected: Bool = false
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
@@ -41,12 +42,14 @@ class RemoteControlAssistant: NSObject {
         port: UInt16,
         password: String,
         delegate: RemoteControlAssistantDelegate,
-        httpProxy: HttpProxy?
+        httpProxy: HttpProxy?,
+        urlSession: URLSession
     ) {
         self.port = port
         self.password = password
         self.delegate = delegate
         self.httpProxy = httpProxy
+        self.urlSession = urlSession
         encryption = RemoteControlEncryption(password: password)
         server = Server()
         super.init()
@@ -247,7 +250,12 @@ class RemoteControlAssistant: NSObject {
             case let .preview(preview: preview):
                 try handlePreview(preview: preview)
             case let .twitchStart(channelId: channelId, accessToken: accessToken):
-                try handleTwitchStart(channelId: channelId, accessToken: accessToken, httpProxy: httpProxy)
+                try handleTwitchStart(
+                    channelId: channelId,
+                    accessToken: accessToken,
+                    httpProxy: httpProxy,
+                    urlSession: urlSession
+                )
             case .twitchStop:
                 try handleTwitchStop()
             }
@@ -319,7 +327,12 @@ class RemoteControlAssistant: NSObject {
         delegate?.remoteControlAssistantPreview(preview: preview)
     }
 
-    private func handleTwitchStart(channelId: String, accessToken: String, httpProxy: HttpProxy?) throws {
+    private func handleTwitchStart(
+        channelId: String,
+        accessToken: String,
+        httpProxy: HttpProxy?,
+        urlSession: URLSession
+    ) throws {
         guard streamerIdentified else {
             throw "Streamer not identified"
         }
@@ -345,6 +358,7 @@ class RemoteControlAssistant: NSObject {
             userId: channelId,
             accessToken: accessToken,
             httpProxy: httpProxy,
+            urlSession: urlSession,
             delegate: self
         )
         twitchEventSub?.start()

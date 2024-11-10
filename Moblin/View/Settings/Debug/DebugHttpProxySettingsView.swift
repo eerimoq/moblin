@@ -10,6 +10,7 @@ struct DebugHttpProxySettingsView: View {
                     model.database.debug!.httpProxy!.enabled
                 }, set: { value in
                     model.database.debug!.httpProxy!.enabled = value
+                    model.createUrlSession()
                     model.reloadConnections()
                 }))
                 TextEditNavigationView(
@@ -17,6 +18,7 @@ struct DebugHttpProxySettingsView: View {
                     value: model.database.debug!.httpProxy!.host
                 ) {
                     model.database.debug!.httpProxy!.host = $0.trim()
+                    model.createUrlSession()
                     model.reloadConnections()
                 }
                 TextEditNavigationView(
@@ -27,6 +29,7 @@ struct DebugHttpProxySettingsView: View {
                         return
                     }
                     model.database.debug!.httpProxy!.port = port
+                    model.createUrlSession()
                     model.reloadConnections()
                 }
             } footer: {
