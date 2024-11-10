@@ -43,8 +43,6 @@ class SrtServerClient {
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
                     let packet = try MpegTsPacket(reader: reader)
-                    // logger.info("srt-server: Packet random access \(packet.adaptationField?.randomAccessIndicator)
-                    // payload start \(packet.payloadUnitStartIndicator)")
                     if packet.id == MpegTsPacket.programAssociationTableId {
                         try handleProgramAssociationTable(packet: packet)
                     } else if let programNumber = programs[packet.id] {
@@ -54,7 +52,7 @@ class SrtServerClient {
                     }
                 }
             } catch {
-                logger.info("srt-server: Got corrupt packet \(error).")
+                logger.info("srt-server-client: Got corrupt packet \(error).")
             }
         }
         srt_close(clientSocket)
@@ -229,7 +227,7 @@ class SrtServerClient {
             return
         }
         guard let audioFormat = AVAudioFormat(streamDescription: streamBasicDescription) else {
-            logger.info("srt-server: Failed to create audio format")
+            logger.info("srt-server-client: Failed to create audio format")
             audioBuffer = nil
             audioDecoder = nil
             return
@@ -246,19 +244,19 @@ class SrtServerClient {
             interleaved: audioFormat.isInterleaved
         )
         guard let pcmAudioFormat else {
-            logger.info("srt-server: Failed to create PCM audio format")
+            logger.info("srt-server-client: Failed to create PCM audio format")
             return
         }
-        logger.info("srt-server: in: \(audioFormat), out: \(pcmAudioFormat)")
+        logger.info("srt-server-client: in: \(audioFormat), out: \(pcmAudioFormat)")
         audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
         if audioDecoder == nil {
-            logger.info("srt-server: Failed to create audio decdoer")
+            logger.info("srt-server-client: Failed to create audio decdoer")
         }
     }
 
     private func handleVideoFormatDescription(_ formatDescription: CMFormatDescription) {
         let dimentions = CMVideoFormatDescriptionGetDimensions(formatDescription)
-        logger.info("srt-server: Got new video dimensions \(dimentions)")
+        logger.info("srt-server-client: Got new video dimensions \(dimentions)")
         videoDecoder?.stopRunning()
         videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
         videoDecoder?.formatDescription = formatDescription
@@ -403,14 +401,9 @@ class SrtServerClient {
 }
 
 extension SrtServerClient: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {
-        // logger.info("srt-server: Decoded format description
-        // \(CMVideoFormatDescriptionGetDimensions(formatDescription))")
-    }
+    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
 
     func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        // logger.info("srt-server: Decoded frame dimensions
-        // \(sampleBuffer.imageBuffer?.width ?? -1) \(sampleBuffer.imageBuffer?.height ?? -1)")
         server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
             streamId: streamId,
             sampleBuffer: sampleBuffer

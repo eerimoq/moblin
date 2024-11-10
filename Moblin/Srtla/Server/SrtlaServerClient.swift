@@ -65,7 +65,6 @@ class SrtlaServerClient {
             writer.writeUInt32(sn)
         }
         let packet = writer.data
-        // logger.info("xxx nak packet \(packet)")
         sendPacketOnLatestConnection(packet: packet)
     }
 
