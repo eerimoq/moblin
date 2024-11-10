@@ -17,7 +17,7 @@ final class WebSocketClient {
     private var connectTimer = SimpleTimer(queue: .main)
     private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
     private var pingTimer = SimpleTimer(queue: .main)
-    private var pongReceived: Bool = true
+    private var pongReceived = true
     var delegate: (any WebSocketClientDelegate)?
     private let url: URL
     private var connected = false
