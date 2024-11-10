@@ -8,7 +8,35 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.387.0", date: "2024-10-26", changes: [
+    Version(version: "0.387.0", date: "2024-11-09", changes: [
+        "• Experimental 1440p (downscaled from 4K camera).",
+        "• Fix SRT(LA) server mic not in list of mics.",
+        "• Potential fix for audio and video out of sync when starting SRT(LA) stream with cinematic stabilization.",
+        "  • Quite big changes to timestamp handling in general for SRT(LA) publisher.",
+        "• Re•add zoom icon in top left of UI when in expanded view. :bulb: DJMarkOxford",
+        "• Quite big changes to the SRT(LA) server timestamp handling.",
+        "• Watch companion app.",
+        "  • Change players on padel scoreboard.",
+        "  • Padel scoreboard in separate tab.",
+        "  • Create stream marker button.",
+        "• Adaptive resolution and FPS when low bitrate.",
+        "  • Enable Settings → Streams → My stream → Video → Adaptive resolution and/or FPS to lower the resolution and/or FPS when bitrate is < 750k.",
+        "  • Enable Settings → Debug → \"Low adaptive encoder resolution\" for extra low resolutions.",
+        "• Support for adaptive bitrate in the SRT(LA) server.",
+        "• Fix widget type selection for non•english languages. :bug: Alfa and djandrea.",
+        "• Live and record toggles in remote control assistant.",
+        "• Fix(?) SRT(LA) server crash?",
+        "• Wider chat text border.",
+        "• Fix/workaround broken recordings. :bug: nn2p",
+        "  • Save as fragmented MP4 instead of MP4.",
+        "  • Automatically start a new recording on failure (if last recording is >60 seconds).",
+        "• More robust SRT(LA) server adaptive resolution handling.",
+        "• Allow bitrate presets down to 50kbps.",
+        "• Fix changing adaptive bitrate algorithm when live.",
+        "• Fix SRTLA server crash.",
+        "• Make the SRTLA server retransmit SRT NAKs as they are often lost.",
+        "• Optional HTTP proxy config for Twitch websockets.",
+        "  • Settings → Debug → HTTP proxy.",
     ]),
     Version(version: "0.386.0", date: "2024-10-26", changes: [
         "• ??? 💡 erik",
@@ -132,7 +160,7 @@ private let versions = [
         "• Do not show AM/PM to make the clock fit on a single line.",
         "• Add 10 Mbps bitrate to DJI device settings. 💡 SoWeQ",
         "• Print chat messages toggle.",
-        "  • Settings -> Cat pritners -> My printer -> Print chat.",
+        "  • Settings → Cat pritners → My printer → Print chat.",
     ]),
     Version(version: "0.381.0", date: "2024-09-15", changes: [
         "• Cat printer support.",
