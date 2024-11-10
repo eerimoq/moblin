@@ -1229,7 +1229,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setPixelFormat()
         setMetalPetalFilters()
         setHigherDataRateLimit()
-        setUseVideoForTimestamps()
         setupAudioSession()
         reloadSpeechToText()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -1402,14 +1401,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setHigherDataRateLimit() {
         videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
-    }
-
-    func setUseVideoForTimestamps() {
-        if database.debug!.useVideoForTimestamps! {
-            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
-        } else {
-            mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.audioPacketId
-        }
     }
 
     func setMapPitch() {

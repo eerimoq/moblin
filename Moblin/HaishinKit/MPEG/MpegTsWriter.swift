@@ -3,7 +3,6 @@ import CoreMedia
 import Foundation
 
 var payloadSize: Int = 1316
-var mpegTsWriterProgramClockReferencePacketId = MpegTsWriter.videoPacketId
 
 protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutput data: Data)
@@ -238,7 +237,7 @@ class MpegTsWriter {
     }
 
     private func writeProgram() {
-        programMappingTable.programClockReferencePacketId = mpegTsWriterProgramClockReferencePacketId
+        programMappingTable.programClockReferencePacketId = MpegTsWriter.audioPacketId
         var patPacket = programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId)
         var pmtPacket = programMappingTable.packet(MpegTsWriter.programMappingTablePacketId)
         patPacket.continuityCounter =
@@ -260,7 +259,7 @@ class MpegTsWriter {
                        timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
-        if mpegTsWriterProgramClockReferencePacketId == packetId {
+        if packetId == MpegTsWriter.audioPacketId {
             if timestamp.seconds - (programClockReferenceTimestamp?.seconds ?? 0) >= 0.02 {
                 programClockReference = UInt64(max(timestamp.seconds, 0) * TSTimestamp.resolution)
                 programClockReferenceTimestamp = timestamp

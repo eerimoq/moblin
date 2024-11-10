@@ -115449,6 +115449,7 @@
       }
     },
     "Use video for timestamps" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -1843,7 +1843,6 @@ class SettingsDebug: Codable {
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
     var higherDataRateLimit: Bool? = true
-    var useVideoForTimestamps: Bool? = false
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
@@ -4002,10 +4001,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.twitchLoggedIn == nil {
             stream.twitchLoggedIn = false
-            store()
-        }
-        if realDatabase.debug!.useVideoForTimestamps == nil {
-            realDatabase.debug!.useVideoForTimestamps = false
             store()
         }
         if realDatabase.alertsMediaGallery == nil {

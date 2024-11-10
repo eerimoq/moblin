@@ -99,12 +99,6 @@ struct DebugSettingsView: View {
                     model.database.debug!.higherDataRateLimit = value
                     model.setHigherDataRateLimit()
                 }))
-                Toggle("Use video for timestamps", isOn: Binding(get: {
-                    model.database.debug!.useVideoForTimestamps!
-                }, set: { value in
-                    model.database.debug!.useVideoForTimestamps = value
-                    model.setUseVideoForTimestamps()
-                }))
                 HStack {
                     Text("Max map pitch")
                     Slider(
