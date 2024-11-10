@@ -1848,7 +1848,6 @@ class SettingsDebug: Codable {
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
-    var lowAdaptiveEncoderResolution: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
     var keepSpeakerAlive: Bool? = false
 }
@@ -4319,10 +4318,6 @@ final class Settings {
         }
         for stream in database.streams where stream.adaptiveEncoderFps == nil {
             stream.adaptiveEncoderFps = false
-            store()
-        }
-        if realDatabase.debug!.lowAdaptiveEncoderResolution == nil {
-            realDatabase.debug!.lowAdaptiveEncoderResolution = false
             store()
         }
         if realDatabase.debug!.httpProxy == nil {

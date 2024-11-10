@@ -127,12 +127,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.twitchRewards = value
                 }))
-                Toggle("Low adaptive encoder resolution", isOn: Binding(get: {
-                    model.database.debug!.lowAdaptiveEncoderResolution!
-                }, set: { value in
-                    model.database.debug!.lowAdaptiveEncoderResolution = value
-                    model.setLowAdaptiveEncoderResolution()
-                }))
                 NavigationLink {
                     DebugHttpProxySettingsView()
                 } label: {

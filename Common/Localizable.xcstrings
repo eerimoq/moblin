@@ -61096,6 +61096,7 @@
       }
     },
     "Low adaptive encoder resolution" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -916,10 +916,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func setLowAdaptiveEncoderResolution() {
-        videoCodecLowAdaptiveEncoderResolution = database.debug!.lowAdaptiveEncoderResolution!
-    }
-
     func setAllowVideoRangePixelFormat() {
         allowVideoRangePixelFormat = database.debug!.allowVideoRangePixelFormat!
     }
@@ -1204,7 +1200,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
-        setLowAdaptiveEncoderResolution()
         audioUnitRemoveWindNoise = database.debug!.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!

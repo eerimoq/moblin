@@ -4,7 +4,6 @@ import UIKit
 import VideoToolbox
 
 var numberOfFailedEncodings = 0
-var videoCodecLowAdaptiveEncoderResolution = false
 private let lowFpsBitrateLimit = 100_000.0
 private let highFpsBitrateLimit = 750_000.0
 private let lowFps = 15.0
@@ -98,28 +97,16 @@ class VideoCodec {
     private func updateAdaptiveResolution(settings: VideoCodecSettings) -> CMVideoDimensions {
         var videoSize: CMVideoDimensions
         if settings.adaptiveResolution {
-            if videoCodecLowAdaptiveEncoderResolution {
-                if settings.bitRate < 250_000 {
-                    videoSize = .init(width: 284, height: 160)
-                } else if settings.bitRate < 500_000 {
-                    videoSize = .init(width: 640, height: 360)
-                } else if settings.bitRate < 750_000 {
-                    videoSize = .init(width: 854, height: 480)
-                } else {
-                    videoSize = settings.videoSize
-                }
+            if settings.bitRate < 100_000 {
+                videoSize = .init(width: 284, height: 160)
+            } else if settings.bitRate < 250_000 {
+                videoSize = .init(width: 640, height: 360)
+            } else if settings.bitRate < 500_000 {
+                videoSize = .init(width: 854, height: 480)
+            } else if settings.bitRate < 750_000 {
+                videoSize = .init(width: 1280, height: 720)
             } else {
-                if settings.bitRate < 100_000 {
-                    videoSize = .init(width: 284, height: 160)
-                } else if settings.bitRate < 250_000 {
-                    videoSize = .init(width: 640, height: 360)
-                } else if settings.bitRate < 500_000 {
-                    videoSize = .init(width: 854, height: 480)
-                } else if settings.bitRate < 750_000 {
-                    videoSize = .init(width: 1280, height: 720)
-                } else {
-                    videoSize = settings.videoSize
-                }
+                videoSize = settings.videoSize
             }
         } else {
             videoSize = settings.videoSize
