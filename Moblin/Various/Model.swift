@@ -506,6 +506,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private var speechToText = SpeechToText()
+    private var keepSpeakerAlivePlayer: AVAudioPlayer?
+    private var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
 
     @Published var showTwitchAuth = false
     let twitchAuth = TwitchAuth()
@@ -1899,6 +1901,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func keepSpeakerAlive(now: ContinuousClock.Instant) {
+        guard database.debug!.keepSpeakerAlive! else {
+            return
+        }
+        guard keepSpeakerAliveLatestPlayed.duration(to: now) > .seconds(5 * 60) else {
+            return
+        }
+        keepSpeakerAliveLatestPlayed = now
+        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3")
+        else {
+            return
+        }
+        logger.info("Playing silence")
+        keepSpeakerAlivePlayer = try? AVAudioPlayer(contentsOf: soundUrl)
+        keepSpeakerAlivePlayer?.play()
+    }
+
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
         var deviceTypes: [AVCaptureDevice.DeviceType] = [
             .builtInTripleCamera,
@@ -2170,6 +2189,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.geographyManager.setLocation(location: self.latestKnownLocation)
             self.updateBitrateStatus()
             self.updateAdsRemainingTimer(now: now)
+            self.keepSpeakerAlive(now: monotonicNow)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()

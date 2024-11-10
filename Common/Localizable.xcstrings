@@ -58492,6 +58492,9 @@
         }
       }
     },
+    "Keep speaker alive" : {
+
+    },
     "Key frame interval" : {
       "localizations" : {
         "de" : {

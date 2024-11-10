@@ -1850,6 +1850,7 @@ class SettingsDebug: Codable {
     var removeWindNoise: Bool? = false
     var lowAdaptiveEncoderResolution: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
+    var keepSpeakerAlive: Bool? = false
 }
 
 let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
@@ -4326,6 +4327,10 @@ final class Settings {
         }
         if realDatabase.debug!.httpProxy == nil {
             realDatabase.debug!.httpProxy = .init()
+            store()
+        }
+        if realDatabase.debug!.keepSpeakerAlive == nil {
+            realDatabase.debug!.keepSpeakerAlive = false
             store()
         }
     }
