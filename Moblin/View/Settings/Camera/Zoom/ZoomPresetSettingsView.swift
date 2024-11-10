@@ -16,7 +16,7 @@ struct ZoomPresetSettingsView: View {
             return
         }
         preset.x = x
-        preset.name = "\(Int(x.rounded()))x"
+        preset.name = "\(formatOneDecimal(value: x))x".replacingOccurrences(of: ".0", with: "")
     }
 
     private func formatX(x: Float) -> String {
