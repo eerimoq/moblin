@@ -28,6 +28,23 @@ extension CMSampleBuffer {
         return sampleBuffer
     }
 
+    static func createSilent(_ format: AVAudioFormat,
+                             _ presentationTimeStamp: CMTime,
+                             _ samplesPerBuffer: UInt32) -> CMSampleBuffer?
+    {
+        guard let dataBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: samplesPerBuffer) else {
+            return nil
+        }
+        guard let data = dataBuffer.int16ChannelData else {
+            return nil
+        }
+        for i in 0 ..< Int(samplesPerBuffer) {
+            data.pointee[i] = 0
+        }
+        dataBuffer.frameLength = samplesPerBuffer
+        return dataBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
+    }
+
     var isSync: Bool {
         get {
             !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)

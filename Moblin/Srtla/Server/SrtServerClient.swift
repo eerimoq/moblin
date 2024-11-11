@@ -126,7 +126,7 @@ class SrtServerClient {
             return self.audioBuffer
         }
         if let error {
-            logger.info("srt-server-client: Error \(error)")
+            logger.info("srt-server-client: Audio error \(error)")
             return
         }
         outputSilenceIfGap(sampleBuffer.presentationTimeStamp, pcmAudioFormat)
@@ -169,7 +169,7 @@ class SrtServerClient {
             \(latestAudioBufferPresentationTimeStamp.seconds)..\(presentationTimeStamp.seconds) \
             with \(newPresentationTimeStamp.seconds)
             """)
-            if let sampleBuffer = createSilentSampleBuffer(
+            if let sampleBuffer = CMSampleBuffer.createSilent(
                 pcmAudioFormat,
                 newPresentationTimeStamp,
                 samplesPerBuffer
@@ -190,23 +190,6 @@ class SrtServerClient {
         let ptsDelta = (presentationTimeStamp - latestPresentationTimeStamp).seconds
         let timePerBuffer = Double(samplesPerBuffer) / sampleFrequency
         return max(Int((ptsDelta / timePerBuffer - 1).rounded()), 0)
-    }
-
-    private func createSilentSampleBuffer(_ format: AVAudioFormat,
-                                          _ presentationTimeStamp: CMTime,
-                                          _ samplesPerBuffer: UInt32) -> CMSampleBuffer?
-    {
-        guard let dataBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: samplesPerBuffer) else {
-            return nil
-        }
-        guard let data = dataBuffer.int16ChannelData else {
-            return nil
-        }
-        for i in 0 ..< Int(samplesPerBuffer) {
-            data.pointee[i] = 0
-        }
-        dataBuffer.frameLength = samplesPerBuffer
-        return dataBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
