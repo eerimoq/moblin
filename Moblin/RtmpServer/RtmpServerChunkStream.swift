@@ -3,7 +3,7 @@ import Foundation
 import Network
 
 class RtmpServerChunkStream {
-    private var messageData: Data
+    private var messageBody: Data
     var messageLength: Int
     var messageTypeId: UInt8
     var messageTimestamp: UInt32
@@ -31,7 +31,7 @@ class RtmpServerChunkStream {
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
         self.streamId = streamId
-        messageData = Data()
+        messageBody = Data()
         messageLength = 0
         messageTypeId = 0
         messageTimestamp = 0
@@ -57,12 +57,12 @@ class RtmpServerChunkStream {
         return min(client.chunkSizeFromClient, messageRemain())
     }
 
-    func handleData(data: Data) {
-        messageData += data
+    func handleBody(data: Data) {
+        messageBody += data
         // logger.info("rtmp-server: client: Got \(data.count) chunk data and \(messageRemain()) remain")
         if messageRemain() == 0 {
             processMessage()
-            messageData.removeAll(keepingCapacity: true)
+            messageBody.removeAll(keepingCapacity: true)
         }
     }
 
@@ -85,7 +85,7 @@ class RtmpServerChunkStream {
     }
 
     private func messageRemain() -> Int {
-        return messageLength - messageData.count
+        return messageLength - messageBody.count
     }
 
     private func processMessage() {
@@ -121,7 +121,7 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        let amf0 = AMF0Serializer(data: messageData)
+        let amf0 = AMF0Serializer(data: messageBody)
         let commandName: String
         let transactionId: Int
         let commandObject: ASObject
@@ -293,11 +293,11 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard messageData.count == 4 else {
+        guard messageBody.count == 4 else {
             client.stopInternal(reason: "Not 4 bytes chunk size")
             return
         }
-        client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
+        client.chunkSizeFromClient = Int(messageBody.getFourBytesBe())
         logger
             .info(
                 "rtmp-server: client: Chunk size from client: \(client.chunkSizeFromClient)"
@@ -308,11 +308,11 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard messageData.count == 4 else {
+        guard messageBody.count == 4 else {
             client.stopInternal(reason: "Not 4 bytes window acknowledgement size")
             return
         }
-        client.windowAcknowledgementSize = Int(messageData.getFourBytesBe())
+        client.windowAcknowledgementSize = Int(messageBody.getFourBytesBe())
         logger
             .info(
                 "rtmp-server: client: Window acknowledgement size from client: \(client.windowAcknowledgementSize)"
@@ -323,11 +323,11 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard messageData.count >= 2 else {
-            client.stopInternal(reason: "Got \(messageData.count) bytes audio message, expected >= 2")
+        guard messageBody.count >= 2 else {
+            client.stopInternal(reason: "Got \(messageBody.count) bytes audio message, expected >= 2")
             return
         }
-        let control = messageData[0]
+        let control = messageBody[0]
         guard let codec = FLVAudioCodec(rawValue: control >> 4),
               let soundRate = FLVSoundRate(rawValue: (control & 0x0C) >> 2),
               let soundSize = FLVSoundSize(rawValue: (control & 0x02) >> 1),
@@ -342,7 +342,7 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported audio codec \(codec). Only AAC is supported.")
             return
         }
-        switch FLVAACPacketType(rawValue: messageData[1]) {
+        switch FLVAACPacketType(rawValue: messageBody[1]) {
         case .seq:
             processMessageAudioTypeSeq(client: client, codec: codec)
         case .raw:
@@ -354,7 +354,7 @@ class RtmpServerChunkStream {
 
     private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FLVAudioCodec) {
         if let config =
-            MpegTsAudioConfig(bytes: [UInt8](messageData[codec.headerSize ..< messageData.count]))
+            MpegTsAudioConfig(bytes: [UInt8](messageBody[codec.headerSize ..< messageBody.count]))
         {
             var streamDescription = config.audioStreamBasicDescription()
             logger.info("rtmp-server: client: \(streamDescription)")
@@ -391,8 +391,8 @@ class RtmpServerChunkStream {
         guard let audioBuffer else {
             return
         }
-        let length = messageData.count - codec.headerSize
-        messageData.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
+        let length = messageBody.count - codec.headerSize
+        messageBody.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
             guard let baseAddress = buffer.baseAddress else {
                 return
             }
@@ -431,11 +431,11 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard messageData.count >= 2 else {
-            client.stopInternal(reason: "Got \(messageData.count) bytes video message, expected >= 2")
+        guard messageBody.count >= 2 else {
+            client.stopInternal(reason: "Got \(messageBody.count) bytes video message, expected >= 2")
             return
         }
-        let control = messageData[0]
+        let control = messageBody[0]
         let frameType = control >> 4
         guard (frameType & 0x8) == 0 else {
             client.stopInternal(reason: "Unsupported video frame type \(frameType)")
@@ -449,22 +449,22 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported video format \(format). Only AVC is supported.")
             return
         }
-        switch FLVAVCPacketType(rawValue: messageData[1]) {
+        switch FLVAVCPacketType(rawValue: messageBody[1]) {
         case .seq:
             processMessageVideoTypeSeq(client: client)
         case .nal:
             processMessageVideoTypeNal(client: client)
         default:
-            client.stopInternal(reason: "Unsupported video AVC packet type \(messageData[1])")
+            client.stopInternal(reason: "Unsupported video AVC packet type \(messageBody[1])")
         }
     }
 
     private func processMessageVideoTypeSeq(client: RtmpServerClient) {
-        guard messageData.count >= FLVTagType.video.headerSize else {
+        guard messageBody.count >= FLVTagType.video.headerSize else {
             client
                 .stopInternal(
                     reason: """
-                    Got \(messageData.count) bytes video message, \
+                    Got \(messageBody.count) bytes video message, \
                     expected >= \(FLVTagType.video.headerSize)
                     """
                 )
@@ -474,21 +474,22 @@ class RtmpServerChunkStream {
             return
         }
         var config = MpegTsVideoConfigAvc()
-        config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
+        config.data = messageBody.subdata(in: FLVTagType.video.headerSize ..< messageBody.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
             videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
             videoDecoder!.formatDescription = formatDescription
             videoDecoder!.delegate = self
             videoDecoder!.startRunning()
+            logger.info("xxx decoder created")
         } else {
             client.stopInternal(reason: "Format description error \(status)")
         }
     }
 
     private func processMessageVideoTypeNal(client: RtmpServerClient) {
-        guard messageData.count > 9 else {
-            logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
+        guard messageBody.count > 9 else {
+            logger.info("rtmp-server: client: Dropping short packet with data \(messageBody.hexString())")
             return
         }
         if firstVideoFrameTimestamp == nil {
@@ -503,7 +504,7 @@ class RtmpServerChunkStream {
     }
 
     private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
-        var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
+        var compositionTime = Int32(data: [0] + messageBody[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
         var duration: Int64
@@ -526,15 +527,13 @@ class RtmpServerChunkStream {
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
             decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
         )
-        /* logger.info("""
-         rtmp-server: client: Created sample buffer \
-         MTS: \(messageTimestamp * messageTimestampScaling) \
-         CT: \(compositionTime) \
-         DUR: \(timing.duration.seconds), \
-         PTS: \(timing.presentationTimeStamp.seconds), \
-         DTS: \(timing.decodeTimeStamp.seconds)
-         """) */
-        let blockBuffer = messageData.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
+        let iskeyFrame = (messageBody[0] >> 4) & 0b0111 == FLVFrameType.key.rawValue
+        // logger.info("""
+        //  rtmp-server: client: xxx Created sample buffer \
+        //  keyframe: \(iskeyFrame), \
+        //  PTS: \(timing.presentationTimeStamp.seconds)
+        //  """)
+        let blockBuffer = messageBody.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(
@@ -553,7 +552,7 @@ class RtmpServerChunkStream {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isSync = messageData[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
+        sampleBuffer?.isSync = iskeyFrame
         return sampleBuffer
     }
 

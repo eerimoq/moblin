@@ -248,7 +248,7 @@ class RtmpServerClient {
     }
 
     private func handleDataHandshakeDoneData(data: Data) {
-        chunkStream.handleData(data: data)
+        chunkStream.handleBody(data: data)
         receiveBasicHeaderFirstByte()
     }
 
