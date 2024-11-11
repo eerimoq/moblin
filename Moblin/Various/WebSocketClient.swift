@@ -92,7 +92,7 @@ final class WebSocketClient {
 
     private func startPingTimer() {
         pongReceived = true
-        pingTimer.startPeriodic(interval: 5, initial: 0) { [weak self] in
+        pingTimer.startPeriodic(interval: 10, initial: 0) { [weak self] in
             guard let self else {
                 return
             }
