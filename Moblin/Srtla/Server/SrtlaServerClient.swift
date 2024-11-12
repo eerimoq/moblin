@@ -199,7 +199,9 @@ class SrtlaServerClient {
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
     func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data) {
-        naks.remove(sn: getSequenceNumber(packet: packet))
+        if isDataPacket(packet: packet) {
+            naks.remove(sn: getSequenceNumber(packet: packet))
+        }
         latestConnection = connection
         localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })
     }

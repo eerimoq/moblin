@@ -481,7 +481,6 @@ class RtmpServerChunkStream {
             videoDecoder!.formatDescription = formatDescription
             videoDecoder!.delegate = self
             videoDecoder!.startRunning()
-            logger.info("xxx decoder created")
         } else {
             client.stopInternal(reason: "Format description error \(status)")
         }
