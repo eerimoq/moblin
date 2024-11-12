@@ -1,5 +1,7 @@
 import Foundation
 
+let nalUnitStartCode = Data([0x00, 0x00, 0x00, 0x01])
+
 struct AvcFormatStream {
     private let data: Data
 
@@ -12,8 +14,8 @@ struct AvcFormatStream {
         var result = Data()
         while buffer.bytesAvailable > 0 {
             do {
-                let length: Int = try Int(buffer.readUInt32())
-                result.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+                let length = try Int(buffer.readUInt32())
+                result += nalUnitStartCode
                 try result.append(buffer.readBytes(length))
             } catch {
                 logger.error("\(buffer)")

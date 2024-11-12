@@ -149,13 +149,15 @@ struct MpegTsPacketizedElementaryStream {
     ) {
         if let config {
             // 3 NAL units. SEI(9), SPS(7) and PPS(8)
-            data.append(contentsOf: [0x00, 0x00, 0x00, 0x01, 0x09, 0x10])
-            data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+            data += nalUnitStartCode
+            data.append(contentsOf: [0x09, 0x10])
+            data += nalUnitStartCode
             data.append(contentsOf: config.sequenceParameterSets[0])
-            data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+            data += nalUnitStartCode
             data.append(contentsOf: config.pictureParameterSets[0])
         } else {
-            data.append(contentsOf: [0x00, 0x00, 0x00, 0x01, 0x09, 0x30])
+            data += nalUnitStartCode
+            data.append(contentsOf: [0x09, 0x30])
         }
         let stream = AvcFormatStream(bytes: bytes, count: count)
         data.append(stream.toByteStream())
@@ -178,15 +180,15 @@ struct MpegTsPacketizedElementaryStream {
     ) {
         if let config {
             if let nal = config.array[.vps] {
-                data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+                data += nalUnitStartCode
                 data.append(nal[0])
             }
             if let nal = config.array[.sps] {
-                data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+                data += nalUnitStartCode
                 data.append(nal[0])
             }
             if let nal = config.array[.pps] {
-                data.append(contentsOf: [0x00, 0x00, 0x00, 0x01])
+                data += nalUnitStartCode
                 data.append(nal[0])
             }
         }
@@ -204,6 +206,9 @@ struct MpegTsPacketizedElementaryStream {
     init(data: Data) throws {
         let reader = ByteArray(data: data)
         startCode = try reader.readBytes(3)
+        if startCode != MpegTsPacketizedElementaryStream.startCode {
+            throw "Bad PES start code"
+        }
         streamID = try reader.readUInt8()
         packetLength = try reader.readUInt16()
         optionalHeader = try OptionalHeader(data: reader.readBytes(reader.bytesAvailable))
