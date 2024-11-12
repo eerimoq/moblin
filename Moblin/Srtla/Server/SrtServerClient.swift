@@ -294,8 +294,7 @@ class SrtServerClient {
         }
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
-            data.streamType,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeAudioSampleBuffer(
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
@@ -327,8 +326,7 @@ class SrtServerClient {
         }
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
-            data.streamType,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeVideoSampleBuffer(
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],
@@ -355,8 +353,7 @@ class SrtServerClient {
         }
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,
-                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeSampleBuffer(
-            data.streamType,
+                   previousReceivedPresentationTimeStamp) = packetizedElementaryStream.makeVideoSampleBuffer(
             getBasePresentationTimeStamp(),
             firstReceivedPresentationTimeStamp,
             previousReceivedPresentationTimeStamps[packetId],

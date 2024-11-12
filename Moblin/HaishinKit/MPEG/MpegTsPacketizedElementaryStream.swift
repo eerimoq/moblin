@@ -284,31 +284,57 @@ struct MpegTsPacketizedElementaryStream {
         return packets
     }
 
-    mutating func makeSampleBuffer(
-        _ streamType: ElementaryStreamType,
+    mutating func makeVideoSampleBuffer(
         _ basePresentationTimeStamp: CMTime,
         _ firstReceivedPresentationTimeStamp: CMTime?,
         _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
-        var blockBuffer: CMBlockBuffer?
+        IsoTypeBufferUtil.toNALFileFormat(&data)
+        let blockBuffer = data.makeBlockBuffer()
+        var sampleSizes = [blockBuffer?.dataLength ?? 0]
+        return makeSampleBuffer(
+            basePresentationTimeStamp,
+            firstReceivedPresentationTimeStamp,
+            previousReceivedPresentationTimeStamp,
+            formatDescription,
+            blockBuffer,
+            &sampleSizes
+        )
+    }
+
+    mutating func makeAudioSampleBuffer(
+        _ basePresentationTimeStamp: CMTime,
+        _ firstReceivedPresentationTimeStamp: CMTime?,
+        _ previousReceivedPresentationTimeStamp: CMTime?,
+        _ formatDescription: CMFormatDescription?
+    ) -> (CMSampleBuffer, CMTime, CMTime)? {
         var sampleSizes: [Int] = []
-        switch streamType {
-        case .h264, .h265:
-            IsoTypeBufferUtil.toNALFileFormat(&data)
-            blockBuffer = data.makeBlockBuffer()
-            sampleSizes.append(blockBuffer?.dataLength ?? 0)
-        case .adtsAac:
-            blockBuffer = data.makeBlockBuffer(advancedBy: 7)
-            let reader = ADTSReader()
-            reader.read(data)
-            var iterator = reader.makeIterator()
-            while let next = iterator.next() {
-                sampleSizes.append(next)
-            }
-        default:
-            break
+        var blockBuffer = data.makeBlockBuffer(advancedBy: 7)
+        let reader = ADTSReader()
+        reader.read(data)
+        var iterator = reader.makeIterator()
+        while let next = iterator.next() {
+            sampleSizes.append(next)
         }
+        return makeSampleBuffer(
+            basePresentationTimeStamp,
+            firstReceivedPresentationTimeStamp,
+            previousReceivedPresentationTimeStamp,
+            formatDescription,
+            blockBuffer,
+            &sampleSizes
+        )
+    }
+
+    private func makeSampleBuffer(
+        _ basePresentationTimeStamp: CMTime,
+        _ firstReceivedPresentationTimeStamp: CMTime?,
+        _ previousReceivedPresentationTimeStamp: CMTime?,
+        _ formatDescription: CMFormatDescription?,
+        _ blockBuffer: CMBlockBuffer?,
+        _ sampleSizes: inout [Int]
+    ) -> (CMSampleBuffer, CMTime, CMTime)? {
         var sampleBuffer: CMSampleBuffer?
         let receivedPresentationTimeStamp = optionalHeader.getPresentationTimeStamp()
         let receivedDecodeTimeStamp = optionalHeader.getDecodeTimeStamp()
