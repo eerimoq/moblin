@@ -140,7 +140,7 @@ struct MpegTsPacketizedElementaryStream {
     }
 
     init(
-        bytes: UnsafePointer<UInt8>,
+        bytes: UnsafeMutablePointer<UInt8>,
         count: Int,
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
@@ -159,7 +159,7 @@ struct MpegTsPacketizedElementaryStream {
             data += nalUnitStartCode
             data.append(contentsOf: [0x09, 0x30])
         }
-        var payload = Data(bytes: bytes, count: count)
+        var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)
         data.append(payload)
         optionalHeader.dataAlignmentIndicator = true
@@ -172,7 +172,7 @@ struct MpegTsPacketizedElementaryStream {
     }
 
     init(
-        bytes: UnsafePointer<UInt8>,
+        bytes: UnsafeMutablePointer<UInt8>,
         count: Int,
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
@@ -193,7 +193,7 @@ struct MpegTsPacketizedElementaryStream {
                 data.append(nal[0])
             }
         }
-        var payload = Data(bytes: bytes, count: count)
+        var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)
         data.append(payload)
         optionalHeader.dataAlignmentIndicator = true

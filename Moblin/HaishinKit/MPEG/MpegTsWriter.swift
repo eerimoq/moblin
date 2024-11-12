@@ -367,7 +367,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         }
         let randomAccessIndicator = sampleBuffer.isSync
         let PES: MpegTsPacketizedElementaryStream
-        let bytes = UnsafeRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
+        let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         if let videoConfig = videoConfig as? MpegTsVideoConfigAvc {
             PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
