@@ -2,25 +2,33 @@ import Foundation
 
 let nalUnitStartCode = Data([0x00, 0x00, 0x00, 0x01])
 
-struct AvcFormatStream {
-    private let data: Data
-
-    init(bytes: UnsafePointer<UInt8>, count: Int) {
-        data = Data(bytes: bytes, count: count)
+// Should escape as well?
+func addNalUnitStartCodes(_ data: inout Data) {
+    var index = 0
+    while index < data.count {
+        let length = data.getFourBytesBe(offset: index)
+        data.replaceSubrange(index ..< index + 4, with: nalUnitStartCode)
+        index += Int(length) + 4
     }
+}
 
-    func toByteStream() -> Data {
-        let buffer = ByteArray(data: data)
-        var result = Data()
-        while buffer.bytesAvailable > 0 {
-            do {
-                let length = try Int(buffer.readUInt32())
-                result += nalUnitStartCode
-                try result.append(buffer.readBytes(length))
-            } catch {
-                logger.error("\(buffer)")
-            }
+// Should unescape as well? Why can length be 3 or 4 bytes? Correct?
+func removeNalUnitStartCodes(_ data: inout Data) {
+    var lastIndexOf = data.count - 1
+    for index in (2 ..< data.count).reversed() {
+        guard data[index] == 1, data[index - 1] == 0, data[index - 2] == 0 else {
+            continue
         }
-        return result
+        let startCodeLength = index - 3 >= 0 && data[index - 3] == 0 ? 4 : 3
+        let start = 4 - startCodeLength
+        let length = lastIndexOf - index
+        guard length > 0 else {
+            continue
+        }
+        data.replaceSubrange(
+            index - startCodeLength + 1 ... index,
+            with: Int32(length).bigEndian.data[start...]
+        )
+        lastIndexOf = index - startCodeLength
     }
 }

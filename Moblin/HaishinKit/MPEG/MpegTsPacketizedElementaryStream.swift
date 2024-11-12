@@ -159,8 +159,9 @@ struct MpegTsPacketizedElementaryStream {
             data += nalUnitStartCode
             data.append(contentsOf: [0x09, 0x30])
         }
-        let stream = AvcFormatStream(bytes: bytes, count: count)
-        data.append(stream.toByteStream())
+        var payload = Data(bytes: bytes, count: count)
+        addNalUnitStartCodes(&payload)
+        data.append(payload)
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
         let length = data.count + optionalHeader.encode().count
@@ -192,8 +193,9 @@ struct MpegTsPacketizedElementaryStream {
                 data.append(nal[0])
             }
         }
-        let stream = AvcFormatStream(bytes: bytes, count: count)
-        data.append(stream.toByteStream())
+        var payload = Data(bytes: bytes, count: count)
+        addNalUnitStartCodes(&payload)
+        data.append(payload)
         optionalHeader.dataAlignmentIndicator = true
         optionalHeader.setTimestamp(presentationTimeStamp, decodeTimeStamp)
         let length = data.count + optionalHeader.encode().count
@@ -290,7 +292,7 @@ struct MpegTsPacketizedElementaryStream {
         _ previousReceivedPresentationTimeStamp: CMTime?,
         _ formatDescription: CMFormatDescription?
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
-        IsoTypeBufferUtil.toNALFileFormat(&data)
+        removeNalUnitStartCodes(&data)
         let blockBuffer = data.makeBlockBuffer()
         var sampleSizes = [blockBuffer?.dataLength ?? 0]
         return makeSampleBuffer(
@@ -310,7 +312,7 @@ struct MpegTsPacketizedElementaryStream {
         _ formatDescription: CMFormatDescription?
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
         var sampleSizes: [Int] = []
-        var blockBuffer = data.makeBlockBuffer(advancedBy: 7)
+        let blockBuffer = data.makeBlockBuffer(advancedBy: 7)
         let reader = ADTSReader()
         reader.read(data)
         var iterator = reader.makeIterator()
