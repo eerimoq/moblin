@@ -1,3 +1,4 @@
+import CoreMedia
 import Foundation
 
 let nalUnitStartCode = Data([0x00, 0x00, 0x00, 0x01])
@@ -31,4 +32,30 @@ func removeNalUnitStartCodes(_ data: inout Data) {
         )
         lastIndexOf = index - startCodeLength
     }
+}
+
+protocol NalUnit {
+    init(_ data: Data)
+}
+
+func readH264NalUnits(_ data: Data) -> [AvcNalUnit] {
+    return readNalUnits(data)
+}
+
+func readH265NalUnits(_ data: Data) -> [HevcNalUnit] {
+    return readNalUnits(data)
+}
+
+private func readNalUnits<T: NalUnit>(_ data: Data) -> [T] {
+    var units: [T] = []
+    var lastIndexOf = data.count - 1
+    for i in (2 ..< data.count).reversed() {
+        guard data[i] == 1, data[i - 1] == 0, data[i - 2] == 0 else {
+            continue
+        }
+        let startCodeLength = i - 3 >= 0 && data[i - 3] == 0 ? 4 : 3
+        units.append(T(data.subdata(in: (i + 1) ..< lastIndexOf + 1)))
+        lastIndexOf = i - startCodeLength
+    }
+    return units
 }

@@ -9,7 +9,6 @@ class SrtServerClient {
     private var elementaryStreamSpecificData: [UInt16: ElementaryStreamSpecificData] = [:]
     private var packetizedElementaryStreams: [UInt16: MpegTsPacketizedElementaryStream] = [:]
     private var formatDescriptions: [UInt16: CMFormatDescription] = [:]
-    private var nalUnitReader = NALUnitReader()
     private var firstReceivedPresentationTimeStamp: CMTime?
     private var previousReceivedPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var basePresentationTimeStamp: CMTime = .invalid
@@ -313,7 +312,7 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let units = nalUnitReader.readH264(packetizedElementaryStream.data)
+        let units = readH264NalUnits(packetizedElementaryStream.data)
         if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
             var data = Data([0x00, 0x00, 0x00, 0x01])
             data.append(unit.data)
@@ -345,7 +344,7 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let units = nalUnitReader.readH265(packetizedElementaryStream.data)
+        let units = readH265NalUnits(packetizedElementaryStream.data)
         let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription

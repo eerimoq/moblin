@@ -1,7 +1,7 @@
 import CoreMedia
 import Foundation
 
-enum AVCNALUnitType: UInt8, Equatable {
+enum AVCNALUnitType: UInt8 {
     case unspec = 0
     case slice = 1 // P frame
     case dpa = 2
@@ -17,7 +17,7 @@ enum AVCNALUnitType: UInt8, Equatable {
     case fill = 12
 }
 
-struct AvcNalUnit: NalUnit, Equatable {
+struct AvcNalUnit: NalUnit {
     let refIdc: UInt8
     let type: AVCNALUnitType
     let payload: Data
@@ -41,40 +41,37 @@ struct AvcNalUnit: NalUnit, Equatable {
 }
 
 extension [AvcNalUnit] {
-    func makeFormatDescription(_ nalUnitHeaderLength: Int32 = 4) -> CMFormatDescription? {
+    func makeFormatDescription() -> CMFormatDescription? {
         guard
             let pps = first(where: { $0.type == .pps }),
             let sps = first(where: { $0.type == .sps })
         else {
             return nil
         }
-        var formatDescription: CMFormatDescription?
-        let status = pps.data.withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+        return pps.data.withUnsafeBytes { ppsBuffer in
             guard let ppsBaseAddress = ppsBuffer.baseAddress else {
-                return kCMFormatDescriptionBridgeError_InvalidParameter
+                return nil
             }
-            return sps.data.withUnsafeBytes { (spsBuffer: UnsafeRawBufferPointer) -> OSStatus in
+            return sps.data.withUnsafeBytes { spsBuffer in
                 guard let spsBaseAddress = spsBuffer.baseAddress else {
-                    return kCMFormatDescriptionBridgeError_InvalidParameter
+                    return nil
                 }
-                let pointers: [UnsafePointer<UInt8>] = [
+                let pointers = [
                     spsBaseAddress.assumingMemoryBound(to: UInt8.self),
                     ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
                 ]
-                let sizes: [Int] = [spsBuffer.count, ppsBuffer.count]
-                return CMVideoFormatDescriptionCreateFromH264ParameterSets(
+                let sizes = [spsBuffer.count, ppsBuffer.count]
+                var formatDescription: CMFormatDescription?
+                _ = CMVideoFormatDescriptionCreateFromH264ParameterSets(
                     allocator: kCFAllocatorDefault,
                     parameterSetCount: pointers.count,
                     parameterSetPointers: pointers,
                     parameterSetSizes: sizes,
-                    nalUnitHeaderLength: nalUnitHeaderLength,
+                    nalUnitHeaderLength: 4,
                     formatDescriptionOut: &formatDescription
                 )
+                return formatDescription
             }
         }
-        if status != noErr {
-            logger.error("NAL unit error \(status)")
-        }
-        return formatDescription
     }
 }
