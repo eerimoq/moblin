@@ -401,6 +401,30 @@ struct BondingConnection {
 struct BondingPercentage: Identifiable {
     let id: Int
     let percentage: UInt64
+    let color: Color
+}
+
+private let colors: [Color] = [
+    RgbColor(red: 0xE6, green: 0x9F, blue: 0x00).color(),
+    RgbColor(red: 0x00, green: 0x9E, blue: 0x73).color(),
+    RgbColor(red: 0xF0, green: 0xE4, blue: 0x42).color(),
+    RgbColor(red: 0x00, green: 0x72, blue: 0xB2).color(),
+    RgbColor(red: 0xCC, green: 0x79, blue: 0xA7).color(),
+    RgbColor(red: 0x56, green: 0xB4, blue: 0xE9).color(),
+    RgbColor(red: 0xD5, green: 0x5E, blue: 0x00).color(),
+]
+private var nameColors: [String: Color] = [
+    "Cellular": colors[0],
+    "WiFi": colors[1],
+]
+
+private func getNameColor(name: String) -> Color {
+    if let color = nameColors[name] {
+        return color
+    }
+    let color = colors[nameColors.count % colors.count]
+    nameColors[name] = color
+    return color
 }
 
 func calcBondingStatistics(connections: [BondingConnection]) -> (String, [BondingPercentage])? {
@@ -424,7 +448,11 @@ func calcBondingStatistics(connections: [BondingConnection]) -> (String, [Bondin
     let message = percentges.map { percentage in
         "\(percentage.usage)% \(percentage.name)"
     }.joined(separator: ", ")
-    return (message, percentges.enumerated().map { .init(id: $0, percentage: $1.usage) })
+    return (
+        message,
+        percentges.enumerated()
+            .map { .init(id: $0, percentage: $1.usage, color: getNameColor(name: $1.name)) }
+    )
 }
 
 extension MTILayer {

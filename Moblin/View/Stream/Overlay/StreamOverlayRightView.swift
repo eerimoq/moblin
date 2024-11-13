@@ -16,9 +16,9 @@ private struct CollapsedBondingView: View {
                     .foregroundColor(color)
                 if #available(iOS 17.0, *) {
                     if !model.bondingPieChartPercentages.isEmpty {
-                        Chart(model.bondingPieChartPercentages) { item in
+                        Chart(model.bondingPieChartPercentages.reversed()) { item in
                             SectorMark(angle: .value("", item.percentage))
-                                .foregroundStyle(by: .value("", item.id))
+                                .foregroundStyle(item.color)
                         }
                         .chartLegend(.hidden)
                         .scaledToFit()
