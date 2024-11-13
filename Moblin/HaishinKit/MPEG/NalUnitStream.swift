@@ -16,21 +16,29 @@ func addNalUnitStartCodes(_ data: inout Data) {
 // Should unescape as well? Why can length be 3 or 4 bytes? Correct?
 func removeNalUnitStartCodes(_ data: inout Data) {
     var lastIndexOf = data.count - 1
-    for index in (2 ..< data.count).reversed() {
-        guard data[index] == 1, data[index - 1] == 0, data[index - 2] == 0 else {
+    var index = lastIndexOf - 2
+    while index >= 0 {
+        guard data[index] <= 1 else {
+            index -= 3
             continue
         }
-        let startCodeLength = index - 3 >= 0 && data[index - 3] == 0 ? 4 : 3
-        let start = 4 - startCodeLength
-        let length = lastIndexOf - index
+        guard data[index + 2] == 1, data[index + 1] == 0, data[index] == 0 else {
+            index -= 1
+            continue
+        }
+        let startCodeLength = index - 1 >= 0 && data[index - 1] == 0 ? 4 : 3
+        let length = lastIndexOf - index - 2
         guard length > 0 else {
+            index -= 1
             continue
         }
+        let startCodeIndex = index + 3 - startCodeLength
         data.replaceSubrange(
-            index - startCodeLength + 1 ... index,
-            with: Int32(length).bigEndian.data[start...]
+            startCodeIndex ..< startCodeIndex + startCodeLength,
+            with: Int32(length).bigEndian.data[(4 - startCodeLength)...]
         )
-        lastIndexOf = index - startCodeLength
+        lastIndexOf = startCodeIndex - 1
+        index = lastIndexOf
     }
 }
 
