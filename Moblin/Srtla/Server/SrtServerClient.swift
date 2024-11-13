@@ -319,7 +319,7 @@ class SrtServerClient {
             data.append(unit.data)
             packetizedElementaryStream.data = data
         }
-        let formatDescription = units.makeFormatDescription(NALUnitReader.defaultNALUnitHeaderLength)
+        let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
             handleVideoFormatDescription(formatDescription)
@@ -346,7 +346,7 @@ class SrtServerClient {
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
         let units = nalUnitReader.readH265(packetizedElementaryStream.data)
-        let formatDescription = units.makeFormatDescription(NALUnitReader.defaultNALUnitHeaderLength)
+        let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
             handleVideoFormatDescription(formatDescription)
