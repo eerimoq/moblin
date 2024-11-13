@@ -108,6 +108,9 @@ class SrtServerClient {
         guard let (dataPointer, length) = dataBuffer.getDataPointer() else {
             return
         }
+        guard length <= audioBuffer.maximumPacketSize else {
+            return
+        }
         guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
             return
         }
@@ -313,12 +316,6 @@ class SrtServerClient {
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
         let units = readH264NalUnits(packetizedElementaryStream.data)
-        // Needed?
-        if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
-            var data = nalUnitStartCode
-            data.append(unit.encode())
-            packetizedElementaryStream.data = data
-        }
         let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
