@@ -26,16 +26,12 @@ struct HevcNalUnit: NalUnit {
     let payload: Data
 
     init(_ data: Data) {
-        self.init(data, length: data.count)
-    }
-
-    init(_ data: Data, length: Int) {
         type = HevcNalUnitType(rawValue: (data[0] & 0x7E) >> 1) ?? .unspec
         temporalIdPlusOne = data[1] & 0b0001_1111
-        payload = data.subdata(in: 2 ..< length)
+        payload = data.subdata(in: 2 ..< data.count)
     }
 
-    var data: Data {
+    func encode() -> Data {
         var result = Data()
         result.append(type.rawValue << 1)
         result.append(temporalIdPlusOne)
@@ -53,15 +49,15 @@ extension [HevcNalUnit] {
         else {
             return nil
         }
-        return vps.data.withUnsafeBytes { vpsBuffer in
+        return vps.encode().withUnsafeBytes { vpsBuffer in
             guard let vpsBaseAddress = vpsBuffer.baseAddress else {
                 return nil
             }
-            return sps.data.withUnsafeBytes { spsBuffer in
+            return sps.encode().withUnsafeBytes { spsBuffer in
                 guard let spsBaseAddress = spsBuffer.baseAddress else {
                     return nil
                 }
-                return pps.data.withUnsafeBytes { ppsBuffer in
+                return pps.encode().withUnsafeBytes { ppsBuffer in
                     guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                         return nil
                     }

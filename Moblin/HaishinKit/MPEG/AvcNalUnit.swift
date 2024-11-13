@@ -23,16 +23,12 @@ struct AvcNalUnit: NalUnit {
     let payload: Data
 
     init(_ data: Data) {
-        self.init(data, length: data.count)
-    }
-
-    init(_ data: Data, length: Int) {
         refIdc = data[0] >> 5
         type = AVCNALUnitType(rawValue: data[0] & 0x1F) ?? .unspec
-        payload = data.subdata(in: 1 ..< length)
+        payload = data.subdata(in: 1 ..< data.count)
     }
 
-    var data: Data {
+    func encode() -> Data {
         var result = Data()
         result.append(refIdc << 5 | type.rawValue)
         result.append(payload)
@@ -48,11 +44,11 @@ extension [AvcNalUnit] {
         else {
             return nil
         }
-        return pps.data.withUnsafeBytes { ppsBuffer in
+        return pps.encode().withUnsafeBytes { ppsBuffer in
             guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                 return nil
             }
-            return sps.data.withUnsafeBytes { spsBuffer in
+            return sps.encode().withUnsafeBytes { spsBuffer in
                 guard let spsBaseAddress = spsBuffer.baseAddress else {
                     return nil
                 }

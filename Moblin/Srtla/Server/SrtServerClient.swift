@@ -313,9 +313,10 @@ class SrtServerClient {
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
         let units = readH264NalUnits(packetizedElementaryStream.data)
+        // Needed?
         if let unit = units.first(where: { $0.type == .idr || $0.type == .slice }) {
-            var data = Data([0x00, 0x00, 0x00, 0x01])
-            data.append(unit.data)
+            var data = nalUnitStartCode
+            data.append(unit.encode())
             packetizedElementaryStream.data = data
         }
         let formatDescription = units.makeFormatDescription()
