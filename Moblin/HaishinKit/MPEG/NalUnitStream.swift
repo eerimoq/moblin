@@ -46,24 +46,44 @@ protocol NalUnit {
     init(_ data: Data)
 }
 
-func readH264NalUnits(_ data: Data) -> [AvcNalUnit] {
-    return readNalUnits(data)
+func readH264NalUnits(_ data: Data, _ filter: [AVCNALUnitType]) -> [AvcNalUnit] {
+    return readNalUnits(data) { byte in
+        filter.contains(AVCNALUnitType(rawValue: byte & 0x1F) ?? .unspec)
+    }
 }
 
-func readH265NalUnits(_ data: Data) -> [HevcNalUnit] {
-    return readNalUnits(data)
+func readH265NalUnits(_ data: Data, _ filter: [HevcNalUnitType]) -> [HevcNalUnit] {
+    return readNalUnits(data) { byte in
+        filter.contains(HevcNalUnitType(rawValue: (byte & 0x7E) >> 1) ?? .unspec)
+    }
 }
 
-private func readNalUnits<T: NalUnit>(_ data: Data) -> [T] {
+private func readNalUnits<T: NalUnit>(_ data: Data, _ filter: (UInt8) -> Bool) -> [T] {
     var units: [T] = []
     var lastIndexOf = data.count - 1
-    for i in (2 ..< data.count).reversed() {
-        guard data[i] == 1, data[i - 1] == 0, data[i - 2] == 0 else {
+    var index = lastIndexOf - 2
+    while index >= 0 {
+        guard data[index] <= 1 else {
+            index -= 3
             continue
         }
-        let startCodeLength = i - 3 >= 0 && data[i - 3] == 0 ? 4 : 3
-        units.append(T(data.subdata(in: (i + 1) ..< lastIndexOf + 1)))
-        lastIndexOf = i - startCodeLength
+        guard data[index + 2] == 1, data[index + 1] == 0, data[index] == 0 else {
+            index -= 1
+            continue
+        }
+        let startCodeLength = index - 1 >= 0 && data[index - 1] == 0 ? 4 : 3
+        let length = lastIndexOf - index - 2
+        guard length > 0 else {
+            index -= 1
+            continue
+        }
+        let startCodeIndex = index + 3 - startCodeLength
+        let nalUnitIndex = startCodeIndex + startCodeLength
+        if filter(data[nalUnitIndex]) {
+            units.append(T(data.subdata(in: nalUnitIndex ..< lastIndexOf + 1)))
+        }
+        lastIndexOf = startCodeIndex - 1
+        index = lastIndexOf
     }
     return units
 }

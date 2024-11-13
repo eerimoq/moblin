@@ -315,7 +315,7 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let units = readH264NalUnits(packetizedElementaryStream.data)
+        let units = readH264NalUnits(packetizedElementaryStream.data, [.pps, .sps, .idr])
         let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
@@ -342,7 +342,7 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let units = readH265NalUnits(packetizedElementaryStream.data)
+        let units = readH265NalUnits(packetizedElementaryStream.data, [.sps, .pps, .vps])
         let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
