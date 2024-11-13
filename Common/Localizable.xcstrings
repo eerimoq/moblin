@@ -14133,8 +14133,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Für eine ordentliche Bildqualität reichen in der Regel etwa 5–8 Mbit/s aus."
+            "state" : "translated",
+            "value" : "Für eine ordentliche Bildqualität reichen in der Regel etwa 5–8 Mbps aus."
           }
         },
         "el" : {
@@ -14523,7 +14523,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Adaptive FPS"
           }
         },
@@ -14653,7 +14653,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Adaptive Auflösung"
           }
         },
@@ -15304,7 +15304,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warnmeldungen"
+            "value" : "Alerts"
           }
         },
         "el" : {
@@ -19729,7 +19729,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Automatische Reduzierung der Auflösung und/oder FPS bei geringer verfügbarer Bandbreite. Im Allgemeinen ergibt sich bei niedrigen Bitraten (<750 Kbps) eine bessere Bildqualität."
           }
         },
@@ -34035,7 +34035,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Streammarker erstellen"
           }
         },
@@ -34555,7 +34555,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird derzeit nur für Twitch-WebSockets verwendet. Die Authentifizierung kann später hinzugefügt werden."
           }
         },
@@ -54185,7 +54185,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "H.265/HEVC erfordert im Allgemeinen weniger Bandbreite für dieselbe Bildqualität. RTMP unterstützt im Allgemeinen nur H.264/AVC."
           }
         },
@@ -55745,8 +55745,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gastgeber"
+            "state" : "translated",
+            "value" : "Host"
           }
         },
         "el" : {
@@ -56005,7 +56005,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "HTTP-Proxy"
           }
         },
@@ -58877,8 +58877,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Halten Sie den Lautsprecher am Leben"
+            "state" : "translated",
+            "value" : "Lautsprecher am Laufen halten"
           }
         },
         "el" : {
@@ -60177,7 +60177,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Einschränkung: In einer Szene wird jeweils höchstens eine integrierte oder USB-Kamera unterstützt."
           }
         },
@@ -61997,7 +61997,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niedrigere FPS führen bei schlechten Lichtverhältnissen im Allgemeinen zu einem helleren Bild."
           }
         },
@@ -82667,7 +82667,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aufzeichnungsfehler"
           }
         },
@@ -89168,7 +89168,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anzeigetafel"
+            "value" : "Punktetafel"
           }
         },
         "el" : {
@@ -98403,7 +98403,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Neue Aufnahme starten"
           }
         },
@@ -111274,7 +111274,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Löse Warnungen mit Chatbot-Befehlen aus."
+            "value" : "Löse Alerts mit Chatbot-Befehlen aus."
           }
         },
         "el" : {
