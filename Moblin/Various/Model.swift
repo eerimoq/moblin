@@ -356,6 +356,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var bondingStatistics = noValue
+    private var bondingStatisticsFormatter = BondingStatisticsFormatter()
     @Published var audioLevel: Float = defaultAudioLevel
     @Published var numberOfAudioChannels: Int = 0
     var settings = Settings()
@@ -1320,6 +1321,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
+        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
     }
 
     private func isWeatherNeeded() -> Bool {
@@ -2472,14 +2474,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateBondingStatistics() {
         if isStreamConnected() {
             if let connections = media.srtlaConnectionStatistics() {
-                if let (message, percentages) = calcBondingStatistics(connections: connections) {
+                if let (message, percentages) = bondingStatisticsFormatter.format(connections) {
                     bondingStatistics = message
                     bondingPieChartPercentages = percentages
                 }
                 return
             }
             if let connections = media.ristBondingStatistics() {
-                if let (message, percentages) = calcBondingStatistics(connections: connections) {
+                if let (message, percentages) = bondingStatisticsFormatter.format(connections) {
                     bondingStatistics = message
                     bondingPieChartPercentages = percentages
                 }
@@ -3144,6 +3146,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func networkInterfaceNamesUpdated() {
         media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames!)
+        bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
     }
 
     @MainActor
