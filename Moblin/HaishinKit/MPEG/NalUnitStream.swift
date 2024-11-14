@@ -15,30 +15,11 @@ func addNalUnitStartCodes(_ data: inout Data) {
 
 // Should unescape as well? Why can length be 3 or 4 bytes? Correct?
 func removeNalUnitStartCodes(_ data: inout Data) {
-    var lastIndexOf = data.count - 1
-    var index = lastIndexOf - 2
-    while index >= 0 {
-        guard data[index] <= 1 else {
-            index -= 3
-            continue
-        }
-        guard data[index + 2] == 1, data[index + 1] == 0, data[index] == 0 else {
-            index -= 1
-            continue
-        }
-        let startCodeLength = index - 1 >= 0 && data[index - 1] == 0 ? 4 : 3
-        let length = lastIndexOf - index - 2
-        guard length > 0 else {
-            index -= 1
-            continue
-        }
-        let startCodeIndex = index + 3 - startCodeLength
+    parseNalUnits(data) { startCodeIndex, startCodeLength, length in
         data.replaceSubrange(
             startCodeIndex ..< startCodeIndex + startCodeLength,
             with: Int32(length).bigEndian.data[(4 - startCodeLength)...]
         )
-        lastIndexOf = startCodeIndex - 1
-        index = lastIndexOf
     }
 }
 
@@ -60,6 +41,16 @@ func readH265NalUnits(_ data: Data, _ filter: [HevcNalUnitType]) -> [HevcNalUnit
 
 private func readNalUnits<T: NalUnit>(_ data: Data, _ filter: (UInt8) -> Bool) -> [T] {
     var units: [T] = []
+    parseNalUnits(data) { startCodeIndex, startCodeLength, length in
+        let nalUnitIndex = startCodeIndex + startCodeLength
+        if filter(data[nalUnitIndex]) {
+            units.append(T(data.subdata(in: nalUnitIndex ..< nalUnitIndex + length)))
+        }
+    }
+    return units
+}
+
+private func parseNalUnits(_ data: Data, _ onNalUnit: (Int, Int, Int) -> Void) {
     var lastIndexOf = data.count - 1
     var index = lastIndexOf - 2
     while index >= 0 {
@@ -78,12 +69,8 @@ private func readNalUnits<T: NalUnit>(_ data: Data, _ filter: (UInt8) -> Bool) -
             continue
         }
         let startCodeIndex = index + 3 - startCodeLength
-        let nalUnitIndex = startCodeIndex + startCodeLength
-        if filter(data[nalUnitIndex]) {
-            units.append(T(data.subdata(in: nalUnitIndex ..< lastIndexOf + 1)))
-        }
+        onNalUnit(startCodeIndex, startCodeLength, length)
         lastIndexOf = startCodeIndex - 1
         index = lastIndexOf
     }
-    return units
 }
