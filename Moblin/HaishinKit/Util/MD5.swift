@@ -89,7 +89,6 @@ enum MD5 {
 
     static func calculate(_ data: Data) -> Data {
         var context = Context()
-
         let count: Data = UInt64(data.count * 8).bigEndian.data
         let message = ByteArray(data: data + [0x80])
         message.length += 64 - (message.length % 64)
@@ -101,21 +100,17 @@ enum MD5 {
         message[message.length - 3] = count[2]
         message[message.length - 2] = count[1]
         message[message.length - 1] = count[0]
-
         // swiftlint:disable:this closure_body_length
         message.sequence(64) {
             let x: [UInt32] = $0.toUInt32()
-
             guard x.count == 16 else {
                 return
             }
-
             var ctx = Context()
             ctx.a = context.a
             ctx.b = context.b
             ctx.c = context.c
             ctx.d = context.d
-
             /* Round 1 */
             ctx.FF(x[0], S11, 0xD76A_A478)
             ctx.FF(x[1], S12, 0xE8C7_B756)
@@ -133,7 +128,6 @@ enum MD5 {
             ctx.FF(x[13], S12, 0xFD98_7193)
             ctx.FF(x[14], S13, 0xA679_438E)
             ctx.FF(x[15], S14, 0x49B4_0821)
-
             /* Round 2 */
             ctx.GG(x[1], S21, 0xF61E_2562)
             ctx.GG(x[6], S22, 0xC040_B340)
@@ -151,7 +145,6 @@ enum MD5 {
             ctx.GG(x[2], S22, 0xFCEF_A3F8)
             ctx.GG(x[7], S23, 0x676F_02D9)
             ctx.GG(x[12], S24, 0x8D2A_4C8A)
-
             /* Round 3 */
             ctx.HH(x[5], S31, 0xFFFA_3942)
             ctx.HH(x[8], S32, 0x8771_F681)
@@ -169,7 +162,6 @@ enum MD5 {
             ctx.HH(x[12], S32, 0xE6DB_99E5)
             ctx.HH(x[15], S33, 0x1FA2_7CF8)
             ctx.HH(x[2], S34, 0xC4AC_5665)
-
             /* Round 4 */
             ctx.II(x[0], S41, 0xF429_2244)
             ctx.II(x[7], S42, 0x432A_FF97)
@@ -187,13 +179,11 @@ enum MD5 {
             ctx.II(x[11], S42, 0xBD3A_F235)
             ctx.II(x[2], S43, 0x2AD7_D2BB)
             ctx.II(x[9], S44, 0xEB86_D391)
-
             context.a = context.a &+ ctx.a
             context.b = context.b &+ ctx.b
             context.c = context.c &+ ctx.c
             context.d = context.d &+ ctx.d
         }
-
         return context.data
     }
 }

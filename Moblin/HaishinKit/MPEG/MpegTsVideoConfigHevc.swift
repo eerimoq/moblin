@@ -1,5 +1,4 @@
 import AVFoundation
-import Foundation
 
 /// ISO/IEC 14496-15 8.3.3.1.2
 struct MpegTsVideoConfigHevc: MpegTsVideoConfig {

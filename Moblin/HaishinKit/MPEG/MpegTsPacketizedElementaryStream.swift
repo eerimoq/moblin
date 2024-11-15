@@ -6,7 +6,7 @@ import CoreMedia
  */
 
 private struct OptionalHeader {
-    static let fixedSectionSize: Int = 3
+    static let fixedSectionSize = 3
     var markerBits: UInt8 = 2
     var scramblingControl: UInt8 = 0
     var priority = false

@@ -1,11 +1,9 @@
-import AVFoundation
-
 /**
  The Audio Specific Config is the global header for MPEG-4 Audio
  - seealso: http://wiki.multimedia.cx/index.php?title=MPEG-4_Audio#Audio_Specific_Config
  - seealso: http://wiki.multimedia.cx/?title=Understanding_AAC
  */
-struct AudioSpecificConfig: Equatable {
+enum AudioSpecificConfig {
     enum AudioObjectType: UInt8 {
         case unknown = 0
         case aacMain = 1

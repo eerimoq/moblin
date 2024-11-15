@@ -43,6 +43,25 @@ extension RTMPMuxer: AudioCodecDelegate {
     }
 }
 
+private let extendedVideoHeader: UInt8 = 0b1000_0000
+
+private func makeAvcVideoTagHeader(_ frameType: FLVFrameType, _ packetType: FLVAVCPacketType) -> Data {
+    return Data([
+        (frameType.rawValue << 4) | FLVVideoCodec.avc.rawValue,
+        packetType.rawValue,
+    ])
+}
+
+private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: FLVVideoPacketType) -> Data {
+    return Data([
+        extendedVideoHeader | (frameType.rawValue << 4) | packetType.rawValue,
+        Character("h").asciiValue!,
+        Character("v").asciiValue!,
+        Character("c").asciiValue!,
+        Character("1").asciiValue!,
+    ])
+}
+
 extension RTMPMuxer: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var buffer: Data
@@ -51,26 +70,15 @@ extension RTMPMuxer: VideoCodecDelegate {
             guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 return
             }
-            buffer = Data([
-                FLVFrameType.key.rawValue << 4 | FLVVideoCodec.avc.rawValue,
-                FLVAVCPacketType.seq.rawValue,
-                0,
-                0,
-                0,
-            ])
-            buffer.append(avcC)
+            buffer = makeAvcVideoTagHeader(.key, .seq)
+            buffer += Data([0, 0, 0])
+            buffer += avcC
         case .hevc:
             guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
                 return
             }
-            buffer = Data([
-                0b1000_0000 | FLVFrameType.key.rawValue << 4 | FLVVideoPacketType.sequenceStart.rawValue,
-                0x68,
-                0x76,
-                0x63,
-                0x31,
-            ])
-            buffer.append(hvcC)
+            buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
+            buffer += hvcC
         }
         delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: 0)
     }
@@ -84,21 +92,12 @@ extension RTMPMuxer: VideoCodecDelegate {
             return
         }
         var buffer: Data
-        let frameType = sampleBuffer.isSync ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue
+        let frameType = sampleBuffer.isSync ? FLVFrameType.key : FLVFrameType.inter
         switch codec.settings.value.format {
         case .h264:
-            buffer = Data([
-                (frameType << 4) | FLVVideoCodec.avc.rawValue,
-                FLVAVCPacketType.nal.rawValue,
-            ])
+            buffer = makeAvcVideoTagHeader(frameType, .nal)
         case .hevc:
-            buffer = Data([
-                0b1000_0000 | (frameType << 4) | FLVVideoPacketType.codedFrames.rawValue,
-                0x68,
-                0x76,
-                0x63,
-                0x31,
-            ])
+            buffer = makeHevcExtendedTagHeader(frameType, .codedFrames)
         }
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
@@ -107,12 +106,11 @@ extension RTMPMuxer: VideoCodecDelegate {
     }
 
     private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
-        guard sampleBuffer.decodeTimeStamp.isValid,
-              sampleBuffer.decodeTimeStamp != sampleBuffer.presentationTimeStamp
-        else {
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+        let decodeTimeStamp = sampleBuffer.decodeTimeStamp
+        guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
             return 0
         }
-        return Int32((sampleBuffer.presentationTimeStamp - videoTimeStamp + compositionTimeOffset)
-            .seconds * 1000)
+        return Int32((presentationTimeStamp - videoTimeStamp + compositionTimeOffset).seconds * 1000)
     }
 }

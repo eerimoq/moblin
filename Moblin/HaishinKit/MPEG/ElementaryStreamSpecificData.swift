@@ -15,8 +15,8 @@ enum ElementaryStreamType: UInt8 {
     case h265 = 0x24
 }
 
-struct ElementaryStreamSpecificData: Equatable {
-    static let fixedHeaderSize: Int = 5
+struct ElementaryStreamSpecificData {
+    static let fixedHeaderSize = 5
     var streamType: ElementaryStreamType = .unspecific
     var elementaryPacketId: UInt16 = 0
     var esInfoLength: UInt16 = 0

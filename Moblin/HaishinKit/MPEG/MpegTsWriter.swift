@@ -1,8 +1,6 @@
 import AVFoundation
-import CoreMedia
-import Foundation
 
-var payloadSize: Int = 1316
+var payloadSize = 1316
 
 protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutput data: Data)
@@ -31,7 +29,7 @@ class MpegTsWriter {
         qos: .userInitiated
     )
     private var videoData: [Data?] = [nil, nil]
-    private var videoDataOffset: Int = 0
+    private var videoDataOffset = 0
 
     private var programAssociationTable: MpegTsProgramAssociation = {
         let programAssociationTable = MpegTsProgramAssociation()

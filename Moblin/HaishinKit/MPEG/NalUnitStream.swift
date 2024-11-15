@@ -1,5 +1,4 @@
 import CoreMedia
-import Foundation
 
 let nalUnitStartCode = Data([0x00, 0x00, 0x00, 0x01])
 

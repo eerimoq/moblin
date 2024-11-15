@@ -160,10 +160,10 @@ open class RTMPStream: NetStream {
         }
     }
 
-    var audioTimestamp: Double = 0.0
-    var audioTimestampZero: Double = -1.0
-    var videoTimestamp: Double = 0.0
-    var videoTimestampZero: Double = -1.0
+    var audioTimestamp = 0.0
+    var audioTimestampZero = -1.0
+    var videoTimestamp = 0.0
+    var videoTimestampZero = -1.0
     private let muxer = RTMPMuxer()
     private var messages: [RTMPCommandMessage] = []
     private var startedAt = Date()
@@ -313,7 +313,6 @@ open class RTMPStream: NetStream {
         guard let rtmpConnection else {
             return
         }
-
         switch oldValue {
         case .playing:
             logger.info("Playing not implemented")
@@ -323,7 +322,6 @@ open class RTMPStream: NetStream {
         default:
             break
         }
-
         switch readyState {
         case .open:
             info.clear()

@@ -131,15 +131,12 @@ open class RTMPConnection: EventDispatcher {
 
     private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
         var command: String = url.absoluteString
-
         guard let index = description.firstIndex(of: "?") else {
             return command
         }
-
         let query = String(description[description.index(index, offsetBy: 1)...])
         let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
         let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
-
         var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
         if let opaque = dictionary["opaque"] {
             command += "&opaque=\(opaque)"
@@ -147,10 +144,8 @@ open class RTMPConnection: EventDispatcher {
         } else if let challenge: String = dictionary["challenge"] {
             response += challenge
         }
-
         response = MD5.base64("\(response)\(challenge)")
         command += "&challenge=\(challenge)&response=\(response)"
-
         return command
     }
 
@@ -425,7 +420,6 @@ extension RTMPConnection: RTMPSocketDelegate {
         {
             position += 4
         }
-
         if currentChunk != nil {
             position = chunk.append(data, size: socket.chunkSizeC)
         }
@@ -465,7 +459,6 @@ extension RTMPConnection: RTMPSocketDelegate {
             currentChunk = chunk.type == .three ? fragmentedChunks[chunk.streamId] : chunk
             fragmentedChunks.removeValue(forKey: chunk.streamId)
         }
-
         if position > 0 && position < data.count {
             self.socket(socket, data: data.advanced(by: position))
         }

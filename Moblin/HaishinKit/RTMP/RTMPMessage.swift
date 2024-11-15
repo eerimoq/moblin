@@ -442,9 +442,7 @@ final class RTMPAudioMessage: RTMPMessage {
             if super.payload == newValue {
                 return
             }
-
             super.payload = newValue
-
             if length == newValue.count && !newValue.isEmpty {
                 guard let codec = FLVAudioCodec(rawValue: newValue[0] >> 4),
                       let soundRate = FLVSoundRate(rawValue: (newValue[0] & 0b0000_1100) >> 2),

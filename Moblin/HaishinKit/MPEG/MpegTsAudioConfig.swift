@@ -165,7 +165,7 @@ struct MpegTsAudioConfig: Equatable {
 
     func makeHeader(_ length: Int) -> [UInt8] {
         let size = 7
-        let fullSize: Int = size + length
+        let fullSize = size + length
         var adts = [UInt8](repeating: 0x00, count: size)
         adts[0] = 0xFF
         adts[1] = 0xF9
