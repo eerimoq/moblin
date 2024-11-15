@@ -33,7 +33,7 @@ class SrtlaClient {
     private var connectTimer = SimpleTimer(queue: srtlaClientQueue)
     private var state: State = .idle {
         didSet {
-            logger.info("srtla: State \(oldValue) -> \(state)")
+            logger.debug("srtla: State \(oldValue) -> \(state)")
         }
     }
 
@@ -61,7 +61,7 @@ class SrtlaClient {
         self.connectionPriorities = .init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
         updateConnectionPriorities(connectionPriorities: connectionPriorities)
-        logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
+        logger.debug("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(
                 type: nil,
@@ -89,7 +89,7 @@ class SrtlaClient {
     }
 
     deinit {
-        logger.info("srtla: srtla deinit")
+        logger.debug("srtla: srtla deinit")
     }
 
     func start(uri: String, timeout: Double) {
@@ -108,9 +108,9 @@ class SrtlaClient {
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection, host: host, port: port)
             }
-            logger.info("srtla: Setting connect timer to \(timeout) seconds")
+            logger.debug("srtla: Setting connect timer to \(timeout) seconds")
             self.connectTimer.startSingleShot(timeout: timeout) {
-                logger.info("srtla: Connect timer expired after \(timeout) seconds")
+                logger.debug("srtla: Connect timer expired after \(timeout) seconds")
                 self.onDisconnected(message: "connect timer expired")
             }
             self.state = .waitForRemoteSocketConnected

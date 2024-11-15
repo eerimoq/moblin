@@ -44,7 +44,7 @@ class RemoteConnection {
     private var priority: Float
     private var state = State.idle {
         didSet {
-            logger.info("srtla: \(typeString): State \(oldValue) -> \(state)")
+            logger.debug("srtla: \(typeString): State \(oldValue) -> \(state)")
         }
     }
 
@@ -100,7 +100,7 @@ class RemoteConnection {
     }
 
     deinit {
-        logger.info("srtla: \(typeString): deinit remote connection")
+        logger.debug("srtla: \(typeString): deinit remote connection")
     }
 
     func setPriority(priority: Float) {
@@ -114,7 +114,7 @@ class RemoteConnection {
     }
 
     private func startInternal() {
-        logger.info("srtla: \(typeString): Start")
+        logger.debug("srtla: \(typeString): Start")
         guard state == .idle else {
             return
         }
@@ -137,7 +137,7 @@ class RemoteConnection {
 
     func stop(reason: String) {
         let sent = sizeFormatter.string(fromByteCount: Int64(totalDataSentByteCount))
-        logger.info("srtla: \(typeString): Stop with reason: \(reason) (\(sent) sent)")
+        logger.debug("srtla: \(typeString): Stop with reason: \(reason) (\(sent) sent)")
         connection?.cancel()
         connection = nil
         cancelAllTimers()
@@ -177,7 +177,7 @@ class RemoteConnection {
     }
 
     private func handleStateUpdate(to state: NWConnection.State) {
-        logger.info("srtla: \(typeString): State change to \(state)")
+        logger.debug("srtla: \(typeString): State change to \(state)")
         switch state {
         case .ready:
             cancelAllTimers()
@@ -267,7 +267,7 @@ class RemoteConnection {
     }
 
     func sendSrtlaReg1() {
-        logger.info("srtla: \(typeString): Sending reg 1 (create group)")
+        logger.debug("srtla: \(typeString): Sending reg 1 (create group)")
         groupId = Data.random(length: 256)
         var packet = createSrtlaPacket(type: .reg1, length: srtControlTypeSize + groupId.count)
         packet[srtControlTypeSize...] = groupId
@@ -275,7 +275,7 @@ class RemoteConnection {
     }
 
     private func sendSrtlaReg2() {
-        logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
+        logger.debug("srtla: \(typeString): Sending reg 2 (register connection)")
         var packet = createSrtlaPacket(type: .reg2, length: srtControlTypeSize + groupId.count)
         packet[srtControlTypeSize...] = groupId
         sendPacket(packet: packet)
@@ -333,7 +333,7 @@ class RemoteConnection {
     }
 
     private func handleSrtlaReg2(packet: Data) {
-        logger.info("srtla: \(typeString): Got reg 2 (group created)")
+        logger.debug("srtla: \(typeString): Got reg 2 (group created)")
         guard packet.count == 258 else {
             logger.warning("srtla: \(typeString): Wrong reg 2 packet length \(packet.count)")
             return
@@ -351,7 +351,7 @@ class RemoteConnection {
     }
 
     private func handleSrtlaReg3() {
-        logger.info("srtla: \(typeString): Got reg 3 (connection registered)")
+        logger.debug("srtla: \(typeString): Got reg 3 (connection registered)")
         guard state == .waitForRegisterResponse else {
             return
         }
@@ -370,15 +370,15 @@ class RemoteConnection {
     }
 
     private func handleSrtlaRegErr() {
-        logger.info("srtla: \(typeString): Register error")
+        logger.debug("srtla: \(typeString): Register error")
     }
 
     private func handleSrtlaRegNgp() {
-        logger.info("srtla: \(typeString): Register no group")
+        logger.debug("srtla: \(typeString): Register no group")
     }
 
     private func handleSrtlaRegNak() {
-        logger.info("srtla: \(typeString): Register nak")
+        logger.debug("srtla: \(typeString): Register nak")
     }
 
     private func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {

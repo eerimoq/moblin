@@ -203,8 +203,8 @@ class AudioCodec {
         else {
             return nil
         }
-        logger.info("inputFormat: \(inputFormat)")
-        logger.info("outputFormat: \(outputFormat)")
+        logger.debug("inputFormat: \(inputFormat)")
+        logger.debug("outputFormat: \(outputFormat)")
         guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
             logger.info("Failed to create from \(inputFormat) to \(outputFormat)")
             return nil
