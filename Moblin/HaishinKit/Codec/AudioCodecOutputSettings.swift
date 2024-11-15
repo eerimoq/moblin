@@ -95,6 +95,6 @@ struct AudioCodecOutputSettings: Codable {
             a.intValue < b.intValue
         })?.intValue ?? bitRate
         converter.bitRate = min(maxAvailableBitRate, max(minAvailableBitRate, bitRate))
-        logger.info("Audio bitrate: \(converter.bitRate), maximum: \(maxAvailableBitRate)")
+        logger.debug("Audio bitrate: \(converter.bitRate), maximum: \(maxAvailableBitRate)")
     }
 }

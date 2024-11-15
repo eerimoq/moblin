@@ -60,12 +60,12 @@ class RemoteControlAssistant: NSObject {
 
     func start() {
         stop()
-        logger.info("remote-control-assistant: start")
+        logger.debug("remote-control-assistant: start")
         startInternal()
     }
 
     func stop() {
-        logger.info("remote-control-assistant: stop")
+        logger.debug("remote-control-assistant: stop")
         server.stop(immediately: true)
         stopRetryStartTimer()
     }

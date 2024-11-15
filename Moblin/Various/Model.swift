@@ -818,7 +818,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             for product in products {
                 self.products[product.id] = product
             }
-            logger.info("cosmetics: Got \(products.count) product(s) from App Store")
+            logger.debug("cosmetics: Got \(products.count) product(s) from App Store")
         } catch {
             logger.error("cosmetics: Failed to get products from App Store: \(error)")
         }
@@ -850,7 +850,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @MainActor
     func updateProductFromAppStore() async {
-        logger.info("cosmetics: Update my products from App Store")
+        logger.debug("cosmetics: Update my products from App Store")
         let myProductIds = await getMyProductIds()
         updateIcons(myProductIds: myProductIds)
     }
@@ -5445,7 +5445,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if !isRemoteControlAssistantConnected() {
             sendThermalStateToWatch(thermalState: thermalState)
         }
-        logger.info("Thermal state is \(thermalState.string())")
+        logger.info("Thermal state: \(thermalState.string())")
         if thermalState == .critical {
             makeFlameRedToast()
         }

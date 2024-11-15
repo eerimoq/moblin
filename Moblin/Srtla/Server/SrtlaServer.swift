@@ -95,7 +95,7 @@ class SrtlaServer {
         for (groupId, client) in clients where client.handlePeriodicTimer() {
             client.stop()
             groupIdsToRemove.append(groupId)
-            logger.info("srtla-server: Removed client")
+            logger.debug("srtla-server: Removed client")
         }
         for groupId in groupIdsToRemove {
             clients.removeValue(forKey: groupId)
@@ -128,17 +128,17 @@ class SrtlaServer {
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {
-        logger.info("srtla-server: State change to \(state)")
+        logger.debug("srtla-server: State change to \(state)")
         switch state {
         case .ready:
-            logger.info("srtla-server: Listening on port \(listener?.port?.rawValue ?? 0)")
+            logger.debug("srtla-server: Listening on port \(listener?.port?.rawValue ?? 0)")
         default:
             break
         }
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
-        logger.info("srtla-server: Client \(connection.endpoint) connected")
+        logger.debug("srtla-server: Client \(connection.endpoint) connected")
         connection.start(queue: srtlaServerQueue)
         receivePacket(connection: connection)
     }
@@ -193,7 +193,7 @@ class SrtlaServer {
     }
 
     private func handleSrtlaReg1(connection: NWConnection, packet: Data) {
-        logger.info("srtla-server: Got reg 1 (create group)")
+        logger.debug("srtla-server: Got reg 1 (create group)")
         guard packet.count == 258 else {
             logger.warning("srtla-server: Wrong reg 1 packet length \(packet.count)")
             return
@@ -207,7 +207,7 @@ class SrtlaServer {
     }
 
     private func handleSrtlaReg2(connection: NWConnection, packet: Data) -> Bool {
-        logger.info("srtla-server: Got reg 2 (register connection)")
+        logger.debug("srtla-server: Got reg 2 (register connection)")
         guard packet.count == 258 else {
             logger.warning("srtla-server: Wrong reg 2 packet length \(packet.count)")
             return false
@@ -224,20 +224,20 @@ class SrtlaServer {
     }
 
     private func sendSrtlaReg2(connection: NWConnection, groupId: Data) {
-        logger.info("srtla-server: Sending reg 2 (group created)")
+        logger.debug("srtla-server: Sending reg 2 (group created)")
         var packet = createSrtlaPacket(type: .reg2, length: 258)
         packet[srtControlTypeSize...] = groupId
         sendPacket(connection: connection, packet: packet)
     }
 
     private func sendSrtlaReg3(connection: NWConnection) {
-        logger.info("srtla-server: Sending reg 3 (connection registered)")
+        logger.debug("srtla-server: Sending reg 3 (connection registered)")
         let packet = createSrtlaPacket(type: .reg3, length: srtControlTypeSize)
         sendPacket(connection: connection, packet: packet)
     }
 
     private func sendSrtlaNgp(connection: NWConnection) {
-        logger.info("srtla-server: Sending ngp (no group)")
+        logger.debug("srtla-server: Sending ngp (no group)")
         let packet = createSrtlaPacket(type: .regNgp, length: srtControlTypeSize)
         sendPacket(connection: connection, packet: packet)
     }
