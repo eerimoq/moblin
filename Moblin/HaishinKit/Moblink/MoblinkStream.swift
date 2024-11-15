@@ -1,7 +1,7 @@
 import AVFoundation
 import Foundation
 
-class IrlStream: NetStream {
+class MoblinkStream: NetStream {
     var client: MoblinkClient?
 
     override init() {
@@ -27,7 +27,7 @@ class IrlStream: NetStream {
     }
 }
 
-extension IrlStream: VideoCodecDelegate {
+extension MoblinkStream: VideoCodecDelegate {
     func videoCodecOutputFormat(_: VideoCodec, _ formatDescription: CMFormatDescription) {
         client?.writeVideoFormat(formatDescription: formatDescription)
     }
@@ -37,7 +37,7 @@ extension IrlStream: VideoCodecDelegate {
     }
 }
 
-extension IrlStream: AudioCodecDelegate {
+extension MoblinkStream: AudioCodecDelegate {
     func audioCodecOutputFormat(_ audioFormat: AVAudioFormat) {
         client?.writeAudioFormat(audioFormat: audioFormat)
     }

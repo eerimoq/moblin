@@ -21,7 +21,7 @@ final class Media: NSObject {
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
     private var ristStream: RistStream?
-    private var irlStream: IrlStream?
+    private var irlStream: MoblinkStream?
     private var srtlaClient: SrtlaClient?
     private var netStream: NetStream?
     private var srtTotalByteCount: Int64 = 0
@@ -117,7 +117,7 @@ final class Media: NSObject {
             irlStream = nil
             netStream = ristStream
         case .irl:
-            irlStream = IrlStream()
+            irlStream = MoblinkStream()
             srtStream = nil
             rtmpStream = nil
             ristStream = nil
