@@ -15,19 +15,19 @@ enum SrtPacketType: UInt16 {
     case peerError = 0x0008
 }
 
-func isDataPacket(packet: Data) -> Bool {
+func isSrtDataPacket(packet: Data) -> Bool {
     return (packet[0] & 0x80) == 0
 }
 
-func getControlPacketType(packet: Data) -> UInt16 {
+func getSrtControlPacketType(packet: Data) -> UInt16 {
     return packet.getUInt16Be() & 0x7FFF
 }
 
-func getSequenceNumber(packet: Data) -> UInt32 {
+func getSrtSequenceNumber(packet: Data) -> UInt32 {
     return packet.getUInt32Be()
 }
 
-func isSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
+func isSrtSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
     if sn < ackSn {
         return ackSn - sn < 100_000_000
     } else {
@@ -35,7 +35,7 @@ func isSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
     }
 }
 
-func isSnRange(sn: UInt32) -> Bool {
+private func isSrtSnRange(sn: UInt32) -> Bool {
     return (sn & 0x8000_0000) == 0x8000_0000
 }
 
@@ -44,7 +44,7 @@ func processSrtNak(packet: Data, onNak: (UInt32) -> Void) {
     while offset <= packet.count - 4 {
         let nakSn = packet.getUInt32Be(offset: offset)
         offset += 4
-        if isSnRange(sn: nakSn) {
+        if isSrtSnRange(sn: nakSn) {
             guard offset <= packet.count - 4 else {
                 return
             }

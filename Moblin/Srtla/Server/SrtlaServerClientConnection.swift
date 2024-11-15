@@ -71,7 +71,7 @@ class SrtlaServerClientConnection {
             return
         }
         latestReceivedTime = .now
-        if isDataPacket(packet: packet) {
+        if isSrtDataPacket(packet: packet) {
             handleDataPacket(packet: packet)
         } else {
             handleControlPacket(packet: packet)
@@ -79,7 +79,7 @@ class SrtlaServerClientConnection {
     }
 
     private func handleControlPacket(packet: Data) {
-        let type = getControlPacketType(packet: packet)
+        let type = getSrtControlPacketType(packet: packet)
         if let type = SrtlaPacketType(rawValue: type) {
             handleSrtlaControlPacket(type: type, packet: packet)
         } else {
@@ -107,7 +107,7 @@ class SrtlaServerClientConnection {
     }
 
     private func handleDataPacket(packet: Data) {
-        if ackPacket.appendSequenceNumber(sn: getSequenceNumber(packet: packet)) {
+        if ackPacket.appendSequenceNumber(sn: getSrtSequenceNumber(packet: packet)) {
             sendPacket(packet: ackPacket.data)
         }
         delegate?.handlePacketFromSrtClient(self, packet: packet)

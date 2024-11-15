@@ -31,7 +31,7 @@ private class NakPacket {
     }
 
     func removeUpTo(ackSn: UInt32) {
-        sns = sns.filter { !isSnAcked(sn: $0, ackSn: ackSn) }
+        sns = sns.filter { !isSrtSnAcked(sn: $0, ackSn: ackSn) }
     }
 
     func remove(sn: UInt32) {
@@ -135,10 +135,10 @@ class SrtlaServerClient {
     }
 
     private func handlePacketFromLocalSrtServer(packet: Data) {
-        if isDataPacket(packet: packet) {
+        if isSrtDataPacket(packet: packet) {
             sendPacketOnLatestConnection(packet: packet)
         } else {
-            switch SrtPacketType(rawValue: getControlPacketType(packet: packet)) {
+            switch SrtPacketType(rawValue: getSrtControlPacketType(packet: packet)) {
             case .ack:
                 handleAckPacketFromLocalSrtServer(packet: packet)
             case .nak:
@@ -154,7 +154,7 @@ class SrtlaServerClient {
         guard packet.count >= 20 else {
             return
         }
-        nakPacket.removeUpTo(ackSn: getSequenceNumber(packet: packet[16 ..< 20]))
+        nakPacket.removeUpTo(ackSn: getSrtSequenceNumber(packet: packet[16 ..< 20]))
     }
 
     private func handleNakPacketFromLocalSrtServer(packet: Data) {
@@ -199,8 +199,8 @@ class SrtlaServerClient {
 
 extension SrtlaServerClient: SrtlaServerClientConnectionDelegate {
     func handlePacketFromSrtClient(_ connection: SrtlaServerClientConnection, packet: Data) {
-        if isDataPacket(packet: packet) {
-            nakPacket.remove(sn: getSequenceNumber(packet: packet))
+        if isSrtDataPacket(packet: packet) {
+            nakPacket.remove(sn: getSrtSequenceNumber(packet: packet))
         }
         latestConnection = connection
         localSrtServerConnection?.send(content: packet, completion: .contentProcessed { _ in })

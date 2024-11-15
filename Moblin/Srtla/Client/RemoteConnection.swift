@@ -225,7 +225,7 @@ class RemoteConnection {
     }
 
     private func sendPacket(packet: Data) {
-        if isDataPacket(packet: packet) {
+        if isSrtDataPacket(packet: packet) {
             var numberOfMpegTsPackets = (packet.count - 16) / MpegTsPacket.size
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
             if numberOfMpegTsPackets < mpegtsPacketsPerPacket {
@@ -252,8 +252,8 @@ class RemoteConnection {
     }
 
     func sendSrtPacket(packet: Data) {
-        if isDataPacket(packet: packet) {
-            packetsInFlight.insert(getSequenceNumber(packet: packet))
+        if isSrtDataPacket(packet: packet) {
+            packetsInFlight.insert(getSrtSequenceNumber(packet: packet))
         }
         sendPacket(packet: packet)
     }
@@ -291,12 +291,12 @@ class RemoteConnection {
         guard packet.count >= 20 else {
             return
         }
-        onSrtAck?(getSequenceNumber(packet: packet[16 ..< 20]))
+        onSrtAck?(getSrtSequenceNumber(packet: packet[16 ..< 20]))
     }
 
     func handleSrtAckSn(sn ackSn: UInt32) {
         packetsInFlight = packetsInFlight
-            .filter { sn in !isSnAcked(sn: sn, ackSn: ackSn) }
+            .filter { sn in !isSrtSnAcked(sn: sn, ackSn: ackSn) }
     }
 
     private func handleSrtNak(packet: Data) {
@@ -417,7 +417,7 @@ class RemoteConnection {
     }
 
     private func handleControlPacket(packet: Data) {
-        let type = getControlPacketType(packet: packet)
+        let type = getSrtControlPacketType(packet: packet)
         if let type = SrtlaPacketType(rawValue: type) {
             handleSrtlaControlPacket(type: type, packet: packet)
         } else {
@@ -438,7 +438,7 @@ class RemoteConnection {
             return
         }
         latestReceivedTime = .now
-        if isDataPacket(packet: packet) {
+        if isSrtDataPacket(packet: packet) {
             handleDataPacket(packet: packet)
         } else {
             handleControlPacket(packet: packet)

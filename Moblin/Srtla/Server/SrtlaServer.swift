@@ -164,14 +164,14 @@ class SrtlaServer {
             logger.error("srtla-server: Packet too short (\(packet.count).")
             return false
         }
-        if !isDataPacket(packet: packet) {
+        if !isSrtDataPacket(packet: packet) {
             return handleControlPacket(connection: connection, packet: packet)
         }
         return false
     }
 
     private func handleControlPacket(connection: NWConnection, packet: Data) -> Bool {
-        let type = getControlPacketType(packet: packet)
+        let type = getSrtControlPacketType(packet: packet)
         if let type = SrtlaPacketType(rawValue: type) {
             return handleSrtlaControlPacket(connection: connection, type: type, packet: packet)
         }
