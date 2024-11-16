@@ -1829,7 +1829,6 @@ class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
-    var letItSnow: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
@@ -3232,10 +3231,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.bFrames == nil {
             stream.bFrames = false
-            store()
-        }
-        if realDatabase.debug!.letItSnow == nil {
-            realDatabase.debug!.letItSnow = false
             store()
         }
         if realDatabase.rtmpServer == nil {

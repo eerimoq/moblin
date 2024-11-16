@@ -59659,6 +59659,7 @@
       }
     },
     "Let it snow" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

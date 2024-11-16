@@ -302,7 +302,6 @@
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
 		03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
-		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
 		03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA62C0ECBA800A59208 /* Srtla.swift */; };
 		03A22DAA2C0ECD9400A59208 /* SrtlaServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */; };
 		03A22DAC2C0EE45600A59208 /* SrtlaServerClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */; };
@@ -851,7 +850,6 @@
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
-		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
 		03A22DA62C0ECBA800A59208 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 		03A22DA92C0ECD9400A59208 /* SrtlaServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClient.swift; sourceTree = "<group>"; };
 		03A22DAB2C0EE45600A59208 /* SrtlaServerClientConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerClientConnection.swift; sourceTree = "<group>"; };
@@ -1767,7 +1765,6 @@
 				0358DDD82BE6A7370080133B /* Moblin.entitlements */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 				03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */,
-				03A173F92B38312E00ACC4F8 /* Snow.sks */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				03EC1E772CBEE477009AEAB1 /* AppShortcuts.strings */,
 				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
@@ -2824,7 +2821,6 @@
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
 				0359F9122BD3E049005BFDA8 /* README.md in Resources */,
 				03EC1E792CBEE477009AEAB1 /* AppShortcuts.strings in Resources */,
-				03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */,
 				03FB42332C68EE6D0009FB26 /* PROTOCOL.md in Resources */,
 				03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */,
 			);

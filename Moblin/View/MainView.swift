@@ -61,28 +61,6 @@ struct BrowserWidgetView: UIViewRepresentable {
     }
 }
 
-class SnowScene: SKScene {
-    let snowEmitterNode = SKEmitterNode(fileNamed: "Snow.sks")
-
-    override func didMove(to _: SKView) {
-        guard let snowEmitterNode = snowEmitterNode else {
-            return
-        }
-        snowEmitterNode.particleSize = CGSize(width: 50, height: 50)
-        snowEmitterNode.particleLifetime = 8
-        snowEmitterNode.particleLifetimeRange = 12
-        addChild(snowEmitterNode)
-    }
-
-    override func didChangeSize(_: CGSize) {
-        guard let snowEmitterNode = snowEmitterNode else {
-            return
-        }
-        snowEmitterNode.particlePosition = CGPoint(x: size.width / 2, y: size.height)
-        snowEmitterNode.particlePositionRange = CGVector(dx: size.width, dy: size.height)
-    }
-}
-
 private struct FindFaceView: View {
     var body: some View {
         HStack {
@@ -110,13 +88,6 @@ struct MainView: View {
     var streamView: StreamView
     var webBrowserView: WebBrowserView
     @State var showAreYouReallySure = false
-
-    private var scene: SKScene {
-        let scene = SnowScene()
-        scene.scaleMode = .resizeFill
-        scene.backgroundColor = .clear
-        return scene
-    }
 
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
         let sideLength = 70.0
@@ -463,12 +434,6 @@ struct MainView: View {
                         .allowsHitTesting(false)
                     }
                 }
-            }
-            if debug.letItSnow! {
-                SpriteView(scene: scene, options: [.allowsTransparency])
-                    .ignoresSafeArea()
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                    .allowsHitTesting(false)
             }
             if model.blackScreen {
                 Text("")

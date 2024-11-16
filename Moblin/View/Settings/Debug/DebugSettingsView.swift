@@ -52,11 +52,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug!.srtOverlay = value
                 }))
-                Toggle("Let it snow", isOn: Binding(get: {
-                    model.database.debug!.letItSnow!
-                }, set: { value in
-                    model.database.debug!.letItSnow = value
-                }))
             }
             Section {
                 HStack {
