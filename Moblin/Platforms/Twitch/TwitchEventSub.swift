@@ -282,7 +282,7 @@ final class TwitchEventSub: NSObject {
     }
 
     func start() {
-        logger.info("twitch: event-sub: Start")
+        logger.debug("twitch: event-sub: Start")
         stopInternal()
         connect()
         started = true
@@ -298,7 +298,7 @@ final class TwitchEventSub: NSObject {
     }
 
     func stop() {
-        logger.info("twitch: event-sub: Stop")
+        logger.debug("twitch: event-sub: Stop")
         stopInternal()
         started = false
     }

@@ -246,10 +246,10 @@ extension TwitchPubSub: URLSessionWebSocketDelegate {
         didCompleteWithError _: Error?
     ) {
         if running {
-            logger.info("twitch: pubsub: \(channelId): Completed")
+            logger.debug("twitch: pubsub: \(channelId): Completed")
             reconnect()
         } else {
-            logger.info("twitch: pubsub: \(channelId): Completed by us")
+            logger.debug("twitch: pubsub: \(channelId): Completed by us")
         }
     }
 }

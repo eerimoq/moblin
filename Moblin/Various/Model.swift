@@ -2445,6 +2445,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             newValue = noValue
         }
+        if !isLive {
+            newValue = noValue
+        }
         if newValue != numberOfViewers {
             numberOfViewers = newValue
             sendViewerCountWatch()
@@ -6047,7 +6050,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusViewers() -> Bool {
-        return database.show.viewers && isViewersConfigured()
+        return database.show.viewers && isViewersConfigured() && isLive
     }
 
     func statusStreamText() -> String {

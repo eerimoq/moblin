@@ -1268,7 +1268,6 @@
 		031C15BC2B9336C700BA967D /* Control */ = {
 			isa = PBXGroup;
 			children = (
-				03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */,
 				031C15BE2B9336D200BA967D /* ControlView.swift */,
 			);
 			path = Control;
@@ -2560,6 +2559,7 @@
 			children = (
 				031C15BC2B9336C700BA967D /* Control */,
 				03B89D9C2B92DF000022EAE7 /* Chat */,
+				03EEC7692CE9253A00749D4E /* PadelScoreboard */,
 				03B89D9B2B92DEF90022EAE7 /* Preview */,
 				03ECDF4A2B8E4E5F00BD920E /* MainView.swift */,
 			);
@@ -2573,6 +2573,14 @@
 				03A01ACD2B9F738200D20AE3 /* CacheImage.swift */,
 			);
 			path = Various;
+			sourceTree = "<group>";
+		};
+		03EEC7692CE9253A00749D4E /* PadelScoreboard */ = {
+			isa = PBXGroup;
+			children = (
+				03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */,
+			);
+			path = PadelScoreboard;
 			sourceTree = "<group>";
 		};
 		03EF34B22B1AFB7F00A19221 /* AfreecaTv */ = {
