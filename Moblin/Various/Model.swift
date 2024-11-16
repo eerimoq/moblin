@@ -999,7 +999,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         else {
             return
         }
-        logger.debug("Uploading snapshot of \(image).")
+        logger.debug("Uploading snapshot to Discord of \(image).")
         uploadImage(
             url: url,
             paramName: "snapshot",
