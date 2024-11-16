@@ -94115,6 +94115,9 @@
         }
       }
     },
+    "Snapshot taken by %@." : {
+
+    },
     "Snapshot uploaded to Discord" : {
       "localizations" : {
         "de" : {

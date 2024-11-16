@@ -443,6 +443,7 @@ func uploadImage(
     paramName: String,
     fileName: String,
     image: Data,
+    message: String?,
     onCompleted: @escaping (Bool) -> Void
 ) {
     let boundary = UUID().uuidString
@@ -450,6 +451,11 @@ func uploadImage(
     request.httpMethod = "POST"
     request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
     var data = Data()
+    if let message {
+        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("content-disposition: form-data; name=\"content\"\r\n\r\n".data(using: .utf8)!)
+        data.append(message.data(using: .utf8)!)
+    }
     data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
     data.append(
         "content-disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n"

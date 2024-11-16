@@ -54,7 +54,7 @@ struct StreamRecordingSettingsView: View {
                         value: String(bitrateToMbps(bitrate: recording.videoBitrate)),
                         footers: [String(localized: "Up to 50 Mbps. Set to 0 for automatic.")],
                         keyboardType: .numbersAndPunctuation
-                    ){
+                    ) {
                         submitVideoBitrateChange(value: $0)
                     }
                 } label: {

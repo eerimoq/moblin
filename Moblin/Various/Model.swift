@@ -980,7 +980,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         buttonPairs = pairs.reversed()
     }
 
-    func takeSnapshot() {
+    func takeSnapshot(message: String? = nil) {
         media.takeSnapshot { image in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
@@ -988,19 +988,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-                self.tryUploadSnapshotToDiscord(image: imageJpeg)
+                self.tryUploadSnapshotToDiscord(image: imageJpeg, message: message)
             }
         }
     }
 
-    private func tryUploadSnapshotToDiscord(image: Data) {
+    private func tryUploadSnapshotToDiscord(image: Data, message: String?) {
         guard !stream.discordSnapshotWebhookOnlyWhenLive! || isLive,
               let url = URL(string: stream.discordSnapshotWebhook!)
         else {
             return
         }
-        logger.info("Uploading snapshot of \(image).")
-        uploadImage(url: url, paramName: "snapshot", fileName: "snapshot.jpg", image: image) { ok in
+        logger.debug("Uploading snapshot of \(image).")
+        uploadImage(
+            url: url,
+            paramName: "snapshot",
+            fileName: "snapshot.jpg",
+            image: image,
+            message: message
+        ) { ok in
             DispatchQueue.main.async {
                 if ok {
                     self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
@@ -1878,7 +1884,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         else {
             return
         }
-        logger.info("Playing silence")
         keepSpeakerAlivePlayer = try? AVAudioPlayer(contentsOf: soundUrl)
         keepSpeakerAlivePlayer?.play()
     }
@@ -4446,7 +4451,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.snapshot!,
             message: message
         ) {
-            self.takeSnapshot()
+            if let user = message.user {
+                self.takeSnapshot(message: String(localized: "Snapshot taken by \(user)."))
+            } else {
+                self.takeSnapshot()
+            }
         }
     }
 

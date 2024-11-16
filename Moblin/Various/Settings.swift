@@ -646,6 +646,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
         new.frontCameraId = frontCameraId
         new.rtmpCameraId = rtmpCameraId
         new.srtlaCameraId = srtlaCameraId
+        new.mediaPlayerCameraId = mediaPlayerCameraId
         new.externalCameraId = externalCameraId
         new.externalCameraName = externalCameraName
         for widget in widgets {
