@@ -14520,6 +14520,7 @@
       }
     },
     "Adaptive FPS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -19726,6 +19727,7 @@
       }
     },
     "Automatically lower resolution and/or FPS when the available bandwidth is low. Generally gives better image quality at low (<750 Kbps) bitrates." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -19854,6 +19856,9 @@
           }
         }
       }
+    },
+    "Automatically lower resolution when the available bandwidth is low. Generally gives better image quality at low (<750 Kbps) bitrates." : {
+
     },
     "Automatically select the stream's audio as mic when connected." : {
       "localizations" : {

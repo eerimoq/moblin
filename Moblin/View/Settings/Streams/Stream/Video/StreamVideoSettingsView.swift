@@ -148,16 +148,9 @@ struct StreamVideoSettingsView: View {
                         model.storeAndReloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)
-                    Toggle("Adaptive FPS", isOn: Binding(get: {
-                        stream.adaptiveEncoderFps!
-                    }, set: { value in
-                        stream.adaptiveEncoderFps = value
-                        model.storeAndReloadStreamIfEnabled(stream: stream)
-                    }))
-                    .disabled(stream.enabled && model.isLive)
                 } footer: {
                     Text("""
-                    Automatically lower resolution and/or FPS when the available bandwidth is \
+                    Automatically lower resolution when the available bandwidth is \
                     low. Generally gives better image quality at low (<750 Kbps) bitrates.
                     """)
                 }

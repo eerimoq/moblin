@@ -8,9 +8,9 @@ func createDataRateLimits(bitRate: UInt32) -> CFArray {
     if videoCodecHigherDataRateLimit {
         bitRate *= 1.2
     }
-    let byteLimit = (bitRate / 8) as CFNumber
-    let secLimit = Double(1.0) as CFNumber
-    return [byteLimit, secLimit] as CFArray
+    let bytesLimit = (bitRate / 8) as CFNumber
+    let secondsLimit = Double(1.0) as CFNumber
+    return [bytesLimit, secondsLimit] as CFArray
 }
 
 struct VideoCodecSettings {
@@ -43,7 +43,6 @@ struct VideoCodecSettings {
     }
 
     var adaptiveResolution = false
-    var adaptiveFps = false
 
     private(set) var format: Format = .h264
 

@@ -405,7 +405,6 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
     var adaptiveEncoderResolution: Bool? = false
-    var adaptiveEncoderFps: Bool? = false
     var adaptiveBitrate: Bool? = true
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp? = .init()
@@ -4309,10 +4308,6 @@ final class Settings {
         }
         for stream in database.streams where stream.adaptiveEncoderResolution == nil {
             stream.adaptiveEncoderResolution = false
-            store()
-        }
-        for stream in database.streams where stream.adaptiveEncoderFps == nil {
-            stream.adaptiveEncoderFps = false
             store()
         }
         if realDatabase.debug!.httpProxy == nil {

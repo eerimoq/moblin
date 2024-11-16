@@ -4,10 +4,6 @@ import UIKit
 import VideoToolbox
 
 var numberOfFailedEncodings = 0
-private let lowFpsBitrateLimit = 100_000.0
-private let highFpsBitrateLimit = 750_000.0
-private let lowFps = 15.0
-private let highFps = 30.0
 
 protocol VideoCodecDelegate: AnyObject {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription)
@@ -31,7 +27,6 @@ class VideoCodec {
                 if self.settings.value.shouldInvalidateSession(oldValue.value) {
                     self.invalidateSession = true
                     self.currentBitrate = 0
-                    self.latestEncodedPresentationTimeStamp = .zero
                 }
             }
         }
@@ -76,7 +71,6 @@ class VideoCodec {
     private var invalidateSession = true
     private var currentBitrate: UInt32 = 0
     private var oldBitrateVideoSize: CMVideoDimensions = .init(width: 0, height: 0)
-    private var latestEncodedPresentationTimeStamp: CMTime = .zero
 
     private func updateBitrate(settings: VideoCodecSettings) {
         guard currentBitrate != settings.bitRate else {
@@ -117,20 +111,6 @@ class VideoCodec {
         return videoSize
     }
 
-    private func shouldDropFrameDueToAdaptiveFps(_ presentationTimeStamp: CMTime) -> Bool {
-        if currentBitrate <= UInt32(highFpsBitrateLimit) {
-            let highLowDelta = highFpsBitrateLimit - lowFpsBitrateLimit
-            let factor = max(Double(currentBitrate) - lowFpsBitrateLimit, 0) / highLowDelta
-            let frameRateLimit = lowFps + (highFps - lowFps) * factor
-            let secondsSinceLatestEncodedFrame = (presentationTimeStamp - latestEncodedPresentationTimeStamp)
-                .seconds
-            if secondsSinceLatestEncodedFrame < 1 / frameRateLimit {
-                return true
-            }
-        }
-        return false
-    }
-
     func encodeImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
         guard isRunning else {
             return
@@ -145,12 +125,6 @@ class VideoCodec {
             session = makeVideoCompressionSession(self, settings: settings)
         }
         updateBitrate(settings: settings)
-        if settings.adaptiveFps {
-            guard !shouldDropFrameDueToAdaptiveFps(presentationTimeStamp) else {
-                return
-            }
-            latestEncodedPresentationTimeStamp = presentationTimeStamp
-        }
         let err = session?.encodeFrame(
             imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
@@ -174,7 +148,6 @@ class VideoCodec {
             logger.info("video: Encode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
-            latestEncodedPresentationTimeStamp = .zero
         }
     }
 
