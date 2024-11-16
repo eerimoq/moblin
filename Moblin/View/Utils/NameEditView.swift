@@ -1,13 +1,12 @@
 import SwiftUI
 
 struct NameEditView: View {
-    @State var name: String
+    @Binding var name: String
     @Environment(\.dismiss) var dismiss
-    var onSubmit: (String) -> Void
 
     private func handleSubmit(value: String) {
+        name = value
         dismiss()
-        onSubmit(value)
     }
 
     var body: some View {

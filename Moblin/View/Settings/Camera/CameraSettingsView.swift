@@ -6,11 +6,6 @@ struct CustomLutView: View {
     var lut: SettingsColorLut
     @State var name: String
 
-    private func submitName(value: String) {
-        model.setLutName(lut: lut, name: value)
-        name = value
-    }
-
     func loadImage() -> UIImage? {
         if let data = model.imageStorage.tryRead(id: lut.id) {
             return UIImage(data: data)
@@ -23,9 +18,12 @@ struct CustomLutView: View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: name, onSubmit: submitName)
+                    NameEditView(name: $name)
                 } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
+                }
+                .onChange(of: name) { name in
+                    model.setLutName(lut: lut, name: name)
                 }
             }
             Section {

@@ -6,18 +6,16 @@ struct WidgetSettingsView: View {
     @State var type: String
     @State var name: String
 
-    func submitName(name: String) {
-        widget.name = name
-        self.name = name
-    }
-
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: name, onSubmit: submitName)
+                    NameEditView(name: $name)
                 } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
+                }
+                .onChange(of: name) { name in
+                    widget.name = name
                 }
                 NavigationLink {
                     InlinePickerView(title: String(localized: "Type"),

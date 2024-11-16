@@ -11,11 +11,6 @@ struct SceneSettingsView: View {
         model.database.widgets
     }
 
-    func submitName(name: String) {
-        scene.name = name
-        self.name = name
-    }
-
     private let widgetsWithPosition: [SettingsWidgetType] = [
         .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource,
     ]
@@ -79,9 +74,12 @@ struct SceneSettingsView: View {
     var body: some View {
         Form {
             NavigationLink {
-                NameEditView(name: name, onSubmit: submitName)
+                NameEditView(name: $name)
             } label: {
                 TextItemView(name: String(localized: "Name"), value: name)
+            }
+            .onChange(of: name) { name in
+                scene.name = name
             }
             Section {
                 NavigationLink {

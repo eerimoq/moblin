@@ -5,18 +5,16 @@ struct StreamSettingsView: View {
     var stream: SettingsStream
     @State var name: String
 
-    func submitName(name: String) {
-        stream.name = name
-        self.name = name
-    }
-
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    NameEditView(name: name, onSubmit: submitName)
+                    NameEditView(name: $name)
                 } label: {
                     TextItemView(name: String(localized: "Name"), value: name)
+                }
+                .onChange(of: name) { name in
+                    stream.name = name
                 }
             }
             Section {
