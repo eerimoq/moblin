@@ -27,11 +27,12 @@ struct ZoomPresetSettingsView: View {
         TextEditView(
             title: String(localized: "X"),
             value: String(preset.x!),
-            onSubmit: submitX,
             footers: [
                 String(localized: "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."),
             ],
             keyboardType: .numbersAndPunctuation
-        )
+        ) {
+            submitX(x: $0)
+        }
     }
 }

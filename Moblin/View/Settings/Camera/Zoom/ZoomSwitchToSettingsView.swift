@@ -20,19 +20,18 @@ struct ZoomSwitchToSettingsView: View {
             TextEditView(
                 title: String(localized: "To \(name) camera"),
                 value: formatX(x: x()),
-                onSubmit: { x in
-                    guard let x = Float(x) else {
-                        return
-                    }
-                    let (minX, maxX) = model.getMinMaxZoomX(position: position)
-                    guard x >= minX, x <= maxX else {
-                        model.makeErrorToast(title: String(localized: "X must be \(minX) - \(maxX)"))
-                        return
-                    }
-                    defaultZoom.x = x
-                },
                 keyboardType: .numbersAndPunctuation
-            )
+            ) {
+                guard let x = Float($0) else {
+                    return
+                }
+                let (minX, maxX) = model.getMinMaxZoomX(position: position)
+                guard x >= minX, x <= maxX else {
+                    model.makeErrorToast(title: String(localized: "X must be \(minX) - \(maxX)"))
+                    return
+                }
+                defaultZoom.x = x
+            }
         } label: {
             Toggle(isOn: Binding(get: {
                 defaultZoom.enabled

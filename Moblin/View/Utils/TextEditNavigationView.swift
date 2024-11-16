@@ -17,11 +17,11 @@ struct TextEditNavigationView: View {
             TextEditView(
                 title: title,
                 value: value,
-                onSubmit: onSubmit,
                 footers: footers,
                 capitalize: capitalize,
                 keyboardType: keyboardType,
-                placeholder: placeholder
+                placeholder: placeholder,
+                onSubmit: onSubmit
             )
         } label: {
             TextItemView(name: title, value: valueFormat?(value) ?? value, sensitive: sensitive, color: color)

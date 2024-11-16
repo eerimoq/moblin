@@ -10,6 +10,8 @@ struct NameEditView: View {
     }
 
     var body: some View {
-        TextEditView(title: String(localized: "Name"), value: name, onSubmit: handleSubmit, capitalize: true)
+        TextEditView(title: String(localized: "Name"), value: name, capitalize: true) {
+            handleSubmit(value: $0)
+        }
     }
 }

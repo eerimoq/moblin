@@ -117,14 +117,15 @@ struct StreamVideoSettingsView: View {
                         TextEditView(
                             title: String(localized: "Key frame interval"),
                             value: String(stream.maxKeyFrameInterval!),
-                            onSubmit: submitMaxKeyFrameInterval,
                             footers: [
                                 String(
                                     localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
                                 ),
                             ],
                             keyboardType: .numbersAndPunctuation
-                        )
+                        ) {
+                            submitMaxKeyFrameInterval(value: $0)
+                        }
                     } label: {
                         TextItemView(
                             name: String(localized: "Key frame interval"),

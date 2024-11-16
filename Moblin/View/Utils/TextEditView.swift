@@ -4,11 +4,11 @@ struct TextEditView: View {
     @Environment(\.dismiss) var dismiss
     var title: String
     @State var value: String
-    var onSubmit: (String) -> Void
     var footers: [String] = []
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
     var placeholder: String = ""
+    var onSubmit: (String) -> Void
     @State private var changed = false
     @State private var submitted = false
 

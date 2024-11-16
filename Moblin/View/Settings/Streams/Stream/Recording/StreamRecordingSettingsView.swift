@@ -52,10 +52,11 @@ struct StreamRecordingSettingsView: View {
                     TextEditView(
                         title: String(localized: "Video bitrate"),
                         value: String(bitrateToMbps(bitrate: recording.videoBitrate)),
-                        onSubmit: submitVideoBitrateChange,
                         footers: [String(localized: "Up to 50 Mbps. Set to 0 for automatic.")],
                         keyboardType: .numbersAndPunctuation
-                    )
+                    ){
+                        submitVideoBitrateChange(value: $0)
+                    }
                 } label: {
                     TextItemView(
                         name: String(localized: "Video bitrate"),
@@ -67,14 +68,15 @@ struct StreamRecordingSettingsView: View {
                     TextEditView(
                         title: String(localized: "Key frame interval"),
                         value: String(recording.maxKeyFrameInterval),
-                        onSubmit: submitMaxKeyFrameInterval,
                         footers: [
                             String(
                                 localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
                             ),
                         ],
                         keyboardType: .numbersAndPunctuation
-                    )
+                    ) {
+                        submitMaxKeyFrameInterval(value: $0)
+                    }
                 } label: {
                     TextItemView(
                         name: String(localized: "Key frame interval"),

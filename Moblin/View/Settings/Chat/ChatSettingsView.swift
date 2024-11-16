@@ -98,9 +98,10 @@ struct ChatSettingsView: View {
                         TextEditView(
                             title: String(localized: "Maximum age"),
                             value: String(model.database.chat.maximumAge!),
-                            onSubmit: submitMaximumAge,
                             footers: [String(localized: "Maximum message age in seconds.")]
-                        )
+                        ) {
+                            submitMaximumAge(value: $0)
+                        }
                     } label: {
                         Toggle(isOn: Binding(get: {
                             model.database.chat.maximumAgeEnabled!
