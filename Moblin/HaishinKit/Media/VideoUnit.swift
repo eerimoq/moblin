@@ -210,9 +210,7 @@ final class VideoUnit: NSObject {
     private var lowFpsImageInterval: Double = 1.0
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
-    private var takeSnapshotAge: Float = 0.0
     private var takeSnapshotComplete: ((UIImage) -> Void)?
-    private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
@@ -330,9 +328,8 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage) -> Void) {
+    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
         lockQueue.async {
-            self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
         }
     }
@@ -914,44 +911,21 @@ final class VideoUnit: NSObject {
             duration: modSampleBuffer.duration
         )
         mixer?.recorder.appendVideo(modSampleBuffer)
-        let presentationTimeStamp = modSampleBuffer.presentationTimeStamp.seconds
-        handleLowFpsImage(imageBuffer: modImageBuffer, presentationTimeStamp: presentationTimeStamp)
-        handleTakeSnapshot(sampleBuffer: modSampleBuffer, presentationTimeStamp: presentationTimeStamp)
-    }
-
-    private func handleLowFpsImage(imageBuffer: CVImageBuffer, presentationTimeStamp: Double) {
-        guard lowFpsImageEnabled else {
-            return
-        }
-        guard presentationTimeStamp > lowFpsImageLatest + lowFpsImageInterval else {
-            return
-        }
-        lowFpsImageLatest = presentationTimeStamp
-        lowFpsImageQueue.async {
-            self.createLowFpsImage(imageBuffer: imageBuffer)
-        }
-    }
-
-    private func handleTakeSnapshot(sampleBuffer: CMSampleBuffer, presentationTimeStamp: Double) {
-        let latestPresentationTimeStamp = takeSnapshotSampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-        if presentationTimeStamp > latestPresentationTimeStamp + 0.5 {
-            takeSnapshotSampleBuffers.append(sampleBuffer)
-            if takeSnapshotSampleBuffers.count > 30 {
-                takeSnapshotSampleBuffers.removeFirst()
+        if lowFpsImageEnabled {
+            let presentationTimeStamp = modSampleBuffer.presentationTimeStamp.seconds
+            if lowFpsImageLatest + lowFpsImageInterval < presentationTimeStamp {
+                lowFpsImageLatest = presentationTimeStamp
+                lowFpsImageQueue.async {
+                    self.createLowFpsImage(imageBuffer: modImageBuffer)
+                }
             }
         }
-        guard let takeSnapshotComplete else {
-            return
+        if let takeSnapshotComplete {
+            DispatchQueue.global().async {
+                self.takeSnapshot(imageBuffer: modImageBuffer, onComplete: takeSnapshotComplete)
+            }
+            self.takeSnapshotComplete = nil
         }
-        DispatchQueue.global().async {
-            self.takeSnapshot(
-                sampleBuffers: self.takeSnapshotSampleBuffers,
-                presentationTimeStamp: presentationTimeStamp,
-                age: self.takeSnapshotAge,
-                onComplete: takeSnapshotComplete
-            )
-        }
-        self.takeSnapshotComplete = nil
     }
 
     private func createLowFpsImage(imageBuffer: CVImageBuffer) {
@@ -967,32 +941,7 @@ final class VideoUnit: NSObject {
         lowFpsImageFrameNumber += 1
     }
 
-    private func findSnapshotsCandidates(_ sampleBuffers: Deque<CMSampleBuffer>,
-                                         _ presentationTimeStamp: Double,
-                                         _ age: Float) -> [CMSampleBuffer]
-    {
-        if age == 0.0 {
-            if let last = sampleBuffers.last {
-                return [last]
-            } else {
-                return []
-            }
-        } else {
-            return sampleBuffers.filter {
-                abs(presentationTimeStamp - $0.presentationTimeStamp.seconds - Double(age)) < 1.2
-            }
-        }
-    }
-
-    private func takeSnapshot(sampleBuffers: Deque<CMSampleBuffer>,
-                              presentationTimeStamp: Double,
-                              age: Float,
-                              onComplete: @escaping (UIImage) -> Void)
-    {
-        let sampleBuffers = findSnapshotsCandidates(sampleBuffers, presentationTimeStamp, age)
-        guard let imageBuffer = sampleBuffers.last?.imageBuffer else {
-            return
-        }
+    private func takeSnapshot(imageBuffer: CVImageBuffer, onComplete: @escaping (UIImage) -> Void) {
         let ciImage = CIImage(cvPixelBuffer: imageBuffer)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)

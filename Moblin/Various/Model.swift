@@ -981,8 +981,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil) {
-        let age = isChatBot ? stream.estimatedViewerDelay! : 0.0
-        media.takeSnapshot(age: age) { image in
+        media.takeSnapshot { image in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }

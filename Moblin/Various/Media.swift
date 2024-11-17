@@ -670,8 +670,8 @@ final class Media: NSObject {
         netStream?.setLowFpsImage(fps: fps)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage) -> Void) {
-        netStream?.takeSnapshot(age: age, onComplete: onComplete)
+    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
+        netStream?.takeSnapshot(onComplete: onComplete)
     }
 
     func setVideoSize(capture: CGSize, output: CGSize) {
