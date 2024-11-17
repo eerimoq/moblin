@@ -43273,6 +43273,12 @@
         }
       }
     },
+    "Estimated viewer delay" : {
+
+    },
+    "Estimated viewer delay, for example used to make it easier to take snapshots using the chat bot. It does not delay the stream." : {
+
+    },
     "Events (alerts)" : {
       "localizations" : {
         "de" : {

@@ -420,6 +420,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var realtimeIrlPushKey: String? = ""
     var portrait: Bool? = false
     var backgroundStreaming: Bool? = false
+    var estimatedViewerDelay: Float? = 8.0
 
     init(name: String) {
         self.name = name
@@ -471,6 +472,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
         new.backgroundStreaming = backgroundStreaming
+        new.estimatedViewerDelay = estimatedViewerDelay
         return new
     }
 
@@ -4318,6 +4320,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.discordChatBotSnapshotWebhook == nil {
             stream.discordChatBotSnapshotWebhook = stream.discordSnapshotWebhook
+            store()
+        }
+        for stream in realDatabase.streams where stream.estimatedViewerDelay == nil {
+            stream.estimatedViewerDelay = 8.0
             store()
         }
     }

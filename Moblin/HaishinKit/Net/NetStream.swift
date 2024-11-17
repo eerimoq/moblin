@@ -162,8 +162,8 @@ open class NetStream: NSObject {
         mixer.video.setLowFpsImage(fps: fps)
     }
 
-    func takeSnapshot(onComplete: @escaping (UIImage) -> Void) {
-        mixer.video.takeSnapshot(onComplete: onComplete)
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage) -> Void) {
+        mixer.video.takeSnapshot(age: age, onComplete: onComplete)
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
