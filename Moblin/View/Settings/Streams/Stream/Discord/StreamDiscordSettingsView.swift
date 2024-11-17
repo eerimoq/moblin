@@ -10,6 +10,11 @@ struct StreamDiscordSettingsView: View {
         stream.discordSnapshotWebhook = url
     }
 
+    func submitSnapshotChatBotWebhookUrl(value: String) {
+        let url = cleanUrl(url: value)
+        stream.discordChatBotSnapshotWebhook = url
+    }
+
     var body: some View {
         Form {
             Section {
@@ -17,6 +22,12 @@ struct StreamDiscordSettingsView: View {
                     title: String(localized: "Snapshot webhook URL"),
                     value: stream.discordSnapshotWebhook!,
                     onSubmit: submitSnapshotWebhookUrl,
+                    keyboardType: .URL
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Chat bot snapshot webhook URL"),
+                    value: stream.discordChatBotSnapshotWebhook!,
+                    onSubmit: submitSnapshotChatBotWebhookUrl,
                     keyboardType: .URL
                 )
                 Toggle(isOn: Binding(get: {
@@ -28,7 +39,10 @@ struct StreamDiscordSettingsView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Auotmatically upload snapshots to a channel in your Discord server.")
+                    Text("""
+                    Auotmatically upload quick button snapshots and chat bot snapshots to channels \
+                    in your Discord server.
+                    """)
                     Text("")
                     Text("Create a webhook in your Discord server's settings and paste it's URL above.")
                 }

@@ -980,7 +980,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         buttonPairs = pairs.reversed()
     }
 
-    func takeSnapshot(message: String? = nil) {
+    func takeSnapshot(isChatBot: Bool = false, message: String? = nil) {
         media.takeSnapshot { image in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
@@ -988,14 +988,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-                self.tryUploadSnapshotToDiscord(image: imageJpeg, message: message)
+                self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             }
         }
     }
 
-    private func tryUploadSnapshotToDiscord(image: Data, message: String?) {
-        guard !stream.discordSnapshotWebhookOnlyWhenLive! || isLive,
-              let url = URL(string: stream.discordSnapshotWebhook!)
+    private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
+        if isChatBot {
+            return URL(string: stream.discordChatBotSnapshotWebhook!)
+        } else {
+            return URL(string: stream.discordSnapshotWebhook!)
+        }
+    }
+
+    private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
+        guard !stream.discordSnapshotWebhookOnlyWhenLive! || isLive, let url = getDiscordWebhookUrl(isChatBot)
         else {
             return
         }
@@ -4455,9 +4462,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             message: message
         ) {
             if let user = message.user {
-                self.takeSnapshot(message: String(localized: "Snapshot taken by \(user)."))
+                self.takeSnapshot(isChatBot: true, message: String(localized: "Snapshot taken by \(user)."))
             } else {
-                self.takeSnapshot()
+                self.takeSnapshot(isChatBot: true)
             }
         }
     }

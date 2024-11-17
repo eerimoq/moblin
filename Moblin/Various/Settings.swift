@@ -398,6 +398,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsAutoStartRecording: Bool? = false
     var obsAutoStopRecording: Bool? = false
     var discordSnapshotWebhook: String? = ""
+    var discordChatBotSnapshotWebhook: String? = ""
     var discordSnapshotWebhookOnlyWhenLive: Bool? = true
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
@@ -449,6 +450,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.obsAutoStartRecording = obsAutoStartRecording
         new.obsAutoStopRecording = obsAutoStopRecording
         new.discordSnapshotWebhook = discordSnapshotWebhook
+        new.discordChatBotSnapshotWebhook = discordChatBotSnapshotWebhook
         new.discordSnapshotWebhookOnlyWhenLive = discordSnapshotWebhookOnlyWhenLive
         new.resolution = resolution
         new.fps = fps
@@ -4312,6 +4314,10 @@ final class Settings {
         }
         if realDatabase.debug!.keepSpeakerAlive == nil {
             realDatabase.debug!.keepSpeakerAlive = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.discordChatBotSnapshotWebhook == nil {
+            stream.discordChatBotSnapshotWebhook = stream.discordSnapshotWebhook
             store()
         }
     }

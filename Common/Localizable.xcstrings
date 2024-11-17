@@ -18426,7 +18426,11 @@
         }
       }
     },
+    "Auotmatically upload quick button snapshots and chat bot snapshots to channels in your Discord server." : {
+
+    },
     "Auotmatically upload snapshots to a channel in your Discord server." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -27529,6 +27533,9 @@
           }
         }
       }
+    },
+    "Chat bot snapshot webhook URL" : {
+
     },
     "Chat is empty." : {
       "localizations" : {
