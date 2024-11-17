@@ -26,11 +26,6 @@ class Recorder: NSObject {
     var url: URL?
     private var fileHandle: FileHandle?
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
-
-    private func isReadyForStartWriting() -> Bool {
-        return writer?.inputs.count == 2
-    }
-
     private var writer: AVAssetWriter?
     private var audioWriterInput: AVAssetWriterInput?
     private var videoWriterInput: AVAssetWriterInput?
@@ -68,24 +63,13 @@ class Recorder: NSObject {
     }
 
     private func appendAudioInner(_ sampleBuffer: CMSampleBuffer) {
-        guard let writer else {
-            return
-        }
-        guard let sampleBuffer = convert(sampleBuffer) else {
-            return
-        }
-        guard
-            let input = makeAudioWriterInput(sourceFormatHint: sampleBuffer.formatDescription),
-            isReadyForStartWriting()
-        else {
-            return
-        }
-        start(writer: writer, presentationTimeStamp: sampleBuffer.presentationTimeStamp)
-        guard input.isReadyForMoreMediaData else {
-            return
-        }
-        guard let sampleBuffer = sampleBuffer
-            .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        guard let writer,
+              let sampleBuffer = convert(sampleBuffer),
+              let input = makeAudioWriterInput(sampleBuffer: sampleBuffer),
+              isReadyForStartWriting(writer: writer, sampleBuffer: sampleBuffer),
+              input.isReadyForMoreMediaData,
+              let sampleBuffer = sampleBuffer
+              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
         else {
             return
         }
@@ -127,25 +111,12 @@ class Recorder: NSObject {
     }
 
     private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
-        guard let writer else {
-            return
-        }
-        guard let pixelBuffer = sampleBuffer.imageBuffer else {
-            return
-        }
-        guard
-            let input = makeVideoWriterInput(width: pixelBuffer.width, height: pixelBuffer.height),
-            isReadyForStartWriting()
-        else {
-            return
-        }
-        start(writer: writer, presentationTimeStamp: sampleBuffer.presentationTimeStamp)
-        guard input.isReadyForMoreMediaData else {
-            logger.info("recorder: video: Not ready")
-            return
-        }
-        guard let sampleBuffer = sampleBuffer
-            .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        guard let writer,
+              let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
+              isReadyForStartWriting(writer: writer, sampleBuffer: sampleBuffer),
+              input.isReadyForMoreMediaData,
+              let sampleBuffer = sampleBuffer
+              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
         else {
             return
         }
@@ -158,7 +129,8 @@ class Recorder: NSObject {
         }
     }
 
-    private func createAudioWriterInput(sourceFormatHint: CMFormatDescription?) -> AVAssetWriterInput? {
+    private func createAudioWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput {
+        let sourceFormatHint = sampleBuffer.formatDescription
         var outputSettings: [String: Any] = [:]
         if let sourceFormatHint, let inSourceFormat = sourceFormatHint.streamBasicDescription?.pointee {
             for (key, value) in audioOutputSettings {
@@ -173,51 +145,56 @@ class Recorder: NSObject {
                 }
             }
         }
-        return makeWriterInput(.audio, outputSettings, sourceFormatHint: sourceFormatHint)
+        return makeWriterInput(.audio, outputSettings, sampleBuffer: sampleBuffer)
     }
 
-    private func makeAudioWriterInput(sourceFormatHint: CMFormatDescription?) -> AVAssetWriterInput? {
+    private func makeAudioWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
         if audioWriterInput == nil {
-            audioWriterInput = createAudioWriterInput(sourceFormatHint: sourceFormatHint)
+            audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer)
         }
         return audioWriterInput
     }
 
-    private func createVideoWriterInput(width: Int, height: Int) -> AVAssetWriterInput? {
+    private func createVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
+        guard let pixelBuffer = sampleBuffer.imageBuffer else {
+            return nil
+        }
         var outputSettings: [String: Any] = [:]
         for (key, value) in videoOutputSettings {
             switch key {
             case AVVideoHeightKey:
-                outputSettings[key] = isZero(value) ? height : value
+                outputSettings[key] = isZero(value) ? pixelBuffer.height : value
             case AVVideoWidthKey:
-                outputSettings[key] = isZero(value) ? width : value
+                outputSettings[key] = isZero(value) ? pixelBuffer.width : value
             default:
                 outputSettings[key] = value
             }
         }
-        return makeWriterInput(.video, outputSettings, sourceFormatHint: nil)
+        return makeWriterInput(.video, outputSettings, sampleBuffer: sampleBuffer)
     }
 
-    private func makeVideoWriterInput(width: Int, height: Int) -> AVAssetWriterInput? {
+    private func makeVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
         if videoWriterInput == nil {
-            videoWriterInput = createVideoWriterInput(width: width, height: height)
+            videoWriterInput = createVideoWriterInput(sampleBuffer: sampleBuffer)
         }
         return videoWriterInput
     }
 
     private func makeWriterInput(_ mediaType: AVMediaType,
                                  _ outputSettings: [String: Any],
-                                 sourceFormatHint: CMFormatDescription?) -> AVAssetWriterInput?
+                                 sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput
     {
-        var input: AVAssetWriterInput?
-        input = AVAssetWriterInput(
+        let input = AVAssetWriterInput(
             mediaType: mediaType,
             outputSettings: outputSettings,
-            sourceFormatHint: sourceFormatHint
+            sourceFormatHint: sampleBuffer.formatDescription
         )
-        input?.expectsMediaDataInRealTime = true
-        if let input {
-            writer?.add(input)
+        input.expectsMediaDataInRealTime = true
+        writer?.add(input)
+        if writer?.inputs.count == 2 {
+            writer?.startWriting()
+            writer?.startSession(atSourceTime: .zero)
+            basePresentationTimeStamp = sampleBuffer.presentationTimeStamp
         }
         return input
     }
@@ -292,6 +269,10 @@ class Recorder: NSObject {
         }
         reset()
         writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
+        writer?.outputFileTypeProfile = .mpeg4AppleHLS
+        writer?.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
+        writer?.delegate = self
+        writer?.initialSegmentStartTime = .zero
         try? Data().write(to: url)
         fileHandle = FileHandle(forWritingAtPath: url.path)
     }
@@ -323,17 +304,8 @@ class Recorder: NSObject {
         videoWriterInput = nil
     }
 
-    private func start(writer: AVAssetWriter, presentationTimeStamp: CMTime) {
-        guard writer.status == .unknown else {
-            return
-        }
-        writer.outputFileTypeProfile = .mpeg4AppleHLS
-        writer.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
-        writer.delegate = self
-        writer.initialSegmentStartTime = .zero
-        writer.startWriting()
-        writer.startSession(atSourceTime: .zero)
-        basePresentationTimeStamp = presentationTimeStamp
+    private func isReadyForStartWriting(writer: AVAssetWriter, sampleBuffer _: CMSampleBuffer) -> Bool {
+        return writer.inputs.count == 2
     }
 }
 
