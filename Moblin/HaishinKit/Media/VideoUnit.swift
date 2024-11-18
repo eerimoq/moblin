@@ -947,11 +947,11 @@ final class VideoUnit: NSObject {
 
     private func handleTakeSnapshot(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: Double) {
         let latestPresentationTimeStamp = takeSnapshotSampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-        if presentationTimeStamp > latestPresentationTimeStamp + 2.5 {
+        if presentationTimeStamp > latestPresentationTimeStamp + 3.0 {
             takeSnapshotSampleBuffers.append(sampleBuffer)
             // Can only save a few sample buffers from captureOutput(). Can save more if effects
             // are applied (sample buffer is copied).
-            if takeSnapshotSampleBuffers.count > 4 {
+            if takeSnapshotSampleBuffers.count > 3 {
                 takeSnapshotSampleBuffers.removeFirst()
             }
         }
@@ -960,36 +960,40 @@ final class VideoUnit: NSObject {
         }
         DispatchQueue.global().async {
             self.takeSnapshot(
-                sampleBuffers: self.takeSnapshotSampleBuffers,
-                presentationTimeStamp: presentationTimeStamp,
-                age: self.takeSnapshotAge,
-                onComplete: takeSnapshotComplete
+                sampleBuffer,
+                self.takeSnapshotSampleBuffers,
+                presentationTimeStamp,
+                self.takeSnapshotAge,
+                takeSnapshotComplete
             )
         }
         self.takeSnapshotComplete = nil
     }
 
-    private func findBestSnapshot(_ sampleBuffers: Deque<CMSampleBuffer>,
+    private func findBestSnapshot(_ sampleBuffer: CMSampleBuffer,
+                                  _ sampleBuffers: Deque<CMSampleBuffer>,
                                   _ presentationTimeStamp: Double,
                                   _ age: Float) -> CVImageBuffer?
     {
-        if age != 0.0 {
+        if age == 0.0 {
+            return sampleBuffer.imageBuffer
+        } else {
             let requestedPresentationTimeStamp = presentationTimeStamp - Double(age)
-            for sampleBuffer in sampleBuffers {
-                if sampleBuffer.presentationTimeStamp.seconds <= requestedPresentationTimeStamp {
-                    return sampleBuffer.imageBuffer
-                }
-            }
+            let sampleBuffer = sampleBuffers.last(where: {
+                $0.presentationTimeStamp.seconds <= requestedPresentationTimeStamp
+            }) ?? sampleBuffers.first
+            return sampleBuffer?.imageBuffer
         }
-        return sampleBuffers.last?.imageBuffer
     }
 
-    private func takeSnapshot(sampleBuffers: Deque<CMSampleBuffer>,
-                              presentationTimeStamp: Double,
-                              age: Float,
-                              onComplete: @escaping (UIImage) -> Void)
+    private func takeSnapshot(_ sampleBuffer: CMSampleBuffer,
+                              _ sampleBuffers: Deque<CMSampleBuffer>,
+                              _ presentationTimeStamp: Double,
+                              _ age: Float,
+                              _ onComplete: @escaping (UIImage) -> Void)
     {
-        guard let imageBuffer = findBestSnapshot(sampleBuffers, presentationTimeStamp, age) else {
+        guard let imageBuffer = findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age)
+        else {
             return
         }
         let ciImage = CIImage(cvPixelBuffer: imageBuffer)
