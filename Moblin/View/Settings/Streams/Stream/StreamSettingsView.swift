@@ -178,6 +178,30 @@ struct StreamSettingsView: View {
                         Text("Live stream and record when the app is in background mode.")
                     }
                 }
+                Section {
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Estimated viewer delay"),
+                            value: formatOneDecimal(value: stream.estimatedViewerDelay!),
+                            keyboardType: .numbersAndPunctuation
+                        ) {
+                            guard let latency = Float($0), latency >= 0.0, latency <= 15.0 else {
+                                return
+                            }
+                            stream.estimatedViewerDelay = latency
+                        }
+                    } label: {
+                        TextItemView(
+                            name: String(localized: "Estimated viewer delay"),
+                            value: "\(formatOneDecimal(value: stream.estimatedViewerDelay!)) s"
+                        )
+                    }
+                } footer: {
+                    Text("""
+                    Estimated viewer delay, for example used to make it easier to take \
+                    snapshots using the chat bot. It does not delay the stream.
+                    """)
+                }
             }
         }
         .navigationTitle("Stream")
