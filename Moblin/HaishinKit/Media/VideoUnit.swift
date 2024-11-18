@@ -911,20 +911,21 @@ final class VideoUnit: NSObject {
             duration: modSampleBuffer.duration
         )
         mixer?.recorder.appendVideo(modSampleBuffer)
-        if lowFpsImageEnabled {
-            let presentationTimeStamp = modSampleBuffer.presentationTimeStamp.seconds
-            if lowFpsImageLatest + lowFpsImageInterval < presentationTimeStamp {
-                lowFpsImageLatest = presentationTimeStamp
-                lowFpsImageQueue.async {
-                    self.createLowFpsImage(imageBuffer: modImageBuffer)
-                }
-            }
+        handleLowFpsImage(sampleBuffer: modSampleBuffer, imageBuffer: modImageBuffer)
+        handleTakeSnapshot(imageBuffer: modImageBuffer)
+    }
+
+    private func handleLowFpsImage(sampleBuffer: CMSampleBuffer, imageBuffer: CVImageBuffer) {
+        guard lowFpsImageEnabled else {
+            return
         }
-        if let takeSnapshotComplete {
-            DispatchQueue.global().async {
-                self.takeSnapshot(imageBuffer: modImageBuffer, onComplete: takeSnapshotComplete)
-            }
-            self.takeSnapshotComplete = nil
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        guard presentationTimeStamp > lowFpsImageLatest + lowFpsImageInterval else {
+            return
+        }
+        lowFpsImageLatest = presentationTimeStamp
+        lowFpsImageQueue.async {
+            self.createLowFpsImage(imageBuffer: imageBuffer)
         }
     }
 
@@ -939,6 +940,16 @@ final class VideoUnit: NSObject {
             frameNumber: lowFpsImageFrameNumber
         )
         lowFpsImageFrameNumber += 1
+    }
+
+    private func handleTakeSnapshot(imageBuffer: CVImageBuffer) {
+        guard let takeSnapshotComplete else {
+            return
+        }
+        DispatchQueue.global().async {
+            self.takeSnapshot(imageBuffer: imageBuffer, onComplete: takeSnapshotComplete)
+        }
+        self.takeSnapshotComplete = nil
     }
 
     private func takeSnapshot(imageBuffer: CVImageBuffer, onComplete: @escaping (UIImage) -> Void) {
