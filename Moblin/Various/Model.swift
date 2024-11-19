@@ -1812,8 +1812,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return
             }
             let name = "RTMP \(camera)"
-            self.media.addReplaceCamera(cameraId: stream.id, name: name)
-            self.media.addReplaceAudio(cameraId: stream.id, name: name)
+            let latency = Double(stream.latency!) / 1000.0
+            self.media.addReplaceCamera(cameraId: stream.id, name: name, latency: latency)
+            self.media.addReplaceAudio(cameraId: stream.id, name: name, latency: latency)
             if stream.autoSelectMic! {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.selectMicById(id: "\(stream.id) 0")
@@ -2177,7 +2178,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if self.stream.enabled {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
-            self.media.logTiming()
+            // self.media.logTiming()
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
@@ -8306,7 +8307,11 @@ extension Model: SampleBufferReceiverDelegate {
 extension Model {
     private func handleSampleBufferSenderConnected() {
         makeToast(title: String(localized: "Screen capture started"))
-        media.addReplaceCamera(cameraId: screenCaptureCameraId, name: "Screen capture")
+        media.addReplaceCamera(
+            cameraId: screenCaptureCameraId,
+            name: "Screen capture",
+            latency: screenRecordingLatency
+        )
     }
 
     private func handleSampleBufferSenderDisconnected() {
@@ -8339,7 +8344,7 @@ extension Model: SrtlaServerDelegate {
         media.addReplaceSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func srtlaServerOnClientStart(streamId: String) {
+    func srtlaServerOnClientStart(streamId: String, latency _: Double) {
         DispatchQueue.main.async {
             let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
             self.makeToast(title: String(localized: "\(camera) connected"))
@@ -8347,8 +8352,9 @@ extension Model: SrtlaServerDelegate {
                 return
             }
             let name = "SRTLA \(camera)"
-            self.media.addReplaceCamera(cameraId: stream.id, name: name)
-            self.media.addReplaceAudio(cameraId: stream.id, name: name)
+            let latency = srtServerClientLatency
+            self.media.addReplaceCamera(cameraId: stream.id, name: name, latency: latency)
+            self.media.addReplaceAudio(cameraId: stream.id, name: name, latency: latency)
             if stream.autoSelectMic! {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                     self.selectMicById(id: "\(stream.id) 0")
@@ -8460,8 +8466,9 @@ extension Model {
 extension Model: MediaPlayerDelegate {
     func mediaPlayerFileLoaded(playerId: UUID, name: String) {
         let name = "Media player file \(name)"
-        media.addReplaceCamera(cameraId: playerId, name: name)
-        media.addReplaceAudio(cameraId: playerId, name: name)
+        let latency = mediaPlayerLatency
+        media.addReplaceCamera(cameraId: playerId, name: name, latency: latency)
+        media.addReplaceAudio(cameraId: playerId, name: name, latency: latency)
         // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
         //     self.selectMicById(id: "\(playerId) 0")
         // }

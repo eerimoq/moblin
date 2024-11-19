@@ -148,6 +148,7 @@ final class Media: NSObject {
         return audioCapturePresentationTimestamp - videoCapturePresentationTimestamp
     }
 
+    // periphery:ignore
     func logTiming() {
         let audioPts = getAudioCapturePresentationTimestamp()
         let videoPts = getVideoCapturePresentationTimestamp()
@@ -823,12 +824,12 @@ final class Media: NSObject {
         netStream?.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addReplaceCamera(cameraId: UUID, name: String) {
-        netStream?.addReplaceVideo(cameraId: cameraId, name: name)
+    func addReplaceCamera(cameraId: UUID, name: String, latency: Double) {
+        netStream?.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
-    func addReplaceAudio(cameraId: UUID, name: String) {
-        netStream?.addReplaceAudio(cameraId: cameraId, name: name)
+    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
+        netStream?.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeReplaceCamera(cameraId: UUID) {

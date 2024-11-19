@@ -1,6 +1,8 @@
 import AVFoundation
 import libsrt
 
+let srtServerClientLatency = 0.5
+
 class SrtServerClient {
     private weak var server: SrtServer?
     private var programAssociationTable = MpegTsProgramAssociation()
@@ -366,7 +368,7 @@ class SrtServerClient {
 
     private func getBasePresentationTimeStamp() -> CMTime {
         if basePresentationTimeStamp == .invalid {
-            let latency = CMTime(seconds: 0.5, preferredTimescale: 1000)
+            let latency = CMTime(seconds: srtServerClientLatency, preferredTimescale: 1000)
             basePresentationTimeStamp = currentPresentationTimeStamp() + latency
         }
         return basePresentationTimeStamp

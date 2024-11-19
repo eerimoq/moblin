@@ -32,6 +32,8 @@ protocol ReplaceAudioSampleBufferDelegate: AnyObject {
 
 private class ReplaceAudio {
     private var cameraId: UUID
+    private let name: String
+    private let latency: Double
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
@@ -39,15 +41,14 @@ private class ReplaceAudio {
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?
-    private let name: String
     private var outputCounter: Int64 = 0
     private var startPresentationTimeStamp: CMTime = .zero
-
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
-    init(cameraId: UUID, name: String) {
+    init(cameraId: UUID, name: String, latency: Double) {
         self.cameraId = cameraId
         self.name = name
+        self.latency = latency
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -88,6 +89,9 @@ private class ReplaceAudio {
             numberOfBuffersConsumed += 1
         }
         if logger.debugEnabled {
+            let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
+            let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
+            let currentLatency = lastPresentationTimeStamp - firstPresentationTimeStamp
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
                 replace-audio: \(name): Duplicating buffer. \
@@ -95,7 +99,8 @@ private class ReplaceAudio {
                 Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
+                Latency: \(currentLatency) (target: \(latency))
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
@@ -104,7 +109,8 @@ private class ReplaceAudio {
                 Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
+                Latency: \(currentLatency) (target: \(latency))
                 """)
             }
         }
@@ -321,14 +327,14 @@ final class AudioUnit: NSObject {
         replaceAudios[id]?.appendSampleBuffer(sampleBuffer)
     }
 
-    func addReplaceAudio(cameraId: UUID, name: String) {
+    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
         lockQueue.async {
-            self.addReplaceAudioInner(cameraId: cameraId, name: name)
+            self.addReplaceAudioInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
-    func addReplaceAudioInner(cameraId: UUID, name: String) {
-        let replaceAudio = ReplaceAudio(cameraId: cameraId, name: name)
+    func addReplaceAudioInner(cameraId: UUID, name: String, latency: Double) {
+        let replaceAudio = ReplaceAudio(cameraId: cameraId, name: name, latency: latency)
         replaceAudio.delegate = self
         replaceAudios[cameraId] = replaceAudio
     }

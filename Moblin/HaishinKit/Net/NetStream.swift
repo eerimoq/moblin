@@ -122,12 +122,12 @@ open class NetStream: NSObject {
         mixer.audio.addReplaceAudioSampleBuffer(id: id, sampleBuffer)
     }
 
-    func addReplaceVideo(cameraId: UUID, name: String) {
-        mixer.video.addReplaceVideo(cameraId: cameraId, name: name)
+    func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
+        mixer.video.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
-    func addReplaceAudio(cameraId: UUID, name: String) {
-        mixer.audio.addReplaceAudio(cameraId: cameraId, name: name)
+    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
+        mixer.audio.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeReplaceVideo(cameraId: UUID) {

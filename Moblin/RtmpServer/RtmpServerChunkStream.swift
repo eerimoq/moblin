@@ -526,7 +526,7 @@ class RtmpServerChunkStream {
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
             decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
         )
-        let iskeyFrame = (messageBody[0] >> 4) & 0b0111 == FLVFrameType.key.rawValue
+        let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FLVFrameType.key.rawValue
         // logger.info("""
         //  rtmp-server: client: xxx Created sample buffer \
         //  keyframe: \(iskeyFrame), \
@@ -551,7 +551,7 @@ class RtmpServerChunkStream {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isSync = iskeyFrame
+        sampleBuffer?.isSync = isKeyFrame
         return sampleBuffer
     }
 

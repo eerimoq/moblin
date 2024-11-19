@@ -1,6 +1,8 @@
 import AVFoundation
 import ReplayKit
 
+let screenRecordingLatency = 0.2
+
 private func bind(fd: Int32, addr: sockaddr_un) throws {
     var addr = addr
     let res = withUnsafePointer(to: &addr) {
@@ -99,7 +101,10 @@ class SampleBufferReceiver {
 
     private func handleVideoBuffer(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
         let data = try read(senderFd, header.size)
-        let timestamp = CMTime(seconds: header.presentationTimeStamp + 0.2, preferredTimescale: 1000)
+        let timestamp = CMTime(
+            seconds: header.presentationTimeStamp + screenRecordingLatency,
+            preferredTimescale: 1000
+        )
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: 30, timescale: 1000),
             presentationTimeStamp: timestamp,

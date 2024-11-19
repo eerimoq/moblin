@@ -9,6 +9,7 @@ protocol MediaPlayerDelegate: AnyObject {
 }
 
 private let mediaPlayerQueue = DispatchQueue(label: "com.eerimoq.moblin.media-player")
+let mediaPlayerLatency = 0.5
 
 class MediaPlayer {
     private var asset: AVAsset?
@@ -325,5 +326,5 @@ class MediaPlayer {
 }
 
 private func outputPresentationTimeStamp() -> CMTime {
-    return currentPresentationTimeStamp() + CMTime(seconds: 0.5, preferredTimescale: 1000)
+    return currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency, preferredTimescale: 1000)
 }

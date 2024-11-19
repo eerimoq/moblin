@@ -47,10 +47,12 @@ private class ReplaceVideo {
     private var timeOffset = 0.0
     private let name: String
     private let update: Bool
+    private let latency: Double
 
-    init(name: String, update: Bool) {
+    init(name: String, update: Bool, latency: Double) {
         self.name = name
         self.update = update
+        self.latency = latency
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -101,6 +103,9 @@ private class ReplaceVideo {
             numberOfBuffersConsumed += 1
         }
         if logger.debugEnabled {
+            let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
+            let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
+            let currentLatency = lastPresentationTimeStamp - firstPresentationTimeStamp
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
                 replace-video: \(name): Duplicating buffer. \
@@ -108,7 +113,8 @@ private class ReplaceVideo {
                 Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
+                Latency: \(currentLatency) (target: \(latency))
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
@@ -117,7 +123,8 @@ private class ReplaceVideo {
                 Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
+                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
+                Latency: \(currentLatency) (target: \(latency))
                 """)
             }
         }
@@ -228,7 +235,7 @@ final class VideoUnit: NSObject {
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
-        replaceVideos[builtinCameraId] = ReplaceVideo(name: "Builtin", update: false)
+        replaceVideos[builtinCameraId] = ReplaceVideo(name: "Builtin", update: false, latency: 0.0)
         startFrameTimer()
     }
 
@@ -343,9 +350,9 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func addReplaceVideo(cameraId: UUID, name: String) {
+    func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
         lockQueue.async {
-            self.addReplaceVideoInner(cameraId: cameraId, name: name)
+            self.addReplaceVideoInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
@@ -761,8 +768,8 @@ final class VideoUnit: NSObject {
         replaceVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    private func addReplaceVideoInner(cameraId: UUID, name: String) {
-        replaceVideos[cameraId] = ReplaceVideo(name: name, update: true)
+    private func addReplaceVideoInner(cameraId: UUID, name: String, latency: Double) {
+        replaceVideos[cameraId] = ReplaceVideo(name: name, update: true, latency: latency)
     }
 
     private func removeReplaceVideoInner(cameraId: UUID) {
