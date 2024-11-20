@@ -26,6 +26,7 @@ class DriftTracker {
 
     func setDrift(drift: Double) {
         self.drift = drift
+        self.adjustDirection = .none
     }
 
     func getDrift() -> Double {
