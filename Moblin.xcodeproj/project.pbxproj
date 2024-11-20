@@ -427,6 +427,7 @@
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03ECDF602B8E738A00BD920E /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF5F2B8E738A00BD920E /* Model.swift */; };
+		03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */; };
 		03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
 		03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */; };
 		03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF41AD2BE8A58200C72415 /* Histogram.swift */; };
@@ -965,6 +966,7 @@
 		03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		03ECDF4F2B8E4E6000BD920E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		03ECDF5F2B8E738A00BD920E /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriftTracker.swift; sourceTree = "<group>"; };
 		03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfreecaTvChat.swift; sourceTree = "<group>"; };
 		03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
 		03EF41AD2BE8A58200C72415 /* Histogram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Histogram.swift; sourceTree = "<group>"; };
@@ -1551,6 +1553,7 @@
 			isa = PBXGroup;
 			children = (
 				0359F8352BD3DA5F005BFDA8 /* AudioUnit.swift */,
+				03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */,
 				0359F8362BD3DA5F005BFDA8 /* Mixer.swift */,
 				0359F8372BD3DA5F005BFDA8 /* Recorder.swift */,
 				0359F8382BD3DA5F005BFDA8 /* VideoUnit.swift */,
@@ -3002,6 +3005,7 @@
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
 				03F465E72C43DFF500630708 /* DjiDevice.swift in Sources */,
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
+				03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */,
 				032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
 				0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */,

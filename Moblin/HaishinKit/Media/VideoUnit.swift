@@ -45,14 +45,15 @@ private class ReplaceVideo {
     private var sampleBuffers: Deque<CMSampleBuffer> = []
     private var currentSampleBuffer: CMSampleBuffer?
     private var timeOffset = 0.0
+    private var isInitialBuffering = true
     private let name: String
     private let update: Bool
-    private let latency: Double
+    private let driftTracker: DriftTracker
 
     init(name: String, update: Bool, latency: Double) {
         self.name = name
         self.update = update
-        self.latency = latency
+        driftTracker = DriftTracker(media: "video", name: name, targetLatency: latency)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -84,7 +85,8 @@ private class ReplaceVideo {
                 numberOfBuffersConsumed += 1
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
+            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + driftTracker
+                .getDrift()
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp + timeOffset
             if abs(inputOutputDelta) < 0.002 {
                 logger.debug("replace-video: \(name): Small delta. Swap offset from \(timeOffset).")
@@ -101,6 +103,7 @@ private class ReplaceVideo {
             currentSampleBuffer = inputSampleBuffer
             sampleBuffers.removeFirst()
             numberOfBuffersConsumed += 1
+            isInitialBuffering = false
         }
         if logger.debugEnabled {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
@@ -114,7 +117,7 @@ private class ReplaceVideo {
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
                 Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency) (target: \(latency))
+                Latency: \(currentLatency)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
@@ -124,9 +127,12 @@ private class ReplaceVideo {
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
                 Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency) (target: \(latency))
+                Latency: \(currentLatency)
                 """)
             }
+        }
+        if !isInitialBuffering {
+            driftTracker.update(outputPresentationTimeStamp, sampleBuffers)
         }
     }
 

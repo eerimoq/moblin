@@ -33,7 +33,6 @@ protocol ReplaceAudioSampleBufferDelegate: AnyObject {
 private class ReplaceAudio {
     private var cameraId: UUID
     private let name: String
-    private let latency: Double
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
@@ -43,12 +42,14 @@ private class ReplaceAudio {
     private var latestSampleBuffer: CMSampleBuffer?
     private var outputCounter: Int64 = 0
     private var startPresentationTimeStamp: CMTime = .zero
+    private let driftTracker: DriftTracker
+    private var isInitialBuffering = true
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
     init(cameraId: UUID, name: String, latency: Double) {
         self.cameraId = cameraId
         self.name = name
-        self.latency = latency
+        driftTracker = DriftTracker(media: "audio", name: name, targetLatency: latency)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -79,7 +80,8 @@ private class ReplaceAudio {
                 numberOfBuffersConsumed += 1
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds
+            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + driftTracker
+                .getDrift()
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
             if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
                 break
@@ -87,6 +89,7 @@ private class ReplaceAudio {
             sampleBuffer = inputSampleBuffer
             sampleBuffers.removeFirst()
             numberOfBuffersConsumed += 1
+            isInitialBuffering = false
         }
         if logger.debugEnabled {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
@@ -100,7 +103,7 @@ private class ReplaceAudio {
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
                 Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency) (target: \(latency))
+                Latency: \(currentLatency)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
@@ -110,7 +113,7 @@ private class ReplaceAudio {
                 Buffers count is \(sampleBuffers.count). \
                 First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
                 Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency) (target: \(latency))
+                Latency: \(currentLatency)
                 """)
             }
         }
@@ -129,6 +132,9 @@ private class ReplaceAudio {
             First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
             Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
             """)
+        }
+        if !isInitialBuffering {
+            driftTracker.update(outputPresentationTimeStamp, sampleBuffers)
         }
         return sampleBuffer
     }
