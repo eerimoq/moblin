@@ -46,13 +46,17 @@ private class ReplaceVideo {
     private var currentSampleBuffer: CMSampleBuffer?
     private var timeOffset = 0.0
     private var isInitialBuffering = true
+    private var cameraId: UUID
     private let name: String
     private let update: Bool
+    private weak var mixer: Mixer?
     private let driftTracker: DriftTracker
 
-    init(name: String, update: Bool, latency: Double) {
+    init(cameraId: UUID, name: String, update: Bool, latency: Double, mixer: Mixer?) {
+        self.cameraId = cameraId
         self.name = name
         self.update = update
+        self.mixer = mixer
         driftTracker = DriftTracker(media: "video", name: name, targetLatency: latency)
     }
 
@@ -132,7 +136,9 @@ private class ReplaceVideo {
             }
         }
         if !isInitialBuffering {
-            driftTracker.update(outputPresentationTimeStamp, sampleBuffers)
+            if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
+                mixer?.setReplaceAudioDrift(cameraId: cameraId, drift: drift)
+            }
         }
     }
 
@@ -142,6 +148,10 @@ private class ReplaceVideo {
 
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
+    }
+
+    func setDrift(drift: Double) {
+        driftTracker.setDrift(drift: drift)
     }
 }
 
@@ -241,7 +251,13 @@ final class VideoUnit: NSObject {
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
-        replaceVideos[builtinCameraId] = ReplaceVideo(name: "Builtin", update: false, latency: 0.0)
+        replaceVideos[builtinCameraId] = ReplaceVideo(
+            cameraId: builtinCameraId,
+            name: "Builtin",
+            update: false,
+            latency: 0.0,
+            mixer: mixer
+        )
         startFrameTimer()
     }
 
@@ -366,6 +382,16 @@ final class VideoUnit: NSObject {
         lockQueue.async {
             self.removeReplaceVideoInner(cameraId: cameraId)
         }
+    }
+
+    func setReplaceVideoDrift(cameraId: UUID, drift: Double) {
+        lockQueue.async {
+            self.setReplaceVideoDriftInner(cameraId: cameraId, drift: drift)
+        }
+    }
+
+    func setReplaceVideoDriftInner(cameraId: UUID, drift: Double) {
+        replaceVideos[cameraId]?.setDrift(drift: drift)
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
@@ -775,7 +801,13 @@ final class VideoUnit: NSObject {
     }
 
     private func addReplaceVideoInner(cameraId: UUID, name: String, latency: Double) {
-        replaceVideos[cameraId] = ReplaceVideo(name: name, update: true, latency: latency)
+        replaceVideos[cameraId] = ReplaceVideo(
+            cameraId: cameraId,
+            name: name,
+            update: true,
+            latency: latency,
+            mixer: mixer
+        )
     }
 
     private func removeReplaceVideoInner(cameraId: UUID) {

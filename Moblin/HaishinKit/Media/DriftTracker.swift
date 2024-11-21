@@ -15,7 +15,7 @@ class DriftTracker {
     private var latestEstimatedLatencyPresentationTimeStamp = 0.0
     private var latestAdjustDriftPresentationTimeStamp = 0.0
     private var drift = 0.0
-    private var adjustDirection: AdjustDriftDirection = .none
+    private var adjustDriftDirection: AdjustDriftDirection = .none
 
     init(media: String, name: String, targetLatency: Double) {
         self.media = media
@@ -25,17 +25,21 @@ class DriftTracker {
     }
 
     func setDrift(drift: Double) {
+        logger.debug("""
+        replace-\(media): drift-tracker: \(name): Set by other media to \(drift). \
+        Drift: \(self.drift), Adjust direction: \(adjustDriftDirection)
+        """)
         self.drift = drift
-        self.adjustDirection = .none
+        adjustDriftDirection = .none
     }
 
     func getDrift() -> Double {
         return drift
     }
 
-    func update(_ outputPresentationTimeStamp: Double, _ sampleBuffers: Deque<CMSampleBuffer>) {
+    func update(_ outputPresentationTimeStamp: Double, _ sampleBuffers: Deque<CMSampleBuffer>) -> Double? {
         guard outputPresentationTimeStamp > latestEstimatedLatencyPresentationTimeStamp + 0.5 else {
-            return
+            return nil
         }
         latestEstimatedLatencyPresentationTimeStamp = outputPresentationTimeStamp
         let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
@@ -43,32 +47,33 @@ class DriftTracker {
         let currentLatency = lastPresentationTimeStamp - firstPresentationTimeStamp
         estimatedLatency = estimatedLatency * 0.95 + currentLatency * 0.05
         if estimatedLatency < lowWaterMark() {
-            adjustDirection = .up
+            adjustDriftDirection = .up
         } else if estimatedLatency > highWaterMark() {
-            adjustDirection = .down
+            adjustDriftDirection = .down
         }
         guard outputPresentationTimeStamp > latestAdjustDriftPresentationTimeStamp + 10.0 else {
-            return
+            return nil
         }
         latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
-        switch adjustDirection {
+        switch adjustDriftDirection {
         case .up:
             drift += 0.01
             if estimatedLatency >= targetLatency {
-                adjustDirection = .none
+                adjustDriftDirection = .none
             }
         case .down:
             drift -= 0.01
             if estimatedLatency <= targetLatency {
-                adjustDirection = .none
+                adjustDriftDirection = .none
             }
         case .none:
-            return
+            return nil
         }
         logger.debug("""
         replace-\(media): drift-tracker: \(name): Estimated latency: \(estimatedLatency), \
-        Drift: \(drift), Adjust direction: \(adjustDirection)
+        Drift: \(drift), Adjust direction: \(adjustDriftDirection)
         """)
+        return drift
     }
 
     func lowWaterMark() -> Double {

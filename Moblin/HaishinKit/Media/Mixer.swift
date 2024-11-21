@@ -61,6 +61,14 @@ class Mixer {
         video.stopRunning()
         audio.stopRunning()
     }
+
+    func setReplaceAudioDrift(cameraId: UUID, drift: Double) {
+        audio.setReplaceAudioDrift(cameraId: cameraId, drift: drift)
+    }
+
+    func setReplaceVideoDrift(cameraId: UUID, drift: Double) {
+        video.setReplaceVideoDrift(cameraId: cameraId, drift: drift)
+    }
 }
 
 extension Mixer: IORecorderDelegate {

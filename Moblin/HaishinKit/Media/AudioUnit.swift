@@ -33,6 +33,7 @@ protocol ReplaceAudioSampleBufferDelegate: AnyObject {
 private class ReplaceAudio {
     private var cameraId: UUID
     private let name: String
+    private weak var mixer: Mixer?
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
@@ -46,9 +47,10 @@ private class ReplaceAudio {
     private var isInitialBuffering = true
     weak var delegate: ReplaceAudioSampleBufferDelegate?
 
-    init(cameraId: UUID, name: String, latency: Double) {
+    init(cameraId: UUID, name: String, latency: Double, mixer: Mixer?) {
         self.cameraId = cameraId
         self.name = name
+        self.mixer = mixer
         driftTracker = DriftTracker(media: "audio", name: name, targetLatency: latency)
     }
 
@@ -134,9 +136,15 @@ private class ReplaceAudio {
             """)
         }
         if !isInitialBuffering {
-            driftTracker.update(outputPresentationTimeStamp, sampleBuffers)
+            if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
+                mixer?.setReplaceVideoDrift(cameraId: cameraId, drift: drift)
+            }
         }
         return sampleBuffer
+    }
+
+    func setDrift(drift: Double) {
+        driftTracker.setDrift(drift: drift)
     }
 
     private func initialize(sampleBuffer: CMSampleBuffer) {
@@ -340,7 +348,7 @@ final class AudioUnit: NSObject {
     }
 
     func addReplaceAudioInner(cameraId: UUID, name: String, latency: Double) {
-        let replaceAudio = ReplaceAudio(cameraId: cameraId, name: name, latency: latency)
+        let replaceAudio = ReplaceAudio(cameraId: cameraId, name: name, latency: latency, mixer: mixer)
         replaceAudio.delegate = self
         replaceAudios[cameraId] = replaceAudio
     }
@@ -353,6 +361,16 @@ final class AudioUnit: NSObject {
 
     func removeReplaceAudioInner(cameraId: UUID) {
         replaceAudios.removeValue(forKey: cameraId)?.stopOutput()
+    }
+
+    func setReplaceAudioDrift(cameraId: UUID, drift: Double) {
+        lockQueue.async {
+            self.setReplaceAudioDriftInner(cameraId: cameraId, drift: drift)
+        }
+    }
+
+    func setReplaceAudioDriftInner(cameraId: UUID, drift: Double) {
+        replaceAudios[cameraId]?.setDrift(drift: drift)
     }
 
     func prepareSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
