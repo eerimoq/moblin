@@ -1871,6 +1871,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
 
     func clone() -> SettingsRtmpServerStream {
         let new = SettingsRtmpServerStream()
+        new.id = id
         new.name = name
         new.streamKey = streamKey
         new.latency = latency

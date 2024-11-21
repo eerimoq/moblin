@@ -1712,11 +1712,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadRtmpServer() {
         stopRtmpServer()
         if database.rtmpServer!.enabled {
-            rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
-                                    onPublishStart: handleRtmpServerPublishStart,
-                                    onPublishStop: handleRtmpServerPublishStop,
-                                    onFrame: handleRtmpServerFrame,
-                                    onAudioBuffer: handleRtmpServerAudioBuffer)
+            rtmpServer = RtmpServer(settings: database.rtmpServer!.clone())
+            rtmpServer?.delegate = self
             rtmpServer!.start()
         }
     }
@@ -1850,17 +1847,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func handleRtmpServerFrame(streamKey: String, sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
-            return
-        }
+    func handleRtmpServerFrame(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func handleRtmpServerAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
-            return
-        }
+    func handleRtmpServerAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
@@ -8329,29 +8320,34 @@ extension Model {
     }
 }
 
-extension Model: SrtlaServerDelegate {
-    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
-            return
-        }
-        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+extension Model: RtmpServerDelegate {
+    func rtmpServerOnPublishStart(streamKey: String) {
+        handleRtmpServerPublishStart(streamKey: streamKey)
     }
 
-    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
-            return
-        }
-        media.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    func rtmpServerOnPublishStop(streamKey: String) {
+        handleRtmpServerPublishStop(streamKey: streamKey)
     }
-    
-    func srtlaServerSetTargetLatencies(streamId: String, videoTargetLatency: Double, audioTargetLatency: Double) {
-        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
-            return
-        }
+
+    func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        handleRtmpServerFrame(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        handleRtmpServerAudioBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func rtmpServerSetTargetLatencies(
+        cameraId: UUID,
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
+    ) {
         media.setReplaceVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
         media.setReplaceAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
+}
 
+extension Model: SrtlaServerDelegate {
     func srtlaServerOnClientStart(streamId: String, latency _: Double) {
         DispatchQueue.main.async {
             let camera = self.getSrtlaStream(streamId: streamId)?.camera() ?? srtlaCamera(name: "Unknown")
@@ -8384,6 +8380,32 @@ extension Model: SrtlaServerDelegate {
                 self.setMicFromSettings()
             }
         }
+    }
+
+    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func srtlaServerSetTargetLatencies(
+        streamId: String,
+        videoTargetLatency: Double,
+        audioTargetLatency: Double
+    ) {
+        guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
+            return
+        }
+        media.setReplaceVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
+        media.setReplaceAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
 }
 

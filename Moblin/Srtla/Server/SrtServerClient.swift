@@ -392,7 +392,6 @@ class SrtServerClient {
             return false
         }
         let audioVideoDiff = latestAudioPresentationTimeStamp - latestVideoPresentationTimeStamp
-        // logger.info("xxx audioVideoDiff is \(audioVideoDiff)")
         guard abs(audioVideoDiff - targetLatencyAudioVideoDiff) > 0.2 else {
             return true
         }

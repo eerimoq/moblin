@@ -251,16 +251,16 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Stream key not a string")
             return
         }
-        let isStreamKeyConfigured = DispatchQueue.main.sync {
-            if let stream = client.server?.settings.streams
-                .filter({ !$0.streamKey.isEmpty })
-                .first(where: { $0.streamKey == streamKey })
-            {
-                client.latency = stream.latency!
-                return true
-            } else {
-                return false
-            }
+        let isStreamKeyConfigured: Bool
+        if let stream = client.server?.settings.streams
+            .filter({ !$0.streamKey.isEmpty })
+            .first(where: { $0.streamKey == streamKey })
+        {
+            client.latency = stream.latency!
+            client.cameraId = stream.id
+            isStreamKeyConfigured = true
+        } else {
+            isStreamKeyConfigured = false
         }
         guard isStreamKeyConfigured else {
             client.stopInternal(reason: "Stream key \(streamKey) not configured")

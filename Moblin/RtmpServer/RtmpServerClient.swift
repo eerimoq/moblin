@@ -48,6 +48,7 @@ class RtmpServerClient {
     private var totalBytesReceived: UInt64 = 0
     private var totalBytesReceivedAcked: UInt64 = 0
     var latency: Int32 = 2000
+    var cameraId: UUID = .init()
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -104,11 +105,11 @@ class RtmpServerClient {
     }
 
     func handleFrame(sampleBuffer: CMSampleBuffer) {
-        server?.onFrame(streamKey, sampleBuffer)
+        server?.delegate?.rtmpServerOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
-        server?.onAudioBuffer(streamKey, sampleBuffer)
+        server?.delegate?.rtmpServerOnAudioBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     private func handleData(data: Data) {

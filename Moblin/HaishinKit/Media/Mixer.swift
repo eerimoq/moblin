@@ -69,14 +69,6 @@ class Mixer {
     func setReplaceVideoDrift(cameraId: UUID, drift: Double) {
         video.setReplaceVideoDrift(cameraId: cameraId, drift: drift)
     }
-
-    func setReplaceAudioTargetLatency(cameraId: UUID, latency: Double) {
-        audio.setReplaceAudioTargetLatency(cameraId: cameraId, latency: latency)
-    }
-
-    func setReplaceVideoTargetLatency(cameraId: UUID, latency: Double) {
-        video.setReplaceVideoTargetLatency(cameraId: cameraId, latency: latency)
-    }
 }
 
 extension Mixer: IORecorderDelegate {

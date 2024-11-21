@@ -17,40 +17,28 @@ struct RtmpServerClientInfo {
 }
 
 protocol RtmpServerDelegate: AnyObject {
-    func rtmpServerOnPublishStart(streamKey: String, latency: Double)
+    func rtmpServerOnPublishStart(streamKey: String)
     func rtmpServerOnPublishStop(streamKey: String)
-    func rtmpServerOnVideoBuffer(streamKey: String, sampleBuffer: CMSampleBuffer)
-    func rtmpServerOnAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer)
+    func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func rtmpServerSetTargetLatencies(
-        streamKey: String,
-        videoTargetLatency: Double,
-        audioTargetLatency: Double
+        cameraId: UUID,
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
     )
 }
 
 class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
-    var onPublishStart: (String) -> Void
-    var onPublishStop: (String) -> Void
-    var onFrame: (String, CMSampleBuffer) -> Void
-    var onAudioBuffer: (String, CMSampleBuffer) -> Void
+    weak var delegate: (any RtmpServerDelegate)?
     var settings: SettingsRtmpServer
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
 
-    init(settings: SettingsRtmpServer,
-         onPublishStart: @escaping (String) -> Void,
-         onPublishStop: @escaping (String) -> Void,
-         onFrame: @escaping (String, CMSampleBuffer) -> Void,
-         onAudioBuffer: @escaping (String, CMSampleBuffer) -> Void)
-    {
+    init(settings: SettingsRtmpServer) {
         self.settings = settings
-        self.onPublishStart = onPublishStart
-        self.onPublishStop = onPublishStop
-        self.onFrame = onFrame
-        self.onAudioBuffer = onAudioBuffer
         clients = []
     }
 
@@ -168,20 +156,20 @@ class RtmpServer {
         var newClients: [RtmpServerClient] = []
         for aClient in clients {
             if aClient !== client, aClient.streamKey == client.streamKey {
-                onPublishStop(client.streamKey)
+                delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey)
                 aClient.stop(reason: "Same stream key")
             } else {
                 newClients.append(aClient)
             }
         }
         clients = newClients
-        onPublishStart(client.streamKey)
+        delegate?.rtmpServerOnPublishStart(streamKey: client.streamKey)
         logNumberOfClients()
     }
 
     func handleClientDisconnected(client: RtmpServerClient, reason: String) {
         if !client.streamKey.isEmpty {
-            onPublishStop(client.streamKey)
+            delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey)
         }
         client.stop(reason: reason)
         clients.removeAll { c in
