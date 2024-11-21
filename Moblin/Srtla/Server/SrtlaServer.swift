@@ -20,6 +20,11 @@ protocol SrtlaServerDelegate: AnyObject {
     func srtlaServerOnClientStop(streamId: String)
     func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
     func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
+    func srtlaServerSetTargetLatencies(
+        streamId: String,
+        videoTargetLatency: Double,
+        audioTargetLatency: Double
+    )
 }
 
 class SrtlaServer {

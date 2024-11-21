@@ -113,29 +113,37 @@ open class NetStream: NSObject {
             }
         }
     }
-
-    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
-    }
-
-    func addAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.audio.addReplaceAudioSampleBuffer(id: id, sampleBuffer)
-    }
-
+    
     func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
         mixer.video.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
     }
-
-    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
-        mixer.audio.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
-    }
-
+    
     func removeReplaceVideo(cameraId: UUID) {
         mixer.video.removeReplaceVideo(cameraId: cameraId)
     }
 
+    func addReplaceVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.video.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    }
+    
+    func setReplaceVideoTargetLatency(cameraId: UUID, _ latency: Double) {
+        mixer.video.setReplaceVideoTargetLatency(cameraId: cameraId, latency: latency)
+    }
+    
+    func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
+        mixer.audio.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
+    }
+    
     func removeReplaceAudio(cameraId: UUID) {
         mixer.audio.removeReplaceAudio(cameraId: cameraId)
+    }
+
+    func addReplaceAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.audio.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+    }
+    
+    func setReplaceAudioTargetLatency(cameraId: UUID, _ latency: Double) {
+        mixer.audio.setReplaceAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func videoCapture() -> VideoUnit? {

@@ -16,6 +16,18 @@ struct RtmpServerClientInfo {
     var videoFps: Double
 }
 
+protocol RtmpServerDelegate: AnyObject {
+    func rtmpServerOnPublishStart(streamKey: String, latency: Double)
+    func rtmpServerOnPublishStop(streamKey: String)
+    func rtmpServerOnVideoBuffer(streamKey: String, sampleBuffer: CMSampleBuffer)
+    func rtmpServerOnAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer)
+    func rtmpServerSetTargetLatencies(
+        streamKey: String,
+        videoTargetLatency: Double,
+        audioTargetLatency: Double
+    )
+}
+
 class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]

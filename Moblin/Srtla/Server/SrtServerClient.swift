@@ -21,6 +21,9 @@ class SrtServerClient {
     private let streamId: String
     private var videoDecoder: VideoCodec?
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
+    private var latestVideoPresentationTimeStamp: Double?
+    private var latestAudioPresentationTimeStamp: Double?
+    private var targetLatencyAudioVideoDiff: Double = .infinity
 
     init(server: SrtServer, streamId: String) {
         self.server = server
@@ -101,6 +104,10 @@ class SrtServerClient {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        latestAudioPresentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        guard updateTargetLatencies() else {
+            return
+        }
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
             return
         }
@@ -197,6 +204,10 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        latestVideoPresentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        guard updateTargetLatencies() else {
+            return
+        }
         guard let videoDecoder else {
             return
         }
@@ -372,6 +383,33 @@ class SrtServerClient {
             basePresentationTimeStamp = currentPresentationTimeStamp() + latency
         }
         return basePresentationTimeStamp
+    }
+
+    private func updateTargetLatencies() -> Bool {
+        guard let latestVideoPresentationTimeStamp, let latestAudioPresentationTimeStamp else {
+            firstReceivedPresentationTimeStamp = nil
+            previousReceivedPresentationTimeStamps.removeAll()
+            return false
+        }
+        let audioVideoDiff = latestAudioPresentationTimeStamp - latestVideoPresentationTimeStamp
+        // logger.info("xxx audioVideoDiff is \(audioVideoDiff)")
+        guard abs(audioVideoDiff - targetLatencyAudioVideoDiff) > 0.2 else {
+            return true
+        }
+        targetLatencyAudioVideoDiff = audioVideoDiff
+        var videoTargetLatency = srtServerClientLatency
+        var audioTargetLatency = srtServerClientLatency
+        if audioVideoDiff > 0.0 {
+            audioTargetLatency += audioVideoDiff
+        } else {
+            videoTargetLatency -= audioVideoDiff
+        }
+        server?.srtlaServer?.delegate?.srtlaServerSetTargetLatencies(
+            streamId: streamId,
+            videoTargetLatency: videoTargetLatency,
+            audioTargetLatency: audioTargetLatency
+        )
+        return true
     }
 }
 

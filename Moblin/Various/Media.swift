@@ -815,29 +815,37 @@ final class Media: NSObject {
     func attachReplaceAudio(cameraId: UUID?) {
         netStream?.attachAudio(nil, replaceAudioId: cameraId)
     }
-
-    func addReplaceSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
-    }
-
-    func addReplaceAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        netStream?.addAudioSampleBuffer(id: cameraId, sampleBuffer)
-    }
-
-    func addReplaceCamera(cameraId: UUID, name: String, latency: Double) {
-        netStream?.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
-    }
-
+    
     func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
         netStream?.addReplaceAudio(cameraId: cameraId, name: name, latency: latency)
     }
+    
+    func removeReplaceAudio(cameraId: UUID) {
+        netStream?.removeReplaceAudio(cameraId: cameraId)
+    }
+    
+    func addReplaceAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream?.addReplaceAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
+    }
+    
+    func setReplaceAudioTargetLatency(cameraId: UUID, latency: Double) {
+        netStream?.setReplaceAudioTargetLatency(cameraId: cameraId, latency)
+    }
+    
+    func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
+        netStream?.addReplaceVideo(cameraId: cameraId, name: name, latency: latency)
+    }
 
-    func removeReplaceCamera(cameraId: UUID) {
+    func removeReplaceVideo(cameraId: UUID) {
         netStream?.removeReplaceVideo(cameraId: cameraId)
     }
 
-    func removeReplaceAudio(cameraId: UUID) {
-        netStream?.removeReplaceAudio(cameraId: cameraId)
+    func addReplaceVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream?.addReplaceVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    }
+    
+    func setReplaceVideoTargetLatency(cameraId: UUID, latency: Double) {
+        netStream?.setReplaceVideoTargetLatency(cameraId: cameraId, latency)
     }
 
     func attachAudio(device: AVCaptureDevice?) {

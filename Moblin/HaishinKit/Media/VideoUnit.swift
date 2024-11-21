@@ -60,6 +60,10 @@ private class ReplaceVideo {
         driftTracker = DriftTracker(media: "video", name: name, targetLatency: latency)
     }
 
+    func setTargetLatency(latency: Double) {
+        driftTracker.setTargetLatency(targetLatency: latency)
+    }
+
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         if let index = sampleBuffers
             .lastIndex(where: { $0.presentationTimeStamp < sampleBuffer.presentationTimeStamp })
@@ -366,9 +370,9 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func addReplaceVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         lockQueue.async {
-            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer)
+            self.addReplaceVideoSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
 
@@ -390,8 +394,18 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setReplaceVideoDriftInner(cameraId: UUID, drift: Double) {
+    private func setReplaceVideoDriftInner(cameraId: UUID, drift: Double) {
         replaceVideos[cameraId]?.setDrift(drift: drift)
+    }
+
+    func setReplaceVideoTargetLatency(cameraId: UUID, latency: Double) {
+        lockQueue.async {
+            self.setReplaceVideoTargetLatencyInner(cameraId: cameraId, latency: latency)
+        }
+    }
+
+    private func setReplaceVideoTargetLatencyInner(cameraId: UUID, latency: Double) {
+        replaceVideos[cameraId]?.setTargetLatency(latency: latency)
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
@@ -793,8 +807,8 @@ final class VideoUnit: NSObject {
         lowFpsImageLatest = 0.0
     }
 
-    private func addReplaceVideoSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        guard let replaceVideo = replaceVideos[id] else {
+    private func addReplaceVideoSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        guard let replaceVideo = replaceVideos[cameraId] else {
             return
         }
         replaceVideo.appendSampleBuffer(sampleBuffer)

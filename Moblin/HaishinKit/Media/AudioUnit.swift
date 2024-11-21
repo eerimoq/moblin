@@ -54,6 +54,10 @@ private class ReplaceAudio {
         driftTracker = DriftTracker(media: "audio", name: name, targetLatency: latency)
     }
 
+    func setTargetLatency(latency: Double) {
+        driftTracker.setTargetLatency(targetLatency: latency)
+    }
+
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBuffers.append(sampleBuffer)
         if !isInitialized {
@@ -331,14 +335,14 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func addReplaceAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func addReplaceAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         lockQueue.async {
-            self.addReplaceAudioSampleBufferInner(id: id, sampleBuffer)
+            self.addReplaceAudioSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
 
-    func addReplaceAudioSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        replaceAudios[id]?.appendSampleBuffer(sampleBuffer)
+    func addReplaceAudioSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        replaceAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
     }
 
     func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
@@ -369,8 +373,18 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func setReplaceAudioDriftInner(cameraId: UUID, drift: Double) {
+    private func setReplaceAudioDriftInner(cameraId: UUID, drift: Double) {
         replaceAudios[cameraId]?.setDrift(drift: drift)
+    }
+
+    func setReplaceAudioTargetLatency(cameraId: UUID, latency: Double) {
+        lockQueue.async {
+            self.setReplaceAudioTargetLatencyInner(cameraId: cameraId, latency: latency)
+        }
+    }
+
+    private func setReplaceAudioTargetLatencyInner(cameraId: UUID, latency: Double) {
+        replaceAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 
     func prepareSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {

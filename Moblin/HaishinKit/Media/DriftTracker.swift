@@ -10,7 +10,7 @@ private enum AdjustDriftDirection {
 class DriftTracker {
     private let media: String
     private let name: String
-    private let targetLatency: Double
+    private var targetLatency: Double
     private var estimatedLatency: Double
     private var latestEstimatedLatencyPresentationTimeStamp = 0.0
     private var latestAdjustDriftPresentationTimeStamp = 0.0
@@ -20,6 +20,12 @@ class DriftTracker {
     init(media: String, name: String, targetLatency: Double) {
         self.media = media
         self.name = name
+        self.targetLatency = targetLatency
+        estimatedLatency = targetLatency
+    }
+
+    func setTargetLatency(targetLatency: Double) {
+        logger.debug("replace-\(media): drift-tracker: \(name): Setting target latency to \(targetLatency)")
         self.targetLatency = targetLatency
         estimatedLatency = targetLatency
     }
@@ -58,12 +64,12 @@ class DriftTracker {
         switch adjustDriftDirection {
         case .up:
             drift += 0.01
-            if estimatedLatency >= targetLatency {
+            if estimatedLatency >= lowWaterMark() + 0.1 {
                 adjustDriftDirection = .none
             }
         case .down:
             drift -= 0.01
-            if estimatedLatency <= targetLatency {
+            if estimatedLatency <= highWaterMark() - 0.1 {
                 adjustDriftDirection = .none
             }
         case .none:
@@ -81,6 +87,6 @@ class DriftTracker {
     }
 
     func highWaterMark() -> Double {
-        return targetLatency + 0.1
+        return targetLatency + 0.3
     }
 }
