@@ -8398,8 +8398,8 @@ extension Model: SrtlaServerDelegate {
 
     func srtlaServerSetTargetLatencies(
         streamId: String,
-        videoTargetLatency: Double,
-        audioTargetLatency: Double
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
     ) {
         guard let cameraId = getSrtlaStream(streamId: streamId)?.id else {
             return

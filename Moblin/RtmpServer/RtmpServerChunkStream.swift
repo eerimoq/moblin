@@ -258,6 +258,9 @@ class RtmpServerChunkStream {
         {
             client.latency = stream.latency!
             client.cameraId = stream.id
+            client
+                .targetLatenciesSynchronizer =
+                TargetLatenciesSynchronizer(targetLatency: Double(stream.latency!) / 1000.0)
             isStreamKeyConfigured = true
         } else {
             isStreamKeyConfigured = false
@@ -419,6 +422,9 @@ class RtmpServerChunkStream {
         if let error {
             logger.info("rtmp-server: client: Error \(error)")
         } else if let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: outputBuffer) {
+            client.targetLatenciesSynchronizer
+                .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+            client.updateTargetLatencies()
             if firstAudioBufferTimestamp == nil {
                 firstAudioBufferTimestamp = .now
             }
@@ -496,6 +502,9 @@ class RtmpServerChunkStream {
         }
         totalNumberOfVideoFrames += 1
         if let sampleBuffer = makeVideoSampleBuffer(client: client) {
+            client.targetLatenciesSynchronizer
+                .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+            client.updateTargetLatencies()
             videoCodecLockQueue.async {
                 self.videoDecoder?.decodeSampleBuffer(sampleBuffer)
             }

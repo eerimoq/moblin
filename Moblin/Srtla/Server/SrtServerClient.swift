@@ -388,8 +388,8 @@ class SrtServerClient {
         }
         server?.srtlaServer?.delegate?.srtlaServerSetTargetLatencies(
             streamId: streamId,
-            videoTargetLatency: videoTargetLatency,
-            audioTargetLatency: audioTargetLatency
+            videoTargetLatency,
+            audioTargetLatency
         )
     }
 }

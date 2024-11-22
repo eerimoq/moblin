@@ -22,8 +22,8 @@ protocol SrtlaServerDelegate: AnyObject {
     func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
     func srtlaServerSetTargetLatencies(
         streamId: String,
-        videoTargetLatency: Double,
-        audioTargetLatency: Double
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
     )
 }
 
