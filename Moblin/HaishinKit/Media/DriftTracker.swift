@@ -26,9 +26,11 @@ class DriftTracker {
 
     func setTargetFillLevel(targetFillLevel: Double) {
         logger.debug("""
-                     replace-\(media): drift-tracker: \(name): Setting target fill level to \(targetFillLevel) \
-                     (was \(self.targetFillLevel)
-                     """)
+        replace-\(media): drift-tracker: \(name): Setting target fill level to \(
+            targetFillLevel
+        ) \
+        (was \(self.targetFillLevel)
+        """)
         let newMinusOldDiff = targetFillLevel - self.targetFillLevel
         if newMinusOldDiff < 0 {
             drift -= newMinusOldDiff

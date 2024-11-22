@@ -3,19 +3,19 @@ class TargetLatenciesSynchronizer {
     private var latestAudioPresentationTimeStamp: Double?
     private var latestVideoPresentationTimeStamp: Double?
     private var currentAudioVideoDiff: Double = .infinity
-    
+
     init(targetLatency: Double) {
         self.targetLatency = targetLatency
     }
-    
+
     func setLatestAudioPresentationTimeStamp(_ presentationTimeStamp: Double) {
         latestAudioPresentationTimeStamp = presentationTimeStamp
     }
-    
+
     func setLatestVideoPresentationTimeStamp(_ presentationTimeStamp: Double) {
         latestVideoPresentationTimeStamp = presentationTimeStamp
     }
-    
+
     func update() -> (Double, Double)? {
         guard let latestVideoPresentationTimeStamp, let latestAudioPresentationTimeStamp else {
             return nil

@@ -21,7 +21,8 @@ class SrtServerClient {
     private let streamId: String
     private var videoDecoder: VideoCodec?
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
-    private var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
+    private var targetLatenciesSynchronizer =
+        TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
 
     init(server: SrtServer, streamId: String) {
         self.server = server
@@ -102,7 +103,8 @@ class SrtServerClient {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        targetLatenciesSynchronizer
+            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         updateTargetLatencies()
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
             return
@@ -200,7 +202,8 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer.setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        targetLatenciesSynchronizer
+            .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         updateTargetLatencies()
         guard let videoDecoder else {
             return
