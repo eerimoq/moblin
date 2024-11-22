@@ -26,23 +26,20 @@ class DriftTracker {
 
     func setTargetFillLevel(targetFillLevel: Double) {
         logger.debug("""
-        replace-\(media): drift-tracker: \(name): Setting target fill level to \(
-            targetFillLevel
-        ) \
-        (was \(self.targetFillLevel)
+        replace-\(media): drift-tracker: \(name): Setting target fill level to \
+        \(targetFillLevel) (was \(self.targetFillLevel))
         """)
-        let newMinusOldDiff = targetFillLevel - self.targetFillLevel
-        if newMinusOldDiff < 0 {
-            drift -= newMinusOldDiff
+        if targetFillLevel > self.targetFillLevel {
+            estimatedFillLevel = targetFillLevel
         }
         self.targetFillLevel = targetFillLevel
-        estimatedFillLevel = targetFillLevel
     }
 
     func setDrift(drift: Double) {
         logger.debug("""
-        replace-\(media): drift-tracker: \(name): Set by other media to \(drift). \
-        Drift: \(self.drift), Adjust direction: \(adjustDriftDirection)
+        replace-\(media): drift-tracker: \(name): Other media set drift. \
+        Estimated fill level: \(estimatedFillLevel), \
+        Old drift: \(self.drift), New drift: \(drift)
         """)
         self.drift = drift
         adjustDriftDirection = .none
@@ -66,36 +63,41 @@ class DriftTracker {
         } else if estimatedFillLevel > highWaterMark() {
             adjustDriftDirection = .down
         }
+        // Don't adjust too often to allow the moving average above to adjust.
         guard outputPresentationTimeStamp > latestAdjustDriftPresentationTimeStamp + 10.0 else {
             return nil
         }
         latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
         switch adjustDriftDirection {
         case .up:
-            drift += 0.01
             if estimatedFillLevel > lowWaterMark() + 0.1 {
                 adjustDriftDirection = .none
             }
+            adjustDrift(drift: max(drift + 0.01, drift + (lowWaterMark() - estimatedFillLevel)))
         case .down:
-            drift -= 0.01
             if estimatedFillLevel < highWaterMark() - 0.1 {
                 adjustDriftDirection = .none
             }
+            adjustDrift(drift: min(drift - 0.01, drift - (estimatedFillLevel - highWaterMark())))
         case .none:
             return nil
         }
-        logger.debug("""
-        replace-\(media): drift-tracker: \(name): Estimated fill level: \(estimatedFillLevel), \
-        Drift: \(drift), Adjust direction: \(adjustDriftDirection)
-        """)
         return drift
     }
 
-    func lowWaterMark() -> Double {
-        return max(targetFillLevel - 0.1, 0.1)
+    private func adjustDrift(drift: Double) {
+        logger.debug("""
+        replace-\(media): drift-tracker: \(name): Estimated fill level: \(estimatedFillLevel), \
+        Old drift: \(self.drift), New drift: \(drift)
+        """)
+        self.drift = drift
     }
 
-    func highWaterMark() -> Double {
-        return targetFillLevel + 0.3
+    private func lowWaterMark() -> Double {
+        return max(targetFillLevel - 0.2, 0.1)
+    }
+
+    private func highWaterMark() -> Double {
+        return targetFillLevel + 0.2
     }
 }

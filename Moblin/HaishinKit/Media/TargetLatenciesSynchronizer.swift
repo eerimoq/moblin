@@ -3,6 +3,7 @@ class TargetLatenciesSynchronizer {
     private var latestAudioPresentationTimeStamp: Double?
     private var latestVideoPresentationTimeStamp: Double?
     private var currentAudioVideoDiff: Double = .infinity
+    private var estimatedAudioVideoDiff: Double = .zero
 
     init(targetLatency: Double) {
         self.targetLatency = targetLatency
@@ -21,10 +22,11 @@ class TargetLatenciesSynchronizer {
             return nil
         }
         let audioVideoDiff = latestAudioPresentationTimeStamp - latestVideoPresentationTimeStamp
-        guard abs(audioVideoDiff - currentAudioVideoDiff) > 0.2 else {
+        estimatedAudioVideoDiff = estimatedAudioVideoDiff * 0.98 + audioVideoDiff * 0.02
+        guard abs(estimatedAudioVideoDiff - currentAudioVideoDiff) > 0.1 else {
             return nil
         }
-        currentAudioVideoDiff = audioVideoDiff
+        currentAudioVideoDiff = estimatedAudioVideoDiff
         var videoTargetLatency = targetLatency
         var audioTargetLatency = targetLatency
         if audioVideoDiff > 0.0 {
