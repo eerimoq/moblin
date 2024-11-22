@@ -57,11 +57,11 @@ private class ReplaceVideo {
         self.name = name
         self.update = update
         self.mixer = mixer
-        driftTracker = DriftTracker(media: "video", name: name, targetLatency: latency)
+        driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
     }
 
     func setTargetLatency(latency: Double) {
-        driftTracker.setTargetLatency(targetLatency: latency)
+        driftTracker.setTargetFillLevel(targetFillLevel: latency)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {

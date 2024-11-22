@@ -21,7 +21,7 @@ class SrtServerClient {
     private let streamId: String
     private var videoDecoder: VideoCodec?
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
-    private var targetLatenciesTracker = TargetLatenciesTracker(targetLatency: srtServerClientLatency)
+    private var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
 
     init(server: SrtServer, streamId: String) {
         self.server = server
@@ -102,10 +102,8 @@ class SrtServerClient {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesTracker.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        guard updateTargetLatencies() else {
-            return
-        }
+        targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        updateTargetLatencies()
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
             return
         }
@@ -202,10 +200,8 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesTracker.setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        guard updateTargetLatencies() else {
-            return
-        }
+        targetLatenciesSynchronizer.setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        updateTargetLatencies()
         guard let videoDecoder else {
             return
         }
@@ -383,21 +379,15 @@ class SrtServerClient {
         return basePresentationTimeStamp
     }
 
-    private func updateTargetLatencies() -> Bool {
-        guard targetLatenciesTracker.hasBothAudioAndVideo() else {
-            firstReceivedPresentationTimeStamp = nil
-            previousReceivedPresentationTimeStamps.removeAll()
-            return false
-        }
-        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesTracker.update() else {
-            return true
+    private func updateTargetLatencies() {
+        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
+            return
         }
         server?.srtlaServer?.delegate?.srtlaServerSetTargetLatencies(
             streamId: streamId,
             videoTargetLatency: videoTargetLatency,
             audioTargetLatency: audioTargetLatency
         )
-        return true
     }
 }
 

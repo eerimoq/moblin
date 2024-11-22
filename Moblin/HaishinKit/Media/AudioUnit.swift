@@ -51,11 +51,11 @@ private class ReplaceAudio {
         self.cameraId = cameraId
         self.name = name
         self.mixer = mixer
-        driftTracker = DriftTracker(media: "audio", name: name, targetLatency: latency)
+        driftTracker = DriftTracker(media: "audio", name: name, targetFillLevel: latency)
     }
 
     func setTargetLatency(latency: Double) {
-        driftTracker.setTargetLatency(targetLatency: latency)
+        driftTracker.setTargetFillLevel(targetFillLevel: latency)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {

@@ -10,24 +10,31 @@ private enum AdjustDriftDirection {
 class DriftTracker {
     private let media: String
     private let name: String
-    private var targetLatency: Double
-    private var estimatedLatency: Double
-    private var latestEstimatedLatencyPresentationTimeStamp = 0.0
+    private var targetFillLevel: Double
+    private var estimatedFillLevel: Double
+    private var latestEstimatedFillLevelPresentationTimeStamp = 0.0
     private var latestAdjustDriftPresentationTimeStamp = 0.0
     private var drift = 0.0
     private var adjustDriftDirection: AdjustDriftDirection = .none
 
-    init(media: String, name: String, targetLatency: Double) {
+    init(media: String, name: String, targetFillLevel: Double) {
         self.media = media
         self.name = name
-        self.targetLatency = targetLatency
-        estimatedLatency = targetLatency
+        self.targetFillLevel = targetFillLevel
+        estimatedFillLevel = targetFillLevel
     }
 
-    func setTargetLatency(targetLatency: Double) {
-        logger.debug("replace-\(media): drift-tracker: \(name): Setting target latency to \(targetLatency)")
-        self.targetLatency = targetLatency
-        estimatedLatency = targetLatency
+    func setTargetFillLevel(targetFillLevel: Double) {
+        logger.debug("""
+                     replace-\(media): drift-tracker: \(name): Setting target fill level to \(targetFillLevel) \
+                     (was \(self.targetFillLevel)
+                     """)
+        let newMinusOldDiff = targetFillLevel - self.targetFillLevel
+        if newMinusOldDiff < 0 {
+            drift -= newMinusOldDiff
+        }
+        self.targetFillLevel = targetFillLevel
+        estimatedFillLevel = targetFillLevel
     }
 
     func setDrift(drift: Double) {
@@ -44,17 +51,17 @@ class DriftTracker {
     }
 
     func update(_ outputPresentationTimeStamp: Double, _ sampleBuffers: Deque<CMSampleBuffer>) -> Double? {
-        guard outputPresentationTimeStamp > latestEstimatedLatencyPresentationTimeStamp + 0.5 else {
+        guard outputPresentationTimeStamp > latestEstimatedFillLevelPresentationTimeStamp + 0.5 else {
             return nil
         }
-        latestEstimatedLatencyPresentationTimeStamp = outputPresentationTimeStamp
+        latestEstimatedFillLevelPresentationTimeStamp = outputPresentationTimeStamp
         let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
         let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-        let currentLatency = lastPresentationTimeStamp - firstPresentationTimeStamp
-        estimatedLatency = estimatedLatency * 0.95 + currentLatency * 0.05
-        if estimatedLatency < lowWaterMark() {
+        let currentFillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
+        estimatedFillLevel = estimatedFillLevel * 0.95 + currentFillLevel * 0.05
+        if estimatedFillLevel < lowWaterMark() {
             adjustDriftDirection = .up
-        } else if estimatedLatency > highWaterMark() {
+        } else if estimatedFillLevel > highWaterMark() {
             adjustDriftDirection = .down
         }
         guard outputPresentationTimeStamp > latestAdjustDriftPresentationTimeStamp + 10.0 else {
@@ -64,29 +71,29 @@ class DriftTracker {
         switch adjustDriftDirection {
         case .up:
             drift += 0.01
-            if estimatedLatency >= lowWaterMark() + 0.1 {
+            if estimatedFillLevel > lowWaterMark() + 0.1 {
                 adjustDriftDirection = .none
             }
         case .down:
             drift -= 0.01
-            if estimatedLatency <= highWaterMark() - 0.1 {
+            if estimatedFillLevel < highWaterMark() - 0.1 {
                 adjustDriftDirection = .none
             }
         case .none:
             return nil
         }
         logger.debug("""
-        replace-\(media): drift-tracker: \(name): Estimated latency: \(estimatedLatency), \
+        replace-\(media): drift-tracker: \(name): Estimated fill level: \(estimatedFillLevel), \
         Drift: \(drift), Adjust direction: \(adjustDriftDirection)
         """)
         return drift
     }
 
     func lowWaterMark() -> Double {
-        return max(targetLatency - 0.1, 0.1)
+        return max(targetFillLevel - 0.1, 0.1)
     }
 
     func highWaterMark() -> Double {
-        return targetLatency + 0.3
+        return targetFillLevel + 0.3
     }
 }

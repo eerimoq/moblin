@@ -1,4 +1,4 @@
-class TargetLatenciesTracker {
+class TargetLatenciesSynchronizer {
     private let targetLatency: Double
     private var latestAudioPresentationTimeStamp: Double?
     private var latestVideoPresentationTimeStamp: Double?
@@ -14,10 +14,6 @@ class TargetLatenciesTracker {
     
     func setLatestVideoPresentationTimeStamp(_ presentationTimeStamp: Double) {
         latestVideoPresentationTimeStamp = presentationTimeStamp
-    }
-    
-    func hasBothAudioAndVideo() -> Bool {
-        return latestAudioPresentationTimeStamp != nil && latestVideoPresentationTimeStamp != nil
     }
     
     func update() -> (Double, Double)? {
