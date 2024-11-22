@@ -46,6 +46,7 @@
 		031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 031852A42B21890A00AEAD0D /* InfoPlist.strings */; };
 		031863C72C8C4BEA00CECA33 /* FaxReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031863C62C8C4BEA00CECA33 /* FaxReceiver.swift */; };
 		0318B4132C845214002B4F58 /* QuickButtonChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318B4122C845214002B4F58 /* QuickButtonChatView.swift */; };
+		0318D35E2CF04C3A00E12F3B /* TargetLatenciesTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318D35D2CF04C2B00E12F3B /* TargetLatenciesTracker.swift */; };
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
 		031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */; };
@@ -548,6 +549,7 @@
 		031852A52B21890A00AEAD0D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		031863C62C8C4BEA00CECA33 /* FaxReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaxReceiver.swift; sourceTree = "<group>"; };
 		0318B4122C845214002B4F58 /* QuickButtonChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonChatView.swift; sourceTree = "<group>"; };
+		0318D35D2CF04C2B00E12F3B /* TargetLatenciesTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetLatenciesTracker.swift; sourceTree = "<group>"; };
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
 		031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerStorage.swift; sourceTree = "<group>"; };
@@ -1555,10 +1557,11 @@
 				0359F8352BD3DA5F005BFDA8 /* AudioUnit.swift */,
 				03EEC76A2CED8C8B00749D4E /* DriftTracker.swift */,
 				0359F8362BD3DA5F005BFDA8 /* Mixer.swift */,
-				0359F8372BD3DA5F005BFDA8 /* Recorder.swift */,
-				0359F8382BD3DA5F005BFDA8 /* VideoUnit.swift */,
 				0359F8392BD3DA5F005BFDA8 /* PreviewView.swift */,
+				0359F8372BD3DA5F005BFDA8 /* Recorder.swift */,
+				0318D35D2CF04C2B00E12F3B /* TargetLatenciesTracker.swift */,
 				0359F83A2BD3DA5F005BFDA8 /* VideoEffect.swift */,
+				0359F8382BD3DA5F005BFDA8 /* VideoUnit.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -3085,6 +3088,7 @@
 				03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */,
+				0318D35E2CF04C3A00E12F3B /* TargetLatenciesTracker.swift in Sources */,
 				0359F8E42BD3DA61005BFDA8 /* MpegTsWriter.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,

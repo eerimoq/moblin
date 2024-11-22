@@ -21,9 +21,7 @@ class SrtServerClient {
     private let streamId: String
     private var videoDecoder: VideoCodec?
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
-    private var latestVideoPresentationTimeStamp: Double?
-    private var latestAudioPresentationTimeStamp: Double?
-    private var targetLatencyAudioVideoDiff: Double = .infinity
+    private var targetLatenciesTracker = TargetLatenciesTracker(targetLatency: srtServerClientLatency)
 
     init(server: SrtServer, streamId: String) {
         self.server = server
@@ -104,7 +102,7 @@ class SrtServerClient {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        latestAudioPresentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        targetLatenciesTracker.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         guard updateTargetLatencies() else {
             return
         }
@@ -204,7 +202,7 @@ class SrtServerClient {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        latestVideoPresentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        targetLatenciesTracker.setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         guard updateTargetLatencies() else {
             return
         }
@@ -386,22 +384,13 @@ class SrtServerClient {
     }
 
     private func updateTargetLatencies() -> Bool {
-        guard let latestVideoPresentationTimeStamp, let latestAudioPresentationTimeStamp else {
+        guard targetLatenciesTracker.hasBothAudioAndVideo() else {
             firstReceivedPresentationTimeStamp = nil
             previousReceivedPresentationTimeStamps.removeAll()
             return false
         }
-        let audioVideoDiff = latestAudioPresentationTimeStamp - latestVideoPresentationTimeStamp
-        guard abs(audioVideoDiff - targetLatencyAudioVideoDiff) > 0.2 else {
+        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesTracker.update() else {
             return true
-        }
-        targetLatencyAudioVideoDiff = audioVideoDiff
-        var videoTargetLatency = srtServerClientLatency
-        var audioTargetLatency = srtServerClientLatency
-        if audioVideoDiff > 0.0 {
-            audioTargetLatency += audioVideoDiff
-        } else {
-            videoTargetLatency -= audioVideoDiff
         }
         server?.srtlaServer?.delegate?.srtlaServerSetTargetLatencies(
             streamId: streamId,
