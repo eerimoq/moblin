@@ -1863,8 +1863,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let info = rtmpServer.streamInfo(streamKey: stream.streamKey) else {
                 continue
             }
-            let audioRate = formatTwoDecimals(value: info.audioSamplesPerSecond)
-            let fps = formatTwoDecimals(value: info.videoFps)
+            let audioRate = formatTwoDecimals(info.audioSamplesPerSecond)
+            let fps = formatTwoDecimals(info.videoFps)
             logger
                 .debug(
                     "RTMP server stream \(stream.streamKey) has FPS \(fps) and \(audioRate) audio samples/second"
@@ -9057,7 +9057,7 @@ extension Model: ObsWebsocketDelegate {
             if volume.isInfinite {
                 values.append(String(localized: "Muted"))
             } else {
-                values.append(String(localized: "\(formatOneDecimal(value: volume)) dB"))
+                values.append(String(localized: "\(formatOneDecimal(volume)) dB"))
             }
         }
         obsAudioVolumeLatest = values.joined(separator: ", ")

@@ -45,8 +45,8 @@ class Location: NSObject {
         guard let latestLocation else {
             return ""
         }
-        let latitude = formatOneDecimal(value: Float(latestLocation.coordinate.latitude))
-        let longitude = formatOneDecimal(value: Float(latestLocation.coordinate.longitude))
+        let latitude = formatOneDecimal(Float(latestLocation.coordinate.latitude))
+        let longitude = formatOneDecimal(Float(latestLocation.coordinate.longitude))
         let formatter = MeasurementFormatter()
         formatter.numberFormatter.maximumFractionDigits = 1
         let speed = formatter.string(from: NSMeasurement(

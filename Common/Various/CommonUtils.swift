@@ -344,12 +344,16 @@ func formatAsInt(_ value: CGFloat) -> String {
     return String(format: "%d", Int(value))
 }
 
-func formatOneDecimal(value: Float) -> String {
+func formatOneDecimal(_ value: Float) -> String {
     return String(format: "%.01f", value)
 }
 
-func formatTwoDecimals(value: Double) -> String {
+func formatTwoDecimals(_ value: Double) -> String {
     return String(format: "%.02f", value)
+}
+
+func formatThreeDecimals(_ value: Double) -> String {
+    return String(format: "%.03f", value)
 }
 
 extension Comparable {

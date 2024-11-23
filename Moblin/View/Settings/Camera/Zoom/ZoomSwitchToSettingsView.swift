@@ -12,7 +12,7 @@ struct ZoomSwitchToSettingsView: View {
     }
 
     private func formatX(x: Float) -> String {
-        return formatOneDecimal(value: x)
+        return formatOneDecimal(x)
     }
 
     var body: some View {

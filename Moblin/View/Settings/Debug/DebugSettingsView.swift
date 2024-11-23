@@ -68,7 +68,7 @@ struct DebugSettingsView: View {
                             model.database.debug!.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
                         }
                     )
-                    Text("\(formatOneDecimal(value: cameraSwitchRemoveBlackish)) s")
+                    Text("\(formatOneDecimal(cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
                 Toggle("Blur scene switch", isOn: Binding(get: {

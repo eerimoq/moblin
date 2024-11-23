@@ -2608,7 +2608,7 @@ private func addDefaultBackZoomPresets(database: Database) {
         xs.append(2 * xs.last!)
         database.zoom.back = []
         for x in xs {
-            let nameX = x < 1 ? formatOneDecimal(value: x) : String(Int(x))
+            let nameX = x < 1 ? formatOneDecimal(x) : String(Int(x))
             database.zoom.back.append(SettingsZoomPreset(
                 id: UUID(),
                 name: "\(nameX)x",

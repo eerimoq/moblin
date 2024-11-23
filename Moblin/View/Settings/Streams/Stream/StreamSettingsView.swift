@@ -182,7 +182,7 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Estimated viewer delay"),
-                            value: formatOneDecimal(value: stream.estimatedViewerDelay!),
+                            value: formatOneDecimal(stream.estimatedViewerDelay!),
                             keyboardType: .numbersAndPunctuation
                         ) {
                             guard let latency = Float($0), latency >= 0.0, latency <= 15.0 else {
@@ -193,7 +193,7 @@ struct StreamSettingsView: View {
                     } label: {
                         TextItemView(
                             name: String(localized: "Estimated viewer delay"),
-                            value: "\(formatOneDecimal(value: stream.estimatedViewerDelay!)) s"
+                            value: "\(formatOneDecimal(stream.estimatedViewerDelay!)) s"
                         )
                     }
                 } footer: {

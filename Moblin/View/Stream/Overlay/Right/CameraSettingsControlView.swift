@@ -241,7 +241,7 @@ private struct ButtonsView: View {
     @EnvironmentObject var model: Model
 
     private func formatExposureBias() -> String {
-        var value = formatOneDecimal(value: model.bias)
+        var value = formatOneDecimal(model.bias)
         if model.bias >= 0 {
             value = "+\(value)"
         }

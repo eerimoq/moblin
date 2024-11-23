@@ -20,7 +20,7 @@ struct ZoomSettingsView: View {
                             model.database.zoom.speed = speed
                         }
                     )
-                    Text(String(formatOneDecimal(value: speed)))
+                    Text(String(formatOneDecimal(speed)))
                         .frame(width: 35)
                 }
             }

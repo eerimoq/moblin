@@ -120,7 +120,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
             logAdaptiveAcion(
                 actionTaken: """
                 Set min: \(bitrate / 1000), rtt: \(rtt) >= latency / 3: \(srtLatency / 3) \
-                or bs: \(bs) > bs_th3: \(formatTwoDecimals(value: bsTh3))
+                or bs: \(bs) > bs_th3: \(formatTwoDecimals(bsTh3))
                 """
             )
         } else if currentTime > nextBitrateDecrTime && (rtt > (srtLatency / 5) || bs > bsTh2) {
@@ -130,7 +130,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
                 actionTaken: """
                 Fast decr: \((bitrateDecrMin + bitrate / bitrateDecrScale) / 1000), \
                 rtt: \(rtt) > latency / 5: \(srtLatency / 5) or bs: \(bs) > bs_th2: \
-                \(formatTwoDecimals(value: bsTh2))
+                \(formatTwoDecimals(bsTh2))
                 """
             )
         } else if currentTime > nextBitrateDecrTime && (rtt > rttThMax || bs > bsTh1) {
@@ -139,8 +139,8 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
             logAdaptiveAcion(
                 actionTaken: """
                 Decr: \(bitrateDecrMin / 1000), rtt: \(rtt) > rtt_th_max: \
-                \(formatTwoDecimals(value: rttThMax)) or bs: \(bs) > bs_th1: \
-                \(formatTwoDecimals(value: bsTh1))
+                \(formatTwoDecimals(rttThMax)) or bs: \(bs) > bs_th1: \
+                \(formatTwoDecimals(bsTh1))
                 """
             )
         } else if currentTime > nextBitrateIncrTime && rtt < rttThMin && rttAvgDelta < 0.01 {

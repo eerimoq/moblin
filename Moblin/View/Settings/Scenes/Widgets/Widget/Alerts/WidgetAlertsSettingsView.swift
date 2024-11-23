@@ -52,7 +52,7 @@ private struct AlertTextToSpeechView: View {
                     alert.textToSpeechDelay = ttsDelay
                     model.updateAlertsSettings()
                 }
-                Text(String(formatOneDecimal(value: Float(ttsDelay))))
+                Text(String(formatOneDecimal(Float(ttsDelay))))
                     .frame(width: 35)
             }
             NavigationLink {

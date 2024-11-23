@@ -73,6 +73,7 @@ private class ReplaceAudio {
     func getSampleBuffer(_ outputPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
+        let drift = driftTracker.getDrift()
         while let inputSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 300 {
                 logger.info(
@@ -86,8 +87,7 @@ private class ReplaceAudio {
                 numberOfBuffersConsumed += 1
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + driftTracker
-                .getDrift()
+            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
             if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
                 break
@@ -100,44 +100,36 @@ private class ReplaceAudio {
         if logger.debugEnabled {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
             let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-            let currentLatency = lastPresentationTimeStamp - firstPresentationTimeStamp
+            let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
                 replace-audio: \(name): Duplicating buffer. \
-                Output time \(outputPresentationTimeStamp) \
-                Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
-                Buffers count is \(sampleBuffers.count). \
-                First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency)
+                Output \(formatThreeDecimals(outputPresentationTimeStamp)) \
+                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)) \
+                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+                Buffers \(sampleBuffers.count) \
+                Fill level \(fillLevel)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 replace-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
-                Output time \(outputPresentationTimeStamp) \
-                Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
-                Buffers count is \(sampleBuffers.count). \
-                First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency)
+                Output time \(formatThreeDecimals(outputPresentationTimeStamp)) \
+                Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)) \
+                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)) \
+                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+                Buffers \(sampleBuffers.count) \
+                Fill level \(fillLevel)
                 """)
             }
         }
         if sampleBuffer != nil {
             latestSampleBuffer = sampleBuffer
-        } else if latestSampleBuffer != nil {
-            if let (buffer, size) = latestSampleBuffer?.dataBuffer?.getDataPointer() {
+        } else if let latestSampleBuffer {
+            if let (buffer, size) = latestSampleBuffer.dataBuffer?.getDataPointer() {
                 buffer.initialize(repeating: 0, count: size)
             }
             sampleBuffer = latestSampleBuffer
-            logger.debug("""
-            replace-audio: \(name): Using latest sample buffer. \
-            Output time \(outputPresentationTimeStamp) \
-            Current \(sampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
-            Buffers count is \(sampleBuffers.count). \
-            First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-            Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan).
-            """)
+            logger.debug("replace-audio: \(name): Outputting silence.")
         }
         if !isInitialBuffering {
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
