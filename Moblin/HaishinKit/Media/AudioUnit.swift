@@ -105,20 +105,20 @@ private class ReplaceAudio {
                 logger.debug("""
                 replace-audio: \(name): Duplicating buffer. \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
-                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
-                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
-                Buffers \(sampleBuffers.count), \
-                Fill level \(fillLevel)
+                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
+                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+                (\(formatThreeDecimals(fillLevel))), \
+                Buffers \(sampleBuffers.count)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 replace-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
-                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
-                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
-                Buffers \(sampleBuffers.count), \
-                Fill level \(fillLevel)
+                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
+                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+                (\(formatThreeDecimals(fillLevel))), \
+                Buffers \(sampleBuffers.count)
                 """)
             }
         }

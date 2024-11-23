@@ -38,7 +38,8 @@ class DriftTracker {
     func setDrift(drift: Double) {
         logger.debug("""
         replace-\(media): drift-tracker: \(name): Other media set drift. \
-        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)), \
+        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
+        (target \(formatThreeDecimals(targetFillLevel))), \
         Drift: \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
         self.drift = drift
@@ -73,12 +74,12 @@ class DriftTracker {
             if estimatedFillLevel > lowWaterMark() + 0.1 {
                 adjustDriftDirection = .none
             }
-            adjustDrift(drift: max(drift + 0.01, drift + (lowWaterMark() - estimatedFillLevel)))
+            adjustDrift(drift: max(drift + 0.02, drift + (lowWaterMark() - estimatedFillLevel)))
         case .down:
             if estimatedFillLevel < highWaterMark() - 0.1 {
                 adjustDriftDirection = .none
             }
-            adjustDrift(drift: min(drift - 0.01, drift - (estimatedFillLevel - highWaterMark())))
+            adjustDrift(drift: min(drift - 0.02, drift - (estimatedFillLevel - highWaterMark())))
         case .none:
             return nil
         }
@@ -88,7 +89,8 @@ class DriftTracker {
     private func adjustDrift(drift: Double) {
         logger.debug("""
         replace-\(media): drift-tracker: \(name): \
-        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)), \
+        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
+        (target \(formatThreeDecimals(targetFillLevel))), \
         Drift \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
         self.drift = drift

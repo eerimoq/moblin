@@ -122,20 +122,20 @@ private class ReplaceVideo {
                 replace-video: \(name): Duplicating buffer. \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
-                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
-                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
-                Buffers \(sampleBuffers.count), \
-                Fill level \(fillLevel)
+                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
+                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+                (\(formatThreeDecimals(fillLevel))), \
+                Buffers \(sampleBuffers.count)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 replace-video: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
                 Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
-                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
-                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
-                Buffers \(sampleBuffers.count), \
-                Fill level \(fillLevel)
+                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
+                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+                (\(formatThreeDecimals(fillLevel))), \
+                Buffers \(sampleBuffers.count)
                 """)
             }
         }
