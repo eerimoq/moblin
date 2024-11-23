@@ -140,7 +140,7 @@ struct ChatBotCommandsSettingsView: View {
                 NavigationLink {
                     PermissionsSettingsView(permissions: permissions.tts)
                 } label: {
-                    Text("!moblin tts say <message...>")
+                    Text("!moblin say <message...>")
                 }
             } footer: {
                 Text("Say given message.")

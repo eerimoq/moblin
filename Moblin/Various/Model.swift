@@ -4381,7 +4381,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageFax(message: message, command: command)
             } else if command.starts(with: "filter ") {
                 handleChatBotMessageFilter(message: message, command: command)
-            } else if command.starts(with: "tts say ") {
+            } else if command.starts(with: "say ") {
                 handleChatBotMessageTtsSay(message: message, command: command)
             }
         }
