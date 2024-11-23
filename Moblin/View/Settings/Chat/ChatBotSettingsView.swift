@@ -136,6 +136,15 @@ struct ChatBotCommandsSettingsView: View {
             } footer: {
                 Text("Turn off chat text to speech.")
             }
+            Section {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.tts)
+                } label: {
+                    Text("!moblin tts say <message...>")
+                }
+            } footer: {
+                Text("Say given message.")
+            }
         }
         .navigationTitle("Commands")
     }

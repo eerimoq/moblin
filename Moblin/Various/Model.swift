@@ -4381,6 +4381,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageFax(message: message, command: command)
             } else if command.starts(with: "filter ") {
                 handleChatBotMessageFilter(message: message, command: command)
+            } else if command.starts(with: "tts say ") {
+                handleChatBotMessageTtsSay(message: message, command: command)
             }
         }
     }
@@ -4409,6 +4411,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             self.database.chat.textToSpeechEnabled = false
             self.chatTextToSpeech.reset(running: true)
+        }
+    }
+
+    private func handleChatBotMessageTtsSay(message: ChatBotMessage, command: String) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.tts,
+            message: message
+        ) {
+            let parts = command.split(separator: " ")
+            guard parts.count > 2 else {
+                return
+            }
+            let user = message.user ?? "Unknown"
+            let message = parts.suffix(from: 2).joined(separator: " ")
+            self.chatTextToSpeech.say(user: user, message: message, isRedemption: false)
         }
     }
 

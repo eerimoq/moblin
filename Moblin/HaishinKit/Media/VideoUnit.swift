@@ -44,7 +44,6 @@ private struct FaceDetectionsCompletion {
 private class ReplaceVideo {
     private var sampleBuffers: Deque<CMSampleBuffer> = []
     private var currentSampleBuffer: CMSampleBuffer?
-    private var timeOffset = 0.0
     private var isInitialBuffering = true
     private var cameraId: UUID
     private let name: String

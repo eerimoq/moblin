@@ -1725,6 +1725,9 @@
         }
       }
     },
+    "!moblin tts say <message...>" : {
+
+    },
     "???" : {
       "localizations" : {
         "de" : {
@@ -88401,6 +88404,9 @@
           }
         }
       }
+    },
+    "Say given message." : {
+
     },
     "Say username" : {
       "localizations" : {
