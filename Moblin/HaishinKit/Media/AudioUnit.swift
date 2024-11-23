@@ -104,20 +104,20 @@ private class ReplaceAudio {
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
                 replace-audio: \(name): Duplicating buffer. \
-                Output \(formatThreeDecimals(outputPresentationTimeStamp)) \
-                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)) \
-                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
-                Buffers \(sampleBuffers.count) \
+                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
+                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
+                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
+                Buffers \(sampleBuffers.count), \
                 Fill level \(fillLevel)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 replace-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
-                Output time \(formatThreeDecimals(outputPresentationTimeStamp)) \
-                Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)) \
-                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)) \
-                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
-                Buffers \(sampleBuffers.count) \
+                Output time \(formatThreeDecimals(outputPresentationTimeStamp)), \
+                Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
+                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
+                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
+                Buffers \(sampleBuffers.count), \
                 Fill level \(fillLevel)
                 """)
             }
@@ -129,7 +129,6 @@ private class ReplaceAudio {
                 buffer.initialize(repeating: 0, count: size)
             }
             sampleBuffer = latestSampleBuffer
-            logger.debug("replace-audio: \(name): Outputting silence.")
         }
         if !isInitialBuffering {
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
