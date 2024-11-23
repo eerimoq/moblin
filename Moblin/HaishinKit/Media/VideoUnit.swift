@@ -78,6 +78,7 @@ private class ReplaceVideo {
         guard update else {
             return
         }
+        var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
         let drift = driftTracker.getDrift()
         while let inputSampleBuffer = sampleBuffers.first {
@@ -89,26 +90,18 @@ private class ReplaceVideo {
                 replace-video: \(name): Over 200 frames (\(sampleBuffers.count)) buffered. Dropping \
                 oldest frame.
                 """)
-                currentSampleBuffer = inputSampleBuffer
+                sampleBuffer = inputSampleBuffer
                 sampleBuffers.removeFirst()
                 numberOfBuffersConsumed += 1
                 continue
             }
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
-            let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp + timeOffset
-            if abs(inputOutputDelta) < 0.002 {
-                logger.debug("replace-video: \(name): Small delta. Swap offset from \(timeOffset).")
-                if timeOffset == 0.0 {
-                    timeOffset = 0.01
-                } else {
-                    timeOffset = 0.0
-                }
-            }
+            let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
             // Break on first frame that is ahead in time.
-            if inputOutputDelta > 0 {
+            if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.01 {
                 break
             }
-            currentSampleBuffer = inputSampleBuffer
+            sampleBuffer = inputSampleBuffer
             sampleBuffers.removeFirst()
             numberOfBuffersConsumed += 1
             isInitialBuffering = false
@@ -138,6 +131,9 @@ private class ReplaceVideo {
                 Buffers \(sampleBuffers.count)
                 """)
             }
+        }
+        if sampleBuffer != nil {
+            currentSampleBuffer = sampleBuffer
         }
         if !isInitialBuffering {
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {

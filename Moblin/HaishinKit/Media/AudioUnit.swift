@@ -75,6 +75,9 @@ private class ReplaceAudio {
         var numberOfBuffersConsumed = 0
         let drift = driftTracker.getDrift()
         while let inputSampleBuffer = sampleBuffers.first {
+            if latestSampleBuffer == nil {
+                latestSampleBuffer = inputSampleBuffer
+            }
             if sampleBuffers.count > 300 {
                 logger.info(
                     """
@@ -89,6 +92,7 @@ private class ReplaceAudio {
             }
             let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
+            // Break on first frame that is ahead in time.
             if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.015 {
                 break
             }
