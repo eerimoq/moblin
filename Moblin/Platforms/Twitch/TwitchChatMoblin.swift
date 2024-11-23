@@ -205,9 +205,15 @@ final class TwitchChatMoblin {
     }
 
     private func handleMessage(message: String) throws {
-        guard let message = try ChatMessage(Message(string: message)) else {
-            return
+        let message = try Message(string: message)
+        if let chatMessage = ChatMessage(message) {
+            try handleChatMessage(message: chatMessage)
+        } else if message.command == .ping {
+            webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
         }
+    }
+
+    private func handleChatMessage(message: ChatMessage) throws {
         let emotes = getEmotes(from: message)
         var badgeUrls: [URL] = []
         for badge in message.badges {
