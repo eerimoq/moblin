@@ -79,6 +79,7 @@ private class ReplaceVideo {
             return
         }
         var numberOfBuffersConsumed = 0
+        let drift = driftTracker.getDrift()
         while let inputSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
                 currentSampleBuffer = inputSampleBuffer
@@ -93,8 +94,7 @@ private class ReplaceVideo {
                 numberOfBuffersConsumed += 1
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + driftTracker
-                .getDrift()
+            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
             let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp + timeOffset
             if abs(inputOutputDelta) < 0.002 {
                 logger.debug("replace-video: \(name): Small delta. Swap offset from \(timeOffset).")
@@ -116,26 +116,26 @@ private class ReplaceVideo {
         if logger.debugEnabled {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
             let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-            let currentLatency = lastPresentationTimeStamp - firstPresentationTimeStamp
+            let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
             if numberOfBuffersConsumed == 0 {
                 logger.debug("""
                 replace-video: \(name): Duplicating buffer. \
-                Output time \(outputPresentationTimeStamp) \
-                Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
-                Buffers count is \(sampleBuffers.count). \
-                First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency)
+                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
+                Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
+                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
+                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
+                Buffers \(sampleBuffers.count), \
+                Fill level \(fillLevel)
                 """)
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 replace-video: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
-                Output time \(outputPresentationTimeStamp) \
-                Current \(currentSampleBuffer?.presentationTimeStamp.seconds ?? .nan). \
-                Buffers count is \(sampleBuffers.count). \
-                First \(sampleBuffers.first?.presentationTimeStamp.seconds ?? .nan). \
-                Last \(sampleBuffers.last?.presentationTimeStamp.seconds ?? .nan). \
-                Latency: \(currentLatency)
+                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
+                Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
+                First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
+                Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
+                Buffers \(sampleBuffers.count), \
+                Fill level \(fillLevel)
                 """)
             }
         }

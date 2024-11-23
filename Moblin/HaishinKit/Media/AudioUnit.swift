@@ -113,7 +113,7 @@ private class ReplaceAudio {
             } else if numberOfBuffersConsumed > 1 {
                 logger.debug("""
                 replace-audio: \(name): Dropping \(numberOfBuffersConsumed - 1) buffer(s). \
-                Output time \(formatThreeDecimals(outputPresentationTimeStamp)), \
+                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
                 Current \(formatThreeDecimals(sampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
                 First \(formatThreeDecimals(firstPresentationTimeStamp + drift)), \
                 Last \(formatThreeDecimals(lastPresentationTimeStamp + drift)), \
