@@ -62,7 +62,7 @@ class BondingStatisticsFormatter {
         } else if name == "WiFi" {
             return colors[1]
         } else if let index = networkInterfaceNames.firstIndex(where: { name == $0.name }) {
-            return colors[index + 2 % colors.count]
+            return colors[(index + 2) % colors.count]
         } else {
             return colors[(2 + networkInterfaceNames.count) % colors.count]
         }

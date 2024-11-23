@@ -186,16 +186,16 @@ private class ReplaceAudio {
         if abs(deltaFromCalculatedToClock.seconds) > deltaLimit {
             if deltaFromCalculatedToClock > .zero {
                 logger.info("""
-                replace-audio: Adjust PTS back in time. Calculated is \(presentationTimeStamp
-                    .seconds) \
+                replace-audio: Adjust PTS back in time. Calculated is \
+                \(presentationTimeStamp.seconds) \
                 and clock is \(currentPresentationTimeStamp.seconds)
                 """)
                 outputCounter -= 1
                 presentationTimeStamp = calcPresentationTimeStamp()
             } else {
                 logger.info("""
-                replace-audio: Adjust PTS forward in time. Calculated is \(presentationTimeStamp
-                    .seconds) \
+                replace-audio: Adjust PTS forward in time. Calculated is \
+                \(presentationTimeStamp.seconds) \
                 and clock is \(currentPresentationTimeStamp.seconds)
                 """)
                 outputCounter += 1
