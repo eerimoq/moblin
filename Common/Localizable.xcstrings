@@ -8586,7 +8586,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Il server RTMP non è abilitato"
+            "value" : "⚠️ Il server RTMP è disabilitato"
           }
         },
         "ja" : {
@@ -8846,7 +8846,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La fiamma è rossa 🔥"
+            "value" : "Fiamma Rossa 🔥"
           }
         },
         "ja" : {
@@ -14175,8 +14175,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Di solito, per ottenere una qualità d'immagine decente sono sufficienti circa 5-8 Mbps."
+            "state" : "translated",
+            "value" : "Di solito, per ottenere una buona qualità d'immagine sono sufficienti circa 5-8 Mbps."
           }
         },
         "ja" : {
@@ -14566,7 +14566,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FPS adattivo"
           }
         },
@@ -14696,7 +14696,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Risoluzione adattiva"
           }
         },
@@ -19777,8 +19777,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abbassa automaticamente la risoluzione e/o gli FPS quando la larghezza di banda disponibile è bassa. In genere offre una migliore qualità dell'immagine a bassi bitrate (<750 Kbps)."
+            "state" : "translated",
+            "value" : "Abbassa automaticamente la risoluzione e/o gli FPS quando la larghezza di banda disponibile è bassa. In genere offre una migliore qualità dell'immagine con bassi bitrate (<750 Kbps)."
           }
         },
         "ja" : {
@@ -34089,8 +34089,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Crea un marcatore di flusso"
+            "state" : "translated",
+            "value" : "Crea stream marker"
           }
         },
         "ja" : {
@@ -34609,7 +34609,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Attualmente utilizzato solo per i websocket di Twitch. L'autenticazione potrebbe essere aggiunta in seguito."
           }
         },
@@ -39809,7 +39809,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Doppie"
           }
         },
@@ -54245,8 +54245,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "H.265/HEVC in genere richiede meno larghezza di banda per la stessa qualità dell'immagine. RTMP in genere supporta solo H.264/AVC."
+            "state" : "translated",
+            "value" : "H.265/HEVC generalmente richiede meno larghezza di banda con la stessa qualità d'immagine. RTMP generalmente supporta solo H.264/AVC."
           }
         },
         "ja" : {
@@ -55805,8 +55805,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ospite"
+            "state" : "translated",
+            "value" : "Host"
           }
         },
         "ja" : {
@@ -56065,7 +56065,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Proxy HTTP"
           }
         },
@@ -58937,8 +58937,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mantenere in vita l'altoparlante"
+            "state" : "translated",
+            "value" : "Mantieni attivo l'altoparlante"
           }
         },
         "ja" : {
@@ -60238,8 +60238,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Limitazione: in una scena è supportata al massimo una telecamera integrata o USB alla volta."
+            "state" : "translated",
+            "value" : "Limite in una scena è supportata una sola camera integrata o USB."
           }
         },
         "ja" : {
@@ -62058,8 +62058,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "In genere, un FPS più basso produce immagini più luminose in condizioni di scarsa illuminazione."
+            "state" : "translated",
+            "value" : "In genere, un FPS più basso produce immagini più luminose in condizioni di scarsa illuminazione"
           }
         },
         "ja" : {
@@ -77008,8 +77008,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Paddle"
+            "state" : "translated",
+            "value" : "Padel"
           }
         },
         "ja" : {
@@ -79478,8 +79478,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Alimentato da Moblin"
+            "state" : "translated",
+            "value" : "Powered da Moblin"
           }
         },
         "ja" : {
@@ -82728,8 +82728,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Errore di registrazione"
+            "state" : "translated",
+            "value" : "Errore registrazione"
           }
         },
         "ja" : {
@@ -98467,8 +98467,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Avvio di una nuova registrazione"
+            "state" : "translated",
+            "value" : "Avvio nuova registrazione"
           }
         },
         "ja" : {
@@ -100417,8 +100417,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Segnale di flusso"
+            "state" : "translated",
+            "value" : "Stream marker"
           }
         },
         "ja" : {
@@ -121477,8 +121477,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prova di allenamento"
+            "state" : "translated",
+            "value" : "Test allenamento"
           }
         },
         "ja" : {
