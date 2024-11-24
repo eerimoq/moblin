@@ -292,10 +292,10 @@ class Recorder: NSObject {
         dispatchGroup.enter()
         writer.finishWriting {
             self.delegate?.recorderFinished()
-            self.reset()
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
+        reset()
     }
 
     private func reset() {
