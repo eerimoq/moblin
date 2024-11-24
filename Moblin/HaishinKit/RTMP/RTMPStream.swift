@@ -1,5 +1,24 @@
 import AVFoundation
 
+private let extendedVideoHeader: UInt8 = 0b1000_0000
+
+private func makeAvcVideoTagHeader(_ frameType: FLVFrameType, _ packetType: FLVAVCPacketType) -> Data {
+    return Data([
+        (frameType.rawValue << 4) | FLVVideoCodec.avc.rawValue,
+        packetType.rawValue,
+    ])
+}
+
+private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: FLVVideoPacketType) -> Data {
+    return Data([
+        extendedVideoHeader | (frameType.rawValue << 4) | packetType.rawValue,
+        Character("h").asciiValue!,
+        Character("v").asciiValue!,
+        Character("c").asciiValue!,
+        Character("1").asciiValue!,
+    ])
+}
+
 /// An object that provides the interface to control a one-way channel over a RtmpConnection.
 open class RTMPStream: NetStream {
     /// NetStatusEvent#info.code for NetStream
@@ -160,11 +179,13 @@ open class RTMPStream: NetStream {
         }
     }
 
+    static let aac = FLVAudioCodec.aac.rawValue << 4 | FLVSoundRate.kHz44.rawValue << 2 | FLVSoundSize
+        .snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
+
     var audioTimestamp = 0.0
     var audioTimestampZero = -1.0
     var videoTimestamp = 0.0
     var videoTimestampZero = -1.0
-    private let muxer = RTMPMuxer()
     private var messages: [RTMPCommandMessage] = []
     private var startedAt = Date()
     private var dispatcher: (any EventDispatcherConvertible)!
@@ -172,6 +193,9 @@ open class RTMPStream: NetStream {
     private var videoChunkType: RTMPChunkType = .zero
     private var dataTimeStamps: [String: Date] = .init()
     private weak var rtmpConnection: RTMPConnection?
+    private var prevAudioPresentationTimeStamp = 0.0
+    private var prevVideoDecodeTimeStamp = 0.0
+    private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
 
     public init(connection: RTMPConnection) {
         rtmpConnection = connection
@@ -352,8 +376,8 @@ open class RTMPStream: NetStream {
             logger.info("Play not implemented")
         case .publish:
             startedAt = .init()
-            muxer.dispose()
-            muxer.delegate = self
+            prevAudioPresentationTimeStamp = 0.0
+            prevVideoDecodeTimeStamp = 0.0
             mixer.startRunning()
             videoChunkType = .zero
             audioChunkType = .zero
@@ -361,7 +385,7 @@ open class RTMPStream: NetStream {
             FCPublish()
         case .publishing:
             send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
-            mixer.startEncoding(muxer)
+            mixer.startEncoding(self)
         default:
             break
         }
@@ -418,10 +442,8 @@ open class RTMPStream: NetStream {
         info.byteCount.mutate { $0 += Int64(length) }
         videoTimestamp = (videoTimestamp - floor(videoTimestamp)) + (timestampDelta ?? 0.0)
     }
-}
 
-extension RTMPStream {
-    func FCPublish() {
+    private func FCPublish() {
         guard let rtmpConnection, let name = info.resourceName,
               rtmpConnection.flashVer.contains("FMLE/")
         else {
@@ -430,7 +452,7 @@ extension RTMPStream {
         rtmpConnection.call("FCPublish", responder: nil, arguments: name)
     }
 
-    func FCUnpublish() {
+    private func FCUnpublish() {
         guard let rtmpConnection, let name = info.resourceName,
               rtmpConnection.flashVer.contains("FMLE/")
         else {
@@ -468,64 +490,13 @@ extension RTMPStream: EventDispatcherConvertible {
     }
 }
 
-extension RTMPStream: RTMPMuxerDelegate {
-    func muxer(_: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double?) {
-        netStreamLockQueue.async {
-            self.handleEncodedAudioBuffer(buffer, timestampDelta)
-        }
-    }
-
-    func muxer(_: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double?) {
-        netStreamLockQueue.async {
-            self.handleEncodedVideoBuffer(buffer, timestampDelta)
-        }
-    }
-}
-
-private let extendedVideoHeader: UInt8 = 0b1000_0000
-
-private func makeAvcVideoTagHeader(_ frameType: FLVFrameType, _ packetType: FLVAVCPacketType) -> Data {
-    return Data([
-        (frameType.rawValue << 4) | FLVVideoCodec.avc.rawValue,
-        packetType.rawValue,
-    ])
-}
-
-private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: FLVVideoPacketType) -> Data {
-    return Data([
-        extendedVideoHeader | (frameType.rawValue << 4) | packetType.rawValue,
-        Character("h").asciiValue!,
-        Character("v").asciiValue!,
-        Character("c").asciiValue!,
-        Character("1").asciiValue!,
-    ])
-}
-
-protocol RTMPMuxerDelegate: AnyObject {
-    func muxer(_ muxer: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double?)
-    func muxer(_ muxer: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double?)
-}
-
-class RTMPMuxer {
-    static let aac = FLVAudioCodec.aac.rawValue << 4 | FLVSoundRate.kHz44.rawValue << 2 | FLVSoundSize
-        .snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
-
-    weak var delegate: (any RTMPMuxerDelegate)?
-    private var prevAudioPresentationTimeStamp = 0.0
-    private var prevVideoDecodeTimeStamp = 0.0
-    private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
-
-    func dispose() {
-        prevAudioPresentationTimeStamp = 0.0
-        prevVideoDecodeTimeStamp = 0.0
-    }
-}
-
-extension RTMPMuxer: AudioCodecDelegate {
+extension RTMPStream: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
-        var buffer = Data([RTMPMuxer.aac, FLVAACPacketType.seq.rawValue])
+        var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
-        delegate?.muxer(self, didOutputAudio: buffer, timestampDelta: nil)
+        netStreamLockQueue.async {
+            self.handleEncodedAudioBuffer(buffer, nil)
+        }
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
@@ -537,17 +508,19 @@ extension RTMPMuxer: AudioCodecDelegate {
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }
-        var buffer = Data([RTMPMuxer.aac, FLVAACPacketType.raw.rawValue])
+        var buffer = Data([RTMPStream.aac, FLVAACPacketType.raw.rawValue])
         buffer.append(
             audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: Int(audioBuffer.byteLength)
         )
-        delegate?.muxer(self, didOutputAudio: buffer, timestampDelta: delta)
         prevAudioPresentationTimeStamp = presentationTimeStamp
+        netStreamLockQueue.async {
+            self.handleEncodedAudioBuffer(buffer, delta)
+        }
     }
 }
 
-extension RTMPMuxer: VideoCodecDelegate {
+extension RTMPStream: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var buffer: Data
         switch codec.settings.value.format {
@@ -565,7 +538,9 @@ extension RTMPMuxer: VideoCodecDelegate {
             buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
             buffer += hvcC
         }
-        delegate?.muxer(self, didOutputVideo: buffer, timestampDelta: nil)
+        netStreamLockQueue.async {
+            self.handleEncodedVideoBuffer(buffer, nil)
+        }
     }
 
     func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
@@ -589,8 +564,10 @@ extension RTMPMuxer: VideoCodecDelegate {
         }
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
-        delegate?.muxer(self, didOutputVideo: buffer, timestampDelta: delta)
         prevVideoDecodeTimeStamp = decodeTimeStamp
+        netStreamLockQueue.async {
+            self.handleEncodedVideoBuffer(buffer, delta)
+        }
     }
 
     private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
