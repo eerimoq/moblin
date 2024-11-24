@@ -193,7 +193,6 @@
 		0359F8EC2BD3DA61005BFDA8 /* RTMPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8542BD3DA5F005BFDA8 /* RTMPConnection.swift */; };
 		0359F8ED2BD3DA61005BFDA8 /* RTMPHandshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8552BD3DA5F005BFDA8 /* RTMPHandshake.swift */; };
 		0359F8EE2BD3DA61005BFDA8 /* RTMPMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8562BD3DA5F005BFDA8 /* RTMPMessage.swift */; };
-		0359F8EF2BD3DA61005BFDA8 /* RTMPMuxer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8572BD3DA5F005BFDA8 /* RTMPMuxer.swift */; };
 		0359F8F02BD3DA61005BFDA8 /* RTMPObjectEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8582BD3DA5F005BFDA8 /* RTMPObjectEncoding.swift */; };
 		0359F8F22BD3DA61005BFDA8 /* RTMPSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85A2BD3DA5F005BFDA8 /* RTMPSocket.swift */; };
 		0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */; };
@@ -695,7 +694,6 @@
 		0359F8542BD3DA5F005BFDA8 /* RTMPConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPConnection.swift; sourceTree = "<group>"; };
 		0359F8552BD3DA5F005BFDA8 /* RTMPHandshake.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPHandshake.swift; sourceTree = "<group>"; };
 		0359F8562BD3DA5F005BFDA8 /* RTMPMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPMessage.swift; sourceTree = "<group>"; };
-		0359F8572BD3DA5F005BFDA8 /* RTMPMuxer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPMuxer.swift; sourceTree = "<group>"; };
 		0359F8582BD3DA5F005BFDA8 /* RTMPObjectEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPObjectEncoding.swift; sourceTree = "<group>"; };
 		0359F85A2BD3DA5F005BFDA8 /* RTMPSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPSocket.swift; sourceTree = "<group>"; };
 		0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPStream.swift; sourceTree = "<group>"; };
@@ -1609,7 +1607,6 @@
 				0359F8542BD3DA5F005BFDA8 /* RTMPConnection.swift */,
 				0359F8552BD3DA5F005BFDA8 /* RTMPHandshake.swift */,
 				0359F8562BD3DA5F005BFDA8 /* RTMPMessage.swift */,
-				0359F8572BD3DA5F005BFDA8 /* RTMPMuxer.swift */,
 				0359F8582BD3DA5F005BFDA8 /* RTMPObjectEncoding.swift */,
 				0359F85A2BD3DA5F005BFDA8 /* RTMPSocket.swift */,
 				0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */,
@@ -2945,7 +2942,6 @@
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* QuickButtonsView.swift in Sources */,
-				0359F8EF2BD3DA61005BFDA8 /* RTMPMuxer.swift in Sources */,
 				0359F8FB2BD3DA61005BFDA8 /* SRTPerformanceData.swift in Sources */,
 				03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */,
 				0359F8ED2BD3DA61005BFDA8 /* RTMPHandshake.swift in Sources */,
