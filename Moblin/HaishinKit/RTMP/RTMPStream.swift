@@ -434,7 +434,7 @@ extension RTMPStream: EventDispatcherConvertible {
 }
 
 extension RTMPStream: RTMPMuxerDelegate {
-    func muxer(_: RTMPMuxer, didOutputAudio buffer: Data, withTimestamp: Double) {
+    func muxer(_: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double) {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
@@ -446,10 +446,10 @@ extension RTMPStream: RTMPMuxerDelegate {
         ))
         audioWasSent = true
         info.byteCount.mutate { $0 += Int64(length) }
-        audioTimestamp = withTimestamp + (audioTimestamp - floor(audioTimestamp))
+        audioTimestamp = timestampDelta + (audioTimestamp - floor(audioTimestamp))
     }
 
-    func muxer(_: RTMPMuxer, didOutputVideo buffer: Data, withTimestamp: Double) {
+    func muxer(_: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double) {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
@@ -464,6 +464,6 @@ extension RTMPStream: RTMPMuxerDelegate {
         }
         videoWasSent = true
         info.byteCount.mutate { $0 += Int64(length) }
-        videoTimestamp = withTimestamp + (videoTimestamp - floor(videoTimestamp))
+        videoTimestamp = timestampDelta + (videoTimestamp - floor(videoTimestamp))
     }
 }
