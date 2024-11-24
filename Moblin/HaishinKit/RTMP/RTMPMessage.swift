@@ -600,7 +600,6 @@ final class RTMPVideoMessage: RTMPMessage {
         var compositionTime = Int32(data: [0] + payload[2 + offset ..< 5 + offset]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-
         var duration = Int64(timestamp)
         switch type {
         case .zero:
@@ -612,7 +611,6 @@ final class RTMPVideoMessage: RTMPMessage {
         default:
             stream.videoTimestamp += Double(timestamp)
         }
-
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(
@@ -624,7 +622,6 @@ final class RTMPVideoMessage: RTMPMessage {
                 timescale: 1000
             )
         )
-
         let blockBuffer = payload.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize + offset)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
