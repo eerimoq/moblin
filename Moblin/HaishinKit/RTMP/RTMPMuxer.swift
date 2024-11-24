@@ -10,13 +10,13 @@ final class RTMPMuxer {
         .snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
 
     weak var delegate: (any RTMPMuxerDelegate)?
-    private var audioTimeStamp: Double = 0.0
-    private var videoTimeStamp: Double = 0.0
+    private var prevAudioPresentationTimeStamp = 0.0
+    private var prevVideoDecodeTimeStamp = 0.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
 
     func dispose() {
-        audioTimeStamp = 0.0
-        videoTimeStamp = 0.0
+        prevAudioPresentationTimeStamp = 0.0
+        prevVideoDecodeTimeStamp = 0.0
     }
 }
 
@@ -28,7 +28,10 @@ extension RTMPMuxer: AudioCodecDelegate {
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        let delta = (audioTimeStamp == 0.0 ? 0.0 : presentationTimeStamp.seconds - audioTimeStamp) * 1000
+        var delta = 0.0
+        if prevAudioPresentationTimeStamp != 0.0 {
+            delta = (presentationTimeStamp.seconds - prevAudioPresentationTimeStamp) * 1000
+        }
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }
@@ -38,7 +41,7 @@ extension RTMPMuxer: AudioCodecDelegate {
             count: Int(audioBuffer.byteLength)
         )
         delegate?.muxer(self, didOutputAudio: buffer, withTimestamp: delta)
-        audioTimeStamp = presentationTimeStamp.seconds
+        prevAudioPresentationTimeStamp = presentationTimeStamp.seconds
     }
 }
 
@@ -86,7 +89,10 @@ extension RTMPMuxer: VideoCodecDelegate {
         let decodeTimeStamp = sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer
             .decodeTimeStamp : sampleBuffer.presentationTimeStamp
         let compositionTime = getCompositionTime(sampleBuffer)
-        let delta = (videoTimeStamp == 0.0 ? 0.0 : decodeTimeStamp.seconds - videoTimeStamp) * 1000
+        var delta = 0.0
+        if prevVideoDecodeTimeStamp != 0.0 {
+            delta = (decodeTimeStamp.seconds - prevVideoDecodeTimeStamp) * 1000
+        }
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
             return
         }
@@ -101,7 +107,7 @@ extension RTMPMuxer: VideoCodecDelegate {
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
         delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: delta)
-        videoTimeStamp = decodeTimeStamp.seconds
+        prevVideoDecodeTimeStamp = decodeTimeStamp.seconds
     }
 
     private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
@@ -110,6 +116,7 @@ extension RTMPMuxer: VideoCodecDelegate {
         guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
             return 0
         }
-        return Int32((presentationTimeStamp.seconds - videoTimeStamp + compositionTimeOffset) * 1000)
+        return Int32((presentationTimeStamp.seconds - prevVideoDecodeTimeStamp + compositionTimeOffset) *
+            1000)
     }
 }
