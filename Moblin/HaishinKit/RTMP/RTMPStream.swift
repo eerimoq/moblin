@@ -168,8 +168,8 @@ open class RTMPStream: NetStream {
     private var messages: [RTMPCommandMessage] = []
     private var startedAt = Date()
     private var dispatcher: (any EventDispatcherConvertible)!
-    private var audioWasSent = false
-    private var videoWasSent = false
+    private var audioChunkType: RTMPChunkType = .zero
+    private var videoChunkType: RTMPChunkType = .zero
     private var dataTimeStamps: [String: Date] = .init()
     private weak var rtmpConnection: RTMPConnection?
 
@@ -348,8 +348,8 @@ open class RTMPStream: NetStream {
             muxer.dispose()
             muxer.delegate = self
             mixer.startRunning()
-            videoWasSent = false
-            audioWasSent = false
+            videoChunkType = .zero
+            audioChunkType = .zero
             dataTimeStamps.removeAll()
             FCPublish()
         case .publishing:
@@ -438,32 +438,27 @@ extension RTMPStream: RTMPMuxerDelegate {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
-        let type: FLVTagType = .audio
         let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
-            type: audioWasSent ? .one : .zero,
-            streamId: type.streamId,
+            type: audioChunkType,
+            streamId: FLVTagType.audio.streamId,
             message: RTMPAudioMessage(streamId: id, timestamp: UInt32(audioTimestamp), payload: buffer)
         ))
-        audioWasSent = true
+        audioChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
-        audioTimestamp = timestampDelta + (audioTimestamp - floor(audioTimestamp))
+        audioTimestamp = (audioTimestamp - floor(audioTimestamp)) + timestampDelta
     }
 
     func muxer(_: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double) {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
-        let type: FLVTagType = .video
         let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
-            type: videoWasSent ? .one : .zero,
-            streamId: type.streamId,
+            type: videoChunkType,
+            streamId: FLVTagType.video.streamId,
             message: RTMPVideoMessage(streamId: id, timestamp: UInt32(videoTimestamp), payload: buffer)
         ))
-        if !videoWasSent {
-            logger.debug("first video frame was sent")
-        }
-        videoWasSent = true
+        videoChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
-        videoTimestamp = timestampDelta + (videoTimestamp - floor(videoTimestamp))
+        videoTimestamp = (videoTimestamp - floor(videoTimestamp)) + timestampDelta
     }
 }
