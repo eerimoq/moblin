@@ -611,14 +611,18 @@ struct ControlBarRemoteControlAssistantView: View {
         }
         .onAppear {
             model.updateRemoteControlAssistantStatus()
-            model.detachCamera()
+            if !(model.isLive || model.isRecording) {
+                model.detachCamera()
+            }
             model.updateScreenAutoOff()
             if model.remoteControlAssistantShowPreview {
                 model.remoteControlAssistantStartPreview()
             }
         }
         .onDisappear {
-            model.attachCamera()
+            if !(model.isLive || model.isRecording) {
+                model.attachCamera()
+            }
             model.updateScreenAutoOff()
             model.remoteControlAssistantStopPreview()
         }

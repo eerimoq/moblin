@@ -224,7 +224,7 @@ final class KickPusher: NSObject {
 }
 
 extension KickPusher: WebSocketClientDelegate {
-    func webSocketClientConnected() {
+    func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("kick: Connected")
         sendMessage(
             message: """
@@ -234,11 +234,11 @@ extension KickPusher: WebSocketClientDelegate {
         )
     }
 
-    func webSocketClientDisconnected() {
+    func webSocketClientDisconnected(_: WebSocketClient) {
         logger.debug("kick: Disconnected")
     }
 
-    func webSocketClientReceiveMessage(string: String) {
+    func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         handleMessage(message: string)
     }
 }

@@ -1165,14 +1165,14 @@ class ObsWebSocket {
 }
 
 extension ObsWebSocket: WebSocketClientDelegate {
-    func webSocketClientConnected() {}
+    func webSocketClientConnected(_: WebSocketClient) {}
 
-    func webSocketClientDisconnected() {
+    func webSocketClientDisconnected(_: WebSocketClient) {
         connected = false
         connectionErrorMessage = String(localized: "Disconnected")
     }
 
-    func webSocketClientReceiveMessage(string: String) {
+    func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         do {
             try handleMessage(message: string)
         } catch {

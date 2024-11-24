@@ -7,9 +7,9 @@ private let shortestDelayMs = 500
 private let longestDelayMs = 10000
 
 protocol WebSocketClientDelegate: AnyObject {
-    func webSocketClientConnected()
-    func webSocketClientDisconnected()
-    func webSocketClientReceiveMessage(string: String)
+    func webSocketClientConnected(_ webSocket: WebSocketClient)
+    func webSocketClientDisconnected(_ webSocket: WebSocketClient)
+    func webSocketClientReceiveMessage(_ webSocket: WebSocketClient, string: String)
 }
 
 final class WebSocketClient {
@@ -20,12 +20,14 @@ final class WebSocketClient {
     private var pongReceived = true
     var delegate: (any WebSocketClientDelegate)?
     private let url: URL
+    private let loopback: Bool
     private var connected = false
     private var connectDelayMs = shortestDelayMs
     private let proxyConfig: NWWebSocketProxyConfig?
 
-    init(url: URL, httpProxy: HttpProxy? = nil) {
+    init(url: URL, httpProxy: HttpProxy? = nil, loopback: Bool = false) {
         self.url = url
+        self.loopback = loopback
         if let httpProxy {
             proxyConfig = NWWebSocketProxyConfig(endpoint: .hostPort(
                 host: .init(httpProxy.host),
@@ -55,7 +57,10 @@ final class WebSocketClient {
 
     private func startInternal() {
         stopInternal()
-        if let interfaceType = networkInterfaceTypeSelector.getNextType() {
+        if var interfaceType = networkInterfaceTypeSelector.getNextType() {
+            if loopback {
+                interfaceType = .loopback
+            }
             webSocket = NWWebSocket(url: url, requiredInterfaceType: interfaceType, proxyConfig: proxyConfig)
             logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
@@ -101,7 +106,7 @@ final class WebSocketClient {
                 self.webSocket.ping()
             } else {
                 self.startInternal()
-                self.delegate?.webSocketClientDisconnected()
+                self.delegate?.webSocketClientDisconnected(self)
             }
         }
     }
@@ -117,7 +122,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         connectDelayMs = shortestDelayMs
         stopConnectTimer()
         connected = true
-        delegate?.webSocketClientConnected()
+        delegate?.webSocketClientConnected(self)
     }
 
     func webSocketDidDisconnect(connection _: WebSocketConnection,
@@ -126,7 +131,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         logger.debug("websocket: Disconnected")
         stopInternal()
         startConnectTimer()
-        delegate?.webSocketClientDisconnected()
+        delegate?.webSocketClientDisconnected(self)
     }
 
     func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
@@ -136,7 +141,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         }
         stopInternal()
         startConnectTimer()
-        delegate?.webSocketClientDisconnected()
+        delegate?.webSocketClientDisconnected(self)
     }
 
     func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {
@@ -147,7 +152,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         logger.debug("websocket: Error \(error.localizedDescription)")
         stopInternal()
         startConnectTimer()
-        delegate?.webSocketClientDisconnected()
+        delegate?.webSocketClientDisconnected(self)
     }
 
     func webSocketDidReceivePong(connection _: WebSocketConnection) {
@@ -155,7 +160,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     }
 
     func webSocketDidReceiveMessage(connection _: WebSocketConnection, string: String) {
-        delegate?.webSocketClientReceiveMessage(string: string)
+        delegate?.webSocketClientReceiveMessage(self, string: string)
     }
 
     func webSocketDidReceiveMessage(connection _: WebSocketConnection, data _: Data) {}

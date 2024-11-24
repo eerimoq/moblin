@@ -316,7 +316,7 @@ final class TwitchEventSub: NSObject {
         return connected
     }
 
-    private func handleMessage(messageText: String) {
+    func handleMessage(messageText: String) {
         let messageData = messageText.utf8Data
         guard let message = try? JSONDecoder().decode(BasicMessage.self, from: messageData) else {
             return
@@ -598,13 +598,13 @@ final class TwitchEventSub: NSObject {
 }
 
 extension TwitchEventSub: WebSocketClientDelegate {
-    func webSocketClientConnected() {}
+    func webSocketClientConnected(_: WebSocketClient) {}
 
-    func webSocketClientDisconnected() {
+    func webSocketClientDisconnected(_: WebSocketClient) {
         connected = false
     }
 
-    func webSocketClientReceiveMessage(string: String) {
+    func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         handleMessage(messageText: string)
     }
 }

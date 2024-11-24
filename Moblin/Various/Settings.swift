@@ -2338,6 +2338,7 @@ class SettingsRemoteControlClient: Codable {
     var port: UInt16 = 2345
     // periphery:ignore
     var password: String? = ""
+    var relay: SettingsRemoteControlServerRelay? = .init()
 }
 
 // Streamer
@@ -2347,6 +2348,12 @@ class SettingsRemoteControlServer: Codable {
     // periphery:ignore
     var password: String? = ""
     var previewFps: Float? = 1.0
+}
+
+class SettingsRemoteControlServerRelay: Codable {
+    var enabled: Bool = false
+    var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
+    var bridgeId: String = UUID().uuidString.lowercased()
 }
 
 class SettingsRemoteControl: Codable {
@@ -4325,6 +4332,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.estimatedViewerDelay == nil {
             stream.estimatedViewerDelay = 8.0
+            store()
+        }
+        if realDatabase.remoteControl!.client.relay == nil {
+            realDatabase.remoteControl!.client.relay = .init()
             store()
         }
     }

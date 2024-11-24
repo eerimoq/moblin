@@ -1335,6 +1335,9 @@
         }
       }
     },
+    "!moblin say <message...>" : {
+
+    },
     "!moblin snapshot" : {
       "localizations" : {
         "de" : {
@@ -1724,9 +1727,6 @@
           }
         }
       }
-    },
-    "!moblin tts say <message...>" : {
-
     },
     "???" : {
       "localizations" : {
@@ -21297,6 +21297,9 @@
         }
       }
     },
+    "Base URL" : {
+
+    },
     "Battery percentage" : {
       "localizations" : {
         "de" : {
@@ -25196,6 +25199,9 @@
           }
         }
       }
+    },
+    "Bridge id" : {
+
     },
     "Browser" : {
       "localizations" : {
@@ -83595,6 +83601,9 @@
         }
       }
     },
+    "Relay" : {
+
+    },
     "Reload browser widgets" : {
       "localizations" : {
         "de" : {
@@ -115716,6 +115725,9 @@
           }
         }
       }
+    },
+    "Use a relay server when the assistant is behind CGNAT or similar." : {
+
     },
     "Use game controllers to zoom, set scene, and more, from a distance." : {
       "localizations" : {

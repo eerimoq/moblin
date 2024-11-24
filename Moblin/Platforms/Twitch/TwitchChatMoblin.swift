@@ -408,7 +408,7 @@ extension ChatMessage {
 }
 
 extension TwitchChatMoblin: WebSocketClientDelegate {
-    func webSocketClientConnected() {
+    func webSocketClientConnected(_ webSocket: WebSocketClient) {
         logger.debug("twitch: chat: Connected")
         webSocket.send(string: "CAP REQ :twitch.tv/membership")
         webSocket.send(string: "CAP REQ :twitch.tv/tags")
@@ -418,11 +418,11 @@ extension TwitchChatMoblin: WebSocketClientDelegate {
         webSocket.send(string: "JOIN #\(channelName)")
     }
 
-    func webSocketClientDisconnected() {
+    func webSocketClientDisconnected(_: WebSocketClient) {
         logger.debug("twitch: chat: Disconnected")
     }
 
-    func webSocketClientReceiveMessage(string: String) {
+    func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         for line in string.split(whereSeparator: { $0.isNewline }) {
             try? handleMessage(message: String(line))
         }

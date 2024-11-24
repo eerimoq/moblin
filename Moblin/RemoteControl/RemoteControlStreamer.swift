@@ -247,9 +247,9 @@ class RemoteControlStreamer {
 }
 
 extension RemoteControlStreamer: WebSocketClientDelegate {
-    func webSocketClientConnected() {}
+    func webSocketClientConnected(_: WebSocketClient) {}
 
-    func webSocketClientDisconnected() {
+    func webSocketClientDisconnected(_: WebSocketClient) {
         if connected {
             delegate?.remoteControlStreamerDisconnected()
         }
@@ -257,7 +257,7 @@ extension RemoteControlStreamer: WebSocketClientDelegate {
         connectionErrorMessage = String(localized: "Disconnected")
     }
 
-    func webSocketClientReceiveMessage(string: String) {
+    func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         try? handleMessage(message: string)
     }
 }

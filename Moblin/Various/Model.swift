@@ -585,6 +585,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
+    private var remoteControlRelay: RemoteControlRelay?
     @Published var remoteControlAssistantShowPreview = true
     @Published var remoteControlAssistantShowPreviewFullScreen = false
     private var isRemoteControlAssistantRequestingPreview = false
@@ -3574,6 +3575,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadObsWebSocket()
         reloadRemoteControlStreamer()
         reloadRemoteControlAssistant()
+        reloadRemoteControlRelay()
         reloadKickViewers()
     }
 
@@ -6478,7 +6480,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerTwitchEventSubNotification(message: String) {
-        twitchEventSub?.webSocketClientReceiveMessage(string: message)
+        twitchEventSub?.handleMessage(messageText: message)
     }
 
     func remoteControlStreamerStartPreview(onComplete _: @escaping () -> Void) {
@@ -6691,6 +6693,28 @@ extension Model {
 
     func remoteControlAssistantStopPreview() {
         remoteControlAssistant?.stopPreview()
+    }
+
+    func reloadRemoteControlRelay() {
+        remoteControlRelay?.stop()
+        remoteControlRelay = nil
+        guard isRemoteControlRelayConfigured() else {
+            return
+        }
+        guard let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl!.client.port)") else {
+            return
+        }
+        remoteControlRelay = RemoteControlRelay(
+            baseUrl: database.remoteControl!.client.relay!.baseUrl,
+            bridgeId: database.remoteControl!.client.relay!.bridgeId,
+            assistantUrl: assistantUrl
+        )
+        remoteControlRelay?.start()
+    }
+
+    func isRemoteControlRelayConfigured() -> Bool {
+        let relay = database.remoteControl!.client.relay!
+        return relay.enabled && !relay.baseUrl.isEmpty
     }
 }
 

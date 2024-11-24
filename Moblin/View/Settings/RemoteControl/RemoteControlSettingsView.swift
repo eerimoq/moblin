@@ -134,6 +134,22 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlAssistant()
     }
 
+    private func submitAssistantRelayUrl(value: String) {
+        guard isValidWebSocketUrl(url: value) == nil else {
+            return
+        }
+        model.database.remoteControl!.client.relay!.baseUrl = value
+        model.reloadRemoteControlRelay()
+    }
+
+    private func submitAssistantRelayBridgeId(value: String) {
+        guard !value.isEmpty else {
+            return
+        }
+        model.database.remoteControl!.client.relay!.bridgeId = value
+        model.reloadRemoteControlRelay()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -219,6 +235,30 @@ struct RemoteControlSettingsView: View {
                 Enable to let a streamer device connect to this device. Once connected, \
                 this device can monitor and control the streamer device.
                 """)
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.remoteControl!.client.relay!.enabled
+                }, set: { value in
+                    model.database.remoteControl!.client.relay!.enabled = value
+                    model.reloadRemoteControlRelay()
+                })) {
+                    Text("Enabled")
+                }
+                TextEditNavigationView(
+                    title: String(localized: "Base URL"),
+                    value: model.database.remoteControl!.client.relay!.baseUrl,
+                    onSubmit: submitAssistantRelayUrl
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Bridge id"),
+                    value: model.database.remoteControl!.client.relay!.bridgeId,
+                    onSubmit: submitAssistantRelayBridgeId
+                )
+            } header: {
+                Text("Relay")
+            } footer: {
+                Text("Use a relay server when the assistant is behind CGNAT or similar.")
             }
             if model.database.remoteControl!.client.enabled {
                 Section {
