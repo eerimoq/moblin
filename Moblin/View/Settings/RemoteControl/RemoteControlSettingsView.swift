@@ -1,27 +1,32 @@
 import SwiftUI
 
-private struct InterfaceView: View {
+private struct InterfaceViewUrl: View {
     @EnvironmentObject var model: Model
-    var ip: String
-    var port: UInt16
+    var url: String
     var image: String
-
-    private func streamUrl() -> String {
-        return "ws://\(ip):\(port)"
-    }
 
     var body: some View {
         HStack {
             Image(systemName: image)
-            Text(streamUrl())
+            Text(url)
             Spacer()
             Button(action: {
-                UIPasteboard.general.string = streamUrl()
+                UIPasteboard.general.string = url
                 model.makeToast(title: "URL copied to clipboard")
             }, label: {
                 Image(systemName: "doc.on.doc")
             })
         }
+    }
+}
+
+private struct InterfaceView: View {
+    var ip: String
+    var port: UInt16
+    var image: String
+
+    var body: some View {
+        InterfaceViewUrl(url: "ws://\(ip):\(port)", image: image)
     }
 }
 
@@ -150,6 +155,11 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlRelay()
     }
 
+    private func relayUrl() -> String {
+        let relay = model.database.remoteControl!.client.relay!
+        return "\(relay.baseUrl)/streamer/\(relay.bridgeId)"
+    }
+
     var body: some View {
         Form {
             Section {
@@ -275,6 +285,9 @@ struct RemoteControlSettingsView: View {
                             port: model.database.remoteControl!.client.port,
                             image: "personalhotspot"
                         )
+                        if model.database.remoteControl!.client.relay!.enabled {
+                            InterfaceViewUrl(url: relayUrl(), image: "globe")
+                        }
                     }
                 } footer: {
                     VStack(alignment: .leading) {
