@@ -1853,15 +1853,11 @@ class SettingsDebug: Codable {
     var httpProxy: SettingsHttpProxy? = .init()
 }
 
-let rtmpServerFpss = ["60.0", "59.94", "50.0", "30.0", "29.97", "25.0"]
-
 class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = defaultRtmpLatency
-    var manualFps: Bool? = false
-    var fps: Double? = 29.97
     var autoSelectMic: Bool? = true
 
     func camera() -> String {
@@ -1874,8 +1870,6 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
-        new.manualFps = manualFps
-        new.fps = fps
         new.autoSelectMic = autoSelectMic
         return new
     }
@@ -2104,7 +2098,7 @@ class SettingsDjiDevice: Codable, Identifiable {
     var serverRtmpUrl: String? = ""
     var customRtmpUrl: String? = ""
     var autoRestartStream: Bool? = false
-    var imageStabilization: SettingsDjiDeviceImageStabilization? = .rockSteady
+    var imageStabilization: SettingsDjiDeviceImageStabilization? = .off
     var resolution: SettingsDjiDeviceResolution? = .r1080p
     var fps: Int? = 30
     var bitrate: UInt32? = 6_000_000
@@ -3295,10 +3289,6 @@ final class Settings {
             realDatabase.debug!.cameraSwitchRemoveBlackish = 0.3
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where stream.fps == nil {
-            stream.fps = 30
-            store()
-        }
         for stream in database.streams where stream.realtimeIrlEnabled == nil {
             stream.realtimeIrlEnabled = false
             store()
@@ -3678,16 +3668,6 @@ final class Settings {
             stream.backgroundStreaming = false
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where stream.manualFps == nil {
-            stream.manualFps = stream.fps! != 0
-            store()
-        }
-        for stream in realDatabase.rtmpServer!.streams {
-            if stream.fps! < 1 || stream.fps! > 100 {
-                stream.fps = 30
-                store()
-            }
-        }
         for scene in realDatabase.scenes where scene.srtlaCameraId == nil {
             scene.srtlaCameraId = .init()
             store()
@@ -3852,25 +3832,12 @@ final class Settings {
             device.autoRestartStream = false
             store()
         }
-        for stream in realDatabase.rtmpServer!.streams where !rtmpServerFpss.contains(String(stream.fps!)) {
-            var newFps = 29.97
-            for fps in rtmpServerFpss {
-                guard let fps = Double(fps) else {
-                    continue
-                }
-                if abs(fps - stream.fps!) < 0.01 {
-                    newFps = fps
-                }
-            }
-            stream.fps = newFps
-            store()
-        }
         if realDatabase.chat.textToSpeechFilterMentions == nil {
             realDatabase.chat.textToSpeechFilterMentions = true
             store()
         }
         for device in realDatabase.djiDevices!.devices where device.imageStabilization == nil {
-            device.imageStabilization = .rockSteady
+            device.imageStabilization = .off
             store()
         }
         for device in realDatabase.djiDevices!.devices where device.resolution == nil {
