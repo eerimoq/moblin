@@ -15,7 +15,6 @@ class RtmpServerChunkStream {
     private var mediaTimestamp: Double = 0
     private var mediaTimestampZero: Double
     private var audioTimestamp: Double
-    private var basePresentationTimeStamp: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoCodec?
@@ -38,7 +37,6 @@ class RtmpServerChunkStream {
         messageStreamId = 0
         mediaTimestampZero = -1
         audioTimestamp = 0
-        basePresentationTimeStamp = -1
         videoTimestamp = 0
         isMessageType0 = true
         extendedTimestampPresentInType3 = false
@@ -527,20 +525,15 @@ class RtmpServerChunkStream {
         } else {
             videoTimestamp += delta
         }
-        let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) +
+        let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) +
             Int64(compositionTime + client.latency)
-        let decodeTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp()) + Int64(client.latency)
+        let decodeTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency)
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
             decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
         )
         let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FLVFrameType.key.rawValue
-        // logger.info("""
-        //  rtmp-server: client: xxx Created sample buffer \
-        //  keyframe: \(iskeyFrame), \
-        //  PTS: \(timing.presentationTimeStamp.seconds)
-        //  """)
         let blockBuffer = messageBody.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
@@ -577,17 +570,14 @@ class RtmpServerChunkStream {
             audioTimestamp += delta
         }
         let presentationTimeStamp = CMTimeMake(
-            value: Int64(audioTimestamp + getBasePresentationTimeStamp()) + Int64(client.latency),
+            value: Int64(audioTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency),
             timescale: 1000
         )
         return audioBuffer.makeSampleBuffer(presentationTimeStamp: presentationTimeStamp)
     }
 
-    private func getBasePresentationTimeStamp() -> Double {
-        if basePresentationTimeStamp == -1 {
-            basePresentationTimeStamp = 1000 * currentPresentationTimeStamp().seconds
-        }
-        return basePresentationTimeStamp
+    private func getBasePresentationTimeStamp(_ client: RtmpServerClient) -> Double {
+        return client.getBasePresentationTimeStamp()
     }
 }
 

@@ -50,6 +50,7 @@ class RtmpServerClient {
     var latency: Int32 = 2000
     var cameraId: UUID = .init()
     var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: 2.0)
+    private var basePresentationTimeStamp: Double
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -58,6 +59,7 @@ class RtmpServerClient {
         chunkState = .basicHeaderFirstByte
         chunkStreams = [:]
         connectionState = .idle
+        basePresentationTimeStamp = -1
         connection.stateUpdateHandler = handleStateUpdate(to:)
         connection.start(queue: rtmpServerDispatchQueue)
     }
@@ -366,5 +368,12 @@ class RtmpServerClient {
     private func send(data: Data) {
         connection.send(content: data, completion: .contentProcessed { _ in
         })
+    }
+
+    func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = 1000 * currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
     }
 }
