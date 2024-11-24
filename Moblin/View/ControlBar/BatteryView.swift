@@ -39,7 +39,7 @@ struct BatteryView: View {
                 .foregroundColor(boltColor())
                 .font(.system(size: 10))
             HStack(spacing: 0) {
-                if model.database.batteryPercentage! {
+                if model.database.batteryPercentage {
                     ZStack(alignment: .center) {
                         RoundedRectangle(cornerRadius: 2)
                             .foregroundColor(.white)

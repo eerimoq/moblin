@@ -10,7 +10,7 @@ struct DebugSettingsView: View {
         guard let lines = Int(value) else {
             return
         }
-        model.database.debug!.maximumLogLines = min(max(1, lines), 100_000)
+        model.database.debug.maximumLogLines = min(max(1, lines), 100_000)
     }
 
     var body: some View {
@@ -26,7 +26,7 @@ struct DebugSettingsView: View {
                     Text("Log")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.debug!.logLevel == .debug
+                    model.database.debug.logLevel == .debug
                 }, set: { value in
                     model.setDebugLogging(on: value)
                 })) {
@@ -34,7 +34,7 @@ struct DebugSettingsView: View {
                 }
                 TextEditNavigationView(
                     title: "Maximum log lines",
-                    value: String(model.database.debug!.maximumLogLines!),
+                    value: String(model.database.debug.maximumLogLines!),
                     onSubmit: submitLogLines
                 )
                 NavigationLink {
@@ -48,9 +48,9 @@ struct DebugSettingsView: View {
                     Text("Video")
                 }
                 Toggle("Debug overlay", isOn: Binding(get: {
-                    model.database.debug!.srtOverlay
+                    model.database.debug.srtOverlay
                 }, set: { value in
-                    model.database.debug!.srtOverlay = value
+                    model.database.debug.srtOverlay = value
                 }))
             }
             Section {
@@ -65,16 +65,16 @@ struct DebugSettingsView: View {
                                 return
                             }
                             ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(cameraSwitchRemoveBlackish)
-                            model.database.debug!.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
+                            model.database.debug.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
                         }
                     )
                     Text("\(formatOneDecimal(cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
                 Toggle("Blur scene switch", isOn: Binding(get: {
-                    model.database.debug!.blurSceneSwitch!
+                    model.database.debug.blurSceneSwitch!
                 }, set: { value in
-                    model.database.debug!.blurSceneSwitch = value
+                    model.database.debug.blurSceneSwitch = value
                     model.setBlurSceneSwitch()
                 }))
                 Toggle("Global tone mapping", isOn: Binding(get: {
@@ -83,15 +83,15 @@ struct DebugSettingsView: View {
                     model.setGlobalToneMapping(on: value)
                 }))
                 Toggle("MetalPetal filters", isOn: Binding(get: {
-                    model.database.debug!.metalPetalFilters!
+                    model.database.debug.metalPetalFilters!
                 }, set: { value in
-                    model.database.debug!.metalPetalFilters = value
+                    model.database.debug.metalPetalFilters = value
                     model.setMetalPetalFilters()
                 }))
                 Toggle("Higher data rate limit", isOn: Binding(get: {
-                    model.database.debug!.higherDataRateLimit!
+                    model.database.debug.higherDataRateLimit!
                 }, set: { value in
-                    model.database.debug!.higherDataRateLimit = value
+                    model.database.debug.higherDataRateLimit = value
                     model.setHigherDataRateLimit()
                 }))
                 HStack {
@@ -104,7 +104,7 @@ struct DebugSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            model.database.debug!.maxMapPitch = maxMapPitch
+                            model.database.debug.maxMapPitch = maxMapPitch
                             model.setMapPitch()
                         }
                     )
@@ -112,9 +112,9 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Twitch rewards", isOn: Binding(get: {
-                    model.database.debug!.twitchRewards!
+                    model.database.debug.twitchRewards!
                 }, set: { value in
-                    model.database.debug!.twitchRewards = value
+                    model.database.debug.twitchRewards = value
                 }))
                 NavigationLink {
                     DebugHttpProxySettingsView()

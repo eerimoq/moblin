@@ -2392,9 +2392,9 @@ class Database: Codable {
     var iconImage: String = plainIcon.image()
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
-    var batteryPercentage: Bool? = true
-    var mic: SettingsMic? = getDefaultMic()
-    var debug: SettingsDebug? = .init()
+    var batteryPercentage: Bool = true
+    var mic: SettingsMic = getDefaultMic()
+    var debug: SettingsDebug = .init()
     var quickButtons: SettingsQuickButtons? = .init()
     var globalButtons: [SettingsButton]? = []
     var rtmpServer: SettingsRtmpServer? = .init()
@@ -3009,10 +3009,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        if realDatabase.batteryPercentage == nil {
-            realDatabase.batteryPercentage = true
-            store()
-        }
         if realDatabase.chat.height == nil {
             realDatabase.chat.height = 1.0
             store()
@@ -3033,16 +3029,8 @@ final class Settings {
             realDatabase.chat.maximumAgeEnabled = false
             store()
         }
-        if realDatabase.mic == nil {
-            realDatabase.mic = getDefaultMic()
-            store()
-        }
-        if realDatabase.debug == nil {
-            realDatabase.debug = .init()
-            store()
-        }
-        if realDatabase.debug!.srtOverheadBandwidth == nil {
-            realDatabase.debug!.srtOverheadBandwidth = 25
+        if realDatabase.debug.srtOverheadBandwidth == nil {
+            realDatabase.debug.srtOverheadBandwidth = 25
             store()
         }
         for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
@@ -3167,8 +3155,8 @@ final class Settings {
                 store()
             }
         }
-        if realDatabase.debug!.cameraSwitchRemoveBlackish == nil {
-            realDatabase.debug!.cameraSwitchRemoveBlackish = 0.3
+        if realDatabase.debug.cameraSwitchRemoveBlackish == nil {
+            realDatabase.debug.cameraSwitchRemoveBlackish = 0.3
             store()
         }
         for stream in database.streams where stream.realtimeIrlEnabled == nil {
@@ -3209,8 +3197,8 @@ final class Settings {
             button.backgroundColor = defaultQuickButtonColor
             store()
         }
-        if realDatabase.debug!.maximumBandwidthFollowInput == nil {
-            realDatabase.debug!.maximumBandwidthFollowInput = true
+        if realDatabase.debug.maximumBandwidthFollowInput == nil {
+            realDatabase.debug.maximumBandwidthFollowInput = true
             store()
         }
         if realDatabase.remoteControl == nil {
@@ -3224,11 +3212,11 @@ final class Settings {
             }
         }
         for stream in realDatabase.streams where stream.srt.overheadBandwidth == nil {
-            stream.srt.overheadBandwidth = realDatabase.debug!.srtOverheadBandwidth!
+            stream.srt.overheadBandwidth = realDatabase.debug.srtOverheadBandwidth!
             store()
         }
         for stream in realDatabase.streams where stream.srt.maximumBandwidthFollowInput == nil {
-            stream.srt.maximumBandwidthFollowInput = realDatabase.debug!.maximumBandwidthFollowInput!
+            stream.srt.maximumBandwidthFollowInput = realDatabase.debug.maximumBandwidthFollowInput!
             store()
         }
         for stream in realDatabase.streams where stream.srt.adaptiveBitrate == nil {
@@ -3257,8 +3245,8 @@ final class Settings {
                 store()
             }
         }
-        if realDatabase.debug!.audioOutputToInputChannelsMap == nil {
-            realDatabase.debug!.audioOutputToInputChannelsMap = .init()
+        if realDatabase.debug.audioOutputToInputChannelsMap == nil {
+            realDatabase.debug.audioOutputToInputChannelsMap = .init()
             store()
         }
         if realDatabase.show.remoteControl == nil {
@@ -3269,12 +3257,12 @@ final class Settings {
             realDatabase.show.browserWidgets = true
             store()
         }
-        if realDatabase.debug!.bluetoothOutputOnly == nil {
-            realDatabase.debug!.bluetoothOutputOnly = false
+        if realDatabase.debug.bluetoothOutputOnly == nil {
+            realDatabase.debug.bluetoothOutputOnly = false
             store()
         }
-        if realDatabase.debug!.maximumLogLines == nil {
-            realDatabase.debug!.maximumLogLines = 500
+        if realDatabase.debug.maximumLogLines == nil {
+            realDatabase.debug.maximumLogLines = 500
             store()
         }
         if realDatabase.color == nil {
@@ -3391,9 +3379,9 @@ final class Settings {
         }
         if realDatabase.audio == nil {
             realDatabase.audio = .init()
-            realDatabase.audio!.audioOutputToInputChannelsMap!.channel1 = realDatabase.debug!
+            realDatabase.audio!.audioOutputToInputChannelsMap!.channel1 = realDatabase.debug
                 .audioOutputToInputChannelsMap!.channel0
-            realDatabase.audio!.audioOutputToInputChannelsMap!.channel2 = realDatabase.debug!
+            realDatabase.audio!.audioOutputToInputChannelsMap!.channel2 = realDatabase.debug
                 .audioOutputToInputChannelsMap!.channel1
             store()
         }
@@ -3409,39 +3397,39 @@ final class Settings {
             realDatabase.watch!.show = .init()
             store()
         }
-        if realDatabase.debug!.pixelFormat == nil {
-            realDatabase.debug!.pixelFormat = pixelFormats[1]
+        if realDatabase.debug.pixelFormat == nil {
+            realDatabase.debug.pixelFormat = pixelFormats[1]
             store()
         }
         if realDatabase.chat.mirrored == nil {
             realDatabase.chat.mirrored = false
             store()
         }
-        if realDatabase.debug!.beautyFilter == nil {
-            realDatabase.debug!.beautyFilter = false
+        if realDatabase.debug.beautyFilter == nil {
+            realDatabase.debug.beautyFilter = false
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings == nil {
-            realDatabase.debug!.beautyFilterSettings = .init()
+        if realDatabase.debug.beautyFilterSettings == nil {
+            realDatabase.debug.beautyFilterSettings = .init()
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.showBeauty == nil {
-            realDatabase.debug!.beautyFilterSettings!.showBeauty = realDatabase.debug!.beautyFilterSettings!
+        if realDatabase.debug.beautyFilterSettings!.showBeauty == nil {
+            realDatabase.debug.beautyFilterSettings!.showBeauty = realDatabase.debug.beautyFilterSettings!
                 .showCute ?? false
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.shapeRadius == nil {
-            realDatabase.debug!.beautyFilterSettings!.shapeRadius = realDatabase.debug!.beautyFilterSettings!
+        if realDatabase.debug.beautyFilterSettings!.shapeRadius == nil {
+            realDatabase.debug.beautyFilterSettings!.shapeRadius = realDatabase.debug.beautyFilterSettings!
                 .cuteRadius ?? 0.5
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.shapeScale == nil {
-            realDatabase.debug!.beautyFilterSettings!.shapeScale = realDatabase.debug!.beautyFilterSettings!
+        if realDatabase.debug.beautyFilterSettings!.shapeScale == nil {
+            realDatabase.debug.beautyFilterSettings!.shapeScale = realDatabase.debug.beautyFilterSettings!
                 .cuteScale ?? 0.0
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.shapeOffset == nil {
-            realDatabase.debug!.beautyFilterSettings!.shapeOffset = realDatabase.debug!.beautyFilterSettings!
+        if realDatabase.debug.beautyFilterSettings!.shapeOffset == nil {
+            realDatabase.debug.beautyFilterSettings!.shapeOffset = realDatabase.debug.beautyFilterSettings!
                 .cuteOffset ?? 0.5
             store()
         }
@@ -3453,8 +3441,8 @@ final class Settings {
             stream.recording!.autoStopRecording = false
             store()
         }
-        if realDatabase.debug!.allowVideoRangePixelFormat == nil {
-            realDatabase.debug!.allowVideoRangePixelFormat = false
+        if realDatabase.debug.allowVideoRangePixelFormat == nil {
+            realDatabase.debug.allowVideoRangePixelFormat = false
             store()
         }
         for stream in realDatabase.streams where stream.rist == nil {
@@ -3469,16 +3457,16 @@ final class Settings {
             realDatabase.show.bonding = true
             store()
         }
-        if realDatabase.debug!.blurSceneSwitch == nil {
-            realDatabase.debug!.blurSceneSwitch = true
+        if realDatabase.debug.blurSceneSwitch == nil {
+            realDatabase.debug.blurSceneSwitch = true
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.smoothAmount == nil {
-            realDatabase.debug!.beautyFilterSettings!.smoothAmount = 0.65
+        if realDatabase.debug.beautyFilterSettings!.smoothAmount == nil {
+            realDatabase.debug.beautyFilterSettings!.smoothAmount = 0.65
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.smoothRadius == nil {
-            realDatabase.debug!.beautyFilterSettings!.smoothRadius = 20.0
+        if realDatabase.debug.beautyFilterSettings!.smoothRadius == nil {
+            realDatabase.debug.beautyFilterSettings!.smoothRadius = 20.0
             store()
         }
         var videoEffectWidgets: [SettingsWidget] = []
@@ -3502,8 +3490,8 @@ final class Settings {
             realDatabase.mirrorFrontCameraOnStream = true
             store()
         }
-        if realDatabase.debug!.metalPetalFilters == nil {
-            realDatabase.debug!.metalPetalFilters = false
+        if realDatabase.debug.metalPetalFilters == nil {
+            realDatabase.debug.metalPetalFilters = false
             store()
         }
         for stream in realDatabase.streams
@@ -3536,8 +3524,8 @@ final class Settings {
             realDatabase.srtlaServer = .init()
             store()
         }
-        if realDatabase.debug!.higherDataRateLimit == nil {
-            realDatabase.debug!.higherDataRateLimit = true
+        if realDatabase.debug.higherDataRateLimit == nil {
+            realDatabase.debug.higherDataRateLimit = true
             store()
         }
         for stream in realDatabase.streams
@@ -3562,8 +3550,8 @@ final class Settings {
             stream.autoSelectMic = true
             store()
         }
-        if realDatabase.debug!.preferStereoMic == nil {
-            realDatabase.debug!.preferStereoMic = false
+        if realDatabase.debug.preferStereoMic == nil {
+            realDatabase.debug.preferStereoMic = false
             store()
         }
         if realDatabase.remoteControl!.server.previewFps == nil {
@@ -3776,8 +3764,8 @@ final class Settings {
             widget.text.needsGeography = false
             store()
         }
-        if realDatabase.debug!.maxMapPitch == nil {
-            realDatabase.debug!.maxMapPitch = 0.0
+        if realDatabase.debug.maxMapPitch == nil {
+            realDatabase.debug.maxMapPitch = 0.0
             store()
         }
         for widget in database.widgets where widget.text.checkboxes == nil {
@@ -3871,8 +3859,8 @@ final class Settings {
             stream.twitchRewards = .init()
             store()
         }
-        if realDatabase.debug!.twitchRewards == nil {
-            realDatabase.debug!.twitchRewards = false
+        if realDatabase.debug.twitchRewards == nil {
+            realDatabase.debug.twitchRewards = false
             store()
         }
         for widget in realDatabase.widgets where widget.map!.migrated == nil {
@@ -4053,8 +4041,8 @@ final class Settings {
             widget.alerts!.twitch!.cheers = .init()
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.showBlurBackground == nil {
-            realDatabase.debug!.beautyFilterSettings!.showBlurBackground = false
+        if realDatabase.debug.beautyFilterSettings!.showBlurBackground == nil {
+            realDatabase.debug.beautyFilterSettings!.showBlurBackground = false
             store()
         }
         for widget in realDatabase.widgets where widget.browser.styleSheet == nil {
@@ -4145,8 +4133,8 @@ final class Settings {
             widget.videoSource!.rotation = 0.0
             store()
         }
-        if realDatabase.debug!.removeWindNoise == nil {
-            realDatabase.debug!.removeWindNoise = false
+        if realDatabase.debug.removeWindNoise == nil {
+            realDatabase.debug.removeWindNoise = false
             store()
         }
         for widget in realDatabase.widgets where widget.scoreboard == nil {
@@ -4166,8 +4154,8 @@ final class Settings {
             stream.adaptiveEncoderResolution = false
             store()
         }
-        if realDatabase.debug!.httpProxy == nil {
-            realDatabase.debug!.httpProxy = .init()
+        if realDatabase.debug.httpProxy == nil {
+            realDatabase.debug.httpProxy = .init()
             store()
         }
         for stream in realDatabase.streams where stream.discordChatBotSnapshotWebhook == nil {

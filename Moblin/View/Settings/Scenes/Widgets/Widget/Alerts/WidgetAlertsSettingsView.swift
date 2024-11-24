@@ -537,7 +537,7 @@ private struct WidgetAlertsSettingsTwitchView: View {
                 } label: {
                     Text("Cheers")
                 }
-                if model.database.debug!.twitchRewards! {
+                if model.database.debug.twitchRewards! {
                     NavigationLink {
                         TwitchRewardsView()
                     } label: {

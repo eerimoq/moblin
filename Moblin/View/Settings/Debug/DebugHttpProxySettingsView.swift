@@ -7,28 +7,28 @@ struct DebugHttpProxySettingsView: View {
         Form {
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
-                    model.database.debug!.httpProxy!.enabled
+                    model.database.debug.httpProxy!.enabled
                 }, set: { value in
-                    model.database.debug!.httpProxy!.enabled = value
+                    model.database.debug.httpProxy!.enabled = value
                     model.createUrlSession()
                     model.reloadConnections()
                 }))
                 TextEditNavigationView(
                     title: String(localized: "Host"),
-                    value: model.database.debug!.httpProxy!.host
+                    value: model.database.debug.httpProxy!.host
                 ) {
-                    model.database.debug!.httpProxy!.host = $0.trim()
+                    model.database.debug.httpProxy!.host = $0.trim()
                     model.createUrlSession()
                     model.reloadConnections()
                 }
                 TextEditNavigationView(
                     title: String(localized: "Port"),
-                    value: String(model.database.debug!.httpProxy!.port)
+                    value: String(model.database.debug.httpProxy!.port)
                 ) {
                     guard let port = UInt16($0) else {
                         return
                     }
-                    model.database.debug!.httpProxy!.port = port
+                    model.database.debug.httpProxy!.port = port
                     model.createUrlSession()
                     model.reloadConnections()
                 }

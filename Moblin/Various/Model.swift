@@ -920,11 +920,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setAllowVideoRangePixelFormat() {
-        allowVideoRangePixelFormat = database.debug!.allowVideoRangePixelFormat!
+        allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat!
     }
 
     func setBlurSceneSwitch() {
-        ioVideoBlurSceneSwitch = database.debug!.blurSceneSwitch!
+        ioVideoBlurSceneSwitch = database.debug.blurSceneSwitch!
     }
 
     func makeToast(title: String, subTitle: String? = nil) {
@@ -1028,7 +1028,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func debugLog(message: String) {
         DispatchQueue.main.async {
-            if self.log.count > self.database.debug!.maximumLogLines! {
+            if self.log.count > self.database.debug.maximumLogLines! {
                 self.log.removeFirst()
             }
             self.log.append(LogEntry(id: self.logId, message: message))
@@ -1193,17 +1193,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
-        audioUnitRemoveWindNoise = database.debug!.removeWindNoise!
+        audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
-        ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
+        ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         logger.handler = debugLog(message:)
-        logger.debugEnabled = database.debug!.logLevel == .debug
+        logger.debugEnabled = database.debug.logLevel == .debug
         updateCameraLists()
         updateBatteryLevel()
         media.onSrtConnected = handleSrtConnected
@@ -1390,15 +1390,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setMetalPetalFilters() {
-        ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
+        ioVideoUnitMetalPetal = database.debug.metalPetalFilters!
     }
 
     func setHigherDataRateLimit() {
-        videoCodecHigherDataRateLimit = database.debug!.higherDataRateLimit!
+        videoCodecHigherDataRateLimit = database.debug.higherDataRateLimit!
     }
 
     func setMapPitch() {
-        maxMapPitch = database.debug!.maxMapPitch!
+        maxMapPitch = database.debug.maxMapPitch!
     }
 
     private func setupSampleBufferReceiver() {
@@ -1407,9 +1407,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        let settings = database.debug!.beautyFilterSettings!
+        let settings = database.debug.beautyFilterSettings!
         faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
-            showCrop: database.debug!.beautyFilter!,
+            showCrop: database.debug.beautyFilter!,
             showBlur: settings.showBlur,
             showBlurBackground: settings.showBlurBackground!,
             showMouth: settings.showMoblin,
@@ -1424,7 +1424,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setPixelFormat() {
         for (format, type) in zip(pixelFormats, pixelFormatTypes) where
-            database.debug!.pixelFormat == format
+            database.debug.pixelFormat == format
         {
             logger.info("Setting pixel format \(format)")
             pixelFormatType = type
@@ -2382,14 +2382,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateAdaptiveBitrate() {
-        if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
+        if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug.srtOverlay) {
             latestDebugLines = lines
             latestDebugActions = actions
         }
     }
 
     private func updateAdaptiveBitrateDebug() {
-        if database.debug!.srtOverlay {
+        if database.debug.srtOverlay {
             debugLines = latestDebugLines + latestDebugActions
             debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled, isLive {
@@ -2816,8 +2816,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isFaceEnabled() -> Bool {
-        let settings = database.debug!.beautyFilterSettings!
-        return database.debug!.beautyFilter! || settings.showBlur || settings.showBlurBackground! || settings
+        let settings = database.debug.beautyFilterSettings!
+        return database.debug.beautyFilter! || settings.showBlur || settings.showBlurBackground! || settings
             .showMoblin || settings
             .showBeauty!
     }
@@ -3457,8 +3457,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
                     .algorithm : nil,
                 latency: stream.srt.latency,
-                overheadBandwidth: database.debug!.srtOverheadBandwidth!,
-                maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
+                overheadBandwidth: database.debug.srtOverheadBandwidth!,
+                maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
@@ -3473,8 +3473,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled! ? stream.srt.adaptiveBitrate!
                     .algorithm : nil,
                 latency: stream.srt.latency,
-                overheadBandwidth: database.debug!.srtOverheadBandwidth!,
-                maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
+                overheadBandwidth: database.debug.srtOverheadBandwidth!,
+                maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
@@ -3699,9 +3699,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setDebugLogging(on: Bool) {
         logger.debugEnabled = on
         if on {
-            database.debug!.logLevel = .debug
+            database.debug.logLevel = .debug
         } else {
-            database.debug!.logLevel = .error
+            database.debug.logLevel = .error
         }
         remoteControlStreamer?.stateChanged(state: RemoteControlState(debugLogging: on))
     }
@@ -3914,7 +3914,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func httpProxy() -> HttpProxy? {
-        return settings.database.debug!.httpProxy!.toHttpProxy()
+        return settings.database.debug.httpProxy!.toHttpProxy()
     }
 
     private func reloadTwitchPubSub() {
@@ -6215,7 +6215,7 @@ extension Model: RemoteControlStreamerDelegate {
             state.bitrate = preset.id
         }
         state.zoom = zoomX
-        state.debugLogging = database.debug!.logLevel == .debug
+        state.debugLogging = database.debug.logLevel == .debug
         remoteControlStreamer?.stateChanged(state: state)
     }
 
@@ -7567,7 +7567,7 @@ extension Model {
         let session = AVAudioSession.sharedInstance()
         do {
             let bluetoothOption: AVAudioSession.CategoryOptions
-            if database.debug!.bluetoothOutputOnly! {
+            if database.debug.bluetoothOutputOnly! {
                 bluetoothOption = .allowBluetoothA2DP
             } else {
                 bluetoothOption = .allowBluetooth
@@ -7708,7 +7708,7 @@ extension Model {
 
     private func setMic() {
         var wantedOrientation: AVAudioSession.Orientation
-        switch database.mic! {
+        switch database.mic {
         case .bottom:
             wantedOrientation = .bottom
         case .front:
@@ -7738,7 +7738,7 @@ extension Model {
 
     func setMicFromSettings() {
         let mics = listMics()
-        if let mic = mics.first(where: { mic in mic.builtInOrientation == database.mic! }) {
+        if let mic = mics.first(where: { mic in mic.builtInOrientation == database.mic }) {
             selectMic(mic: mic)
         } else if let mic = mics.first {
             selectMic(mic: mic)
@@ -7852,7 +7852,7 @@ extension Model {
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        if database.debug!.preferStereoMic! {
+        if database.debug.preferStereoMic! {
             if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
                 try dataSource.setPreferredPolarPattern(.stereo)
             } else {

@@ -111,7 +111,7 @@ struct MainView: View {
     }
 
     private var debug: SettingsDebug {
-        model.database.debug!
+        model.database.debug
     }
 
     var body: some View {

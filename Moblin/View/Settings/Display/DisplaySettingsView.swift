@@ -29,7 +29,7 @@ struct DisplaySettingsView: View {
                     }
                     if !ProcessInfo().isiOSAppOnMac {
                         Toggle("Battery percentage", isOn: Binding(get: {
-                            model.database.batteryPercentage!
+                            model.database.batteryPercentage
                         }, set: { value in
                             model.database.batteryPercentage = value
                             model.objectWillChange.send()

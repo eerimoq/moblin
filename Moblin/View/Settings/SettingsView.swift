@@ -187,8 +187,8 @@ struct SettingsView: View {
                     }
                     NavigationLink {
                         DebugSettingsView(
-                            cameraSwitchRemoveBlackish: model.database.debug!.cameraSwitchRemoveBlackish!,
-                            maxMapPitch: model.database.debug!.maxMapPitch!
+                            cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish!,
+                            maxMapPitch: model.database.debug.maxMapPitch!
                         )
                     } label: {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
