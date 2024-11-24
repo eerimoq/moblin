@@ -460,6 +460,85 @@ open class RTMPStream: NetStream {
         }
         rtmpConnection.call("FCUnpublish", responder: nil, arguments: name)
     }
+
+    func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
+        var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
+        buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
+        handleEncodedAudioBuffer(buffer, nil)
+    }
+
+    func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+        let presentationTimeStamp = presentationTimeStamp.seconds
+        var delta = 0.0
+        if prevAudioPresentationTimeStamp != 0.0 {
+            delta = (presentationTimeStamp - prevAudioPresentationTimeStamp) * 1000
+        }
+        guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
+            return
+        }
+        var buffer = Data([RTMPStream.aac, FLVAACPacketType.raw.rawValue])
+        buffer.append(
+            audioBuffer.data.assumingMemoryBound(to: UInt8.self),
+            count: Int(audioBuffer.byteLength)
+        )
+        prevAudioPresentationTimeStamp = presentationTimeStamp
+        handleEncodedAudioBuffer(buffer, delta)
+    }
+
+    func videoCodecOutputFormatInner(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+        var buffer: Data
+        switch codec.settings.value.format {
+        case .h264:
+            guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
+                return
+            }
+            buffer = makeAvcVideoTagHeader(.key, .seq)
+            buffer += Data([0, 0, 0])
+            buffer += avcC
+        case .hevc:
+            guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
+                return
+            }
+            buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
+            buffer += hvcC
+        }
+        handleEncodedVideoBuffer(buffer, nil)
+    }
+
+    func videoCodecOutputSampleBufferInner(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        let decodeTimeStamp = (sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer
+            .decodeTimeStamp : sampleBuffer.presentationTimeStamp).seconds
+        let compositionTime = getCompositionTime(sampleBuffer)
+        var delta = 0.0
+        if prevVideoDecodeTimeStamp != 0.0 {
+            delta = (decodeTimeStamp - prevVideoDecodeTimeStamp) * 1000
+        }
+        guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
+            return
+        }
+        var buffer: Data
+        let frameType = sampleBuffer.isSync ? FLVFrameType.key : FLVFrameType.inter
+        switch codec.settings.value.format {
+        case .h264:
+            buffer = makeAvcVideoTagHeader(frameType, .nal)
+        case .hevc:
+            buffer = makeHevcExtendedTagHeader(frameType, .codedFrames)
+        }
+        buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
+        buffer.append(data)
+        prevVideoDecodeTimeStamp = decodeTimeStamp
+        handleEncodedVideoBuffer(buffer, delta)
+    }
+
+    private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+        let decodeTimeStamp = sampleBuffer.decodeTimeStamp
+        guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
+            return 0
+        }
+        return Int32((presentationTimeStamp.seconds - prevVideoDecodeTimeStamp + compositionTimeOffset) *
+            1000)
+    }
 }
 
 extension RTMPStream: EventDispatcherConvertible {
@@ -492,91 +571,28 @@ extension RTMPStream: EventDispatcherConvertible {
 
 extension RTMPStream: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
-        var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
-        buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
         netStreamLockQueue.async {
-            self.handleEncodedAudioBuffer(buffer, nil)
+            self.audioCodecOutputFormatInner(format)
         }
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        let presentationTimeStamp = presentationTimeStamp.seconds
-        var delta = 0.0
-        if prevAudioPresentationTimeStamp != 0.0 {
-            delta = (presentationTimeStamp - prevAudioPresentationTimeStamp) * 1000
-        }
-        guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
-            return
-        }
-        var buffer = Data([RTMPStream.aac, FLVAACPacketType.raw.rawValue])
-        buffer.append(
-            audioBuffer.data.assumingMemoryBound(to: UInt8.self),
-            count: Int(audioBuffer.byteLength)
-        )
-        prevAudioPresentationTimeStamp = presentationTimeStamp
         netStreamLockQueue.async {
-            self.handleEncodedAudioBuffer(buffer, delta)
+            self.audioCodecOutputBufferInner(buffer, presentationTimeStamp)
         }
     }
 }
 
 extension RTMPStream: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
-        var buffer: Data
-        switch codec.settings.value.format {
-        case .h264:
-            guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
-                return
-            }
-            buffer = makeAvcVideoTagHeader(.key, .seq)
-            buffer += Data([0, 0, 0])
-            buffer += avcC
-        case .hevc:
-            guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
-                return
-            }
-            buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
-            buffer += hvcC
-        }
         netStreamLockQueue.async {
-            self.handleEncodedVideoBuffer(buffer, nil)
+            self.videoCodecOutputFormatInner(codec, formatDescription)
         }
     }
 
     func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        let decodeTimeStamp = (sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer
-            .decodeTimeStamp : sampleBuffer.presentationTimeStamp).seconds
-        let compositionTime = getCompositionTime(sampleBuffer)
-        var delta = 0.0
-        if prevVideoDecodeTimeStamp != 0.0 {
-            delta = (decodeTimeStamp - prevVideoDecodeTimeStamp) * 1000
-        }
-        guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
-            return
-        }
-        var buffer: Data
-        let frameType = sampleBuffer.isSync ? FLVFrameType.key : FLVFrameType.inter
-        switch codec.settings.value.format {
-        case .h264:
-            buffer = makeAvcVideoTagHeader(frameType, .nal)
-        case .hevc:
-            buffer = makeHevcExtendedTagHeader(frameType, .codedFrames)
-        }
-        buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
-        buffer.append(data)
-        prevVideoDecodeTimeStamp = decodeTimeStamp
         netStreamLockQueue.async {
-            self.handleEncodedVideoBuffer(buffer, delta)
+            self.videoCodecOutputSampleBufferInner(codec, sampleBuffer)
         }
-    }
-
-    private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
-        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
-        let decodeTimeStamp = sampleBuffer.decodeTimeStamp
-        guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
-            return 0
-        }
-        return Int32((presentationTimeStamp.seconds - prevVideoDecodeTimeStamp + compositionTimeOffset) *
-            1000)
     }
 }
