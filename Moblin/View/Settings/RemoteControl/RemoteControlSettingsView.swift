@@ -2,9 +2,9 @@ import SwiftUI
 
 private struct InterfaceView: View {
     @EnvironmentObject var model: Model
+    var ip: String
     var port: UInt16
     var image: String
-    var ip: String
 
     private func streamUrl() -> String {
         return "ws://\(ip):\(port)"
@@ -265,15 +265,15 @@ struct RemoteControlSettingsView: View {
                     List {
                         ForEach(model.ipStatuses, id: \.name) { status in
                             InterfaceView(
+                                ip: status.ip,
                                 port: model.database.remoteControl!.client.port,
-                                image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ip
+                                image: urlImage(interfaceType: status.interfaceType)
                             )
                         }
                         InterfaceView(
+                            ip: personalHotspotLocalAddress,
                             port: model.database.remoteControl!.client.port,
-                            image: "personalhotspot",
-                            ip: personalHotspotLocalAddress
+                            image: "personalhotspot"
                         )
                     }
                 } footer: {
