@@ -105,14 +105,8 @@ private struct PasswordView: View {
     }
 }
 
-struct RemoteControlSettingsView: View {
+private struct RemoteControlSettingsStreamerView: View {
     @EnvironmentObject var model: Model
-
-    private func submitPassword(value: String) {
-        model.database.remoteControl!.password = value.trim()
-        model.reloadRemoteControlStreamer()
-        model.reloadRemoteControlAssistant()
-    }
 
     private func submitStreamerUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
@@ -131,6 +125,54 @@ struct RemoteControlSettingsView: View {
         return String(Int(value))
     }
 
+    var body: some View {
+        Section {
+            Toggle(isOn: Binding(get: {
+                model.database.remoteControl!.server.enabled
+            }, set: { value in
+                model.database.remoteControl!.server.enabled = value
+                model.reloadRemoteControlStreamer()
+            })) {
+                Text("Enabled")
+            }
+            TextEditNavigationView(
+                title: String(localized: "Assistant URL"),
+                value: model.database.remoteControl!.server.url,
+                onSubmit: submitStreamerUrl,
+                footers: [
+                    String(
+                        localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
+                    ),
+                ],
+                keyboardType: .URL,
+                placeholder: "ws://32.143.32.12:2345"
+            )
+            HStack {
+                Text("Preview FPS")
+                SliderView(
+                    value: model.database.remoteControl!.server.previewFps!,
+                    minimum: 1,
+                    maximum: 5,
+                    step: 1,
+                    onSubmit: submitStreamerPreviewFps,
+                    width: 20,
+                    format: formatStreamerPreviewFps
+                )
+            }
+        } header: {
+            Text("Streamer")
+        } footer: {
+            Text("""
+            Enable to allow an assistant to monitor and control this device from a \
+            different device.
+            """)
+        }
+    }
+}
+
+private struct RemoteControlSettingsAssistantView: View {
+    @EnvironmentObject var model: Model
+
     private func submitAssistantPort(value: String) {
         guard let port = UInt16(value.trim()) else {
             return
@@ -138,6 +180,37 @@ struct RemoteControlSettingsView: View {
         model.database.remoteControl!.client.port = port
         model.reloadRemoteControlAssistant()
     }
+
+    var body: some View {
+        Section {
+            Toggle(isOn: Binding(get: {
+                model.database.remoteControl!.client.enabled
+            }, set: { value in
+                model.database.remoteControl!.client.enabled = value
+                model.reloadRemoteControlAssistant()
+            })) {
+                Text("Enabled")
+            }
+            TextEditNavigationView(
+                title: String(localized: "Server port"),
+                value: String(model.database.remoteControl!.client.port),
+                onSubmit: submitAssistantPort,
+                keyboardType: .numbersAndPunctuation,
+                placeholder: "2345"
+            )
+        } header: {
+            Text("Assistant")
+        } footer: {
+            Text("""
+            Enable to let a streamer device connect to this device. Once connected, \
+            this device can monitor and control the streamer device.
+            """)
+        }
+    }
+}
+
+private struct RemoteControlSettingsRelayView: View {
+    @EnvironmentObject var model: Model
 
     private func submitAssistantRelayUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
@@ -153,6 +226,43 @@ struct RemoteControlSettingsView: View {
         }
         model.database.remoteControl!.client.relay!.bridgeId = value
         model.reloadRemoteControlRelay()
+    }
+
+    var body: some View {
+        Section {
+            Toggle(isOn: Binding(get: {
+                model.database.remoteControl!.client.relay!.enabled
+            }, set: { value in
+                model.database.remoteControl!.client.relay!.enabled = value
+                model.reloadRemoteControlRelay()
+            })) {
+                Text("Enabled")
+            }
+            TextEditNavigationView(
+                title: String(localized: "Base URL"),
+                value: model.database.remoteControl!.client.relay!.baseUrl,
+                onSubmit: submitAssistantRelayUrl
+            )
+            TextEditNavigationView(
+                title: String(localized: "Bridge id"),
+                value: model.database.remoteControl!.client.relay!.bridgeId,
+                onSubmit: submitAssistantRelayBridgeId
+            )
+        } header: {
+            Text("Relay")
+        } footer: {
+            Text("Use a relay server when the assistant is behind CGNAT or similar.")
+        }
+    }
+}
+
+struct RemoteControlSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    private func submitPassword(value: String) {
+        model.database.remoteControl!.password = value.trim()
+        model.reloadRemoteControlStreamer()
+        model.reloadRemoteControlAssistant()
     }
 
     private func relayUrl() -> String {
@@ -181,95 +291,9 @@ struct RemoteControlSettingsView: View {
             } footer: {
                 Text("Used by both streamer and assistant.")
             }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.remoteControl!.server.enabled
-                }, set: { value in
-                    model.database.remoteControl!.server.enabled = value
-                    model.reloadRemoteControlStreamer()
-                })) {
-                    Text("Enabled")
-                }
-                TextEditNavigationView(
-                    title: String(localized: "Assistant URL"),
-                    value: model.database.remoteControl!.server.url,
-                    onSubmit: submitStreamerUrl,
-                    footers: [
-                        String(
-                            localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
-                        ),
-                    ],
-                    keyboardType: .URL,
-                    placeholder: "ws://32.143.32.12:2345"
-                )
-                HStack {
-                    Text("Preview FPS")
-                    SliderView(
-                        value: model.database.remoteControl!.server.previewFps!,
-                        minimum: 1,
-                        maximum: 5,
-                        step: 1,
-                        onSubmit: submitStreamerPreviewFps,
-                        width: 20,
-                        format: formatStreamerPreviewFps
-                    )
-                }
-            } header: {
-                Text("Streamer")
-            } footer: {
-                Text("""
-                Enable to allow an assistant to monitor and control this device from a \
-                different device.
-                """)
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.remoteControl!.client.enabled
-                }, set: { value in
-                    model.database.remoteControl!.client.enabled = value
-                    model.reloadRemoteControlAssistant()
-                })) {
-                    Text("Enabled")
-                }
-                TextEditNavigationView(
-                    title: String(localized: "Server port"),
-                    value: String(model.database.remoteControl!.client.port),
-                    onSubmit: submitAssistantPort,
-                    keyboardType: .numbersAndPunctuation,
-                    placeholder: "2345"
-                )
-            } header: {
-                Text("Assistant")
-            } footer: {
-                Text("""
-                Enable to let a streamer device connect to this device. Once connected, \
-                this device can monitor and control the streamer device.
-                """)
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.remoteControl!.client.relay!.enabled
-                }, set: { value in
-                    model.database.remoteControl!.client.relay!.enabled = value
-                    model.reloadRemoteControlRelay()
-                })) {
-                    Text("Enabled")
-                }
-                TextEditNavigationView(
-                    title: String(localized: "Base URL"),
-                    value: model.database.remoteControl!.client.relay!.baseUrl,
-                    onSubmit: submitAssistantRelayUrl
-                )
-                TextEditNavigationView(
-                    title: String(localized: "Bridge id"),
-                    value: model.database.remoteControl!.client.relay!.bridgeId,
-                    onSubmit: submitAssistantRelayBridgeId
-                )
-            } header: {
-                Text("Relay")
-            } footer: {
-                Text("Use a relay server when the assistant is behind CGNAT or similar.")
-            }
+            RemoteControlSettingsStreamerView()
+            RemoteControlSettingsAssistantView()
+            RemoteControlSettingsRelayView()
             if model.database.remoteControl!.client.enabled {
                 Section {
                     List {
