@@ -181,20 +181,22 @@ open class RTMPStream: NetStream {
         .snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
 
     // Inbound
-    var audioTimestamp = 0.0
     var audioTimestampZero = -1.0
-    var videoTimestamp = 0.0
     var videoTimestampZero = -1.0
+
+    var audioTimestamp = 0.0
+    var videoTimestamp = 0.0
 
     private var messages: [RTMPCommandMessage] = []
     private var startedAt = Date()
     private var dispatcher: (any EventDispatcherConvertible)!
     private var audioChunkType: RTMPChunkType = .zero
     private var videoChunkType: RTMPChunkType = .zero
-    private var dataTimeStamps: [String: Date] = .init()
+    private var dataTimeStamps: [String: Date] = [:]
     private weak var rtmpConnection: RTMPConnection?
 
     // Outbound
+    private var baseTimeStamp = 0.0
     private var prevAudioPresentationTimeStamp = 0.0
     private var prevVideoDecodeTimeStamp = 0.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
@@ -372,6 +374,7 @@ open class RTMPStream: NetStream {
             messages.removeAll()
         case .publish:
             startedAt = .init()
+            baseTimeStamp = 0.0
             prevAudioPresentationTimeStamp = 0.0
             prevVideoDecodeTimeStamp = 0.0
             mixer.startRunning()
@@ -449,17 +452,19 @@ open class RTMPStream: NetStream {
         info.byteCount.mutate { $0 += Int64(length) }
     }
 
-    func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
+    private func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
         var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
         handleEncodedAudioBuffer(buffer, 0)
     }
 
-    func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        let presentationTimeStamp = presentationTimeStamp.seconds
+    private func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+        guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
+            return
+        }
         var delta = 0.0
-        if prevAudioPresentationTimeStamp != 0.0 {
-            delta = (presentationTimeStamp - prevAudioPresentationTimeStamp) * 1000
+        if prevAudioPresentationTimeStamp == 0.0 {
+            delta = (rebasedTimestamp - prevAudioPresentationTimeStamp) * 1000
         }
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
@@ -469,13 +474,13 @@ open class RTMPStream: NetStream {
             audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: Int(audioBuffer.byteLength)
         )
-        prevAudioPresentationTimeStamp = presentationTimeStamp
+        prevAudioPresentationTimeStamp = rebasedTimestamp
         handleEncodedAudioBuffer(buffer, UInt32(audioTimestamp))
         audioTimestamp -= floor(audioTimestamp)
         audioTimestamp += delta
     }
 
-    func videoCodecOutputFormatInner(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+    private func videoCodecOutputFormatInner(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var buffer: Data
         switch codec.settings.value.format {
         case .h264:
@@ -495,13 +500,20 @@ open class RTMPStream: NetStream {
         handleEncodedVideoBuffer(buffer, 0)
     }
 
-    func videoCodecOutputSampleBufferInner(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        let decodeTimeStamp = (sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer.decodeTimeStamp : sampleBuffer
-            .presentationTimeStamp).seconds
-        let compositionTime = getCompositionTime(sampleBuffer)
+    private func videoCodecOutputSampleBufferInner(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        let decodeTimeStamp: Double
+        if sampleBuffer.decodeTimeStamp.isValid {
+            decodeTimeStamp = sampleBuffer.decodeTimeStamp.seconds
+        } else {
+            decodeTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        }
+        guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
+            return
+        }
+        let compositionTime = getVideoCompositionTime(sampleBuffer)
         var delta = 0.0
-        if prevVideoDecodeTimeStamp != 0.0 {
-            delta = (decodeTimeStamp - prevVideoDecodeTimeStamp) * 1000
+        if prevVideoDecodeTimeStamp == 0.0 {
+            delta = (rebasedTimestamp - prevVideoDecodeTimeStamp) * 1000
         }
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
             return
@@ -516,19 +528,34 @@ open class RTMPStream: NetStream {
         }
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
-        prevVideoDecodeTimeStamp = decodeTimeStamp
+        prevVideoDecodeTimeStamp = rebasedTimestamp
         handleEncodedVideoBuffer(buffer, UInt32(videoTimestamp))
         videoTimestamp -= floor(videoTimestamp)
         videoTimestamp += delta
     }
 
-    private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
+    private func getVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp
         let decodeTimeStamp = sampleBuffer.decodeTimeStamp
         guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
             return 0
         }
-        return Int32((presentationTimeStamp.seconds - prevVideoDecodeTimeStamp + compositionTimeOffset) * 1000)
+        guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
+            return 0
+        }
+        return Int32((rebasedTimestamp - prevVideoDecodeTimeStamp + compositionTimeOffset) * 1000)
+    }
+
+    private func rebaseTimeStamp(timestamp: Double) -> Double? {
+        if baseTimeStamp == 0.0 {
+            baseTimeStamp = timestamp
+        }
+        let timestamp = timestamp - baseTimeStamp
+        if timestamp >= 0 {
+            return timestamp
+        } else {
+            return nil
+        }
     }
 }
 
