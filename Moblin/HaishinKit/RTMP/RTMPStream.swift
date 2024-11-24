@@ -391,7 +391,7 @@ open class RTMPStream: NetStream {
         }
     }
 
-    private func handleEncodedAudioBuffer(_ buffer: Data, _ timestampDelta: Double) {
+    private func handleEncodedAudioBuffer(_ buffer: Data, _ timestampDelta: Double?) {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
@@ -402,10 +402,10 @@ open class RTMPStream: NetStream {
         ))
         audioChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
-        audioTimestamp = (audioTimestamp - floor(audioTimestamp)) + timestampDelta
+        audioTimestamp = (audioTimestamp - floor(audioTimestamp)) + (timestampDelta ?? 0.0)
     }
 
-    private func handleEncodedVideoBuffer(_ buffer: Data, _ timestampDelta: Double) {
+    private func handleEncodedVideoBuffer(_ buffer: Data, _ timestampDelta: Double?) {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
@@ -416,7 +416,7 @@ open class RTMPStream: NetStream {
         ))
         videoChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
-        videoTimestamp = (videoTimestamp - floor(videoTimestamp)) + timestampDelta
+        videoTimestamp = (videoTimestamp - floor(videoTimestamp)) + (timestampDelta ?? 0.0)
     }
 }
 
@@ -469,13 +469,13 @@ extension RTMPStream: EventDispatcherConvertible {
 }
 
 extension RTMPStream: RTMPMuxerDelegate {
-    func muxer(_: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double) {
+    func muxer(_: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double?) {
         netStreamLockQueue.async {
             self.handleEncodedAudioBuffer(buffer, timestampDelta)
         }
     }
 
-    func muxer(_: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double) {
+    func muxer(_: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double?) {
         netStreamLockQueue.async {
             self.handleEncodedVideoBuffer(buffer, timestampDelta)
         }

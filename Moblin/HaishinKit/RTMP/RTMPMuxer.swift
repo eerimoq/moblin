@@ -1,8 +1,8 @@
 import AVFoundation
 
 protocol RTMPMuxerDelegate: AnyObject {
-    func muxer(_ muxer: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double)
-    func muxer(_ muxer: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double)
+    func muxer(_ muxer: RTMPMuxer, didOutputAudio buffer: Data, timestampDelta: Double?)
+    func muxer(_ muxer: RTMPMuxer, didOutputVideo buffer: Data, timestampDelta: Double?)
 }
 
 final class RTMPMuxer {
@@ -24,7 +24,7 @@ extension RTMPMuxer: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
         var buffer = Data([RTMPMuxer.aac, FLVAACPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
-        delegate?.muxer(self, didOutputAudio: buffer, timestampDelta: 0)
+        delegate?.muxer(self, didOutputAudio: buffer, timestampDelta: nil)
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
@@ -83,7 +83,7 @@ extension RTMPMuxer: VideoCodecDelegate {
             buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
             buffer += hvcC
         }
-        delegate?.muxer(self, didOutputVideo: buffer, timestampDelta: 0)
+        delegate?.muxer(self, didOutputVideo: buffer, timestampDelta: nil)
     }
 
     func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
