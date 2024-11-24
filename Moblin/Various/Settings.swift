@@ -1354,39 +1354,6 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     }
 }
 
-// periphery:ignore
-class SettingsVariableText: Codable {
-    var value: String = "15.0"
-}
-
-// periphery:ignore
-class SettingsVariableHttp: Codable {
-    var url: String = "https://"
-}
-
-// periphery:ignore
-class SettingsVariableTwitchPubSub: Codable {
-    var pattern: String = ""
-}
-
-// periphery:ignore
-class SettingsVariableTextWebsocket: Codable {
-    var url: String = "https://"
-    var pattern: String = ""
-}
-
-enum SettingsVariableType: String, Codable {
-    case text = "Camera"
-    case http = "HTTP"
-    case twitchPubSub = "Twitch PubSub"
-    case websocket = "Websocket"
-
-    public init(from decoder: Decoder) throws {
-        self = try SettingsVariableType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .text
-    }
-}
-
 enum SettingsButtonType: String, Codable, CaseIterable {
     case unknown = "Unknown"
     case torch = "Torch"
@@ -1661,8 +1628,6 @@ class SettingsChat: Codable {
     var backgroundColorEnabled: Bool = true
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
-    // periphery:ignore
-    var alignedMessages: Bool? = false
     var boldUsername: Bool = false
     var boldMessage: Bool = false
     var animatedEmotes: Bool = false
@@ -1730,21 +1695,7 @@ let pixelFormatTypes = [
 class SettingsDebugBeautyFilter: Codable {
     var showBlur = false
     var showBlurBackground: Bool? = false
-    // periphery:ignore
-    var showColors: Bool? = false
     var showMoblin = false
-    // periphery:ignore
-    var showComic = false
-    // periphery:ignore
-    var showFaceRectangle: Bool? = false
-    // periphery:ignore
-    var showFaceLandmarks: Bool? = false
-    // periphery:ignore
-    var brightness: Float? = 0.0
-    // periphery:ignore
-    var contrast: Float? = 1.0
-    // periphery:ignore
-    var saturation: Float? = 1.0
     var showCute: Bool? = false
     var cuteRadius: Float? = 0.5
     var cuteScale: Float? = 0.0
@@ -2267,18 +2218,14 @@ class SettingsGameController: Codable, Identifiable {
 class SettingsRemoteControlAssistant: Codable {
     var enabled: Bool = false
     // periphery:ignore
-    var address: String = ""
+    var address: String? = ""
     var port: UInt16 = 2345
-    // periphery:ignore
-    var password: String? = ""
     var relay: SettingsRemoteControlServerRelay? = .init()
 }
 
 class SettingsRemoteControlStreamer: Codable {
     var enabled: Bool = false
     var url: String = ""
-    // periphery:ignore
-    var password: String? = ""
     var previewFps: Float? = 1.0
 }
 
