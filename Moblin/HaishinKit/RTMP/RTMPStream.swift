@@ -452,8 +452,7 @@ open class RTMPStream: NetStream {
     func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
         var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
-        handleEncodedAudioBuffer(buffer, UInt32(audioTimestamp))
-        audioTimestamp -= floor(audioTimestamp)
+        handleEncodedAudioBuffer(buffer, 0)
     }
 
     func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
@@ -493,8 +492,7 @@ open class RTMPStream: NetStream {
             buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
             buffer += hvcC
         }
-        handleEncodedVideoBuffer(buffer, UInt32(videoTimestamp))
-        videoTimestamp -= floor(videoTimestamp)
+        handleEncodedVideoBuffer(buffer, 0)
     }
 
     func videoCodecOutputSampleBufferInner(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
