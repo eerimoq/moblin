@@ -159,8 +159,6 @@ open class RTMPStream: NetStream {
     enum ReadyState: UInt8 {
         case initialized
         case open
-        case play
-        case playing
         case publish
         case publishing
     }
@@ -169,7 +167,7 @@ open class RTMPStream: NetStream {
     var info = RTMPStreamInfo()
     private(set) var objectEncoding = RTMPConnection.defaultObjectEncoding
 
-    var id: UInt32 = RTMPStream.defaultID
+    var id = RTMPStream.defaultID
     var readyState: ReadyState = .initialized {
         didSet {
             guard oldValue != readyState else {
@@ -182,10 +180,12 @@ open class RTMPStream: NetStream {
     static let aac = FLVAudioCodec.aac.rawValue << 4 | FLVSoundRate.kHz44.rawValue << 2 | FLVSoundSize
         .snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
 
+    // Inbound
     var audioTimestamp = 0.0
     var audioTimestampZero = -1.0
     var videoTimestamp = 0.0
     var videoTimestampZero = -1.0
+
     private var messages: [RTMPCommandMessage] = []
     private var startedAt = Date()
     private var dispatcher: (any EventDispatcherConvertible)!
@@ -193,6 +193,8 @@ open class RTMPStream: NetStream {
     private var videoChunkType: RTMPChunkType = .zero
     private var dataTimeStamps: [String: Date] = .init()
     private weak var rtmpConnection: RTMPConnection?
+
+    // Outbound
     private var prevAudioPresentationTimeStamp = 0.0
     private var prevVideoDecodeTimeStamp = 0.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
@@ -270,8 +272,8 @@ open class RTMPStream: NetStream {
         guard let rtmpConnection = rtmpConnection, readyState == .publishing else {
             return
         }
-        let dataWasSent = dataTimeStamps[handlerName] == nil ? false : true
-        let timestmap: UInt32 = dataWasSent ?
+        let dataWasSent = dataTimeStamps[handlerName] != nil
+        let timestmap = dataWasSent ?
             UInt32((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000) :
             UInt32(startedAt.timeIntervalSinceNow * -1000)
         let chunk = RTMPChunk(
@@ -345,8 +347,6 @@ open class RTMPStream: NetStream {
             return
         }
         switch oldValue {
-        case .playing:
-            logger.info("Playing not implemented")
         case .publishing:
             FCUnpublish()
             mixer.stopEncoding()
@@ -362,8 +362,6 @@ open class RTMPStream: NetStream {
                 message.streamId = id
                 message.transactionId = rtmpConnection.currentTransactionId
                 switch message.commandName {
-                case "play":
-                    self.readyState = .play
                 case "publish":
                     self.readyState = .publish
                 default:
@@ -372,8 +370,6 @@ open class RTMPStream: NetStream {
                 rtmpConnection.socket.doOutput(chunk: RTMPChunk(message: message))
             }
             messages.removeAll()
-        case .play:
-            logger.info("Play not implemented")
         case .publish:
             startedAt = .init()
             prevAudioPresentationTimeStamp = 0.0
@@ -404,10 +400,6 @@ open class RTMPStream: NetStream {
         case RTMPConnection.Code.connectSuccess.rawValue:
             readyState = .initialized
             rtmpConnection.createStream(self)
-        case RTMPStream.Code.playReset.rawValue:
-            readyState = .play
-        case RTMPStream.Code.playStart.rawValue:
-            readyState = .playing
         case RTMPStream.Code.publishStart.rawValue:
             readyState = .publishing
         default:
@@ -453,9 +445,7 @@ open class RTMPStream: NetStream {
     }
 
     private func FCUnpublish() {
-        guard let rtmpConnection, let name = info.resourceName,
-              rtmpConnection.flashVer.contains("FMLE/")
-        else {
+        guard let rtmpConnection, let name = info.resourceName, rtmpConnection.flashVer.contains("FMLE/") else {
             return
         }
         rtmpConnection.call("FCUnpublish", responder: nil, arguments: name)

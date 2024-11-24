@@ -388,8 +388,7 @@ final class FaceEffect: VideoEffect {
         return filter.outputImage
     }
 
-    private func addBeautyShapeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage?
-    {
+    private func addBeautyShapeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
         guard let image, var detections else {
             return image
         }
