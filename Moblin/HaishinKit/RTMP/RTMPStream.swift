@@ -407,34 +407,6 @@ open class RTMPStream: NetStream {
         }
     }
 
-    private func handleEncodedAudioBuffer(_ buffer: Data, _ timestampDelta: Double?) {
-        guard let rtmpConnection, readyState == .publishing else {
-            return
-        }
-        let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
-            type: audioChunkType,
-            streamId: FLVTagType.audio.streamId,
-            message: RTMPAudioMessage(streamId: id, timestamp: UInt32(audioTimestamp), payload: buffer)
-        ))
-        audioChunkType = .one
-        info.byteCount.mutate { $0 += Int64(length) }
-        audioTimestamp = (audioTimestamp - floor(audioTimestamp)) + (timestampDelta ?? 0.0)
-    }
-
-    private func handleEncodedVideoBuffer(_ buffer: Data, _ timestampDelta: Double?) {
-        guard let rtmpConnection, readyState == .publishing else {
-            return
-        }
-        let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
-            type: videoChunkType,
-            streamId: FLVTagType.video.streamId,
-            message: RTMPVideoMessage(streamId: id, timestamp: UInt32(videoTimestamp), payload: buffer)
-        ))
-        videoChunkType = .one
-        info.byteCount.mutate { $0 += Int64(length) }
-        videoTimestamp = (videoTimestamp - floor(videoTimestamp)) + (timestampDelta ?? 0.0)
-    }
-
     private func FCPublish() {
         guard let rtmpConnection, let name = info.resourceName,
               rtmpConnection.flashVer.contains("FMLE/")
@@ -451,10 +423,37 @@ open class RTMPStream: NetStream {
         rtmpConnection.call("FCUnpublish", responder: nil, arguments: name)
     }
 
+    private func handleEncodedAudioBuffer(_ buffer: Data, _ timestamp: UInt32) {
+        guard let rtmpConnection, readyState == .publishing else {
+            return
+        }
+        let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
+            type: audioChunkType,
+            streamId: FLVTagType.audio.streamId,
+            message: RTMPAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
+        ))
+        audioChunkType = .one
+        info.byteCount.mutate { $0 += Int64(length) }
+    }
+
+    private func handleEncodedVideoBuffer(_ buffer: Data, _ timestamp: UInt32) {
+        guard let rtmpConnection, readyState == .publishing else {
+            return
+        }
+        let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
+            type: videoChunkType,
+            streamId: FLVTagType.video.streamId,
+            message: RTMPVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)
+        ))
+        videoChunkType = .one
+        info.byteCount.mutate { $0 += Int64(length) }
+    }
+
     func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
         var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
-        handleEncodedAudioBuffer(buffer, nil)
+        handleEncodedAudioBuffer(buffer, UInt32(audioTimestamp))
+        audioTimestamp -= floor(audioTimestamp)
     }
 
     func audioCodecOutputBufferInner(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
@@ -472,7 +471,9 @@ open class RTMPStream: NetStream {
             count: Int(audioBuffer.byteLength)
         )
         prevAudioPresentationTimeStamp = presentationTimeStamp
-        handleEncodedAudioBuffer(buffer, delta)
+        handleEncodedAudioBuffer(buffer, UInt32(audioTimestamp))
+        audioTimestamp -= floor(audioTimestamp)
+        audioTimestamp += delta
     }
 
     func videoCodecOutputFormatInner(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
@@ -492,12 +493,13 @@ open class RTMPStream: NetStream {
             buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
             buffer += hvcC
         }
-        handleEncodedVideoBuffer(buffer, nil)
+        handleEncodedVideoBuffer(buffer, UInt32(videoTimestamp))
+        videoTimestamp -= floor(videoTimestamp)
     }
 
     func videoCodecOutputSampleBufferInner(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        let decodeTimeStamp = (sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer
-            .decodeTimeStamp : sampleBuffer.presentationTimeStamp).seconds
+        let decodeTimeStamp = (sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer.decodeTimeStamp : sampleBuffer
+            .presentationTimeStamp).seconds
         let compositionTime = getCompositionTime(sampleBuffer)
         var delta = 0.0
         if prevVideoDecodeTimeStamp != 0.0 {
@@ -517,7 +519,9 @@ open class RTMPStream: NetStream {
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
         prevVideoDecodeTimeStamp = decodeTimeStamp
-        handleEncodedVideoBuffer(buffer, delta)
+        handleEncodedVideoBuffer(buffer, UInt32(videoTimestamp))
+        videoTimestamp -= floor(videoTimestamp)
+        videoTimestamp += delta
     }
 
     private func getCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
@@ -526,8 +530,7 @@ open class RTMPStream: NetStream {
         guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
             return 0
         }
-        return Int32((presentationTimeStamp.seconds - prevVideoDecodeTimeStamp + compositionTimeOffset) *
-            1000)
+        return Int32((presentationTimeStamp.seconds - prevVideoDecodeTimeStamp + compositionTimeOffset) * 1000)
     }
 }
 
