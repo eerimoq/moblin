@@ -121,11 +121,6 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("HTTP proxy")
                 }
-                Toggle("Keep speaker alive", isOn: Binding(get: {
-                    model.database.debug!.keepSpeakerAlive!
-                }, set: { value in
-                    model.database.debug!.keepSpeakerAlive = value
-                }))
             } header: {
                 Text("Experimental")
             }

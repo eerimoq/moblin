@@ -58901,6 +58901,7 @@
       }
     },
     "Keep speaker alive" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
