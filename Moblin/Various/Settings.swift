@@ -588,9 +588,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     }
 }
 
-// periphery:ignore
-class SettingsSceneButton: Codable {}
-
 enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case back = "Back"
     case front = "Front"
@@ -630,8 +627,6 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
-    // periphery:ignore
-    var buttons: [SettingsSceneButton]? = []
 
     init(name: String) {
         self.name = name
@@ -841,20 +836,6 @@ class SettingsWidgetText: Codable {
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
 }
-
-// periphery:ignore
-class SettingsWidgetImage: Codable {
-    var url: String = "https://"
-}
-
-// periphery:ignore
-class SettingsWidgetVideo: Codable {
-    var url: String = "https://"
-}
-
-class SettingsWidgetChat: Codable {}
-
-class SettingsWidgetRecording: Codable {}
 
 class SettingsWidgetCrop: Codable {
     var sourceWidgetId: UUID = .init()
@@ -1270,13 +1251,6 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     }
 }
 
-// periphery:ignore
-class SettingsWidgetVideoEffect: Codable {
-    var type: SettingsWidgetVideoEffectType = .noiseReduction
-    var noiseReductionNoiseLevel: Float = 0.01
-    var noiseReductionSharpness: Float = 1.5
-}
-
 enum SettingsWidgetType: String, Codable, CaseIterable {
     case browser = "Browser"
     case image = "Image"
@@ -1361,17 +1335,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var type: SettingsWidgetType = .browser
     var text: SettingsWidgetText = .init()
-    // periphery:ignore
-    var image: SettingsWidgetImage? = .init()
-    // periphery:ignore
-    var video: SettingsWidgetVideo? = .init()
-    // periphery:ignore
-    var chat: SettingsWidgetChat? = .init()
-    // periphery:ignore
-    var recording: SettingsWidgetRecording? = .init()
     var browser: SettingsWidgetBrowser = .init()
-    // periphery:ignore
-    var videoEffect: SettingsWidgetVideoEffect? = .init()
     var crop: SettingsWidgetCrop? = .init()
     var map: SettingsWidgetMap? = .init()
     var scene: SettingsWidgetScene? = .init()
@@ -1423,17 +1387,6 @@ enum SettingsVariableType: String, Codable {
     }
 }
 
-// periphery:ignore
-class SettingsVariable: Codable, Identifiable {
-    var name: String
-    var id: UUID = .init()
-    var type: SettingsVariableType = .text
-    var text: SettingsVariableText = .init()
-    var http: SettingsVariableHttp = .init()
-    var twitchPubSub: SettingsVariableTwitchPubSub = .init()
-    var websocket: SettingsVariableTextWebsocket = .init()
-}
-
 enum SettingsButtonType: String, Codable, CaseIterable {
     case unknown = "Unknown"
     case torch = "Torch"
@@ -1480,16 +1433,6 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     }
 }
 
-// periphery:ignore
-class SettingsButtonWidget: Codable, Identifiable {
-    var widgetId: UUID
-    var id: UUID = .init()
-
-    init(widgetId: UUID) {
-        self.widgetId = widgetId
-    }
-}
-
 class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var name: String
     var id: UUID = .init()
@@ -1498,8 +1441,6 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var imageType: String? = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
-    // periphery:ignore
-    var widget: SettingsButtonWidget? = .init(widgetId: UUID())
     var isOn: Bool = false
     var enabled: Bool? = true
     var backgroundColor: RgbColor? = defaultQuickButtonColor
@@ -2323,8 +2264,7 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
-// Assistant
-class SettingsRemoteControlClient: Codable {
+class SettingsRemoteControlAssistant: Codable {
     var enabled: Bool = false
     // periphery:ignore
     var address: String = ""
@@ -2334,8 +2274,7 @@ class SettingsRemoteControlClient: Codable {
     var relay: SettingsRemoteControlServerRelay? = .init()
 }
 
-// Streamer
-class SettingsRemoteControlServer: Codable {
+class SettingsRemoteControlStreamer: Codable {
     var enabled: Bool = false
     var url: String = ""
     // periphery:ignore
@@ -2350,8 +2289,8 @@ class SettingsRemoteControlServerRelay: Codable {
 }
 
 class SettingsRemoteControl: Codable {
-    var client: SettingsRemoteControlClient = .init()
-    var server: SettingsRemoteControlServer = .init()
+    var client: SettingsRemoteControlAssistant = .init()
+    var server: SettingsRemoteControlStreamer = .init()
     var password: String? = randomGoodPassword()
 }
 
@@ -2499,10 +2438,6 @@ class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
-    // periphery:ignore
-    var variables: [SettingsVariable]? = []
-    // periphery:ignore
-    var buttons: [SettingsButton]? = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
