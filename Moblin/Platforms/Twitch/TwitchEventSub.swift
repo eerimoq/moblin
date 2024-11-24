@@ -363,6 +363,9 @@ final class TwitchEventSub: NSObject {
         )
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "follow")
+            guard ok else {
+                return
+            }
             self.subscribeToChannelSubscribe()
         }
     }
@@ -382,7 +385,7 @@ final class TwitchEventSub: NSObject {
     private func subscribeToChannelSubscriptionMessage() {
         subscribeBroadcasterUserId(
             type: subTypeChannelSubscriptionMessage,
-            eventType: "Subscription message"
+            eventType: "subscription message"
         ) {
             self.subscribeToChannelPointsCustomRewardRedemptionAdd()
         }
@@ -403,6 +406,9 @@ final class TwitchEventSub: NSObject {
                               condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: "raid")
+            guard ok else {
+                return
+            }
             self.subscribeToChannelCheer()
         }
     }
@@ -440,12 +446,15 @@ final class TwitchEventSub: NSObject {
     private func subscribeBroadcasterUserId(
         type: String,
         eventType: String,
-        onCompleted: @escaping () -> Void
+        onSuccess: @escaping () -> Void
     ) {
         let body = createBroadcasterUserIdBody(type: type)
         twitchApi.createEventSubSubscription(body: body) { ok in
             self.makeSubscribeErrorToastIfNotOk(ok: ok, eventType: eventType)
-            onCompleted()
+            guard ok else {
+                return
+            }
+            onSuccess()
         }
     }
 
