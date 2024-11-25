@@ -134,10 +134,7 @@ class VideoCodec {
                 return
             }
             guard let sampleBuffer, status == noErr else {
-                logger
-                    .info(
-                        "video: Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)"
-                    )
+                logger.info("video: Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)")
                 numberOfFailedEncodings += 1
                 return
             }
@@ -159,9 +156,7 @@ class VideoCodec {
             session = makeVideoDecompressionSession(self)
         }
         let err = session?
-            .decodeFrame(sampleBuffer) { [
-                weak self
-            ] status, _, imageBuffer, presentationTimeStamp, duration in
+            .decodeFrame(sampleBuffer) { [weak self] status, _, imageBuffer, presentationTimeStamp, duration in
                 guard let self else {
                     return
                 }

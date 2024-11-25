@@ -1186,14 +1186,8 @@ final class VideoUnit: NSObject {
                 device.activeFormat = format
             }
             device.activeColorSpace = colorSpace
-            device.activeVideoMinFrameDuration = CMTime(
-                value: 100,
-                timescale: CMTimeScale(100 * frameRate)
-            )
-            device.activeVideoMaxFrameDuration = CMTime(
-                value: 100,
-                timescale: CMTimeScale(100 * frameRate)
-            )
+            device.activeVideoMinFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
+            device.activeVideoMaxFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
             device.unlockForConfiguration()
         } catch {
             logger.error("while locking device for fps: \(error)")
