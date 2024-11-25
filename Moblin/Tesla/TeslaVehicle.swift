@@ -38,6 +38,26 @@ class TeslaVehicle: NSObject {
         let hash = SHA1.hash(vin.utf8Data).prefix(8).hexString()
         return "S\(hash)C"
     }
+    
+    private func startSession() {
+        let message = UniversalMessage_RoutableMessage.with {
+            $0.toDestination = .with({
+                $0.subDestination = .domain(.vehicleSecurity)
+            })
+            $0.fromDestination = .with({
+                $0.subDestination = .routingAddress(Data(count: 16))
+            })
+            $0.sessionInfoRequest = .with({
+                $0.publicKey = Data(count: 10) // privateKey.pubKeyBytes
+            })
+            $0.uuid = Data(count: 16)
+        }
+        do {
+            let encoded = try message.serializedData()
+            logger.info("tesla-vehicle: Message \(encoded.hexString())")
+        } catch {
+        }
+    }
 }
 
 extension TeslaVehicle: CBCentralManagerDelegate {
@@ -112,6 +132,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
                 logger.info("tesla-vehicle: Found unknown characteristic \(characteristic.uuid)")
             }
         }
+        startSession()
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor _: CBCharacteristic, error _: Error?) {
