@@ -6324,7 +6324,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
-        let scenes = database.scenes.map { scene in
+        let scenes = enabledScenes.map { scene in
             RemoteControlSettingsScene(id: scene.id, name: scene.name)
         }
         let mics = listMics().map { mic in
