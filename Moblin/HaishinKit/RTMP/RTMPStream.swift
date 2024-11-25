@@ -183,9 +183,8 @@ open class RTMPStream: NetStream {
     // Inbound
     var audioTimestampZero = -1.0
     var videoTimestampZero = -1.0
-
-    var audioTimestamp = 0.0
-    var videoTimestamp = 0.0
+    var audioTimeStamp = 0.0
+    var videoTimeStamp = 0.0
 
     private var messages: [RTMPCommandMessage] = []
     private var startedAt = Date()
@@ -196,9 +195,11 @@ open class RTMPStream: NetStream {
     private weak var rtmpConnection: RTMPConnection?
 
     // Outbound
-    private var baseTimeStamp = 0.0
-    private var prevAudioPresentationTimeStamp = 0.0
-    private var prevVideoDecodeTimeStamp = 0.0
+    private var baseTimeStamp = -1.0
+    private var audioTimeStampDelta = 0.0
+    private var videoTimeStampDelta = 0.0
+    private var prevRebasedAudioTimeStamp = -1.0
+    private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
 
     public init(connection: RTMPConnection) {
@@ -374,9 +375,9 @@ open class RTMPStream: NetStream {
             messages.removeAll()
         case .publish:
             startedAt = .init()
-            baseTimeStamp = 0.0
-            prevAudioPresentationTimeStamp = 0.0
-            prevVideoDecodeTimeStamp = 0.0
+            baseTimeStamp = -1.0
+            prevRebasedAudioTimeStamp = -1.0
+            prevRebasedVideoTimeStamp = -1.0
             mixer.startRunning()
             videoChunkType = .zero
             audioChunkType = .zero
@@ -463,8 +464,8 @@ open class RTMPStream: NetStream {
             return
         }
         var delta = 0.0
-        if prevAudioPresentationTimeStamp == 0.0 {
-            delta = (rebasedTimestamp - prevAudioPresentationTimeStamp) * 1000
+        if prevRebasedAudioTimeStamp != -1.0 {
+            delta = (rebasedTimestamp - prevRebasedAudioTimeStamp) * 1000
         }
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
@@ -474,15 +475,18 @@ open class RTMPStream: NetStream {
             audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: Int(audioBuffer.byteLength)
         )
-        prevAudioPresentationTimeStamp = rebasedTimestamp
-        handleEncodedAudioBuffer(buffer, UInt32(audioTimestamp))
-        audioTimestamp -= floor(audioTimestamp)
-        audioTimestamp += delta
+        prevRebasedAudioTimeStamp = rebasedTimestamp
+        handleEncodedAudioBuffer(buffer, UInt32(audioTimeStampDelta))
+        audioTimeStampDelta -= floor(audioTimeStampDelta)
+        audioTimeStampDelta += delta
     }
 
-    private func videoCodecOutputFormatInner(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+    private func videoCodecOutputFormatInner(
+        _ format: VideoCodecSettings.Format,
+        _ formatDescription: CMFormatDescription
+    ) {
         var buffer: Data
-        switch codec.settings.value.format {
+        switch format {
         case .h264:
             guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 return
@@ -500,7 +504,9 @@ open class RTMPStream: NetStream {
         handleEncodedVideoBuffer(buffer, 0)
     }
 
-    private func videoCodecOutputSampleBufferInner(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+    private func videoCodecOutputSampleBufferInner(_ format: VideoCodecSettings.Format,
+                                                   _ sampleBuffer: CMSampleBuffer)
+    {
         let decodeTimeStamp: Double
         if sampleBuffer.decodeTimeStamp.isValid {
             decodeTimeStamp = sampleBuffer.decodeTimeStamp.seconds
@@ -510,17 +516,17 @@ open class RTMPStream: NetStream {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
             return
         }
-        let compositionTime = getVideoCompositionTime(sampleBuffer)
+        let compositionTime = calcVideoCompositionTime(sampleBuffer)
         var delta = 0.0
-        if prevVideoDecodeTimeStamp == 0.0 {
-            delta = (rebasedTimestamp - prevVideoDecodeTimeStamp) * 1000
+        if prevRebasedVideoTimeStamp != -1.0 {
+            delta = (rebasedTimestamp - prevRebasedVideoTimeStamp) * 1000
         }
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
             return
         }
         var buffer: Data
         let frameType = sampleBuffer.isSync ? FLVFrameType.key : FLVFrameType.inter
-        switch codec.settings.value.format {
+        switch format {
         case .h264:
             buffer = makeAvcVideoTagHeader(frameType, .nal)
         case .hevc:
@@ -528,13 +534,13 @@ open class RTMPStream: NetStream {
         }
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
-        prevVideoDecodeTimeStamp = rebasedTimestamp
-        handleEncodedVideoBuffer(buffer, UInt32(videoTimestamp))
-        videoTimestamp -= floor(videoTimestamp)
-        videoTimestamp += delta
+        prevRebasedVideoTimeStamp = rebasedTimestamp
+        handleEncodedVideoBuffer(buffer, UInt32(videoTimeStampDelta))
+        videoTimeStampDelta -= floor(videoTimeStampDelta)
+        videoTimeStampDelta += delta
     }
 
-    private func getVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
+    private func calcVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp
         let decodeTimeStamp = sampleBuffer.decodeTimeStamp
         guard decodeTimeStamp.isValid, decodeTimeStamp != presentationTimeStamp else {
@@ -543,11 +549,11 @@ open class RTMPStream: NetStream {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
             return 0
         }
-        return Int32((rebasedTimestamp - prevVideoDecodeTimeStamp + compositionTimeOffset) * 1000)
+        return Int32((rebasedTimestamp - prevRebasedVideoTimeStamp + compositionTimeOffset) * 1000)
     }
 
     private func rebaseTimeStamp(timestamp: Double) -> Double? {
-        if baseTimeStamp == 0.0 {
+        if baseTimeStamp == -1.0 {
             baseTimeStamp = timestamp
         }
         let timestamp = timestamp - baseTimeStamp
@@ -603,14 +609,16 @@ extension RTMPStream: AudioCodecDelegate {
 
 extension RTMPStream: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+        let format = codec.settings.value.format
         netStreamLockQueue.async {
-            self.videoCodecOutputFormatInner(codec, formatDescription)
+            self.videoCodecOutputFormatInner(format, formatDescription)
         }
     }
 
     func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+        let format = codec.settings.value.format
         netStreamLockQueue.async {
-            self.videoCodecOutputSampleBufferInner(codec, sampleBuffer)
+            self.videoCodecOutputSampleBufferInner(format, sampleBuffer)
         }
     }
 }

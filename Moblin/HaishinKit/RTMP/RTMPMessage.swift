@@ -484,10 +484,10 @@ final class RTMPAudioMessage: RTMPMessage {
             if stream.audioTimestampZero == -1 {
                 stream.audioTimestampZero = Double(timestamp)
             }
-            duration -= Int64(stream.audioTimestamp)
-            stream.audioTimestamp = Double(timestamp) - stream.audioTimestampZero
+            duration -= Int64(stream.audioTimeStamp)
+            stream.audioTimeStamp = Double(timestamp) - stream.audioTimestampZero
         default:
-            stream.audioTimestamp += Double(timestamp)
+            stream.audioTimeStamp += Double(timestamp)
         }
         switch payload[1] {
         case FLVAACPacketType.seq.rawValue:
@@ -503,7 +503,7 @@ final class RTMPAudioMessage: RTMPMessage {
                 stream.mixer.audio.codec.appendAudioBuffer(
                     audioBuffer,
                     presentationTimeStamp: CMTime(
-                        seconds: stream.audioTimestamp / 1000,
+                        seconds: stream.audioTimeStamp / 1000,
                         preferredTimescale: 1000
                     )
                 )
@@ -606,19 +606,19 @@ final class RTMPVideoMessage: RTMPMessage {
             if stream.videoTimestampZero == -1 {
                 stream.videoTimestampZero = Double(timestamp)
             }
-            duration -= Int64(stream.videoTimestamp)
-            stream.videoTimestamp = Double(timestamp) - stream.videoTimestampZero
+            duration -= Int64(stream.videoTimeStamp)
+            stream.videoTimeStamp = Double(timestamp) - stream.videoTimestampZero
         default:
-            stream.videoTimestamp += Double(timestamp)
+            stream.videoTimeStamp += Double(timestamp)
         }
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(
-                value: Int64(stream.videoTimestamp) + Int64(compositionTime),
+                value: Int64(stream.videoTimeStamp) + Int64(compositionTime),
                 timescale: 1000
             ),
             decodeTimeStamp: compositionTime == 0 ? .invalid : CMTimeMake(
-                value: Int64(stream.videoTimestamp),
+                value: Int64(stream.videoTimeStamp),
                 timescale: 1000
             )
         )
