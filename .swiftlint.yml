@@ -14,3 +14,4 @@ disabled_rules:
   - non_optional_string_data_conversion
   - shorthand_operator
   - inclusive_language
+  - blanket_disable_command

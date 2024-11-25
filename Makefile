@@ -1,4 +1,4 @@
-FORMAT_ARGS=--maxwidth 120 --swiftversion 5
+FORMAT_ARGS=--maxwidth 120 --swiftversion 5 --exclude Moblin/Tesla/Protobuf
 LINT_ARGS=--strict --quiet
 
 all:
