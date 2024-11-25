@@ -22,6 +22,12 @@ import WatchConnectivity
 import WebKit
 import WrappingHStack
 
+private let teslaVehicleVin = ""
+private let teslaVehiclePrivateKey = """
+-----BEGIN EC PRIVATE KEY-----
+-----END EC PRIVATE KEY-----
+"""
+
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
@@ -1337,7 +1343,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
         bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
+        if false {
+            teslaVehicle = TeslaVehicle(vin: teslaVehicleVin, privateKey: teslaVehiclePrivateKey)
+            teslaVehicle?.start()
+        }
     }
+
+    private var teslaVehicle: TeslaVehicle?
 
     private func isWeatherNeeded() -> Bool {
         for widget in database.widgets {

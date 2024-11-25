@@ -13,3 +13,4 @@ disabled_rules:
   - closure_parameter_position
   - non_optional_string_data_conversion
   - shorthand_operator
+  - inclusive_language

@@ -48,6 +48,8 @@
 		0318B4132C845214002B4F58 /* QuickButtonChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318B4122C845214002B4F58 /* QuickButtonChatView.swift */; };
 		0318D35E2CF04C3A00E12F3B /* TargetLatenciesSynchronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318D35D2CF04C2B00E12F3B /* TargetLatenciesSynchronizer.swift */; };
 		0318D3612CF2BDC700E12F3B /* RemoteControlRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318D3602CF2BDBF00E12F3B /* RemoteControlRelay.swift */; };
+		0318D3642CF4FB3100E12F3B /* TeslaVehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318D3632CF4FB2C00E12F3B /* TeslaVehicle.swift */; };
+		0318D3672CF50B8800E12F3B /* CryptorECC in Frameworks */ = {isa = PBXBuildFile; productRef = 0318D3662CF50B8800E12F3B /* CryptorECC */; };
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
 		031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */; };
@@ -551,6 +553,7 @@
 		0318B4122C845214002B4F58 /* QuickButtonChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonChatView.swift; sourceTree = "<group>"; };
 		0318D35D2CF04C2B00E12F3B /* TargetLatenciesSynchronizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetLatenciesSynchronizer.swift; sourceTree = "<group>"; };
 		0318D3602CF2BDBF00E12F3B /* RemoteControlRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlRelay.swift; sourceTree = "<group>"; };
+		0318D3632CF4FB2C00E12F3B /* TeslaVehicle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaVehicle.swift; sourceTree = "<group>"; };
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
 		031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerStorage.swift; sourceTree = "<group>"; };
@@ -1009,6 +1012,7 @@
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
+				0318D3672CF50B8800E12F3B /* CryptorECC in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
 				0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */,
 				0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */,
@@ -1233,6 +1237,14 @@
 				0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */,
 			);
 			path = Image;
+			sourceTree = "<group>";
+		};
+		0318D3622CF4FB2300E12F3B /* Tesla */ = {
+			isa = PBXGroup;
+			children = (
+				0318D3632CF4FB2C00E12F3B /* TeslaVehicle.swift */,
+			);
+			path = Tesla;
 			sourceTree = "<group>";
 		};
 		031A2E0E2ADDDD62005CE350 /* VideoStabilization */ = {
@@ -1749,6 +1761,7 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
+				0318D3622CF4FB2300E12F3B /* Tesla */,
 				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				038C912A2C44691F003CAD5F /* DjiDevice */,
@@ -2685,6 +2698,7 @@
 				03D151AE2BFA73C100D29D8E /* MetalPetal */,
 				033BEAC32C0FCC0B005F4E06 /* NWWebSocket */,
 				03F465EB2C441D1400630708 /* CrcSwift */,
+				0318D3662CF50B8800E12F3B /* CryptorECC */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2799,6 +2813,7 @@
 				03D151AD2BFA73C100D29D8E /* XCRemoteSwiftPackageReference "MetalPetal" */,
 				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
+				0318D3652CF50B8800E12F3B /* XCRemoteSwiftPackageReference "BlueECC" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -2972,6 +2987,7 @@
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				03BA3B432C9019D500DEFA3E /* AtkinsonDithering.swift in Sources */,
+				0318D3642CF4FB3100E12F3B /* TeslaVehicle.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MoblinkCommon.swift in Sources */,
@@ -3876,6 +3892,14 @@
 				minimumVersion = 0.30.0;
 			};
 		};
+		0318D3652CF50B8800E12F3B /* XCRemoteSwiftPackageReference "BlueECC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Kitura/BlueECC.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.201;
+			};
+		};
 		0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ksemianov/WrappingHStack";
@@ -3979,6 +4003,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */;
 			productName = Telegraph;
+		};
+		0318D3662CF50B8800E12F3B /* CryptorECC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0318D3652CF50B8800E12F3B /* XCRemoteSwiftPackageReference "BlueECC" */;
+			productName = CryptorECC;
 		};
 		0320D8752AED36860030418F /* WrappingHStack */ = {
 			isa = XCSwiftPackageProductDependency;

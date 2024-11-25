@@ -92,7 +92,7 @@ class DjiDevice: NSObject {
         reset()
         startStartStreamingTimer()
         setState(state: .discovering)
-        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        centralManager = CBCentralManager(delegate: self, queue: .main)
     }
 
     func stopLiveStream() {
