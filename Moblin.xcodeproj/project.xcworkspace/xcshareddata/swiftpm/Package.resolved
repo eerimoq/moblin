@@ -12,10 +12,10 @@
     {
       "identity" : "blueecc",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Kitura/BlueECC.git",
+      "location" : "https://github.com/eerimoq/BlueECC.git",
       "state" : {
-        "revision" : "1485268a54f8135435a825a855e733f026fa6cc8",
-        "version" : "1.2.201"
+        "branch" : "master",
+        "revision" : "42a4e4e5ad74959c9ab7da4cfd1a4376529fe065"
       }
     },
     {

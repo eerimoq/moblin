@@ -3942,10 +3942,10 @@
 		};
 		0318D3652CF50B8800E12F3B /* XCRemoteSwiftPackageReference "BlueECC" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Kitura/BlueECC.git";
+			repositoryURL = "https://github.com/eerimoq/BlueECC.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.201;
+				branch = master;
+				kind = branch;
 			};
 		};
 		0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {

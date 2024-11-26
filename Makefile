@@ -27,7 +27,7 @@ lint:
 	swiftlint lint $(LINT_ARGS) "Moblin Screen Recording"
 
 periphery:
-	periphery scan
+	periphery scan --report-exclude Moblin/Tesla/Protobuf/**
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
