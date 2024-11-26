@@ -1338,7 +1338,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         MoblinShortcuts.updateAppShortcutParameters()
         bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
         let tesla = database.debug.tesla!
-        if tesla.vin != "" && tesla.privateKey != "" {
+        if tesla.vin != "", tesla.privateKey != "" {
             teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKey: tesla.privateKey)
             teslaVehicle?.start()
         }
