@@ -36,7 +36,6 @@ class TeslaVehicle: NSObject {
     }
 
     func start() {
-        startHandshake()
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: .main)
     }

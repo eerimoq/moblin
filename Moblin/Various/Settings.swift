@@ -1722,6 +1722,11 @@ class SettingsHttpProxy: Codable {
     }
 }
 
+class SettingsTesla: Codable {
+    var vin: String = ""
+    var privateKey: String = ""
+}
+
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
@@ -1743,6 +1748,7 @@ class SettingsDebug: Codable {
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
+    var tesla: SettingsTesla? = .init()
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4168,6 +4174,10 @@ final class Settings {
         }
         if realDatabase.remoteControl!.client.relay == nil {
             realDatabase.remoteControl!.client.relay = .init()
+            store()
+        }
+        if realDatabase.debug.tesla == nil {
+            realDatabase.debug.tesla = .init()
             store()
         }
     }

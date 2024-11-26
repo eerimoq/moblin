@@ -396,6 +396,7 @@
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
+		03C354662CF5A5A500B8B29F /* DebugTeslaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354652CF5A5A400B8B29F /* DebugTeslaSettingsView.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -947,6 +948,7 @@
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
+		03C354652CF5A5A400B8B29F /* DebugTeslaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugTeslaSettingsView.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -1949,10 +1951,11 @@
 		0379BB992AAD80AF00B718B6 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
-				03AC13C92CDED767000BC82A /* DebugHttpProxySettingsView.swift */,
 				031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */,
+				03AC13C92CDED767000BC82A /* DebugHttpProxySettingsView.swift */,
 				0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */,
 				0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */,
+				03C354652CF5A5A400B8B29F /* DebugTeslaSettingsView.swift */,
 				0358DDD52BE695B70080133B /* DebugVideoSettingsView.swift */,
 			);
 			path = Debug;
@@ -3259,6 +3262,7 @@
 				031BD2C52C2D11DC002D4E10 /* Platform.swift in Sources */,
 				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0359F8D72BD3DA61005BFDA8 /* MpegTsAudioConfig.swift in Sources */,
+				03C354662CF5A5A500B8B29F /* DebugTeslaSettingsView.swift in Sources */,
 				031E9FBB2C5ABCC9009FF4D8 /* TwitchAuth.swift in Sources */,
 				03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,

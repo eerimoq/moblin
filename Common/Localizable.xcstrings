@@ -80742,6 +80742,9 @@
         }
       }
     },
+    "Private key" : {
+
+    },
     "Protocol" : {
       "localizations" : {
         "de" : {
@@ -105327,6 +105330,9 @@
         }
       }
     },
+    "Tesla" : {
+
+    },
     "Test" : {
       "localizations" : {
         "de" : {
@@ -118589,6 +118595,9 @@
           }
         }
       }
+    },
+    "VIN" : {
+
     },
     "Voices" : {
       "localizations" : {

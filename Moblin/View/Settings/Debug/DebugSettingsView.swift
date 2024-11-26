@@ -121,6 +121,11 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("HTTP proxy")
                 }
+                NavigationLink {
+                    DebugTeslaSettingsView(privateKey: model.database.debug.tesla!.privateKey)
+                } label: {
+                    Text("Tesla")
+                }
             } header: {
                 Text("Experimental")
             }
