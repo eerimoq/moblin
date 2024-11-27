@@ -508,10 +508,10 @@ class Model: NSObject, ObservableObject {
     }
 
     private func updateWorkoutStats(stats: WatchProtocolWorkoutStats) {
-        guard let stats = try? JSONEncoder().encode(stats) else {
+        guard let data = try? JSONEncoder().encode(stats) else {
             return
         }
-        let message = WatchMessageFromWatch.pack(type: .updateWorkoutStats, data: stats)
+        let message = WatchMessageFromWatch.pack(type: .updateWorkoutStats, data: data)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 

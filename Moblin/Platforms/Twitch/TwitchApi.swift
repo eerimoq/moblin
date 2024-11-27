@@ -203,12 +203,12 @@ class TwitchApi {
         onComplete: @escaping (TwitchApiChannelPointsCustomRewards?) -> Void
     ) {
         doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            logger.info("Twitch rewards: \(String(data: data ?? Data(), encoding: .utf8))")
-            let data = try? JSONDecoder().decode(
+            // logger.info("Twitch rewards: \(String(data: data ?? Data(), encoding: .utf8))")
+            let message = try? JSONDecoder().decode(
                 TwitchApiChannelPointsCustomRewards.self,
                 from: data ?? Data()
             )
-            onComplete(data)
+            onComplete(message)
         })
     }
 
@@ -217,11 +217,11 @@ class TwitchApi {
         onComplete: @escaping (TwitchApiChannelInformationData?) -> Void
     ) {
         doGet(subPath: "channels?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            let data = try? JSONDecoder().decode(
+            let message = try? JSONDecoder().decode(
                 TwitchApiChannelInformation.self,
                 from: data ?? Data()
             )
-            onComplete(data?.data.first)
+            onComplete(message?.data.first)
         })
     }
 
@@ -237,11 +237,11 @@ class TwitchApi {
         }
         """
         doPost(subPath: "channels/commercial", body: body.utf8Data, onComplete: { data in
-            let data = try? JSONDecoder().decode(
+            let message = try? JSONDecoder().decode(
                 TwitchApiStartCommercial.self,
                 from: data ?? Data()
             )
-            onComplete(data?.data.first)
+            onComplete(message?.data.first)
         })
     }
 
@@ -255,11 +255,11 @@ class TwitchApi {
         }
         """
         doPost(subPath: "streams/markers", body: body.utf8Data, onComplete: { data in
-            let data = try? JSONDecoder().decode(
+            let message = try? JSONDecoder().decode(
                 TwitchApiCreateStreamMarker.self,
                 from: data ?? Data()
             )
-            onComplete(data?.data.first)
+            onComplete(message?.data.first)
         })
     }
 
@@ -291,11 +291,11 @@ class TwitchApi {
 
     func getGlobalChatBadges(onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void) {
         doGet(subPath: "chat/badges/global", onComplete: { data in
-            let data = try? JSONDecoder().decode(
+            let message = try? JSONDecoder().decode(
                 TwitchApiChatBadges.self,
                 from: data ?? Data()
             )
-            onComplete(data?.data)
+            onComplete(message?.data)
         })
     }
 
@@ -304,11 +304,11 @@ class TwitchApi {
         onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void
     ) {
         doGet(subPath: "chat/badges?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            let data = try? JSONDecoder().decode(
+            let message = try? JSONDecoder().decode(
                 TwitchApiChatBadges.self,
                 from: data ?? Data()
             )
-            onComplete(data?.data)
+            onComplete(message?.data)
         })
     }
 
@@ -320,11 +320,11 @@ class TwitchApi {
         doGet(
             subPath: "subscriptions?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
             onComplete: { data in
-                let data = try? JSONDecoder().decode(
+                let message = try? JSONDecoder().decode(
                     TwitchApiGetBroadcasterSubscriptions.self,
                     from: data ?? Data()
                 )
-                onComplete(data?.data.first)
+                onComplete(message?.data.first)
             }
         )
     }
@@ -336,11 +336,11 @@ class TwitchApi {
         doGet(
             subPath: "bits/cheermotes?broadcaster_id=\(broadcasterId)",
             onComplete: { data in
-                let data = try? JSONDecoder().decode(
+                let message = try? JSONDecoder().decode(
                     TwitchApiGetCheermotes.self,
                     from: data ?? Data()
                 )
-                onComplete(data?.data)
+                onComplete(message?.data)
             }
         )
     }

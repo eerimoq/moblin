@@ -211,16 +211,11 @@ class TeslaVehicle: NSObject {
         message.signatureData.aesGcmPersonalizedData.counter = sessionInfo.counter + 1
         message.signatureData.aesGcmPersonalizedData.expiresAt = sessionInfo.clockTime + 15
         let key = try createSymmetricKey(vehiclePublicKey: sessionInfo.publicKey)
-        let metadataHash = try createMetadata(
-            message.toDestination.domain,
-            message.signatureData.aesGcmPersonalizedData,
-            message.flags
-        )
+        let metadataHash = try createMetadata(message)
         let encrypted = try AES.GCM.seal(payload, using: key, authenticating: metadataHash)
         message.signatureData.aesGcmPersonalizedData.nonce = Data(encrypted.nonce.makeIterator())
         message.signatureData.aesGcmPersonalizedData.tag = encrypted.tag
         message.payload = .protobufMessageAsBytes(encrypted.ciphertext)
-        logger.info("tesla-vehicle: Encrypted payload \(encrypted.ciphertext.hexString())")
     }
 
     private func createSymmetricKey(vehiclePublicKey: Data) throws -> SymmetricKey {
@@ -235,19 +230,15 @@ class TeslaVehicle: NSObject {
         return SymmetricKey(data: sharedSecret)
     }
 
-    private func createMetadata(_ domain: UniversalMessage_Domain,
-                                _ aesGcmPersonalizedData: Signatures_AES_GCM_Personalized_Signature_Data,
-                                _ flags: UInt32) throws
-        -> Data
-    {
+    private func createMetadata(_ message: UniversalMessage_RoutableMessage) throws -> Data {
         let metadata = Metadata()
         try metadata.addUInt8(tag: .signatureType, UInt8(Signatures_SignatureType.aesGcmPersonalized.rawValue))
-        try metadata.addUInt8(tag: .domain, UInt8(domain.rawValue))
+        try metadata.addUInt8(tag: .domain, UInt8(message.toDestination.domain.rawValue))
         try metadata.add(tag: .personalization, vin.utf8Data)
-        try metadata.add(tag: .epoch, aesGcmPersonalizedData.epoch)
-        try metadata.addUInt32(tag: .expiresAt, aesGcmPersonalizedData.expiresAt)
-        try metadata.addUInt32(tag: .counter, aesGcmPersonalizedData.counter)
-        try metadata.addUInt32(tag: .flags, flags)
+        try metadata.add(tag: .epoch, message.signatureData.aesGcmPersonalizedData.epoch)
+        try metadata.addUInt32(tag: .expiresAt, message.signatureData.aesGcmPersonalizedData.expiresAt)
+        try metadata.addUInt32(tag: .counter, message.signatureData.aesGcmPersonalizedData.counter)
+        try metadata.addUInt32(tag: .flags, message.flags)
         return metadata.finalize(message: Data())
     }
 
@@ -285,7 +276,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
         guard localName == self.localName() else {
             return
         }
-        logger.info("tesla-vehicle: Connecting to \(localName)")
+        logger.debug("tesla-vehicle: Connecting to \(localName)")
         central.stopScan()
         vehiclePeripheral = peripheral
         peripheral.delegate = self
@@ -294,16 +285,16 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {
-        logger.info("tesla-vehicle: Connect failure")
+        logger.debug("tesla-vehicle: Connect failure")
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        logger.info("tesla-vehicle: Connected")
+        logger.debug("tesla-vehicle: Connected")
         peripheral.discoverServices([vehicleServiceUuid])
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
-        logger.info("tesla-vehicle: Disconnected")
+        logger.debug("tesla-vehicle: Disconnected")
     }
 }
 
@@ -382,7 +373,6 @@ private class Metadata {
     func finalize(message: Data) -> Data {
         writer.writeUInt8(UInt8(Signatures_Tag.end.rawValue))
         writer.writeBytes(message)
-        logger.info("tesla-vehicle: Metadata \(writer.data.hexString())")
         return Data(SHA256.hash(data: writer.data))
     }
 }
