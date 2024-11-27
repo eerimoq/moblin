@@ -13,12 +13,17 @@ struct DebugTeslaSettingsView: View {
                 ) {
                     model.database.debug.tesla!.vin = $0.trim()
                 }
-                TextEditNavigationView(
-                    title: String(localized: "Private key"),
-                    value: model.database.debug.tesla!.privateKey
-                ) {
-                    model.database.debug.tesla!.privateKey = $0.trim()
-                }
+            }
+            Section {
+                TextField("", text: $privateKey, axis: .vertical)
+                    .keyboardType(.default)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .onChange(of: privateKey) { _ in
+                        model.database.debug.tesla!.privateKey = privateKey
+                    }
+            } header: {
+                Text("Private key")
             }
         }
         .navigationTitle("Tesla")
