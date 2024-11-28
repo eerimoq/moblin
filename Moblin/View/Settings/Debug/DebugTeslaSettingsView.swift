@@ -25,6 +25,61 @@ struct DebugTeslaSettingsView: View {
             } header: {
                 Text("Private key")
             }
+            Section {
+                Button {
+                    model.teslaFlashLights()
+                } label: {
+                    HStack {
+                        Spacer()
+                    Text("Flash lights")
+                        Spacer()
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaHonk()
+                } label: {
+                    HStack {
+                        Spacer()
+                    Text("Honk")
+                        Spacer()
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaOpenTrunk()
+                } label: {
+                    HStack {
+                        Spacer()
+                    Text("Open trunk")
+                        Spacer()
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaCloseTrunk()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Close trunk")
+                        Spacer()
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaGetChargeState()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Get charge info")
+                        Spacer()
+                    }
+                }
+            }
         }
         .navigationTitle("Tesla")
     }

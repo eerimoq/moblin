@@ -1,3 +1,4 @@
+import Collections
 import CoreBluetooth
 import CryptoKit
 import CryptorECC
@@ -7,17 +8,105 @@ private let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf
 private let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
 private let fromVehicleUuid = CBUUID(string: "00000213-b2d1-43f0-9b88-960cebf8b91e")
 
-enum TeslaVehicleState {
+private enum TeslaVehicleState {
     case idle
     case discovering
     case connecting
     case handshaking
+    case connected
+}
+
+private func createSymmetricKey(clientPrivateKeyPem: String, vehiclePublicKey: Data) throws -> SymmetricKey {
+    let vehicleKeyDer = makeDer(publicKeyBytes: vehiclePublicKey)
+    let publicKey = try P256.KeyAgreement.PublicKey(derRepresentation: vehicleKeyDer)
+    let privateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: clientPrivateKeyPem)
+    let shared = try privateKey.sharedSecretFromKeyAgreement(with: publicKey)
+    let sharedData = shared.withUnsafeBytes { buffer in
+        Data(bytes: buffer.baseAddress!, count: buffer.count)
+    }
+    let sharedSecret = SHA1(data: sharedData).digest[0 ..< 16]
+    return SymmetricKey(data: sharedSecret)
+}
+
+private func makeDer(publicKeyBytes: Data) -> Data {
+    // Dirty, dirty, dirty...
+    let derStuff = Data([
+        0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86,
+        0x48, 0xCE, 0x3D, 0x02, 0x01, 0x06, 0x08, 0x2A,
+        0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
+        0x42, 0x00,
+    ])
+    return derStuff + publicKeyBytes
+}
+
+class VehicleDomain {
+    private let clientPrivateKeyPem: String
+    private var sessionInfo: Signatures_SessionInfo?
+    private var localClock: ContinuousClock.Instant = .now
+    private var requests: Deque<Data> = []
+    private var waitingForResponse = false
+    private var symmetricKey: SymmetricKey?
+
+    init(_ clientPrivateKeyPem: String) {
+        self.clientPrivateKeyPem = clientPrivateKeyPem
+    }
+
+    func updateSesionInfo(sessionInfo: Signatures_SessionInfo) throws {
+        symmetricKey = try createSymmetricKey(
+            clientPrivateKeyPem: clientPrivateKeyPem,
+            vehiclePublicKey: sessionInfo.publicKey
+        )
+        self.sessionInfo = sessionInfo
+        localClock = .now
+    }
+
+    func getSymmetricKey() throws -> SymmetricKey {
+        guard let symmetricKey else {
+            throw "Symmetric key missing"
+        }
+        return symmetricKey
+    }
+
+    func appendRequest(payload: Data) {
+        requests.append(payload)
+    }
+
+    func tryGetNextRequest() -> Data? {
+        guard !waitingForResponse else {
+            return nil
+        }
+        waitingForResponse = true
+        return requests.popFirst()
+    }
+
+    func responseReceived() {
+        waitingForResponse = false
+    }
+
+    func hasSessionInfo() -> Bool {
+        return sessionInfo != nil
+    }
+
+    func epoch() -> Data {
+        return sessionInfo?.epoch ?? Data()
+    }
+
+    func nextCounter() -> UInt32 {
+        sessionInfo?.counter += 1
+        return sessionInfo?.counter ?? 0
+    }
+
+    func expiresAt() -> UInt32 {
+        let clockTime = sessionInfo?.clockTime ?? 0
+        let elapsed = UInt32(localClock.duration(to: .now).seconds)
+        return clockTime + elapsed + 15
+    }
 }
 
 class TeslaVehicle: NSObject {
     private let vin: String
-    private let privateKeyPem: String
-    private let privateKey: ECPrivateKey
+    private let clientPrivateKeyPem: String
+    private let clientPublicKeyBytes: Data
     private var centralManager: CBCentralManager?
     private var vehiclePeripheral: CBPeripheral?
     private var toVehicleCharacteristic: CBCharacteristic?
@@ -25,13 +114,13 @@ class TeslaVehicle: NSObject {
     private var state: TeslaVehicleState = .idle
     private var responseHandlers: [Data: (UniversalMessage_RoutableMessage) throws -> Void] = [:]
     private var receivedData = Data()
-    private var sessionInfo: Signatures_SessionInfo?
+    private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
 
     init?(vin: String, privateKey: String) {
         self.vin = vin
-        privateKeyPem = privateKey
+        clientPrivateKeyPem = privateKey
         do {
-            self.privateKey = try ECPrivateKey(key: privateKey)
+            clientPublicKeyBytes = try ECPrivateKey(key: privateKey).pubKeyBytes
         } catch {
             logger.error("tesla-vehicle: Error \(error)")
             return nil
@@ -41,6 +130,8 @@ class TeslaVehicle: NSObject {
     func start() {
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: .main)
+        vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKeyPem)
+        vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKeyPem)
     }
 
     func stop() {
@@ -48,6 +139,10 @@ class TeslaVehicle: NSObject {
         vehiclePeripheral = nil
         toVehicleCharacteristic = nil
         fromVehicleCharacteristic = nil
+        responseHandlers.removeAll()
+        receivedData.removeAll()
+        vehicleDomains.removeAll()
+        setState(state: .idle)
     }
 
     func openTrunk() {
@@ -74,23 +169,35 @@ class TeslaVehicle: NSObject {
         executeCarServerAction(action)
     }
 
-    func getChargeState() {}
+    func getChargeState() {
+        var action = CarServer_Action()
+        action.vehicleAction.getVehicleData.getChargeState = .init()
+        executeCarServerAction(action)
+    }
 
     private func executeClosureMoveAction(_ closureMoveRequest: VCSEC_ClosureMoveRequest) {
+        guard let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
+            return
+        }
         var unsignedMessage = VCSEC_UnsignedMessage()
         unsignedMessage.closureMoveRequest = closureMoveRequest
         do {
             let payload = try unsignedMessage.serializedData()
-            try sendPayloadRequest(domain: .vehicleSecurity, payload: payload)
+            vehicleDomain.appendRequest(payload: payload)
+            try trySendNextRequest(domain: .vehicleSecurity)
         } catch {
             logger.info("tesla-vehicle: Execute closure move action error \(error)")
         }
     }
 
     private func executeCarServerAction(_ action: CarServer_Action) {
+        guard let vehicleDomain = vehicleDomains[.infotainment] else {
+            return
+        }
         do {
             let payload = try action.serializedData()
-            try sendPayloadRequest(domain: .infotainment, payload: payload)
+            vehicleDomain.appendRequest(payload: payload)
+            try trySendNextRequest(domain: .infotainment)
         } catch {
             logger.info("tesla-vehicle: Send payload request error \(error)")
         }
@@ -115,7 +222,7 @@ class TeslaVehicle: NSObject {
 
     private func startHandshake() throws {
         setState(state: .handshaking)
-        // sendSessionInfoRequest(domain: .vehicleSecurity)
+        try sendSessionInfoRequest(domain: .vehicleSecurity)
         try sendSessionInfoRequest(domain: .infotainment)
     }
 
@@ -125,36 +232,52 @@ class TeslaVehicle: NSObject {
         var message = UniversalMessage_RoutableMessage()
         message.toDestination.domain = domain
         message.fromDestination.routingAddress = address
-        message.sessionInfoRequest.publicKey = privateKey.pubKeyBytes
+        message.sessionInfoRequest.publicKey = clientPublicKeyBytes
         message.uuid = uuid
         responseHandlers[address] = handleSessionInfoResponse(message:)
         try sendMessage(message: message)
     }
 
     private func handleSessionInfoResponse(message: UniversalMessage_RoutableMessage) throws {
-        sessionInfo = try Signatures_SessionInfo(serializedBytes: message.sessionInfo)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.flashLights()
+        let domain = message.fromDestination.domain
+        let sessionInfo = try Signatures_SessionInfo(serializedBytes: message.sessionInfo)
+        try vehicleDomains[domain]?.updateSesionInfo(sessionInfo: sessionInfo)
+        if vehicleDomains.values.filter({ $0.hasSessionInfo() }).count == 2 {
+            setState(state: .connected)
+            try trySendNextRequest(domain: .vehicleSecurity)
+            try trySendNextRequest(domain: .infotainment)
         }
     }
 
     private func sendPayloadRequest(domain: UniversalMessage_Domain, payload: Data) throws {
         let address = getNextAddress()
-        let uuid = Data.random(length: 16)
-        var message = UniversalMessage_RoutableMessage()
-        message.toDestination.domain = domain
-        message.fromDestination.routingAddress = address
-        message.uuid = uuid
-        message.flags = 1 << UniversalMessage_Flags.flagEncryptResponse.rawValue
-        responseHandlers[address] = handlePayloadResponse(message:)
-        logger.info("tesla-vehicle: Payload \(payload.hexString())")
-        try sign(message: &message, payload: payload)
-        try sendMessage(message: message)
+        var request = UniversalMessage_RoutableMessage()
+        request.toDestination.domain = domain
+        request.fromDestination.routingAddress = address
+        request.uuid = Data.random(length: 16)
+        request.flags = 1 << UniversalMessage_Flags.flagEncryptResponse.rawValue
+        responseHandlers[address] = handlePayloadResponse(response:)
+        try sign(message: &request, payload: payload)
+        try sendMessage(message: request)
     }
 
-    private func handlePayloadResponse(message: UniversalMessage_RoutableMessage) throws {
-        logger.info("tesla-vehicle: Got payload status \(message.signedMessageStatus.signedMessageFault)")
-        try logger.info("tesla-vehicle: Got payload for \(message.jsonString())")
+    private func handlePayloadResponse(response: UniversalMessage_RoutableMessage) throws {
+        let domain = response.fromDestination.domain
+        guard let vehicleDomain = vehicleDomains[domain] else {
+            throw "Invalid vehicle domain received in response"
+        }
+        vehicleDomain.responseReceived()
+        try trySendNextRequest(domain: domain)
+        guard response.signedMessageStatus.signedMessageFault == .rrorNone else {
+            throw try "Request was not successful. Response \(response.jsonString())"
+        }
+        try logger.info("tesla-vehicle: Response \(response.jsonString())")
+    }
+
+    private func trySendNextRequest(domain: UniversalMessage_Domain) throws {
+        if let payload = vehicleDomains[domain]?.tryGetNextRequest() {
+            try sendPayloadRequest(domain: domain, payload: payload)
+        }
     }
 
     private func handleMessage(message: Data) throws {
@@ -171,12 +294,7 @@ class TeslaVehicle: NSObject {
         }
         let message = try UniversalMessage_RoutableMessage(serializedBytes: payload)
         // logger.info("tesla-vehicle: Got \(try message.jsonString())")
-        switch message.toDestination.subDestination {
-        case let .routingAddress(address):
-            try responseHandlers[address]?(message)
-        default:
-            logger.info("tesla-vehicle: Unexpected non-routing address")
-        }
+        try responseHandlers[message.toDestination.routingAddress]?(message)
     }
 
     private func sendMessage(message: UniversalMessage_RoutableMessage) throws {
@@ -202,32 +320,19 @@ class TeslaVehicle: NSObject {
     }
 
     private func sign(message: inout UniversalMessage_RoutableMessage, payload: Data) throws {
-        guard let sessionInfo else {
-            return
+        guard let vehicleDomain = vehicleDomains[message.toDestination.domain] else {
+            throw "Cannot sign for missing vehicle domain"
         }
-        logger.info("tesla-vehicle: Counter \(sessionInfo.counter)")
-        message.signatureData.signerIdentity.publicKey = privateKey.pubKeyBytes
-        message.signatureData.aesGcmPersonalizedData.epoch = sessionInfo.epoch
-        message.signatureData.aesGcmPersonalizedData.counter = sessionInfo.counter + 1
-        message.signatureData.aesGcmPersonalizedData.expiresAt = sessionInfo.clockTime + 15
-        let key = try createSymmetricKey(vehiclePublicKey: sessionInfo.publicKey)
+        message.signatureData.signerIdentity.publicKey = clientPublicKeyBytes
+        message.signatureData.aesGcmPersonalizedData.epoch = vehicleDomain.epoch()
+        message.signatureData.aesGcmPersonalizedData.counter = vehicleDomain.nextCounter()
+        message.signatureData.aesGcmPersonalizedData.expiresAt = vehicleDomain.expiresAt()
+        let key = try vehicleDomain.getSymmetricKey()
         let metadataHash = try createMetadata(message)
         let encrypted = try AES.GCM.seal(payload, using: key, authenticating: metadataHash)
         message.signatureData.aesGcmPersonalizedData.nonce = Data(encrypted.nonce.makeIterator())
         message.signatureData.aesGcmPersonalizedData.tag = encrypted.tag
-        message.payload = .protobufMessageAsBytes(encrypted.ciphertext)
-    }
-
-    private func createSymmetricKey(vehiclePublicKey: Data) throws -> SymmetricKey {
-        let vehicleKeyDer = makeDer(publicBytes: vehiclePublicKey)
-        let publicKey = try P256.KeyAgreement.PublicKey(derRepresentation: vehicleKeyDer)
-        let privateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
-        let shared = try privateKey.sharedSecretFromKeyAgreement(with: publicKey)
-        let sharedData = shared.withUnsafeBytes { buffer in
-            Data(bytes: buffer.baseAddress!, count: buffer.count)
-        }
-        let sharedSecret = SHA1(data: sharedData).digest[0 ..< 16]
-        return SymmetricKey(data: sharedSecret)
+        message.protobufMessageAsBytes = encrypted.ciphertext
     }
 
     private func createMetadata(_ message: UniversalMessage_RoutableMessage) throws -> Data {
@@ -240,17 +345,6 @@ class TeslaVehicle: NSObject {
         try metadata.addUInt32(tag: .counter, message.signatureData.aesGcmPersonalizedData.counter)
         try metadata.addUInt32(tag: .flags, message.flags)
         return metadata.finalize(message: Data())
-    }
-
-    private func makeDer(publicBytes: Data) -> Data {
-        // Dirty, dirty, dirty...
-        let derStuff = Data([
-            0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86,
-            0x48, 0xCE, 0x3D, 0x02, 0x01, 0x06, 0x08, 0x2A,
-            0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
-            0x42, 0x00,
-        ])
-        return derStuff + publicBytes
     }
 }
 
@@ -315,7 +409,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
                 toVehicleCharacteristic = characteristic
             } else if characteristic.uuid == fromVehicleUuid {
                 fromVehicleCharacteristic = characteristic
-                peripheral.setNotifyValue(true, for: characteristic)
+                peripheral.setNotifyValue(true, for: fromVehicleCharacteristic!)
             }
         }
         do {

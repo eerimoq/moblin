@@ -570,6 +570,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     let chatTextToSpeech = ChatTextToSpeech()
 
+    private var teslaVehicle: TeslaVehicle?
+
     private var lastAttachCompletedTime: ContinuousClock.Instant?
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
@@ -1337,6 +1339,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
         bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
+        reloadTeslaVehicle()
+    }
+
+    private func reloadTeslaVehicle() {
+        stopTeslaVehicle()
         let tesla = database.debug.tesla!
         if tesla.vin != "", tesla.privateKey != "" {
             teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKey: tesla.privateKey)
@@ -1344,7 +1351,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private var teslaVehicle: TeslaVehicle?
+    private func stopTeslaVehicle() {
+        teslaVehicle?.stop()
+        teslaVehicle = nil
+    }
+
+    func teslaFlashLights() {
+        teslaVehicle?.flashLights()
+    }
+
+    func teslaHonk() {
+        teslaVehicle?.honk()
+    }
+
+    func teslaGetChargeState() {
+        teslaVehicle?.getChargeState()
+    }
+
+    func teslaOpenTrunk() {
+        teslaVehicle?.openTrunk()
+    }
+
+    func teslaCloseTrunk() {
+        teslaVehicle?.closeTrunk()
+    }
 
     private func isWeatherNeeded() -> Bool {
         for widget in database.widgets {
@@ -1669,6 +1699,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             media.stopAllNetStreams()
             speechToText.stop()
             stopWorkout(showToast: false)
+            stopTeslaVehicle()
         }
     }
 
@@ -1691,6 +1722,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 resumeRecording()
             }
             reloadSpeechToText()
+            reloadTeslaVehicle()
         }
     }
 

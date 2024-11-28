@@ -29372,6 +29372,9 @@
         }
       }
     },
+    "Close trunk" : {
+
+    },
     "Codec" : {
       "localizations" : {
         "de" : {
@@ -50178,6 +50181,9 @@
         }
       }
     },
+    "Flash lights" : {
+
+    },
     "FOC" : {
       "localizations" : {
         "de" : {
@@ -53168,6 +53174,9 @@
         }
       }
     },
+    "Get charge info" : {
+
+    },
     "Gift subsciptions" : {
       "localizations" : {
         "de" : {
@@ -55507,6 +55516,9 @@
           }
         }
       }
+    },
+    "Honk" : {
+
     },
     "HorizonBalancing" : {
       "localizations" : {
@@ -76061,6 +76073,9 @@
           }
         }
       }
+    },
+    "Open trunk" : {
+
     },
     "Optional, but simplifies the setup." : {
       "localizations" : {
