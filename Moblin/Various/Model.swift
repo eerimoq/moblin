@@ -1375,7 +1375,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func teslaCloseTrunk() {
         teslaVehicle?.closeTrunk()
     }
-    
+
     func teslaPing() {
         teslaVehicle?.ping()
     }

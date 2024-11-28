@@ -39,18 +39,18 @@ private func makeDer(publicKeyBytes: Data) -> Data {
     return derStuff + publicKeyBytes
 }
 
-private struct Request {
+private struct Job {
+    let address: Data
     let playload: Data
     let onCompleted: (_ request: UniversalMessage_RoutableMessage, _ response: UniversalMessage_RoutableMessage) throws
         -> Void
 }
 
-class VehicleDomain {
+private class VehicleDomain {
     private let clientPrivateKeyPem: String
     private var sessionInfo: Signatures_SessionInfo?
     private var localClock: ContinuousClock.Instant = .now
-    private var requests: Deque<Request> = []
-    private var currentRequest: Request?
+    private var jobs: Deque<Job> = []
     private var symmetricKey: SymmetricKey?
 
     init(_ clientPrivateKeyPem: String) {
@@ -74,27 +74,19 @@ class VehicleDomain {
     }
 
     func appendRequest(
+        address: Data,
         payload: Data,
         onCompleted: @escaping (_ request: UniversalMessage_RoutableMessage,
                                 _ response: UniversalMessage_RoutableMessage) throws -> Void
     ) {
-        requests.append(Request(playload: payload, onCompleted: onCompleted))
+        jobs.append(Job(address: address, playload: payload, onCompleted: onCompleted))
     }
 
-    func finalizeRequest(request: UniversalMessage_RoutableMessage, response: UniversalMessage_RoutableMessage) throws {
-        guard let currentRequest else {
-            return
-        }
-        self.currentRequest = nil
-        try currentRequest.onCompleted(request, response)
-    }
-
-    func tryGetNextRequest() -> Data? {
-        guard currentRequest == nil, hasSessionInfo() else {
+    func tryGetNextJob() -> Job? {
+        guard hasSessionInfo() else {
             return nil
         }
-        currentRequest = requests.popFirst()
-        return currentRequest?.playload
+        return jobs.popFirst()
     }
 
     func hasSessionInfo() -> Bool {
@@ -174,11 +166,11 @@ class TeslaVehicle: NSObject {
             logger.info("tesla-vehicle: Close trunk response")
         }
     }
-    
+
     func ping() {
         var action = CarServer_Action()
         action.vehicleAction.ping.pingID = 1
-        executeCarServerAction(action) { response in
+        executeCarServerAction(action) { _ in
             logger.info("tesla-vehicle: Ping response")
             // try logger.info("tesla-vehicle: Message \(response.jsonString())")
         }
@@ -187,7 +179,7 @@ class TeslaVehicle: NSObject {
     func honk() {
         var action = CarServer_Action()
         action.vehicleAction.vehicleControlHonkHornAction = .init()
-        executeCarServerAction(action) { response in
+        executeCarServerAction(action) { _ in
             logger.info("tesla-vehicle: Honk response")
             // try logger.info("tesla-vehicle: Message \(response.jsonString())")
         }
@@ -196,7 +188,7 @@ class TeslaVehicle: NSObject {
     func flashLights() {
         var action = CarServer_Action()
         action.vehicleAction.vehicleControlFlashLightsAction = .init()
-        executeCarServerAction(action) { response in
+        executeCarServerAction(action) { _ in
             logger.info("tesla-vehicle: Flash lights response")
             // try logger.info("tesla-vehicle: Message \(response.jsonString())")
         }
@@ -222,10 +214,10 @@ class TeslaVehicle: NSObject {
         unsignedMessage.closureMoveRequest = closureMoveRequest
         do {
             let payload = try unsignedMessage.serializedData()
-            vehicleDomain.appendRequest(payload: payload) { _, _ in
+            vehicleDomain.appendRequest(address: getNextAddress(), payload: payload) { _, _ in
                 try onCompleted()
             }
-            try trySendNextRequest(domain: .vehicleSecurity)
+            try trySendNextJob(domain: .vehicleSecurity)
         } catch {
             logger.info("tesla-vehicle: Execute closure move action error \(error)")
         }
@@ -240,7 +232,7 @@ class TeslaVehicle: NSObject {
         }
         do {
             let payload = try action.serializedData()
-            vehicleDomain.appendRequest(payload: payload) { request, response in
+            vehicleDomain.appendRequest(address: getNextAddress(), payload: payload) { request, response in
                 let aesGcmResponseData = response.signatureData.aesGcmResponseData
                 let sealedBox = try AES.GCM.SealedBox(nonce: .init(data: aesGcmResponseData.nonce),
                                                       ciphertext: response.protobufMessageAsBytes,
@@ -255,7 +247,7 @@ class TeslaVehicle: NSObject {
                 }
                 try onCompleted(response)
             }
-            try trySendNextRequest(domain: .infotainment)
+            try trySendNextJob(domain: .infotainment)
         } catch {
             logger.info("tesla-vehicle: Execute car server action error \(error)")
         }
@@ -307,42 +299,39 @@ class TeslaVehicle: NSObject {
         try vehicleDomains[domain]?.updateSesionInfo(sessionInfo: sessionInfo)
         if vehicleDomains.values.filter({ $0.hasSessionInfo() }).count == 2 {
             setState(state: .connected)
-            try trySendNextRequest(domain: .vehicleSecurity)
-            try trySendNextRequest(domain: .infotainment)
+            try trySendNextJob(domain: .vehicleSecurity)
+            try trySendNextJob(domain: .infotainment)
         }
     }
 
-    private func sendPayloadRequest(domain: UniversalMessage_Domain, payload: Data) throws {
-        let address = getNextAddress()
+    private func startJob(domain: UniversalMessage_Domain, job: Job) throws {
         var request = UniversalMessage_RoutableMessage()
         request.toDestination.domain = domain
-        request.fromDestination.routingAddress = address
+        request.fromDestination.routingAddress = job.address
         request.uuid = Data.random(length: 16)
         request.flags = 1 << UniversalMessage_Flags.flagEncryptResponse.rawValue
-        try sign(message: &request, payload: payload)
-        responseHandlers[address] = { response in
-            try self.handlePayloadResponse(request, response)
+        try sign(message: &request, payload: job.playload)
+        responseHandlers[job.address] = { response in
+            try self.handleJobResponse(job, request, response)
         }
         try sendMessage(message: request)
     }
 
-    private func handlePayloadResponse(_ request: UniversalMessage_RoutableMessage,
-                                       _ response: UniversalMessage_RoutableMessage) throws
+    private func handleJobResponse(_ job: Job,
+                                   _ request: UniversalMessage_RoutableMessage,
+                                   _ response: UniversalMessage_RoutableMessage) throws
     {
         let domain = response.fromDestination.domain
-        guard let vehicleDomain = vehicleDomains[domain] else {
-            throw "Invalid vehicle domain received in response"
-        }
-        try vehicleDomain.finalizeRequest(request: request, response: response)
-        try trySendNextRequest(domain: domain)
+        try job.onCompleted(request, response)
+        try trySendNextJob(domain: domain)
         guard response.signedMessageStatus.signedMessageFault == .rrorNone else {
             throw try "Request was not successful. Response \(response.jsonString())"
         }
     }
 
-    private func trySendNextRequest(domain: UniversalMessage_Domain) throws {
-        if let payload = vehicleDomains[domain]?.tryGetNextRequest() {
-            try sendPayloadRequest(domain: domain, payload: payload)
+    private func trySendNextJob(domain: UniversalMessage_Domain) throws {
+        if let job = vehicleDomains[domain]?.tryGetNextJob() {
+            try startJob(domain: domain, job: job)
         }
     }
 
@@ -523,7 +512,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didWriteValueFor _: CBCharacteristic, error: (any Error)?) {
+    func peripheral(_: CBPeripheral, didWriteValueFor _: CBCharacteristic, error _: (any Error)?) {
         // logger.info("tesla-vehicle: didWriteValueFor \(error)")
     }
 
