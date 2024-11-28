@@ -31,7 +31,7 @@ struct DebugTeslaSettingsView: View {
                 } label: {
                     HStack {
                         Spacer()
-                    Text("Flash lights")
+                        Text("Flash lights")
                         Spacer()
                     }
                 }
@@ -42,7 +42,7 @@ struct DebugTeslaSettingsView: View {
                 } label: {
                     HStack {
                         Spacer()
-                    Text("Honk")
+                        Text("Honk")
                         Spacer()
                     }
                 }
@@ -53,7 +53,7 @@ struct DebugTeslaSettingsView: View {
                 } label: {
                     HStack {
                         Spacer()
-                    Text("Open trunk")
+                        Text("Open trunk")
                         Spacer()
                     }
                 }
@@ -65,6 +65,17 @@ struct DebugTeslaSettingsView: View {
                     HStack {
                         Spacer()
                         Text("Close trunk")
+                        Spacer()
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaPing()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Ping")
                         Spacer()
                     }
                 }

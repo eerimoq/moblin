@@ -39,12 +39,18 @@ private func makeDer(publicKeyBytes: Data) -> Data {
     return derStuff + publicKeyBytes
 }
 
+private struct Request {
+    let playload: Data
+    let onCompleted: (_ request: UniversalMessage_RoutableMessage, _ response: UniversalMessage_RoutableMessage) throws
+        -> Void
+}
+
 class VehicleDomain {
     private let clientPrivateKeyPem: String
     private var sessionInfo: Signatures_SessionInfo?
     private var localClock: ContinuousClock.Instant = .now
-    private var requests: Deque<Data> = []
-    private var waitingForResponse = false
+    private var requests: Deque<Request> = []
+    private var currentRequest: Request?
     private var symmetricKey: SymmetricKey?
 
     init(_ clientPrivateKeyPem: String) {
@@ -67,20 +73,28 @@ class VehicleDomain {
         return symmetricKey
     }
 
-    func appendRequest(payload: Data) {
-        requests.append(payload)
+    func appendRequest(
+        payload: Data,
+        onCompleted: @escaping (_ request: UniversalMessage_RoutableMessage,
+                                _ response: UniversalMessage_RoutableMessage) throws -> Void
+    ) {
+        requests.append(Request(playload: payload, onCompleted: onCompleted))
+    }
+
+    func finalizeRequest(request: UniversalMessage_RoutableMessage, response: UniversalMessage_RoutableMessage) throws {
+        guard let currentRequest else {
+            return
+        }
+        self.currentRequest = nil
+        try currentRequest.onCompleted(request, response)
     }
 
     func tryGetNextRequest() -> Data? {
-        guard !waitingForResponse else {
+        guard currentRequest == nil, hasSessionInfo() else {
             return nil
         }
-        waitingForResponse = true
-        return requests.popFirst()
-    }
-
-    func responseReceived() {
-        waitingForResponse = false
+        currentRequest = requests.popFirst()
+        return currentRequest?.playload
     }
 
     func hasSessionInfo() -> Bool {
@@ -148,34 +162,59 @@ class TeslaVehicle: NSObject {
     func openTrunk() {
         var closureMoveRequest = VCSEC_ClosureMoveRequest()
         closureMoveRequest.rearTrunk = .closureMoveTypeOpen
-        executeClosureMoveAction(closureMoveRequest)
+        executeClosureMoveAction(closureMoveRequest) {
+            logger.info("tesla-vehicle: Open trunk response")
+        }
     }
 
     func closeTrunk() {
         var closureMoveRequest = VCSEC_ClosureMoveRequest()
         closureMoveRequest.rearTrunk = .closureMoveTypeClose
-        executeClosureMoveAction(closureMoveRequest)
+        executeClosureMoveAction(closureMoveRequest) {
+            logger.info("tesla-vehicle: Close trunk response")
+        }
+    }
+    
+    func ping() {
+        var action = CarServer_Action()
+        action.vehicleAction.ping.pingID = 1
+        executeCarServerAction(action) { response in
+            logger.info("tesla-vehicle: Ping response")
+            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
+        }
     }
 
     func honk() {
         var action = CarServer_Action()
         action.vehicleAction.vehicleControlHonkHornAction = .init()
-        executeCarServerAction(action)
+        executeCarServerAction(action) { response in
+            logger.info("tesla-vehicle: Honk response")
+            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
+        }
     }
 
     func flashLights() {
         var action = CarServer_Action()
         action.vehicleAction.vehicleControlFlashLightsAction = .init()
-        executeCarServerAction(action)
+        executeCarServerAction(action) { response in
+            logger.info("tesla-vehicle: Flash lights response")
+            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
+        }
     }
 
     func getChargeState() {
         var action = CarServer_Action()
         action.vehicleAction.getVehicleData.getChargeState = .init()
-        executeCarServerAction(action)
+        executeCarServerAction(action) { response in
+            let percentage = response.vehicleData.chargeState.batteryLevel
+            logger.info("tesla-vehicle: Battery level \(percentage)")
+            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
+        }
     }
 
-    private func executeClosureMoveAction(_ closureMoveRequest: VCSEC_ClosureMoveRequest) {
+    private func executeClosureMoveAction(_ closureMoveRequest: VCSEC_ClosureMoveRequest,
+                                          onCompleted: @escaping () throws -> Void)
+    {
         guard let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
             return
         }
@@ -183,23 +222,42 @@ class TeslaVehicle: NSObject {
         unsignedMessage.closureMoveRequest = closureMoveRequest
         do {
             let payload = try unsignedMessage.serializedData()
-            vehicleDomain.appendRequest(payload: payload)
+            vehicleDomain.appendRequest(payload: payload) { _, _ in
+                try onCompleted()
+            }
             try trySendNextRequest(domain: .vehicleSecurity)
         } catch {
             logger.info("tesla-vehicle: Execute closure move action error \(error)")
         }
     }
 
-    private func executeCarServerAction(_ action: CarServer_Action) {
+    private func executeCarServerAction(
+        _ action: CarServer_Action,
+        onCompleted: @escaping (CarServer_Response) throws -> Void
+    ) {
         guard let vehicleDomain = vehicleDomains[.infotainment] else {
             return
         }
         do {
             let payload = try action.serializedData()
-            vehicleDomain.appendRequest(payload: payload)
+            vehicleDomain.appendRequest(payload: payload) { request, response in
+                let aesGcmResponseData = response.signatureData.aesGcmResponseData
+                let sealedBox = try AES.GCM.SealedBox(nonce: .init(data: aesGcmResponseData.nonce),
+                                                      ciphertext: response.protobufMessageAsBytes,
+                                                      tag: aesGcmResponseData.tag)
+                let metadataHash = try self.createResponseMetadata(request, response)
+                let decoded = try AES.GCM.open(sealedBox,
+                                               using: vehicleDomain.getSymmetricKey(),
+                                               authenticating: metadataHash)
+                let response = try CarServer_Response(serializedBytes: decoded)
+                if response.actionStatus.result != .operationstatusOk {
+                    logger.info("tesla-vehicle: Car server response status not ok")
+                }
+                try onCompleted(response)
+            }
             try trySendNextRequest(domain: .infotainment)
         } catch {
-            logger.info("tesla-vehicle: Send payload request error \(error)")
+            logger.info("tesla-vehicle: Execute car server action error \(error)")
         }
     }
 
@@ -234,13 +292,18 @@ class TeslaVehicle: NSObject {
         message.fromDestination.routingAddress = address
         message.sessionInfoRequest.publicKey = clientPublicKeyBytes
         message.uuid = uuid
-        responseHandlers[address] = handleSessionInfoResponse(message:)
+        responseHandlers[address] = { response in
+            try self.handleSessionInfoResponse(message, response)
+        }
         try sendMessage(message: message)
     }
 
-    private func handleSessionInfoResponse(message: UniversalMessage_RoutableMessage) throws {
-        let domain = message.fromDestination.domain
-        let sessionInfo = try Signatures_SessionInfo(serializedBytes: message.sessionInfo)
+    private func handleSessionInfoResponse(
+        _: UniversalMessage_RoutableMessage,
+        _ response: UniversalMessage_RoutableMessage
+    ) throws {
+        let domain = response.fromDestination.domain
+        let sessionInfo = try Signatures_SessionInfo(serializedBytes: response.sessionInfo)
         try vehicleDomains[domain]?.updateSesionInfo(sessionInfo: sessionInfo)
         if vehicleDomains.values.filter({ $0.hasSessionInfo() }).count == 2 {
             setState(state: .connected)
@@ -256,22 +319,25 @@ class TeslaVehicle: NSObject {
         request.fromDestination.routingAddress = address
         request.uuid = Data.random(length: 16)
         request.flags = 1 << UniversalMessage_Flags.flagEncryptResponse.rawValue
-        responseHandlers[address] = handlePayloadResponse(response:)
         try sign(message: &request, payload: payload)
+        responseHandlers[address] = { response in
+            try self.handlePayloadResponse(request, response)
+        }
         try sendMessage(message: request)
     }
 
-    private func handlePayloadResponse(response: UniversalMessage_RoutableMessage) throws {
+    private func handlePayloadResponse(_ request: UniversalMessage_RoutableMessage,
+                                       _ response: UniversalMessage_RoutableMessage) throws
+    {
         let domain = response.fromDestination.domain
         guard let vehicleDomain = vehicleDomains[domain] else {
             throw "Invalid vehicle domain received in response"
         }
-        vehicleDomain.responseReceived()
+        try vehicleDomain.finalizeRequest(request: request, response: response)
         try trySendNextRequest(domain: domain)
         guard response.signedMessageStatus.signedMessageFault == .rrorNone else {
             throw try "Request was not successful. Response \(response.jsonString())"
         }
-        try logger.info("tesla-vehicle: Response \(response.jsonString())")
     }
 
     private func trySendNextRequest(domain: UniversalMessage_Domain) throws {
@@ -293,12 +359,22 @@ class TeslaVehicle: NSObject {
             receivedData = try reader.readBytes(reader.bytesAvailable)
         }
         let message = try UniversalMessage_RoutableMessage(serializedBytes: payload)
-        // logger.info("tesla-vehicle: Got \(try message.jsonString())")
-        try responseHandlers[message.toDestination.routingAddress]?(message)
+        switch message.toDestination.subDestination {
+        case .domain:
+            return
+        default:
+            break
+        }
+        // try logger.info("tesla-vehicle: Got \(message.jsonString())")
+        guard let responseHandler = responseHandlers.removeValue(forKey: message.toDestination.routingAddress) else {
+            logger.info("tesla-vehicle: No response handler found")
+            return
+        }
+        try responseHandler(message)
     }
 
     private func sendMessage(message: UniversalMessage_RoutableMessage) throws {
-        // logger.info("tesla-vehicle: Sending \(try message.jsonString())")
+        // try logger.info("tesla-vehicle: Sending \(message.jsonString())")
         let message = try message.serializedData()
         sendData(message: message)
     }
@@ -328,14 +404,14 @@ class TeslaVehicle: NSObject {
         message.signatureData.aesGcmPersonalizedData.counter = vehicleDomain.nextCounter()
         message.signatureData.aesGcmPersonalizedData.expiresAt = vehicleDomain.expiresAt()
         let key = try vehicleDomain.getSymmetricKey()
-        let metadataHash = try createMetadata(message)
+        let metadataHash = try createRequestMetadata(message)
         let encrypted = try AES.GCM.seal(payload, using: key, authenticating: metadataHash)
         message.signatureData.aesGcmPersonalizedData.nonce = Data(encrypted.nonce.makeIterator())
         message.signatureData.aesGcmPersonalizedData.tag = encrypted.tag
         message.protobufMessageAsBytes = encrypted.ciphertext
     }
 
-    private func createMetadata(_ message: UniversalMessage_RoutableMessage) throws -> Data {
+    private func createRequestMetadata(_ message: UniversalMessage_RoutableMessage) throws -> Data {
         let metadata = Metadata()
         try metadata.addUInt8(tag: .signatureType, UInt8(Signatures_SignatureType.aesGcmPersonalized.rawValue))
         try metadata.addUInt8(tag: .domain, UInt8(message.toDestination.domain.rawValue))
@@ -344,6 +420,22 @@ class TeslaVehicle: NSObject {
         try metadata.addUInt32(tag: .expiresAt, message.signatureData.aesGcmPersonalizedData.expiresAt)
         try metadata.addUInt32(tag: .counter, message.signatureData.aesGcmPersonalizedData.counter)
         try metadata.addUInt32(tag: .flags, message.flags)
+        return metadata.finalize(message: Data())
+    }
+
+    private func createResponseMetadata(_ request: UniversalMessage_RoutableMessage,
+                                        _ response: UniversalMessage_RoutableMessage) throws -> Data
+    {
+        let metadata = Metadata()
+        try metadata.addUInt8(tag: .signatureType, UInt8(Signatures_SignatureType.aesGcmResponse.rawValue))
+        try metadata.addUInt8(tag: .domain, UInt8(response.fromDestination.domain.rawValue))
+        try metadata.add(tag: .personalization, vin.utf8Data) // ?
+        try metadata.addUInt32(tag: .counter, response.signatureData.aesGcmResponseData.counter)
+        try metadata.addUInt32(tag: .flags, response.flags)
+        var requestId = Data([UInt8(Signatures_SignatureType.aesGcmPersonalized.rawValue)])
+        requestId += request.signatureData.aesGcmPersonalizedData.tag
+        try metadata.add(tag: .requestHash, requestId)
+        try metadata.addUInt32(tag: .fault, UInt32(response.signedMessageStatus.signedMessageFault.rawValue))
         return metadata.finalize(message: Data())
     }
 }
@@ -370,7 +462,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
         guard localName == self.localName() else {
             return
         }
-        logger.debug("tesla-vehicle: Connecting to \(localName)")
+        logger.info("tesla-vehicle: Connecting to \(localName)")
         central.stopScan()
         vehiclePeripheral = peripheral
         peripheral.delegate = self
@@ -379,16 +471,16 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {
-        logger.debug("tesla-vehicle: Connect failure")
+        logger.info("tesla-vehicle: Connect failure")
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        logger.debug("tesla-vehicle: Connected")
+        logger.info("tesla-vehicle: Connected")
         peripheral.discoverServices([vehicleServiceUuid])
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
-        logger.debug("tesla-vehicle: Disconnected")
+        logger.info("tesla-vehicle: Disconnected")
     }
 }
 
@@ -420,6 +512,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+        // logger.info("tesla-vehicle: didUpdateValueFor")
         guard let value = characteristic.value else {
             return
         }
@@ -430,9 +523,17 @@ extension TeslaVehicle: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didUpdateNotificationStateFor _: CBCharacteristic, error _: Error?) {}
+    func peripheral(_: CBPeripheral, didWriteValueFor _: CBCharacteristic, error: (any Error)?) {
+        // logger.info("tesla-vehicle: didWriteValueFor \(error)")
+    }
 
-    func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {}
+    func peripheral(_: CBPeripheral, didUpdateNotificationStateFor _: CBCharacteristic, error _: Error?) {
+        // logger.info("tesla-vehicle: didUpdateNotificationStateFor")
+    }
+
+    func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {
+        logger.info("tesla-vehicle: toSendWriteWithoutResponse")
+    }
 }
 
 private class Metadata {
