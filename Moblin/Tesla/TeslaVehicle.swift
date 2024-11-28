@@ -109,6 +109,12 @@ private class VehicleDomain {
     }
 }
 
+private func generateKeyPair() -> (P256.KeyAgreement.PrivateKey, P256.KeyAgreement.PublicKey) {
+    let privateKey = P256.KeyAgreement.PrivateKey()
+    let publicKey = privateKey.publicKey
+    return (privateKey, publicKey)
+}
+
 class TeslaVehicle: NSObject {
     private let vin: String
     private let clientPrivateKeyPem: String
