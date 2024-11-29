@@ -101,10 +101,8 @@ struct CatPrinterSettingsView: View {
             }
             if device.enabled {
                 Section {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text(state())
-                        Spacer()
                     }
                 }
                 Section {

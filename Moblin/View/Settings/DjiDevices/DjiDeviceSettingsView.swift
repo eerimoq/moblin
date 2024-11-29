@@ -299,14 +299,12 @@ struct DjiDeviceSettingsView: View {
                 .disabled(!canStartLive())
             } else {
                 Section {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Button(action: {
                             model.stopDjiDeviceLiveStream(device: device)
                         }, label: {
                             Text("Stop live stream")
                         })
-                        Spacer()
                     }
                 }
                 .foregroundColor(.white)

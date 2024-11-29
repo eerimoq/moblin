@@ -39,10 +39,8 @@ struct LocationSettingsView: View {
                 Button(action: {
                     model.resetDistance()
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Reset")
-                        Spacer()
                     }
                 })
             } header: {

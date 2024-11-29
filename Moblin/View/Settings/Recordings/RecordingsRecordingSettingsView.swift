@@ -13,8 +13,7 @@ struct RecordingsRecordingSettingsView: View {
             }
             Form {
                 Section {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         if let image = createThumbnail(path: recording.url()) {
                             Image(uiImage: image)
                                 .resizable()
@@ -22,7 +21,6 @@ struct RecordingsRecordingSettingsView: View {
                         } else {
                             Image(systemName: "photo")
                         }
-                        Spacer()
                     }
                 }
                 Section {

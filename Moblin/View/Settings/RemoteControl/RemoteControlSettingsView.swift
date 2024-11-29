@@ -93,10 +93,8 @@ private struct PasswordView: View {
                     value = randomGoodPassword()
                     submit()
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Generate")
-                        Spacer()
                     }
                 }
             }

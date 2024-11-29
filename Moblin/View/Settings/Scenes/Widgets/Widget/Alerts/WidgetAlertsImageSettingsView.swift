@@ -53,8 +53,7 @@ private struct CustomImageView: View {
                     showPicker = true
                     model.onDocumentPickerUrl = onUrl
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         if let image {
                             AnimatedImage(data: image)
                                 .resizable()
@@ -63,7 +62,6 @@ private struct CustomImageView: View {
                         } else {
                             Text("Select image")
                         }
-                        Spacer()
                     }
                 }
                 .sheet(isPresented: $showPicker) {
@@ -107,10 +105,8 @@ private struct ImageGalleryView: View {
                     model.database.alertsMediaGallery!.customImages.append(image)
                     model.objectWillChange.send()
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Add")
-                        Spacer()
                     }
                 })
             } footer: {

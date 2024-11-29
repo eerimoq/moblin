@@ -10,10 +10,8 @@ struct CatPrinterScannerSettingsView: View {
         Form {
             Section {
                 if scanner.discoveredDevices.isEmpty {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         ProgressView()
-                        Spacer()
                     }
                 } else {
                     List {

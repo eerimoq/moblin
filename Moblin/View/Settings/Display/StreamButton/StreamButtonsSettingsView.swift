@@ -23,10 +23,8 @@ struct StreamButtonsSettingsView: View {
                     background = defaultStreamButtonColor.color()
                     onColorChange(color: background)
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Reset")
-                        Spacer()
                     }
                 })
             } header: {

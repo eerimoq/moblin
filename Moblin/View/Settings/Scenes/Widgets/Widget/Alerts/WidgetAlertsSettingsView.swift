@@ -263,10 +263,8 @@ private struct TwitchFollowsView: View {
                     )
                     model.testAlert(alert: .twitchFollow(event))
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Test")
-                        Spacer()
                     }
                 })
             }
@@ -314,10 +312,8 @@ private struct TwitchSubscriptionsView: View {
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Test")
-                        Spacer()
                     }
                 })
             }
@@ -364,10 +360,8 @@ private struct TwitchRaidsView: View {
                     )
                     model.testAlert(alert: .twitchRaid(event))
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Test")
-                        Spacer()
                     }
                 })
             }
@@ -433,10 +427,8 @@ private struct TwitchCheerView: View {
                     )
                     model.testAlert(alert: .twitchCheer(event))
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Test")
-                        Spacer()
                     }
                 })
             }
@@ -613,10 +605,8 @@ private struct ChatBotCommandView: View {
                 Button(action: {
                     model.testAlert(alert: .chatBotCommand(command.name, testNames.randomElement()!))
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Test")
-                        Spacer()
                     }
                 })
             }

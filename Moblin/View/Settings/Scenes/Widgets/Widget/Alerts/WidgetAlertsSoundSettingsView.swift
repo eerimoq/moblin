@@ -58,14 +58,12 @@ private struct CustomSoundView: View {
                     showPicker = true
                     model.onDocumentPickerUrl = onUrl
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         if audioPlayer != nil {
                             Text("Select another sound")
                         } else {
                             Text("Select sound")
                         }
-                        Spacer()
                     }
                 }
                 .sheet(isPresented: $showPicker) {
@@ -107,10 +105,8 @@ private struct SoundGalleryView: View {
                     model.database.alertsMediaGallery!.customSounds.append(sound)
                     model.objectWillChange.send()
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Add")
-                        Spacer()
                     }
                 })
             } footer: {

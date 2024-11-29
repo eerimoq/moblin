@@ -19,19 +19,15 @@ struct WidgetImageSettingsView: View {
             let image = loadImage()
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 if let image {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 1920 / 6, height: 1080 / 6)
-                        Spacer()
                     }
                 } else {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Select image")
-                        Spacer()
                     }
                 }
             }

@@ -21,10 +21,8 @@ struct GlobalQuickButtonsButtonSettingsView: View {
                     onChange(background)
                     onSubmit()
                 }, label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Reset")
-                        Spacer()
                     }
                 })
             } header: {

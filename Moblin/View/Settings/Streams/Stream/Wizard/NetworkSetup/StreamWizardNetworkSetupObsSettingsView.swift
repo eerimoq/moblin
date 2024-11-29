@@ -51,12 +51,10 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                     Text("1. Create a Media Source in OBS and configure it as shown in the image below.")
                     Text("")
                     Text("2. Replace 7654 with your port.")
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Image("ObsMediaSourceSrt")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                        Spacer()
                     }
                 }
             } header: {

@@ -39,13 +39,11 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                     Press "Add automatically to Moblin" on https://cloud.belabox.net SRT(LA) relays \
                     (requires login). See screenshot below.
                     """)
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Image("BelaboxCloudIngest")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: 400)
-                        Spacer()
                     }
                 }
             }

@@ -28,13 +28,11 @@ struct CustomLutView: View {
             }
             Section {
                 if let image = loadImage() {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 1920 / 6, height: 1080 / 6)
-                        Spacer()
                     }
                 }
             }
@@ -75,10 +73,8 @@ struct CameraSettingsLutsView: View {
                     })
                 }
                 PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Add")
-                        Spacer()
                     }
                 }
                 .onChange(of: selectedImageItem) { imageItem in

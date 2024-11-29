@@ -90,10 +90,8 @@ struct MediaPlayerSettingsView: View {
                     })
                 }
                 PhotosPicker(selection: $selectedVideoItem, matching: .videos) {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Add")
-                        Spacer()
                     }
                 }
                 .onChange(of: selectedVideoItem) { videoItem in

@@ -10,10 +10,8 @@ struct DjiDeviceScannerSettingsView: View {
         Form {
             Section {
                 if djiScanner.discoveredDevices.isEmpty {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         ProgressView()
-                        Spacer()
                     }
                 } else {
                     List {
