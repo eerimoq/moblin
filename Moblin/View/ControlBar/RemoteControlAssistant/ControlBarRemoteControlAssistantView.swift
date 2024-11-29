@@ -524,10 +524,8 @@ private struct ControlBarRemoteControlAssistantRightView: View {
                     SrtConnectionPrioritiesView()
                     DebugLoggingView()
                 } else {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         ProgressView()
-                        Spacer()
                     }
                 }
             } header: {

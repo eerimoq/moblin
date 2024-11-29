@@ -12,6 +12,7 @@ struct DebugTeslaSettingsView: View {
                     value: model.database.debug.tesla!.vin
                 ) {
                     model.database.debug.tesla!.vin = $0.trim()
+                    model.reloadTeslaVehicle()
                 }
             }
             Section {
@@ -21,6 +22,7 @@ struct DebugTeslaSettingsView: View {
                     .disableAutocorrection(true)
                     .onChange(of: privateKey) { _ in
                         model.database.debug.tesla!.privateKey = privateKey
+                        model.reloadTeslaVehicle()
                     }
             } header: {
                 Text("Private key")
@@ -29,10 +31,8 @@ struct DebugTeslaSettingsView: View {
                 Button {
                     model.teslaFlashLights()
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Flash lights")
-                        Spacer()
                     }
                 }
             }
@@ -40,10 +40,8 @@ struct DebugTeslaSettingsView: View {
                 Button {
                     model.teslaHonk()
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Honk")
-                        Spacer()
                     }
                 }
             }
@@ -51,10 +49,8 @@ struct DebugTeslaSettingsView: View {
                 Button {
                     model.teslaOpenTrunk()
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Open trunk")
-                        Spacer()
                     }
                 }
             }
@@ -62,21 +58,26 @@ struct DebugTeslaSettingsView: View {
                 Button {
                     model.teslaCloseTrunk()
                 } label: {
-                    HStack {
-                        Spacer()
+                    HCenter {
                         Text("Close trunk")
-                        Spacer()
                     }
                 }
             }
             Section {
                 Button {
-                    model.teslaPing()
+                    model.mediaNextTrack()
                 } label: {
-                    HStack {
-                        Spacer()
-                        Text("Ping")
-                        Spacer()
+                    HCenter {
+                        Text("Media next track")
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.mediaTogglePlayback()
+                } label: {
+                    HCenter {
+                        Text("Media toggle playback")
                     }
                 }
             }
@@ -84,10 +85,35 @@ struct DebugTeslaSettingsView: View {
                 Button {
                     model.teslaGetChargeState()
                 } label: {
-                    HStack {
-                        Spacer()
-                        Text("Get charge info")
-                        Spacer()
+                    HCenter {
+                        Text("Get charge state")
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaGetDriveState()
+                } label: {
+                    HCenter {
+                        Text("Get drive state")
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaGetMediaState()
+                } label: {
+                    HCenter {
+                        Text("Get media state")
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaPing()
+                } label: {
+                    HCenter {
+                        Text("Ping")
                     }
                 }
             }

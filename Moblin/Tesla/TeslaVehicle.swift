@@ -42,8 +42,8 @@ private func makeDer(publicKeyBytes: Data) -> Data {
 private struct Job {
     let address: Data
     let playload: Data
-    let onCompleted: (_ request: UniversalMessage_RoutableMessage, _ response: UniversalMessage_RoutableMessage) throws
-        -> Void
+    let onCompleted: (_ request: UniversalMessage_RoutableMessage,
+                      _ response: UniversalMessage_RoutableMessage) throws -> Void
 }
 
 private class VehicleDomain {
@@ -73,7 +73,7 @@ private class VehicleDomain {
         return symmetricKey
     }
 
-    func appendRequest(
+    func appendJob(
         address: Data,
         payload: Data,
         onCompleted: @escaping (_ request: UniversalMessage_RoutableMessage,
@@ -125,7 +125,7 @@ class TeslaVehicle: NSObject {
     private var fromVehicleCharacteristic: CBCharacteristic?
     private var state: TeslaVehicleState = .idle
     private var responseHandlers: [Data: (UniversalMessage_RoutableMessage) throws -> Void] = [:]
-    private var receivedData = Data()
+    private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
 
     init?(vin: String, privateKey: String) {
@@ -152,9 +152,22 @@ class TeslaVehicle: NSObject {
         toVehicleCharacteristic = nil
         fromVehicleCharacteristic = nil
         responseHandlers.removeAll()
-        receivedData.removeAll()
+        receiveBuffer.removeAll()
         vehicleDomains.removeAll()
         setState(state: .idle)
+    }
+
+    func addKeyRequestWithRole() throws {
+        var message = VCSEC_UnsignedMessage()
+        message.whitelistOperation.addKeyToWhitelistAndAddPermissions.key.publicKeyRaw = clientPublicKeyBytes
+        message.whitelistOperation.addKeyToWhitelistAndAddPermissions.keyRole = .owner
+        message.whitelistOperation.metadataForKey.keyFormFactor = .cloudKey
+        var encoded = try message.serializedData()
+        var envelope = VCSEC_ToVCSECMessage()
+        envelope.signedMessage.protobufMessageAsBytes = encoded
+        envelope.signedMessage.signatureType = .presentKey
+        encoded = try envelope.serializedData()
+        sendData(message: encoded)
     }
 
     func openTrunk() {
@@ -187,7 +200,6 @@ class TeslaVehicle: NSObject {
         action.vehicleAction.vehicleControlHonkHornAction = .init()
         executeCarServerAction(action) { _ in
             logger.info("tesla-vehicle: Honk response")
-            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
         }
     }
 
@@ -196,17 +208,63 @@ class TeslaVehicle: NSObject {
         action.vehicleAction.vehicleControlFlashLightsAction = .init()
         executeCarServerAction(action) { _ in
             logger.info("tesla-vehicle: Flash lights response")
-            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
         }
     }
 
-    func getChargeState() {
+    func mediaNextTrack() {
+        var action = CarServer_Action()
+        action.vehicleAction.mediaNextTrack = .init()
+        executeCarServerAction(action) { _ in
+            logger.info("tesla-vehicle: Media next track response")
+        }
+    }
+
+    func mediaTogglePlayback() {
+        var action = CarServer_Action()
+        action.vehicleAction.mediaPlayAction = .init()
+        executeCarServerAction(action) { _ in
+            logger.info("tesla-vehicle: Media toggle playback response")
+        }
+    }
+
+    func getChargeState(onCompleted: @escaping (CarServer_ChargeState) -> Void) {
         var action = CarServer_Action()
         action.vehicleAction.getVehicleData.getChargeState = .init()
         executeCarServerAction(action) { response in
-            let percentage = response.vehicleData.chargeState.batteryLevel
-            logger.info("tesla-vehicle: Battery level \(percentage)")
-            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
+            let chargeState = response.vehicleData.chargeState
+            logger.info("tesla-vehicle: Battery level \(chargeState.batteryLevel)")
+            logger.info("tesla-vehicle: Minutes to charge limit \(chargeState.minutesToChargeLimit)")
+            logger.info("tesla-vehicle: Charger power \(chargeState.chargerPower)")
+            logger.info("tesla-vehicle: Charging state \(chargeState.chargingState)")
+            onCompleted(chargeState)
+        }
+    }
+
+    func getDriveState(onCompleted: @escaping (CarServer_DriveState) -> Void) {
+        var action = CarServer_Action()
+        action.vehicleAction.getVehicleData.getDriveState = .init()
+        executeCarServerAction(action) { response in
+            logger.info("tesla-vehicle: Drive state response")
+            let driveState = response.vehicleData.driveState
+            logger.info("tesla-vehicle: Active route destination \(driveState.activeRouteDestination)")
+            logger.info("tesla-vehicle: Active route minutes to arrival \(driveState.activeRouteMinutesToArrival)")
+            logger.info("tesla-vehicle: Power \(driveState.power)")
+            logger.info("tesla-vehicle: Shift state \(driveState.shiftState)")
+            try logger.info("tesla-vehicle: Message \(response.jsonString())")
+            onCompleted(driveState)
+        }
+    }
+
+    func getMediaState(onCompleted: @escaping (CarServer_MediaState) -> Void) {
+        var action = CarServer_Action()
+        action.vehicleAction.getVehicleData.getMediaState = .init()
+        executeCarServerAction(action) { response in
+            logger.info("tesla-vehicle: Media state response")
+            let mediaState = response.vehicleData.mediaState
+            logger.info("tesla-vehicle: Now playing title \(mediaState.nowPlayingTitle)")
+            logger.info("tesla-vehicle: Now playing source \(mediaState.nowPlayingSource)")
+            try logger.info("tesla-vehicle: Message \(response.jsonString())")
+            onCompleted(mediaState)
         }
     }
 
@@ -220,7 +278,7 @@ class TeslaVehicle: NSObject {
         unsignedMessage.closureMoveRequest = closureMoveRequest
         do {
             let payload = try unsignedMessage.serializedData()
-            vehicleDomain.appendRequest(address: getNextAddress(), payload: payload) { _, _ in
+            vehicleDomain.appendJob(address: getNextAddress(), payload: payload) { _, _ in
                 try onCompleted()
             }
             try trySendNextJob(domain: .vehicleSecurity)
@@ -238,7 +296,7 @@ class TeslaVehicle: NSObject {
         }
         do {
             let payload = try action.serializedData()
-            vehicleDomain.appendRequest(address: getNextAddress(), payload: payload) { request, response in
+            vehicleDomain.appendJob(address: getNextAddress(), payload: payload) { request, response in
                 let aesGcmResponseData = response.signatureData.aesGcmResponseData
                 let sealedBox = try AES.GCM.SealedBox(nonce: .init(data: aesGcmResponseData.nonce),
                                                       ciphertext: response.protobufMessageAsBytes,
@@ -336,14 +394,14 @@ class TeslaVehicle: NSObject {
     }
 
     private func trySendNextJob(domain: UniversalMessage_Domain) throws {
-        if let job = vehicleDomains[domain]?.tryGetNextJob() {
+        while let job = vehicleDomains[domain]?.tryGetNextJob() {
             try startJob(domain: domain, job: job)
         }
     }
 
-    private func handleMessage(message: Data) throws {
-        receivedData += message
-        let reader = ByteArray(data: receivedData)
+    private func handleData(data: Data) throws {
+        receiveBuffer += data
+        let reader = ByteArray(data: receiveBuffer)
         let size = try reader.readUInt16()
         if reader.bytesAvailable < size {
             return
@@ -351,17 +409,14 @@ class TeslaVehicle: NSObject {
         let payload = try reader.readBytes(Int(size))
         // logger.info("tesla-vehicle: Got \(payload.hexString()) of \(payload.count) bytes")
         if reader.bytesAvailable > 0 {
-            receivedData = try reader.readBytes(reader.bytesAvailable)
+            receiveBuffer = try reader.readBytes(reader.bytesAvailable)
         }
         let message = try UniversalMessage_RoutableMessage(serializedBytes: payload)
-        switch message.toDestination.subDestination {
-        case .domain:
+        guard case let .routingAddress(address) = message.toDestination.subDestination else {
             return
-        default:
-            break
         }
         // try logger.info("tesla-vehicle: Got \(message.jsonString())")
-        guard let responseHandler = responseHandlers.removeValue(forKey: message.toDestination.routingAddress) else {
+        guard let responseHandler = responseHandlers.removeValue(forKey: address) else {
             logger.info("tesla-vehicle: No response handler found")
             return
         }
@@ -370,8 +425,7 @@ class TeslaVehicle: NSObject {
 
     private func sendMessage(message: UniversalMessage_RoutableMessage) throws {
         // try logger.info("tesla-vehicle: Sending \(message.jsonString())")
-        let message = try message.serializedData()
-        sendData(message: message)
+        try sendData(message: message.serializedData())
     }
 
     private func sendData(message: Data) {
@@ -507,27 +561,14 @@ extension TeslaVehicle: CBPeripheralDelegate {
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
-        // logger.info("tesla-vehicle: didUpdateValueFor")
         guard let value = characteristic.value else {
             return
         }
         do {
-            try handleMessage(message: value)
+            try handleData(data: value)
         } catch {
             logger.info("tesla-vehicle: Message handling error \(error)")
         }
-    }
-
-    func peripheral(_: CBPeripheral, didWriteValueFor _: CBCharacteristic, error _: (any Error)?) {
-        // logger.info("tesla-vehicle: didWriteValueFor \(error)")
-    }
-
-    func peripheral(_: CBPeripheral, didUpdateNotificationStateFor _: CBCharacteristic, error _: Error?) {
-        // logger.info("tesla-vehicle: didUpdateNotificationStateFor")
-    }
-
-    func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {
-        logger.info("tesla-vehicle: toSendWriteWithoutResponse")
     }
 }
 

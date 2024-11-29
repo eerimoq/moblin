@@ -53174,7 +53174,13 @@
         }
       }
     },
-    "Get charge info" : {
+    "Get charge state" : {
+
+    },
+    "Get drive state" : {
+
+    },
+    "Get media state" : {
 
     },
     "Gift subsciptions" : {
@@ -65804,6 +65810,9 @@
         }
       }
     },
+    "Media next track" : {
+
+    },
     "Media player" : {
       "localizations" : {
         "de" : {
@@ -66063,6 +66072,9 @@
           }
         }
       }
+    },
+    "Media toggle playback" : {
+
     },
     "Member" : {
       "localizations" : {

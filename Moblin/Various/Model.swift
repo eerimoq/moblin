@@ -1342,7 +1342,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadTeslaVehicle()
     }
 
-    private func reloadTeslaVehicle() {
+    func reloadTeslaVehicle() {
         stopTeslaVehicle()
         let tesla = database.debug.tesla!
         if tesla.vin != "", tesla.privateKey != "" {
@@ -1365,7 +1365,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func teslaGetChargeState() {
-        teslaVehicle?.getChargeState()
+        teslaVehicle?.getChargeState { _ in
+        }
+    }
+
+    func teslaGetDriveState() {
+        teslaVehicle?.getDriveState { _ in
+        }
+    }
+
+    func teslaGetMediaState() {
+        teslaVehicle?.getMediaState { _ in
+        }
     }
 
     func teslaOpenTrunk() {
@@ -1374,6 +1385,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func teslaCloseTrunk() {
         teslaVehicle?.closeTrunk()
+    }
+
+    func mediaNextTrack() {
+        teslaVehicle?.mediaNextTrack()
+    }
+
+    func mediaTogglePlayback() {
+        teslaVehicle?.mediaTogglePlayback()
     }
 
     func teslaPing() {
