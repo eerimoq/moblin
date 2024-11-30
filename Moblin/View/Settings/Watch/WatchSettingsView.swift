@@ -16,11 +16,19 @@ struct WatchSettingsView: View {
                 } label: {
                     Text("Display")
                 }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.watch!.viaRemoteControl!
+                }, set: { value in
+                    model.database.watch!.viaRemoteControl = value
+                })) {
+                    Text("Remote control assistant")
+                }
             } footer: {
                 Text("""
-                The watch acts as remote control assistant when the remote control streamer is \
-                connected. Please note that in this case, chat, skip current TTS and a few other \
-                features are not (yet) supported.
+                The watch acts as remote control assistant when enabled. Please note that in this \
+                case, chat, skip current TTS and a few other features are not supported.
                 """)
             }
         }

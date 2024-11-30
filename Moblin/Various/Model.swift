@@ -443,6 +443,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private var serversSpeed: Int64 = 0
+
     @Published var hypeTrainLevel: Int?
     @Published var hypeTrainProgress: Int?
     @Published var hypeTrainGoal: Int?
@@ -2256,7 +2258,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateAudioLevel()
             }
             self.updateChat()
-            if !self.isRemoteControlAssistantConnected() {
+            if self.isWatchLocal() {
                 self.trySendNextChatPostToWatch()
             }
             if let lastAttachCompletedTime = self.lastAttachCompletedTime,
@@ -2539,7 +2541,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .isNaN || newAudioLevel == .infinity || audioLevel.isNaN || audioLevel == .infinity
         {
             audioLevel = newAudioLevel
-            if !isRemoteControlAssistantConnected() {
+            if isWatchLocal() {
                 sendAudioLevelToWatch(audioLevel: audioLevel)
             }
         }
@@ -2668,7 +2670,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 chatPosts.removeLast()
             }
             chatPosts.prepend(post)
-            if !isRemoteControlAssistantConnected() {
+            if isWatchLocal() {
                 sendChatMessageToWatch(post: post)
             }
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
@@ -3414,7 +3416,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setIsLive(value: Bool) {
         isLive = value
-        if !isRemoteControlAssistantConnected() {
+        if isWatchLocal() {
             sendIsLiveToWatch(isLive: isLive)
         }
         remoteControlStreamer?.stateChanged(state: RemoteControlState(streaming: isLive))
@@ -3424,7 +3426,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         isRecording = value
         setGlobalButtonState(type: .record, isOn: value)
         updateButtonStates()
-        if !isRemoteControlAssistantConnected() {
+        if isWatchLocal() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }
         remoteControlStreamer?.stateChanged(state: RemoteControlState(recording: isRecording))
@@ -5396,12 +5398,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
             let size = currentRecording.url().fileSize.formatBytes()
             recordingLength = "\(elapsed) (\(size))"
-            if !isRemoteControlAssistantConnected() {
+            if isWatchLocal() {
                 sendRecordingLengthToWatch(recordingLength: recordingLength)
             }
         } else if recordingLength != noValue {
             recordingLength = noValue
-            if !isRemoteControlAssistantConnected() {
+            if isWatchLocal() {
                 sendRecordingLengthToWatch(recordingLength: recordingLength)
             }
         }
@@ -5487,19 +5489,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speedString) (\(total))")
-            if !isRemoteControlAssistantConnected() {
+            if isWatchLocal() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
         } else if speedAndTotal != noValue {
             speedMbpsOneDecimal = noValue
             speedAndTotal = noValue
-            if !isRemoteControlAssistantConnected() {
+            if isWatchLocal() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
         }
     }
 
-    private var serversSpeed: Int64 = 0
+    private func isWatchRemoteControl() -> Bool {
+        return database.watch!.viaRemoteControl! && isRemoteControlAssistantConnected()
+    }
+
+    private func isWatchLocal() -> Bool {
+        return !isWatchRemoteControl()
+    }
 
     private func updateServersSpeed() {
         var anyServerEnabled = false
@@ -5577,7 +5585,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
-        if !isRemoteControlAssistantConnected() {
+        if isWatchLocal() {
             sendThermalStateToWatch(thermalState: thermalState)
         }
         logger.info("Thermal state: \(thermalState.string())")
@@ -5819,7 +5827,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateMute() {
         media.setMute(on: isMuteOn)
-        if !isRemoteControlAssistantConnected() {
+        if isWatchLocal() {
             sendIsMutedToWatch(isMuteOn: isMuteOn)
         }
         updateTextEffects(now: .now, timestamp: .now)
@@ -5935,7 +5943,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         DispatchQueue.main.async { [self] in
             if frameNumber % lowFpsImageFps == 0 {
-                if !isRemoteControlAssistantConnected() {
+                if isWatchLocal() {
                     sendPreviewToWatch(image: image)
                 }
             }
@@ -6695,7 +6703,7 @@ extension Model {
     }
 
     func updateRemoteControlAssistantStatus() {
-        guard showingRemoteControl || isWatchReachable(), isRemoteControlAssistantConnected() else {
+        guard showingRemoteControl || isWatchRemoteControl(), isRemoteControlAssistantConnected() else {
             return
         }
         remoteControlAssistant?.getStatus { general, topLeft, topRight in
@@ -7201,7 +7209,7 @@ extension Model: WCSessionDelegate {
             self.sendSceneToWatch()
             self.sendWorkoutToWatch()
             self.resetWorkoutStats()
-            if self.isRemoteControlAssistantConnected() {
+            if self.isWatchRemoteControl() {
                 if let general = self.remoteControlGeneral {
                     if let thermalState = general.flame?.toThermalState() {
                         self.sendThermalStateToWatch(thermalState: thermalState)
@@ -7289,7 +7297,7 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            if self.isRemoteControlAssistantConnected() {
+            if self.isWatchRemoteControl() {
                 self.remoteControlAssistantSetStream(on: value) {
                     DispatchQueue.main.async {
                         self.updateRemoteControlAssistantStatus()
@@ -7310,7 +7318,7 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            if self.isRemoteControlAssistantConnected() {
+            if self.isWatchRemoteControl() {
                 self.remoteControlAssistantSetRecord(on: value) {
                     DispatchQueue.main.async {
                         self.updateRemoteControlAssistantStatus()
@@ -7331,7 +7339,7 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            if self.isRemoteControlAssistantConnected() {
+            if self.isWatchRemoteControl() {
                 self.remoteControlAssistantSetMute(on: value) {
                     DispatchQueue.main.async {
                         self.updateRemoteControlAssistantStatus()
@@ -8719,8 +8727,6 @@ extension Model: TeslaVehicleDelegate {
         switch state {
         case .idle:
             reloadTeslaVehicle()
-        case .discovering:
-            makeToast(title: String(localized: "Searching for your Tesla"))
         case .connected:
             makeToast(title: String(localized: "Connected to your Tesla"))
         default:

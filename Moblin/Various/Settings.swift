@@ -4185,5 +4185,9 @@ final class Settings {
             realDatabase.chat.botCommandPermissions!.tesla = .init()
             store()
         }
+        if realDatabase.watch!.viaRemoteControl == nil {
+            realDatabase.watch!.viaRemoteControl = false
+            store()
+        }
     }
 }
