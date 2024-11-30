@@ -571,6 +571,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let chatTextToSpeech = ChatTextToSpeech()
 
     private var teslaVehicle: TeslaVehicle?
+    @Published var teslaVehicleState: TeslaVehicleState?
 
     private var lastAttachCompletedTime: ContinuousClock.Instant?
 
@@ -1347,13 +1348,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let tesla = database.debug.tesla!
         if tesla.vin != "", tesla.privateKey != "" {
             teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKeyPem: tesla.privateKey)
+            teslaVehicle?.delegate = self
             teslaVehicle?.start()
         }
     }
 
     private func stopTeslaVehicle() {
+        teslaVehicle?.delegate = nil
         teslaVehicle?.stop()
         teslaVehicle = nil
+        teslaVehicleState = nil
     }
 
     func teslaFlashLights() {
@@ -1364,8 +1368,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaVehicle?.honk()
     }
 
+    private var teslaChargeState = CarServer_ChargeState()
+
     func teslaGetChargeState() {
-        teslaVehicle?.getChargeState { _ in
+        teslaVehicle?.getChargeState { state in
+            self.teslaChargeState = state
         }
     }
 
@@ -1385,6 +1392,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func teslaCloseTrunk() {
         teslaVehicle?.closeTrunk()
+    }
+
+    private func updateTeslaVehicleState() {
+        teslaGetChargeState()
     }
 
     func mediaNextTrack() {
@@ -2233,6 +2244,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
+            self.updateTeslaVehicleState()
         })
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             self.updateRemoteControlAssistantStatus()
@@ -3002,6 +3014,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let weather = weatherManager.getLatestWeather()
         let placemark = geographyManager.getLatestPlacemark()
+        var teslaBatteryLevel = "-"
+        if teslaChargeState.optionalBatteryLevel != nil {
+            teslaBatteryLevel = "\(teslaChargeState.batteryLevel) %"
+        }
         let stats = TextEffectStats(
             timestamp: timestamp,
             bitrateAndTotal: speedAndTotal,
@@ -3020,7 +3036,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             activeEnergyBurned: workoutActiveEnergyBurned,
             workoutDistance: workoutDistance,
             power: workoutPower,
-            stepCount: workoutStepCount
+            stepCount: workoutStepCount,
+            teslaBatteryLevel: teslaBatteryLevel
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -4444,6 +4461,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageFilter(message: message, command: command)
             } else if command.starts(with: "say ") {
                 handleChatBotMessageTtsSay(message: message, command: command)
+            } else if command.starts(with: "tesla ") {
+                handleChatBotMessageTesla(message: message, command: command)
             }
         }
     }
@@ -4597,6 +4616,35 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.setGlobalButtonState(type: type, isOn: parts[2].trim() == "on")
             self.sceneUpdated()
             self.updateButtonStates()
+        }
+    }
+
+    private func handleChatBotMessageTesla(message: ChatBotMessage, command: String) {
+        return
+        let parts = command.split(separator: " ")
+        guard parts.count >= 2 else {
+            return
+        }
+        switch parts[1].trim() {
+        case "trunk":
+            handleChatBotMessageTeslaTrunk(message: message, command: command, parts: parts)
+        default:
+            break
+        }
+    }
+
+    // !moblin tesla trunk open
+    // !moblin tesla trunk close
+    private func handleChatBotMessageTeslaTrunk(message _: ChatBotMessage, command _: String, parts: [Substring]) {
+        guard parts.count == 3 else {
+            return
+        }
+        switch parts[2].trim() {
+        case "open":
+            teslaVehicle?.openTrunk()
+        case "close":
+            teslaVehicle?.closeTrunk()
+        default: break
         }
     }
 
@@ -8661,6 +8709,22 @@ extension Model: DjiDeviceDelegate {
         default:
             break
         }
+    }
+}
+
+extension Model: TeslaVehicleDelegate {
+    func teslaVehicleState(_: TeslaVehicle, state: TeslaVehicleState) {
+        switch state {
+        case .idle:
+            reloadTeslaVehicle()
+        case .discovering:
+            makeToast(title: String(localized: "Searching for your Tesla"))
+        case .connected:
+            makeToast(title: String(localized: "Connected to your Tesla"))
+        default:
+            break
+        }
+        teslaVehicleState = state
     }
 }
 

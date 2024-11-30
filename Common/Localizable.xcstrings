@@ -31325,6 +31325,9 @@
         }
       }
     },
+    "Connected to your Tesla" : {
+
+    },
     "Connecting" : {
       "localizations" : {
         "de" : {
@@ -54352,6 +54355,9 @@
           }
         }
       }
+    },
+    "Handshaking" : {
+
     },
     "Heart rate" : {
       "localizations" : {
@@ -89880,6 +89886,9 @@
           }
         }
       }
+    },
+    "Searching for your Tesla" : {
+
     },
     "Select %@ if you want the DJI camera to stream to Moblin's RTMP server on this device. Select %@ to make the DJI camera stream to any destination." : {
       "localizations" : {

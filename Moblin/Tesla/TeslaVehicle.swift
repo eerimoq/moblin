@@ -7,7 +7,7 @@ private let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf
 private let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
 private let fromVehicleUuid = CBUUID(string: "00000213-b2d1-43f0-9b88-960cebf8b91e")
 
-private enum TeslaVehicleState {
+enum TeslaVehicleState {
     case idle
     case discovering
     case connecting
@@ -120,6 +120,10 @@ private func generateKeyPair() -> (P256.KeyAgreement.PrivateKey, P256.KeyAgreeme
     return (privateKey, publicKey)
 }
 
+protocol TeslaVehicleDelegate: AnyObject {
+    func teslaVehicleState(_ vehicle: TeslaVehicle, state: TeslaVehicleState)
+}
+
 class TeslaVehicle: NSObject {
     private let vin: String
     private let clientPrivateKey: P256.KeyAgreement.PrivateKey
@@ -132,6 +136,7 @@ class TeslaVehicle: NSObject {
     private var responseHandlers: [Data: (UniversalMessage_RoutableMessage) throws -> Void] = [:]
     private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
+    weak var delegate: (any TeslaVehicleDelegate)?
 
     init?(vin: String, privateKeyPem: String) {
         self.vin = vin
@@ -145,13 +150,17 @@ class TeslaVehicle: NSObject {
     }
 
     func start() {
-        setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: .main)
         vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKey)
         vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKey)
+        setState(state: .discovering)
     }
 
     func stop() {
+        reset()
+    }
+
+    private func reset() {
         centralManager = nil
         vehiclePeripheral = nil
         toVehicleCharacteristic = nil
@@ -289,6 +298,7 @@ class TeslaVehicle: NSObject {
             try trySendNextJob(domain: .vehicleSecurity)
         } catch {
             logger.info("tesla-vehicle: Execute closure move action error \(error)")
+            stop()
         }
     }
 
@@ -319,6 +329,7 @@ class TeslaVehicle: NSObject {
             try trySendNextJob(domain: .infotainment)
         } catch {
             logger.info("tesla-vehicle: Execute car server action error \(error)")
+            stop()
         }
     }
 
@@ -328,6 +339,7 @@ class TeslaVehicle: NSObject {
         }
         logger.info("tesla-vehicle: State change \(self.state) -> \(state)")
         self.state = state
+        delegate?.teslaVehicleState(self, state: state)
     }
 
     private func localName() -> String {
@@ -367,9 +379,9 @@ class TeslaVehicle: NSObject {
         let sessionInfo = try Signatures_SessionInfo(serializedBytes: response.sessionInfo)
         try vehicleDomains[domain]?.updateSesionInfo(sessionInfo: sessionInfo)
         if vehicleDomains.values.filter({ $0.hasSessionInfo() }).count == 2 {
-            setState(state: .connected)
             try trySendNextJob(domain: .vehicleSecurity)
             try trySendNextJob(domain: .infotainment)
+            setState(state: .connected)
         }
     }
 
@@ -535,6 +547,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
         logger.info("tesla-vehicle: Disconnected")
+        reset()
     }
 }
 
@@ -562,6 +575,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
             try startHandshake()
         } catch {
             logger.info("tesla-vehicle: Failed to start handshake \(error)")
+            stop()
         }
     }
 
@@ -573,6 +587,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
             try handleData(data: value)
         } catch {
             logger.info("tesla-vehicle: Message handling error \(error)")
+            stop()
         }
     }
 }

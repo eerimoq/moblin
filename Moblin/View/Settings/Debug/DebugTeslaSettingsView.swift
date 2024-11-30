@@ -1,5 +1,21 @@
 import SwiftUI
 
+private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
+    if state == nil || state == .idle {
+        return String(localized: "Not started")
+    } else if state == .discovering {
+        return String(localized: "Discovering")
+    } else if state == .connecting {
+        return String(localized: "Connecting")
+    } else if state == .handshaking {
+        return String(localized: "Handshaking")
+    } else if state == .connected {
+        return String(localized: "Connected")
+    } else {
+        return String(localized: "Unknown")
+    }
+}
+
 struct DebugTeslaSettingsView: View {
     @EnvironmentObject var model: Model
     @State var privateKey: String
@@ -26,6 +42,11 @@ struct DebugTeslaSettingsView: View {
                     }
             } header: {
                 Text("Private key")
+            }
+            Section {
+                HCenter {
+                    Text(formatTeslaVehicleState(state: model.teslaVehicleState))
+                }
             }
             Section {
                 Button {

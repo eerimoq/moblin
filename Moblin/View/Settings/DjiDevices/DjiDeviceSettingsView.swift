@@ -274,10 +274,8 @@ struct DjiDeviceSettingsView: View {
                 }
             }
             Section {
-                HStack {
-                    Spacer()
+                HCenter {
                     Text(state())
-                    Spacer()
                 }
             }
             if !model.isDjiDeviceStarted(device: device) {
@@ -285,10 +283,8 @@ struct DjiDeviceSettingsView: View {
                     Button(action: {
                         model.startDjiDeviceLiveStream(device: device)
                     }, label: {
-                        HStack {
-                            Spacer()
+                        HCenter {
                             Text("Start live stream")
-                            Spacer()
                         }
                     })
                 }
