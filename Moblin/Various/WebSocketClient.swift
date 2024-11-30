@@ -152,7 +152,9 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         logger.debug("websocket: Error \(error.localizedDescription)")
         stopInternal()
         startConnectTimer()
-        delegate?.webSocketClientDisconnected(self)
+        if connected {
+            delegate?.webSocketClientDisconnected(self)
+        }
     }
 
     func webSocketDidReceivePong(connection _: WebSocketConnection) {
