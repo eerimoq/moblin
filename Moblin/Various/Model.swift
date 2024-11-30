@@ -1346,7 +1346,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopTeslaVehicle()
         let tesla = database.debug.tesla!
         if tesla.vin != "", tesla.privateKey != "" {
-            teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKey: tesla.privateKey)
+            teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKeyPem: tesla.privateKey)
             teslaVehicle?.start()
         }
     }

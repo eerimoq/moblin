@@ -1,7 +1,6 @@
 import Collections
 import CoreBluetooth
 import CryptoKit
-import CryptorECC
 import Telegraph
 
 private let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf8b91e")
@@ -16,11 +15,11 @@ private enum TeslaVehicleState {
     case connected
 }
 
-private func createSymmetricKey(clientPrivateKeyPem: String, vehiclePublicKey: Data) throws -> SymmetricKey {
-    let vehicleKeyDer = makeDer(publicKeyBytes: vehiclePublicKey)
-    let publicKey = try P256.KeyAgreement.PublicKey(derRepresentation: vehicleKeyDer)
-    let privateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: clientPrivateKeyPem)
-    let shared = try privateKey.sharedSecretFromKeyAgreement(with: publicKey)
+private func createSymmetricKey(clientPrivateKey: P256.KeyAgreement.PrivateKey,
+                                vehiclePublicKey: Data) throws -> SymmetricKey
+{
+    let publicKey = try P256.KeyAgreement.PublicKey(bytes: vehiclePublicKey)
+    let shared = try clientPrivateKey.sharedSecretFromKeyAgreement(with: publicKey)
     let sharedData = shared.withUnsafeBytes { buffer in
         Data(bytes: buffer.baseAddress!, count: buffer.count)
     }
@@ -28,15 +27,21 @@ private func createSymmetricKey(clientPrivateKeyPem: String, vehiclePublicKey: D
     return SymmetricKey(data: sharedSecret)
 }
 
-private func makeDer(publicKeyBytes: Data) -> Data {
-    // Dirty, dirty, dirty...
-    let derStuff = Data([
-        0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86,
-        0x48, 0xCE, 0x3D, 0x02, 0x01, 0x06, 0x08, 0x2A,
-        0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
-        0x42, 0x00,
-    ])
-    return derStuff + publicKeyBytes
+extension P256.KeyAgreement.PublicKey {
+    init(bytes: Data) throws {
+        // Dirty, dirty, dirty...
+        let derStuff = Data([
+            0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86,
+            0x48, 0xCE, 0x3D, 0x02, 0x01, 0x06, 0x08, 0x2A,
+            0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
+            0x42, 0x00,
+        ])
+        try self.init(derRepresentation: derStuff + bytes)
+    }
+
+    func toBytes() -> Data {
+        return derRepresentation[26...]
+    }
 }
 
 private struct Job {
@@ -47,19 +52,19 @@ private struct Job {
 }
 
 private class VehicleDomain {
-    private let clientPrivateKeyPem: String
+    private let clientPrivateKey: P256.KeyAgreement.PrivateKey
     private var sessionInfo: Signatures_SessionInfo?
     private var localClock: ContinuousClock.Instant = .now
     private var jobs: Deque<Job> = []
     private var symmetricKey: SymmetricKey?
 
-    init(_ clientPrivateKeyPem: String) {
-        self.clientPrivateKeyPem = clientPrivateKeyPem
+    init(_ clientPrivateKey: P256.KeyAgreement.PrivateKey) {
+        self.clientPrivateKey = clientPrivateKey
     }
 
     func updateSesionInfo(sessionInfo: Signatures_SessionInfo) throws {
         symmetricKey = try createSymmetricKey(
-            clientPrivateKeyPem: clientPrivateKeyPem,
+            clientPrivateKey: clientPrivateKey,
             vehiclePublicKey: sessionInfo.publicKey
         )
         self.sessionInfo = sessionInfo
@@ -117,7 +122,7 @@ private func generateKeyPair() -> (P256.KeyAgreement.PrivateKey, P256.KeyAgreeme
 
 class TeslaVehicle: NSObject {
     private let vin: String
-    private let clientPrivateKeyPem: String
+    private let clientPrivateKey: P256.KeyAgreement.PrivateKey
     private let clientPublicKeyBytes: Data
     private var centralManager: CBCentralManager?
     private var vehiclePeripheral: CBPeripheral?
@@ -128,22 +133,22 @@ class TeslaVehicle: NSObject {
     private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
 
-    init?(vin: String, privateKey: String) {
+    init?(vin: String, privateKeyPem: String) {
         self.vin = vin
-        clientPrivateKeyPem = privateKey
         do {
-            clientPublicKeyBytes = try ECPrivateKey(key: privateKey).pubKeyBytes
+            clientPrivateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
         } catch {
             logger.error("tesla-vehicle: Error \(error)")
             return nil
         }
+        clientPublicKeyBytes = clientPrivateKey.publicKey.toBytes()
     }
 
     func start() {
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: .main)
-        vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKeyPem)
-        vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKeyPem)
+        vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKey)
+        vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKey)
     }
 
     func stop() {

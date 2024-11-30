@@ -1,5 +1,5 @@
 {
-  "originHash" : "b603c00da4e66847726175bf188471171df74b54c9427b7a27a003e9ae1baf08",
+  "originHash" : "fad398f3a78941a487da6d77ef796636ec0d671119c4df12dc8106026efb889d",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "b39252eacd159904afd7d718bba0afabb87f2f2f",
         "version" : "1.3.9"
-      }
-    },
-    {
-      "identity" : "blueecc",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/BlueECC.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "42a4e4e5ad74959c9ab7da4cfd1a4376529fe065"
       }
     },
     {
