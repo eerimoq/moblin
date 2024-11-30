@@ -214,7 +214,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
-        logger.info("remote-control-assistant: Streamer connected")
+        logger.debug("remote-control-assistant: Streamer connected")
         streamerWebSocket = webSocket
         challenge = randomString()
         salt = randomString()
@@ -227,9 +227,9 @@ class RemoteControlAssistant: NSObject {
 
     private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
         if let error {
-            logger.info("remote-control-assistant: Streamer disconnected \(error)")
+            logger.debug("remote-control-assistant: Streamer disconnected \(error)")
         } else {
-            logger.info("remote-control-assistant: Streamer disconnected")
+            logger.debug("remote-control-assistant: Streamer disconnected")
         }
         streamerWebSocket = nil
         connected = false
