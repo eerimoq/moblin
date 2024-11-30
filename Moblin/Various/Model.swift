@@ -4620,21 +4620,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessageTesla(message: ChatBotMessage, command: String) {
-        return
-        let parts = command.split(separator: " ")
-        guard parts.count >= 2 else {
-            return
-        }
-        switch parts[1].trim() {
-        case "trunk":
-            handleChatBotMessageTeslaTrunk(message: message, command: command, parts: parts)
-        default:
-            break
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.tesla!,
+            message: message
+        ) {
+            let parts = command.split(separator: " ")
+            guard parts.count >= 2 else {
+                return
+            }
+            switch parts[1].trim() {
+            case "trunk":
+                self.handleChatBotMessageTeslaTrunk(message: message, command: command, parts: parts)
+            default:
+                break
+            }
         }
     }
 
-    // !moblin tesla trunk open
-    // !moblin tesla trunk close
     private func handleChatBotMessageTeslaTrunk(message _: ChatBotMessage, command _: String, parts: [Substring]) {
         guard parts.count == 3 else {
             return

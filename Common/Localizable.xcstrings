@@ -1468,6 +1468,9 @@
         }
       }
     },
+    "!moblin tesla ..." : {
+
+    },
     "!moblin tts off" : {
       "localizations" : {
         "de" : {
@@ -54356,9 +54359,6 @@
         }
       }
     },
-    "Handshaking" : {
-
-    },
     "Heart rate" : {
       "localizations" : {
         "de" : {
@@ -105370,6 +105370,9 @@
       }
     },
     "Tesla" : {
+
+    },
+    "Tesla control." : {
 
     },
     "Test" : {

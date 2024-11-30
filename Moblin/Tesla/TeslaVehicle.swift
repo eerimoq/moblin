@@ -11,7 +11,6 @@ enum TeslaVehicleState {
     case idle
     case discovering
     case connecting
-    case handshaking
     case connected
 }
 
@@ -87,6 +86,10 @@ private class VehicleDomain {
         jobs.append(Job(address: address, playload: payload, onCompleted: onCompleted))
     }
 
+    func removeJobs() {
+        jobs.removeAll()
+    }
+
     func tryGetNextJob() -> Job? {
         guard hasSessionInfo() else {
             return nil
@@ -137,6 +140,8 @@ class TeslaVehicle: NSObject {
     private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
     weak var delegate: (any TeslaVehicleDelegate)?
+    private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
+    private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
 
     init?(vin: String, privateKeyPem: String) {
         self.vin = vin
@@ -150,6 +155,7 @@ class TeslaVehicle: NSObject {
     }
 
     func start() {
+        reset()
         centralManager = CBCentralManager(delegate: self, queue: .main)
         vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKey)
         vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKey)
@@ -161,6 +167,8 @@ class TeslaVehicle: NSObject {
     }
 
     private func reset() {
+        vehicleSecurityHandshakeTimer.stop()
+        infotainmentHandshakeTimer.stop()
         centralManager = nil
         vehiclePeripheral = nil
         toVehicleCharacteristic = nil
@@ -204,8 +212,7 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.ping.pingID = 1
         executeCarServerAction(action) { _ in
-            logger.info("tesla-vehicle: Ping response")
-            // try logger.info("tesla-vehicle: Message \(response.jsonString())")
+            logger.debug("tesla-vehicle: Ping response")
         }
     }
 
@@ -213,7 +220,7 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.vehicleControlHonkHornAction = .init()
         executeCarServerAction(action) { _ in
-            logger.info("tesla-vehicle: Honk response")
+            logger.debug("tesla-vehicle: Honk response")
         }
     }
 
@@ -221,7 +228,7 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.vehicleControlFlashLightsAction = .init()
         executeCarServerAction(action) { _ in
-            logger.info("tesla-vehicle: Flash lights response")
+            logger.debug("tesla-vehicle: Flash lights response")
         }
     }
 
@@ -229,7 +236,7 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.mediaNextTrack = .init()
         executeCarServerAction(action) { _ in
-            logger.info("tesla-vehicle: Media next track response")
+            logger.debug("tesla-vehicle: Media next track response")
         }
     }
 
@@ -237,7 +244,7 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.mediaPlayAction = .init()
         executeCarServerAction(action) { _ in
-            logger.info("tesla-vehicle: Media toggle playback response")
+            logger.debug("tesla-vehicle: Media toggle playback response")
         }
     }
 
@@ -246,10 +253,6 @@ class TeslaVehicle: NSObject {
         action.vehicleAction.getVehicleData.getChargeState = .init()
         executeCarServerAction(action) { response in
             let chargeState = response.vehicleData.chargeState
-            logger.info("tesla-vehicle: Battery level \(chargeState.batteryLevel)")
-            logger.info("tesla-vehicle: Minutes to charge limit \(chargeState.minutesToChargeLimit)")
-            logger.info("tesla-vehicle: Charger power \(chargeState.chargerPower)")
-            logger.info("tesla-vehicle: Charging state \(chargeState.chargingState)")
             onCompleted(chargeState)
         }
     }
@@ -260,11 +263,7 @@ class TeslaVehicle: NSObject {
         executeCarServerAction(action) { response in
             logger.info("tesla-vehicle: Drive state response")
             let driveState = response.vehicleData.driveState
-            logger.info("tesla-vehicle: Active route destination \(driveState.activeRouteDestination)")
-            logger.info("tesla-vehicle: Active route minutes to arrival \(driveState.activeRouteMinutesToArrival)")
-            logger.info("tesla-vehicle: Power \(driveState.power)")
-            logger.info("tesla-vehicle: Shift state \(driveState.shiftState)")
-            try logger.info("tesla-vehicle: Message \(response.jsonString())")
+            try logger.debug("tesla-vehicle: Message \(response.jsonString())")
             onCompleted(driveState)
         }
     }
@@ -273,11 +272,9 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.getVehicleData.getMediaState = .init()
         executeCarServerAction(action) { response in
-            logger.info("tesla-vehicle: Media state response")
+            logger.debug("tesla-vehicle: Media state response")
             let mediaState = response.vehicleData.mediaState
-            logger.info("tesla-vehicle: Now playing title \(mediaState.nowPlayingTitle)")
-            logger.info("tesla-vehicle: Now playing source \(mediaState.nowPlayingSource)")
-            try logger.info("tesla-vehicle: Message \(response.jsonString())")
+            try logger.debug("tesla-vehicle: Message \(response.jsonString())")
             onCompleted(mediaState)
         }
     }
@@ -351,10 +348,22 @@ class TeslaVehicle: NSObject {
         return Data.random(length: 16)
     }
 
-    private func startHandshake() throws {
-        setState(state: .handshaking)
+    private func startVehicleSecurityHandshake() throws {
         try sendSessionInfoRequest(domain: .vehicleSecurity)
+        vehicleSecurityHandshakeTimer.startSingleShot(timeout: 5.0) { [weak self] in
+            self?.reset()
+        }
+    }
+
+    private func startInfotainmentHandshake() throws {
         try sendSessionInfoRequest(domain: .infotainment)
+        infotainmentHandshakeTimer.startSingleShot(timeout: 5.0) { [weak self] in
+            do {
+                try self?.startInfotainmentHandshake()
+            } catch {
+                self?.reset()
+            }
+        }
     }
 
     private func sendSessionInfoRequest(domain: UniversalMessage_Domain) throws {
@@ -377,11 +386,22 @@ class TeslaVehicle: NSObject {
     ) throws {
         let domain = response.fromDestination.domain
         let sessionInfo = try Signatures_SessionInfo(serializedBytes: response.sessionInfo)
-        try vehicleDomains[domain]?.updateSesionInfo(sessionInfo: sessionInfo)
-        if vehicleDomains.values.filter({ $0.hasSessionInfo() }).count == 2 {
-            try trySendNextJob(domain: .vehicleSecurity)
-            try trySendNextJob(domain: .infotainment)
+        guard let vehicleDomain = vehicleDomains[domain] else {
+            return
+        }
+        try vehicleDomain.updateSesionInfo(sessionInfo: sessionInfo)
+        vehicleDomain.removeJobs()
+        switch domain {
+        case .vehicleSecurity:
+            logger.info("tesla-vehicle: Vehicle security domain handshake complete")
+            vehicleSecurityHandshakeTimer.stop()
             setState(state: .connected)
+            try startInfotainmentHandshake()
+        case .infotainment:
+            logger.info("tesla-vehicle: Infotainment domain handshake complete")
+            infotainmentHandshakeTimer.stop()
+        default:
+            break
         }
     }
 
@@ -402,9 +422,7 @@ class TeslaVehicle: NSObject {
                                    _ request: UniversalMessage_RoutableMessage,
                                    _ response: UniversalMessage_RoutableMessage) throws
     {
-        let domain = response.fromDestination.domain
         try job.onCompleted(request, response)
-        try trySendNextJob(domain: domain)
         guard response.signedMessageStatus.signedMessageFault == .rrorNone else {
             throw try "Request was not successful. Response \(response.jsonString())"
         }
@@ -572,7 +590,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
             }
         }
         do {
-            try startHandshake()
+            try startVehicleSecurityHandshake()
         } catch {
             logger.info("tesla-vehicle: Failed to start handshake \(error)")
             stop()

@@ -145,6 +145,15 @@ struct ChatBotCommandsSettingsView: View {
             } footer: {
                 Text("Say given message.")
             }
+            Section {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.tesla!)
+                } label: {
+                    Text("!moblin tesla ...")
+                }
+            } footer: {
+                Text("Tesla control.")
+            }
         }
         .navigationTitle("Commands")
     }

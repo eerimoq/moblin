@@ -7,8 +7,6 @@ private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
         return String(localized: "Discovering")
     } else if state == .connecting {
         return String(localized: "Connecting")
-    } else if state == .handshaking {
-        return String(localized: "Handshaking")
     } else if state == .connected {
         return String(localized: "Connected")
     } else {

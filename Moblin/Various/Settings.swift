@@ -1618,6 +1618,7 @@ class SettingsChatBotPermissions: Codable {
     var fax: SettingsChatBotPermissionsCommand? = .init()
     var snapshot: SettingsChatBotPermissionsCommand? = .init()
     var filter: SettingsChatBotPermissionsCommand? = .init()
+    var tesla: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -4178,6 +4179,10 @@ final class Settings {
         }
         if realDatabase.debug.tesla == nil {
             realDatabase.debug.tesla = .init()
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tesla == nil {
+            realDatabase.chat.botCommandPermissions!.tesla = .init()
             store()
         }
     }

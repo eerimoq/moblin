@@ -62,8 +62,8 @@ class DjiDevice: NSObject {
     private var fff5Characteristic: CBCharacteristic?
     private var state: DjiDeviceState = .idle
     weak var delegate: (any DjiDeviceDelegate)?
-    private var startStreamingTimer = SimpleTimer(queue: .main)
-    private var stopStreamingTimer = SimpleTimer(queue: .main)
+    private let startStreamingTimer = SimpleTimer(queue: .main)
+    private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
     // periphery:ignore
     private var batteryPercentage: UInt8?
