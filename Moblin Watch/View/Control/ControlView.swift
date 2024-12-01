@@ -93,8 +93,10 @@ struct ControlView: View {
                 ControlLiveView()
                 ControlRecordingView()
                 ControlMutedView()
-                ControlSkipCurrentTtsView()
-                ControlCreateStreamMarkersView()
+                if !model.viaRemoteControl {
+                    ControlSkipCurrentTtsView()
+                    ControlCreateStreamMarkersView()
+                }
                 Spacer()
             }
             .padding()

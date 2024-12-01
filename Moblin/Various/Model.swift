@@ -2250,7 +2250,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         })
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             self.updateRemoteControlAssistantStatus()
-            self.sendThermalStateToWatch(thermalState: self.thermalState)
+            if self.isWatchLocal() {
+                self.sendThermalStateToWatch(thermalState: self.thermalState)
+            }
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             let monotonicNow = ContinuousClock.now
@@ -3341,7 +3343,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setIsWorkout(type: type)
         authorizeHealthKit {
             DispatchQueue.main.async {
-                self.sendWorkoutToWatch()
+                if self.isWatchLocal() {
+                    self.sendWorkoutToWatch()
+                }
             }
         }
         makeToast(
@@ -3352,7 +3356,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func stopWorkout(showToast: Bool = true) {
         setIsWorkout(type: nil)
-        sendWorkoutToWatch()
+        if isWatchLocal() {
+            sendWorkoutToWatch()
+        }
         if showToast {
             makeToast(title: String(localized: "Ending workout"),
                       subTitle: String(localized: "Open Moblin in your Apple Watch to end it"))
@@ -5134,7 +5140,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for (id, padelScoreboardEffect) in padelScoreboardEffects
             where !usedPadelScoreboardEffects.contains(padelScoreboardEffect)
         {
-            sendRemovePadelScoreboardToWatch(id: id)
+            if isWatchLocal() {
+                sendRemovePadelScoreboardToWatch(id: id)
+            }
         }
         media.setSpeechToText(enabled: needsSpeechToText)
         attachSingleLayout(scene: scene)
@@ -5278,7 +5286,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     let scoreboard = widget.scoreboard!
                     padelScoreboardEffect
                         .update(scoreboard: padelScoreboardSettingsToEffect(scoreboard.padel))
-                    sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
+                    if isWatchLocal() {
+                        sendUpdatePadelScoreboardToWatch(id: widget.id, scoreboard: scoreboard)
+                    }
                     effects.append(padelScoreboardEffect)
                     usedPadelScoreboardEffects.append(padelScoreboardEffect)
                 }
@@ -5352,9 +5362,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setSceneId(id: UUID) {
         selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
-        sendSceneToWatch()
-        sendZoomPresetsToWatch()
-        sendZoomPresetToWatch()
+        if isWatchLocal() {
+            sendSceneToWatch(id: selectedSceneId)
+            sendZoomPresetsToWatch()
+            sendZoomPresetToWatch()
+        }
         showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
     }
 
@@ -5502,7 +5514,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isWatchRemoteControl() -> Bool {
-        return database.watch!.viaRemoteControl! && isRemoteControlAssistantConnected()
+        return database.watch!.viaRemoteControl!
     }
 
     private func isWatchLocal() -> Bool {
@@ -5847,7 +5859,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
                 setZoomX(x: preset.x!)
             }
-            sendZoomPresetToWatch()
+            if isWatchLocal() {
+                sendZoomPresetToWatch()
+            }
         } else {
             clearZoomId()
         }
@@ -5864,7 +5878,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         zoomX = x
         remoteControlStreamer?.stateChanged(state: RemoteControlState(zoom: x))
-        sendZoomToWatch(x: x)
+        if isWatchLocal() {
+            sendZoomToWatch(x: x)
+        }
         if setPinch {
             zoomXPinch = zoomX
         }
@@ -5899,7 +5915,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         default:
             break
         }
-        sendZoomPresetToWatch()
+        if isWatchLocal() {
+            sendZoomPresetToWatch()
+        }
     }
 
     private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
@@ -6710,28 +6728,8 @@ extension Model {
             self.remoteControlGeneral = general
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
-            if let general {
-                if let thermalState = general.flame?.toThermalState() {
-                    self.sendThermalStateToWatch(thermalState: thermalState)
-                }
-                if let isLive = general.isLive {
-                    self.sendIsLiveToWatch(isLive: isLive)
-                }
-                if let isRecording = general.isRecording {
-                    self.sendIsRecordingToWatch(isRecording: isRecording)
-                }
-                if let isMuted = general.isMuted {
-                    self.sendIsMutedToWatch(isMuteOn: isMuted)
-                }
-            }
-            if let recordingMessage = topRight.recording?.message {
-                self.sendRecordingLengthToWatch(recordingLength: recordingMessage)
-            }
-            if let bitrateMessage = topRight.bitrate?.message {
-                self.sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
-            }
-            if let audioInfo = topRight.audioInfo {
-                self.sendAudioLevelToWatch(audioLevel: audioInfo.audioLevel.toFloat())
+            if self.isWatchRemoteControl() {
+                self.sendRemoteControlAssistantStatusToWatch()
             }
         }
         remoteControlAssistant?.getSettings { settings in
@@ -6739,43 +6737,100 @@ extension Model {
         }
     }
 
+    private func sendRemoteControlAssistantStatusToWatch() {
+        if let general = remoteControlGeneral {
+            if let thermalState = general.flame?.toThermalState() {
+                sendThermalStateToWatch(thermalState: thermalState)
+            }
+            if let isLive = general.isLive {
+                sendIsLiveToWatch(isLive: isLive)
+            }
+            if let isRecording = general.isRecording {
+                sendIsRecordingToWatch(isRecording: isRecording)
+            }
+            if let isMuted = general.isMuted {
+                sendIsMutedToWatch(isMuteOn: isMuted)
+            }
+        }
+        if let topLeft = remoteControlTopLeft {
+            if let zoom = topLeft.zoom {
+                sendZoomToWatch(x: Float(zoom.message) ?? 0.0)
+            }
+        }
+        if let topRight = remoteControlTopRight {
+            if let recordingMessage = topRight.recording?.message {
+                sendRecordingLengthToWatch(recordingLength: recordingMessage)
+            }
+            if let bitrateMessage = topRight.bitrate?.message {
+                sendSpeedAndTotalToWatch(speedAndTotal: bitrateMessage)
+            }
+            if let audioInfo = topRight.audioInfo {
+                sendAudioLevelToWatch(audioLevel: audioInfo.audioLevel.toFloat())
+            }
+        }
+        sendScenesToWatchRemoteControl()
+        sendSceneToWatch(id: remoteControlScene)
+    }
+
     func isRemoteControlAssistantConfigured() -> Bool {
         let client = database.remoteControl!.client
         return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
     }
 
-    func remoteControlAssistantSetStream(on: Bool, onSuccess: @escaping () -> Void) {
+    func remoteControlAssistantSetStream(on: Bool) {
         remoteControlAssistant?.setStream(on: on) {
-            onSuccess()
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
         }
     }
 
-    func remoteControlAssistantSetRecord(on: Bool, onSuccess: @escaping () -> Void) {
+    func remoteControlAssistantSetRecord(on: Bool) {
         remoteControlAssistant?.setRecord(on: on) {
-            onSuccess()
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
         }
     }
 
-    func remoteControlAssistantSetMute(on: Bool, onSuccess: @escaping () -> Void) {
+    func remoteControlAssistantSetMute(on: Bool) {
         remoteControlAssistant?.setMute(on: on) {
-            onSuccess()
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
         }
     }
 
     func remoteControlAssistantSetScene(id: UUID) {
-        remoteControlAssistant?.setScene(id: id) {}
+        remoteControlAssistant?.setScene(id: id) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
     }
 
     func remoteControlAssistantSetMic(id: String) {
-        remoteControlAssistant?.setMic(id: id) {}
+        remoteControlAssistant?.setMic(id: id) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
     }
 
     func remoteControlAssistantSetZoom(x: Float) {
-        remoteControlAssistant?.setZoom(x: x) {}
+        remoteControlAssistant?.setZoom(x: x) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
     }
 
     func remoteControlAssistantSetBitratePreset(id: UUID) {
-        remoteControlAssistant?.setBitratePreset(id: id) {}
+        remoteControlAssistant?.setBitratePreset(id: id) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
     }
 
     func remoteControlAssistantSetDebugLogging(on: Bool) {
@@ -6876,11 +6931,16 @@ extension Model: RemoteControlAssistantDelegate {
         if let recording = state.recording {
             remoteControlState.recording = recording
         }
+        if isWatchRemoteControl() {
+            sendRemoteControlAssistantStatusToWatch()
+        }
     }
 
     func remoteControlAssistantPreview(preview: Data) {
         remoteControlPreview = UIImage(data: preview)
-        sendPreviewToWatch(image: preview)
+        if isWatchRemoteControl() {
+            sendPreviewToWatch(image: preview)
+        }
     }
 
     func remoteControlAssistantLog(entry: String) {
@@ -7122,21 +7182,31 @@ extension Model {
         sendMessageToWatch(type: .zoomPreset, data: zoomPreset.uuidString)
     }
 
-    private func sendScenesToWatch() {
+    private func sendScenesToWatch(scenes: [WatchProtocolScene]) {
         guard isWatchReachable() else {
             return
         }
-        let scenes = enabledScenes.map { WatchProtocolScene(id: $0.id, name: $0.name) }
         do {
             try sendMessageToWatch(type: .scenes, data: JSONEncoder().encode(scenes))
         } catch {}
     }
 
-    private func sendSceneToWatch() {
+    private func sendScenesToWatchLocal() {
+        sendScenesToWatch(scenes: enabledScenes.map { WatchProtocolScene(id: $0.id, name: $0.name) })
+    }
+
+    private func sendScenesToWatchRemoteControl() {
+        guard let scenes = remoteControlSettings?.scenes else {
+            return
+        }
+        sendScenesToWatch(scenes: scenes.map { WatchProtocolScene(id: $0.id, name: $0.name) })
+    }
+
+    private func sendSceneToWatch(id: UUID) {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: .scene, data: selectedSceneId.uuidString)
+        sendMessageToWatch(type: .scene, data: id.uuidString)
     }
 
     func sendSettingsToWatch() {
@@ -7182,7 +7252,9 @@ extension Model: WCSessionDelegate {
         case .activated:
             DispatchQueue.main.async {
                 self.setLowFpsImage()
-                self.sendWorkoutToWatch()
+                if self.isWatchLocal() {
+                    self.sendWorkoutToWatch()
+                }
             }
         default:
             break
@@ -7202,34 +7274,16 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             self.setLowFpsImage()
             self.sendSettingsToWatch()
-            self.sendZoomToWatch(x: self.zoomX)
-            self.sendZoomPresetsToWatch()
-            self.sendZoomPresetToWatch()
-            self.sendScenesToWatch()
-            self.sendSceneToWatch()
-            self.sendWorkoutToWatch()
-            self.resetWorkoutStats()
             if self.isWatchRemoteControl() {
-                if let general = self.remoteControlGeneral {
-                    if let thermalState = general.flame?.toThermalState() {
-                        self.sendThermalStateToWatch(thermalState: thermalState)
-                    }
-                    if let isLive = general.isLive {
-                        self.sendIsLiveToWatch(isLive: isLive)
-                    }
-                    if let isRecording = general.isRecording {
-                        self.sendIsRecordingToWatch(isRecording: isRecording)
-                    }
-                    if let isMuted = general.isMuted {
-                        self.sendIsMutedToWatch(isMuteOn: isMuted)
-                    }
-                }
-                if let topRight = self.remoteControlTopRight {
-                    if let audioInfo = topRight.audioInfo {
-                        self.sendAudioLevelToWatch(audioLevel: audioInfo.audioLevel.toFloat())
-                    }
-                }
+                self.sendRemoteControlAssistantStatusToWatch()
             } else {
+                self.sendZoomToWatch(x: self.zoomX)
+                self.sendZoomPresetsToWatch()
+                self.sendZoomPresetToWatch()
+                self.sendScenesToWatchLocal()
+                self.sendSceneToWatch(id: self.selectedSceneId)
+                self.sendWorkoutToWatch()
+                self.resetWorkoutStats()
                 self.trySendNextChatPostToWatch()
                 self.sendAudioLevelToWatch(audioLevel: self.audioLevel)
                 self.sendThermalStateToWatch(thermalState: self.thermalState)
@@ -7298,11 +7352,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchRemoteControl() {
-                self.remoteControlAssistantSetStream(on: value) {
-                    DispatchQueue.main.async {
-                        self.updateRemoteControlAssistantStatus()
-                    }
-                }
+                self.remoteControlAssistantSetStream(on: value)
             } else {
                 if value {
                     self.startStream()
@@ -7319,11 +7369,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchRemoteControl() {
-                self.remoteControlAssistantSetRecord(on: value) {
-                    DispatchQueue.main.async {
-                        self.updateRemoteControlAssistantStatus()
-                    }
-                }
+                self.remoteControlAssistantSetRecord(on: value)
             } else {
                 if value {
                     self.startRecording()
@@ -7340,11 +7386,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchRemoteControl() {
-                self.remoteControlAssistantSetMute(on: value) {
-                    DispatchQueue.main.async {
-                        self.updateRemoteControlAssistantStatus()
-                    }
-                }
+                self.remoteControlAssistantSetMute(on: value)
             } else {
                 self.setIsMuted(value: value)
             }
@@ -7353,7 +7395,9 @@ extension Model: WCSessionDelegate {
 
     private func handleSkipCurrentChatTextToSpeechMessage(_: Any) {
         DispatchQueue.main.async {
-            self.chatTextToSpeech.skipCurrentMessage()
+            if self.isWatchLocal() {
+                self.chatTextToSpeech.skipCurrentMessage()
+            }
         }
     }
 
@@ -7362,9 +7406,13 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            self.clearZoomId()
-            if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
-                self.setZoomX(x: x)
+            if self.isWatchLocal() {
+                self.clearZoomId()
+                if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
+                    self.setZoomX(x: x)
+                }
+            } else {
+                self.remoteControlAssistantSetZoom(x: x)
             }
         }
     }
@@ -7377,7 +7425,9 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            self.setCameraZoomPreset(id: zoomPresetId)
+            if self.isWatchLocal() {
+                self.setCameraZoomPreset(id: zoomPresetId)
+            }
         }
     }
 
@@ -7389,7 +7439,11 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            self.selectScene(id: sceneId)
+            if self.isWatchLocal() {
+                self.selectScene(id: sceneId)
+            } else {
+                self.remoteControlAssistantSetScene(id: sceneId)
+            }
         }
     }
 
@@ -7401,20 +7455,22 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            if let heartRate = stats.heartRate {
-                self.workoutHeartRate = heartRate
-            }
-            if let activeEnergyBurned = stats.activeEnergyBurned {
-                self.workoutActiveEnergyBurned = activeEnergyBurned
-            }
-            if let distance = stats.distance {
-                self.workoutDistance = distance
-            }
-            if let stepCount = stats.stepCount {
-                self.workoutStepCount = stepCount
-            }
-            if let power = stats.power {
-                self.workoutPower = power
+            if self.isWatchLocal() {
+                if let heartRate = stats.heartRate {
+                    self.workoutHeartRate = heartRate
+                }
+                if let activeEnergyBurned = stats.activeEnergyBurned {
+                    self.workoutActiveEnergyBurned = activeEnergyBurned
+                }
+                if let distance = stats.distance {
+                    self.workoutDistance = distance
+                }
+                if let stepCount = stats.stepCount {
+                    self.workoutStepCount = stepCount
+                }
+                if let power = stats.power {
+                    self.workoutPower = power
+                }
             }
         }
     }
@@ -7427,33 +7483,37 @@ extension Model: WCSessionDelegate {
             return
         }
         DispatchQueue.main.async {
-            guard let widget = self.findWidget(id: scoreboard.id) else {
-                return
+            if self.isWatchLocal() {
+                guard let widget = self.findWidget(id: scoreboard.id) else {
+                    return
+                }
+                widget.scoreboard!.padel.score = scoreboard.score.map {
+                    let score = SettingsWidgetScoreboardScore()
+                    score.home = $0.home
+                    score.away = $0.away
+                    return score
+                }
+                widget.scoreboard!.padel.homePlayer1 = scoreboard.home[0]
+                if scoreboard.home.count > 1 {
+                    widget.scoreboard!.padel.homePlayer2 = scoreboard.home[1]
+                }
+                widget.scoreboard!.padel.awayPlayer1 = scoreboard.away[0]
+                if scoreboard.away.count > 1 {
+                    widget.scoreboard!.padel.awayPlayer2 = scoreboard.away[1]
+                }
+                guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
+                    return
+                }
+                padelScoreboardEffect
+                    .update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))
             }
-            widget.scoreboard!.padel.score = scoreboard.score.map {
-                let score = SettingsWidgetScoreboardScore()
-                score.home = $0.home
-                score.away = $0.away
-                return score
-            }
-            widget.scoreboard!.padel.homePlayer1 = scoreboard.home[0]
-            if scoreboard.home.count > 1 {
-                widget.scoreboard!.padel.homePlayer2 = scoreboard.home[1]
-            }
-            widget.scoreboard!.padel.awayPlayer1 = scoreboard.away[0]
-            if scoreboard.away.count > 1 {
-                widget.scoreboard!.padel.awayPlayer2 = scoreboard.away[1]
-            }
-            guard let padelScoreboardEffect = self.padelScoreboardEffects[scoreboard.id] else {
-                return
-            }
-            padelScoreboardEffect
-                .update(scoreboard: self.padelScoreboardSettingsToEffect(widget.scoreboard!.padel))
         }
     }
 
     private func handleCreateStreamMarker() {
-        createStreamMarker()
+        if isWatchLocal() {
+            createStreamMarker()
+        }
     }
 
     func session(

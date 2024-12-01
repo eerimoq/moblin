@@ -98,6 +98,7 @@ class Model: NSObject, ObservableObject {
     private var nextNonNormalChatLineId = -1
     private var logId = 1
     var numberOfMessagesReceived = 0
+    @Published var viaRemoteControl = false
     @Published var isLive = false
     @Published var isRecording = false
     @Published var isMuted = false
@@ -307,6 +308,7 @@ class Model: NSObject, ObservableObject {
         if self.settings.show == nil {
             self.settings.show = .init()
         }
+        viaRemoteControl = self.settings.viaRemoteControl ?? false
     }
 
     private func handleThermalState(_ data: Any) throws {

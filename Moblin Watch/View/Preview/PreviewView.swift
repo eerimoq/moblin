@@ -68,12 +68,14 @@ struct PreviewView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 1) {
                         Spacer()
-                        StreamOverlayIconAndTextView(
-                            show: model.viewerCount != noValue,
-                            icon: "eye",
-                            text: model.viewerCount,
-                            textPlacement: .afterIcon
-                        )
+                        if !model.viaRemoteControl {
+                            StreamOverlayIconAndTextView(
+                                show: model.viewerCount != noValue,
+                                icon: "eye",
+                                text: model.viewerCount,
+                                textPlacement: .afterIcon
+                            )
+                        }
                         StreamOverlayIconAndTextView(
                             show: true,
                             icon: "magnifyingglass",
@@ -118,21 +120,23 @@ struct PreviewView: View {
             }
             .padding([.bottom], 3)
             List {
-                Picker(selection: $model.zoomPresetIdPicker) {
-                    ForEach(model.zoomPresets) { zoomPreset in
-                        Text(zoomPreset.name)
-                            .tag(zoomPreset.id as UUID?)
-                    }
-                    .onChange(of: model.zoomPresetIdPicker) { _, _ in
-                        guard model.zoomPresetIdPicker != model.zoomPresetId else {
-                            return
+                if !model.viaRemoteControl {
+                    Picker(selection: $model.zoomPresetIdPicker) {
+                        ForEach(model.zoomPresets) { zoomPreset in
+                            Text(zoomPreset.name)
+                                .tag(zoomPreset.id as UUID?)
                         }
-                        model.setZoomPreset(id: model.zoomPresetIdPicker ?? .init())
+                        .onChange(of: model.zoomPresetIdPicker) { _, _ in
+                            guard model.zoomPresetIdPicker != model.zoomPresetId else {
+                                return
+                            }
+                            model.setZoomPreset(id: model.zoomPresetIdPicker ?? .init())
+                        }
+                        Text("Other")
+                            .tag(nil as UUID?)
+                    } label: {
+                        Text("Zoom")
                     }
-                    Text("Other")
-                        .tag(nil as UUID?)
-                } label: {
-                    Text("Zoom")
                 }
                 if model.scenes.contains(where: { model.sceneIdPicker == $0.id }) {
                     Picker(selection: $model.sceneIdPicker) {

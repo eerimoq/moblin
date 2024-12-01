@@ -6,8 +6,10 @@ struct MainView: View {
     var body: some View {
         TabView {
             PreviewView()
-            ChatView()
-            if model.showPadelScoreBoard {
+            if !model.viaRemoteControl {
+                ChatView()
+            }
+            if model.showPadelScoreBoard && !model.viaRemoteControl {
                 PadelScoreboardView()
             }
             ControlView()
