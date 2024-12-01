@@ -22,6 +22,7 @@ struct WatchSettingsView: View {
                     model.database.watch!.viaRemoteControl!
                 }, set: { value in
                     model.database.watch!.viaRemoteControl = value
+                    model.sendInitToWatch()
                 })) {
                     Text("Remote control assistant")
                 }

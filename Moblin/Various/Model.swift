@@ -6980,6 +6980,47 @@ extension Model {
         )
     }
 
+    func sendInitToWatch() {
+        setLowFpsImage()
+        sendSettingsToWatch()
+        if !isWatchReachable() {
+            remoteControlAssistantStopPreview(user: .watch)
+        }
+        if isWatchRemoteControl() {
+            if isWatchReachable() {
+                remoteControlAssistantStartPreview(user: .watch)
+            }
+            sendRemoteControlAssistantStatusToWatch()
+        } else {
+            sendZoomToWatch(x: zoomX)
+            sendZoomPresetsToWatch()
+            sendZoomPresetToWatch()
+            sendScenesToWatchLocal()
+            sendSceneToWatch(id: selectedSceneId)
+            sendWorkoutToWatch()
+            resetWorkoutStats()
+            trySendNextChatPostToWatch()
+            sendAudioLevelToWatch(audioLevel: audioLevel)
+            sendThermalStateToWatch(thermalState: thermalState)
+            sendIsLiveToWatch(isLive: isLive)
+            sendIsRecordingToWatch(isRecording: isRecording)
+            sendIsMutedToWatch(isMuteOn: isMuteOn)
+            sendViewerCountWatch()
+            sendScoreboardPlayersToWatch()
+            let sceneWidgets = getSelectedScene()?.widgets ?? []
+            for id in padelScoreboardEffects.keys {
+                if let sceneWidget = sceneWidgets.first(where: { $0.widgetId == id }),
+                   sceneWidget.enabled,
+                   let scoreboard = findWidget(id: id)?.scoreboard
+                {
+                    sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
+                } else {
+                    sendRemovePadelScoreboardToWatch(id: id)
+                }
+            }
+        }
+    }
+
     private func sendSpeedAndTotalToWatch(speedAndTotal: String) {
         guard isWatchReachable() else {
             return
@@ -7282,44 +7323,7 @@ extension Model: WCSessionDelegate {
     func sessionReachabilityDidChange(_: WCSession) {
         logger.debug("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
-            self.setLowFpsImage()
-            self.sendSettingsToWatch()
-            if !self.isWatchReachable() {
-                self.remoteControlAssistantStopPreview(user: .watch)
-            }
-            if self.isWatchRemoteControl() {
-                if self.isWatchReachable() {
-                    self.remoteControlAssistantStartPreview(user: .watch)
-                }
-                self.sendRemoteControlAssistantStatusToWatch()
-            } else {
-                self.sendZoomToWatch(x: self.zoomX)
-                self.sendZoomPresetsToWatch()
-                self.sendZoomPresetToWatch()
-                self.sendScenesToWatchLocal()
-                self.sendSceneToWatch(id: self.selectedSceneId)
-                self.sendWorkoutToWatch()
-                self.resetWorkoutStats()
-                self.trySendNextChatPostToWatch()
-                self.sendAudioLevelToWatch(audioLevel: self.audioLevel)
-                self.sendThermalStateToWatch(thermalState: self.thermalState)
-                self.sendIsLiveToWatch(isLive: self.isLive)
-                self.sendIsRecordingToWatch(isRecording: self.isRecording)
-                self.sendIsMutedToWatch(isMuteOn: self.isMuteOn)
-                self.sendViewerCountWatch()
-                self.sendScoreboardPlayersToWatch()
-                let sceneWidgets = self.getSelectedScene()?.widgets ?? []
-                for id in self.padelScoreboardEffects.keys {
-                    if let sceneWidget = sceneWidgets.first(where: { $0.widgetId == id }),
-                       sceneWidget.enabled,
-                       let scoreboard = self.findWidget(id: id)?.scoreboard
-                    {
-                        self.sendUpdatePadelScoreboardToWatch(id: id, scoreboard: scoreboard)
-                    } else {
-                        self.sendRemovePadelScoreboardToWatch(id: id)
-                    }
-                }
-            }
+            self.sendInitToWatch()
         }
     }
 
