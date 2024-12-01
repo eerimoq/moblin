@@ -1380,8 +1380,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         let keyAdder = TeslaVehicleKeyAdder()
-        keyAdder.addKey(vin: vin, privateKeyPem: privateKeyPem) {
-            self.makeToast(title: String(localized: "Confirm by tapping NFC card on center console"))
+        keyAdder.start(vin: vin, privateKeyPem: privateKeyPem) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Confirm by tapping NFC card on center console"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to add key"))
+            }
+            keyAdder.stop()
         }
     }
 

@@ -78,7 +78,12 @@ struct DebugTeslaSettingsView: View {
                 NavigationLink {
                     DebugTeslaKeySettingsView(privateKey: model.database.debug.tesla!.privateKey)
                 } label: {
-                    Text("Key")
+                    TextItemView(
+                        name: "Key",
+                        value: model.database.debug.tesla!.privateKey,
+                        sensitive: true,
+                        color: .gray
+                    )
                 }
             }
             Section {
