@@ -492,12 +492,25 @@ struct MainView: View {
                 .onKeyPress { press in
                     model.handleKeyPress(press: press)
                 }
-                .onChange(of: model.showingPanel) { value in
-                    logger.info("keyboard focused \(value == .none)")
-                    focused = value == .none
+                .onChange(of: model.showingPanel) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.showBrowser) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.showTwitchAuth) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.isPresentingWizard) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.isPresentingSetupWizard) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.wizardShowTwitchAuth) { _ in
+                    focused = model.isKeyboardActive()
                 }
                 .onAppear {
-                    logger.info("keyboard focused appear")
                     focused = true
                 }
         } else {

@@ -5450,9 +5450,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func isKeyboardActive() -> Bool {
+        if showingPanel != .none {
+            return false
+        }
+        if showBrowser {
+            return false
+        }
+        if showTwitchAuth {
+            return false
+        }
+        if isPresentingWizard {
+            return false
+        }
+        if isPresentingSetupWizard {
+            return false
+        }
+        if wizardShowTwitchAuth {
+            return false
+        }
+        return true
+    }
+
     @available(iOS 17.0, *)
     func handleKeyPress(press: KeyPress) -> KeyPress.Result {
-        guard showingPanel == .none else {
+        guard isKeyboardActive() else {
             return .ignored
         }
         guard let key = database.keyboard!.keys.first(where: {
@@ -5465,24 +5487,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             break
         case .record:
             toggleRecording()
-            updateButtonStates()
         case .stream:
             toggleStream()
-            updateButtonStates()
         case .torch:
             toggleTorch()
             toggleGlobalButton(type: .torch)
-            updateButtonStates()
         case .mute:
             toggleMute()
             toggleGlobalButton(type: .mute)
-            updateButtonStates()
         case .blackScreen:
             toggleBlackScreen()
-            updateButtonStates()
         case .scene:
             selectScene(id: key.sceneId)
         }
+        updateButtonStates()
         return .handled
     }
 
