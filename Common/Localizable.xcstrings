@@ -12448,6 +12448,9 @@
         }
       }
     },
+    "a key" : {
+
+    },
     "a player" : {
       "localizations" : {
         "de" : {
@@ -59190,6 +59193,9 @@
           }
         }
       }
+    },
+    "Keyboard" : {
+
     },
     "Kick" : {
       "localizations" : {
@@ -115651,6 +115657,9 @@
           }
         }
       }
+    },
+    "Use a keyboard to zoom, set scene, and more." : {
+
     },
     "Use a media player as video source in scenes and as mic to stream recordings or other MP4-files." : {
       "localizations" : {

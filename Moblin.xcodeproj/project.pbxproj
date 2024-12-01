@@ -397,6 +397,8 @@
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C354662CF5A5A500B8B29F /* DebugTeslaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354652CF5A5A400B8B29F /* DebugTeslaSettingsView.swift */; };
 		03C354682CF98DD900B8B29F /* HCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354672CF98DD600B8B29F /* HCenter.swift */; };
+		03C3560D2CFC90D200B8B29F /* KeyboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */; };
+		03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -950,6 +952,8 @@
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C354652CF5A5A400B8B29F /* DebugTeslaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugTeslaSettingsView.swift; sourceTree = "<group>"; };
 		03C354672CF98DD600B8B29F /* HCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HCenter.swift; sourceTree = "<group>"; };
+		03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSettingsView.swift; sourceTree = "<group>"; };
+		03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeySettingsView.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -2298,6 +2302,7 @@
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
+				03C3560A2CFC90B400B8B29F /* Keyboard */,
 				03ACC7C52B7C94AA003B6CD6 /* Location */,
 				038E7BDE2C32F362008994BA /* MediaPlayer */,
 				03B16A222B35610100E5AB07 /* Recordings */,
@@ -2502,6 +2507,15 @@
 				0384C0372C10E14900B82216 /* WebSocketClient.swift */,
 			);
 			path = Various;
+			sourceTree = "<group>";
+		};
+		03C3560A2CFC90B400B8B29F /* Keyboard */ = {
+			isa = PBXGroup;
+			children = (
+				03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */,
+				03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */,
+			);
+			path = Keyboard;
 			sourceTree = "<group>";
 		};
 		03CBFC732BFD3C650029A888 /* MirrorFrontCamera */ = {
@@ -3105,6 +3119,7 @@
 				03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */,
 				0359F8D82BD3DA61005BFDA8 /* MpegTsVideoConfigAvc.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
+				03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */,
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* AMF0Serializer.swift in Sources */,
@@ -3204,6 +3219,7 @@
 				0359F8CE2BD3DA61005BFDA8 /* FLVVideoFourCC.swift in Sources */,
 				0359F8C82BD3DA61005BFDA8 /* FLVFrameType.swift in Sources */,
 				0379E66A2C88C9340021AB59 /* CatPrinterCommands.swift in Sources */,
+				03C3560D2CFC90D200B8B29F /* KeyboardSettingsView.swift in Sources */,
 				035F24422CB76835008288C7 /* TwitchCommon.swift in Sources */,
 				03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */,
 				03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */,

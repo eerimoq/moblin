@@ -5450,6 +5450,42 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    @available(iOS 17.0, *)
+    func handleKeyPress(press: KeyPress) -> KeyPress.Result {
+        guard showingPanel == .none else {
+            return .ignored
+        }
+        guard let key = database.keyboard!.keys.first(where: {
+            $0.key == press.characters
+        }) else {
+            return .ignored
+        }
+        switch key.function {
+        case .unused:
+            break
+        case .record:
+            toggleRecording()
+            updateButtonStates()
+        case .stream:
+            toggleStream()
+            updateButtonStates()
+        case .torch:
+            toggleTorch()
+            toggleGlobalButton(type: .torch)
+            updateButtonStates()
+        case .mute:
+            toggleMute()
+            toggleGlobalButton(type: .mute)
+            updateButtonStates()
+        case .blackScreen:
+            toggleBlackScreen()
+            updateButtonStates()
+        case .scene:
+            selectScene(id: key.sceneId)
+        }
+        return .handled
+    }
+
     private func updateBatteryState() {
         batteryState = UIDevice.current.batteryState
     }

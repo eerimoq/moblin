@@ -98,6 +98,11 @@ struct SettingsView: View {
                         IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
                     }
                     NavigationLink {
+                        KeyboardSettingsView()
+                    } label: {
+                        IconAndTextView(image: "keyboard", text: String(localized: "Keyboard"))
+                    }
+                    NavigationLink {
                         RemoteControlSettingsView()
                     } label: {
                         IconAndTextView(

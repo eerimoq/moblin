@@ -2222,6 +2222,77 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
+enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
+    case unused = "Unused"
+    case record = "Record"
+    case stream = "Stream"
+    case mute = "Mute"
+    case torch = "Torch"
+    case blackScreen = "Black screen"
+    case scene = "Scene"
+
+    public init(from decoder: Decoder) throws {
+        var value = try decoder.singleValueContainer().decode(RawValue.self)
+        if value == "Pause chat" {
+            value = "Interactive chat"
+        }
+        self = SettingsKeyboardKeyFunction(rawValue: value) ?? .unused
+    }
+
+    static func fromString(value: String) -> SettingsKeyboardKeyFunction {
+        switch value {
+        case String(localized: "Unused"):
+            return .unused
+        case String(localized: "Record"):
+            return .record
+        case String(localized: "Stream"):
+            return .stream
+        case String(localized: "Mute"):
+            return .mute
+        case String(localized: "Torch"):
+            return .torch
+        case String(localized: "Black screen"):
+            return .blackScreen
+        case String(localized: "Scene"):
+            return .scene
+        default:
+            return .unused
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .unused:
+            return String(localized: "Unused")
+        case .record:
+            return String(localized: "Record")
+        case .stream:
+            return String(localized: "Stream")
+        case .mute:
+            return String(localized: "Mute")
+        case .torch:
+            return String(localized: "Torch")
+        case .blackScreen:
+            return String(localized: "Black screen")
+        case .scene:
+            return String(localized: "Scene")
+        }
+    }
+}
+
+var keyboardKeyFunctions = SettingsKeyboardKeyFunction.allCases.map { $0.toString() }
+
+class SettingsKeyboardKey: Codable, Identifiable {
+    var id: UUID = .init()
+    var key: String = ""
+    var function: SettingsKeyboardKeyFunction = .unused
+    var sceneId: UUID = .init()
+}
+
+class SettingsKeyboard: Codable {
+    var keys: [SettingsKeyboardKey] = []
+}
+
 class SettingsRemoteControlAssistant: Codable {
     var enabled: Bool = false
     // periphery:ignore
@@ -2428,6 +2499,7 @@ class Database: Codable {
     var catPrinters: SettingsCatPrinters? = .init()
     var verboseStatuses: Bool? = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
+    var keyboard: SettingsKeyboard? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4187,6 +4259,10 @@ final class Settings {
         }
         if realDatabase.watch!.viaRemoteControl == nil {
             realDatabase.watch!.viaRemoteControl = false
+            store()
+        }
+        if realDatabase.keyboard == nil {
+            realDatabase.keyboard = .init()
             store()
         }
     }

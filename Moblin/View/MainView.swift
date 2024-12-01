@@ -88,6 +88,7 @@ struct MainView: View {
     var streamView: StreamView
     var webBrowserView: WebBrowserView
     @State var showAreYouReallySure = false
+    @FocusState private var focused: Bool
 
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
         let sideLength = 70.0
@@ -115,7 +116,7 @@ struct MainView: View {
     }
 
     var body: some View {
-        ZStack {
+        let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
                 VStack(spacing: 0) {
                     ZStack {
@@ -484,5 +485,23 @@ struct MainView: View {
             )
         }
         .persistentSystemOverlays(.hidden)
+        if #available(iOS 17.0, *) {
+            all
+                .focusable()
+                .focused($focused)
+                .onKeyPress { press in
+                    model.handleKeyPress(press: press)
+                }
+                .onChange(of: model.showingPanel) { value in
+                    logger.info("keyboard focused \(value == .none)")
+                    focused = value == .none
+                }
+                .onAppear {
+                    logger.info("keyboard focused appear")
+                    focused = true
+                }
+        } else {
+            all
+        }
     }
 }
