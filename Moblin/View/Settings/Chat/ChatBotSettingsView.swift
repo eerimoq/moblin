@@ -149,10 +149,19 @@ struct ChatBotCommandsSettingsView: View {
                 NavigationLink {
                     PermissionsSettingsView(permissions: permissions.tesla!)
                 } label: {
-                    Text("!moblin tesla ...")
+                    Text("!moblin tesla trunk open")
                 }
             } footer: {
-                Text("Tesla control.")
+                Text("Open Tesla vehicle trunk.")
+            }
+            Section {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.tesla!)
+                } label: {
+                    Text("!moblin tesla trunk close")
+                }
+            } footer: {
+                Text("Close Tesla vehicle trunk.")
             }
         }
         .navigationTitle("Commands")
