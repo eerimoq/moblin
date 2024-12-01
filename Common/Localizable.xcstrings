@@ -1468,7 +1468,10 @@
         }
       }
     },
-    "!moblin tesla ..." : {
+    "!moblin tesla trunk close" : {
+
+    },
+    "!moblin tesla trunk open" : {
 
     },
     "!moblin tts off" : {
@@ -29374,6 +29377,9 @@
           }
         }
       }
+    },
+    "Close Tesla vehicle trunk." : {
+
     },
     "Close trunk" : {
 
@@ -76092,6 +76098,9 @@
         }
       }
     },
+    "Open Tesla vehicle trunk." : {
+
+    },
     "Open trunk" : {
 
     },
@@ -105367,9 +105376,6 @@
       }
     },
     "Tesla" : {
-
-    },
-    "Tesla control." : {
 
     },
     "Test" : {
