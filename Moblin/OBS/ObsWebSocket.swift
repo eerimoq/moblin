@@ -854,8 +854,7 @@ class ObsWebSocket {
           "requests": [\(requests.joined(separator: ","))]
         }
         """
-        let message = packMessage(op: .requestBatch, data: requestBatch.utf8Data)
-        webSocket.send(string: message)
+        send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
     private func onRequestError(
@@ -949,8 +948,7 @@ class ObsWebSocket {
             return
         }
         requests[requestId] = Request(onSuccess: onSuccess, onError: onError)
-        let message = packMessage(op: .request, data: request)
-        webSocket.send(string: message)
+        send(op: .request, data: request)
     }
 
     private func packRequest<T>(type: RequestType, request: T?) throws -> (Data, String) where T: Encodable {
@@ -1144,8 +1142,7 @@ class ObsWebSocket {
         let identify = Identify(rpcVersion: rpcVersion, authentication: authentication)
         do {
             let identify = try JSONEncoder().encode(identify)
-            let message = packMessage(op: .identify, data: identify)
-            webSocket.send(string: message)
+            send(op: .identify, data: identify)
         } catch {}
     }
 
@@ -1153,14 +1150,21 @@ class ObsWebSocket {
         let reidentify = Reidentify(eventSubscriptions: eventSubscriptions)
         do {
             let reidentify = try JSONEncoder().encode(reidentify)
-            let message = packMessage(op: .reidentify, data: reidentify)
-            webSocket.send(string: message)
+            send(op: .reidentify, data: reidentify)
         } catch {}
     }
 
     private func getNextId() -> String {
         nextId += 1
         return String(nextId)
+    }
+
+    private func send(op: OpCode, data: Data) {
+        let message = packMessage(op: op, data: data)
+        if logger.debugEnabled {
+            logger.debug("obs-websocket: Sending \(message.prefix(250))")
+        }
+        webSocket.send(string: message)
     }
 }
 
@@ -1173,6 +1177,9 @@ extension ObsWebSocket: WebSocketClientDelegate {
     }
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
+        if logger.debugEnabled {
+            logger.debug("obs-websocket: Received \(string.prefix(250))")
+        }
         do {
             try handleMessage(message: string)
         } catch {
