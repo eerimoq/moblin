@@ -579,6 +579,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
             }
         }
         guard handshake else {
+            setState(state: .connected)
             return
         }
         do {

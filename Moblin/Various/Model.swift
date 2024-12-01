@@ -579,6 +579,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var teslaVehicle: TeslaVehicle?
     @Published var teslaVehicleState: TeslaVehicleState?
+    private let teslaVehicleKeyAdder = TeslaVehicleKeyAdder()
 
     private var lastAttachCompletedTime: ContinuousClock.Instant?
 
@@ -1379,15 +1380,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             makeErrorToast(title: String(localized: "Private key is empty"))
             return
         }
-        let keyAdder = TeslaVehicleKeyAdder()
-        keyAdder.start(vin: vin, privateKeyPem: privateKeyPem) { ok in
+        teslaVehicleKeyAdder.start(vin: vin, privateKeyPem: privateKeyPem) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Confirm by tapping NFC card on center console"))
             } else {
                 self.makeErrorToast(title: String(localized: "Failed to add key"))
             }
-            keyAdder.stop()
         }
+    }
+
+    func teslaStopAddKeyToVehicle() {
+        teslaVehicleKeyAdder.stop()
     }
 
     func teslaFlashLights() {

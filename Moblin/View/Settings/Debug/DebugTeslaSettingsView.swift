@@ -56,6 +56,9 @@ private struct DebugTeslaKeySettingsView: View {
                 Text("Remove the key using your Tesla's center screen.")
             }
         }
+        .onDisappear {
+            model.teslaStopAddKeyToVehicle()
+        }
         .navigationTitle("Key")
     }
 }

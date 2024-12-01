@@ -4,14 +4,22 @@ class TeslaVehicleKeyAdder: NSObject {
     private var vehicle: TeslaVehicle?
     private var privateKeyPem: String?
     private var onCompleted: ((Bool) -> Void)?
+    private let timer = SimpleTimer(queue: .main)
 
-    func start(vin: String, privateKeyPem: String, onCompleted _: @escaping (Bool) -> Void) {
+    func start(vin: String, privateKeyPem: String, onCompleted: @escaping (Bool) -> Void) {
         self.privateKeyPem = privateKeyPem
-        vehicle = TeslaVehicle(vin: vin, privateKeyPem: privateKeyPem)
+        self.onCompleted = onCompleted
+        stop()
+        vehicle = TeslaVehicle(vin: vin, privateKeyPem: privateKeyPem, handshake: false)
         vehicle?.delegate = self
+        vehicle?.start()
+        timer.startSingleShot(timeout: 10.0) { [weak self] in
+            self?.onCompleted?(false)
+        }
     }
 
     func stop() {
+        timer.stop()
         vehicle?.stop()
     }
 }
@@ -21,14 +29,10 @@ extension TeslaVehicleKeyAdder: TeslaVehicleDelegate {
         guard let privateKeyPem, let onCompleted else {
             return
         }
-        switch state {
-        case .idle:
-            onCompleted(false)
-        case .connected:
+        if state == .connected {
             vehicle.addKeyRequestWithRole(privateKeyPem: privateKeyPem)
+            timer.stop()
             onCompleted(true)
-        default:
-            break
         }
     }
 }
