@@ -1368,6 +1368,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaVehicleState = nil
     }
 
+    func teslaAddKeyToVehicle() {
+        let vin = database.debug.tesla!.vin
+        let privateKeyPem = database.debug.tesla!.privateKey
+        guard !vin.isEmpty else {
+            makeErrorToast(title: String(localized: "VIN is empty"))
+            return
+        }
+        guard !privateKeyPem.isEmpty else {
+            makeErrorToast(title: String(localized: "Private key is empty"))
+            return
+        }
+        let keyAdder = TeslaVehicleKeyAdder()
+        keyAdder.addKey(vin: vin, privateKeyPem: privateKeyPem) {
+            self.makeToast(title: String(localized: "Confirm by tapping NFC card on center console"))
+        }
+    }
+
     func teslaFlashLights() {
         teslaVehicle?.flashLights()
     }
@@ -1381,16 +1398,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func teslaGetChargeState() {
         teslaVehicle?.getChargeState { state in
             self.teslaChargeState = state
-        }
-    }
-
-    func teslaGetDriveState() {
-        teslaVehicle?.getDriveState { _ in
-        }
-    }
-
-    func teslaGetMediaState() {
-        teslaVehicle?.getMediaState { _ in
         }
     }
 
@@ -1410,12 +1417,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaVehicle?.mediaNextTrack()
     }
 
-    func mediaTogglePlayback() {
-        teslaVehicle?.mediaTogglePlayback()
+    func mediaPreviousTrack() {
+        teslaVehicle?.mediaPreviousTrack()
     }
 
-    func teslaPing() {
-        teslaVehicle?.ping()
+    func mediaTogglePlayback() {
+        teslaVehicle?.mediaTogglePlayback()
     }
 
     private func isWeatherNeeded() -> Bool {

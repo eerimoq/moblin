@@ -117,10 +117,8 @@ private class VehicleDomain {
     }
 }
 
-private func generateKeyPair() -> (P256.KeyAgreement.PrivateKey, P256.KeyAgreement.PublicKey) {
-    let privateKey = P256.KeyAgreement.PrivateKey()
-    let publicKey = privateKey.publicKey
-    return (privateKey, publicKey)
+func teslaGeneratePrivateKey() -> P256.KeyAgreement.PrivateKey {
+    return P256.KeyAgreement.PrivateKey()
 }
 
 protocol TeslaVehicleDelegate: AnyObject {
@@ -142,9 +140,11 @@ class TeslaVehicle: NSObject {
     weak var delegate: (any TeslaVehicleDelegate)?
     private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
     private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
+    private var handshake: Bool
 
-    init?(vin: String, privateKeyPem: String) {
+    init?(vin: String, privateKeyPem: String, handshake: Bool = true) {
         self.vin = vin
+        self.handshake = handshake
         do {
             clientPrivateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
         } catch {
@@ -179,17 +179,24 @@ class TeslaVehicle: NSObject {
         setState(state: .idle)
     }
 
-    func addKeyRequestWithRole() throws {
-        var message = VCSEC_UnsignedMessage()
-        message.whitelistOperation.addKeyToWhitelistAndAddPermissions.key.publicKeyRaw = clientPublicKeyBytes
-        message.whitelistOperation.addKeyToWhitelistAndAddPermissions.keyRole = .owner
-        message.whitelistOperation.metadataForKey.keyFormFactor = .cloudKey
-        var encoded = try message.serializedData()
-        var envelope = VCSEC_ToVCSECMessage()
-        envelope.signedMessage.protobufMessageAsBytes = encoded
-        envelope.signedMessage.signatureType = .presentKey
-        encoded = try envelope.serializedData()
-        sendData(message: encoded)
+    func addKeyRequestWithRole(privateKeyPem: String) {
+        do {
+            let privateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
+            let clientPublicKeyBytes = privateKey.publicKey.toBytes()
+            var message = VCSEC_UnsignedMessage()
+            message.whitelistOperation.addKeyToWhitelistAndAddPermissions.key.publicKeyRaw = clientPublicKeyBytes
+            message.whitelistOperation.addKeyToWhitelistAndAddPermissions.keyRole = .owner
+            message.whitelistOperation.metadataForKey.keyFormFactor = .cloudKey
+            var encoded = try message.serializedData()
+            var envelope = VCSEC_ToVCSECMessage()
+            envelope.signedMessage.protobufMessageAsBytes = encoded
+            envelope.signedMessage.signatureType = .presentKey
+            encoded = try envelope.serializedData()
+            sendData(message: encoded)
+        } catch {
+            logger.info("tesla-vehicle: Add key error \(error)")
+            reset()
+        }
     }
 
     func openTrunk() {
@@ -205,14 +212,6 @@ class TeslaVehicle: NSObject {
         closureMoveRequest.rearTrunk = .closureMoveTypeClose
         executeClosureMoveAction(closureMoveRequest) {
             logger.info("tesla-vehicle: Close trunk response")
-        }
-    }
-
-    func ping() {
-        var action = CarServer_Action()
-        action.vehicleAction.ping.pingID = 1
-        executeCarServerAction(action) { _ in
-            logger.debug("tesla-vehicle: Ping response")
         }
     }
 
@@ -240,6 +239,14 @@ class TeslaVehicle: NSObject {
         }
     }
 
+    func mediaPreviousTrack() {
+        var action = CarServer_Action()
+        action.vehicleAction.mediaPreviousTrack = .init()
+        executeCarServerAction(action) { _ in
+            logger.debug("tesla-vehicle: Media previous track response")
+        }
+    }
+
     func mediaTogglePlayback() {
         var action = CarServer_Action()
         action.vehicleAction.mediaPlayAction = .init()
@@ -254,28 +261,6 @@ class TeslaVehicle: NSObject {
         executeCarServerAction(action) { response in
             let chargeState = response.vehicleData.chargeState
             onCompleted(chargeState)
-        }
-    }
-
-    func getDriveState(onCompleted: @escaping (CarServer_DriveState) -> Void) {
-        var action = CarServer_Action()
-        action.vehicleAction.getVehicleData.getDriveState = .init()
-        executeCarServerAction(action) { response in
-            logger.info("tesla-vehicle: Drive state response")
-            let driveState = response.vehicleData.driveState
-            try logger.debug("tesla-vehicle: Message \(response.jsonString())")
-            onCompleted(driveState)
-        }
-    }
-
-    func getMediaState(onCompleted: @escaping (CarServer_MediaState) -> Void) {
-        var action = CarServer_Action()
-        action.vehicleAction.getVehicleData.getMediaState = .init()
-        executeCarServerAction(action) { response in
-            logger.debug("tesla-vehicle: Media state response")
-            let mediaState = response.vehicleData.mediaState
-            try logger.debug("tesla-vehicle: Message \(response.jsonString())")
-            onCompleted(mediaState)
         }
     }
 
@@ -350,14 +335,18 @@ class TeslaVehicle: NSObject {
 
     private func startVehicleSecurityHandshake() throws {
         try sendSessionInfoRequest(domain: .vehicleSecurity)
-        vehicleSecurityHandshakeTimer.startSingleShot(timeout: 5.0) { [weak self] in
-            self?.reset()
+        vehicleSecurityHandshakeTimer.startSingleShot(timeout: 10.0) { [weak self] in
+            do {
+                try self?.startVehicleSecurityHandshake()
+            } catch {
+                self?.reset()
+            }
         }
     }
 
     private func startInfotainmentHandshake() throws {
         try sendSessionInfoRequest(domain: .infotainment)
-        infotainmentHandshakeTimer.startSingleShot(timeout: 5.0) { [weak self] in
+        infotainmentHandshakeTimer.startSingleShot(timeout: 10.0) { [weak self] in
             do {
                 try self?.startInfotainmentHandshake()
             } catch {
@@ -588,6 +577,9 @@ extension TeslaVehicle: CBPeripheralDelegate {
                 fromVehicleCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: fromVehicleCharacteristic!)
             }
+        }
+        guard handshake else {
+            return
         }
         do {
             try startVehicleSecurityHandshake()

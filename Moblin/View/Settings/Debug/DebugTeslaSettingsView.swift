@@ -14,9 +14,54 @@ private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
     }
 }
 
-struct DebugTeslaSettingsView: View {
+private struct DebugTeslaKeySettingsView: View {
     @EnvironmentObject var model: Model
     @State var privateKey: String
+
+    var body: some View {
+        Form {
+            Section {
+                TextField("", text: $privateKey, axis: .vertical)
+                    .keyboardType(.default)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .onChange(of: privateKey) { _ in
+                        model.database.debug.tesla!.privateKey = privateKey
+                        model.reloadTeslaVehicle()
+                    }
+            } header: {
+                Text("Key")
+            } footer: {
+                Text("Do not share this key with anyone!")
+            }
+            Section {
+                Button {
+                    model.database.debug.tesla!.privateKey = teslaGeneratePrivateKey().pemRepresentation
+                    privateKey = model.database.debug.tesla!.privateKey
+                } label: {
+                    HCenter {
+                        Text("Generate new key")
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.teslaAddKeyToVehicle()
+                } label: {
+                    HCenter {
+                        Text("Add key to vehicle")
+                    }
+                }
+            } footer: {
+                Text("Remove the key using your Tesla's center screen.")
+            }
+        }
+        .navigationTitle("Key")
+    }
+}
+
+struct DebugTeslaSettingsView: View {
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
@@ -30,16 +75,11 @@ struct DebugTeslaSettingsView: View {
                 }
             }
             Section {
-                TextField("", text: $privateKey, axis: .vertical)
-                    .keyboardType(.default)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .onChange(of: privateKey) { _ in
-                        model.database.debug.tesla!.privateKey = privateKey
-                        model.reloadTeslaVehicle()
-                    }
-            } header: {
-                Text("Private key")
+                NavigationLink {
+                    DebugTeslaKeySettingsView(privateKey: model.database.debug.tesla!.privateKey)
+                } label: {
+                    Text("Key")
+                }
             }
             Section {
                 HCenter {
@@ -87,7 +127,16 @@ struct DebugTeslaSettingsView: View {
                     model.mediaNextTrack()
                 } label: {
                     HCenter {
-                        Text("Media next track")
+                        Text("Next media track")
+                    }
+                }
+            }
+            Section {
+                Button {
+                    model.mediaPreviousTrack()
+                } label: {
+                    HCenter {
+                        Text("Previous media  track")
                     }
                 }
             }
@@ -96,43 +145,7 @@ struct DebugTeslaSettingsView: View {
                     model.mediaTogglePlayback()
                 } label: {
                     HCenter {
-                        Text("Media toggle playback")
-                    }
-                }
-            }
-            Section {
-                Button {
-                    model.teslaGetChargeState()
-                } label: {
-                    HCenter {
-                        Text("Get charge state")
-                    }
-                }
-            }
-            Section {
-                Button {
-                    model.teslaGetDriveState()
-                } label: {
-                    HCenter {
-                        Text("Get drive state")
-                    }
-                }
-            }
-            Section {
-                Button {
-                    model.teslaGetMediaState()
-                } label: {
-                    HCenter {
-                        Text("Get media state")
-                    }
-                }
-            }
-            Section {
-                Button {
-                    model.teslaPing()
-                } label: {
-                    HCenter {
-                        Text("Ping")
+                        Text("Toggle media playback")
                     }
                 }
             }

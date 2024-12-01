@@ -14922,6 +14922,9 @@
         }
       }
     },
+    "Add key to vehicle" : {
+
+    },
     "Add your own LUTs." : {
       "localizations" : {
         "de" : {
@@ -31077,6 +31080,9 @@
         }
       }
     },
+    "Confirm by tapping NFC card on center console" : {
+
+    },
     "Connected" : {
       "localizations" : {
         "de" : {
@@ -39269,6 +39275,9 @@
           }
         }
       }
+    },
+    "Do not share this key with anyone!" : {
+
     },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
       "localizations" : {
@@ -53059,6 +53068,9 @@
         }
       }
     },
+    "Generate new key" : {
+
+    },
     "Geometry" : {
       "localizations" : {
         "de" : {
@@ -53188,15 +53200,6 @@
           }
         }
       }
-    },
-    "Get charge state" : {
-
-    },
-    "Get drive state" : {
-
-    },
-    "Get media state" : {
-
     },
     "Gift subsciptions" : {
       "localizations" : {
@@ -59063,6 +59066,9 @@
           }
         }
       }
+    },
+    "Key" : {
+
     },
     "Key frame interval" : {
       "localizations" : {
@@ -65828,9 +65834,6 @@
         }
       }
     },
-    "Media next track" : {
-
-    },
     "Media player" : {
       "localizations" : {
         "de" : {
@@ -66090,9 +66093,6 @@
           }
         }
       }
-    },
-    "Media toggle playback" : {
-
     },
     "Member" : {
       "localizations" : {
@@ -72334,6 +72334,9 @@
         }
       }
     },
+    "Next media track" : {
+
+    },
     "No audio levels received yet." : {
       "localizations" : {
         "de" : {
@@ -77540,9 +77543,6 @@
         }
       }
     },
-    "Ping" : {
-
-    },
     "Pixel format" : {
       "localizations" : {
         "de" : {
@@ -80273,6 +80273,9 @@
         }
       }
     },
+    "Previous media  track" : {
+
+    },
     "Print chat" : {
       "localizations" : {
         "de" : {
@@ -80793,7 +80796,7 @@
         }
       }
     },
-    "Private key" : {
+    "Private key is empty" : {
 
     },
     "Protocol" : {
@@ -84828,6 +84831,9 @@
           }
         }
       }
+    },
+    "Remove the key using your Tesla's center screen." : {
+
     },
     "Remove wind noise" : {
       "localizations" : {
@@ -109808,6 +109814,9 @@
         }
       }
     },
+    "Toggle media playback" : {
+
+    },
     "Too many recordings. Deleting oldest recording." : {
       "localizations" : {
         "de" : {
@@ -118655,6 +118664,9 @@
       }
     },
     "VIN" : {
+
+    },
+    "VIN is empty" : {
 
     },
     "Voices" : {
