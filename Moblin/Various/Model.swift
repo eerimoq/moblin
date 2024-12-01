@@ -25,6 +25,11 @@ import WrappingHStack
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
+enum RemoteControlAssistantPreviewUser {
+    case panel
+    case watch
+}
+
 private struct ChatBotMessage {
     let platform: Platform
     let user: String?
@@ -594,6 +599,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var remoteControlAssistantShowPreview = true
     @Published var remoteControlAssistantShowPreviewFullScreen = false
     private var isRemoteControlAssistantRequestingPreview = false
+    private var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
 
     private var currentWiFiSsid: String?
     @Published var djiDeviceStreamingState: DjiDeviceState?
@@ -4365,7 +4371,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setLowFpsImage() {
         var fps: Float = 0.0
-        if isWatchReachable() {
+        if isWatchReachable(), isWatchLocal() {
             fps = 1.0
         }
         if isRemoteControlStreamerConnected(), isRemoteControlAssistantRequestingPreview {
@@ -6859,12 +6865,16 @@ extension Model {
         ) {}
     }
 
-    func remoteControlAssistantStartPreview() {
+    func remoteControlAssistantStartPreview(user: RemoteControlAssistantPreviewUser) {
+        remoteControlAssistantPreviewUsers.insert(user)
         remoteControlAssistant?.startPreview()
     }
 
-    func remoteControlAssistantStopPreview() {
-        remoteControlAssistant?.stopPreview()
+    func remoteControlAssistantStopPreview(user: RemoteControlAssistantPreviewUser) {
+        remoteControlAssistantPreviewUsers.remove(user)
+        if remoteControlAssistantPreviewUsers.isEmpty {
+            remoteControlAssistant?.stopPreview()
+        }
     }
 
     func reloadRemoteControlRelay() {
@@ -7274,7 +7284,13 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             self.setLowFpsImage()
             self.sendSettingsToWatch()
+            if !self.isWatchReachable() {
+                self.remoteControlAssistantStopPreview(user: .watch)
+            }
             if self.isWatchRemoteControl() {
+                if self.isWatchReachable() {
+                    self.remoteControlAssistantStartPreview(user: .watch)
+                }
                 self.sendRemoteControlAssistantStatusToWatch()
             } else {
                 self.sendZoomToWatch(x: self.zoomX)

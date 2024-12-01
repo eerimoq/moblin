@@ -233,7 +233,7 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
                                 model.remoteControlAssistantShowPreviewFullScreen = true
                             }
                             .onTapGesture(count: 1) { _ in
-                                model.remoteControlAssistantStopPreview()
+                                model.remoteControlAssistantStopPreview(user: .panel)
                                 model.remoteControlAssistantShowPreview = false
                             }
                     } else {
@@ -241,7 +241,7 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
                     }
                 } else {
                     Button {
-                        model.remoteControlAssistantStartPreview()
+                        model.remoteControlAssistantStartPreview(user: .panel)
                         model.remoteControlAssistantShowPreview = true
                     } label: {
                         HStack {
@@ -614,7 +614,7 @@ struct ControlBarRemoteControlAssistantView: View {
             }
             model.updateScreenAutoOff()
             if model.remoteControlAssistantShowPreview {
-                model.remoteControlAssistantStartPreview()
+                model.remoteControlAssistantStartPreview(user: .panel)
             }
         }
         .onDisappear {
@@ -622,7 +622,7 @@ struct ControlBarRemoteControlAssistantView: View {
                 model.attachCamera()
             }
             model.updateScreenAutoOff()
-            model.remoteControlAssistantStopPreview()
+            model.remoteControlAssistantStopPreview(user: .panel)
         }
         .navigationTitle("Remote control assistant")
     }

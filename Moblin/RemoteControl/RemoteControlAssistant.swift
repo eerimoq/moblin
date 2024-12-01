@@ -237,7 +237,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
-        // logger.debug("remote-control-assistant: Got message \(message)")
+        // logger.debug("remote-control-assistant: Received \(message.prefix(250))")
         do {
             let message = try RemoteControlMessageToAssistant.fromJson(data: message)
             switch message {
@@ -412,6 +412,7 @@ class RemoteControlAssistant: NSObject {
         guard let text = message.toJson() else {
             return
         }
+        // logger.debug("remote-control-assistant: Sending \(text)")
         streamerWebSocket?.send(text: text)
     }
 }
