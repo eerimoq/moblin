@@ -5498,6 +5498,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @available(iOS 17.0, *)
     func handleKeyPress(press: KeyPress) -> KeyPress.Result {
+        let charactersHex = press.characters.data(using: .utf8)?.hexString() ?? "???"
+        logger.info("""
+        keyboard: Press characters \"\(press.characters)\" (\(charactersHex)), \
+        modifiers \(press.modifiers), key \(press.key), phase \(press.phase)
+        """)
         guard isKeyboardActive() else {
             return .ignored
         }
