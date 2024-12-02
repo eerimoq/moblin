@@ -4671,7 +4671,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             break
         }
     }
-    
+
     private func handleChatBotMessageTeslaMedia(message _: ChatBotMessage, command _: String, parts: [Substring]) {
         guard parts.count == 3 else {
             return

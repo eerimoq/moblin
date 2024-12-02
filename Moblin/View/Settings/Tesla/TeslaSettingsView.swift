@@ -2,7 +2,7 @@ import SwiftUI
 
 private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
     if state == nil || state == .idle {
-        return String(localized: "Not started")
+        return String(localized: "Disconnected")
     } else if state == .discovering {
         return String(localized: "Discovering")
     } else if state == .connecting {
