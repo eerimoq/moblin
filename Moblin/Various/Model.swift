@@ -579,7 +579,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var teslaVehicle: TeslaVehicle?
     @Published var teslaVehicleState: TeslaVehicleState?
-    private let teslaVehicleKeyAdder = TeslaVehicleKeyAdder()
+    @Published var teslaVehicleVehicleSecurityConnected = false
+    @Published var teslaVehicleInfotainmentConnected = false
 
     private var lastAttachCompletedTime: ContinuousClock.Instant?
 
@@ -1367,30 +1368,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaVehicle?.stop()
         teslaVehicle = nil
         teslaVehicleState = nil
+        teslaVehicleVehicleSecurityConnected = false
+        teslaVehicleInfotainmentConnected = false
     }
 
     func teslaAddKeyToVehicle() {
-        let vin = database.debug.tesla!.vin
-        let privateKeyPem = database.debug.tesla!.privateKey
-        guard !vin.isEmpty else {
-            makeErrorToast(title: String(localized: "VIN is empty"))
-            return
-        }
-        guard !privateKeyPem.isEmpty else {
-            makeErrorToast(title: String(localized: "Private key is empty"))
-            return
-        }
-        teslaVehicleKeyAdder.start(vin: vin, privateKeyPem: privateKeyPem) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Confirm by tapping NFC card on center console"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to add key"))
-            }
-        }
-    }
-
-    func teslaStopAddKeyToVehicle() {
-        teslaVehicleKeyAdder.stop()
+        teslaVehicle?.addKeyRequestWithRole(privateKeyPem: database.debug.tesla!.privateKey)
+        makeToast(title: String(localized: "Confirm by tapping Tesla key card on center console"))
     }
 
     func teslaFlashLights() {
@@ -8882,6 +8866,14 @@ extension Model: TeslaVehicleDelegate {
             break
         }
         teslaVehicleState = state
+    }
+
+    func teslaVehicleVehicleSecurityConnected(_: TeslaVehicle) {
+        teslaVehicleVehicleSecurityConnected = true
+    }
+
+    func teslaVehicleInfotainmentConnected(_: TeslaVehicle) {
+        teslaVehicleInfotainmentConnected = true
     }
 }
 

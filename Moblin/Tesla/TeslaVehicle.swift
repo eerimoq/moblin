@@ -123,6 +123,8 @@ func teslaGeneratePrivateKey() -> P256.KeyAgreement.PrivateKey {
 
 protocol TeslaVehicleDelegate: AnyObject {
     func teslaVehicleState(_ vehicle: TeslaVehicle, state: TeslaVehicleState)
+    func teslaVehicleVehicleSecurityConnected(_ vehicle: TeslaVehicle)
+    func teslaVehicleInfotainmentConnected(_ vehicle: TeslaVehicle)
 }
 
 class TeslaVehicle: NSObject {
@@ -140,11 +142,9 @@ class TeslaVehicle: NSObject {
     weak var delegate: (any TeslaVehicleDelegate)?
     private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
     private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
-    private var handshake: Bool
 
-    init?(vin: String, privateKeyPem: String, handshake: Bool = true) {
+    init?(vin: String, privateKeyPem: String, handshake _: Bool = true) {
         self.vin = vin
-        self.handshake = handshake
         do {
             clientPrivateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
         } catch {
@@ -195,7 +195,6 @@ class TeslaVehicle: NSObject {
             sendData(message: encoded)
         } catch {
             logger.info("tesla-vehicle: Add key error \(error)")
-            reset()
         }
     }
 
@@ -280,7 +279,6 @@ class TeslaVehicle: NSObject {
             try trySendNextJob(domain: .vehicleSecurity)
         } catch {
             logger.info("tesla-vehicle: Execute closure move action error \(error)")
-            stop()
         }
     }
 
@@ -311,7 +309,6 @@ class TeslaVehicle: NSObject {
             try trySendNextJob(domain: .infotainment)
         } catch {
             logger.info("tesla-vehicle: Execute car server action error \(error)")
-            stop()
         }
     }
 
@@ -339,7 +336,7 @@ class TeslaVehicle: NSObject {
             do {
                 try self?.startVehicleSecurityHandshake()
             } catch {
-                self?.reset()
+                logger.info("tesla-vehicle: Failed to start vehicle security handshake with error \(error)")
             }
         }
     }
@@ -350,7 +347,7 @@ class TeslaVehicle: NSObject {
             do {
                 try self?.startInfotainmentHandshake()
             } catch {
-                self?.reset()
+                logger.info("tesla-vehicle: Failed to start infotainment handshake with error \(error)")
             }
         }
     }
@@ -382,13 +379,12 @@ class TeslaVehicle: NSObject {
         vehicleDomain.removeJobs()
         switch domain {
         case .vehicleSecurity:
-            logger.info("tesla-vehicle: Vehicle security domain handshake complete")
             vehicleSecurityHandshakeTimer.stop()
-            setState(state: .connected)
+            delegate?.teslaVehicleVehicleSecurityConnected(self)
             try startInfotainmentHandshake()
         case .infotainment:
-            logger.info("tesla-vehicle: Infotainment domain handshake complete")
             infotainmentHandshakeTimer.stop()
+            delegate?.teslaVehicleInfotainmentConnected(self)
         default:
             break
         }
@@ -578,15 +574,11 @@ extension TeslaVehicle: CBPeripheralDelegate {
                 peripheral.setNotifyValue(true, for: fromVehicleCharacteristic!)
             }
         }
-        guard handshake else {
-            setState(state: .connected)
-            return
-        }
+        setState(state: .connected)
         do {
             try startVehicleSecurityHandshake()
         } catch {
             logger.info("tesla-vehicle: Failed to start handshake \(error)")
-            stop()
         }
     }
 
@@ -598,7 +590,6 @@ extension TeslaVehicle: CBPeripheralDelegate {
             try handleData(data: value)
         } catch {
             logger.info("tesla-vehicle: Message handling error \(error)")
-            stop()
         }
     }
 }

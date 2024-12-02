@@ -31080,7 +31080,7 @@
         }
       }
     },
-    "Confirm by tapping NFC card on center console" : {
+    "Confirm by tapping Tesla key card on center console" : {
 
     },
     "Connected" : {
@@ -39276,9 +39276,6 @@
         }
       }
     },
-    "Do not share this key with anyone!" : {
-
-    },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
       "localizations" : {
         "de" : {
@@ -45654,9 +45651,6 @@
           }
         }
       }
-    },
-    "Failed to add key" : {
-
     },
     "Failed to create stream marker" : {
       "localizations" : {
@@ -59069,9 +59063,6 @@
           }
         }
       }
-    },
-    "Key" : {
-
     },
     "Key frame interval" : {
       "localizations" : {
@@ -80799,9 +80790,6 @@
         }
       }
     },
-    "Private key is empty" : {
-
-    },
     "Protocol" : {
       "localizations" : {
         "de" : {
@@ -84835,7 +84823,7 @@
         }
       }
     },
-    "Remove the key using your Tesla's center screen." : {
+    "Remove keys in Controls → Locks on your Tesla's center screen." : {
 
     },
     "Remove wind noise" : {
@@ -89780,6 +89768,9 @@
           }
         }
       }
+    },
+    "Scroll down in your Tesla app and copy it." : {
+
     },
     "Search with Google or enter address" : {
       "localizations" : {
@@ -118667,9 +118658,6 @@
       }
     },
     "VIN" : {
-
-    },
-    "VIN is empty" : {
 
     },
     "Voices" : {

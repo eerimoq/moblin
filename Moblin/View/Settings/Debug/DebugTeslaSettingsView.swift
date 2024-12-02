@@ -14,35 +14,44 @@ private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
     }
 }
 
-private struct DebugTeslaKeySettingsView: View {
+struct DebugTeslaSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var privateKey: String
+
+    private var tesla: SettingsTesla {
+        return model.database.debug.tesla!
+    }
+
+    private func onSubmitVin(value: String) {
+        tesla.vin = value.trim()
+        model.reloadTeslaVehicle()
+    }
 
     var body: some View {
         Form {
             Section {
-                TextField("", text: $privateKey, axis: .vertical)
-                    .keyboardType(.default)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .onChange(of: privateKey) { _ in
-                        model.database.debug.tesla!.privateKey = privateKey
-                        model.reloadTeslaVehicle()
-                    }
-            } header: {
-                Text("Key")
-            } footer: {
-                Text("Do not share this key with anyone!")
+                TextEditNavigationView(
+                    title: String(localized: "VIN"),
+                    value: tesla.vin,
+                    onSubmit: onSubmitVin,
+                    footers: [
+                        String(localized: "Scroll down in your Tesla app and copy it."),
+                    ]
+                )
             }
             Section {
                 Button {
-                    model.database.debug.tesla!.privateKey = teslaGeneratePrivateKey().pemRepresentation
-                    privateKey = model.database.debug.tesla!.privateKey
+                    tesla.privateKey = teslaGeneratePrivateKey().pemRepresentation
+                    model.reloadTeslaVehicle()
                 } label: {
                     HCenter {
                         Text("Generate new key")
                     }
                 }
+            } footer: {
+                Text("""
+                Moblin identifies itself to the vehicle with this key. Tap the button below to add \
+                it to your vehicle.
+                """)
             }
             Section {
                 Button {
@@ -52,42 +61,9 @@ private struct DebugTeslaKeySettingsView: View {
                         Text("Add key to vehicle")
                     }
                 }
+                .disabled(tesla.vin.isEmpty || tesla.privateKey.isEmpty || model.teslaVehicleState != .connected)
             } footer: {
-                Text("Remove the key using your Tesla's center screen.")
-            }
-        }
-        .onDisappear {
-            model.teslaStopAddKeyToVehicle()
-        }
-        .navigationTitle("Key")
-    }
-}
-
-struct DebugTeslaSettingsView: View {
-    @EnvironmentObject var model: Model
-
-    var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "VIN"),
-                    value: model.database.debug.tesla!.vin
-                ) {
-                    model.database.debug.tesla!.vin = $0.trim()
-                    model.reloadTeslaVehicle()
-                }
-            }
-            Section {
-                NavigationLink {
-                    DebugTeslaKeySettingsView(privateKey: model.database.debug.tesla!.privateKey)
-                } label: {
-                    TextItemView(
-                        name: "Key",
-                        value: model.database.debug.tesla!.privateKey,
-                        sensitive: true,
-                        color: .gray
-                    )
-                }
+                Text("Remove keys in Controls → Locks on your Tesla's center screen.")
             }
             Section {
                 HCenter {
@@ -102,6 +78,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Flash lights")
                     }
                 }
+                .disabled(!model.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -111,6 +88,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Honk")
                     }
                 }
+                .disabled(!model.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -120,6 +98,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Open trunk")
                     }
                 }
+                .disabled(!model.teslaVehicleVehicleSecurityConnected)
             }
             Section {
                 Button {
@@ -129,6 +108,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Close trunk")
                     }
                 }
+                .disabled(!model.teslaVehicleVehicleSecurityConnected)
             }
             Section {
                 Button {
@@ -138,6 +118,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Next media track")
                     }
                 }
+                .disabled(!model.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -147,6 +128,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Previous media  track")
                     }
                 }
+                .disabled(!model.teslaVehicleInfotainmentConnected)
             }
             Section {
                 Button {
@@ -156,6 +138,7 @@ struct DebugTeslaSettingsView: View {
                         Text("Toggle media playback")
                     }
                 }
+                .disabled(!model.teslaVehicleInfotainmentConnected)
             }
         }
         .navigationTitle("Tesla")

@@ -399,7 +399,6 @@
 		03C354682CF98DD900B8B29F /* HCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354672CF98DD600B8B29F /* HCenter.swift */; };
 		03C3560D2CFC90D200B8B29F /* KeyboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */; };
 		03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */; };
-		03C356112CFCE7CF00B8B29F /* TeslaVehicleKeyAdder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C356102CFCE7C700B8B29F /* TeslaVehicleKeyAdder.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -955,7 +954,6 @@
 		03C354672CF98DD600B8B29F /* HCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HCenter.swift; sourceTree = "<group>"; };
 		03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSettingsView.swift; sourceTree = "<group>"; };
 		03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeySettingsView.swift; sourceTree = "<group>"; };
-		03C356102CFCE7C700B8B29F /* TeslaVehicleKeyAdder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeslaVehicleKeyAdder.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -1273,7 +1271,6 @@
 			children = (
 				0318D36B2CF51D7300E12F3B /* Protobuf */,
 				0318D3632CF4FB2C00E12F3B /* TeslaVehicle.swift */,
-				03C356102CFCE7C700B8B29F /* TeslaVehicleKeyAdder.swift */,
 			);
 			path = Tesla;
 			sourceTree = "<group>";
@@ -3070,7 +3067,6 @@
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
 				033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */,
-				03C356112CFCE7CF00B8B29F /* TeslaVehicleKeyAdder.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */,
 				03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
