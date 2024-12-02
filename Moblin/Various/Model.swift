@@ -578,6 +578,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let chatTextToSpeech = ChatTextToSpeech()
 
     private var teslaVehicle: TeslaVehicle?
+    private var teslaChargeState = CarServer_ChargeState()
     @Published var teslaVehicleState: TeslaVehicleState?
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
@@ -1368,6 +1369,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaVehicle?.stop()
         teslaVehicle = nil
         teslaVehicleState = nil
+        teslaChargeState = .init()
         teslaVehicleVehicleSecurityConnected = false
         teslaVehicleInfotainmentConnected = false
     }
@@ -1384,8 +1386,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func teslaHonk() {
         teslaVehicle?.honk()
     }
-
-    private var teslaChargeState = CarServer_ChargeState()
 
     func teslaGetChargeState() {
         teslaVehicle?.getChargeState { state in
