@@ -1468,6 +1468,18 @@
         }
       }
     },
+    "!moblin tesla ..." : {
+
+    },
+    "!moblin tesla media next" : {
+
+    },
+    "!moblin tesla media previous" : {
+
+    },
+    "!moblin tesla media toggle-playback" : {
+
+    },
     "!moblin tesla trunk close" : {
 
     },
@@ -29387,7 +29399,7 @@
         }
       }
     },
-    "Close Tesla vehicle trunk." : {
+    "Close the trunk." : {
 
     },
     "Close trunk" : {
@@ -72337,6 +72349,9 @@
     "Next media track" : {
 
     },
+    "Next track." : {
+
+    },
     "No audio levels received yet." : {
       "localizations" : {
         "de" : {
@@ -76107,7 +76122,7 @@
         }
       }
     },
-    "Open Tesla vehicle trunk." : {
+    "Open the trunk." : {
 
     },
     "Open trunk" : {
@@ -80274,6 +80289,9 @@
       }
     },
     "Previous media  track" : {
+
+    },
+    "Previous track." : {
 
     },
     "Print chat" : {
@@ -109818,6 +109836,9 @@
       }
     },
     "Toggle media playback" : {
+
+    },
+    "Toggle playback." : {
 
     },
     "Too many recordings. Deleting oldest recording." : {

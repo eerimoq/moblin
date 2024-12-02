@@ -149,19 +149,25 @@ struct ChatBotCommandsSettingsView: View {
                 NavigationLink {
                     PermissionsSettingsView(permissions: permissions.tesla!)
                 } label: {
+                    Text("!moblin tesla ...")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
                     Text("!moblin tesla trunk open")
-                }
-            } footer: {
-                Text("Open Tesla vehicle trunk.")
-            }
-            Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.tesla!)
-                } label: {
+                    Text("Open the trunk.")
+                    Text("")
                     Text("!moblin tesla trunk close")
+                    Text("Close the trunk.")
+                    Text("")
+                    Text("!moblin tesla media next")
+                    Text("Next track.")
+                    Text("")
+                    Text("!moblin tesla media previous")
+                    Text("Previous track.")
+                    Text("")
+                    Text("!moblin tesla media toggle-playback")
+                    Text("Toggle playback.")
                 }
-            } footer: {
-                Text("Close Tesla vehicle trunk.")
             }
         }
         .navigationTitle("Commands")

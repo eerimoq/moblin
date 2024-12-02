@@ -4650,6 +4650,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             switch parts[1].trim() {
             case "trunk":
                 self.handleChatBotMessageTeslaTrunk(message: message, command: command, parts: parts)
+            case "media":
+                self.handleChatBotMessageTeslaMedia(message: message, command: command, parts: parts)
             default:
                 break
             }
@@ -4665,7 +4667,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             teslaVehicle?.openTrunk()
         case "close":
             teslaVehicle?.closeTrunk()
-        default: break
+        default:
+            break
+        }
+    }
+    
+    private func handleChatBotMessageTeslaMedia(message _: ChatBotMessage, command _: String, parts: [Substring]) {
+        guard parts.count == 3 else {
+            return
+        }
+        switch parts[2].trim() {
+        case "next":
+            teslaVehicle?.mediaNextTrack()
+        case "previous":
+            teslaVehicle?.mediaPreviousTrack()
+        case "toggle-playback":
+            teslaVehicle?.mediaTogglePlayback()
+        default:
+            break
         }
     }
 
