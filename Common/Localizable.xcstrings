@@ -3814,6 +3814,9 @@
         }
       }
     },
+    "{teslaBatteryLevel} - Tesla battery level" : {
+
+    },
     "{time} - Show time as HH:MM:SS" : {
       "localizations" : {
         "de" : {
@@ -105385,6 +105388,9 @@
       }
     },
     "Tesla" : {
+
+    },
+    "Tesla (requires a Tesla)" : {
 
     },
     "Test" : {

@@ -22,6 +22,7 @@ private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
+private let suggestionTesla = "🏎️ 🔋 {teslaBatteryLevel}"
 
 private let suggestions = createSuggestions()
 
@@ -47,6 +48,7 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 11, name: String(localized: "Muted"), text: suggestionMuted),
         Suggestion(id: 12, name: String(localized: "Debug"), text: suggestionDebug),
         Suggestion(id: 13, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
+        Suggestion(id: 14, name: String(localized: "Tesla"), text: suggestionTesla),
     ]
     return suggestions
 }
@@ -251,12 +253,15 @@ private struct TextSelectionView: View {
                     Text("Weather (if Settings -> Location is enabled)").bold()
                     Text("{conditions} - Show conditions")
                     Text("{temperature} - Show temperature")
-                    Text("")
                     if isPhone() {
+                        Text("")
                         Text("Workout (requires Apple Watch)").bold()
                         Text("{heartRate} - Show heart rate")
-                        Text("")
                     }
+                    Text("")
+                    Text("Tesla (requires a Tesla)").bold()
+                    Text("{teslaBatteryLevel} - Tesla battery level")
+                    Text("")
                     Text("Debug").bold()
                     Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
                     Text("{debugOverlay} - Show debug overlay (if enabled)")
