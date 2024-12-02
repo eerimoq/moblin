@@ -121,11 +121,6 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("HTTP proxy")
                 }
-                NavigationLink {
-                    DebugTeslaSettingsView()
-                } label: {
-                    Text("Tesla")
-                }
             } header: {
                 Text("Experimental")
             }

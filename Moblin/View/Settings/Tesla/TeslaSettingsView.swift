@@ -14,7 +14,7 @@ private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
     }
 }
 
-struct DebugTeslaSettingsView: View {
+struct TeslaSettingsView: View {
     @EnvironmentObject var model: Model
 
     private var tesla: SettingsTesla {

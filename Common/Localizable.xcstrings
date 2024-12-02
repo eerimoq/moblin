@@ -67648,6 +67648,9 @@
         }
       }
     },
+    "Moblin identifies itself to the vehicle with this key. Tap the button below to add it to your vehicle." : {
+
+    },
     "Moblin will periodically try to switch to the BRB scene if the stream is likely broken, and back to the main scene once everything seems to work again." : {
       "localizations" : {
         "de" : {

@@ -126,6 +126,14 @@ struct SettingsView: View {
                             text: String(localized: "Cat printers")
                         )
                     }
+                    NavigationLink {
+                        TeslaSettingsView()
+                    } label: {
+                        IconAndTextView(
+                            image: "car.side",
+                            text: String(localized: "Tesla")
+                        )
+                    }
                 }
                 NavigationLink {
                     LocationSettingsView()
