@@ -437,7 +437,6 @@ class TeslaVehicle: NSObject {
         }
         // try logger.info("tesla-vehicle: Got \(message.jsonString())")
         guard let responseHandler = responseHandlers.removeValue(forKey: address) else {
-            logger.info("tesla-vehicle: No response handler found")
             return
         }
         try responseHandler(message)
@@ -540,16 +539,17 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {
-        logger.info("tesla-vehicle: Connect failure")
+        logger.debug("tesla-vehicle: Connect failure")
+        reset()
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        logger.info("tesla-vehicle: Connected")
+        logger.debug("tesla-vehicle: Connected")
         peripheral.discoverServices([vehicleServiceUuid])
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
-        logger.info("tesla-vehicle: Disconnected")
+        logger.debug("tesla-vehicle: Disconnected")
         reset()
     }
 }
