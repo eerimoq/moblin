@@ -3026,6 +3026,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var teslaBatteryLevel = "-"
         if teslaChargeState.optionalBatteryLevel != nil {
             teslaBatteryLevel = "\(teslaChargeState.batteryLevel) %"
+            if teslaChargeState.chargerPower != 0 {
+                teslaBatteryLevel += " \(teslaChargeState.chargerPower) kW"
+            }
+            if teslaChargeState.optionalMinutesToChargeLimit != nil {
+                teslaBatteryLevel += " \(teslaChargeState.minutesToChargeLimit) minutes left"
+            }
         }
         let stats = TextEffectStats(
             timestamp: timestamp,
