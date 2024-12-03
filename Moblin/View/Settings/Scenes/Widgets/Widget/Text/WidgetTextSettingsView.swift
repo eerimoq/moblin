@@ -55,24 +55,21 @@ private func createSuggestions() -> [Suggestion] {
 
 private struct SuggestionsView: View {
     @Environment(\.dismiss) var dismiss
-    @State var suggestion: Int = 0
     var onSubmit: (String) -> Void
 
     var body: some View {
         Form {
             Section {
-                List {
-                    ForEach(suggestions) { suggestion in
-                        VStack(alignment: .leading) {
-                            Button {
-                                onSubmit(suggestion.text)
-                                dismiss()
-                            } label: {
-                                Text(suggestion.name).font(.title3)
-                            }
-                            Text(suggestion.text)
+                ForEach(suggestions) { suggestion in
+                    VStack(alignment: .leading) {
+                        Button {
+                            onSubmit(suggestion.text)
+                            dismiss()
+                        } label: {
+                            Text(suggestion.name)
+                                .font(.title3)
                         }
-                        .tag(suggestion.id)
+                        Text(suggestion.text)
                     }
                 }
             }
