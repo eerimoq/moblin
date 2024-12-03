@@ -71,6 +71,7 @@ private struct SuggestionsView: View {
                         }
                         Text(suggestion.text)
                     }
+                    .tag(suggestion.id)
                 }
             }
         }
@@ -84,7 +85,6 @@ private struct TextSelectionView: View {
     var widget: SettingsWidget
     @State var value: String
     @State var suggestion: Int = 0
-    @FocusState private var isFocused: Bool
 
     private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
         let numberOfTimers = parts.filter { value in
@@ -208,17 +208,6 @@ private struct TextSelectionView: View {
                     .onChange(of: value) { _ in
                         update()
                     }
-                    .focused($isFocused)
-                if isFocused {
-                    Button {
-                        isFocused = false
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Text("Done")
-                        }
-                    }
-                }
             }
             Section {
                 NavigationLink {
