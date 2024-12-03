@@ -55,7 +55,7 @@ private func createSuggestions() -> [Suggestion] {
 
 private struct SuggestionsView: View {
     @Environment(\.dismiss) var dismiss
-    var onSubmit: (String) -> Void
+    @Binding var value: String
 
     var body: some View {
         Form {
@@ -63,7 +63,7 @@ private struct SuggestionsView: View {
                 ForEach(suggestions) { suggestion in
                     VStack(alignment: .leading) {
                         Button {
-                            onSubmit(suggestion.text)
+                            value = suggestion.text
                             dismiss()
                         } label: {
                             Text(suggestion.name)
@@ -205,16 +205,10 @@ private struct TextSelectionView: View {
                     .keyboardType(.default)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
-                    .onChange(of: value) { _ in
-                        update()
-                    }
             }
             Section {
                 NavigationLink {
-                    SuggestionsView(onSubmit: { value in
-                        self.value = value
-                        update()
-                    })
+                    SuggestionsView(value: $value)
                 } label: {
                     Text("Suggestions")
                 }
@@ -253,6 +247,9 @@ private struct TextSelectionView: View {
                     Text("{debugOverlay} - Show debug overlay (if enabled)")
                 }
             }
+        }
+        .onChange(of: value) { _ in
+            update()
         }
         .navigationTitle("Text")
     }
