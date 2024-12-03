@@ -97,10 +97,12 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
                     }
-                    NavigationLink {
-                        KeyboardSettingsView()
-                    } label: {
-                        IconAndTextView(image: "keyboard", text: String(localized: "Keyboard"))
+                    if #available(iOS 17.0, *) {
+                        NavigationLink {
+                            KeyboardSettingsView()
+                        } label: {
+                            IconAndTextView(image: "keyboard", text: String(localized: "Keyboard"))
+                        }
                     }
                     NavigationLink {
                         RemoteControlSettingsView()
