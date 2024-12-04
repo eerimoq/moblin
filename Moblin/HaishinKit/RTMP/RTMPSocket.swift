@@ -144,11 +144,9 @@ final class RTMPSocket {
 
     @discardableResult
     func doOutput(chunk: RTMPChunk) -> Int {
-        let chunks: [Data] = chunk.split(chunkSizeS)
-        for i in 0 ..< chunks.count - 1 {
-            doOutput(data: chunks[i])
+        for data in chunk.split(chunkSizeS) {
+            doOutput(data: data)
         }
-        doOutput(data: chunks.last!)
         return chunk.message!.length
     }
 
@@ -231,7 +229,7 @@ final class RTMPSocket {
             if inputBuffer.isEmpty {
                 break
             }
-            let bytes: Data = inputBuffer
+            let bytes = inputBuffer
             inputBuffer.removeAll()
             delegate?.socket(self, data: bytes)
         default:

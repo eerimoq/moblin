@@ -167,7 +167,7 @@ open class RTMPConnection: EventDispatcher {
             }
             socket.doOutput(chunk: RTMPChunk(
                 type: .zero,
-                streamId: RTMPChunk.StreamID.control.rawValue,
+                chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPWindowAcknowledgementSizeMessage(100_000)
             ))
         }
@@ -286,7 +286,7 @@ open class RTMPConnection: EventDispatcher {
             socket.chunkSizeS = chunkSize
             socket.doOutput(chunk: RTMPChunk(
                 type: .zero,
-                streamId: RTMPChunk.StreamID.control.rawValue,
+                chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPSetChunkSizeMessage(UInt32(socket.chunkSizeS))
             ))
         case .some(.connectRejected):
@@ -413,29 +413,26 @@ extension RTMPConnection: RTMPSocketDelegate {
             socket.inputBuffer.append(data)
             return
         }
-
-        var position = chunk.data.count
-        if (chunk.data.count >= 4) && (chunk.data[1] == 0xFF) && (chunk.data[2] == 0xFF) &&
-            (chunk.data[3] == 0xFF)
-        {
+        let chunkData = chunk.encode()
+        var position = chunkData.count
+        if (chunkData.count >= 4) && (chunkData[1] == 0xFF) && (chunkData[2] == 0xFF) && (chunkData[3] == 0xFF) {
             position += 4
         }
         if currentChunk != nil {
             position = chunk.append(data, size: socket.chunkSizeC)
         }
         if chunk.type == .two {
-            position = chunk.append(data, message: messages[chunk.streamId])
+            position = chunk.append(data, message: messages[chunk.chunkStreamId])
         }
-        if chunk.type == .three && fragmentedChunks[chunk.streamId] == nil {
-            position = chunk.append(data, message: messages[chunk.streamId])
+        if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
+            position = chunk.append(data, message: messages[chunk.chunkStreamId])
         }
-
-        if let message = chunk.message, chunk.ready {
+        if let message = chunk.message, chunk.ready() {
             switch chunk.type {
             case .zero:
-                streamsmap[chunk.streamId] = message.streamId
+                streamsmap[chunk.chunkStreamId] = message.streamId
             case .one:
-                if let streamId = streamsmap[chunk.streamId] {
+                if let streamId = streamsmap[chunk.chunkStreamId] {
                     message.streamId = streamId
                 }
             case .two:
@@ -445,19 +442,18 @@ extension RTMPConnection: RTMPSocketDelegate {
             }
             message.execute(self, type: chunk.type)
             currentChunk = nil
-            messages[chunk.streamId] = message
+            messages[chunk.chunkStreamId] = message
             if position > 0 && position < data.count {
                 self.socket(socket, data: data.advanced(by: position))
             }
             return
         }
-
         if chunk.fragmented {
-            fragmentedChunks[chunk.streamId] = chunk
+            fragmentedChunks[chunk.chunkStreamId] = chunk
             currentChunk = nil
         } else {
-            currentChunk = chunk.type == .three ? fragmentedChunks[chunk.streamId] : chunk
-            fragmentedChunks.removeValue(forKey: chunk.streamId)
+            currentChunk = chunk.type == .three ? fragmentedChunks[chunk.chunkStreamId] : chunk
+            fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
         }
         if position > 0 && position < data.count {
             self.socket(socket, data: data.advanced(by: position))

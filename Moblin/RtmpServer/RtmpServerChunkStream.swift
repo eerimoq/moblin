@@ -180,22 +180,22 @@ class RtmpServerChunkStream {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: RTMPChunk.StreamID.control.rawValue,
+            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
             message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: RTMPChunk.StreamID.control.rawValue,
+            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
             message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: RTMPChunk.StreamID.control.rawValue,
+            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
             message: RTMPSetChunkSizeMessage(1024)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: streamId,
+            chunkStreamId: streamId,
             message: RTMPCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
@@ -221,7 +221,7 @@ class RtmpServerChunkStream {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: streamId,
+            chunkStreamId: streamId,
             message: RTMPCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
@@ -272,7 +272,7 @@ class RtmpServerChunkStream {
         client.server?.handleClientConnected(client: client)
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: streamId,
+            chunkStreamId: streamId,
             message: RTMPCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
@@ -441,7 +441,8 @@ class RtmpServerChunkStream {
         }
         let control = messageBody[0]
         let frameType = control >> 4
-        guard (frameType & 0x8) == 0 else {
+        let isExVideoHeader = (frameType & 0x8) == 0
+        guard isExVideoHeader else {
             client.stopInternal(reason: "Unsupported video frame type \(frameType)")
             return
         }

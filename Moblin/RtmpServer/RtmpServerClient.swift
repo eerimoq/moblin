@@ -354,7 +354,7 @@ class RtmpServerClient {
         message.sequence = UInt32(totalBytesReceived & 0xFFFF_FFFF)
         sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: RTMPChunk.StreamID.control.rawValue,
+            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
             message: message
         ))
     }

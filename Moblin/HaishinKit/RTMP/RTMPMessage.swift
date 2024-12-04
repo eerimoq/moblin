@@ -735,7 +735,7 @@ final class RTMPUserControlMessage: RTMPMessage {
         case .ping:
             connection.socket.doOutput(chunk: RTMPChunk(
                 type: .zero,
-                streamId: RTMPChunk.StreamID.control.rawValue,
+                chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPUserControlMessage(event: .pong, value: value)
             ))
         case .bufferEmpty:

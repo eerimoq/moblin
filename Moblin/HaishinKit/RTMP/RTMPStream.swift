@@ -281,7 +281,7 @@ open class RTMPStream: NetStream {
             UInt32(startedAt.timeIntervalSinceNow * -1000)
         let chunk = RTMPChunk(
             type: dataWasSent ? RTMPChunkType.one : RTMPChunkType.zero,
-            streamId: RTMPChunk.StreamID.data.rawValue,
+            chunkStreamId: RTMPChunk.ChunkStreamId.data.rawValue,
             message: RTMPDataMessage(
                 streamId: id,
                 objectEncoding: objectEncoding,
@@ -333,7 +333,7 @@ open class RTMPStream: NetStream {
         readyState = .open
         rtmpConnection.socket?.doOutput(chunk: RTMPChunk(
             type: .zero,
-            streamId: RTMPChunk.StreamID.command.rawValue,
+            chunkStreamId: RTMPChunk.ChunkStreamId.command.rawValue,
             message: RTMPCommandMessage(
                 streamId: 0,
                 transactionId: 0,
@@ -433,7 +433,7 @@ open class RTMPStream: NetStream {
         }
         let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
             type: audioChunkType,
-            streamId: FLVTagType.audio.streamId,
+            chunkStreamId: FLVTagType.audio.streamId,
             message: RTMPAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
         ))
         audioChunkType = .one
@@ -446,7 +446,7 @@ open class RTMPStream: NetStream {
         }
         let length = rtmpConnection.socket.doOutput(chunk: RTMPChunk(
             type: videoChunkType,
-            streamId: FLVTagType.video.streamId,
+            chunkStreamId: FLVTagType.video.streamId,
             message: RTMPVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)
         ))
         videoChunkType = .one
