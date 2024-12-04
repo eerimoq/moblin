@@ -374,7 +374,7 @@ open class RTMPConnection: EventDispatcher {
 }
 
 extension RTMPConnection: RTMPSocketDelegate {
-    func socket(_ socket: RTMPSocket, readyState: RTMPSocketReadyState) {
+    func socketReadyStateChanged(_ socket: RTMPSocket, readyState: RTMPSocketReadyState) {
         switch readyState {
         case .handshakeDone:
             guard let chunk = makeConnectionChunk() else {
@@ -401,14 +401,14 @@ extension RTMPConnection: RTMPSocketDelegate {
         }
     }
 
-    func socket(_: RTMPSocket, totalBytesOut: Int64) {
+    func socketUpdateStats(_: RTMPSocket, totalBytesOut: Int64) {
         guard let stream = streams.first else {
             return
         }
         stream.info.onWritten(sequence: totalBytesOut)
     }
 
-    func socket(_ socket: RTMPSocket, data: Data) {
+    func socketDataReceived(_ socket: RTMPSocket, data: Data) {
         guard let chunk = currentChunk ?? RTMPChunk(data, size: socket.chunkSizeC) else {
             socket.inputBuffer.append(data)
             return
@@ -444,7 +444,7 @@ extension RTMPConnection: RTMPSocketDelegate {
             currentChunk = nil
             messages[chunk.chunkStreamId] = message
             if position > 0 && position < data.count {
-                self.socket(socket, data: data.advanced(by: position))
+                self.socketDataReceived(socket, data: data.advanced(by: position))
             }
             return
         }
@@ -456,7 +456,7 @@ extension RTMPConnection: RTMPSocketDelegate {
             fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
         }
         if position > 0 && position < data.count {
-            self.socket(socket, data: data.advanced(by: position))
+            self.socketDataReceived(socket, data: data.advanced(by: position))
         }
     }
 }

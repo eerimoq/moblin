@@ -12,9 +12,9 @@ enum RTMPSocketReadyState: UInt8 {
 
 // swiftlint:disable:next class_delegate_protocol
 protocol RTMPSocketDelegate: EventDispatcherConvertible {
-    func socket(_ socket: RTMPSocket, data: Data)
-    func socket(_ socket: RTMPSocket, readyState: RTMPSocketReadyState)
-    func socket(_ socket: RTMPSocket, totalBytesOut: Int64)
+    func socketDataReceived(_ socket: RTMPSocket, data: Data)
+    func socketReadyStateChanged(_ socket: RTMPSocket, readyState: RTMPSocketReadyState)
+    func socketUpdateStats(_ socket: RTMPSocket, totalBytesOut: Int64)
 }
 
 final class RTMPSocket {
@@ -26,7 +26,7 @@ final class RTMPSocket {
     var timeout: Int = 10
     var readyState: RTMPSocketReadyState = .uninitialized {
         didSet {
-            delegate?.socket(self, readyState: readyState)
+            delegate?.socketReadyStateChanged(self, readyState: readyState)
         }
     }
 
@@ -160,7 +160,7 @@ final class RTMPSocket {
                 return
             }
             self.totalBytesOut.mutate { $0 += Int64(data.count) }
-            self.delegate?.socket(self, totalBytesOut: self.totalBytesOut.value)
+            self.delegate?.socketUpdateStats(self, totalBytesOut: self.totalBytesOut.value)
         })
     }
 
@@ -197,17 +197,17 @@ final class RTMPSocket {
     private func receive(on connection: NWConnection) {
         connection
             .receive(minimumIncompleteLength: 0, maximumLength: windowSizeC) { [weak self] data, _, _, _ in
-                guard let self = self, let data = data, self.connected else {
+                guard let self, let data, self.connected else {
                     return
                 }
                 self.inputBuffer.append(data)
                 self.totalBytesIn.mutate { $0 += Int64(data.count) }
-                self.listen()
+                self.processInput()
                 self.receive(on: connection)
             }
     }
 
-    private func listen() {
+    private func processInput() {
         switch readyState {
         case .versionSent:
             if inputBuffer.count < RTMPHandshake.sigSize + 1 {
@@ -217,7 +217,7 @@ final class RTMPSocket {
             inputBuffer.removeSubrange(0 ... RTMPHandshake.sigSize)
             readyState = .ackSent
             if RTMPHandshake.sigSize <= inputBuffer.count {
-                listen()
+                processInput()
             }
         case .ackSent:
             if inputBuffer.count < RTMPHandshake.sigSize {
@@ -231,7 +231,7 @@ final class RTMPSocket {
             }
             let bytes = inputBuffer
             inputBuffer.removeAll()
-            delegate?.socket(self, data: bytes)
+            delegate?.socketDataReceived(self, data: bytes)
         default:
             break
         }
