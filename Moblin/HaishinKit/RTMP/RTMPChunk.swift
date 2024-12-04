@@ -65,7 +65,7 @@ final class RTMPChunk {
         guard let message else {
             return false
         }
-        return message.length == message.payload.count
+        return message.length == message.encoded.count
     }
 
     private func basicAndMessageHeadersSize() -> Int {
@@ -122,7 +122,7 @@ final class RTMPChunk {
             return header
         }
         guard header.isEmpty else {
-            return header + message.payload
+            return header + message.encoded
         }
         header.append(type.toBasicHeader(chunkStreamId))
         if RTMPChunk.maxTimestamp < message.timestamp {
@@ -130,7 +130,7 @@ final class RTMPChunk {
         } else {
             header.append(contentsOf: message.timestamp.bigEndian.data[1 ... 3])
         }
-        header.append(contentsOf: UInt32(message.payload.count).bigEndian.data[1 ... 3])
+        header.append(contentsOf: UInt32(message.encoded.count).bigEndian.data[1 ... 3])
         header.append(message.type.rawValue)
         if type == .zero {
             header.append(message.streamId.littleEndian.data)
@@ -138,7 +138,7 @@ final class RTMPChunk {
         if RTMPChunk.maxTimestamp < message.timestamp {
             header.append(message.timestamp.bigEndian.data)
         }
-        return header + message.payload
+        return header + message.encoded
     }
 
     private func decode(data: Data) {
@@ -180,7 +180,7 @@ final class RTMPChunk {
         }
         let end = min(message.length + start, data.count)
         fragmented = size + start <= end
-        message.payload = data.subdata(in: start ..< min(size + start, end))
+        message.encoded = data.subdata(in: start ..< min(size + start, end))
         self.message = message
     }
 
@@ -189,18 +189,18 @@ final class RTMPChunk {
         guard let message else {
             return 0
         }
-        var length = message.length - message.payload.count
+        var length = message.length - message.encoded.count
         if data.count < length {
             length = data.count
         }
-        let chunkSize = size - (message.payload.count % size)
+        let chunkSize = size - (message.encoded.count % size)
         if chunkSize < length {
             length = chunkSize
         }
         if length > 0 {
-            message.payload.append(data[0 ..< length])
+            message.encoded.append(data[0 ..< length])
         }
-        fragmented = message.payload.count % size == 0
+        fragmented = message.encoded.count % size == 0
         return length
     }
 
@@ -215,7 +215,7 @@ final class RTMPChunk {
             self.message?.streamId = message.streamId
             self.message?.timestamp = type == .two ? try buffer.readUInt24() : message.timestamp
             self.message?.length = message.length
-            self.message?.payload = try Data(buffer.readBytes(message.length))
+            self.message?.encoded = try Data(buffer.readBytes(message.length))
         } catch {
             logger.info("\(buffer)")
         }
@@ -225,7 +225,7 @@ final class RTMPChunk {
     func split(_ size: Int) -> [Data] {
         let data = encode()
         message?.length = data.count
-        guard let message, size < message.payload.count else {
+        guard let message, size < message.encoded.count else {
             return [data]
         }
         let startIndex = size + basicAndMessageHeadersSize()

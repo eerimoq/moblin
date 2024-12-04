@@ -21,7 +21,7 @@ class RTMPMessage {
     var length: Int = 0
     var streamId: UInt32 = 0
     var timestamp: UInt32 = 0
-    var payload = Data()
+    var encoded = Data()
 
     init(type: RTMPMessageType) {
         self.type = type
@@ -80,20 +80,20 @@ final class RTMPSetChunkSizeMessage: RTMPMessage {
         connection.socket.chunkSizeC = Int(size)
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
-            super.payload = size.bigEndian.data
-            return super.payload
+            super.encoded = size.bigEndian.data
+            return super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
             size = UInt32(data: newValue).bigEndian
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -108,20 +108,20 @@ final class RTMPAbortMessge: RTMPMessage {
         super.init(type: .abort)
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
-            super.payload = chunkStreamId.bigEndian.data
-            return super.payload
+            super.encoded = chunkStreamId.bigEndian.data
+            return super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
             chunkStreamId = UInt32(data: newValue).bigEndian
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -144,20 +144,20 @@ final class RTMPAcknowledgementMessage: RTMPMessage {
         stream.info.onAck(sequence: sequence)
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
-            super.payload = sequence.bigEndian.data
-            return super.payload
+            super.encoded = sequence.bigEndian.data
+            return super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
             sequence = UInt32(data: newValue).bigEndian
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -182,20 +182,20 @@ final class RTMPWindowAcknowledgementSizeMessage: RTMPMessage {
         // connection.windowSizeS = Int64(size)
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
-            super.payload = size.bigEndian.data
-            return super.payload
+            super.encoded = size.bigEndian.data
+            return super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
             size = UInt32(data: newValue).bigEndian
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -228,24 +228,24 @@ final class RTMPSetPeerBandwidthMessage: RTMPMessage {
         // connection.bandWidth = size
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
             var payload = Data()
             payload.append(size.bigEndian.data)
             payload.append(limit.rawValue)
-            super.payload = payload
-            return super.payload
+            super.encoded = payload
+            return super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
             size = UInt32(data: newValue[0 ..< 4]).bigEndian
             limit = Limit(rawValue: newValue[4]) ?? .unknown
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -302,10 +302,10 @@ final class RTMPCommandMessage: RTMPMessage {
         }
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
             if type == .amf3Command {
                 serializer.writeUInt8(0)
@@ -317,9 +317,9 @@ final class RTMPCommandMessage: RTMPMessage {
             for i in arguments {
                 serializer.serialize(i)
             }
-            super.payload = serializer.data
+            super.encoded = serializer.data
             serializer.clear()
-            return super.payload
+            return super.encoded
         }
         set {
             if length == newValue.count {
@@ -341,7 +341,7 @@ final class RTMPCommandMessage: RTMPMessage {
                 }
                 serializer.clear()
             }
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -377,13 +377,13 @@ final class RTMPDataMessage: RTMPMessage {
         guard let stream = connection.streams.first(where: { $0.id == streamId }) else {
             return
         }
-        stream.info.byteCount.mutate { $0 += Int64(payload.count) }
+        stream.info.byteCount.mutate { $0 += Int64(encoded.count) }
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
 
             if type == .amf3Data {
@@ -393,13 +393,13 @@ final class RTMPDataMessage: RTMPMessage {
             for arg in arguments {
                 serializer.serialize(arg)
             }
-            super.payload = serializer.data
+            super.encoded = serializer.data
             serializer.clear()
 
-            return super.payload
+            return super.encoded
         }
         set {
-            guard super.payload != newValue else {
+            guard super.encoded != newValue else {
                 return
             }
 
@@ -420,7 +420,7 @@ final class RTMPDataMessage: RTMPMessage {
                 serializer.clear()
             }
 
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
@@ -442,14 +442,14 @@ final class RTMPAudioMessage: RTMPMessage {
         super.init(type: .audio)
         self.streamId = streamId
         self.timestamp = timestamp
-        self.payload = payload
+        self.encoded = payload
     }
 
     override func execute(_ connection: RTMPConnection, type: RTMPChunkType) {
         guard let stream = connection.streams.first(where: { $0.id == streamId }) else {
             return
         }
-        stream.info.byteCount.mutate { $0 += Int64(payload.count) }
+        stream.info.byteCount.mutate { $0 += Int64(encoded.count) }
         guard codec.isSupported else {
             return
         }
@@ -464,9 +464,9 @@ final class RTMPAudioMessage: RTMPMessage {
         default:
             stream.audioTimeStamp += Double(timestamp)
         }
-        switch payload[1] {
+        switch encoded[1] {
         case FLVAACPacketType.seq.rawValue:
-            let config = MpegTsAudioConfig(bytes: [UInt8](payload[codec.headerSize ..< payload.count]))
+            let config = MpegTsAudioConfig(bytes: [UInt8](encoded[codec.headerSize ..< encoded.count]))
             stream.mixer.audio.codec.outputSettings.format = .pcm
             stream.mixer.audio.codec.inSourceFormat = config?.audioStreamBasicDescription()
         case FLVAACPacketType.raw.rawValue:
@@ -488,15 +488,15 @@ final class RTMPAudioMessage: RTMPMessage {
         }
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            super.payload
+            super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
-            super.payload = newValue
+            super.encoded = newValue
             if length == newValue.count && !newValue.isEmpty {
                 guard let codec = FLVAudioCodec(rawValue: newValue[0] >> 4),
                       let soundRate = FLVSoundRate(rawValue: (newValue[0] & 0b0000_1100) >> 2),
@@ -514,13 +514,13 @@ final class RTMPAudioMessage: RTMPMessage {
     }
 
     private func makeAudioBuffer(_ stream: RTMPStream) -> AVAudioBuffer? {
-        return payload.withUnsafeMutableBytes { (buffer: UnsafeMutableRawBufferPointer) -> AVAudioBuffer? in
+        return encoded.withUnsafeMutableBytes { (buffer: UnsafeMutableRawBufferPointer) -> AVAudioBuffer? in
             guard let baseAddress = buffer.baseAddress,
                   let buffer = stream.mixer.audio.codec.makeInputBuffer() as? AVAudioCompressedBuffer
             else {
                 return nil
             }
-            let byteCount = payload.count - codec.headerSize
+            let byteCount = encoded.count - codec.headerSize
             buffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
                 mStartOffset: 0,
                 mVariableFramesInPacket: 0,
@@ -550,22 +550,22 @@ final class RTMPVideoMessage: RTMPMessage {
         super.init(type: .video)
         self.streamId = streamId
         self.timestamp = timestamp
-        self.payload = payload
+        self.encoded = payload
     }
 
     override func execute(_ connection: RTMPConnection, type: RTMPChunkType) {
         guard let stream = connection.streams.first(where: { $0.id == streamId }) else {
             return
         }
-        stream.info.byteCount.mutate { $0 += Int64(payload.count) }
-        guard FLVTagType.video.headerSize <= payload.count else {
+        stream.info.byteCount.mutate { $0 += Int64(encoded.count) }
+        guard FLVTagType.video.headerSize <= encoded.count else {
             return
         }
-        if (payload[0] & 0b1000_0000) == 0 {
-            guard payload[0] & 0b0111_0000 >> 4 == FLVVideoCodec.avc.rawValue else {
+        if (encoded[0] & 0b1000_0000) == 0 {
+            guard encoded[0] & 0b0111_0000 >> 4 == FLVVideoCodec.avc.rawValue else {
                 return
             }
-            switch payload[1] {
+            switch encoded[1] {
             case FLVAVCPacketType.seq.rawValue:
                 makeFormatDescription(stream, format: .h264)
             case FLVAVCPacketType.nal.rawValue:
@@ -577,10 +577,10 @@ final class RTMPVideoMessage: RTMPMessage {
             }
         } else {
             // IsExHeader for Enhancing RTMP, FLV
-            guard payload[1] == 0x68 && payload[2] == 0x76 && payload[3] == 0x63 && payload[4] == 0x31 else {
+            guard encoded[1] == 0x68 && encoded[2] == 0x76 && encoded[3] == 0x63 && encoded[4] == 0x31 else {
                 return
             }
-            switch payload[0] & 0b0000_1111 {
+            switch encoded[0] & 0b0000_1111 {
             case FLVVideoPacketType.sequenceStart.rawValue:
                 makeFormatDescription(stream, format: .hevc)
             case FLVVideoPacketType.codedFrames.rawValue:
@@ -597,7 +597,7 @@ final class RTMPVideoMessage: RTMPMessage {
                                   offset: Int = 0) -> CMSampleBuffer?
     {
         // compositionTime -> SI24
-        var compositionTime = Int32(data: [0] + payload[2 + offset ..< 5 + offset]).bigEndian
+        var compositionTime = Int32(data: [0] + encoded[2 + offset ..< 5 + offset]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
         var duration = Int64(timestamp)
@@ -622,7 +622,7 @@ final class RTMPVideoMessage: RTMPMessage {
                 timescale: 1000
             )
         )
-        let blockBuffer = payload.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize + offset)
+        let blockBuffer = encoded.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize + offset)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(
@@ -641,7 +641,7 @@ final class RTMPVideoMessage: RTMPMessage {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isSync = payload[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
+        sampleBuffer?.isSync = encoded[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
         return sampleBuffer
     }
 
@@ -650,11 +650,11 @@ final class RTMPVideoMessage: RTMPMessage {
         switch format {
         case .h264:
             var config = MpegTsVideoConfigAvc()
-            config.data = payload.subdata(in: FLVTagType.video.headerSize ..< payload.count)
+            config.data = encoded.subdata(in: FLVTagType.video.headerSize ..< encoded.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         case .hevc:
             var config = MpegTsVideoConfigHevc()
-            config.data = payload.subdata(in: FLVTagType.video.headerSize ..< payload.count)
+            config.data = encoded.subdata(in: FLVTagType.video.headerSize ..< encoded.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         }
         if status == noErr {
@@ -729,18 +729,18 @@ final class RTMPUserControlMessage: RTMPMessage {
         }
     }
 
-    override var payload: Data {
+    override var encoded: Data {
         get {
-            guard super.payload.isEmpty else {
-                return super.payload
+            guard super.encoded.isEmpty else {
+                return super.encoded
             }
-            super.payload.removeAll()
-            super.payload += event.bytes
-            super.payload += value.bigEndian.data
-            return super.payload
+            super.encoded.removeAll()
+            super.encoded += event.bytes
+            super.encoded += value.bigEndian.data
+            return super.encoded
         }
         set {
-            if super.payload == newValue {
+            if super.encoded == newValue {
                 return
             }
             if length == newValue.count {
@@ -749,7 +749,7 @@ final class RTMPUserControlMessage: RTMPMessage {
                 }
                 value = Int32(data: newValue[2 ..< newValue.count]).bigEndian
             }
-            super.payload = newValue
+            super.encoded = newValue
         }
     }
 }
