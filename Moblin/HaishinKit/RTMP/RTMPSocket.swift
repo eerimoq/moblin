@@ -18,19 +18,14 @@ protocol RTMPSocketDelegate: EventDispatcherConvertible {
 }
 
 final class RTMPSocket {
-    static let defaultWindowSizeC = Int(UInt8.max)
+    private static let defaultWindowSizeC = Int(UInt8.max)
 
-    var chunkSizeC: Int = RTMPChunk.defaultSize
-    var chunkSizeS: Int = RTMPChunk.defaultSize
-    var windowSizeC = RTMPSocket.defaultWindowSizeC
-    var timeout: Int = 10
-    var readyState: RTMPSocketReadyState = .uninitialized {
-        didSet {
-            delegate?.socketReadyStateChanged(self, readyState: readyState)
-        }
-    }
+    var maximumChunkSizeFromServer = RTMPChunk.defaultSize
+    var maximumChunkSizeToServer = RTMPChunk.defaultSize
+    private let timeout = 10
+    private var readyState: RTMPSocketReadyState = .uninitialized
 
-    var secure: Bool = false {
+    var secure = false {
         didSet {
             if secure {
                 tlsOptions = .init()
@@ -48,16 +43,22 @@ final class RTMPSocket {
     private(set) var connected = false {
         didSet {
             if connected {
-                doOutput(data: handshake.c0c1packet)
-                readyState = .versionSent
+                write(data: handshake.c0c1packet)
+                setReadyState(state: .versionSent)
                 return
             }
-            readyState = .closed
+            setReadyState(state: .closed)
             for event in events {
                 delegate?.dispatch(event: event)
             }
             events.removeAll()
         }
+    }
+
+    private func setReadyState(state: RTMPSocketReadyState) {
+        logger.info("rtmp: Setting socket state \(readyState) -> \(state)")
+        readyState = state
+        delegate?.socketReadyStateChanged(self, readyState: readyState)
     }
 
     private var events: [Event] = []
@@ -82,19 +83,17 @@ final class RTMPSocket {
 
     func connect(withName: String, port: Int) {
         handshake.clear()
-        readyState = .uninitialized
-        chunkSizeS = RTMPChunk.defaultSize
-        chunkSizeC = RTMPChunk.defaultSize
+        setReadyState(state: .uninitialized)
+        maximumChunkSizeToServer = RTMPChunk.defaultSize
+        maximumChunkSizeFromServer = RTMPChunk.defaultSize
         totalBytesIn.mutate { $0 = 0 }
         totalBytesOut.mutate { $0 = 0 }
         inputBuffer.removeAll(keepingCapacity: false)
-        let tcpOptions = NWProtocolTCP.Options()
-        // tcpOptions.noDelay = true
         connection = NWConnection(
             to: NWEndpoint
                 .hostPort(host: .init(withName),
                           port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
-            using: .init(tls: tlsOptions, tcp: tcpOptions)
+            using: .init(tls: tlsOptions, tcp: NWProtocolTCP.Options())
         )
         connection?.viabilityUpdateHandler = viabilityDidChange(to:)
         connection?.stateUpdateHandler = stateDidChange(to:)
@@ -126,7 +125,7 @@ final class RTMPSocket {
                 RTMPConnection.Code.connectClosed.data("") : RTMPConnection.Code.connectFailed.data("")
             events.append(Event(type: .rtmpStatus, data: data))
         }
-        readyState = .closing
+        setReadyState(state: .closing)
         if !isDisconnected, connection.state == .ready {
             connection.send(
                 content: nil,
@@ -143,14 +142,14 @@ final class RTMPSocket {
     }
 
     @discardableResult
-    func doOutput(chunk: RTMPChunk) -> Int {
-        for data in chunk.split(chunkSizeS) {
-            doOutput(data: data)
+    func write(chunk: RTMPChunk) -> Int {
+        for data in chunk.split(maximumChunkSizeToServer) {
+            write(data: data)
         }
         return chunk.message!.length
     }
 
-    private func doOutput(data: Data) {
+    private func write(data: Data) {
         connection?.send(content: data, completion: .contentProcessed { error in
             guard self.connected else {
                 return
@@ -166,7 +165,7 @@ final class RTMPSocket {
 
     private func viabilityDidChange(to viability: Bool) {
         logger.info("rtmp: Connection viability changed to \(viability)")
-        if viability == false {
+        if !viability {
             close(isDisconnected: true)
         }
     }
@@ -196,7 +195,7 @@ final class RTMPSocket {
 
     private func receive(on connection: NWConnection) {
         connection
-            .receive(minimumIncompleteLength: 0, maximumLength: windowSizeC) { [weak self] data, _, _, _ in
+            .receive(minimumIncompleteLength: 0, maximumLength: 255) { [weak self] data, _, _, _ in
                 guard let self, let data, self.connected else {
                     return
                 }
@@ -213,9 +212,9 @@ final class RTMPSocket {
             if inputBuffer.count < RTMPHandshake.sigSize + 1 {
                 break
             }
-            doOutput(data: handshake.c2packet(inputBuffer))
+            write(data: handshake.c2packet(inputBuffer))
             inputBuffer.removeSubrange(0 ... RTMPHandshake.sigSize)
-            readyState = .ackSent
+            setReadyState(state: .ackSent)
             if RTMPHandshake.sigSize <= inputBuffer.count {
                 processInput()
             }
@@ -224,7 +223,7 @@ final class RTMPSocket {
                 break
             }
             inputBuffer.removeAll()
-            readyState = .handshakeDone
+            setReadyState(state: .handshakeDone)
         case .handshakeDone, .closing:
             if inputBuffer.isEmpty {
                 break

@@ -77,7 +77,7 @@ final class RTMPSetChunkSizeMessage: RTMPMessage {
     }
 
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
-        connection.socket.chunkSizeC = Int(size)
+        connection.socket.maximumChunkSizeFromServer = Int(size)
     }
 
     override var encoded: Data {
@@ -178,8 +178,7 @@ final class RTMPWindowAcknowledgementSizeMessage: RTMPMessage {
     }
 
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
-        connection.windowSizeC = Int64(size)
-        // connection.windowSizeS = Int64(size)
+        connection.windowSizeFromServer = Int64(size)
     }
 
     override var encoded: Data {
@@ -709,7 +708,7 @@ final class RTMPUserControlMessage: RTMPMessage {
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
         switch event {
         case .ping:
-            connection.socket.doOutput(chunk: RTMPChunk(
+            connection.socket.write(chunk: RTMPChunk(
                 type: .zero,
                 chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPUserControlMessage(event: .pong, value: value)

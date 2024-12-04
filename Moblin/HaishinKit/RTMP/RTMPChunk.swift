@@ -38,13 +38,17 @@ final class RTMPChunk {
     enum ChunkStreamId: UInt16 {
         case control = 0x02
         case command = 0x03
-        // case audio = 0x04
-        // case video = 0x05
         case data = 0x08
     }
 
     static let defaultSize = 128
     static let maxTimestamp: UInt32 = 0xFFFFFF
+    var size = 0
+    var type: RTMPChunkType = .zero
+    var chunkStreamId = RTMPChunk.ChunkStreamId.command.rawValue
+    private(set) var message: RTMPMessage?
+    private(set) var fragmented = false
+    private var header = Data()
 
     static func basicHeaderSize(_ byte: UInt8) -> Int {
         switch byte & 0b0011_1111 {
@@ -56,41 +60,6 @@ final class RTMPChunk {
             return 1
         }
     }
-
-    var size = 0
-    var type: RTMPChunkType = .zero
-    var chunkStreamId = RTMPChunk.ChunkStreamId.command.rawValue
-
-    func ready() -> Bool {
-        guard let message else {
-            return false
-        }
-        return message.length == message.encoded.count
-    }
-
-    private func basicAndMessageHeadersSize() -> Int {
-        if chunkStreamId <= 63 {
-            return 1 + type.messageHeaderSize()
-        }
-        if chunkStreamId <= 319 {
-            return 2 + type.messageHeaderSize()
-        }
-        return 3 + type.messageHeaderSize()
-    }
-
-    private func basicHeaderSize() -> Int {
-        if chunkStreamId <= 63 {
-            return 1
-        }
-        if chunkStreamId <= 319 {
-            return 2
-        }
-        return 3
-    }
-
-    private(set) var message: RTMPMessage?
-    private(set) var fragmented = false
-    private var header = Data()
 
     init(type: RTMPChunkType, chunkStreamId: UInt16, message: RTMPMessage) {
         self.type = type
@@ -115,6 +84,13 @@ final class RTMPChunk {
         self.size = size
         self.type = type
         decode(data: data)
+    }
+
+    func ready() -> Bool {
+        guard let message else {
+            return false
+        }
+        return message.length == message.encoded.count
     }
 
     func encode() -> Data {
@@ -232,12 +208,29 @@ final class RTMPChunk {
         let header = RTMPChunkType.three.toBasicHeader(chunkStreamId)
         var chunks = [data.subdata(in: 0 ..< startIndex)]
         for index in stride(from: startIndex, to: data.count, by: size) {
-            var chunk = header
-            chunk
-                .append(data
-                    .subdata(in: index ..< index.advanced(by: index + size < data.count ? size : data.count - index)))
-            chunks.append(chunk)
+            let endIndex = index.advanced(by: index + size < data.count ? size : data.count - index)
+            chunks.append(header + data.subdata(in: index ..< endIndex))
         }
         return chunks
+    }
+
+    private func basicAndMessageHeadersSize() -> Int {
+        if chunkStreamId <= 63 {
+            return 1 + type.messageHeaderSize()
+        }
+        if chunkStreamId <= 319 {
+            return 2 + type.messageHeaderSize()
+        }
+        return 3 + type.messageHeaderSize()
+    }
+
+    private func basicHeaderSize() -> Int {
+        if chunkStreamId <= 63 {
+            return 1
+        }
+        if chunkStreamId <= 319 {
+            return 2
+        }
+        return 3
     }
 }
