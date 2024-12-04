@@ -157,10 +157,11 @@ final class RTMPChunk {
         if type == .two || type == .three {
             return
         }
-        guard let message = RTMPMessageType(rawValue: data[pos + 6])?.makeMessage() else {
+        guard let messageType = RTMPMessageType(rawValue: data[pos + 6]) else {
             logger.error(data.description)
             return
         }
+        let message = RTMPMessage.create(type: messageType)
         switch type {
         case .zero:
             message.timestamp = UInt32(data: data[pos ..< pos + 3]).bigEndian
@@ -210,7 +211,7 @@ final class RTMPChunk {
         let buffer = ByteArray(data: data)
         buffer.position = basicHeaderSize()
         do {
-            self.message = message.type.makeMessage()
+            self.message = RTMPMessage.create(type: message.type)
             self.message?.streamId = message.streamId
             self.message?.timestamp = type == .two ? try buffer.readUInt24() : message.timestamp
             self.message?.length = message.length

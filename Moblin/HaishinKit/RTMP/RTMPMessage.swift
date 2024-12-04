@@ -14,9 +14,23 @@ enum RTMPMessageType: UInt8 {
     case amf0Data = 0x12
     case amf0Command = 0x14
     case aggregate = 0x16
+}
 
-    func makeMessage() -> RTMPMessage {
-        switch self {
+class RTMPMessage {
+    let type: RTMPMessageType
+    var length: Int = 0
+    var streamId: UInt32 = 0
+    var timestamp: UInt32 = 0
+    var payload = Data()
+
+    init(type: RTMPMessageType) {
+        self.type = type
+    }
+
+    func execute(_: RTMPConnection, type _: RTMPChunkType) {}
+
+    static func create(type: RTMPMessageType) -> RTMPMessage {
+        switch type {
         case .chunkSize:
             return RTMPSetChunkSizeMessage()
         case .abort:
@@ -45,20 +59,6 @@ enum RTMPMessageType: UInt8 {
             return RTMPAggregateMessage()
         }
     }
-}
-
-class RTMPMessage {
-    let type: RTMPMessageType
-    var length: Int = 0
-    var streamId: UInt32 = 0
-    var timestamp: UInt32 = 0
-    var payload = Data()
-
-    init(type: RTMPMessageType) {
-        self.type = type
-    }
-
-    func execute(_: RTMPConnection, type _: RTMPChunkType) {}
 }
 
 /**
