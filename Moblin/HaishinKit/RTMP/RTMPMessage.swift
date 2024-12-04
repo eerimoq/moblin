@@ -442,7 +442,7 @@ final class RTMPAudioMessage: RTMPMessage {
         super.init(type: .audio)
         self.streamId = streamId
         self.timestamp = timestamp
-        self.encoded = payload
+        encoded = payload
     }
 
     override func execute(_ connection: RTMPConnection, type: RTMPChunkType) {
