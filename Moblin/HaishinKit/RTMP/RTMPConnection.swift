@@ -444,7 +444,7 @@ extension RTMPConnection: RTMPSocketDelegate {
             currentChunk = nil
             messages[chunk.chunkStreamId] = message
             if position > 0 && position < data.count {
-                self.socketDataReceived(socket, data: data.advanced(by: position))
+                socketDataReceived(socket, data: data.advanced(by: position))
             }
             return
         }
@@ -456,7 +456,7 @@ extension RTMPConnection: RTMPSocketDelegate {
             fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
         }
         if position > 0 && position < data.count {
-            self.socketDataReceived(socket, data: data.advanced(by: position))
+            socketDataReceived(socket, data: data.advanced(by: position))
         }
     }
 }

@@ -550,7 +550,7 @@ final class RTMPVideoMessage: RTMPMessage {
         super.init(type: .video)
         self.streamId = streamId
         self.timestamp = timestamp
-        self.encoded = payload
+        encoded = payload
     }
 
     override func execute(_ connection: RTMPConnection, type: RTMPChunkType) {
