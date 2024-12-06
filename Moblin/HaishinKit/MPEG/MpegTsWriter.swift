@@ -83,14 +83,13 @@ class MpegTsWriter {
     }
 
     private func encode(_ packetId: UInt16,
-                        presentationTimeStamp: CMTime,
-                        randomAccessIndicator: Bool,
-                        pes: MpegTsPacketizedElementaryStream) -> Data
+                        _ presentationTimeStamp: CMTime,
+                        _ randomAccessIndicator: Bool,
+                        _ packetizedElementaryStream: MpegTsPacketizedElementaryStream) -> Data
     {
-        let timestamp = presentationTimeStamp
-        let packets = split(packetId, pes: pes, timestamp: timestamp)
+        let packets = split(packetId,  packetizedElementaryStream,  presentationTimeStamp)
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
-        rotateFileHandle(timestamp)
+        rotateFileHandle(presentationTimeStamp)
         let count = packets.count * MpegTsPacket.size
         var data = Data(
             bytesNoCopy: UnsafeMutableRawPointer.allocate(byteCount: count, alignment: 8),
@@ -253,8 +252,8 @@ class MpegTsWriter {
     }
 
     private func split(_ packetId: UInt16,
-                       pes: MpegTsPacketizedElementaryStream,
-                       timestamp: CMTime) -> [MpegTsPacket]
+                       _ packetizedElementaryStream: MpegTsPacketizedElementaryStream,
+                       _ timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
         if packetId == MpegTsWriter.audioPacketId {
@@ -263,7 +262,7 @@ class MpegTsWriter {
                 programClockReferenceTimestamp = timestamp
             }
         }
-        return pes.arrayOfPackets(packetId, programClockReference)
+        return packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
     }
 }
 
@@ -287,17 +286,13 @@ extension MpegTsWriter: AudioCodecDelegate {
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        guard let audioBuffer = buffer as? AVAudioCompressedBuffer else {
-            logger.info("ts-writer: Audio output no buffer")
+        guard let audioBuffer = buffer as? AVAudioCompressedBuffer,
+              canWriteFor(),
+              let audioConfig
+        else {
             return
         }
-        guard canWriteFor() else {
-            return
-        }
-        guard let audioConfig else {
-            return
-        }
-        guard let pes = MpegTsPacketizedElementaryStream(
+        guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
             bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: audioBuffer.byteLength,
             presentationTimeStamp: presentationTimeStamp,
@@ -306,12 +301,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         ) else {
             return
         }
-        writeAudio(data: encode(
-            MpegTsWriter.audioPacketId,
-            presentationTimeStamp: presentationTimeStamp,
-            randomAccessIndicator: true,
-            pes: pes
-        ))
+        writeAudio(data: encode(MpegTsWriter.audioPacketId, presentationTimeStamp, true, packetizedElementaryStream))
     }
 }
 
@@ -351,23 +341,18 @@ extension MpegTsWriter: VideoCodecDelegate {
     }
 
     func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        guard let dataBuffer = sampleBuffer.dataBuffer else {
-            return
-        }
-        guard let (buffer, length) = dataBuffer.getDataPointer() else {
-            return
-        }
-        guard canWriteFor() else {
-            return
-        }
-        guard let videoConfig else {
+        guard let dataBuffer = sampleBuffer.dataBuffer,
+              let (buffer, length) = dataBuffer.getDataPointer(),
+              canWriteFor(),
+              let videoConfig
+        else {
             return
         }
         let randomAccessIndicator = sampleBuffer.isSync
-        let pes: MpegTsPacketizedElementaryStream
+        let packetizedElementaryStream: MpegTsPacketizedElementaryStream
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         if let videoConfig = videoConfig as? MpegTsVideoConfigAvc {
-            pes = MpegTsPacketizedElementaryStream(
+            packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
@@ -376,7 +361,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 streamId: MpegTsWriter.videoStreamId
             )
         } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
-            pes = MpegTsPacketizedElementaryStream(
+            packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
@@ -389,9 +374,9 @@ extension MpegTsWriter: VideoCodecDelegate {
         }
         writeVideo(data: encode(
             MpegTsWriter.videoPacketId,
-            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-            randomAccessIndicator: randomAccessIndicator,
-            pes: pes
+            sampleBuffer.presentationTimeStamp,
+            randomAccessIndicator,
+            packetizedElementaryStream
         ))
     }
 }
