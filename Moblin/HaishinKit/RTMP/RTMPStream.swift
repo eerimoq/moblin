@@ -19,11 +19,10 @@ private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: 
     ])
 }
 
-/// An object that provides the interface to control a one-way channel over a RtmpConnection.
-open class RTMPStream: NetStream {
+class RTMPStream: NetStream {
     /// NetStatusEvent#info.code for NetStream
     /// - seealso: https://help.adobe.com/en_US/air/reference/html/flash/events/NetStatusEvent.html#NET_STATUS
-    public enum Code: String {
+    enum Code: String {
         case bufferEmpty = "NetStream.Buffer.Empty"
         case bufferFlush = "NetStream.Buffer.Flush"
         case bufferFull = "NetStream.Buffer.Full"
@@ -165,7 +164,6 @@ open class RTMPStream: NetStream {
 
     static let defaultID: UInt32 = 0
     var info = RTMPStreamInfo()
-    private(set) var objectEncoding = RTMPConnection.defaultObjectEncoding
 
     var id = RTMPStream.defaultID
     private var readyState: ReadyState = .initialized
@@ -204,7 +202,7 @@ open class RTMPStream: NetStream {
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
 
-    public init(connection: RTMPConnection) {
+    init(connection: RTMPConnection) {
         rtmpConnection = connection
         super.init()
         dispatcher = EventDispatcher(target: self)
@@ -245,7 +243,7 @@ open class RTMPStream: NetStream {
         let message = RTMPCommandMessage(
             streamId: id,
             transactionId: 0,
-            objectEncoding: objectEncoding,
+            objectEncoding: .amf0,
             commandName: "publish",
             commandObject: nil,
             arguments: [name, "live"]
@@ -286,7 +284,7 @@ open class RTMPStream: NetStream {
             chunkStreamId: RTMPChunk.ChunkStreamId.data.rawValue,
             message: RTMPDataMessage(
                 streamId: id,
-                objectEncoding: objectEncoding,
+                objectEncoding: .amf0,
                 timestamp: timestmap,
                 handlerName: handlerName,
                 arguments: arguments
@@ -339,7 +337,7 @@ open class RTMPStream: NetStream {
             message: RTMPCommandMessage(
                 streamId: 0,
                 transactionId: 0,
-                objectEncoding: objectEncoding,
+                objectEncoding: .amf0,
                 commandName: "closeStream",
                 commandObject: nil,
                 arguments: [id]
@@ -434,7 +432,7 @@ open class RTMPStream: NetStream {
         let message = RTMPCommandMessage(
             streamId: id,
             transactionId: 0,
-            objectEncoding: objectEncoding,
+            objectEncoding: .amf0,
             commandName: "deleteStream",
             commandObject: nil,
             arguments: [id]

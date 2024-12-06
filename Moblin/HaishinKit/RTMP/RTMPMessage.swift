@@ -295,7 +295,8 @@ final class RTMPCommandMessage: RTMPMessage {
         case "_result":
             responder.on(result: arguments)
         case "_error":
-            responder.on(status: arguments)
+            // Should probably do something.
+            break
         default:
             break
         }

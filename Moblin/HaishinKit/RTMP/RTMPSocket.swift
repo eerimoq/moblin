@@ -18,8 +18,6 @@ protocol RTMPSocketDelegate: EventDispatcherConvertible {
 }
 
 final class RTMPSocket {
-    private static let defaultWindowSizeC = Int(UInt8.max)
-
     var maximumChunkSizeFromServer = RTMPChunk.defaultSize
     var maximumChunkSizeToServer = RTMPChunk.defaultSize
     private let timeout = 10

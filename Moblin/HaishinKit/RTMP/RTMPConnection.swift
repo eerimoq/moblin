@@ -1,32 +1,20 @@
 import AVFoundation
 import Foundation
 
-/// The RTMPResponder class provides to use handle RTMPConnection's callback.
-open class RTMPResponder {
-    /// A Handler represents RTMPResponder's callback function.
+class RTMPResponder {
     typealias Handler = (_ data: [Any?]) -> Void
-
     private var result: Handler
-    private var status: Handler?
 
-    /// Creates a new RTMPResponder object.
-    init(result: @escaping Handler, status: Handler? = nil) {
+    init(result: @escaping Handler) {
         self.result = result
-        self.status = status
     }
 
     final func on(result: [Any?]) {
         self.result(result)
     }
-
-    final func on(status: [Any?]) {
-        self.status?(status)
-        self.status = nil
-    }
 }
 
-/// The RTMPConneciton class create a two-way RTMP connection.
-open class RTMPConnection: EventDispatcher {
+class RTMPConnection: EventDispatcher {
     private static let defaultWindowSizeFromServer: Int64 = 250_000
     private static let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
     private static let defaultPort = 1935
@@ -34,13 +22,12 @@ open class RTMPConnection: EventDispatcher {
     private static let defaultFlashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
     private static let defaultMaximumChunkSizeToServer = 1024 * 8
     private static let defaultCapabilities = 239
-    public static let defaultObjectEncoding: RTMPObjectEncoding = .amf0
 
     /**
      - NetStatusEvent#info.code for NetConnection
      - see: https://help.adobe.com/en_US/air/reference/html/flash/events/NetStatusEvent.html#NET_STATUS
      */
-    public enum Code: String {
+    enum Code: String {
         case callBadVersion = "NetConnection.Call.BadVersion"
         case callFailed = "NetConnection.Call.Failed"
         case callProhibited = "NetConnection.Call.Prohibited"
@@ -53,7 +40,7 @@ open class RTMPConnection: EventDispatcher {
         case connectRejected = "NetConnection.Connect.Rejected"
         case connectSuccess = "NetConnection.Connect.Success"
 
-        public var level: String {
+        var level: String {
             switch self {
             case .callBadVersion:
                 return "error"
@@ -144,7 +131,6 @@ open class RTMPConnection: EventDispatcher {
     var flashVer = RTMPConnection.defaultFlashVer
     private(set) var uri: URL?
     private(set) var connected = false
-    private var objectEncoding = RTMPConnection.defaultObjectEncoding
     var socket: RTMPSocket!
     var streams: [RTMPStream] = []
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
@@ -188,7 +174,7 @@ open class RTMPConnection: EventDispatcher {
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)))
     }
 
-    open func call(_ commandName: String, responder: RTMPResponder?, arguments: Any?...) {
+    func call(_ commandName: String, responder: RTMPResponder?, arguments: Any?...) {
         guard connected else {
             return
         }
@@ -196,7 +182,7 @@ open class RTMPConnection: EventDispatcher {
         let message = RTMPCommandMessage(
             streamId: 0,
             transactionId: currentTransactionId,
-            objectEncoding: objectEncoding,
+            objectEncoding: .amf0,
             commandName: commandName,
             commandObject: nil,
             arguments: arguments
@@ -207,7 +193,7 @@ open class RTMPConnection: EventDispatcher {
         socket.write(chunk: RTMPChunk(message: message))
     }
 
-    open func connect(_ command: String, arguments: Any?...) {
+    func connect(_ command: String, arguments: Any?...) {
         guard let uri = URL(string: command),
               let scheme = uri.scheme,
               !connected && Self.supportedProtocols.contains(scheme)
@@ -226,7 +212,7 @@ open class RTMPConnection: EventDispatcher {
         )
     }
 
-    open func close() {
+    func close() {
         close(isDisconnected: false)
     }
 
@@ -339,7 +325,7 @@ open class RTMPConnection: EventDispatcher {
                 "videoCodecs": SupportVideo.h264.rawValue,
                 "videoFunction": VideoFunction.clientSeek.rawValue,
                 "pageUrl": nil,
-                "objectEncoding": objectEncoding.rawValue,
+                "objectEncoding": RTMPObjectEncoding.amf0.rawValue,
             ],
             arguments: arguments
         )
