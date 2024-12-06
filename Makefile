@@ -1,4 +1,4 @@
-FORMAT_ARGS=--maxwidth 120 --swiftversion 5 --exclude Moblin/Tesla/Protobuf
+FORMAT_ARGS=--maxwidth 120 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf
 LINT_ARGS=--strict --quiet
 
 all:
@@ -27,7 +27,7 @@ lint:
 	swiftlint lint $(LINT_ARGS) "Moblin Screen Recording"
 
 periphery:
-	periphery scan --report-exclude Moblin/Tesla/Protobuf/**
+	periphery scan --report-exclude Moblin/Integrations/Tesla/Protobuf/**
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
