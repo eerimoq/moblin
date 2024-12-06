@@ -2,7 +2,6 @@ import AVFAudio
 import Foundation
 
 struct AudioCodecOutputSettings: Codable {
-    static let `default` = AudioCodecOutputSettings()
     static let maximumNumberOfChannels: UInt32 = 2
 
     enum Format: Codable {

@@ -54,6 +54,8 @@ final class Media: NSObject {
     private var failedVideoEffect: String?
     private var irlToolkitFetcher: IrlToolkitFetcher?
     var srtDroppedPacketsTotal: Int32 = 0
+    private var videoEncoderSettings = VideoCodecSettings()
+    private var audioEncoderSettings = AudioCodecOutputSettings()
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -677,16 +679,15 @@ final class Media: NSObject {
 
     func setVideoSize(capture: CGSize, output: CGSize) {
         netStream?.setVideoSize(capture: capture, output: output)
-        netStream?.videoEncoderSettings.videoSize = .init(
+        videoEncoderSettings.videoSize = .init(
             width: Int32(output.width),
             height: Int32(output.height)
         )
+        setVideoEncoderSettings()
     }
 
     func getVideoSize() -> CGSize {
-        guard let size = netStream?.videoEncoderSettings.videoSize else {
-            return .init(width: 1920, height: 1080)
-        }
+        let size = videoEncoderSettings.videoSize
         return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
     }
 
@@ -700,10 +701,19 @@ final class Media: NSObject {
 
     private var multiplier: UInt32 = 0
 
+    private func setVideoEncoderSettings() {
+        netStream?.setVideoEncoderSettings(settings: videoEncoderSettings)
+    }
+
+    private func setAudioEncoderSettings() {
+        netStream?.setAudioEncoderSettings(settings: audioEncoderSettings)
+    }
+
     func updateVideoStreamBitrate(bitrate: UInt32) {
         multiplier ^= 1
         let bitRate = getVideoStreamBitrate(bitrate: bitrate)
-        netStream?.videoEncoderSettings.bitRate = bitRate + multiplier * (bitRate / 10)
+        videoEncoderSettings.bitRate = bitRate + multiplier * (bitRate / 10)
+        setVideoEncoderSettings()
     }
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
@@ -720,35 +730,44 @@ final class Media: NSObject {
         if let adaptiveBitrate {
             adaptiveBitrate.setTargetBitrate(bitrate: bitrate)
         } else {
-            netStream?.videoEncoderSettings.bitRate = bitrate
+            videoEncoderSettings.bitRate = bitrate
+            setVideoEncoderSettings()
         }
     }
 
     func setVideoProfile(profile: CFString) {
-        netStream?.videoEncoderSettings.profileLevel = profile as String
+        videoEncoderSettings.profileLevel = profile as String
+        setVideoEncoderSettings()
     }
 
     func setAllowFrameReordering(value: Bool) {
-        netStream?.videoEncoderSettings.allowFrameReordering = value
+        videoEncoderSettings.allowFrameReordering = value
+        setVideoEncoderSettings()
     }
 
     func setStreamKeyFrameInterval(seconds: Int32) {
-        netStream?.videoEncoderSettings.maxKeyFrameIntervalDuration = seconds
+        videoEncoderSettings.maxKeyFrameIntervalDuration = seconds
+        setVideoEncoderSettings()
     }
 
     func setStreamAdaptiveResolution(value: Bool) {
-        netStream?.videoEncoderSettings.adaptiveResolution = value
+        videoEncoderSettings.adaptiveResolution = value
+        setVideoEncoderSettings()
     }
 
     func setAudioStreamBitrate(bitrate: Int) {
-        netStream?.audioEncoderSettings.bitRate = bitrate
+        audioEncoderSettings.bitRate = bitrate
+        setAudioEncoderSettings()
     }
 
     func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
-        netStream?.audioEncoderSettings.format = format
+        audioEncoderSettings.format = format
+        setAudioEncoderSettings()
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
+        audioEncoderSettings.channelsMap = channelsMap
+        setAudioEncoderSettings()
         netStream?.setAudioChannelsMap(map: channelsMap)
     }
 
@@ -1008,7 +1027,8 @@ extension Media: SrtlaDelegate {
 
 extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
-        netStream?.videoEncoderSettings.bitRate = bitrate
+        videoEncoderSettings.bitRate = bitrate
+        setVideoEncoderSettings()
     }
 }
 

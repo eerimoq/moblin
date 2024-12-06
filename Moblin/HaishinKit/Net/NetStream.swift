@@ -68,21 +68,15 @@ open class NetStream: NSObject {
         }
     }
 
-    var audioEncoderSettings: AudioCodecOutputSettings {
-        get {
-            mixer.audio.encoder.settings
-        }
-        set {
-            mixer.audio.encoder.settings = newValue
+    func setAudioEncoderSettings(settings: AudioCodecOutputSettings) {
+        netStreamLockQueue.async {
+            self.mixer.audio.encoder.settings = settings
         }
     }
 
-    var videoEncoderSettings: VideoCodecSettings {
-        get {
-            mixer.video.encoder.settings.value
-        }
-        set {
-            mixer.video.encoder.settings.mutate { $0 = newValue }
+    func setVideoEncoderSettings(settings: VideoCodecSettings) {
+        netStreamLockQueue.async {
+            self.mixer.video.encoder.settings.mutate { $0 = settings }
         }
     }
 
@@ -177,7 +171,6 @@ open class NetStream: NSObject {
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        audioEncoderSettings.channelsMap = map
         mixer.recorder.setAudioChannelsMap(map: map)
     }
 

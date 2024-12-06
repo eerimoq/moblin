@@ -49,7 +49,7 @@ class AudioCodec {
 
     weak var delegate: (any AudioCodecDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
-    var settings: AudioCodecOutputSettings = .default {
+    var settings = AudioCodecOutputSettings() {
         didSet {
             guard let audioConverter else {
                 return
