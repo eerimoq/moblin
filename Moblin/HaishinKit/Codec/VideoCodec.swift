@@ -11,10 +11,6 @@ protocol VideoCodecDelegate: AnyObject {
 }
 
 class VideoCodec {
-    init(lockQueue: DispatchQueue) {
-        self.lockQueue = lockQueue
-    }
-
     private static let defaultAttributes: [NSString: AnyObject]? = [
         kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
         kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
@@ -70,7 +66,11 @@ class VideoCodec {
 
     private var invalidateSession = true
     private var currentBitrate: UInt32 = 0
-    private var oldBitrateVideoSize: CMVideoDimensions = .init(width: 0, height: 0)
+    private var oldBitrateVideoSize = CMVideoDimensions(width: 0, height: 0)
+
+    init(lockQueue: DispatchQueue) {
+        self.lockQueue = lockQueue
+    }
 
     private func updateBitrate(settings: VideoCodecSettings) {
         guard currentBitrate != settings.bitRate else {

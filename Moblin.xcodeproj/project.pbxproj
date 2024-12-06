@@ -399,6 +399,7 @@
 		03C354682CF98DD900B8B29F /* HCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C354672CF98DD600B8B29F /* HCenter.swift */; };
 		03C3560D2CFC90D200B8B29F /* KeyboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */; };
 		03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */; };
+		03C3572A2D03776D00B8B29F /* MultiTrackVideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -954,6 +955,7 @@
 		03C354672CF98DD600B8B29F /* HCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HCenter.swift; sourceTree = "<group>"; };
 		03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSettingsView.swift; sourceTree = "<group>"; };
 		03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeySettingsView.swift; sourceTree = "<group>"; };
+		03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiTrackVideoEncoder.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -1560,6 +1562,7 @@
 				0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */,
 				0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */,
 				0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */,
+				03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */,
 				0359F8102BD3DA5F005BFDA8 /* VideoCodec.swift */,
 				0359F8112BD3DA5F005BFDA8 /* VideoCodecSettings.swift */,
 				0359F8132BD3DA5F005BFDA8 /* VTSessionConvertible.swift */,
@@ -3218,6 +3221,7 @@
 				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,
 				03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */,
+				03C3572A2D03776D00B8B29F /* MultiTrackVideoEncoder.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
 				038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */,
