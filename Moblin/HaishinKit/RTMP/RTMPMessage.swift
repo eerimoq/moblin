@@ -467,15 +467,15 @@ final class RTMPAudioMessage: RTMPMessage {
         switch encoded[1] {
         case FLVAACPacketType.seq.rawValue:
             let config = MpegTsAudioConfig(bytes: [UInt8](encoded[codec.headerSize ..< encoded.count]))
-            stream.mixer.audio.codec.outputSettings.format = .pcm
-            stream.mixer.audio.codec.inSourceFormat = config?.audioStreamBasicDescription()
+            stream.mixer.audio.encoder.settings.format = .pcm
+            stream.mixer.audio.encoder.inSourceFormat = config?.audioStreamBasicDescription()
         case FLVAACPacketType.raw.rawValue:
-            if stream.mixer.audio.codec.inSourceFormat == nil {
-                stream.mixer.audio.codec.outputSettings.format = .pcm
-                stream.mixer.audio.codec.inSourceFormat = makeAudioStreamBasicDescription()
+            if stream.mixer.audio.encoder.inSourceFormat == nil {
+                stream.mixer.audio.encoder.settings.format = .pcm
+                stream.mixer.audio.encoder.inSourceFormat = makeAudioStreamBasicDescription()
             }
             if let audioBuffer = makeAudioBuffer(stream) {
-                stream.mixer.audio.codec.appendAudioBuffer(
+                stream.mixer.audio.encoder.appendAudioBuffer(
                     audioBuffer,
                     presentationTimeStamp: CMTime(
                         seconds: stream.audioTimeStamp / 1000,
@@ -516,7 +516,7 @@ final class RTMPAudioMessage: RTMPMessage {
     private func makeAudioBuffer(_ stream: RTMPStream) -> AVAudioBuffer? {
         return encoded.withUnsafeMutableBytes { (buffer: UnsafeMutableRawBufferPointer) -> AVAudioBuffer? in
             guard let baseAddress = buffer.baseAddress,
-                  let buffer = stream.mixer.audio.codec.makeInputBuffer() as? AVAudioCompressedBuffer
+                  let buffer = stream.mixer.audio.encoder.makeInputBuffer() as? AVAudioCompressedBuffer
             else {
                 return nil
             }

@@ -312,8 +312,8 @@ class RTMPStream: NetStream {
         }
         if mixer.audio.device != nil {
             metadata["audiocodecid"] = FLVAudioCodec.aac.rawValue
-            metadata["audiodatarate"] = mixer.audio.codec.outputSettings.bitRate / 1000
-            if let sampleRate = mixer.audio.codec.inSourceFormat?.mSampleRate {
+            metadata["audiodatarate"] = mixer.audio.encoder.settings.bitRate / 1000
+            if let sampleRate = mixer.audio.encoder.inSourceFormat?.mSampleRate {
                 metadata["audiosamplerate"] = sampleRate
             }
         }

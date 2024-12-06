@@ -57,7 +57,9 @@ open class NetStream: NSObject {
     }
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {
-        mixer.video.videoOrientation = value
+        netStreamLockQueue.async {
+            self.mixer.video.videoOrientation = value
+        }
     }
 
     func setHasAudio(value: Bool) {
@@ -66,16 +68,16 @@ open class NetStream: NSObject {
         }
     }
 
-    var audioSettings: AudioCodecOutputSettings {
+    var audioEncoderSettings: AudioCodecOutputSettings {
         get {
-            mixer.audio.codec.outputSettings
+            mixer.audio.encoder.settings
         }
         set {
-            mixer.audio.codec.outputSettings = newValue
+            mixer.audio.encoder.settings = newValue
         }
     }
 
-    var videoEncodecSettings: VideoCodecSettings {
+    var videoEncoderSettings: VideoCodecSettings {
         get {
             mixer.video.encoder.settings.value
         }
@@ -175,7 +177,7 @@ open class NetStream: NSObject {
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        audioSettings.channelsMap = map
+        audioEncoderSettings.channelsMap = map
         mixer.recorder.setAudioChannelsMap(map: map)
     }
 

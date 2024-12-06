@@ -49,12 +49,12 @@ class AudioCodec {
 
     weak var delegate: (any AudioCodecDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
-    var outputSettings: AudioCodecOutputSettings = .default {
+    var settings: AudioCodecOutputSettings = .default {
         didSet {
             guard let audioConverter else {
                 return
             }
-            outputSettings.apply(audioConverter, oldValue: oldValue)
+            settings.apply(audioConverter, oldValue: oldValue)
         }
     }
 
@@ -76,7 +76,7 @@ class AudioCodec {
         guard isRunning.value else {
             return
         }
-        switch outputSettings.format {
+        switch settings.format {
         case .pcm:
             appendSampleBufferOutputPcm(sampleBuffer, presentationTimeStamp)
         case .aac:
@@ -191,7 +191,7 @@ class AudioCodec {
     }
 
     private func createOutputBuffer(_ audioConverter: AVAudioConverter) -> AVAudioBuffer? {
-        return outputSettings.format.makeAudioBuffer(audioConverter.outputFormat)
+        return settings.format.makeAudioBuffer(audioConverter.outputFormat)
     }
 
     private func makeAudioConverter(_ inSourceFormat: inout AudioStreamBasicDescription)
@@ -199,7 +199,7 @@ class AudioCodec {
     {
         guard
             let inputFormat = Self.makeAudioFormat(&inSourceFormat),
-            let outputFormat = outputSettings.format.makeAudioFormat(inSourceFormat)
+            let outputFormat = settings.format.makeAudioFormat(inSourceFormat)
         else {
             return nil
         }
@@ -212,9 +212,9 @@ class AudioCodec {
         converter.channelMap = makeChannelMap(
             numberOfInputChannels: Int(inputFormat.channelCount),
             numberOfOutputChannels: Int(outputFormat.channelCount),
-            outputToInputChannelsMap: outputSettings.channelsMap
+            outputToInputChannelsMap: settings.channelsMap
         )
-        outputSettings.apply(converter, oldValue: nil)
+        settings.apply(converter, oldValue: nil)
         delegate?.audioCodecOutputFormat(outputFormat)
         return converter
     }

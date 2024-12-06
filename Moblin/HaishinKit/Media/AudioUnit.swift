@@ -214,7 +214,7 @@ private class ReplaceAudio {
 }
 
 final class AudioUnit: NSObject {
-    lazy var codec: AudioCodec = .init(lockQueue: lockQueue)
+    lazy var encoder: AudioCodec = .init(lockQueue: lockQueue)
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
@@ -230,7 +230,7 @@ final class AudioUnit: NSObject {
             guard inputSourceFormat != oldValue else {
                 return
             }
-            codec.inSourceFormat = inputSourceFormat
+            encoder.inSourceFormat = inputSourceFormat
         }
     }
 
@@ -267,18 +267,18 @@ final class AudioUnit: NSObject {
             mixer?.delegate?.mixer(audioSampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.streamBasicDescription?.pointee
-        codec.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+        encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         mixer?.recorder.appendAudio(sampleBuffer)
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
-        codec.delegate = delegate
-        codec.startRunning()
+        encoder.delegate = delegate
+        encoder.startRunning()
     }
 
     func stopEncoding() {
-        codec.stopRunning()
-        codec.delegate = nil
+        encoder.stopRunning()
+        encoder.delegate = nil
         inputSourceFormat = nil
     }
 
