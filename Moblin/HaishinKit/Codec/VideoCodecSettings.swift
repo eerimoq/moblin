@@ -14,7 +14,7 @@ func createDataRateLimits(bitRate: UInt32) -> CFArray {
 }
 
 struct VideoCodecSettings {
-    enum Format: Codable {
+    enum Format {
         case h264
         case hevc
 

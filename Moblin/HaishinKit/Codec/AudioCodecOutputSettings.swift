@@ -1,10 +1,10 @@
 import AVFAudio
 import Foundation
 
-struct AudioCodecOutputSettings: Codable {
+struct AudioCodecOutputSettings {
     static let maximumNumberOfChannels: UInt32 = 2
 
-    enum Format: Codable {
+    enum Format {
         case pcm
         case aac
         case opus
