@@ -85,10 +85,10 @@ class MpegTsWriter {
     private func encode(_ packetId: UInt16,
                         presentationTimeStamp: CMTime,
                         randomAccessIndicator: Bool,
-                        PES: MpegTsPacketizedElementaryStream) -> Data
+                        pes: MpegTsPacketizedElementaryStream) -> Data
     {
         let timestamp = presentationTimeStamp
-        let packets = split(packetId, PES: PES, timestamp: timestamp)
+        let packets = split(packetId, pes: pes, timestamp: timestamp)
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
         let count = packets.count * MpegTsPacket.size
@@ -253,7 +253,7 @@ class MpegTsWriter {
     }
 
     private func split(_ packetId: UInt16,
-                       PES: MpegTsPacketizedElementaryStream,
+                       pes: MpegTsPacketizedElementaryStream,
                        timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
@@ -263,7 +263,7 @@ class MpegTsWriter {
                 programClockReferenceTimestamp = timestamp
             }
         }
-        return PES.arrayOfPackets(packetId, programClockReference)
+        return pes.arrayOfPackets(packetId, programClockReference)
     }
 }
 
@@ -297,12 +297,12 @@ extension MpegTsWriter: AudioCodecDelegate {
         guard let audioConfig else {
             return
         }
-        guard let PES = MpegTsPacketizedElementaryStream(
+        guard let pes = MpegTsPacketizedElementaryStream(
             bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: audioBuffer.byteLength,
             presentationTimeStamp: presentationTimeStamp,
             config: audioConfig,
-            streamID: MpegTsWriter.audioStreamId
+            streamId: MpegTsWriter.audioStreamId
         ) else {
             return
         }
@@ -310,7 +310,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             MpegTsWriter.audioPacketId,
             presentationTimeStamp: presentationTimeStamp,
             randomAccessIndicator: true,
-            PES: PES
+            pes: pes
         ))
     }
 }
@@ -364,25 +364,25 @@ extension MpegTsWriter: VideoCodecDelegate {
             return
         }
         let randomAccessIndicator = sampleBuffer.isSync
-        let PES: MpegTsPacketizedElementaryStream
+        let pes: MpegTsPacketizedElementaryStream
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         if let videoConfig = videoConfig as? MpegTsVideoConfigAvc {
-            PES = MpegTsPacketizedElementaryStream(
+            pes = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
-                streamID: MpegTsWriter.videoStreamId
+                streamId: MpegTsWriter.videoStreamId
             )
         } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
-            PES = MpegTsPacketizedElementaryStream(
+            pes = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
-                streamID: MpegTsWriter.videoStreamId
+                streamId: MpegTsWriter.videoStreamId
             )
         } else {
             return
@@ -391,7 +391,7 @@ extension MpegTsWriter: VideoCodecDelegate {
             MpegTsWriter.videoPacketId,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             randomAccessIndicator: randomAccessIndicator,
-            PES: PES
+            pes: pes
         ))
     }
 }

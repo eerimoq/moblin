@@ -114,7 +114,7 @@ struct MpegTsPacketizedElementaryStream {
     static let untilPacketLengthSize: Int = 6
     static let startCode = Data([0x00, 0x00, 0x01])
     private var startCode = MpegTsPacketizedElementaryStream.startCode
-    private var streamID: UInt8 = 0
+    private var streamId: UInt8 = 0
     private var packetLength: UInt16 = 0
     private var optionalHeader = OptionalHeader()
     var data = Data()
@@ -124,7 +124,7 @@ struct MpegTsPacketizedElementaryStream {
         count: UInt32,
         presentationTimeStamp: CMTime,
         config: MpegTsAudioConfig,
-        streamID: UInt8
+        streamId: UInt8
     ) {
         data.append(contentsOf: config.makeHeader(Int(count)))
         data.append(bytes, count: Int(count))
@@ -136,7 +136,7 @@ struct MpegTsPacketizedElementaryStream {
         } else {
             return nil
         }
-        self.streamID = streamID
+        self.streamId = streamId
     }
 
     init(
@@ -145,7 +145,7 @@ struct MpegTsPacketizedElementaryStream {
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
         config: MpegTsVideoConfigAvc?,
-        streamID: UInt8
+        streamId: UInt8
     ) {
         if let config {
             // 3 NAL units. SEI(9), SPS(7) and PPS(8)
@@ -168,7 +168,7 @@ struct MpegTsPacketizedElementaryStream {
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         }
-        self.streamID = streamID
+        self.streamId = streamId
     }
 
     init(
@@ -177,7 +177,7 @@ struct MpegTsPacketizedElementaryStream {
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
         config: MpegTsVideoConfigHevc?,
-        streamID: UInt8
+        streamId: UInt8
     ) {
         if let config {
             if let nal = config.array[.vps] {
@@ -202,7 +202,7 @@ struct MpegTsPacketizedElementaryStream {
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         }
-        self.streamID = streamID
+        self.streamId = streamId
     }
 
     init(data: Data) throws {
@@ -211,7 +211,7 @@ struct MpegTsPacketizedElementaryStream {
         if startCode != MpegTsPacketizedElementaryStream.startCode {
             throw "Bad PES start code"
         }
-        streamID = try reader.readUInt8()
+        streamId = try reader.readUInt8()
         packetLength = try reader.readUInt16()
         optionalHeader = try OptionalHeader(data: reader.readBytes(reader.bytesAvailable))
         reader.position = MpegTsPacketizedElementaryStream
@@ -233,7 +233,7 @@ struct MpegTsPacketizedElementaryStream {
     private func encode() -> Data {
         ByteArray()
             .writeBytes(startCode)
-            .writeUInt8(streamID)
+            .writeUInt8(streamId)
             .writeUInt16(packetLength)
             .writeBytes(optionalHeader.encode())
             .writeBytes(data)

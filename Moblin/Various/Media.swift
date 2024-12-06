@@ -56,6 +56,9 @@ final class Media: NSObject {
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoCodecSettings()
     private var audioEncoderSettings = AudioCodecOutputSettings()
+    private var multiplier: UInt32 = 0
+    private var updateTickCount: UInt64 = 0
+    private var belaLinesAndActions: ([String], [String])?
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -258,8 +261,6 @@ final class Media: NSObject {
         srtlaClient?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
-    private var updateTickCount: UInt64 = 0
-
     private func is200MsTick() -> Bool {
         return updateTickCount % 10 == 0
     }
@@ -283,8 +284,6 @@ final class Media: NSObject {
             return updateAdaptiveBitrateSrtFight(overlay: overlay)
         }
     }
-
-    private var belaLinesAndActions: ([String], [String])?
 
     private func updateAdaptiveBitrateSrtBela(overlay: Bool) -> ([String], [String])? {
         let stats = srtConnection.performanceData
@@ -698,8 +697,6 @@ final class Media: NSObject {
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
         netStream?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
-
-    private var multiplier: UInt32 = 0
 
     private func setVideoEncoderSettings() {
         netStream?.setVideoEncoderSettings(settings: videoEncoderSettings)
