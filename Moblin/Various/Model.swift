@@ -379,6 +379,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
     private var newChatPosts: Deque<ChatPost> = []
+    private var chatBotMessages: Deque<ChatBotMessage> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
     private var chatPostsRatePerMinute = 0.0
@@ -2281,6 +2282,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateAudioLevel()
             }
             self.updateChat()
+            self.executeChatBotMessage()
             if self.isWatchLocal() {
                 self.trySendNextChatPostToWatch()
             }
@@ -4112,6 +4114,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatSpeedTicks = 0
         chatPosts = []
         newChatPosts = []
+        chatBotMessages = []
         numberOfChatPostsPerTick = 0
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
@@ -4578,6 +4581,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         })
     }
 
+    private func executeChatBotMessage() {
+        guard let message = chatBotMessages.popFirst() else {
+            return
+        }
+        handleChatBotMessage(message: message)
+    }
+
     private func handleChatBotMessage(message: ChatBotMessage) {
         guard message.segments.count > 1 else {
             return
@@ -4925,14 +4935,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if database.chat.botEnabled!, segments.first?.text?.trim().lowercased() == "!moblin" {
-            handleChatBotMessage(message: ChatBotMessage(
-                platform: platform,
-                user: user,
-                isModerator: isModerator,
-                isSubscriber: isSubscriber,
-                userId: userId,
-                segments: segments
-            ))
+            if chatBotMessages.count < 25 || isModerator {
+                chatBotMessages.append(ChatBotMessage(
+                    platform: platform,
+                    user: user,
+                    isModerator: isModerator,
+                    isSubscriber: isSubscriber,
+                    userId: userId,
+                    segments: segments
+                ))
+            }
         }
         if pollEnabled {
             handlePollVote(vote: segments.first?.text?.trim())

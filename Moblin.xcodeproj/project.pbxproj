@@ -2480,7 +2480,6 @@
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
-				03C357302D048FCD00B8B29F /* MusicIdentifier.swift */,
 				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
 				03D37EDF2CE08921006D14C2 /* UrlSession.swift */,
 				0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */,
@@ -2499,10 +2498,11 @@
 				031A43862C33B7A3007CF059 /* MediaPlayerStorage.swift */,
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
+				03C357302D048FCD00B8B29F /* MusicIdentifier.swift */,
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
-				03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */,
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
+				03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */,
 				03510DDB2C7661A400FD3A27 /* SpeechToText.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */,
