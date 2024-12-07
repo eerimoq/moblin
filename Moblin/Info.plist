@@ -17,8 +17,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>IRLTOOLKIT_URL</key>
-	<string>$(IRLTOOLKIT_URL)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>

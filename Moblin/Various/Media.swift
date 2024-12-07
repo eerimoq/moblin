@@ -52,7 +52,6 @@ final class Media: NSObject {
     var onNoTorch: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
-    private var irlToolkitFetcher: IrlToolkitFetcher?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoCodecSettings()
     private var audioEncoderSettings = AudioCodecOutputSettings()
@@ -107,7 +106,7 @@ final class Media: NSObject {
             ristStream = nil
             irlStream = nil
             netStream = rtmpStream
-        case .srt, .irltk:
+        case .srt:
             srtStream = SRTStream(srtConnection)
             rtmpStream = nil
             ristStream = nil
@@ -616,41 +615,6 @@ final class Media: NSObject {
         irlStream?.stop()
     }
 
-    func irlToolkitStartStream(
-        url: String,
-        reconnectTime: Double,
-        targetBitrate: UInt32,
-        adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
-        latency: Int32,
-        overheadBandwidth: Int32,
-        maximumBandwidthFollowInput: Bool,
-        mpegtsPacketsPerPacket: Int,
-        networkInterfaceNames: [SettingsNetworkInterfaceName],
-        connectionPriorities: SettingsStreamSrtConnectionPriorities
-    ) {
-        srtInitStream(
-            isSrtla: true,
-            targetBitrate: targetBitrate,
-            adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm,
-            latency: latency,
-            overheadBandwidth: overheadBandwidth,
-            maximumBandwidthFollowInput: maximumBandwidthFollowInput,
-            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-            networkInterfaceNames: networkInterfaceNames,
-            connectionPriorities: connectionPriorities
-        )
-        irlToolkitFetcher?.stop()
-        irlToolkitFetcher = IrlToolkitFetcher(url: url, timeout: reconnectTime)
-        irlToolkitFetcher?.delegate = self
-        irlToolkitFetcher?.start()
-    }
-
-    func irlToolkitStopStream() {
-        irlToolkitFetcher?.stop()
-        irlToolkitFetcher = nil
-        srtStopStream()
-    }
-
     func setTorch(on: Bool) {
         netStream?.setTorch(value: on)
     }
@@ -1033,16 +997,5 @@ extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         videoEncoderSettings.bitRate = bitrate
         commitVideoEncoderSettings()
-    }
-}
-
-extension Media: IrlToolkitFetcherDelegate {
-    func irlToolkitFetcherSuccess(url: String, reconnectTime: Double) {
-        srtUrl = url
-        srtlaClient?.start(uri: url, timeout: reconnectTime)
-    }
-
-    func irlToolkitFetcherError(message: String) {
-        onSrtDisconnected(message)
     }
 }

@@ -90,7 +90,6 @@ enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
     case rist = "RIST"
-    case irltk = "IRLToolkit"
     case irl = "IRL"
 
     public init(from decoder: Decoder) throws {
@@ -512,8 +511,6 @@ class SettingsStream: Codable, Identifiable, Equatable {
             return .srt
         case "rist":
             return .rist
-        case "irltk":
-            return .irltk
         case "irl":
             return .irl
         default:

@@ -101,12 +101,6 @@ private struct NetworkSetupView: View {
             } header: {
                 Text("Direct")
             }
-        } else if model.wizardNetworkSetup == .irlToolkit {
-            Section {
-                NetworkSetupDirectView()
-            } header: {
-                Text("Free IRLToolkit bonding")
-            }
         }
     }
 }

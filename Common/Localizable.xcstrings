@@ -22368,6 +22368,7 @@
       }
     },
     "Best possible stability. Uses bonding. Free third-party service provided as a courtesy by IRLToolkit. Not to be used if you pay for IRLToolkit." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -51392,6 +51393,7 @@
       }
     },
     "Free IRLToolkit bonding" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -63115,6 +63117,7 @@
       }
     },
     "Malformed IRLToolkit URL" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

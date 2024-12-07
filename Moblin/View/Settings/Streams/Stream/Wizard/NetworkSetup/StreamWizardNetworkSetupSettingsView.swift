@@ -38,27 +38,6 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 } footer: {
                     Text("Best possible stability. Uses bonding. Paid third-party service.")
                 }
-                if false {
-                    Section {
-                        NavigationLink {
-                            StreamWizardNetworkSetupIrlToolkitSettingsView()
-                        } label: {
-                            HStack {
-                                Text("Moblin")
-                                Image(systemName: "arrow.right")
-                                Text("Free IRLToolkit bonding")
-                                Image(systemName: "arrow.right")
-                                Text(platform)
-                            }
-                        }
-                    } footer: {
-                        Text("""
-                        Best possible stability. Uses bonding. Free third-party service \
-                        provided as a courtesy by IRLToolkit. Not to be used if you pay \
-                        for IRLToolkit.
-                        """)
-                    }
-                }
                 Section {
                     NavigationLink {
                         StreamWizardNetworkSetupDirectSettingsView()

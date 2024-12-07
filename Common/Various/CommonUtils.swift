@@ -90,13 +90,6 @@ func isValidRistUrl(url: String) -> String? {
     return nil
 }
 
-private func isValidIrlToolkitUrl(url: String) -> String? {
-    guard URL(string: url) != nil else {
-        return String(localized: "Malformed IRLToolkit URL")
-    }
-    return nil
-}
-
 private func isValidIrlUrl(url: String) -> String? {
     guard URL(string: url) != nil else {
         return String(localized: "Malformed IRL URL")
@@ -119,11 +112,9 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
     }
-    if url.scheme != "irltk" {
         if url.host() == nil {
             return String(localized: "Host missing")
         }
-    }
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")
     }
@@ -151,10 +142,6 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
         }
     case "rist":
         if let message = isValidRistUrl(url: value) {
-            return message
-        }
-    case "irltk":
-        if let message = isValidIrlToolkitUrl(url: value) {
             return message
         }
     case "irl":
