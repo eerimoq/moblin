@@ -112,9 +112,9 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
     }
-        if url.host() == nil {
-            return String(localized: "Host missing")
-        }
+    if url.host() == nil {
+        return String(localized: "Host missing")
+    }
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")
     }
