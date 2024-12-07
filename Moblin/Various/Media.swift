@@ -682,7 +682,7 @@ final class Media: NSObject {
             width: Int32(output.width),
             height: Int32(output.height)
         )
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 
     func getVideoSize() -> CGSize {
@@ -698,11 +698,11 @@ final class Media: NSObject {
         netStream?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
-    private func setVideoEncoderSettings() {
+    private func commitVideoEncoderSettings() {
         netStream?.setVideoEncoderSettings(settings: videoEncoderSettings)
     }
 
-    private func setAudioEncoderSettings() {
+    private func commitAudioEncoderSettings() {
         netStream?.setAudioEncoderSettings(settings: audioEncoderSettings)
     }
 
@@ -710,7 +710,7 @@ final class Media: NSObject {
         multiplier ^= 1
         let bitRate = getVideoStreamBitrate(bitrate: bitrate)
         videoEncoderSettings.bitRate = bitRate + multiplier * (bitRate / 10)
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
@@ -728,43 +728,43 @@ final class Media: NSObject {
             adaptiveBitrate.setTargetBitrate(bitrate: bitrate)
         } else {
             videoEncoderSettings.bitRate = bitrate
-            setVideoEncoderSettings()
+            commitVideoEncoderSettings()
         }
     }
 
     func setVideoProfile(profile: CFString) {
         videoEncoderSettings.profileLevel = profile as String
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 
     func setAllowFrameReordering(value: Bool) {
         videoEncoderSettings.allowFrameReordering = value
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 
     func setStreamKeyFrameInterval(seconds: Int32) {
         videoEncoderSettings.maxKeyFrameIntervalDuration = seconds
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 
     func setStreamAdaptiveResolution(value: Bool) {
         videoEncoderSettings.adaptiveResolution = value
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 
     func setAudioStreamBitrate(bitrate: Int) {
         audioEncoderSettings.bitRate = bitrate
-        setAudioEncoderSettings()
+        commitAudioEncoderSettings()
     }
 
     func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
         audioEncoderSettings.format = format
-        setAudioEncoderSettings()
+        commitAudioEncoderSettings()
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
         audioEncoderSettings.channelsMap = channelsMap
-        setAudioEncoderSettings()
+        commitAudioEncoderSettings()
         netStream?.setAudioChannelsMap(map: channelsMap)
     }
 
@@ -1025,7 +1025,7 @@ extension Media: SrtlaDelegate {
 extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         videoEncoderSettings.bitRate = bitrate
-        setVideoEncoderSettings()
+        commitVideoEncoderSettings()
     }
 }
 

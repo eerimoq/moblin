@@ -87,7 +87,7 @@ class MpegTsWriter {
                         _ randomAccessIndicator: Bool,
                         _ packetizedElementaryStream: MpegTsPacketizedElementaryStream) -> Data
     {
-        let packets = split(packetId,  packetizedElementaryStream,  presentationTimeStamp)
+        let packets = split(packetId, packetizedElementaryStream, presentationTimeStamp)
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(presentationTimeStamp)
         let count = packets.count * MpegTsPacket.size
