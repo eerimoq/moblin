@@ -2220,6 +2220,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setupPeriodicTimers() {
+        Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
+            self.updateAdaptiveBitrate()
+        })
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+            let monotonicNow = ContinuousClock.now
+            if self.database.show.audioBar {
+                self.updateAudioLevel()
+            }
+            self.updateChat()
+            self.executeChatBotMessage()
+            if self.isWatchLocal() {
+                self.trySendNextChatPostToWatch()
+            }
+            if let lastAttachCompletedTime = self.lastAttachCompletedTime,
+               lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
+            {
+                self.updateTorch()
+                self.lastAttachCompletedTime = nil
+            }
+            self.speechToText.tick(now: monotonicNow)
+        })
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
             let monotonicNow = ContinuousClock.now
@@ -2252,6 +2273,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
         })
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
+            self.teslaGetDriveState()
+        })
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
+            self.updateRemoteControlAssistantStatus()
+            if self.isWatchLocal() {
+                self.sendThermalStateToWatch(thermalState: self.thermalState)
+            }
+            self.teslaGetMediaState()
+        })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
             self.media.logStatistics()
@@ -2264,38 +2295,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
-        })
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
-            self.teslaGetDriveState()
-        })
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
-            self.updateRemoteControlAssistantStatus()
-            if self.isWatchLocal() {
-                self.sendThermalStateToWatch(thermalState: self.thermalState)
-            }
             self.teslaGetChargeState()
-            self.teslaGetMediaState()
-        })
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            let monotonicNow = ContinuousClock.now
-            if self.database.show.audioBar {
-                self.updateAudioLevel()
-            }
-            self.updateChat()
-            self.executeChatBotMessage()
-            if self.isWatchLocal() {
-                self.trySendNextChatPostToWatch()
-            }
-            if let lastAttachCompletedTime = self.lastAttachCompletedTime,
-               lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
-            {
-                self.updateTorch()
-                self.lastAttachCompletedTime = nil
-            }
-            self.speechToText.tick(now: monotonicNow)
-        })
-        Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true, block: { _ in
-            self.updateAdaptiveBitrate()
         })
     }
 
