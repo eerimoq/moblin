@@ -258,8 +258,25 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.getVehicleData.getChargeState = .init()
         executeCarServerAction(action) { response in
-            let chargeState = response.vehicleData.chargeState
-            onCompleted(chargeState)
+            onCompleted(response.vehicleData.chargeState)
+        }
+    }
+
+    func getDriveState(onCompleted: @escaping (CarServer_DriveState) -> Void) {
+        var action = CarServer_Action()
+        action.vehicleAction.getVehicleData.getDriveState = .init()
+        executeCarServerAction(action) { response in
+            logger.info("Tesla response \(response)")
+            onCompleted(response.vehicleData.driveState)
+        }
+    }
+
+    func getMediaState(onCompleted: @escaping (CarServer_MediaState) -> Void) {
+        var action = CarServer_Action()
+        action.vehicleAction.getVehicleData.getMediaState = .init()
+        executeCarServerAction(action) { response in
+            logger.info("Tesla response \(response)")
+            onCompleted(response.vehicleData.mediaState)
         }
     }
 

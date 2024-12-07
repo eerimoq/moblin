@@ -1393,6 +1393,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func teslaGetDriveState() {
+        teslaVehicle?.getDriveState { state in
+            logger.info("Tesla drive state \(state)")
+        }
+    }
+
+    func teslaGetMediaState() {
+        teslaVehicle?.getMediaState { state in
+            logger.info("Tesla media state \(state)")
+        }
+    }
+
     func teslaOpenTrunk() {
         teslaVehicle?.openTrunk()
     }
