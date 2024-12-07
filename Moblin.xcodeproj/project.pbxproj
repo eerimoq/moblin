@@ -401,6 +401,7 @@
 		03C3572A2D03776D00B8B29F /* MultiTrackVideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */; };
 		03C3572D2D0416CD00B8B29F /* AppleGPUInfo in Frameworks */ = {isa = PBXBuildFile; productRef = 03C3572C2D0416CD00B8B29F /* AppleGPUInfo */; };
 		03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3572E2D041A1F00B8B29F /* TwitchMultiTrack.swift */; };
+		03C357312D048FD800B8B29F /* MusicIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357302D048FCD00B8B29F /* MusicIdentifier.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -956,6 +957,7 @@
 		03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeySettingsView.swift; sourceTree = "<group>"; };
 		03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiTrackVideoEncoder.swift; sourceTree = "<group>"; };
 		03C3572E2D041A1F00B8B29F /* TwitchMultiTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchMultiTrack.swift; sourceTree = "<group>"; };
+		03C357302D048FCD00B8B29F /* MusicIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicIdentifier.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -2478,6 +2480,7 @@
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				03C357302D048FCD00B8B29F /* MusicIdentifier.swift */,
 				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
 				03D37EDF2CE08921006D14C2 /* UrlSession.swift */,
 				0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */,
@@ -3154,6 +3157,7 @@
 				03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */,
 				03DC9DA92C4C3BB5005E2104 /* DjiDeviceModel.swift in Sources */,
 				03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */,
+				03C357312D048FD800B8B29F /* MusicIdentifier.swift in Sources */,
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
