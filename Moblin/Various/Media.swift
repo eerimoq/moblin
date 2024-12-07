@@ -558,10 +558,10 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
-    func multiTrackRtmpStartStream(_ url: String, _ videoEncoderSettings: [VideoCodecSettings]) {
-        logger.info("xxx URL \(url)")
+    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoCodecSettings]) {
+        logger.info("stream: Multi track URL \(url)")
         for videoEncoderSetting in videoEncoderSettings {
-            logger.info("xxx \(videoEncoderSetting)")
+            logger.info("stream: Multi track video encoder config \(videoEncoderSetting)")
         }
     }
 

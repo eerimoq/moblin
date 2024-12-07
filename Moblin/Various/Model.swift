@@ -3586,7 +3586,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         else {
             return
         }
-        media.multiTrackRtmpStartStream(url, videoEncoderSettings)
+        media.rtmpMultiTrackStartStream(url, videoEncoderSettings)
         updateSpeed(now: .now)
     }
 
