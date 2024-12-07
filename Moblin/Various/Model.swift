@@ -3039,6 +3039,35 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let weather = weatherManager.getLatestWeather()
         let placemark = geographyManager.getLatestPlacemark()
+        let stats = TextEffectStats(
+            timestamp: timestamp,
+            bitrateAndTotal: speedAndTotal,
+            date: now,
+            debugOverlayLines: debugLines,
+            speed: format(speed: max(location?.speed ?? 0, 0)),
+            altitude: format(altitude: location?.altitude ?? 0),
+            distance: getDistance(),
+            conditions: weather?.currentWeather.symbolName,
+            temperature: weather?.currentWeather.temperature,
+            country: placemark?.country ?? "",
+            countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
+            city: placemark?.locality,
+            muted: isMuteOn,
+            heartRate: workoutHeartRate,
+            activeEnergyBurned: workoutActiveEnergyBurned,
+            workoutDistance: workoutDistance,
+            power: workoutPower,
+            stepCount: workoutStepCount,
+            teslaBatteryLevel: textEffectTeslaBatteryLevel(),
+            teslaDrive: textEffectTeslaDrive(),
+            teslaMedia: textEffectTeslaMedia()
+        )
+        for textEffect in textEffects.values {
+            textEffect.updateStats(stats: stats)
+        }
+    }
+
+    private func textEffectTeslaBatteryLevel() -> String {
         var teslaBatteryLevel = "-"
         if teslaChargeState.optionalBatteryLevel != nil {
             teslaBatteryLevel = "\(teslaChargeState.batteryLevel) %"
@@ -3049,6 +3078,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 teslaBatteryLevel += " \(teslaChargeState.minutesToChargeLimit) minutes left"
             }
         }
+        return teslaBatteryLevel
+    }
+
+    private func textEffectTeslaDrive() -> String {
         var teslaDrive = "-"
         if let shift = teslaDriveState.shiftState.type {
             switch shift {
@@ -3074,6 +3107,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
+        return teslaDrive
+    }
+
+    private func textEffectTeslaMedia() -> String {
         var teslaMedia = "-"
         if case let .nowPlayingArtist(artist) = teslaMediaState.optionalNowPlayingArtist,
            case let .nowPlayingTitle(title) = teslaMediaState.optionalNowPlayingTitle
@@ -3084,32 +3121,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 teslaMedia = "\(artist) - \(title)"
             }
         }
-        let stats = TextEffectStats(
-            timestamp: timestamp,
-            bitrateAndTotal: speedAndTotal,
-            date: now,
-            debugOverlayLines: debugLines,
-            speed: format(speed: max(location?.speed ?? 0, 0)),
-            altitude: format(altitude: location?.altitude ?? 0),
-            distance: getDistance(),
-            conditions: weather?.currentWeather.symbolName,
-            temperature: weather?.currentWeather.temperature,
-            country: placemark?.country ?? "",
-            countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
-            city: placemark?.locality,
-            muted: isMuteOn,
-            heartRate: workoutHeartRate,
-            activeEnergyBurned: workoutActiveEnergyBurned,
-            workoutDistance: workoutDistance,
-            power: workoutPower,
-            stepCount: workoutStepCount,
-            teslaBatteryLevel: teslaBatteryLevel,
-            teslaDrive: teslaDrive,
-            teslaMedia: teslaMedia
-        )
-        for textEffect in textEffects.values {
-            textEffect.updateStats(stats: stats)
-        }
+        return teslaMedia
     }
 
     private func forceUpdateTextEffects() {
