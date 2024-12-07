@@ -400,6 +400,8 @@
 		03C3560D2CFC90D200B8B29F /* KeyboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */; };
 		03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */; };
 		03C3572A2D03776D00B8B29F /* MultiTrackVideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */; };
+		03C3572D2D0416CD00B8B29F /* AppleGPUInfo in Frameworks */ = {isa = PBXBuildFile; productRef = 03C3572C2D0416CD00B8B29F /* AppleGPUInfo */; };
+		03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3572E2D041A1F00B8B29F /* TwitchMultiTrack.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -956,6 +958,7 @@
 		03C3560C2CFC90CC00B8B29F /* KeyboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSettingsView.swift; sourceTree = "<group>"; };
 		03C3560E2CFC90DD00B8B29F /* KeyboardKeySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeySettingsView.swift; sourceTree = "<group>"; };
 		03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiTrackVideoEncoder.swift; sourceTree = "<group>"; };
+		03C3572E2D041A1F00B8B29F /* TwitchMultiTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchMultiTrack.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -1032,6 +1035,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03C3572D2D0416CD00B8B29F /* AppleGPUInfo in Frameworks */,
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
 				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
@@ -1916,6 +1920,7 @@
 		0379BB712AA4BFA500B718B6 /* Twitch */ = {
 			isa = PBXGroup;
 			children = (
+				03C3572E2D041A1F00B8B29F /* TwitchMultiTrack.swift */,
 				035F24412CB76830008288C7 /* TwitchCommon.swift */,
 				031E9FC02C5B1D87009FF4D8 /* TwitchApi.swift */,
 				031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */,
@@ -2765,6 +2770,7 @@
 				033BEAC32C0FCC0B005F4E06 /* NWWebSocket */,
 				03F465EB2C441D1400630708 /* CrcSwift */,
 				0318D3692CF51D6900E12F3B /* SwiftProtobuf */,
+				03C3572C2D0416CD00B8B29F /* AppleGPUInfo */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2880,6 +2886,7 @@
 				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
+				03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -3142,6 +3149,7 @@
 				037FE0302C594CE40067B5AC /* AlertsEffect.swift in Sources */,
 				0379E6732C8985710021AB59 /* CatPrinterScanner.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
+				03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */,
 				0359F8FC2BD3DA61005BFDA8 /* SRTSocket.swift in Sources */,
 				03B507A72C88B8F6003CDEDF /* CatPrinter.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */,
@@ -4060,6 +4068,14 @@
 				minimumVersion = 0.14.0;
 			};
 		};
+		03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/philipturner/applegpuinfo";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		03D151AD2BFA73C100D29D8E /* XCRemoteSwiftPackageReference "MetalPetal" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/MetalPetal";
@@ -4148,6 +4164,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
 			productName = SDWebImageWebPCoder;
+		};
+		03C3572C2D0416CD00B8B29F /* AppleGPUInfo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */;
+			productName = AppleGPUInfo;
 		};
 		03D151AE2BFA73C100D29D8E /* MetalPetal */ = {
 			isa = XCSwiftPackageProductDependency;

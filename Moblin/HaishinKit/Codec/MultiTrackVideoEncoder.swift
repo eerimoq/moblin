@@ -1,5 +1,6 @@
 import VideoToolbox
 
+// periphery:ignore
 class MultiTrackVideoEncoder {
     private let encoders: [VideoCodec]
 
@@ -24,6 +25,7 @@ class MultiTrackVideoEncoder {
     }
 }
 
+// periphery:ignore
 extension MultiTrackVideoEncoder: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         logger.info("multi-track-video-encoder: Format for \(codec) \(formatDescription)")

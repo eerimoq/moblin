@@ -61,6 +61,25 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
             return "240p"
         }
     }
+
+    func dimensions() -> CMVideoDimensions {
+        switch self {
+        case .r3840x2160:
+            return .init(width: 3840, height: 2160)
+        case .r2560x1440:
+            return .init(width: 2560, height: 1440)
+        case .r1920x1080:
+            return .init(width: 1920, height: 1080)
+        case .r1280x720:
+            return .init(width: 1280, height: 720)
+        case .r854x480:
+            return .init(width: 854, height: 480)
+        case .r640x360:
+            return .init(width: 640, height: 360)
+        case .r426x240:
+            return .init(width: 426, height: 240)
+        }
+    }
 }
 
 let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
@@ -421,6 +440,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var portrait: Bool? = false
     var backgroundStreaming: Bool? = false
     var estimatedViewerDelay: Float? = 8.0
+    var twitchMultiTrackEnabled: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -4263,6 +4283,10 @@ final class Settings {
         }
         if realDatabase.keyboard == nil {
             realDatabase.keyboard = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.twitchMultiTrackEnabled == nil {
+            stream.twitchMultiTrackEnabled = false
             store()
         }
     }

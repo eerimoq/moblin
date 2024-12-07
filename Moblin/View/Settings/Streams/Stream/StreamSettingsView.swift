@@ -131,7 +131,7 @@ struct StreamSettingsView: View {
                     Text("Emotes")
                 }
             } header: {
-                Text("Chat and viewers")
+                Text("Platforms")
             }
             Section {
                 NavigationLink {

@@ -1,5 +1,6 @@
 import AlertToast
 import AppIntents
+import AppleGPUInfo
 import Collections
 import Combine
 import CoreMotion
@@ -3536,9 +3537,90 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         UIApplication.shared.isIdleTimerDisabled = (showingRemoteControl || isLive)
     }
 
-    private func startNetStream(reconnect _: Bool = false) {
+    private func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
+        if stream.twitchMultiTrackEnabled! {
+            startNetStreamMultiTrack()
+        } else {
+            startNetStreamSingleTrack()
+        }
+    }
+
+    private func startNetStreamMultiTrack() {
+        twitchMultiTrackGetClientConfiguration(
+            url: stream.url,
+            dimensions: stream.resolution.dimensions(),
+            fps: stream.fps
+        ) { response in
+            DispatchQueue.main.async {
+                self.startNetStreamMultiTrackCompletion(response: response)
+            }
+        }
+    }
+
+    private func startNetStreamMultiTrackCompletion(response: TwitchMultiTrackGetClientConfigurationResponse?) {
+        guard let response else {
+            return
+        }
+        guard let ingestEndpoint = response.ingest_endpoints.first(where: { $0.proto == "RTMP" }) else {
+            return
+        }
+        let url = ingestEndpoint.url_template.replacingOccurrences(
+            of: "{stream_key}",
+            with: ingestEndpoint.authentication
+        )
+        guard let videoEncoderSettings = createMultiTrackVideoCodecSettings(encoderConfigurations: response
+            .encoder_configurations)
+        else {
+            return
+        }
+        media.multiTrackRtmpStartStream(url, videoEncoderSettings)
+        updateSpeed(now: .now)
+    }
+
+    private func createMultiTrackVideoCodecSettings(
+        encoderConfigurations: [TwitchMultiTrackGetClientConfigurationEncoderContiguration]
+    )
+        -> [VideoCodecSettings]?
+    {
+        var videoEncoderSettings: [VideoCodecSettings] = []
+        for encoderConfiguration in encoderConfigurations {
+            var settings = VideoCodecSettings()
+            let bitrate = encoderConfiguration.settings.bitrate
+            guard bitrate >= 100, bitrate <= 50000 else {
+                return nil
+            }
+            settings.bitRate = bitrate * 1000
+            let width = encoderConfiguration.width
+            let height = encoderConfiguration.height
+            guard width >= 1, width <= 5000 else {
+                return nil
+            }
+            guard height >= 1, height <= 5000 else {
+                return nil
+            }
+            settings.videoSize = CMVideoDimensions(width: width, height: height)
+            settings.maxKeyFrameIntervalDuration = encoderConfiguration.settings.keyint_sec
+            settings.allowFrameReordering = encoderConfiguration.settings.bframes
+            let codec = encoderConfiguration.type
+            let profile = encoderConfiguration.settings.profile
+            if codec.hasSuffix("avc"), profile == "main" {
+                settings.profileLevel = kVTProfileLevel_H264_Main_AutoLevel as String
+            } else if codec.hasSuffix("avc"), profile == "high" {
+                settings.profileLevel = kVTProfileLevel_H264_High_AutoLevel as String
+            } else if codec.hasSuffix("hevc"), profile == "main" {
+                settings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
+            } else {
+                logger.error("Unsupported multi track codec and profile combination: \(codec) \(profile)")
+                return nil
+            }
+            videoEncoderSettings.append(settings)
+        }
+        return videoEncoderSettings
+    }
+
+    private func startNetStreamSingleTrack() {
         switch stream.getProtocol() {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
@@ -6127,7 +6209,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
                 logger.info("stream: Reconnecting")
-                self.startNetStream(reconnect: true)
+                self.startNetStream()
             }
     }
 

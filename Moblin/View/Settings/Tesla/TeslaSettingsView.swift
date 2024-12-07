@@ -32,11 +32,10 @@ struct TeslaSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "VIN"),
                     value: tesla.vin,
-                    onSubmit: onSubmitVin,
-                    footers: [
-                        String(localized: "Scroll down in your Tesla app and copy it."),
-                    ]
+                    onSubmit: onSubmitVin
                 )
+            } footer: {
+                Text("Scroll down in your Tesla app and copy it.")
             }
             Section {
                 Button {

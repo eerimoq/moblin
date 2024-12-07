@@ -86,6 +86,15 @@ struct StreamTwitchSettingsView: View {
                     )
                 }
             }
+            if false {
+                Section {
+                    Toggle("Multi track", isOn: Binding(get: {
+                        stream.twitchMultiTrackEnabled!
+                    }, set: { value in
+                        stream.twitchMultiTrackEnabled = value
+                    }))
+                }
+            }
             if loggedIn {
                 Section {
                     NavigationLink {

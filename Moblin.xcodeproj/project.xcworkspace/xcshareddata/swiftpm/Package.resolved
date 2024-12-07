@@ -1,5 +1,5 @@
 {
-  "originHash" : "fad398f3a78941a487da6d77ef796636ec0d671119c4df12dc8106026efb889d",
+  "originHash" : "f4a4826bdf769ab1db89ff8d8fd4305d3a91e183dee3868b74f30bacd3aebcc0",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "b39252eacd159904afd7d718bba0afabb87f2f2f",
         "version" : "1.3.9"
+      }
+    },
+    {
+      "identity" : "applegpuinfo",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/philipturner/applegpuinfo",
+      "state" : {
+        "branch" : "main",
+        "revision" : "24226431095c614c88de686ea5afcc99d7cb31f5"
       }
     },
     {
@@ -26,6 +35,15 @@
       "state" : {
         "revision" : "bb2fff7fb79815fad0528da71c9168d570bfc76c",
         "version" : "0.0.3"
+      }
+    },
+    {
+      "identity" : "devicekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/devicekit/DeviceKit",
+      "state" : {
+        "branch" : "master",
+        "revision" : "d3bb693a66cbcf5e7c124af31684493d2e7b6bf2"
       }
     },
     {
@@ -107,6 +125,15 @@
       "state" : {
         "revision" : "f534cfe830a7807ecc3d0332127a502426cfa067",
         "version" : "0.14.6"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "branch" : "main",
+        "revision" : "41d58ffe702cfe7b00b2c4c6a6611d9d25a0adc1"
       }
     },
     {

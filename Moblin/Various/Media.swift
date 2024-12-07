@@ -559,6 +559,13 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
+    func multiTrackRtmpStartStream(_ url: String, _ videoEncoderSettings: [VideoCodecSettings]) {
+        logger.info("xxx URL \(url)")
+        for videoEncoderSetting in videoEncoderSettings {
+            logger.info("xxx \(videoEncoderSetting)")
+        }
+    }
+
     @objc
     private func rtmpStatusHandler(_ notification: Notification) {
         let e = Event.from(notification)
