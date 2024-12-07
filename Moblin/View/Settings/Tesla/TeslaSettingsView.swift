@@ -139,26 +139,6 @@ struct TeslaSettingsView: View {
                 }
                 .disabled(!model.teslaVehicleInfotainmentConnected)
             }
-            Section {
-                Button {
-                    model.teslaGetDriveState()
-                } label: {
-                    HCenter {
-                        Text("Get drive state")
-                    }
-                }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
-            }
-            Section {
-                Button {
-                    model.teslaGetMediaState()
-                } label: {
-                    HCenter {
-                        Text("Get media state")
-                    }
-                }
-                .disabled(!model.teslaVehicleInfotainmentConnected)
-            }
         }
         .navigationTitle("Tesla")
     }
