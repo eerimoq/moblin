@@ -579,6 +579,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var teslaVehicle: TeslaVehicle?
     private var teslaChargeState = CarServer_ChargeState()
+    private var teslaDriveState = CarServer_DriveState()
+    private var teslaMediaState = CarServer_MediaState()
     @Published var teslaVehicleState: TeslaVehicleState?
     @Published var teslaVehicleVehicleSecurityConnected = false
     @Published var teslaVehicleInfotainmentConnected = false
@@ -1370,6 +1372,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaVehicle = nil
         teslaVehicleState = nil
         teslaChargeState = .init()
+        teslaDriveState = .init()
+        teslaMediaState = .init()
         teslaVehicleVehicleSecurityConnected = false
         teslaVehicleInfotainmentConnected = false
     }
@@ -1395,13 +1399,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func teslaGetDriveState() {
         teslaVehicle?.getDriveState { state in
-            logger.info("Tesla drive state \(state)")
+            self.teslaDriveState = state
         }
     }
 
     func teslaGetMediaState() {
         teslaVehicle?.getMediaState { state in
-            logger.info("Tesla media state \(state)")
+            self.teslaMediaState = state
         }
     }
 
@@ -1411,10 +1415,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func teslaCloseTrunk() {
         teslaVehicle?.closeTrunk()
-    }
-
-    private func updateTeslaVehicleState() {
-        teslaGetChargeState()
     }
 
     func mediaNextTrack() {
@@ -2263,13 +2263,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
-            self.updateTeslaVehicleState()
+        })
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
+            self.teslaGetDriveState()
         })
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
             self.updateRemoteControlAssistantStatus()
             if self.isWatchLocal() {
                 self.sendThermalStateToWatch(thermalState: self.thermalState)
             }
+            self.teslaGetChargeState()
+            self.teslaGetMediaState()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             let monotonicNow = ContinuousClock.now
@@ -3045,6 +3049,41 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 teslaBatteryLevel += " \(teslaChargeState.minutesToChargeLimit) minutes left"
             }
         }
+        var teslaDrive = "-"
+        if let shift = teslaDriveState.shiftState.type {
+            switch shift {
+            case .invalid:
+                teslaDrive = "-"
+            case .p:
+                teslaDrive = "P"
+            case .r:
+                teslaDrive = "R"
+            case .n:
+                teslaDrive = "N"
+            case .d:
+                teslaDrive = "D"
+            case .sna:
+                teslaDrive = "SNA"
+            }
+            if teslaDrive != "P" {
+                if case let .speed(speed) = teslaDriveState.optionalSpeed {
+                    teslaDrive += " \(speed) mph"
+                }
+                if case let .power(power) = teslaDriveState.optionalPower {
+                    teslaDrive += " \(Float(power) / 10.0) kW"
+                }
+            }
+        }
+        var teslaMedia = "-"
+        if case let .nowPlayingArtist(artist) = teslaMediaState.optionalNowPlayingArtist,
+           case let .nowPlayingTitle(title) = teslaMediaState.optionalNowPlayingTitle
+        {
+            if artist.isEmpty {
+                teslaMedia = title
+            } else {
+                teslaMedia = "\(artist) - \(title)"
+            }
+        }
         let stats = TextEffectStats(
             timestamp: timestamp,
             bitrateAndTotal: speedAndTotal,
@@ -3064,7 +3103,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             workoutDistance: workoutDistance,
             power: workoutPower,
             stepCount: workoutStepCount,
-            teslaBatteryLevel: teslaBatteryLevel
+            teslaBatteryLevel: teslaBatteryLevel,
+            teslaDrive: teslaDrive,
+            teslaMedia: teslaMedia
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)

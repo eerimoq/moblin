@@ -266,7 +266,6 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.getVehicleData.getDriveState = .init()
         executeCarServerAction(action) { response in
-            logger.info("Tesla response \(response)")
             onCompleted(response.vehicleData.driveState)
         }
     }
@@ -275,7 +274,6 @@ class TeslaVehicle: NSObject {
         var action = CarServer_Action()
         action.vehicleAction.getVehicleData.getMediaState = .init()
         executeCarServerAction(action) { response in
-            logger.info("Tesla response \(response)")
             onCompleted(response.vehicleData.mediaState)
         }
     }
@@ -283,6 +281,9 @@ class TeslaVehicle: NSObject {
     private func executeClosureMoveAction(_ closureMoveRequest: VCSEC_ClosureMoveRequest,
                                           onCompleted: @escaping () throws -> Void)
     {
+        guard state == .connected else {
+            return
+        }
         guard let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
             return
         }
@@ -303,6 +304,9 @@ class TeslaVehicle: NSObject {
         _ action: CarServer_Action,
         onCompleted: @escaping (CarServer_Response) throws -> Void
     ) {
+        guard state == .connected else {
+            return
+        }
         guard let vehicleDomain = vehicleDomains[.infotainment] else {
             return
         }
@@ -607,6 +611,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
             try handleData(data: value)
         } catch {
             logger.info("tesla-vehicle: Message handling error \(error)")
+            reset()
         }
     }
 }

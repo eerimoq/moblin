@@ -27,6 +27,8 @@ enum TextFormatPart {
     case stepCount
     case workoutDistance
     case teslaBatteryLevel
+    case teslaDrive
+    case teslaMedia
 }
 
 class TextFormatLoader {
@@ -92,6 +94,10 @@ class TextFormatLoader {
                     loadItem(part: .workoutDistance, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{teslabatterylevel}") {
                     loadItem(part: .teslaBatteryLevel, offsetBy: 19)
+                } else if formatFromIndex.hasPrefix("{tesladrive}") {
+                    loadItem(part: .teslaDrive, offsetBy: 12)
+                } else if formatFromIndex.hasPrefix("{teslamedia}") {
+                    loadItem(part: .teslaMedia, offsetBy: 12)
                 } else {
                     index = format.index(after: index)
                 }

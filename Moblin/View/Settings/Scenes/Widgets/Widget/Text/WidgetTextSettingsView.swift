@@ -22,7 +22,7 @@ private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
-private let suggestionTesla = "🏎️ 🔋 {teslaBatteryLevel}"
+private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
 
 private let suggestions = createSuggestions()
 
