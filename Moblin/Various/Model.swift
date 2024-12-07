@@ -3103,7 +3103,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     teslaDrive += " \(speed) mph"
                 }
                 if case let .power(power) = teslaDriveState.optionalPower {
-                    teslaDrive += " \(Float(power) / 10.0) kW"
+                    teslaDrive += " \(power) kW"
                 }
             }
         }
