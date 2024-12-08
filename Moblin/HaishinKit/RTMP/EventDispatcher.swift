@@ -3,27 +3,26 @@ import Foundation
 protocol EventDispatcherConvertible: AnyObject {
     func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?)
     func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?)
-    func dispatch(event: Event)
     func dispatch(_ type: Event.Name, data: Any?)
 }
 
-open class Event {
-    public struct Name: RawRepresentable, ExpressibleByStringLiteral {
+class Event {
+    struct Name: RawRepresentable, ExpressibleByStringLiteral {
         // swiftlint:disable:next nesting
-        public typealias RawValue = String
+        typealias RawValue = String
         // swiftlint:disable:next nesting
-        public typealias StringLiteralType = String
+        typealias StringLiteralType = String
 
-        public static let event: Name = "event"
-        public static let rtmpStatus: Name = "rtmpStatus"
+        static let event: Name = "event"
+        static let rtmpStatus: Name = "rtmpStatus"
 
-        public let rawValue: String
+        let rawValue: String
 
-        public init(rawValue: String) {
+        init(rawValue: String) {
             self.rawValue = rawValue
         }
 
-        public init(stringLiteral value: String) {
+        init(stringLiteral value: String) {
             rawValue = value
         }
     }
@@ -48,7 +47,7 @@ open class Event {
     }
 }
 
-open class EventDispatcher: EventDispatcherConvertible {
+class EventDispatcher: EventDispatcherConvertible {
     private weak var target: AnyObject?
 
     init() {}
@@ -74,7 +73,7 @@ open class EventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    open func dispatch(event: Event) {
+    func dispatch(event: Event) {
         NotificationCenter.default.post(
             name: Notification.Name(rawValue: event.type.rawValue),
             object: target ?? self,

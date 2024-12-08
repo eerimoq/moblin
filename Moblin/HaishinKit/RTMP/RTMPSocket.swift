@@ -10,11 +10,11 @@ enum RTMPSocketReadyState: UInt8 {
     case closed = 5
 }
 
-// swiftlint:disable:next class_delegate_protocol
-protocol RTMPSocketDelegate: EventDispatcherConvertible {
+protocol RTMPSocketDelegate: AnyObject {
     func socketDataReceived(_ socket: RTMPSocket, data: Data)
     func socketReadyStateChanged(_ socket: RTMPSocket, readyState: RTMPSocketReadyState)
     func socketUpdateStats(_ socket: RTMPSocket, totalBytesOut: Int64)
+    func socketDispatch(_ socket: RTMPSocket, event: Event)
 }
 
 final class RTMPSocket {
@@ -43,13 +43,13 @@ final class RTMPSocket {
             if connected {
                 write(data: handshake.c0c1packet)
                 setReadyState(state: .versionSent)
-                return
+            } else {
+                setReadyState(state: .closed)
+                for event in events {
+                    delegate?.socketDispatch(self, event: event)
+                }
+                events.removeAll()
             }
-            setReadyState(state: .closed)
-            for event in events {
-                delegate?.dispatch(event: event)
-            }
-            events.removeAll()
         }
     }
 

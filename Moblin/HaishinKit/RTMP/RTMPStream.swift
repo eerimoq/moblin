@@ -587,10 +587,6 @@ extension RTMPStream: EventDispatcherConvertible {
         dispatcher.removeEventListener(type, selector: selector, observer: observer)
     }
 
-    func dispatch(event: Event) {
-        dispatcher.dispatch(event: event)
-    }
-
     func dispatch(_ type: Event.Name, data: Any?) {
         dispatcher.dispatch(type, data: data)
     }

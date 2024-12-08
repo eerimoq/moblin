@@ -426,4 +426,8 @@ extension RTMPConnection: RTMPSocketDelegate {
             socketDataReceived(socket, data: data.advanced(by: position))
         }
     }
+
+    func socketDispatch(_: RTMPSocket, event: Event) {
+        dispatch(event: event)
+    }
 }
