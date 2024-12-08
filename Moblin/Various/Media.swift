@@ -578,7 +578,7 @@ final class Media: NSObject {
             return
         }
         DispatchQueue.main.async {
-            switch RtmpConnection.Code(rawValue: code) {
+            switch RtmpConnectionCode(rawValue: code) {
             case .connectSuccess:
                 self.rtmpStream?.publish(self.rtmpStreamName)
                 self.delegate?.mediaOnRtmpConnected()

@@ -1,46 +1,42 @@
 import AVFoundation
 import Foundation
 
+private let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
+
+private enum SupportVideo: UInt16 {
+    case h264 = 0x0080
+}
+
+private enum SupportSound: UInt16 {
+    case aac = 0x0400
+}
+
+private enum VideoFunction: UInt8 {
+    case clientSeek = 1
+}
+
+enum RtmpConnectionCode: String {
+    case connectClosed = "NetConnection.Connect.Closed"
+    case connectFailed = "NetConnection.Connect.Failed"
+    case connectRejected = "NetConnection.Connect.Rejected"
+    case connectSuccess = "NetConnection.Connect.Success"
+
+    func data() -> ASObject {
+        return [
+            "code": rawValue,
+        ]
+    }
+}
+
 class RtmpConnection: EventDispatcher {
-    private static let defaultWindowSizeFromServer: Int64 = 250_000
-    private static let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
-    private static let defaultFlashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
-    private static let defaultMaximumChunkSizeToServer = 1024 * 8
-    private static let defaultCapabilities = 239
-
-    enum Code: String {
-        case connectClosed = "NetConnection.Connect.Closed"
-        case connectFailed = "NetConnection.Connect.Failed"
-        case connectRejected = "NetConnection.Connect.Rejected"
-        case connectSuccess = "NetConnection.Connect.Success"
-
-        func data() -> ASObject {
-            return [
-                "code": rawValue,
-            ]
-        }
-    }
-
-    enum SupportVideo: UInt16 {
-        case h264 = 0x0080
-    }
-
-    enum SupportSound: UInt16 {
-        case aac = 0x0400
-    }
-
-    enum VideoFunction: UInt8 {
-        case clientSeek = 1
-    }
-
-    var flashVer = RtmpConnection.defaultFlashVer
+    var flashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
     private(set) var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
     var streams: [RtmpStream] = []
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
-    var windowSizeFromServer = RtmpConnection.defaultWindowSizeFromServer {
+    var windowSizeFromServer: Int64 = 250_000 {
         didSet {
             guard socket.connected else {
                 return
@@ -126,7 +122,7 @@ class RtmpConnection: EventDispatcher {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
-              !connected && Self.supportedProtocols.contains(scheme)
+              !connected && supportedProtocols.contains(scheme)
         else {
             return
         }
@@ -165,7 +161,7 @@ class RtmpConnection: EventDispatcher {
         else {
             return
         }
-        switch Code(rawValue: code) {
+        switch RtmpConnectionCode(rawValue: code) {
         case .connectSuccess:
             handleConnectSuccess()
         case .connectRejected:
@@ -179,7 +175,7 @@ class RtmpConnection: EventDispatcher {
 
     private func handleConnectSuccess() {
         connected = true
-        socket.maximumChunkSizeToServer = RtmpConnection.defaultMaximumChunkSizeToServer
+        socket.maximumChunkSizeToServer = 1024 * 8
         _ = socket.write(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
@@ -243,7 +239,7 @@ class RtmpConnection: EventDispatcher {
                 "swfUrl": nil,
                 "tcUrl": uri.absoluteWithoutAuthenticationString,
                 "fpad": false,
-                "capabilities": Self.defaultCapabilities,
+                "capabilities": 239,
                 "audioCodecs": SupportSound.aac.rawValue,
                 "videoCodecs": SupportVideo.h264.rawValue,
                 "videoFunction": VideoFunction.clientSeek.rawValue,

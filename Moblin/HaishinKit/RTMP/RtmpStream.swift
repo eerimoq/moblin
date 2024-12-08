@@ -261,7 +261,7 @@ class RtmpStream: NetStream {
             return
         }
         switch code {
-        case RtmpConnection.Code.connectSuccess.rawValue:
+        case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)
             rtmpConnection.createStream(self)
         case RtmpStream.Code.publishStart.rawValue:
