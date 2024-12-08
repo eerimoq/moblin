@@ -104,9 +104,9 @@ final class RtmpSocket {
         if isDisconnected {
             let data: ASObject
             if readyState == .handshakeDone {
-                data = RtmpConnectionCode.connectClosed.data()
+                data = RtmpConnectionCode.connectClosed.eventData()
             } else {
-                data = RtmpConnectionCode.connectFailed.data()
+                data = RtmpConnectionCode.connectFailed.eventData()
             }
             delegate?.socketDispatch(self, event: Event(type: .rtmpStatus, data: data))
         }

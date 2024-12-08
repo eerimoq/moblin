@@ -19,21 +19,18 @@ private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: 
     ])
 }
 
-class RtmpStream: NetStream {
-    enum Code: String {
-        case bufferEmpty = "NetStream.Buffer.Empty"
-        case bufferFlush = "NetStream.Buffer.Flush"
-        case bufferFull = "NetStream.Buffer.Full"
-        case publishStart = "NetStream.Publish.Start"
-        case videoDimensionChange = "NetStream.Video.DimensionChange"
+enum RtmpStreamCode: String {
+    case publishStart = "NetStream.Publish.Start"
+    case videoDimensionChange = "NetStream.Video.DimensionChange"
 
-        func data() -> ASObject {
-            return [
-                "code": rawValue,
-            ]
-        }
+    func eventData() -> ASObject {
+        return [
+            "code": rawValue,
+        ]
     }
+}
 
+class RtmpStream: NetStream {
     enum ReadyState: UInt8 {
         case initialized
         case open
@@ -264,7 +261,7 @@ class RtmpStream: NetStream {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)
             rtmpConnection.createStream(self)
-        case RtmpStream.Code.publishStart.rawValue:
+        case RtmpStreamCode.publishStart.rawValue:
             setReadyState(state: .publishing)
         default:
             break

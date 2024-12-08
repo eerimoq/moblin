@@ -21,7 +21,7 @@ enum RtmpConnectionCode: String {
     case connectRejected = "NetConnection.Connect.Rejected"
     case connectSuccess = "NetConnection.Connect.Success"
 
-    func data() -> ASObject {
+    func eventData() -> ASObject {
         return [
             "code": rawValue,
         ]
@@ -52,7 +52,6 @@ class RtmpConnection: EventDispatcher {
     var currentTransactionId = 0
     private var timer = SimpleTimer(queue: netStreamLockQueue)
     private var messages: [UInt16: RtmpMessage] = [:]
-    private var arguments: [Any?] = []
     private var currentChunk: RtmpChunk?
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
 
@@ -67,9 +66,9 @@ class RtmpConnection: EventDispatcher {
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)))
     }
 
-    func connect(_ url: String, arguments: Any?...) {
+    func connect(_ url: String) {
         netStreamLockQueue.async {
-            self.connectInternal(url, arguments: arguments)
+            self.connectInternal(url)
         }
     }
 
@@ -118,7 +117,7 @@ class RtmpConnection: EventDispatcher {
         _ = socket.write(chunk: RtmpChunk(message: message))
     }
 
-    func connectInternal(_ url: String, arguments: Any?...) {
+    func connectInternal(_ url: String) {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
@@ -127,7 +126,6 @@ class RtmpConnection: EventDispatcher {
             return
         }
         self.uri = uri
-        self.arguments = arguments
         socket = socket != nil ? socket : RtmpSocket()
         socket.delegate = self
         let secure = uri.scheme == "rtmps" || uri.scheme == "rtmpts"
@@ -200,7 +198,7 @@ class RtmpConnection: EventDispatcher {
             break
         case description.contains("reason=needauth"):
             let command = Self.makeSanJoseAuthCommand(uri, description: description)
-            connect(command, arguments: arguments)
+            connect(command)
         case description.contains("authmod=adobe"):
             if user.isEmpty || password.isEmpty {
                 disconnectInternal()
@@ -208,7 +206,7 @@ class RtmpConnection: EventDispatcher {
             }
             let query = uri.query ?? ""
             let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
-            connect(command, arguments: arguments)
+            connect(command)
         default:
             break
         }
@@ -246,7 +244,7 @@ class RtmpConnection: EventDispatcher {
                 "pageUrl": nil,
                 "objectEncoding": RtmpObjectEncoding.amf0.rawValue,
             ],
-            arguments: arguments
+            arguments: []
         )
         return RtmpChunk(message: message)
     }

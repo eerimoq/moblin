@@ -657,7 +657,7 @@ final class RtmpVideoMessage: RtmpMessage {
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         }
         if status == noErr {
-            stream.dispatch(.rtmpStatus, data: RtmpStream.Code.videoDimensionChange.data())
+            stream.dispatch(.rtmpStatus, data: RtmpStreamCode.videoDimensionChange.eventData())
         }
     }
 }
@@ -713,16 +713,6 @@ final class RtmpUserControlMessage: RtmpMessage {
                 chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
                 message: RtmpUserControlMessage(event: .pong, value: value)
             ))
-        case .bufferEmpty:
-            connection.streams.first(where: { $0.id == UInt32(value) })?.dispatch(
-                .rtmpStatus,
-                data: RtmpStream.Code.bufferEmpty.data()
-            )
-        case .bufferFull:
-            connection.streams.first(where: { $0.id == UInt32(value) })?.dispatch(
-                .rtmpStatus,
-                data: RtmpStream.Code.bufferFull.data()
-            )
         default:
             break
         }
