@@ -21,43 +21,18 @@ class RTMPConnection: EventDispatcher {
     private static let defaultMaximumChunkSizeToServer = 1024 * 8
     private static let defaultCapabilities = 239
 
-    /**
-     - NetStatusEvent#info.code for NetConnection
-     - see: https://help.adobe.com/en_US/air/reference/html/flash/events/NetStatusEvent.html#NET_STATUS
-     */
     enum Code: String {
-        case callBadVersion = "NetConnection.Call.BadVersion"
-        case callFailed = "NetConnection.Call.Failed"
-        case callProhibited = "NetConnection.Call.Prohibited"
-        case connectAppshutdown = "NetConnection.Connect.AppShutdown"
         case connectClosed = "NetConnection.Connect.Closed"
         case connectFailed = "NetConnection.Connect.Failed"
-        case connectIdleTimeOut = "NetConnection.Connect.IdleTimeOut"
-        case connectInvalidApp = "NetConnection.Connect.InvalidApp"
-        case connectNetworkChange = "NetConnection.Connect.NetworkChange"
         case connectRejected = "NetConnection.Connect.Rejected"
         case connectSuccess = "NetConnection.Connect.Success"
 
         var level: String {
             switch self {
-            case .callBadVersion:
-                return "error"
-            case .callFailed:
-                return "error"
-            case .callProhibited:
-                return "error"
-            case .connectAppshutdown:
-                return "error"
             case .connectClosed:
                 return "status"
             case .connectFailed:
                 return "error"
-            case .connectIdleTimeOut:
-                return "status"
-            case .connectInvalidApp:
-                return "error"
-            case .connectNetworkChange:
-                return "status"
             case .connectRejected:
                 return "error"
             case .connectSuccess:
@@ -75,31 +50,11 @@ class RTMPConnection: EventDispatcher {
     }
 
     enum SupportVideo: UInt16 {
-        case unused = 0x0001
-        case jpeg = 0x0002
-        case sorenson = 0x0004
-        case homebrew = 0x0008
-        case vp6 = 0x0010
-        case vp6Alpha = 0x0020
-        case homebrewv = 0x0040
         case h264 = 0x0080
-        case all = 0x00FF
     }
 
     enum SupportSound: UInt16 {
-        case none = 0x0001
-        case adpcm = 0x0002
-        case mp3 = 0x0004
-        case intel = 0x0008
-        case unused = 0x0010
-        case nelly8 = 0x0020
-        case nelly = 0x0040
-        case g711A = 0x0080
-        case g711U = 0x0100
-        case nelly16 = 0x0200
         case aac = 0x0400
-        case speex = 0x0800
-        case all = 0x0FFF
     }
 
     enum VideoFunction: UInt8 {
@@ -286,7 +241,7 @@ class RTMPConnection: EventDispatcher {
         }
     }
 
-    private func makeConnectionChunk() -> RTMPChunk? {
+    private func makeConnectChunk() -> RTMPChunk? {
         guard let uri else {
             return nil
         }
@@ -320,10 +275,11 @@ class RTMPConnection: EventDispatcher {
     }
 
     private func handleHandshakeDone() {
-        guard let chunk = makeConnectionChunk() else {
+        guard let chunk = makeConnectChunk() else {
             close()
             return
         }
+        _ = socket.write(chunk: chunk)
         timer.startPeriodic(interval: 1.0, handler: { [weak self] in
             guard let self else {
                 return
@@ -332,7 +288,6 @@ class RTMPConnection: EventDispatcher {
                 stream.onTimeout()
             }
         })
-        _ = socket.write(chunk: chunk)
     }
 
     private func handleClosed() {

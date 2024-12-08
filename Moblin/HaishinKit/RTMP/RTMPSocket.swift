@@ -188,31 +188,41 @@ final class RTMPSocket {
     private func processInput() {
         switch readyState {
         case .versionSent:
-            if inputBuffer.count < RTMPHandshake.sigSize + 1 {
-                break
-            }
-            write(data: handshake.createC2Packet(inputBuffer))
-            inputBuffer.removeSubrange(0 ... RTMPHandshake.sigSize)
-            setReadyState(state: .ackSent)
-            if RTMPHandshake.sigSize <= inputBuffer.count {
-                processInput()
-            }
+            processInputVersionSent()
         case .ackSent:
-            if inputBuffer.count < RTMPHandshake.sigSize {
-                break
-            }
-            inputBuffer.removeAll()
-            setReadyState(state: .handshakeDone)
+            processInputAckSent()
         case .handshakeDone:
-            if inputBuffer.isEmpty {
-                break
-            }
-            let bytes = inputBuffer
-            inputBuffer.removeAll()
-            delegate?.socketDataReceived(self, data: bytes)
+            processInputHandshakeDone()
         default:
             break
         }
+    }
+
+    private func processInputVersionSent() {
+        guard inputBuffer.count >= RTMPHandshake.sigSize + 1 else {
+            return
+        }
+        write(data: handshake.createC2Packet(inputBuffer))
+        inputBuffer.removeSubrange(0 ... RTMPHandshake.sigSize)
+        setReadyState(state: .ackSent)
+        processInput()
+    }
+
+    private func processInputAckSent() {
+        guard inputBuffer.count >= RTMPHandshake.sigSize else {
+            return
+        }
+        inputBuffer.removeAll()
+        setReadyState(state: .handshakeDone)
+    }
+
+    private func processInputHandshakeDone() {
+        guard !inputBuffer.isEmpty else {
+            return
+        }
+        let bytes = inputBuffer
+        inputBuffer.removeAll()
+        delegate?.socketDataReceived(self, data: bytes)
     }
 
     private func handleConnectTimeout() {
