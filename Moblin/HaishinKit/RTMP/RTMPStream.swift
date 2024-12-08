@@ -253,7 +253,7 @@ class RTMPStream: NetStream {
             messages.append(message)
         default:
             setReadyState(state: .publish)
-            rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
+            _ = rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
         }
     }
 
@@ -331,7 +331,7 @@ class RTMPStream: NetStream {
             return
         }
         setReadyState(state: .open)
-        rtmpConnection.socket?.write(chunk: RTMPChunk(
+        _ = rtmpConnection.socket?.write(chunk: RTMPChunk(
             type: .zero,
             chunkStreamId: RTMPChunk.ChunkStreamId.command.rawValue,
             message: RTMPCommandMessage(
@@ -371,7 +371,7 @@ class RTMPStream: NetStream {
                 default:
                     break
                 }
-                rtmpConnection.socket.write(chunk: RTMPChunk(message: message))
+                _ = rtmpConnection.socket.write(chunk: RTMPChunk(message: message))
             }
             messages.removeAll()
         case .publish:
@@ -437,7 +437,7 @@ class RTMPStream: NetStream {
             commandObject: nil,
             arguments: [id]
         )
-        rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
+        _ = rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
     }
 
     private func handleEncodedAudioBuffer(_ buffer: Data, _ timestamp: UInt32) {

@@ -140,7 +140,7 @@ class RTMPConnection: EventDispatcher {
             guard socket.connected else {
                 return
             }
-            socket.write(chunk: RTMPChunk(
+            _ = socket.write(chunk: RTMPChunk(
                 type: .zero,
                 chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPWindowAcknowledgementSizeMessage(100_000)
@@ -190,7 +190,7 @@ class RTMPConnection: EventDispatcher {
         if responder != nil {
             operations[message.transactionId] = responder
         }
-        socket.write(chunk: RTMPChunk(message: message))
+        _ = socket.write(chunk: RTMPChunk(message: message))
     }
 
     func connect(_ url: String, arguments: Any?...) {
@@ -255,7 +255,7 @@ class RTMPConnection: EventDispatcher {
         case .some(.connectSuccess):
             connected = true
             socket.maximumChunkSizeToServer = RTMPConnection.defaultMaximumChunkSizeToServer
-            socket.write(chunk: RTMPChunk(
+            _ = socket.write(chunk: RTMPChunk(
                 type: .zero,
                 chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPSetChunkSizeMessage(UInt32(socket.maximumChunkSizeToServer))
@@ -355,7 +355,7 @@ extension RTMPConnection: RTMPSocketDelegate {
                 userInfo: nil,
                 repeats: true
             )
-            socket.write(chunk: chunk)
+            _ = socket.write(chunk: chunk)
         case .closed:
             connected = false
             currentChunk = nil

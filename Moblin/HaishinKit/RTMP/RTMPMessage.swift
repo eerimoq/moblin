@@ -709,7 +709,7 @@ final class RTMPUserControlMessage: RTMPMessage {
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
         switch event {
         case .ping:
-            connection.socket.write(chunk: RTMPChunk(
+            _ = connection.socket.write(chunk: RTMPChunk(
                 type: .zero,
                 chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
                 message: RTMPUserControlMessage(event: .pong, value: value)

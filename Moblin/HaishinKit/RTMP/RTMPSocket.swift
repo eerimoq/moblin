@@ -20,7 +20,6 @@ protocol RTMPSocketDelegate: AnyObject {
 final class RTMPSocket {
     var maximumChunkSizeFromServer = RTMPChunk.defaultSize
     var maximumChunkSizeToServer = RTMPChunk.defaultSize
-    private let timeout = 10
     private var readyState: RTMPSocketReadyState = .uninitialized
 
     var secure = false {
@@ -99,47 +98,27 @@ final class RTMPSocket {
         if let connection {
             receive(on: connection)
         }
-        if timeout > 0 {
-            let newTimeoutHandler = DispatchWorkItem { [weak self] in
-                guard let self = self, self.timeoutHandler?.isCancelled == false else {
-                    return
-                }
-                self.didTimeout()
+        timeoutHandler = DispatchWorkItem { [weak self] in
+            guard let self, self.timeoutHandler?.isCancelled == false else {
+                return
             }
-            timeoutHandler = newTimeoutHandler
-            DispatchQueue.global(qos: .userInteractive).asyncAfter(
-                deadline: .now() + .seconds(timeout),
-                execute: newTimeoutHandler
-            )
+            self.handleConnectTimeout()
         }
+        netStreamLockQueue.asyncAfter(deadline: .now() + .seconds(10), execute: timeoutHandler!)
     }
 
     func close(isDisconnected: Bool) {
-        guard let connection else {
-            return
-        }
         if isDisconnected {
-            let data: ASObject = (readyState == .handshakeDone) ?
-                RTMPConnection.Code.connectClosed.data("") : RTMPConnection.Code.connectFailed.data("")
+            let data = (readyState == .handshakeDone)
+                ? RTMPConnection.Code.connectClosed.data("")
+                : RTMPConnection.Code.connectFailed.data("")
             events.append(Event(type: .rtmpStatus, data: data))
         }
         setReadyState(state: .closing)
-        if !isDisconnected, connection.state == .ready {
-            connection.send(
-                content: nil,
-                contentContext: .finalMessage,
-                isComplete: true,
-                completion: .contentProcessed { _ in
-                    self.connection = nil
-                }
-            )
-        } else {
-            self.connection = nil
-        }
+        connection = nil
         timeoutHandler?.cancel()
     }
 
-    @discardableResult
     func write(chunk: RTMPChunk) -> Int {
         for data in chunk.split(maximumChunkSizeToServer) {
             write(data: data)
@@ -234,7 +213,7 @@ final class RTMPSocket {
         }
     }
 
-    private func didTimeout() {
+    private func handleConnectTimeout() {
         logger.info("rtmp: Connect timeout")
         close(isDisconnected: true)
     }
