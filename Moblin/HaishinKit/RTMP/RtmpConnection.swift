@@ -29,7 +29,6 @@ enum RtmpConnectionCode: String {
 }
 
 class RtmpConnection: EventDispatcher {
-    let flashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
     private(set) var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
@@ -233,12 +232,11 @@ class RtmpConnection: EventDispatcher {
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: currentTransactionId,
-            // "connect" must be a objectEncoding = 0
             objectEncoding: .amf0,
             commandName: "connect",
             commandObject: [
                 "app": app,
-                "flashVer": flashVer,
+                "flashVer": "FMLE/3.0 (compatible; FMSc/1.0)",
                 "swfUrl": nil,
                 "tcUrl": uri.absoluteWithoutAuthenticationString,
                 "fpad": false,
