@@ -174,6 +174,7 @@ class RTMPStream: NetStream {
         }
         let oldState = readyState
         readyState = state
+        logger.info("rtmp: Settings stream state \(oldState) -> \(state)")
         didChangeReadyState(state, oldValue: oldState)
     }
 
@@ -327,35 +328,18 @@ class RTMPStream: NetStream {
             }
             return
         }
-        guard let rtmpConnection, ReadyState.open.rawValue < readyState.rawValue else {
-            return
-        }
-        setReadyState(state: .open)
-        _ = rtmpConnection.socket?.write(chunk: RTMPChunk(
-            type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.command.rawValue,
-            message: RTMPCommandMessage(
-                streamId: 0,
-                transactionId: 0,
-                objectEncoding: .amf0,
-                commandName: "closeStream",
-                commandObject: nil,
-                arguments: [id]
-            )
-        ))
+        setReadyState(state: .initialized)
     }
 
     private func didChangeReadyState(_ readyState: ReadyState, oldValue: ReadyState) {
         guard let rtmpConnection else {
             return
         }
-        switch oldValue {
-        case .publishing:
+        if oldValue == .publishing {
             FCUnpublish()
             deleteStream()
+            closeStream()
             mixer.stopEncoding()
-        default:
-            break
         }
         switch readyState {
         case .open:
@@ -429,15 +413,35 @@ class RTMPStream: NetStream {
     }
 
     private func deleteStream() {
-        let message = RTMPCommandMessage(
+        guard let rtmpConnection else {
+            return
+        }
+        _ = rtmpConnection.socket.write(chunk: RTMPChunk(message: RTMPCommandMessage(
             streamId: id,
             transactionId: 0,
             objectEncoding: .amf0,
             commandName: "deleteStream",
             commandObject: nil,
             arguments: [id]
-        )
-        _ = rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
+        )))
+    }
+
+    private func closeStream() {
+        guard let rtmpConnection else {
+            return
+        }
+        _ = rtmpConnection.socket.write(chunk: RTMPChunk(
+            type: .zero,
+            chunkStreamId: RTMPChunk.ChunkStreamId.command.rawValue,
+            message: RTMPCommandMessage(
+                streamId: 0,
+                transactionId: 0,
+                objectEncoding: .amf0,
+                commandName: "closeStream",
+                commandObject: nil,
+                arguments: [id]
+            )
+        ))
     }
 
     private func handleEncodedAudioBuffer(_ buffer: Data, _ timestamp: UInt32) {

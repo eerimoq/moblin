@@ -1,13 +1,12 @@
 import Foundation
 import Network
 
-enum RTMPSocketReadyState: UInt8 {
-    case uninitialized = 0
-    case versionSent = 1
-    case ackSent = 2
-    case handshakeDone = 3
-    case closing = 4
-    case closed = 5
+enum RTMPSocketReadyState {
+    case uninitialized
+    case versionSent
+    case ackSent
+    case handshakeDone
+    case closed
 }
 
 protocol RTMPSocketDelegate: AnyObject {
@@ -42,15 +41,10 @@ final class RTMPSocket {
                 setReadyState(state: .versionSent)
             } else {
                 setReadyState(state: .closed)
-                for event in events {
-                    delegate?.socketDispatch(self, event: event)
-                }
-                events.removeAll()
             }
         }
     }
 
-    private var events: [Event] = []
     private var handshake = RTMPHandshake()
     private var connection: NWConnection? {
         didSet {
@@ -94,14 +88,25 @@ final class RTMPSocket {
     }
 
     func close(isDisconnected: Bool) {
+        if let connection {
+            // To make sure all data (FCUnpublish, deleteStream and closeStream) has been written?
+            connection.send(
+                content: nil,
+                contentContext: .finalMessage,
+                isComplete: true,
+                completion: .contentProcessed { _ in
+                    self.connection = nil
+                }
+            )
+        } else {
+            connection = nil
+        }
         if isDisconnected {
             let data = (readyState == .handshakeDone)
                 ? RTMPConnection.Code.connectClosed.data("")
                 : RTMPConnection.Code.connectFailed.data("")
-            events.append(Event(type: .rtmpStatus, data: data))
+            delegate?.socketDispatch(self, event: Event(type: .rtmpStatus, data: data))
         }
-        setReadyState(state: .closing)
-        connection = nil
         timeoutHandler?.cancel()
     }
 
@@ -195,7 +200,7 @@ final class RTMPSocket {
             }
             inputBuffer.removeAll()
             setReadyState(state: .handshakeDone)
-        case .handshakeDone, .closing:
+        case .handshakeDone:
             if inputBuffer.isEmpty {
                 break
             }
