@@ -8,6 +8,33 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.389.0", date: "2024-12-08", changes: [
+        "• Hammer Twitch API slightly less.",
+        "• Major outbound RTMP refactoring.",
+        "• Fix audio/video sync when going live with cinematic stabilization for RTMP.",
+        "• Fix RTMP server audio/video sync when medias are received on different chunk streams.",
+        "  • Which is the case for Moblins RTMP streamer.",
+        "• Only show enabled scenes in the remote control assistant.",
+        "• Tesla vehicle integration over Bluetooth (BLE).",
+        "  • Show car battery percentage, radio, speed and more on stream.",
+        "  • Chat commands:",
+        "    • Open trunk with: !moblin tesla trunk open (only works when parked)",
+        "    • Close trunk with !moblin tesla trunk close (only works when parked)",
+        "    • And some media control commands.",
+        "• Fix websocket connection when usning moblin remote control relay.",
+        "• Watch companion app.",
+        "  • Toggle to act as remote control assistant.",
+        "    • Not automatically doing it anymore.",
+        "  • Hide useless parts of the UI when acting as remote control assistant.",
+        "  • Fix various bugs related to remote control assistant vs local setting.",
+        "• Initial support for keyboard.",
+        "  • Map keys to Moblin functions, just like for game controllers.",
+        "  • It has some quirks.",
+        "• Fix text widget suggestions hang.",
+        "• End RTMP streams cleanly (hopefully).",
+        "• Limit number of chat bot commands executed per second.",
+        "  • Drop if too many are queued.",
+    ]),
     Version(version: "0.388.0", date: "2024-11-24", changes: [
         "• Keep speaker alive by playing silence for a few seconds every 5 minutes (experimental). 💡 MaledettoAlex",
         "  • Enable in debug settings.",
