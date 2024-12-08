@@ -21,7 +21,6 @@ final class RTMPSocket {
     var maximumChunkSizeFromServer = RTMPChunk.defaultSize
     var maximumChunkSizeToServer = RTMPChunk.defaultSize
     private var readyState: RTMPSocketReadyState = .uninitialized
-
     var secure = false {
         didSet {
             if secure {
@@ -34,13 +33,12 @@ final class RTMPSocket {
 
     var inputBuffer = Data()
     weak var delegate: (any RTMPSocketDelegate)?
-
     private(set) var totalBytesIn: Atomic<Int64> = .init(0)
     private(set) var totalBytesOut: Atomic<Int64> = .init(0)
     private(set) var connected = false {
         didSet {
             if connected {
-                write(data: handshake.c0c1packet)
+                write(data: handshake.createC0C1Packet())
                 setReadyState(state: .versionSent)
             } else {
                 setReadyState(state: .closed)
@@ -50,12 +48,6 @@ final class RTMPSocket {
                 events.removeAll()
             }
         }
-    }
-
-    private func setReadyState(state: RTMPSocketReadyState) {
-        logger.info("rtmp: Setting socket state \(readyState) -> \(state)")
-        readyState = state
-        delegate?.socketReadyStateChanged(self, readyState: readyState)
     }
 
     private var events: [Event] = []
@@ -72,14 +64,10 @@ final class RTMPSocket {
     }
 
     private var tlsOptions: NWProtocolTLS.Options?
-    private lazy var networkQueue = DispatchQueue(
-        label: "com.haishinkit.HaishinKit.RTMPSocket.network",
-        qos: .userInitiated
-    )
     private var timeoutHandler: DispatchWorkItem?
 
-    func connect(withName: String, port: Int) {
-        handshake.clear()
+    func connect(host: String, port: Int) {
+        handshake = RTMPHandshake()
         setReadyState(state: .uninitialized)
         maximumChunkSizeToServer = RTMPChunk.defaultSize
         maximumChunkSizeFromServer = RTMPChunk.defaultSize
@@ -87,15 +75,13 @@ final class RTMPSocket {
         totalBytesOut.mutate { $0 = 0 }
         inputBuffer.removeAll(keepingCapacity: false)
         connection = NWConnection(
-            to: NWEndpoint
-                .hostPort(host: .init(withName),
-                          port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
-            using: .init(tls: tlsOptions, tcp: NWProtocolTCP.Options())
+            to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
+            using: .init(tls: tlsOptions)
         )
-        connection?.viabilityUpdateHandler = viabilityDidChange(to:)
-        connection?.stateUpdateHandler = stateDidChange(to:)
-        connection?.start(queue: networkQueue)
         if let connection {
+            connection.viabilityUpdateHandler = viabilityDidChange
+            connection.stateUpdateHandler = stateDidChange
+            connection.start(queue: netStreamLockQueue)
             receive(on: connection)
         }
         timeoutHandler = DispatchWorkItem { [weak self] in
@@ -124,6 +110,15 @@ final class RTMPSocket {
             write(data: data)
         }
         return chunk.message!.length
+    }
+
+    private func setReadyState(state: RTMPSocketReadyState) {
+        guard readyState != state else {
+            return
+        }
+        logger.info("rtmp: Setting socket state \(readyState) -> \(state)")
+        readyState = state
+        delegate?.socketReadyStateChanged(self, readyState: readyState)
     }
 
     private func write(data: Data) {
@@ -171,16 +166,15 @@ final class RTMPSocket {
     }
 
     private func receive(on connection: NWConnection) {
-        connection
-            .receive(minimumIncompleteLength: 0, maximumLength: 255) { [weak self] data, _, _, _ in
-                guard let self, let data, self.connected else {
-                    return
-                }
-                self.inputBuffer.append(data)
-                self.totalBytesIn.mutate { $0 += Int64(data.count) }
-                self.processInput()
-                self.receive(on: connection)
+        connection.receive(minimumIncompleteLength: 0, maximumLength: 255) { [weak self] data, _, _, _ in
+            guard let self, let data, self.connected else {
+                return
             }
+            self.inputBuffer.append(data)
+            self.totalBytesIn.mutate { $0 += Int64(data.count) }
+            self.processInput()
+            self.receive(on: connection)
+        }
     }
 
     private func processInput() {
@@ -189,7 +183,7 @@ final class RTMPSocket {
             if inputBuffer.count < RTMPHandshake.sigSize + 1 {
                 break
             }
-            write(data: handshake.c2packet(inputBuffer))
+            write(data: handshake.createC2Packet(inputBuffer))
             inputBuffer.removeSubrange(0 ... RTMPHandshake.sigSize)
             setReadyState(state: .ackSent)
             if RTMPHandshake.sigSize <= inputBuffer.count {

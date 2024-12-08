@@ -17,8 +17,6 @@ class RTMPResponder {
 class RTMPConnection: EventDispatcher {
     private static let defaultWindowSizeFromServer: Int64 = 250_000
     private static let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
-    private static let defaultPort = 1935
-    private static let defaultSecurePort = 443
     private static let defaultFlashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
     private static let defaultMaximumChunkSizeToServer = 1024 * 8
     private static let defaultCapabilities = 239
@@ -149,15 +147,7 @@ class RTMPConnection: EventDispatcher {
     }
 
     var currentTransactionId = 0
-    private var timer: Timer? {
-        didSet {
-            oldValue?.invalidate()
-            if let timer {
-                RunLoop.main.add(timer, forMode: .common)
-            }
-        }
-    }
-
+    private var timer = SimpleTimer(queue: netStreamLockQueue)
     private var messages: [UInt16: RTMPMessage] = [:]
     private var arguments: [Any?] = []
     private var currentChunk: RTMPChunk?
@@ -169,7 +159,7 @@ class RTMPConnection: EventDispatcher {
     }
 
     deinit {
-        timer = nil
+        timer.stop()
         streams.removeAll()
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)))
     }
@@ -196,6 +186,7 @@ class RTMPConnection: EventDispatcher {
     func connect(_ url: String, arguments: Any?...) {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
+              let host = uri.host,
               !connected && Self.supportedProtocols.contains(scheme)
         else {
             return
@@ -206,10 +197,7 @@ class RTMPConnection: EventDispatcher {
         socket.delegate = self
         let secure = uri.scheme == "rtmps" || uri.scheme == "rtmpts"
         socket.secure = secure
-        socket.connect(
-            withName: uri.host!,
-            port: uri.port ?? (secure ? Self.defaultSecurePort : Self.defaultPort)
-        )
+        socket.connect(host: host, port: uri.port ?? (secure ? 443 : 1935))
     }
 
     func close() {
@@ -217,11 +205,10 @@ class RTMPConnection: EventDispatcher {
     }
 
     func close(isDisconnected: Bool) {
+        timer.stop()
         guard connected || isDisconnected else {
-            timer = nil
             return
         }
-        timer = nil
         if !isDisconnected {
             uri = nil
         }
@@ -332,37 +319,39 @@ class RTMPConnection: EventDispatcher {
         return RTMPChunk(message: message)
     }
 
-    @objc
-    private func on(timer _: Timer) {
-        for stream in streams {
-            stream.onTimeout()
+    private func handleHandshakeDone() {
+        guard let chunk = makeConnectionChunk() else {
+            close()
+            return
         }
+        timer.startPeriodic(interval: 1.0, handler: { [weak self] in
+            guard let self else {
+                return
+            }
+            for stream in self.streams {
+                stream.onTimeout()
+            }
+        })
+        _ = socket.write(chunk: chunk)
+    }
+
+    private func handleClosed() {
+        connected = false
+        currentChunk = nil
+        currentTransactionId = 0
+        messages.removeAll()
+        operations.removeAll()
+        fragmentedChunks.removeAll()
     }
 }
 
 extension RTMPConnection: RTMPSocketDelegate {
-    func socketReadyStateChanged(_ socket: RTMPSocket, readyState: RTMPSocketReadyState) {
+    func socketReadyStateChanged(_: RTMPSocket, readyState: RTMPSocketReadyState) {
         switch readyState {
         case .handshakeDone:
-            guard let chunk = makeConnectionChunk() else {
-                close()
-                break
-            }
-            timer = Timer(
-                timeInterval: 1.0,
-                target: self,
-                selector: #selector(on(timer:)),
-                userInfo: nil,
-                repeats: true
-            )
-            _ = socket.write(chunk: chunk)
+            handleHandshakeDone()
         case .closed:
-            connected = false
-            currentChunk = nil
-            currentTransactionId = 0
-            messages.removeAll()
-            operations.removeAll()
-            fragmentedChunks.removeAll()
+            handleClosed()
         default:
             break
         }
