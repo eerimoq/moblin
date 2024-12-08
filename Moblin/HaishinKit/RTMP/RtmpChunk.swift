@@ -20,7 +20,7 @@ enum RTMPChunkType: UInt8 {
     }
 
     func areBasicAndMessageHeadersAvailable(_ data: Data) -> Bool {
-        return RTMPChunk.basicHeaderSize(data[0]) + messageHeaderSize() < data.count
+        return RtmpChunk.basicHeaderSize(data[0]) + messageHeaderSize() < data.count
     }
 
     func toBasicHeader(_ chunkStreamId: UInt16) -> Data {
@@ -34,7 +34,7 @@ enum RTMPChunkType: UInt8 {
     }
 }
 
-final class RTMPChunk {
+final class RtmpChunk {
     enum ChunkStreamId: UInt16 {
         case control = 0x02
         case command = 0x03
@@ -45,8 +45,8 @@ final class RTMPChunk {
     static let maxTimestamp: UInt32 = 0xFFFFFF
     var size = 0
     var type: RTMPChunkType = .zero
-    var chunkStreamId = RTMPChunk.ChunkStreamId.command.rawValue
-    private(set) var message: RTMPMessage?
+    var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
+    private(set) var message: RtmpMessage?
     private(set) var fragmented = false
     private var header = Data()
 
@@ -61,13 +61,13 @@ final class RTMPChunk {
         }
     }
 
-    init(type: RTMPChunkType, chunkStreamId: UInt16, message: RTMPMessage) {
+    init(type: RTMPChunkType, chunkStreamId: UInt16, message: RtmpMessage) {
         self.type = type
         self.chunkStreamId = chunkStreamId
         self.message = message
     }
 
-    init(message: RTMPMessage) {
+    init(message: RtmpMessage) {
         self.message = message
     }
 
@@ -101,7 +101,7 @@ final class RTMPChunk {
             return header + message.encoded
         }
         header.append(type.toBasicHeader(chunkStreamId))
-        if RTMPChunk.maxTimestamp < message.timestamp {
+        if RtmpChunk.maxTimestamp < message.timestamp {
             header.append(contentsOf: [0xFF, 0xFF, 0xFF])
         } else {
             header.append(contentsOf: message.timestamp.bigEndian.data[1 ... 3])
@@ -111,7 +111,7 @@ final class RTMPChunk {
         if type == .zero {
             header.append(message.streamId.littleEndian.data)
         }
-        if RTMPChunk.maxTimestamp < message.timestamp {
+        if RtmpChunk.maxTimestamp < message.timestamp {
             header.append(message.timestamp.bigEndian.data)
         }
         return header + message.encoded
@@ -133,11 +133,11 @@ final class RTMPChunk {
         if type == .two || type == .three {
             return
         }
-        guard let messageType = RTMPMessageType(rawValue: data[pos + 6]) else {
+        guard let messageType = RtmpMessageType(rawValue: data[pos + 6]) else {
             logger.error(data.description)
             return
         }
-        let message = RTMPMessage.create(type: messageType)
+        let message = RtmpMessage.create(type: messageType)
         switch type {
         case .zero:
             message.timestamp = UInt32(data: data[pos ..< pos + 3]).bigEndian
@@ -150,7 +150,7 @@ final class RTMPChunk {
             break
         }
         var start = basicAndMessageHeadersSize()
-        if message.timestamp == RTMPChunk.maxTimestamp {
+        if message.timestamp == RtmpChunk.maxTimestamp {
             message.timestamp = UInt32(data: data[start ..< start + 4]).bigEndian
             start += 4
         }
@@ -180,14 +180,14 @@ final class RTMPChunk {
         return length
     }
 
-    func append(_ data: Data, message: RTMPMessage?) -> Int {
+    func append(_ data: Data, message: RtmpMessage?) -> Int {
         guard let message else {
             return 0
         }
         let buffer = ByteArray(data: data)
         buffer.position = basicHeaderSize()
         do {
-            self.message = RTMPMessage.create(type: message.type)
+            self.message = RtmpMessage.create(type: message.type)
             self.message?.streamId = message.streamId
             self.message?.timestamp = type == .two ? try buffer.readUInt24() : message.timestamp
             self.message?.length = message.length

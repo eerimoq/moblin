@@ -19,7 +19,7 @@ private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: 
     ])
 }
 
-class RTMPStream: NetStream {
+class RtmpStream: NetStream {
     /// NetStatusEvent#info.code for NetStream
     /// - seealso: https://help.adobe.com/en_US/air/reference/html/flash/events/NetStatusEvent.html#NET_STATUS
     enum Code: String {
@@ -163,9 +163,9 @@ class RTMPStream: NetStream {
     }
 
     static let defaultID: UInt32 = 0
-    var info = RTMPStreamInfo()
+    var info = RtmpStreamInfo()
 
-    var id = RTMPStream.defaultID
+    var id = RtmpStream.defaultID
     private var readyState: ReadyState = .initialized
 
     func setReadyState(state: ReadyState) {
@@ -187,13 +187,13 @@ class RTMPStream: NetStream {
     var audioTimeStamp = 0.0
     var videoTimeStamp = 0.0
 
-    private var messages: [RTMPCommandMessage] = []
+    private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
     private var dispatcher: (any EventDispatcherConvertible)!
     private var audioChunkType: RTMPChunkType = .zero
     private var videoChunkType: RTMPChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
-    private weak var rtmpConnection: RTMPConnection?
+    private weak var rtmpConnection: RtmpConnection?
 
     // Outbound
     private var baseTimeStamp = -1.0
@@ -203,7 +203,7 @@ class RTMPStream: NetStream {
     private var prevRebasedVideoTimeStamp = -1.0
     private let compositionTimeOffset = CMTime(value: 3, timescale: 30).seconds
 
-    init(connection: RTMPConnection) {
+    init(connection: RtmpConnection) {
         rtmpConnection = connection
         super.init()
         dispatcher = EventDispatcher(target: self)
@@ -247,7 +247,7 @@ class RTMPStream: NetStream {
             return
         }
         info.resourceName = name
-        let message = RTMPCommandMessage(
+        let message = RtmpCommandMessage(
             streamId: id,
             transactionId: 0,
             objectEncoding: .amf0,
@@ -260,7 +260,7 @@ class RTMPStream: NetStream {
             messages.append(message)
         default:
             setReadyState(state: .publish)
-            _ = rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
+            _ = rtmpConnection?.socket.write(chunk: RtmpChunk(message: message))
         }
     }
 
@@ -282,10 +282,10 @@ class RTMPStream: NetStream {
         let timestmap = dataWasSent ?
             UInt32((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000) :
             UInt32(startedAt.timeIntervalSinceNow * -1000)
-        let chunk = RTMPChunk(
+        let chunk = RtmpChunk(
             type: dataWasSent ? RTMPChunkType.one : RTMPChunkType.zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.data.rawValue,
-            message: RTMPDataMessage(
+            chunkStreamId: RtmpChunk.ChunkStreamId.data.rawValue,
+            message: RtmpDataMessage(
                 streamId: id,
                 objectEncoding: .amf0,
                 timestamp: timestmap,
@@ -351,7 +351,7 @@ class RTMPStream: NetStream {
                 default:
                     break
                 }
-                _ = rtmpConnection.socket.write(chunk: RTMPChunk(message: message))
+                _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: message))
             }
             messages.removeAll()
         case .publish:
@@ -382,10 +382,10 @@ class RTMPStream: NetStream {
             return
         }
         switch code {
-        case RTMPConnection.Code.connectSuccess.rawValue:
+        case RtmpConnection.Code.connectSuccess.rawValue:
             setReadyState(state: .initialized)
             rtmpConnection.createStream(self)
-        case RTMPStream.Code.publishStart.rawValue:
+        case RtmpStream.Code.publishStart.rawValue:
             setReadyState(state: .publishing)
         default:
             break
@@ -412,7 +412,7 @@ class RTMPStream: NetStream {
         guard let rtmpConnection else {
             return
         }
-        _ = rtmpConnection.socket.write(chunk: RTMPChunk(message: RTMPCommandMessage(
+        _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
             streamId: id,
             transactionId: 0,
             objectEncoding: .amf0,
@@ -426,10 +426,10 @@ class RTMPStream: NetStream {
         guard let rtmpConnection else {
             return
         }
-        _ = rtmpConnection.socket.write(chunk: RTMPChunk(
+        _ = rtmpConnection.socket.write(chunk: RtmpChunk(
             type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.command.rawValue,
-            message: RTMPCommandMessage(
+            chunkStreamId: RtmpChunk.ChunkStreamId.command.rawValue,
+            message: RtmpCommandMessage(
                 streamId: 0,
                 transactionId: 0,
                 objectEncoding: .amf0,
@@ -444,10 +444,10 @@ class RTMPStream: NetStream {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
-        let length = rtmpConnection.socket.write(chunk: RTMPChunk(
+        let length = rtmpConnection.socket.write(chunk: RtmpChunk(
             type: audioChunkType,
             chunkStreamId: FLVTagType.audio.streamId,
-            message: RTMPAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
+            message: RtmpAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
         ))
         audioChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
@@ -457,17 +457,17 @@ class RTMPStream: NetStream {
         guard let rtmpConnection, readyState == .publishing else {
             return
         }
-        let length = rtmpConnection.socket.write(chunk: RTMPChunk(
+        let length = rtmpConnection.socket.write(chunk: RtmpChunk(
             type: videoChunkType,
             chunkStreamId: FLVTagType.video.streamId,
-            message: RTMPVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)
+            message: RtmpVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)
         ))
         videoChunkType = .one
         info.byteCount.mutate { $0 += Int64(length) }
     }
 
     private func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
-        var buffer = Data([RTMPStream.aac, FLVAACPacketType.seq.rawValue])
+        var buffer = Data([RtmpStream.aac, FLVAACPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
         handleEncodedAudioBuffer(buffer, 0)
     }
@@ -483,7 +483,7 @@ class RTMPStream: NetStream {
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }
-        var buffer = Data([RTMPStream.aac, FLVAACPacketType.raw.rawValue])
+        var buffer = Data([RtmpStream.aac, FLVAACPacketType.raw.rawValue])
         buffer.append(
             audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: Int(audioBuffer.byteLength)
@@ -578,7 +578,7 @@ class RTMPStream: NetStream {
     }
 }
 
-extension RTMPStream: EventDispatcherConvertible {
+extension RtmpStream: EventDispatcherConvertible {
     func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
         dispatcher.addEventListener(type, selector: selector, observer: observer)
     }
@@ -592,7 +592,7 @@ extension RTMPStream: EventDispatcherConvertible {
     }
 }
 
-extension RTMPStream: AudioCodecDelegate {
+extension RtmpStream: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
         netStreamLockQueue.async {
             self.audioCodecOutputFormatInner(format)
@@ -606,7 +606,7 @@ extension RTMPStream: AudioCodecDelegate {
     }
 }
 
-extension RTMPStream: VideoCodecDelegate {
+extension RtmpStream: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         let format = codec.settings.value.format
         netStreamLockQueue.async {

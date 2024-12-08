@@ -1,14 +1,14 @@
 import Foundation
 import libsrt
 
-protocol SRTSocketDelegate: AnyObject {
-    func socket(_ socket: SRTSocket, status: SRT_SOCKSTATUS)
-    func socket(_ socket: SRTSocket, sendHook data: Data) -> Bool
+protocol SrtSocketDelegate: AnyObject {
+    func socket(_ socket: SrtSocket, status: SRT_SOCKSTATUS)
+    func socket(_ socket: SrtSocket, sendHook data: Data) -> Bool
 }
 
-final class SRTSocket {
-    var options: [SRTSocketOption: String] = [:]
-    weak var delegate: (any SRTSocketDelegate)?
+final class SrtSocket {
+    var options: [SrtSocketOption: String] = [:]
+    weak var delegate: (any SrtSocketDelegate)?
     private(set) var perf = CBytePerfMon()
     private(set) var isRunning: Atomic<Bool> = .init(false)
     private(set) var socket: SRTSOCKET = SRT_INVALID_SOCK
@@ -48,7 +48,7 @@ final class SRTSocket {
 
     init() {}
 
-    func open(_ addr: sockaddr_in, _ options: [SRTSocketOption: String]) throws {
+    func open(_ addr: sockaddr_in, _ options: [SrtSocketOption: String]) throws {
         guard socket == SRT_INVALID_SOCK else {
             return
         }
@@ -62,7 +62,7 @@ final class SRTSocket {
                               guard let context, let buf1, let buf2 else {
                                   return -1
                               }
-                              let socket: SRTSocket = Unmanaged.fromOpaque(context).takeUnretainedValue()
+                              let socket: SrtSocket = Unmanaged.fromOpaque(context).takeUnretainedValue()
                               var data = Data(capacity: Int(size1 + size2))
                               buf1.withMemoryRebound(to: UInt8.self, capacity: Int(size1)) { buf in
                                   data.append(buf, count: Int(size1))
@@ -114,8 +114,8 @@ final class SRTSocket {
         socket = SRT_INVALID_SOCK
     }
 
-    func configure(_ binding: SRTSocketOption.Binding) -> Bool {
-        let failures = SRTSocketOption.configure(socket, binding: binding, options: options)
+    func configure(_ binding: SrtSocketOption.Binding) -> Bool {
+        let failures = SrtSocketOption.configure(socket, binding: binding, options: options)
         guard failures.isEmpty else {
             logger.error("configure failures: \(failures)")
             return false

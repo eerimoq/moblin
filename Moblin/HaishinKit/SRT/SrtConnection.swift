@@ -1,24 +1,24 @@
 import Foundation
 import libsrt
 
-public class SRTConnection: NSObject {
+public class SrtConnection: NSObject {
     @objc public private(set) dynamic var connected = false
 
-    var socket: SRTSocket? {
+    var socket: SrtSocket? {
         didSet {
             socket?.delegate = self
         }
     }
 
-    private var stream: SRTStream?
+    private var stream: SrtStream?
     private var sendHook: ((Data) -> Bool)?
 
-    var performanceData: SRTPerformanceData {
+    var performanceData: SrtPerformanceData {
         guard let socket else {
             return .zero
         }
         _ = socket.bstats()
-        return SRTPerformanceData(mon: socket.perf)
+        return SrtPerformanceData(mon: socket.perf)
     }
 
     override public init() {
@@ -37,7 +37,7 @@ public class SRTConnection: NSObject {
         }
         self.sendHook = sendHook
         socket = .init()
-        try socket?.open(sockaddrIn(host, port: UInt16(port)), SRTSocketOption.from(uri: uri))
+        try socket?.open(sockaddrIn(host, port: UInt16(port)), SrtSocketOption.from(uri: uri))
     }
 
     func close() {
@@ -52,7 +52,7 @@ public class SRTConnection: NSObject {
         stream = nil
     }
 
-    func setStream(stream: SRTStream) {
+    func setStream(stream: SrtStream) {
         self.stream = stream
     }
 
@@ -72,12 +72,12 @@ public class SRTConnection: NSObject {
     }
 }
 
-extension SRTConnection: SRTSocketDelegate {
-    func socket(_ socket: SRTSocket, status _: SRT_SOCKSTATUS) {
+extension SrtConnection: SrtSocketDelegate {
+    func socket(_ socket: SrtSocket, status _: SRT_SOCKSTATUS) {
         connected = socket.status == SRTS_CONNECTED
     }
 
-    func socket(_: SRTSocket, sendHook data: Data) -> Bool {
+    func socket(_: SrtSocket, sendHook data: Data) -> Bool {
         return sendHook?(data) ?? false
     }
 }

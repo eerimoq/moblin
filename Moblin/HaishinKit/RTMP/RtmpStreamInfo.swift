@@ -5,16 +5,16 @@ private struct SendTiming {
     var sequence: Int64
 }
 
-struct RTMPStreamStats {
+struct RtmpStreamStats {
     var rttMs: Double = 0
     var packetsInFlight: UInt32 = 0
 }
 
-class RTMPStreamInfo {
+class RtmpStreamInfo {
     var byteCount: Atomic<Int64> = .init(0)
     var resourceName: String?
     var currentBytesPerSecond: Int64 = 0
-    var stats: Atomic<RTMPStreamStats> = .init(RTMPStreamStats())
+    var stats: Atomic<RtmpStreamStats> = .init(RtmpStreamStats())
 
     private var previousByteCount: Int64 = 0
     private var sendTimings: [SendTiming] = []
@@ -31,7 +31,7 @@ class RTMPStreamInfo {
 
     func clear() {
         byteCount.mutate { $0 = 0 }
-        stats.mutate { $0 = RTMPStreamStats() }
+        stats.mutate { $0 = RtmpStreamStats() }
         currentBytesPerSecond = 0
         previousByteCount = 0
         sendTimings.removeAll()

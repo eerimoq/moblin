@@ -14,7 +14,7 @@ class RTMPResponder {
     }
 }
 
-class RTMPConnection: EventDispatcher {
+class RtmpConnection: EventDispatcher {
     private static let defaultWindowSizeFromServer: Int64 = 250_000
     private static let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
     private static let defaultFlashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
@@ -81,32 +81,32 @@ class RTMPConnection: EventDispatcher {
         return command
     }
 
-    var flashVer = RTMPConnection.defaultFlashVer
+    var flashVer = RtmpConnection.defaultFlashVer
     private(set) var uri: URL?
     private(set) var connected = false
-    var socket: RTMPSocket!
-    var streams: [RTMPStream] = []
+    var socket: RtmpSocket!
+    var streams: [RtmpStream] = []
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var operations: [Int: RTMPResponder] = [:]
-    var windowSizeFromServer = RTMPConnection.defaultWindowSizeFromServer {
+    var windowSizeFromServer = RtmpConnection.defaultWindowSizeFromServer {
         didSet {
             guard socket.connected else {
                 return
             }
-            _ = socket.write(chunk: RTMPChunk(
+            _ = socket.write(chunk: RtmpChunk(
                 type: .zero,
-                chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
-                message: RTMPWindowAcknowledgementSizeMessage(100_000)
+                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+                message: RtmpWindowAcknowledgementSizeMessage(100_000)
             ))
         }
     }
 
     var currentTransactionId = 0
     private var timer = SimpleTimer(queue: netStreamLockQueue)
-    private var messages: [UInt16: RTMPMessage] = [:]
+    private var messages: [UInt16: RtmpMessage] = [:]
     private var arguments: [Any?] = []
-    private var currentChunk: RTMPChunk?
-    private var fragmentedChunks: [UInt16: RTMPChunk] = [:]
+    private var currentChunk: RtmpChunk?
+    private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
 
     override init() {
         super.init()
@@ -136,7 +136,7 @@ class RTMPConnection: EventDispatcher {
             return
         }
         currentTransactionId += 1
-        let message = RTMPCommandMessage(
+        let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: currentTransactionId,
             objectEncoding: .amf0,
@@ -147,7 +147,7 @@ class RTMPConnection: EventDispatcher {
         if responder != nil {
             operations[message.transactionId] = responder
         }
-        _ = socket.write(chunk: RTMPChunk(message: message))
+        _ = socket.write(chunk: RtmpChunk(message: message))
     }
 
     func connectInternal(_ url: String, arguments: Any?...) {
@@ -160,7 +160,7 @@ class RTMPConnection: EventDispatcher {
         }
         self.uri = uri
         self.arguments = arguments
-        socket = socket != nil ? socket : RTMPSocket()
+        socket = socket != nil ? socket : RtmpSocket()
         socket.delegate = self
         let secure = uri.scheme == "rtmps" || uri.scheme == "rtmpts"
         socket.secure = secure
@@ -175,7 +175,7 @@ class RTMPConnection: EventDispatcher {
         socket?.close()
     }
 
-    func createStream(_ stream: RTMPStream) {
+    func createStream(_ stream: RtmpStream) {
         let responder = RTMPResponder(result: { data in
             guard let id = data[0] as? Double else {
                 return
@@ -208,11 +208,11 @@ class RTMPConnection: EventDispatcher {
 
     private func handleConnectSuccess() {
         connected = true
-        socket.maximumChunkSizeToServer = RTMPConnection.defaultMaximumChunkSizeToServer
-        _ = socket.write(chunk: RTMPChunk(
+        socket.maximumChunkSizeToServer = RtmpConnection.defaultMaximumChunkSizeToServer
+        _ = socket.write(chunk: RtmpChunk(
             type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
-            message: RTMPSetChunkSizeMessage(UInt32(socket.maximumChunkSizeToServer))
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpSetChunkSizeMessage(UInt32(socket.maximumChunkSizeToServer))
         ))
     }
 
@@ -254,7 +254,7 @@ class RTMPConnection: EventDispatcher {
         disconnectInternal()
     }
 
-    private func makeConnectChunk() -> RTMPChunk? {
+    private func makeConnectChunk() -> RtmpChunk? {
         guard let uri else {
             return nil
         }
@@ -263,7 +263,7 @@ class RTMPConnection: EventDispatcher {
             app += "?" + query
         }
         currentTransactionId += 1
-        let message = RTMPCommandMessage(
+        let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: currentTransactionId,
             // "connect" must be a objectEncoding = 0
@@ -280,11 +280,11 @@ class RTMPConnection: EventDispatcher {
                 "videoCodecs": SupportVideo.h264.rawValue,
                 "videoFunction": VideoFunction.clientSeek.rawValue,
                 "pageUrl": nil,
-                "objectEncoding": RTMPObjectEncoding.amf0.rawValue,
+                "objectEncoding": RtmpObjectEncoding.amf0.rawValue,
             ],
             arguments: arguments
         )
-        return RTMPChunk(message: message)
+        return RtmpChunk(message: message)
     }
 
     private func handleHandshakeDone() {
@@ -313,8 +313,8 @@ class RTMPConnection: EventDispatcher {
     }
 }
 
-extension RTMPConnection: RTMPSocketDelegate {
-    func socketReadyStateChanged(_: RTMPSocket, readyState: RTMPSocketReadyState) {
+extension RtmpConnection: RtmpSocketDelegate {
+    func socketReadyStateChanged(_: RtmpSocket, readyState: RtmpSocketReadyState) {
         switch readyState {
         case .handshakeDone:
             handleHandshakeDone()
@@ -325,15 +325,15 @@ extension RTMPConnection: RTMPSocketDelegate {
         }
     }
 
-    func socketUpdateStats(_: RTMPSocket, totalBytesOut: Int64) {
+    func socketUpdateStats(_: RtmpSocket, totalBytesOut: Int64) {
         guard let stream = streams.first else {
             return
         }
         stream.info.onWritten(sequence: totalBytesOut)
     }
 
-    func socketDataReceived(_ socket: RTMPSocket, data: Data) {
-        guard let chunk = currentChunk ?? RTMPChunk(data, size: socket.maximumChunkSizeFromServer) else {
+    func socketDataReceived(_ socket: RtmpSocket, data: Data) {
+        guard let chunk = currentChunk ?? RtmpChunk(data, size: socket.maximumChunkSizeFromServer) else {
             socket.inputBuffer.append(data)
             return
         }
@@ -384,7 +384,7 @@ extension RTMPConnection: RTMPSocketDelegate {
         }
     }
 
-    func socketDispatch(_: RTMPSocket, event: Event) {
+    func socketDispatch(_: RtmpSocket, event: Event) {
         dispatch(event: event)
     }
 }

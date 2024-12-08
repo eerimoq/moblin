@@ -32,10 +32,10 @@ protocol MediaDelegate: AnyObject {
 }
 
 final class Media: NSObject {
-    private var rtmpConnection = RTMPConnection()
-    private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream?
-    private var srtStream: SRTStream?
+    private var rtmpConnection = RtmpConnection()
+    private var srtConnection = SrtConnection()
+    private var rtmpStream: RtmpStream?
+    private var srtStream: SrtStream?
     private var ristStream: RistStream?
     private var irlStream: MoblinkStream?
     private var srtlaClient: SrtlaClient?
@@ -84,7 +84,7 @@ final class Media: NSObject {
     }
 
     func stopAllNetStreams() {
-        rtmpConnection = RTMPConnection()
+        rtmpConnection = RtmpConnection()
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -102,16 +102,16 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         irlStopStream()
-        rtmpConnection = RTMPConnection()
+        rtmpConnection = RtmpConnection()
         switch proto {
         case .rtmp:
-            rtmpStream = RTMPStream(connection: rtmpConnection)
+            rtmpStream = RtmpStream(connection: rtmpConnection)
             srtStream = nil
             ristStream = nil
             irlStream = nil
             netStream = rtmpStream
         case .srt:
-            srtStream = SRTStream(srtConnection)
+            srtStream = SrtStream(srtConnection)
             rtmpStream = nil
             ristStream = nil
             irlStream = nil
@@ -365,7 +365,7 @@ final class Media: NSObject {
         }
     }
 
-    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> ([String], [String])? {
+    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RtmpStream) -> ([String], [String])? {
         guard is200MsTick() else {
             return nil
         }
@@ -578,7 +578,7 @@ final class Media: NSObject {
             return
         }
         DispatchQueue.main.async {
-            switch RTMPConnection.Code(rawValue: code) {
+            switch RtmpConnection.Code(rawValue: code) {
             case .connectSuccess:
                 self.rtmpStream?.publish(self.rtmpStreamName)
                 self.delegate?.mediaOnRtmpConnected()

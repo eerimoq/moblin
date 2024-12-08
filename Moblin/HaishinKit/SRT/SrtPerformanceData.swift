@@ -2,8 +2,8 @@ import Foundation
 import libsrt
 
 // periphery:ignore
-public struct SRTPerformanceData {
-    static let zero: SRTPerformanceData = .init(
+public struct SrtPerformanceData {
+    static let zero: SrtPerformanceData = .init(
         msTimeStamp: 0,
         pktSentTotal: 0,
         pktRecvTotal: 0,

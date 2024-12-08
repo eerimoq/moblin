@@ -2,8 +2,7 @@ import AVFoundation
 import Foundation
 import libsrt
 
-/// An object that provides the interface to control a one-way channel over a SRTConnection.
-public class SRTStream: NetStream {
+public class SrtStream: NetStream {
     private enum ReadyState: UInt8 {
         case initialized = 0
         case open = 1
@@ -16,7 +15,7 @@ public class SRTStream: NetStream {
 
     private var action: (() -> Void)?
     private var keyValueObservations: [NSKeyValueObservation] = []
-    private weak var connection: SRTConnection?
+    private weak var connection: SrtConnection?
 
     private lazy var writer: MpegTsWriter = {
         var writer = MpegTsWriter()
@@ -54,8 +53,7 @@ public class SRTStream: NetStream {
         }
     }
 
-    /// Creates a new SRTStream object.
-    public init(_ connection: SRTConnection) {
+    public init(_ connection: SrtConnection) {
         super.init()
         self.connection = connection
         self.connection?.removeStream()
@@ -103,7 +101,6 @@ public class SRTStream: NetStream {
         super.attachAudio(audio, onError: onError, replaceAudioId: replaceAudioId)
     }
 
-    /// Sends streaming audio, video and data message from client.
     public func publish(_ name: String? = "") {
         netStreamLockQueue.async {
             guard let name else {
@@ -123,7 +120,6 @@ public class SRTStream: NetStream {
         }
     }
 
-    /// Stops playing or publishing and makes available other uses.
     public func close() {
         netStreamLockQueue.async {
             if self.readyState == .closed || self.readyState == .initialized {
@@ -134,7 +130,7 @@ public class SRTStream: NetStream {
     }
 }
 
-extension SRTStream: MpegTsWriterDelegate {
+extension SrtStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutput data: Data) {
         guard readyState == .publishing else {
             return

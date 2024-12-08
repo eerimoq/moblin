@@ -87,7 +87,7 @@ class RtmpServerChunkStream {
     }
 
     private func processMessage() {
-        guard let messageType = RTMPMessageType(rawValue: messageTypeId) else {
+        guard let messageType = RtmpMessageType(rawValue: messageTypeId) else {
             logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
             return
         }
@@ -178,25 +178,25 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Not a camera path")
             return
         }
-        client.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RtmpChunk(
             type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
-            message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpWindowAcknowledgementSizeMessage(2_500_000)
         ))
-        client.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RtmpChunk(
             type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
-            message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
-        client.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RtmpChunk(
             type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
-            message: RTMPSetChunkSizeMessage(1024)
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpSetChunkSizeMessage(1024)
         ))
-        client.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: streamId,
-            message: RTMPCommandMessage(
+            message: RtmpCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 objectEncoding: .amf0,
@@ -219,10 +219,10 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        client.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: streamId,
-            message: RTMPCommandMessage(
+            message: RtmpCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 objectEncoding: .amf0,
@@ -270,10 +270,10 @@ class RtmpServerChunkStream {
         client.streamKey = streamKey
         client.connectionState = .connected
         client.server?.handleClientConnected(client: client)
-        client.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: streamId,
-            message: RTMPCommandMessage(
+            message: RtmpCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 objectEncoding: .amf0,

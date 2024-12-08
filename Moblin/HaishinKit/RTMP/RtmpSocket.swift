@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-enum RTMPSocketReadyState {
+enum RtmpSocketReadyState {
     case uninitialized
     case versionSent
     case ackSent
@@ -9,17 +9,17 @@ enum RTMPSocketReadyState {
     case closed
 }
 
-protocol RTMPSocketDelegate: AnyObject {
-    func socketDataReceived(_ socket: RTMPSocket, data: Data)
-    func socketReadyStateChanged(_ socket: RTMPSocket, readyState: RTMPSocketReadyState)
-    func socketUpdateStats(_ socket: RTMPSocket, totalBytesOut: Int64)
-    func socketDispatch(_ socket: RTMPSocket, event: Event)
+protocol RtmpSocketDelegate: AnyObject {
+    func socketDataReceived(_ socket: RtmpSocket, data: Data)
+    func socketReadyStateChanged(_ socket: RtmpSocket, readyState: RtmpSocketReadyState)
+    func socketUpdateStats(_ socket: RtmpSocket, totalBytesOut: Int64)
+    func socketDispatch(_ socket: RtmpSocket, event: Event)
 }
 
-final class RTMPSocket {
-    var maximumChunkSizeFromServer = RTMPChunk.defaultSize
-    var maximumChunkSizeToServer = RTMPChunk.defaultSize
-    private var readyState: RTMPSocketReadyState = .uninitialized
+final class RtmpSocket {
+    var maximumChunkSizeFromServer = RtmpChunk.defaultSize
+    var maximumChunkSizeToServer = RtmpChunk.defaultSize
+    private var readyState: RtmpSocketReadyState = .uninitialized
     var secure = false {
         didSet {
             if secure {
@@ -31,7 +31,7 @@ final class RTMPSocket {
     }
 
     var inputBuffer = Data()
-    weak var delegate: (any RTMPSocketDelegate)?
+    weak var delegate: (any RtmpSocketDelegate)?
     private(set) var totalBytesIn: Atomic<Int64> = .init(0)
     private(set) var totalBytesOut: Atomic<Int64> = .init(0)
     private(set) var connected = false {
@@ -45,7 +45,7 @@ final class RTMPSocket {
         }
     }
 
-    private var handshake = RTMPHandshake()
+    private var handshake = RtmpHandshake()
     private var connection: NWConnection? {
         didSet {
             oldValue?.viabilityUpdateHandler = nil
@@ -61,10 +61,10 @@ final class RTMPSocket {
     private var timeoutHandler: DispatchWorkItem?
 
     func connect(host: String, port: Int) {
-        handshake = RTMPHandshake()
+        handshake = RtmpHandshake()
         setReadyState(state: .uninitialized)
-        maximumChunkSizeToServer = RTMPChunk.defaultSize
-        maximumChunkSizeFromServer = RTMPChunk.defaultSize
+        maximumChunkSizeToServer = RtmpChunk.defaultSize
+        maximumChunkSizeFromServer = RtmpChunk.defaultSize
         totalBytesIn.mutate { $0 = 0 }
         totalBytesOut.mutate { $0 = 0 }
         inputBuffer.removeAll(keepingCapacity: false)
@@ -104,23 +104,23 @@ final class RTMPSocket {
         if isDisconnected {
             let data: ASObject
             if readyState == .handshakeDone {
-                data = RTMPConnection.Code.connectClosed.data("")
+                data = RtmpConnection.Code.connectClosed.data("")
             } else {
-                data = RTMPConnection.Code.connectFailed.data("")
+                data = RtmpConnection.Code.connectFailed.data("")
             }
             delegate?.socketDispatch(self, event: Event(type: .rtmpStatus, data: data))
         }
         timeoutHandler?.cancel()
     }
 
-    func write(chunk: RTMPChunk) -> Int {
+    func write(chunk: RtmpChunk) -> Int {
         for data in chunk.split(maximumChunkSizeToServer) {
             write(data: data)
         }
         return chunk.message!.length
     }
 
-    private func setReadyState(state: RTMPSocketReadyState) {
+    private func setReadyState(state: RtmpSocketReadyState) {
         guard readyState != state else {
             return
         }
@@ -199,17 +199,17 @@ final class RTMPSocket {
     }
 
     private func processInputVersionSent() {
-        guard inputBuffer.count >= RTMPHandshake.sigSize + 1 else {
+        guard inputBuffer.count >= RtmpHandshake.sigSize + 1 else {
             return
         }
         write(data: handshake.createC2Packet(inputBuffer))
-        inputBuffer.removeSubrange(0 ... RTMPHandshake.sigSize)
+        inputBuffer.removeSubrange(0 ... RtmpHandshake.sigSize)
         setReadyState(state: .ackSent)
         processInput()
     }
 
     private func processInputAckSent() {
-        guard inputBuffer.count >= RTMPHandshake.sigSize else {
+        guard inputBuffer.count >= RtmpHandshake.sigSize else {
             return
         }
         inputBuffer.removeAll()

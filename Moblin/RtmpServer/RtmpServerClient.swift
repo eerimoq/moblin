@@ -350,16 +350,16 @@ class RtmpServerClient {
     }
 
     private func sendAck() {
-        let message = RTMPAcknowledgementMessage()
+        let message = RtmpAcknowledgementMessage()
         message.sequence = UInt32(totalBytesReceived & 0xFFFF_FFFF)
-        sendMessage(chunk: RTMPChunk(
+        sendMessage(chunk: RtmpChunk(
             type: .zero,
-            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
             message: message
         ))
     }
 
-    func sendMessage(chunk: RTMPChunk) {
+    func sendMessage(chunk: RtmpChunk) {
         for chunk in chunk.split(chunkSizeToClient) {
             send(data: chunk)
         }

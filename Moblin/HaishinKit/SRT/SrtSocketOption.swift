@@ -6,15 +6,15 @@ private let enummapTranstype: [String: Any] = [
     "file": SRTT_FILE,
 ]
 
-enum SRTSocketOption: String {
-    static func from(uri: URL?) -> [SRTSocketOption: String] {
+enum SrtSocketOption: String {
+    static func from(uri: URL?) -> [SrtSocketOption: String] {
         guard let uri else {
             return [:]
         }
         let queryItems = getQueryItems(uri: uri)
-        var options: [SRTSocketOption: String] = [:]
+        var options: [SrtSocketOption: String] = [:]
         for item in queryItems {
-            guard let option = SRTSocketOption(rawValue: item.key) else {
+            guard let option = SrtSocketOption(rawValue: item.key) else {
                 logger.error("Unknown option: \(item.key)")
                 continue
             }
@@ -431,7 +431,7 @@ enum SRTSocketOption: String {
     }
 
     static func configure(_ socket: SRTSOCKET, binding: Binding,
-                          options: [SRTSocketOption: String]) -> [String]
+                          options: [SrtSocketOption: String]) -> [String]
     {
         var failures: [String] = []
         for (key, value) in options where key.binding == binding {
