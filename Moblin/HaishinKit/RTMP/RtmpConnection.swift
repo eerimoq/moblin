@@ -126,11 +126,10 @@ class RtmpConnection: EventDispatcher {
             return
         }
         self.uri = uri
-        socket = socket != nil ? socket : RtmpSocket()
+        socket = socket ?? RtmpSocket()
         socket.delegate = self
-        let secure = uri.scheme == "rtmps" || uri.scheme == "rtmpts"
-        socket.secure = secure
-        socket.connect(host: host, port: uri.port ?? (secure ? 443 : 1935))
+        socket.secure = scheme.hasSuffix("s")
+        socket.connect(host: host, port: uri.port ?? (socket.secure ? 443 : 1935))
     }
 
     func disconnectInternal() {
