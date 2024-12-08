@@ -38,21 +38,22 @@ class MpegTsWriter {
     }()
 
     private var programMappingTable = MpegTsProgramMapping()
-    private var audioConfig: MpegTsAudioConfig? {
-        didSet {
-            writeProgramIfNeeded()
-        }
-    }
-
-    private var videoConfig: MpegTsVideoConfig? {
-        didSet {
-            writeProgramIfNeeded()
-        }
-    }
+    private var audioConfig: MpegTsAudioConfig?
+    private var videoConfig: MpegTsVideoConfig?
 
     private var programClockReferenceTimestamp: CMTime?
 
     init() {}
+
+    private func setAudioConfig(_ config: MpegTsAudioConfig) {
+        audioConfig = config
+        writeProgramIfNeeded()
+    }
+
+    private func setVideoConfig(_ config: MpegTsVideoConfig) {
+        videoConfig = config
+        writeProgramIfNeeded()
+    }
 
     func startRunning() {
         isRunning.mutate { $0 = true }
@@ -283,7 +284,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         data.elementaryPacketId = MpegTsWriter.audioPacketId
         programMappingTable.elementaryStreamSpecificDatas.append(data)
         audioContinuityCounter = 0
-        audioConfig = MpegTsAudioConfig(formatDescription: format.formatDescription)
+        setAudioConfig(MpegTsAudioConfig(formatDescription: format.formatDescription))
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
@@ -319,7 +320,7 @@ extension MpegTsWriter: VideoCodecDelegate {
             }
             data.streamType = .h264
             addVideoSpecificDatas(data: data)
-            videoConfig = MpegTsVideoConfigAvc(data: avcC)
+            setVideoConfig(MpegTsVideoConfigAvc(data: avcC))
         case .hevc:
             guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create hvcC")
@@ -327,7 +328,7 @@ extension MpegTsWriter: VideoCodecDelegate {
             }
             data.streamType = .h265
             addVideoSpecificDatas(data: data)
-            videoConfig = MpegTsVideoConfigHevc(data: hvcC)
+            setVideoConfig(MpegTsVideoConfigHevc(data: hvcC))
         }
     }
 
