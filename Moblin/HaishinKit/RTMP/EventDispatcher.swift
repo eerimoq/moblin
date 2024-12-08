@@ -1,8 +1,8 @@
 import Foundation
 
 protocol EventDispatcherConvertible: AnyObject {
-    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?, useCapture: Bool)
-    func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?, useCapture: Bool)
+    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?)
+    func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?)
     func dispatch(event: Event)
     func dispatch(_ type: Event.Name, data: Any?)
 }
@@ -57,37 +57,27 @@ open class EventDispatcher: EventDispatcherConvertible {
         self.target = target
     }
 
-    deinit {
-        target = nil
-    }
-
-    func addEventListener(
-        _ type: Event.Name,
-        selector: Selector,
-        observer: AnyObject? = nil,
-        useCapture: Bool = false
-    ) {
+    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
         NotificationCenter.default.addObserver(
-            observer ?? target ?? self, selector: selector,
-            name: Notification.Name(rawValue: "\(type.rawValue)/\(useCapture)"), object: target ?? self
+            observer ?? target ?? self,
+            selector: selector,
+            name: Notification.Name(rawValue: type.rawValue),
+            object: target ?? self
         )
     }
 
-    func removeEventListener(
-        _ type: Event.Name,
-        selector _: Selector,
-        observer: AnyObject? = nil,
-        useCapture: Bool = false
-    ) {
+    func removeEventListener(_ type: Event.Name, selector _: Selector, observer: AnyObject? = nil) {
         NotificationCenter.default.removeObserver(
-            observer ?? target ?? self, name: Notification.Name(rawValue: "\(type.rawValue)/\(useCapture)"),
+            observer ?? target ?? self,
+            name: Notification.Name(rawValue: type.rawValue),
             object: target ?? self
         )
     }
 
     open func dispatch(event: Event) {
         NotificationCenter.default.post(
-            name: Notification.Name(rawValue: "\(event.type.rawValue)/false"), object: target ?? self,
+            name: Notification.Name(rawValue: event.type.rawValue),
+            object: target ?? self,
             userInfo: ["event": event]
         )
     }

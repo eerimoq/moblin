@@ -579,22 +579,12 @@ class RTMPStream: NetStream {
 }
 
 extension RTMPStream: EventDispatcherConvertible {
-    func addEventListener(
-        _ type: Event.Name,
-        selector: Selector,
-        observer: AnyObject? = nil,
-        useCapture: Bool = false
-    ) {
-        dispatcher.addEventListener(type, selector: selector, observer: observer, useCapture: useCapture)
+    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
+        dispatcher.addEventListener(type, selector: selector, observer: observer)
     }
 
-    func removeEventListener(
-        _ type: Event.Name,
-        selector: Selector,
-        observer: AnyObject? = nil,
-        useCapture: Bool = false
-    ) {
-        dispatcher.removeEventListener(type, selector: selector, observer: observer, useCapture: useCapture)
+    func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
+        dispatcher.removeEventListener(type, selector: selector, observer: observer)
     }
 
     func dispatch(event: Event) {
