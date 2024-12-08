@@ -28,7 +28,7 @@ class RtmpStream: NetStream {
         case videoDimensionChange = "NetStream.Video.DimensionChange"
 
         func data() -> ASObject {
-            [
+            return [
                 "code": rawValue,
             ]
         }

@@ -28,7 +28,7 @@ class RtmpConnection: EventDispatcher {
         case connectSuccess = "NetConnection.Connect.Success"
 
         func data() -> ASObject {
-            [
+            return [
                 "code": rawValue,
             ]
         }
