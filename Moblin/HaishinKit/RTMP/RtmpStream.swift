@@ -277,14 +277,14 @@ class RtmpStream: NetStream {
         else {
             return
         }
-        rtmpConnection.call("FCPublish", responder: nil, arguments: name)
+        rtmpConnection.call("FCPublish", arguments: [name])
     }
 
     private func FCUnpublish() {
         guard let rtmpConnection, let name = info.resourceName, rtmpConnection.flashVer.contains("FMLE/") else {
             return
         }
-        rtmpConnection.call("FCUnpublish", responder: nil, arguments: name)
+        rtmpConnection.call("FCUnpublish", arguments: [name])
     }
 
     private func deleteStream() {

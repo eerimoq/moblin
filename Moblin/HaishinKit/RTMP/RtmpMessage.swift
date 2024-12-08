@@ -281,7 +281,7 @@ final class RtmpCommandMessage: RtmpMessage {
     }
 
     override func execute(_ connection: RtmpConnection, type _: RTMPChunkType) {
-        guard let responder = connection.operations.removeValue(forKey: transactionId) else {
+        guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
             switch commandName {
             case "close":
                 connection.disconnectInternal()
@@ -292,7 +292,7 @@ final class RtmpCommandMessage: RtmpMessage {
         }
         switch commandName {
         case "_result":
-            responder.on(result: arguments)
+            responder(arguments)
         case "_error":
             // Should probably do something.
             break

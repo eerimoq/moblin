@@ -1,19 +1,6 @@
 import AVFoundation
 import Foundation
 
-class RTMPResponder {
-    typealias Handler = (_ data: [Any?]) -> Void
-    private var result: Handler
-
-    init(result: @escaping Handler) {
-        self.result = result
-    }
-
-    final func on(result: [Any?]) {
-        self.result(result)
-    }
-}
-
 class RtmpConnection: EventDispatcher {
     private static let defaultWindowSizeFromServer: Int64 = 250_000
     private static let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
@@ -52,7 +39,7 @@ class RtmpConnection: EventDispatcher {
     var socket: RtmpSocket!
     var streams: [RtmpStream] = []
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
-    var operations: [Int: RTMPResponder] = [:]
+    var callCompletions: [Int: ([Any?]) -> Void] = [:]
     var windowSizeFromServer = RtmpConnection.defaultWindowSizeFromServer {
         didSet {
             guard socket.connected else {
@@ -116,7 +103,7 @@ class RtmpConnection: EventDispatcher {
         return command
     }
 
-    func call(_ commandName: String, responder: RTMPResponder?, arguments: Any?...) {
+    func call(_ commandName: String, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
         guard connected else {
             return
         }
@@ -129,8 +116,8 @@ class RtmpConnection: EventDispatcher {
             commandObject: nil,
             arguments: arguments
         )
-        if responder != nil {
-            operations[message.transactionId] = responder
+        if let onCompleted {
+            callCompletions[message.transactionId] = onCompleted
         }
         _ = socket.write(chunk: RtmpChunk(message: message))
     }
@@ -161,14 +148,13 @@ class RtmpConnection: EventDispatcher {
     }
 
     func createStream(_ stream: RtmpStream) {
-        let responder = RTMPResponder(result: { data in
+        call("createStream", arguments: []) { data in
             guard let id = data[0] as? Double else {
                 return
             }
             stream.id = UInt32(id)
             stream.setReadyState(state: .open)
-        })
-        call("createStream", responder: responder)
+        }
     }
 
     @objc
@@ -290,7 +276,7 @@ class RtmpConnection: EventDispatcher {
         currentChunk = nil
         currentTransactionId = 0
         messages.removeAll()
-        operations.removeAll()
+        callCompletions.removeAll()
         fragmentedChunks.removeAll()
     }
 }
