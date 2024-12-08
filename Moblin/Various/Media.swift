@@ -117,9 +117,7 @@ final class Media: NSObject {
             irlStream = nil
             netStream = srtStream
         case .rist:
-            ristStream = RistStream()
-            ristStream?.onConnected = onRistConnected
-            ristStream?.onDisconnected = onRistDisconnected
+            ristStream = RistStream(deletate: self)
             srtStream = nil
             rtmpStream = nil
             irlStream = nil
@@ -611,14 +609,6 @@ final class Media: NSObject {
         ristStream?.stop()
     }
 
-    private func onRistConnected() {
-        delegate?.mediaOnRistConnected()
-    }
-
-    private func onRistDisconnected() {
-        delegate?.mediaOnRistDisconnected()
-    }
-
     func irlStartStream() {
         irlStream?.start()
     }
@@ -1008,5 +998,15 @@ extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         videoEncoderSettings.bitRate = bitrate
         commitVideoEncoderSettings()
+    }
+}
+
+extension Media: RistStreamDelegate {
+    func ristStreamOnConnected() {
+        delegate?.mediaOnRistConnected()
+    }
+
+    func ristStreamOnDisconnected() {
+        delegate?.mediaOnRistDisconnected()
     }
 }

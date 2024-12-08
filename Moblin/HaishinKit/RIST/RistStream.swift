@@ -72,6 +72,11 @@ private enum RistStreamState {
     case disconnected
 }
 
+protocol RistStreamDelegate: AnyObject {
+    func ristStreamOnConnected()
+    func ristStreamOnDisconnected()
+}
+
 class RistStream: NetStream {
     private var context: RistContext?
     private var peers: [RistRemotePeer] = []
@@ -79,11 +84,11 @@ class RistStream: NetStream {
     private var networkPathMonitor: NWPathMonitor?
     private var bonding: Bool = false
     private var url: String = ""
-    var onConnected: (() -> Void)?
-    var onDisconnected: (() -> Void)?
     private var state: RistStreamState = .connecting
+    private weak var ristDelegate: (any RistStreamDelegate)?
 
-    override init() {
+    init(deletate: RistStreamDelegate) {
+        ristDelegate = deletate
         super.init()
         writer.delegate = self
     }
@@ -299,7 +304,7 @@ class RistStream: NetStream {
         }
         for peer in peers where peer.isConnected() {
             state = .connected
-            onConnected?()
+            ristDelegate?.ristStreamOnConnected()
             break
         }
     }
@@ -310,7 +315,7 @@ class RistStream: NetStream {
         }
         logger.info("rist: All peers disconnected")
         state = .disconnected
-        onDisconnected?()
+        ristDelegate?.ristStreamOnDisconnected()
     }
 
     private func send(data: Data) {
