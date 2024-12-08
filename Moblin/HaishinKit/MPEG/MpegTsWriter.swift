@@ -106,8 +106,7 @@ class MpegTsWriter {
                     adaptationField.encode().withUnsafeBytes { (adaptationPointer: UnsafeRawBufferPointer) in
                         pointer.copyMemory(from: adaptationPointer)
                     }
-                    pointer =
-                        UnsafeMutableRawBufferPointer(rebasing: pointer[adaptationField.encode().count...])
+                    pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[adaptationField.encode().count...])
                 }
                 packet.payload.withUnsafeBytes { (payloadPointer: UnsafeRawBufferPointer) in
                     pointer.copyMemory(from: payloadPointer)
@@ -132,21 +131,25 @@ class MpegTsWriter {
                 videoContinuityCounter &= 0x0F
             }
             return videoContinuityCounter
-        case MpegTsWriter.programAssociationTablePacketId:
-            defer {
-                patContinuityCounter += 1
-                patContinuityCounter &= 0x0F
-            }
-            return patContinuityCounter
-        case MpegTsWriter.programMappingTablePacketId:
-            defer {
-                pmtContinuityCounter += 1
-                pmtContinuityCounter &= 0x0F
-            }
-            return pmtContinuityCounter
         default:
             return 0
         }
+    }
+
+    private func nextProgramAssociationTableContinuityCounter() -> UInt8 {
+        defer {
+            patContinuityCounter += 1
+            patContinuityCounter &= 0x0F
+        }
+        return patContinuityCounter
+    }
+
+    private func nextProgramMappingTableContinuityCounter() -> UInt8 {
+        defer {
+            pmtContinuityCounter += 1
+            pmtContinuityCounter &= 0x0F
+        }
+        return pmtContinuityCounter
     }
 
     private func rotateFileHandle(_ timestamp: CMTime) {
@@ -237,8 +240,8 @@ class MpegTsWriter {
         programMappingTable.programClockReferencePacketId = MpegTsWriter.audioPacketId
         var patPacket = programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId)
         var pmtPacket = programMappingTable.packet(MpegTsWriter.programMappingTablePacketId)
-        patPacket.continuityCounter = nextContinuityCounter(packetId: MpegTsWriter.programAssociationTablePacketId)
-        pmtPacket.continuityCounter = nextContinuityCounter(packetId: MpegTsWriter.programMappingTablePacketId)
+        patPacket.continuityCounter = nextProgramAssociationTableContinuityCounter()
+        pmtPacket.continuityCounter = nextProgramMappingTableContinuityCounter()
         write(patPacket.encode() + pmtPacket.encode())
     }
 
