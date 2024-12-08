@@ -27,24 +27,9 @@ class RtmpConnection: EventDispatcher {
         case connectRejected = "NetConnection.Connect.Rejected"
         case connectSuccess = "NetConnection.Connect.Success"
 
-        var level: String {
-            switch self {
-            case .connectClosed:
-                return "status"
-            case .connectFailed:
-                return "error"
-            case .connectRejected:
-                return "error"
-            case .connectSuccess:
-                return "status"
-            }
-        }
-
-        func data(_ description: String) -> ASObject {
+        func data() -> ASObject {
             [
                 "code": rawValue,
-                "level": level,
-                "description": description,
             ]
         }
     }
@@ -200,7 +185,7 @@ class RtmpConnection: EventDispatcher {
         case .some(.connectRejected):
             handleConnectRejected(data: data)
         case .some(.connectClosed):
-            handleConnectClosed(data: data)
+            handleConnectClosed()
         default:
             break
         }
@@ -247,10 +232,7 @@ class RtmpConnection: EventDispatcher {
         }
     }
 
-    private func handleConnectClosed(data: ASObject) {
-        if let description = data["description"] as? String {
-            logger.info(description)
-        }
+    private func handleConnectClosed() {
         disconnectInternal()
     }
 

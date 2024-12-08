@@ -20,137 +20,16 @@ private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: 
 }
 
 class RtmpStream: NetStream {
-    /// NetStatusEvent#info.code for NetStream
-    /// - seealso: https://help.adobe.com/en_US/air/reference/html/flash/events/NetStatusEvent.html#NET_STATUS
     enum Code: String {
         case bufferEmpty = "NetStream.Buffer.Empty"
         case bufferFlush = "NetStream.Buffer.Flush"
         case bufferFull = "NetStream.Buffer.Full"
-        case connectClosed = "NetStream.Connect.Closed"
-        case connectFailed = "NetStream.Connect.Failed"
-        case connectRejected = "NetStream.Connect.Rejected"
-        case connectSuccess = "NetStream.Connect.Success"
-        case drmUpdateNeeded = "NetStream.DRM.UpdateNeeded"
-        case failed = "NetStream.Failed"
-        case multicastStreamReset = "NetStream.MulticastStream.Reset"
-        case pauseNotify = "NetStream.Pause.Notify"
-        case playFailed = "NetStream.Play.Failed"
-        case playFileStructureInvalid = "NetStream.Play.FileStructureInvalid"
-        case playInsufficientBW = "NetStream.Play.InsufficientBW"
-        case playNoSupportedTrackFound = "NetStream.Play.NoSupportedTrackFound"
-        case playReset = "NetStream.Play.Reset"
-        case playStart = "NetStream.Play.Start"
-        case playStop = "NetStream.Play.Stop"
-        case playStreamNotFound = "NetStream.Play.StreamNotFound"
-        case playTransition = "NetStream.Play.Transition"
-        case playUnpublishNotify = "NetStream.Play.UnpublishNotify"
-        case publishBadName = "NetStream.Publish.BadName"
-        case publishIdle = "NetStream.Publish.Idle"
         case publishStart = "NetStream.Publish.Start"
-        case recordAlreadyExists = "NetStream.Record.AlreadyExists"
-        case recordFailed = "NetStream.Record.Failed"
-        case recordNoAccess = "NetStream.Record.NoAccess"
-        case recordStart = "NetStream.Record.Start"
-        case recordStop = "NetStream.Record.Stop"
-        case recordDiskQuotaExceeded = "NetStream.Record.DiskQuotaExceeded"
-        case secondScreenStart = "NetStream.SecondScreen.Start"
-        case secondScreenStop = "NetStream.SecondScreen.Stop"
-        case seekFailed = "NetStream.Seek.Failed"
-        case seekInvalidTime = "NetStream.Seek.InvalidTime"
-        case seekNotify = "NetStream.Seek.Notify"
-        case stepNotify = "NetStream.Step.Notify"
-        case unpauseNotify = "NetStream.Unpause.Notify"
-        case unpublishSuccess = "NetStream.Unpublish.Success"
         case videoDimensionChange = "NetStream.Video.DimensionChange"
 
-        public var level: String {
-            switch self {
-            case .bufferEmpty:
-                return "status"
-            case .bufferFlush:
-                return "status"
-            case .bufferFull:
-                return "status"
-            case .connectClosed:
-                return "status"
-            case .connectFailed:
-                return "error"
-            case .connectRejected:
-                return "error"
-            case .connectSuccess:
-                return "status"
-            case .drmUpdateNeeded:
-                return "status"
-            case .failed:
-                return "error"
-            case .multicastStreamReset:
-                return "status"
-            case .pauseNotify:
-                return "status"
-            case .playFailed:
-                return "error"
-            case .playFileStructureInvalid:
-                return "error"
-            case .playInsufficientBW:
-                return "warning"
-            case .playNoSupportedTrackFound:
-                return "status"
-            case .playReset:
-                return "status"
-            case .playStart:
-                return "status"
-            case .playStop:
-                return "status"
-            case .playStreamNotFound:
-                return "error"
-            case .playTransition:
-                return "status"
-            case .playUnpublishNotify:
-                return "status"
-            case .publishBadName:
-                return "error"
-            case .publishIdle:
-                return "status"
-            case .publishStart:
-                return "status"
-            case .recordAlreadyExists:
-                return "status"
-            case .recordFailed:
-                return "error"
-            case .recordNoAccess:
-                return "error"
-            case .recordStart:
-                return "status"
-            case .recordStop:
-                return "status"
-            case .recordDiskQuotaExceeded:
-                return "error"
-            case .secondScreenStart:
-                return "status"
-            case .secondScreenStop:
-                return "status"
-            case .seekFailed:
-                return "error"
-            case .seekInvalidTime:
-                return "error"
-            case .seekNotify:
-                return "status"
-            case .stepNotify:
-                return "status"
-            case .unpauseNotify:
-                return "status"
-            case .unpublishSuccess:
-                return "status"
-            case .videoDimensionChange:
-                return "status"
-            }
-        }
-
-        func data(_ description: String) -> ASObject {
+        func data() -> ASObject {
             [
                 "code": rawValue,
-                "level": level,
-                "description": description,
             ]
         }
     }
