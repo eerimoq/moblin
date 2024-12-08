@@ -111,8 +111,7 @@ final class MapEffect: VideoEffect {
             let overlay = dot
                 .transformed(by: CGAffineTransform(
                     translationX: CGFloat(side - 30) / 2,
-                    y: CGFloat(side - 30) / 2 -
-                        CGFloat(dotOffsetRatio * CGFloat(side) / 2)
+                    y: CGFloat(side - 30) / 2 - CGFloat(dotOffsetRatio * CGFloat(side) / 2)
                 ))
                 .composited(over: CIImage(cgImage: image)
                     .transformed(by: CGAffineTransform(
