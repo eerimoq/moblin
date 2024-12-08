@@ -102,9 +102,12 @@ final class RTMPSocket {
             connection = nil
         }
         if isDisconnected {
-            let data = (readyState == .handshakeDone)
-                ? RTMPConnection.Code.connectClosed.data("")
-                : RTMPConnection.Code.connectFailed.data("")
+            let data: ASObject
+            if readyState == .handshakeDone {
+                data = RTMPConnection.Code.connectClosed.data("")
+            } else {
+                data = RTMPConnection.Code.connectFailed.data("")
+            }
             delegate?.socketDispatch(self, event: Event(type: .rtmpStatus, data: data))
         }
         timeoutHandler?.cancel()
