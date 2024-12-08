@@ -284,13 +284,12 @@ final class RTMPCommandMessage: RTMPMessage {
         guard let responder = connection.operations.removeValue(forKey: transactionId) else {
             switch commandName {
             case "close":
-                connection.close(isDisconnected: true)
+                connection.disconnectInternal()
             default:
                 connection.dispatch(.rtmpStatus, data: arguments.first as Any?)
             }
             return
         }
-
         switch commandName {
         case "_result":
             responder.on(result: arguments)

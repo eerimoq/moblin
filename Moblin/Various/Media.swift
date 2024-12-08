@@ -554,7 +554,7 @@ final class Media: NSObject {
             observer: self
         )
         rtmpStream?.close()
-        rtmpConnection.close()
+        rtmpConnection.disconnect()
         adaptiveBitrate = nil
     }
 

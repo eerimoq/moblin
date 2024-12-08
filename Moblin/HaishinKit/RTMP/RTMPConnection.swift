@@ -119,6 +119,18 @@ class RTMPConnection: EventDispatcher {
         removeEventListener(.rtmpStatus, selector: #selector(on(status:)))
     }
 
+    func connect(_ url: String, arguments: Any?...) {
+        netStreamLockQueue.async {
+            self.connectInternal(url, arguments: arguments)
+        }
+    }
+
+    func disconnect() {
+        netStreamLockQueue.async {
+            self.disconnectInternal()
+        }
+    }
+
     func call(_ commandName: String, responder: RTMPResponder?, arguments: Any?...) {
         guard connected else {
             return
@@ -138,7 +150,7 @@ class RTMPConnection: EventDispatcher {
         _ = socket.write(chunk: RTMPChunk(message: message))
     }
 
-    func connect(_ url: String, arguments: Any?...) {
+    func connectInternal(_ url: String, arguments: Any?...) {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
@@ -155,25 +167,12 @@ class RTMPConnection: EventDispatcher {
         socket.connect(host: host, port: uri.port ?? (secure ? 443 : 1935))
     }
 
-    func close() {
-        close(isDisconnected: false)
-    }
-
-    func close(isDisconnected: Bool) {
+    func disconnectInternal() {
         timer.stop()
-        guard connected || isDisconnected else {
-            return
-        }
-        if !isDisconnected {
-            uri = nil
-        }
         for stream in streams {
-            stream.close()
+            stream.closeInternal()
         }
-        // Just to let stream send unpublish and delete stream commands. It's a mess...
-        netStreamLockQueue.async {
-            self.socket?.close(isDisconnected: false)
-        }
+        socket?.close()
     }
 
     func createStream(_ stream: RTMPStream) {
@@ -195,50 +194,62 @@ class RTMPConnection: EventDispatcher {
         }
         switch Code(rawValue: code) {
         case .some(.connectSuccess):
-            connected = true
-            socket.maximumChunkSizeToServer = RTMPConnection.defaultMaximumChunkSizeToServer
-            _ = socket.write(chunk: RTMPChunk(
-                type: .zero,
-                chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
-                message: RTMPSetChunkSizeMessage(UInt32(socket.maximumChunkSizeToServer))
-            ))
+            handleConnectSuccess()
         case .some(.connectRejected):
-            guard
-                let uri,
-                let user = uri.user,
-                let password = uri.password,
-                let description = data["description"] as? String
-            else {
-                break
-            }
-            socket.close(isDisconnected: false)
-            switch true {
-            case description.contains("reason=nosuchuser"):
-                break
-            case description.contains("reason=authfailed"):
-                break
-            case description.contains("reason=needauth"):
-                let command = Self.makeSanJoseAuthCommand(uri, description: description)
-                connect(command, arguments: arguments)
-            case description.contains("authmod=adobe"):
-                if user.isEmpty || password.isEmpty {
-                    close(isDisconnected: true)
-                    break
-                }
-                let query = uri.query ?? ""
-                let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
-                connect(command, arguments: arguments)
-            default:
-                break
-            }
+            handleConnectRejected(data: data)
         case .some(.connectClosed):
-            if let description = data["description"] as? String {
-                logger.info(description)
-            }
-            close(isDisconnected: true)
+            handleConnectClosed(data: data)
         default:
             break
         }
+    }
+
+    private func handleConnectSuccess() {
+        connected = true
+        socket.maximumChunkSizeToServer = RTMPConnection.defaultMaximumChunkSizeToServer
+        _ = socket.write(chunk: RTMPChunk(
+            type: .zero,
+            chunkStreamId: RTMPChunk.ChunkStreamId.control.rawValue,
+            message: RTMPSetChunkSizeMessage(UInt32(socket.maximumChunkSizeToServer))
+        ))
+    }
+
+    private func handleConnectRejected(data: ASObject) {
+        guard
+            let uri,
+            let user = uri.user,
+            let password = uri.password,
+            let description = data["description"] as? String
+        else {
+            return
+        }
+        socket.close()
+        switch true {
+        case description.contains("reason=nosuchuser"):
+            break
+        case description.contains("reason=authfailed"):
+            break
+        case description.contains("reason=needauth"):
+            let command = Self.makeSanJoseAuthCommand(uri, description: description)
+            connect(command, arguments: arguments)
+        case description.contains("authmod=adobe"):
+            if user.isEmpty || password.isEmpty {
+                disconnectInternal()
+                break
+            }
+            let query = uri.query ?? ""
+            let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
+            connect(command, arguments: arguments)
+        default:
+            break
+        }
+    }
+
+    private func handleConnectClosed(data: ASObject) {
+        if let description = data["description"] as? String {
+            logger.info(description)
+        }
+        disconnectInternal()
     }
 
     private func makeConnectChunk() -> RTMPChunk? {
@@ -276,7 +287,7 @@ class RTMPConnection: EventDispatcher {
 
     private func handleHandshakeDone() {
         guard let chunk = makeConnectChunk() else {
-            close()
+            disconnectInternal()
             return
         }
         _ = socket.write(chunk: chunk)

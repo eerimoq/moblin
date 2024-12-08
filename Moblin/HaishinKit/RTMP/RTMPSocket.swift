@@ -87,7 +87,7 @@ final class RTMPSocket {
         netStreamLockQueue.asyncAfter(deadline: .now() + .seconds(10), execute: timeoutHandler!)
     }
 
-    func close(isDisconnected: Bool) {
+    func close(isDisconnected: Bool = false) {
         if let connection {
             // To make sure all data (FCUnpublish, deleteStream and closeStream) has been written?
             connection.send(

@@ -227,11 +227,17 @@ class RTMPStream: NetStream {
         }
     }
 
+    func close() {
+        netStreamLockQueue.async {
+            self.closeInternal()
+        }
+    }
+
     private func publishInner(_ name: String?) {
         guard let name else {
             switch readyState {
             case .publish, .publishing:
-                close(withLockQueue: false)
+                closeInternal()
             default:
                 break
             }
@@ -256,10 +262,6 @@ class RTMPStream: NetStream {
             setReadyState(state: .publish)
             _ = rtmpConnection?.socket.write(chunk: RTMPChunk(message: message))
         }
-    }
-
-    func close() {
-        close(withLockQueue: true)
     }
 
     func onTimeout() {
@@ -321,13 +323,7 @@ class RTMPStream: NetStream {
         return metadata
     }
 
-    private func close(withLockQueue: Bool) {
-        if withLockQueue {
-            netStreamLockQueue.async {
-                self.close(withLockQueue: false)
-            }
-            return
-        }
+    func closeInternal() {
         setReadyState(state: .initialized)
     }
 
