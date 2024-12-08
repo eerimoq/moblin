@@ -313,8 +313,8 @@ final class RTMPCommandMessage: RTMPMessage {
                 .serialize(commandName)
                 .serialize(transactionId)
                 .serialize(commandObject)
-            for i in arguments {
-                serializer.serialize(i)
+            for argument in arguments {
+                serializer.serialize(argument)
             }
             super.encoded = serializer.data
             serializer.clear()

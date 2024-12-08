@@ -188,8 +188,10 @@ class RTMPConnection: EventDispatcher {
 
     @objc
     private func on(status: Notification) {
-        let e = Event.from(status)
-        guard let data = e.data as? ASObject, let code = data["code"] as? String else {
+        guard let event = Event.from(status),
+              let data = event.data as? ASObject,
+              let code = data["code"] as? String
+        else {
             return
         }
         switch Code(rawValue: code) {

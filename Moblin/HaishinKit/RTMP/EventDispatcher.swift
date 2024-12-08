@@ -13,7 +13,6 @@ class Event {
         // swiftlint:disable:next nesting
         typealias StringLiteralType = String
 
-        static let event: Name = "event"
         static let rtmpStatus: Name = "rtmpStatus"
 
         let rawValue: String
@@ -27,14 +26,8 @@ class Event {
         }
     }
 
-    static func from(_ notification: Notification) -> Event {
-        guard
-            let userInfo: [AnyHashable: Any] = notification.userInfo,
-            let event: Event = userInfo["event"] as? Event
-        else {
-            return Event(type: .event)
-        }
-        return event
+    static func from(_ notification: Notification) -> Event? {
+        return notification.userInfo?["event"] as? Event
     }
 
     fileprivate(set) var type: Name

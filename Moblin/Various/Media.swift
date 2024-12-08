@@ -567,8 +567,10 @@ final class Media: NSObject {
 
     @objc
     private func rtmpStatusHandler(_ notification: Notification) {
-        let event = Event.from(notification)
-        guard let data = event.data as? ASObject, let code = data["code"] as? String else {
+        guard let event = Event.from(notification),
+              let data = event.data as? ASObject,
+              let code = data["code"] as? String
+        else {
             return
         }
         DispatchQueue.main.async {

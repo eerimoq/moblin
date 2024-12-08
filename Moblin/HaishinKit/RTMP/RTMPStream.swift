@@ -374,11 +374,11 @@ class RTMPStream: NetStream {
 
     @objc
     private func on(status: Notification) {
-        guard let rtmpConnection else {
-            return
-        }
-        let e = Event.from(status)
-        guard let data = e.data as? ASObject, let code = data["code"] as? String else {
+        guard let rtmpConnection,
+              let event = Event.from(status),
+              let data = event.data as? ASObject,
+              let code = data["code"] as? String
+        else {
             return
         }
         switch code {
