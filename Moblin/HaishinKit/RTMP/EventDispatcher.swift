@@ -8,13 +8,7 @@ protocol EventDispatcherConvertible: AnyObject {
 
 class Event {
     struct Name: RawRepresentable, ExpressibleByStringLiteral {
-        // swiftlint:disable:next nesting
-        typealias RawValue = String
-        // swiftlint:disable:next nesting
-        typealias StringLiteralType = String
-
         static let rtmpStatus: Name = "rtmpStatus"
-
         let rawValue: String
 
         init(rawValue: String) {
@@ -30,9 +24,8 @@ class Event {
         return notification.userInfo?["event"] as? Event
     }
 
-    fileprivate(set) var type: Name
-
-    fileprivate(set) var data: Any?
+    let type: Name
+    let data: Any?
 
     init(type: Name, data: Any? = nil) {
         self.type = type
