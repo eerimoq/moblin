@@ -51,7 +51,7 @@ class RtmpStream: NetStream {
         let oldState = readyState
         readyState = state
         logger.info("rtmp: Settings stream state \(oldState) -> \(state)")
-        didChangeReadyState(state, oldValue: oldState)
+        didChangeReadyState(state, oldReadyState: oldState)
     }
 
     static let aac = FLVAudioCodec.aac.rawValue << 4 | FLVSoundRate.kHz44.rawValue << 2 | FLVSoundSize
@@ -97,7 +97,7 @@ class RtmpStream: NetStream {
         rtmpConnection?.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
-    func publish(_ name: String?) {
+    func publish(_ name: String) {
         netStreamLockQueue.async {
             self.publishInner(name)
         }
@@ -109,19 +109,7 @@ class RtmpStream: NetStream {
         }
     }
 
-    private func publishInner(_ name: String?) {
-        guard let name else {
-            switch readyState {
-            case .publish, .publishing:
-                closeInternal()
-            default:
-                break
-            }
-            return
-        }
-        if info.resourceName == name && readyState == .publishing {
-            return
-        }
+    private func publishInner(_ name: String) {
         info.resourceName = name
         let message = RtmpCommandMessage(
             streamId: id,
@@ -145,12 +133,6 @@ class RtmpStream: NetStream {
     }
 
     private func send(handlerName: String, arguments: Any?...) {
-        netStreamLockQueue.async {
-            self.sendInner(handlerName: handlerName, arguments: arguments)
-        }
-    }
-
-    private func sendInner(handlerName: String, arguments: Any?...) {
         guard let rtmpConnection = rtmpConnection, readyState == .publishing else {
             return
         }
@@ -176,25 +158,21 @@ class RtmpStream: NetStream {
 
     private func createMetaData() -> ASObject {
         var metadata: [String: Any] = [:]
-        if mixer.video.device != nil {
-            let settings = mixer.video.encoder.settings.value
-            metadata["width"] = settings.videoSize.width
-            metadata["height"] = settings.videoSize.height
-            metadata["framerate"] = mixer.video.frameRate
-            switch settings.format {
-            case .h264:
-                metadata["videocodecid"] = FLVVideoCodec.avc.rawValue
-            case .hevc:
-                metadata["videocodecid"] = FLVVideoFourCC.hevc.rawValue
-            }
-            metadata["videodatarate"] = settings.bitRate / 1000
+        let settings = mixer.video.encoder.settings.value
+        metadata["width"] = settings.videoSize.width
+        metadata["height"] = settings.videoSize.height
+        metadata["framerate"] = mixer.video.frameRate
+        switch settings.format {
+        case .h264:
+            metadata["videocodecid"] = FLVVideoCodec.avc.rawValue
+        case .hevc:
+            metadata["videocodecid"] = FLVVideoFourCC.hevc.rawValue
         }
-        if mixer.audio.device != nil {
-            metadata["audiocodecid"] = FLVAudioCodec.aac.rawValue
-            metadata["audiodatarate"] = mixer.audio.encoder.settings.bitRate / 1000
-            if let sampleRate = mixer.audio.encoder.inSourceFormat?.mSampleRate {
-                metadata["audiosamplerate"] = sampleRate
-            }
+        metadata["videodatarate"] = settings.bitRate / 1000
+        metadata["audiocodecid"] = FLVAudioCodec.aac.rawValue
+        metadata["audiodatarate"] = mixer.audio.encoder.settings.bitRate / 1000
+        if let sampleRate = mixer.audio.encoder.inSourceFormat?.mSampleRate {
+            metadata["audiosamplerate"] = sampleRate
         }
         return metadata
     }
@@ -203,55 +181,74 @@ class RtmpStream: NetStream {
         setReadyState(state: .initialized)
     }
 
-    private func didChangeReadyState(_ readyState: ReadyState, oldValue: ReadyState) {
-        guard let rtmpConnection else {
-            return
-        }
-        if oldValue == .publishing {
-            FCUnpublish()
-            deleteStream()
+    private func didChangeReadyState(_ readyState: ReadyState, oldReadyState: ReadyState) {
+        if oldReadyState == .publishing {
+            sendFCUnpublish()
+            sendDeleteStream()
             closeStream()
             mixer.stopEncoding()
         }
         switch readyState {
         case .open:
-            info.clear()
-            delegate?.streamDidOpen(self)
-            for message in messages {
-                rtmpConnection.currentTransactionId += 1
-                message.streamId = id
-                message.transactionId = rtmpConnection.currentTransactionId
-                switch message.commandName {
-                case "publish":
-                    setReadyState(state: .publish)
-                default:
-                    break
-                }
-                _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: message))
-            }
-            messages.removeAll()
+            handleOpen()
         case .publish:
-            startedAt = .init()
-            baseTimeStamp = -1.0
-            prevRebasedAudioTimeStamp = -1.0
-            prevRebasedVideoTimeStamp = -1.0
-            mixer.startRunning()
-            videoChunkType = .zero
-            audioChunkType = .zero
-            dataTimeStamps.removeAll()
-            FCPublish()
+            handlePublish()
         case .publishing:
-            send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
-            mixer.startEncoding(self)
+            handlePublishing()
         default:
             break
         }
     }
 
+    private func handleOpen() {
+        guard let rtmpConnection else {
+            return
+        }
+        info.clear()
+        for message in messages {
+            rtmpConnection.currentTransactionId += 1
+            message.streamId = id
+            message.transactionId = rtmpConnection.currentTransactionId
+            switch message.commandName {
+            case "publish":
+                setReadyState(state: .publish)
+            default:
+                break
+            }
+            _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: message))
+        }
+        messages.removeAll()
+    }
+
+    private func handlePublish() {
+        startedAt = .init()
+        baseTimeStamp = -1.0
+        prevRebasedAudioTimeStamp = -1.0
+        prevRebasedVideoTimeStamp = -1.0
+        mixer.startRunning()
+        videoChunkType = .zero
+        audioChunkType = .zero
+        dataTimeStamps.removeAll()
+        sendFCPublish()
+    }
+
+    private func handlePublishing() {
+        send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
+        mixer.startEncoding(self)
+    }
+
     @objc
     private func on(status: Notification) {
+        guard let event = Event.from(status) else {
+            return
+        }
+        netStreamLockQueue.async {
+            self.onInternal(event: event)
+        }
+    }
+
+    private func onInternal(event: Event) {
         guard let rtmpConnection,
-              let event = Event.from(status),
               let data = event.data as? ASObject,
               let code = data["code"] as? String
         else {
@@ -268,27 +265,16 @@ class RtmpStream: NetStream {
         }
     }
 
-    private func FCPublish() {
-        guard let rtmpConnection, let name = info.resourceName,
-              rtmpConnection.flashVer.contains("FMLE/")
-        else {
-            return
-        }
-        rtmpConnection.call("FCPublish", arguments: [name])
+    private func sendFCPublish() {
+        rtmpConnection?.call("FCPublish", arguments: [info.resourceName])
     }
 
-    private func FCUnpublish() {
-        guard let rtmpConnection, let name = info.resourceName, rtmpConnection.flashVer.contains("FMLE/") else {
-            return
-        }
-        rtmpConnection.call("FCUnpublish", arguments: [name])
+    private func sendFCUnpublish() {
+        rtmpConnection?.call("FCUnpublish", arguments: [info.resourceName])
     }
 
-    private func deleteStream() {
-        guard let rtmpConnection else {
-            return
-        }
-        _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
+    private func sendDeleteStream() {
+        _ = rtmpConnection?.socket.write(chunk: RtmpChunk(message: RtmpCommandMessage(
             streamId: id,
             transactionId: 0,
             objectEncoding: .amf0,
@@ -299,10 +285,7 @@ class RtmpStream: NetStream {
     }
 
     private func closeStream() {
-        guard let rtmpConnection else {
-            return
-        }
-        _ = rtmpConnection.socket.write(chunk: RtmpChunk(
+        _ = rtmpConnection?.socket.write(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.command.rawValue,
             message: RtmpCommandMessage(

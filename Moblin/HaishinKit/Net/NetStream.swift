@@ -2,7 +2,6 @@ import AVFoundation
 import UIKit
 
 protocol NetStreamDelegate: AnyObject {
-    func streamDidOpen(_ stream: NetStream)
     func stream(
         _ stream: NetStream,
         audioLevel: Float,

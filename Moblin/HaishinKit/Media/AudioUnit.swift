@@ -215,7 +215,6 @@ private class ReplaceAudio {
 
 final class AudioUnit: NSObject {
     lazy var encoder: AudioCodec = .init(lockQueue: lockQueue)
-    private(set) var device: AVCaptureDevice?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -249,7 +248,6 @@ final class AudioUnit: NSObject {
         if let device {
             output?.setSampleBufferDelegate(nil, queue: lockQueue)
             try attachDevice(device, session)
-            self.device = device
             output?.setSampleBufferDelegate(self, queue: lockQueue)
             session.automaticallyConfiguresApplicationAudioSession = false
         }

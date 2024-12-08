@@ -12,7 +12,7 @@ struct RtmpStreamStats {
 
 class RtmpStreamInfo {
     var byteCount: Atomic<Int64> = .init(0)
-    var resourceName: String?
+    var resourceName: String = ""
     var currentBytesPerSecond: Int64 = 0
     var stats: Atomic<RtmpStreamStats> = .init(RtmpStreamStats())
 

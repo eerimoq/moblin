@@ -29,7 +29,7 @@ enum RtmpConnectionCode: String {
 }
 
 class RtmpConnection: EventDispatcher {
-    var flashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
+    let flashVer = "FMLE/3.0 (compatible; FMSc/1.0)"
     private(set) var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
@@ -79,7 +79,7 @@ class RtmpConnection: EventDispatcher {
     }
 
     private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
-        var command: String = url.absoluteString
+        var command = url.absoluteString
         guard let index = description.firstIndex(of: "?") else {
             return command
         }
@@ -152,10 +152,16 @@ class RtmpConnection: EventDispatcher {
 
     @objc
     private func on(status: Notification) {
-        guard let event = Event.from(status),
-              let data = event.data as? ASObject,
-              let code = data["code"] as? String
-        else {
+        guard let event = Event.from(status) else {
+            return
+        }
+        netStreamLockQueue.async {
+            self.onInternal(event: event)
+        }
+    }
+
+    private func onInternal(event: Event) {
+        guard let data = event.data as? ASObject, let code = data["code"] as? String else {
             return
         }
         switch RtmpConnectionCode(rawValue: code) {

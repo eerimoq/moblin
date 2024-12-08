@@ -899,8 +899,6 @@ final class Media: NSObject {
 }
 
 extension Media: NetStreamDelegate {
-    func streamDidOpen(_: NetStream) {}
-
     func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
