@@ -48,7 +48,7 @@ class RtmpConnection: EventDispatcher {
         }
     }
 
-    var currentTransactionId = 0
+    private var nextTransactionId = 0
     private var timer = SimpleTimer(queue: netStreamLockQueue)
     private var messages: [UInt16: RtmpMessage] = [:]
     private var currentChunk: RtmpChunk?
@@ -101,10 +101,9 @@ class RtmpConnection: EventDispatcher {
         guard connected else {
             return
         }
-        currentTransactionId += 1
         let message = RtmpCommandMessage(
             streamId: 0,
-            transactionId: currentTransactionId,
+            transactionId: getNextTransactionId(),
             objectEncoding: .amf0,
             commandName: commandName,
             commandObject: nil,
@@ -147,6 +146,11 @@ class RtmpConnection: EventDispatcher {
             stream.id = UInt32(id)
             stream.setReadyState(state: .open)
         }
+    }
+
+    func getNextTransactionId() -> Int {
+        nextTransactionId += 1
+        return nextTransactionId
     }
 
     @objc
@@ -228,10 +232,9 @@ class RtmpConnection: EventDispatcher {
         if let query = uri.query {
             app += "?" + query
         }
-        currentTransactionId += 1
         let message = RtmpCommandMessage(
             streamId: 0,
-            transactionId: currentTransactionId,
+            transactionId: getNextTransactionId(),
             objectEncoding: .amf0,
             commandName: "connect",
             commandObject: [
@@ -271,7 +274,7 @@ class RtmpConnection: EventDispatcher {
     private func handleClosed() {
         connected = false
         currentChunk = nil
-        currentTransactionId = 0
+        nextTransactionId = 0
         messages.removeAll()
         callCompletions.removeAll()
         fragmentedChunks.removeAll()

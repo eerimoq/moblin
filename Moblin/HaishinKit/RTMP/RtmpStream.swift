@@ -206,9 +206,8 @@ class RtmpStream: NetStream {
         }
         info.clear()
         for message in messages {
-            rtmpConnection.currentTransactionId += 1
             message.streamId = id
-            message.transactionId = rtmpConnection.currentTransactionId
+            message.transactionId = rtmpConnection.getNextTransactionId()
             switch message.commandName {
             case "publish":
                 setReadyState(state: .publish)
