@@ -30,9 +30,7 @@ struct MpegTsVideoConfigAvc: MpegTsVideoConfig {
         self.data = data
     }
 
-    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>)
-        -> OSStatus
-    {
+    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
         return pictureParameterSets[0].withUnsafeBytes { (ppsBuffer: UnsafeRawBufferPointer) -> OSStatus in
             guard let ppsBaseAddress = ppsBuffer.baseAddress else {
                 return kCMFormatDescriptionBridgeError_InvalidParameter

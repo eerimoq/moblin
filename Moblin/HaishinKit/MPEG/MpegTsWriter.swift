@@ -237,10 +237,8 @@ class MpegTsWriter {
         programMappingTable.programClockReferencePacketId = MpegTsWriter.audioPacketId
         var patPacket = programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId)
         var pmtPacket = programMappingTable.packet(MpegTsWriter.programMappingTablePacketId)
-        patPacket.continuityCounter =
-            nextContinuityCounter(packetId: MpegTsWriter.programAssociationTablePacketId)
-        pmtPacket.continuityCounter =
-            nextContinuityCounter(packetId: MpegTsWriter.programMappingTablePacketId)
+        patPacket.continuityCounter = nextContinuityCounter(packetId: MpegTsWriter.programAssociationTablePacketId)
+        pmtPacket.continuityCounter = nextContinuityCounter(packetId: MpegTsWriter.programMappingTablePacketId)
         write(patPacket.encode() + pmtPacket.encode())
     }
 

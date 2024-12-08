@@ -248,10 +248,7 @@ struct MpegTsPacketizedElementaryStream {
         packet.payloadUnitStartIndicator = true
         packet.adaptationField = MpegTsAdaptationField()
         if let programClockReference {
-            packet.adaptationField!.programClockReference = TSProgramClockReference.encode(
-                programClockReference,
-                0
-            )
+            packet.adaptationField!.programClockReference = TSProgramClockReference.encode(programClockReference, 0)
         }
         var payloadOffset = packet.setPayload(payload)
         packets.append(packet)
