@@ -1203,6 +1203,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        media.delegate = self
         createUrlSession()
         AppDependencyManager.shared.add(dependency: self)
         faxReceiver.delegate = self
@@ -1223,19 +1224,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         logger.debugEnabled = database.debug.logLevel == .debug
         updateCameraLists()
         updateBatteryLevel()
-        media.onSrtConnected = handleSrtConnected
-        media.onSrtDisconnected = handleSrtDisconnected
-        media.onRtmpConnected = handleRtmpConnected
-        media.onRtmpDisconnected = handleRtmpDisconnected
-        media.onRistConnected = handleRistConnected
-        media.onRistDisconnected = handleRistDisconnected
-        media.onAudioMuteChange = updateAudioLevel
-        media.onAudioBuffer = handleAudioBuffer
-        media.onLowFpsImage = handleLowFpsImage
-        media.onFindVideoFormatError = handleFindVideoFormatError
-        media.onRecorderFinished = handleRecorderFinished
-        media.onRecorderError = handleRecorderError
-        media.onNoTorch = handleNoTorch
         setPixelFormat()
         setMetalPetalFilters()
         setHigherDataRateLimit()
@@ -9638,5 +9626,59 @@ extension Model: FaxReceiverDelegate {
                 catPrinter.print(image: image, feedPaperDelay: nil)
             }
         }
+    }
+}
+
+extension Model: MediaDelegate {
+    func mediaOnSrtConnected() {
+        handleSrtConnected()
+    }
+
+    func mediaOnSrtDisconnected(_ reason: String) {
+        handleSrtDisconnected(reason: reason)
+    }
+
+    func mediaOnRtmpConnected() {
+        handleRtmpConnected()
+    }
+
+    func mediaOnRtmpDisconnected(_ message: String) {
+        handleRtmpDisconnected(message: message)
+    }
+
+    func mediaOnRistConnected() {
+        handleRistConnected()
+    }
+
+    func mediaOnRistDisconnected() {
+        handleRistDisconnected()
+    }
+
+    func mediaOnAudioMuteChange() {
+        updateAudioLevel()
+    }
+
+    func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
+        handleAudioBuffer(sampleBuffer: sampleBuffer)
+    }
+
+    func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64) {
+        handleLowFpsImage(image: lowFpsImage, frameNumber: frameNumber)
+    }
+
+    func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String) {
+        handleFindVideoFormatError(findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
+    }
+
+    func mediaOnRecorderFinished() {
+        handleRecorderFinished()
+    }
+
+    func mediaOnRecorderError() {
+        handleRecorderError()
+    }
+
+    func mediaOnNoTorch() {
+        handleNoTorch()
     }
 }

@@ -15,6 +15,22 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
     return isMuted(level: old) && !isMuted(level: new)
 }
 
+protocol MediaDelegate: AnyObject {
+    func mediaOnSrtConnected()
+    func mediaOnSrtDisconnected(_ reason: String)
+    func mediaOnRtmpConnected()
+    func mediaOnRtmpDisconnected(_ message: String)
+    func mediaOnRistConnected()
+    func mediaOnRistDisconnected()
+    func mediaOnAudioMuteChange()
+    func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
+    func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
+    func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
+    func mediaOnRecorderFinished()
+    func mediaOnRecorderError()
+    func mediaOnNoTorch()
+}
+
 final class Media: NSObject {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
@@ -37,19 +53,7 @@ final class Media: NSObject {
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
-    var onSrtConnected: (() -> Void)!
-    var onSrtDisconnected: ((_ reason: String) -> Void)!
-    var onRtmpConnected: (() -> Void)!
-    var onRtmpDisconnected: ((_ message: String) -> Void)!
-    var onRistConnected: (() -> Void)!
-    var onRistDisconnected: (() -> Void)!
-    var onAudioMuteChange: (() -> Void)!
-    var onAudioBuffer: ((CMSampleBuffer) -> Void)!
-    var onLowFpsImage: ((Data?, UInt64) -> Void)!
-    var onFindVideoFormatError: ((String, String) -> Void)!
-    var onRecorderFinished: (() -> Void)!
-    var onRecorderError: (() -> Void)!
-    var onNoTorch: (() -> Void)!
+    weak var delegate: (any MediaDelegate)?
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
     var srtDroppedPacketsTotal: Int32 = 0
@@ -477,9 +481,9 @@ final class Media: NSObject {
             }
             DispatchQueue.main.async {
                 if connected.newValue! {
-                    self.onSrtConnected()
+                    self.delegate?.mediaOnSrtConnected()
                 } else {
-                    self.onSrtDisconnected(String(localized: "SRT disconnected"))
+                    self.delegate?.mediaOnSrtDisconnected(String(localized: "SRT disconnected"))
                 }
             }
         }
@@ -577,9 +581,9 @@ final class Media: NSObject {
             switch RTMPConnection.Code(rawValue: code) {
             case .connectSuccess:
                 self.rtmpStream?.publish(self.rtmpStreamName)
-                self.onRtmpConnected()
+                self.delegate?.mediaOnRtmpConnected()
             case .connectFailed, .connectClosed:
-                self.onRtmpDisconnected("\(code)")
+                self.delegate?.mediaOnRtmpDisconnected("\(code)")
             default:
                 break
             }
@@ -605,6 +609,14 @@ final class Media: NSObject {
 
     func ristStopStream() {
         ristStream?.stop()
+    }
+
+    private func onRistConnected() {
+        delegate?.mediaOnRistConnected()
+    }
+
+    private func onRistDisconnected() {
+        delegate?.mediaOnRistDisconnected()
     }
 
     func irlStartStream() {
@@ -906,7 +918,7 @@ extension Media: NetStreamDelegate {
                 new: audioLevel
             ) {
                 self.currentAudioLevel = audioLevel
-                self.onAudioMuteChange()
+                self.delegate?.mediaOnAudioMuteChange()
             } else {
                 self.currentAudioLevel = audioLevel
             }
@@ -928,27 +940,27 @@ extension Media: NetStreamDelegate {
     }
 
     func streamVideo(_: NetStream, lowFpsImage: Data?, frameNumber: UInt64) {
-        onLowFpsImage(lowFpsImage, frameNumber)
+        delegate?.mediaOnLowFpsImage(lowFpsImage, frameNumber)
     }
 
     func streamVideo(_: NetStream, findVideoFormatError: String, activeFormat: String) {
-        onFindVideoFormatError(findVideoFormatError, activeFormat)
+        delegate?.mediaOnFindVideoFormatError(findVideoFormatError, activeFormat)
     }
 
     func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
-        onAudioBuffer(sampleBuffer)
+        delegate?.mediaOnAudioBuffer(sampleBuffer)
     }
 
     func streamRecorderFinished() {
-        onRecorderFinished()
+        delegate?.mediaOnRecorderFinished()
     }
 
     func streamRecorderError() {
-        onRecorderError()
+        delegate?.mediaOnRecorderError()
     }
 
     func streamNoTorch() {
-        onNoTorch()
+        delegate?.mediaOnNoTorch()
     }
 }
 
@@ -975,10 +987,9 @@ extension Media: SrtlaDelegate {
                     self.srtStream?.publish()
                 } catch {
                     DispatchQueue.main.async {
-                        self
-                            .onSrtDisconnected(
-                                String(localized: "SRT connect failed with \(error.localizedDescription)")
-                            )
+                        self.delegate?.mediaOnSrtDisconnected(
+                            String(localized: "SRT connect failed with \(error.localizedDescription)")
+                        )
                     }
                 }
             }
@@ -988,7 +999,7 @@ extension Media: SrtlaDelegate {
     func srtlaError(message: String) {
         DispatchQueue.main.async {
             logger.info("stream: SRT error: \(message)")
-            self.onSrtDisconnected(String(localized: "SRT error: \(message)"))
+            self.delegate?.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
         }
     }
 }
