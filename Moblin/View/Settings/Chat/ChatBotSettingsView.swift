@@ -89,7 +89,7 @@ struct ChatBotCommandsSettingsView: View {
                 NavigationLink {
                     PermissionsSettingsView(permissions: permissions.snapshot!)
                 } label: {
-                    Text("!moblin snapshot")
+                    Text("!moblin snapshot <optional message>")
                 }
             } footer: {
                 Text("Take snapshot.")
