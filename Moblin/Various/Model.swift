@@ -31,6 +31,12 @@ enum RemoteControlAssistantPreviewUser {
     case watch
 }
 
+struct SnapshotJob {
+    let isChatBot: Bool
+    let message: String
+    let user: String?
+}
+
 private struct ChatBotMessage {
     let platform: Platform
     let user: String?
@@ -636,6 +642,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
 
+    @Published var snapshotCountdown = 0
+    @Published var currentSnapshotJob: SnapshotJob?
+    private var snapshotJobs: Deque<SnapshotJob> = []
+
     private var srtlaServer: SrtlaServer?
 
     private var gameControllers: [GCController?] = []
@@ -998,8 +1008,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         buttonPairs = pairs.reversed()
     }
 
-    func takeSnapshot(isChatBot: Bool = false, message: String? = nil) {
-        let age = isChatBot ? stream.estimatedViewerDelay! : 0.0
+    func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
+        let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
         media.takeSnapshot(age: age) { image in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
@@ -1010,6 +1020,46 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             }
         }
+    }
+
+    private func tryTakeNextSnapshot() {
+        guard currentSnapshotJob == nil else {
+            return
+        }
+        currentSnapshotJob = snapshotJobs.popFirst()
+        guard currentSnapshotJob != nil else {
+            return
+        }
+        snapshotCountdown = 5
+        snapshotCountdownTick()
+    }
+
+    private func snapshotCountdownTick() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.snapshotCountdown -= 1
+            guard self.snapshotCountdown == 0 else {
+                self.snapshotCountdownTick()
+                return
+            }
+            guard let snapshotJob = self.currentSnapshotJob else {
+                return
+            }
+            var message = snapshotJob.message
+            if let user = snapshotJob.user {
+                message += "\n"
+                message += self.formatSnapshotTakenBy(user: user)
+            }
+            self.takeSnapshot(isChatBot: snapshotJob.isChatBot, message: message, noDelay: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                self.currentSnapshotJob = nil
+                self.tryTakeNextSnapshot()
+            }
+        }
+    }
+
+    private func takeSnapshotWithCountdown(isChatBot: Bool, message: String, user: String?) {
+        snapshotJobs.append(SnapshotJob(isChatBot: isChatBot, message: message, user: user))
+        tryTakeNextSnapshot()
     }
 
     private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
@@ -4609,6 +4659,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageTtsSay(message: message, command: command)
             } else if command.starts(with: "tesla ") {
                 handleChatBotMessageTesla(message: message, command: command)
+            } else if command.starts(with: "snapshot ") {
+                handleChatBotMessageSnapshotWithMessage(message: message, command: command)
             }
         }
     }
@@ -4692,16 +4744,38 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func formatSnapshotTakenBy(user: String) -> String {
+        return String(localized: "Snapshot taken by \(user).")
+    }
+
     private func handleChatBotMessageSnapshot(message: ChatBotMessage) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.snapshot!,
             message: message
         ) {
             if let user = message.user {
-                self.takeSnapshot(isChatBot: true, message: String(localized: "Snapshot taken by \(user)."))
+                self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
             } else {
                 self.takeSnapshot(isChatBot: true)
             }
+        }
+    }
+
+    private func handleChatBotMessageSnapshotWithMessage(message: ChatBotMessage, command: String) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.snapshot!,
+            message: message
+        ) {
+            let parts = command.split(separator: " ")
+            guard parts.count > 1 else {
+                return
+            }
+            let messageFromUser = parts.suffix(from: 1).joined(separator: " ")
+            self.takeSnapshotWithCountdown(
+                isChatBot: true,
+                message: messageFromUser,
+                user: message.user
+            )
         }
     }
 
