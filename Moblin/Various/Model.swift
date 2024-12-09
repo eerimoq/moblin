@@ -4669,7 +4669,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleChatBotMessageHelp() {
         sendChatMessage(
-            message: "Moblin chat bot help: https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help"
+            message: """
+            Moblin chat bot help: \
+            https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help
+            """
         )
     }
 
