@@ -6,11 +6,11 @@
 | !moblin alert \<name> | Trigger alerts. Configure alert names in alert widgets. |
 | !moblin fax \<url> | Fax the streamer images. |
 | !moblin snapshot | Take snapshot. |
-| !moblin snapshot <message> | Take snapshot showing given message to the streamer. |
+| !moblin snapshot \<message> | Take snapshot showing given message to the streamer. |
 | !moblin map zoom out | Zoom out map widget temporarily. |
 | !moblin tts on | Turn on chat text to speech. |
 | !moblin tts off | Turn off chat text to speech. |
-| !moblin say <message> | Say given message. |
+| !moblin say \<message> | Say given message. |
 | !moblin tesla trunk open | Open the trunk. |
 | !moblin tesla trunk close | Close the trunk. |
 | !moblin tesla media next | Next track. |
