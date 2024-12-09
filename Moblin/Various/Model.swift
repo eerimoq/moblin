@@ -4638,6 +4638,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         command = command.trim()
         switch command {
+        case "help":
+            handleChatBotMessageHelp()
         case "tts on":
             handleChatBotMessageTtsOn(message: message)
         case "tts off":
@@ -4663,6 +4665,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageSnapshotWithMessage(message: message, command: command)
             }
         }
+    }
+
+    private func handleChatBotMessageHelp() {
+        sendChatMessage(
+            message: "Moblin chat bot help: https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help"
+        )
     }
 
     private func handleChatBotMessageTtsOn(message: ChatBotMessage) {

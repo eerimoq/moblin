@@ -1339,6 +1339,7 @@
 
     },
     "!moblin snapshot" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1467,6 +1468,9 @@
           }
         }
       }
+    },
+    "!moblin snapshot <optional message>" : {
+
     },
     "!moblin tesla ..." : {
 
