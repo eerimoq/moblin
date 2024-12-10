@@ -1776,17 +1776,12 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
-				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
-				03BC115B2AE4BD6200C38FC4 /* Emotes */,
-				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
 				03CDEAA02C0AB8BB006121D0 /* Integrations */,
 				0391D2012CB2FFFC008AB44B /* Intents */,
-				0342F19F2C627A3D004DD3EA /* Moblink */,
+				03C3573E2D0818EF00B8B29F /* Media */,
 				03BDE2202B24364700DF193A /* OBS */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
 				039ADE452B55C20800FE0F59 /* RemoteControl */,
-				034D26FD2B3A034A0097C619 /* RtmpServer */,
-				0315A3392AA2FA0A00295443 /* Srtla */,
 				03BE504E2B3EC107004720AF /* Various */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
 				03A983542A9A0582008FF0DB /* View */,
@@ -2519,6 +2514,18 @@
 			path = Video;
 			sourceTree = "<group>";
 		};
+		03C3573E2D0818EF00B8B29F /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
+				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
+				0342F19F2C627A3D004DD3EA /* Moblink */,
+				034D26FD2B3A034A0097C619 /* RtmpServer */,
+				0315A3392AA2FA0A00295443 /* Srtla */,
+			);
+			path = Media;
+			sourceTree = "<group>";
+		};
 		03CBFC732BFD3C650029A888 /* MirrorFrontCamera */ = {
 			isa = PBXGroup;
 			children = (
@@ -2532,6 +2539,7 @@
 			children = (
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				038C912A2C44691F003CAD5F /* DjiDevice */,
+				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
 				0318D3622CF4FB2300E12F3B /* Tesla */,
 			);
