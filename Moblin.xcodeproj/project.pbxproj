@@ -186,8 +186,8 @@
 		0359F8E42BD3DA61005BFDA8 /* MpegTsWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */; };
 		0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */; };
 		0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */; };
-		0359F8E92BD3DA61005BFDA8 /* AMFFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8512BD3DA5F005BFDA8 /* AMFFoundation.swift */; };
-		0359F8EA2BD3DA61005BFDA8 /* EventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8522BD3DA5F005BFDA8 /* EventDispatcher.swift */; };
+		0359F8E92BD3DA61005BFDA8 /* AmfFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */; };
+		0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */; };
 		0359F8EB2BD3DA61005BFDA8 /* RtmpChunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */; };
 		0359F8EC2BD3DA61005BFDA8 /* RtmpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */; };
 		0359F8ED2BD3DA61005BFDA8 /* RtmpHandshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */; };
@@ -393,6 +393,17 @@
 		03C357312D048FD800B8B29F /* MusicIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357302D048FCD00B8B29F /* MusicIdentifier.swift */; };
 		03C357372D0803B700B8B29F /* ChatBotCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357362D0803B100B8B29F /* ChatBotCommand.swift */; };
 		03C3573B2D08150300B8B29F /* Flv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3573A2D08150100B8B29F /* Flv.swift */; };
+		03C357422D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357412D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift */; };
+		03C357442D081CF000B8B29F /* RtmpAbortMessge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357432D081CF000B8B29F /* RtmpAbortMessge.swift */; };
+		03C357462D081CF100B8B29F /* RtmpAcknowledgementMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357452D081CF100B8B29F /* RtmpAcknowledgementMessage.swift */; };
+		03C357482D081CF200B8B29F /* RtmpWindowAcknowledgementSizeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357472D081CF200B8B29F /* RtmpWindowAcknowledgementSizeMessage.swift */; };
+		03C3574A2D081CF300B8B29F /* RtmpSetPeerBandwidthMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357492D081CF300B8B29F /* RtmpSetPeerBandwidthMessage.swift */; };
+		03C3574C2D081CF400B8B29F /* RtmpCommandMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3574B2D081CF400B8B29F /* RtmpCommandMessage.swift */; };
+		03C3574E2D081CF500B8B29F /* RtmpDataMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3574D2D081CF500B8B29F /* RtmpDataMessage.swift */; };
+		03C357502D081D8400B8B29F /* RtmpAudioMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C3574F2D081D8400B8B29F /* RtmpAudioMessage.swift */; };
+		03C357522D081D8A00B8B29F /* RtmpVideoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357512D081D8A00B8B29F /* RtmpVideoMessage.swift */; };
+		03C357542D081D9000B8B29F /* RtmpAggregateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357532D081D9000B8B29F /* RtmpAggregateMessage.swift */; };
+		03C357562D081D9100B8B29F /* RtmpUserControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C357552D081D9100B8B29F /* RtmpUserControlMessage.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03C5AE422C536FE10056B6C7 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE412C536FE10056B6C7 /* WeatherManager.swift */; };
 		03C5AE482C5515B20056B6C7 /* GeographyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C5AE472C5515B20056B6C7 /* GeographyManager.swift */; };
@@ -694,8 +705,8 @@
 		0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MpegTsWriter.swift; sourceTree = "<group>"; };
 		0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetStream.swift; sourceTree = "<group>"; };
 		0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Amf0Serializer.swift; sourceTree = "<group>"; };
-		0359F8512BD3DA5F005BFDA8 /* AMFFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMFFoundation.swift; sourceTree = "<group>"; };
-		0359F8522BD3DA5F005BFDA8 /* EventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventDispatcher.swift; sourceTree = "<group>"; };
+		0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfFoundation.swift; sourceTree = "<group>"; };
+		0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpEventDispatcher.swift; sourceTree = "<group>"; };
 		0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpChunk.swift; sourceTree = "<group>"; };
 		0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConnection.swift; sourceTree = "<group>"; };
 		0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpHandshake.swift; sourceTree = "<group>"; };
@@ -940,6 +951,17 @@
 		03C357302D048FCD00B8B29F /* MusicIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicIdentifier.swift; sourceTree = "<group>"; };
 		03C357362D0803B100B8B29F /* ChatBotCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBotCommand.swift; sourceTree = "<group>"; };
 		03C3573A2D08150100B8B29F /* Flv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flv.swift; sourceTree = "<group>"; };
+		03C357412D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpSetChunkSizeMessage.swift; sourceTree = "<group>"; };
+		03C357432D081CF000B8B29F /* RtmpAbortMessge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpAbortMessge.swift; sourceTree = "<group>"; };
+		03C357452D081CF100B8B29F /* RtmpAcknowledgementMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpAcknowledgementMessage.swift; sourceTree = "<group>"; };
+		03C357472D081CF200B8B29F /* RtmpWindowAcknowledgementSizeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpWindowAcknowledgementSizeMessage.swift; sourceTree = "<group>"; };
+		03C357492D081CF300B8B29F /* RtmpSetPeerBandwidthMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpSetPeerBandwidthMessage.swift; sourceTree = "<group>"; };
+		03C3574B2D081CF400B8B29F /* RtmpCommandMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpCommandMessage.swift; sourceTree = "<group>"; };
+		03C3574D2D081CF500B8B29F /* RtmpDataMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpDataMessage.swift; sourceTree = "<group>"; };
+		03C3574F2D081D8400B8B29F /* RtmpAudioMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpAudioMessage.swift; sourceTree = "<group>"; };
+		03C357512D081D8A00B8B29F /* RtmpVideoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpVideoMessage.swift; sourceTree = "<group>"; };
+		03C357532D081D9000B8B29F /* RtmpAggregateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpAggregateMessage.swift; sourceTree = "<group>"; };
+		03C357552D081D9100B8B29F /* RtmpUserControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpUserControlMessage.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03C5AE412C536FE10056B6C7 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		03C5AE472C5515B20056B6C7 /* GeographyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographyManager.swift; sourceTree = "<group>"; };
@@ -1627,13 +1649,12 @@
 		0359F85F2BD3DA5F005BFDA8 /* Rtmp */ = {
 			isa = PBXGroup;
 			children = (
-				0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */,
-				0359F8512BD3DA5F005BFDA8 /* AMFFoundation.swift */,
-				0359F8522BD3DA5F005BFDA8 /* EventDispatcher.swift */,
+				03C3573F2D081C5A00B8B29F /* Amf */,
+				03C357402D081CD700B8B29F /* Message */,
 				0359F8532BD3DA5F005BFDA8 /* RtmpChunk.swift */,
 				0359F8542BD3DA5F005BFDA8 /* RtmpConnection.swift */,
+				0359F8522BD3DA5F005BFDA8 /* RtmpEventDispatcher.swift */,
 				0359F8552BD3DA5F005BFDA8 /* RtmpHandshake.swift */,
-				0359F8562BD3DA5F005BFDA8 /* RtmpMessage.swift */,
 				0359F8582BD3DA5F005BFDA8 /* RtmpObjectEncoding.swift */,
 				0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */,
 				0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */,
@@ -2526,6 +2547,34 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
+		03C3573F2D081C5A00B8B29F /* Amf */ = {
+			isa = PBXGroup;
+			children = (
+				0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */,
+				0359F8512BD3DA5F005BFDA8 /* AmfFoundation.swift */,
+			);
+			path = Amf;
+			sourceTree = "<group>";
+		};
+		03C357402D081CD700B8B29F /* Message */ = {
+			isa = PBXGroup;
+			children = (
+				03C357432D081CF000B8B29F /* RtmpAbortMessge.swift */,
+				03C357452D081CF100B8B29F /* RtmpAcknowledgementMessage.swift */,
+				03C357532D081D9000B8B29F /* RtmpAggregateMessage.swift */,
+				03C3574F2D081D8400B8B29F /* RtmpAudioMessage.swift */,
+				03C3574B2D081CF400B8B29F /* RtmpCommandMessage.swift */,
+				03C3574D2D081CF500B8B29F /* RtmpDataMessage.swift */,
+				0359F8562BD3DA5F005BFDA8 /* RtmpMessage.swift */,
+				03C357412D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift */,
+				03C357492D081CF300B8B29F /* RtmpSetPeerBandwidthMessage.swift */,
+				03C357552D081D9100B8B29F /* RtmpUserControlMessage.swift */,
+				03C357512D081D8A00B8B29F /* RtmpVideoMessage.swift */,
+				03C357472D081CF200B8B29F /* RtmpWindowAcknowledgementSizeMessage.swift */,
+			);
+			path = Message;
+			sourceTree = "<group>";
+		};
 		03CBFC732BFD3C650029A888 /* MirrorFrontCamera */ = {
 			isa = PBXGroup;
 			children = (
@@ -2976,7 +3025,7 @@
 				03BC90B02BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift in Sources */,
 				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
-				0359F8EA2BD3DA61005BFDA8 /* EventDispatcher.swift in Sources */,
+				0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */,
 				03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
 				0359F8B22BD3DA61005BFDA8 /* VTSessionOption.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
@@ -3112,6 +3161,7 @@
 				03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
+				03C357462D081CF100B8B29F /* RtmpAcknowledgementMessage.swift in Sources */,
 				034FA1B82C151DFF00695825 /* AdaptiveBitrateSrtFight.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
@@ -3135,12 +3185,15 @@
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
 				03AC13CA2CDED772000BC82A /* DebugHttpProxySettingsView.swift in Sources */,
 				03C656152C02E23900E017B2 /* SampleBufferReceiver.swift in Sources */,
+				03C3574A2D081CF300B8B29F /* RtmpSetPeerBandwidthMessage.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				037FE0302C594CE40067B5AC /* AlertsEffect.swift in Sources */,
 				0379E6732C8985710021AB59 /* CatPrinterScanner.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */,
+				03C357542D081D9000B8B29F /* RtmpAggregateMessage.swift in Sources */,
 				0359F8FC2BD3DA61005BFDA8 /* SrtSocket.swift in Sources */,
+				03C357562D081D9100B8B29F /* RtmpUserControlMessage.swift in Sources */,
 				03B507A72C88B8F6003CDEDF /* CatPrinter.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */,
 				0359F8DD2BD3DA61005BFDA8 /* MpegTsVideoConfigHevc.swift in Sources */,
@@ -3162,8 +3215,10 @@
 				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0318D3752CF51DEB00E12F3B /* car_server.pb.swift in Sources */,
+				03C3574E2D081CF500B8B29F /* RtmpDataMessage.swift in Sources */,
 				0318D3762CF51DEB00E12F3B /* common.pb.swift in Sources */,
 				0318D3772CF51DEB00E12F3B /* keys.pb.swift in Sources */,
+				03C357422D081CE900B8B29F /* RtmpSetChunkSizeMessage.swift in Sources */,
 				0318D3782CF51DEB00E12F3B /* signatures.pb.swift in Sources */,
 				0318D3792CF51DEB00E12F3B /* universal_message.pb.swift in Sources */,
 				0318D37A2CF51DEB00E12F3B /* vcsec.pb.swift in Sources */,
@@ -3188,6 +3243,7 @@
 				0359F8E22BD3DA61005BFDA8 /* MpegTsProgram.swift in Sources */,
 				034CE2EC2B4D2E7200E2C1BD /* StreamRealtimeIrlSettingsView.swift in Sources */,
 				03859D7E2C50183C000EFE43 /* SampleBufferCommon.swift in Sources */,
+				03C357522D081D8A00B8B29F /* RtmpVideoMessage.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
 				03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */,
@@ -3229,6 +3285,7 @@
 				0379E66A2C88C9340021AB59 /* CatPrinterCommands.swift in Sources */,
 				03C3560D2CFC90D200B8B29F /* KeyboardSettingsView.swift in Sources */,
 				035F24422CB76835008288C7 /* TwitchCommon.swift in Sources */,
+				03C357482D081CF200B8B29F /* RtmpWindowAcknowledgementSizeMessage.swift in Sources */,
 				03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */,
 				03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */,
 				0359F8DB2BD3DA61005BFDA8 /* Crc32.swift in Sources */,
@@ -3284,6 +3341,7 @@
 				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0359F8D72BD3DA61005BFDA8 /* MpegTsAudioConfig.swift in Sources */,
 				03C354662CF5A5A500B8B29F /* TeslaSettingsView.swift in Sources */,
+				03C3574C2D081CF400B8B29F /* RtmpCommandMessage.swift in Sources */,
 				031E9FBB2C5ABCC9009FF4D8 /* TwitchAuth.swift in Sources */,
 				03941A1F2C0CDC810061DA81 /* DeepLinkCreatorWebBrowserSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
@@ -3300,6 +3358,7 @@
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				0359F9012BD3DA61005BFDA8 /* Atomic.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
+				03C357502D081D8400B8B29F /* RtmpAudioMessage.swift in Sources */,
 				031863C72C8C4BEA00CECA33 /* FaxReceiver.swift in Sources */,
 				034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */,
 				0342F1A32C627A87004DD3EA /* MoblinkServer.swift in Sources */,
@@ -3331,6 +3390,7 @@
 				0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */,
 				031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
+				03C357442D081CF000B8B29F /* RtmpAbortMessge.swift in Sources */,
 				035D37372AB230E700045B92 /* QuickButtonBitrateView.swift in Sources */,
 				0359F8C22BD3DA61005BFDA8 /* URL+Extension.swift in Sources */,
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
@@ -3339,7 +3399,7 @@
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 				0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */,
 				0359F8C32BD3DA61005BFDA8 /* VTCompressionSession+Extension.swift in Sources */,
-				0359F8E92BD3DA61005BFDA8 /* AMFFoundation.swift in Sources */,
+				0359F8E92BD3DA61005BFDA8 /* AmfFoundation.swift in Sources */,
 				030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */,
 				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,
 				45E3E780842910145791546F /* DjiDeviceScanner.swift in Sources */,

@@ -28,7 +28,7 @@ enum RtmpConnectionCode: String {
     }
 }
 
-class RtmpConnection: EventDispatcher {
+class RtmpConnection: RtmpEventDispatcher {
     private(set) var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
@@ -155,7 +155,7 @@ class RtmpConnection: EventDispatcher {
 
     @objc
     private func on(status: Notification) {
-        guard let event = Event.from(status) else {
+        guard let event = RtmpEvent.from(status) else {
             return
         }
         netStreamLockQueue.async {
@@ -163,7 +163,7 @@ class RtmpConnection: EventDispatcher {
         }
     }
 
-    private func onInternal(event: Event) {
+    private func onInternal(event: RtmpEvent) {
         guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
@@ -352,7 +352,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
     }
 
-    func socketDispatch(_: RtmpSocket, event: Event) {
+    func socketDispatch(_: RtmpSocket, event: RtmpEvent) {
         dispatch(event: event)
     }
 }

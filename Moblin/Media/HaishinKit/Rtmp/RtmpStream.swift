@@ -65,7 +65,7 @@ class RtmpStream: NetStream {
 
     private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
-    private var dispatcher: (any EventDispatcherConvertible)!
+    private var dispatcher: (any RtmpEventDispatcherConvertible)!
     private var audioChunkType: RTMPChunkType = .zero
     private var videoChunkType: RTMPChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
@@ -82,7 +82,7 @@ class RtmpStream: NetStream {
     init(connection: RtmpConnection) {
         rtmpConnection = connection
         super.init()
-        dispatcher = EventDispatcher(target: self)
+        dispatcher = RtmpEventDispatcher(target: self)
         connection.streams.append(self)
         addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         connection.addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
@@ -238,7 +238,7 @@ class RtmpStream: NetStream {
 
     @objc
     private func on(status: Notification) {
-        guard let event = Event.from(status) else {
+        guard let event = RtmpEvent.from(status) else {
             return
         }
         netStreamLockQueue.async {
@@ -246,7 +246,7 @@ class RtmpStream: NetStream {
         }
     }
 
-    private func onInternal(event: Event) {
+    private func onInternal(event: RtmpEvent) {
         guard let rtmpConnection,
               let data = event.data as? AsObject,
               let code = data["code"] as? String
@@ -436,16 +436,16 @@ class RtmpStream: NetStream {
     }
 }
 
-extension RtmpStream: EventDispatcherConvertible {
-    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
+extension RtmpStream: RtmpEventDispatcherConvertible {
+    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
         dispatcher.addEventListener(type, selector: selector, observer: observer)
     }
 
-    func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
+    func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
         dispatcher.removeEventListener(type, selector: selector, observer: observer)
     }
 
-    func dispatch(_ type: Event.Name, data: Any?) {
+    func dispatch(_ type: RtmpEvent.Name, data: Any?) {
         dispatcher.dispatch(type, data: data)
     }
 }

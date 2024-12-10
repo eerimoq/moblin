@@ -569,7 +569,7 @@ final class Media: NSObject {
 
     @objc
     private func rtmpStatusHandler(_ notification: Notification) {
-        guard let event = Event.from(notification),
+        guard let event = RtmpEvent.from(notification),
               let data = event.data as? AsObject,
               let code = data["code"] as? String
         else {

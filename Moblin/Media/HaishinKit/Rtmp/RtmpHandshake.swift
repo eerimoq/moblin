@@ -1,9 +1,9 @@
 import Foundation
 
 final class RtmpHandshake {
-    static let sigSize: Int = 1536
+    static let sigSize = 1536
     private static let protocolVersion: UInt8 = 3
-    private var timestamp: TimeInterval = 0
+    private let timestamp: TimeInterval = 0
 
     func createC0C1Packet() -> Data {
         let packet = ByteArray()

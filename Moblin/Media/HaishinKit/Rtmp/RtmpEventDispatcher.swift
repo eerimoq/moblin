@@ -1,12 +1,12 @@
 import Foundation
 
-protocol EventDispatcherConvertible: AnyObject {
-    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?)
-    func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?)
-    func dispatch(_ type: Event.Name, data: Any?)
+protocol RtmpEventDispatcherConvertible: AnyObject {
+    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
+    func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
+    func dispatch(_ type: RtmpEvent.Name, data: Any?)
 }
 
-class Event {
+class RtmpEvent {
     struct Name: RawRepresentable, ExpressibleByStringLiteral {
         static let rtmpStatus: Name = "rtmpStatus"
         let rawValue: String
@@ -20,8 +20,8 @@ class Event {
         }
     }
 
-    static func from(_ notification: Notification) -> Event? {
-        return notification.userInfo?["event"] as? Event
+    static func from(_ notification: Notification) -> RtmpEvent? {
+        return notification.userInfo?["event"] as? RtmpEvent
     }
 
     let type: Name
@@ -33,7 +33,7 @@ class Event {
     }
 }
 
-class RtmpEventDispatcher: EventDispatcherConvertible {
+class RtmpEventDispatcher: RtmpEventDispatcherConvertible {
     private weak var target: AnyObject?
 
     init() {}
@@ -42,7 +42,7 @@ class RtmpEventDispatcher: EventDispatcherConvertible {
         self.target = target
     }
 
-    func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject? = nil) {
+    func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
         NotificationCenter.default.addObserver(
             observer ?? target ?? self,
             selector: selector,
@@ -51,7 +51,7 @@ class RtmpEventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    func removeEventListener(_ type: Event.Name, selector _: Selector, observer: AnyObject? = nil) {
+    func removeEventListener(_ type: RtmpEvent.Name, selector _: Selector, observer: AnyObject? = nil) {
         NotificationCenter.default.removeObserver(
             observer ?? target ?? self,
             name: Notification.Name(rawValue: type.rawValue),
@@ -59,7 +59,7 @@ class RtmpEventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    func dispatch(event: Event) {
+    func dispatch(event: RtmpEvent) {
         NotificationCenter.default.post(
             name: Notification.Name(rawValue: event.type.rawValue),
             object: target ?? self,
@@ -67,7 +67,7 @@ class RtmpEventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    func dispatch(_ type: Event.Name, data: Any?) {
-        dispatch(event: Event(type: type, data: data))
+    func dispatch(_ type: RtmpEvent.Name, data: Any?) {
+        dispatch(event: RtmpEvent(type: type, data: data))
     }
 }
