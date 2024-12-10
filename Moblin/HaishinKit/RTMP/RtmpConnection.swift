@@ -21,7 +21,7 @@ enum RtmpConnectionCode: String {
     case connectRejected = "NetConnection.Connect.Rejected"
     case connectSuccess = "NetConnection.Connect.Success"
 
-    func eventData() -> ASObject {
+    func eventData() -> AsObject {
         return [
             "code": rawValue,
         ]
@@ -164,7 +164,7 @@ class RtmpConnection: EventDispatcher {
     }
 
     private func onInternal(event: Event) {
-        guard let data = event.data as? ASObject, let code = data["code"] as? String else {
+        guard let data = event.data as? AsObject, let code = data["code"] as? String else {
             return
         }
         switch RtmpConnectionCode(rawValue: code) {
@@ -189,7 +189,7 @@ class RtmpConnection: EventDispatcher {
         ))
     }
 
-    private func handleConnectRejected(data: ASObject) {
+    private func handleConnectRejected(data: AsObject) {
         guard
             let uri,
             let user = uri.user,

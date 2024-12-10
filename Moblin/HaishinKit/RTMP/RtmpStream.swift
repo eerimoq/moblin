@@ -2,14 +2,14 @@ import AVFoundation
 
 private let extendedVideoHeader: UInt8 = 0b1000_0000
 
-private func makeAvcVideoTagHeader(_ frameType: FLVFrameType, _ packetType: FLVAVCPacketType) -> Data {
+private func makeAvcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvAvcPacketType) -> Data {
     return Data([
-        (frameType.rawValue << 4) | FLVVideoCodec.avc.rawValue,
+        (frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue,
         packetType.rawValue,
     ])
 }
 
-private func makeHevcExtendedTagHeader(_ frameType: FLVFrameType, _ packetType: FLVVideoPacketType) -> Data {
+private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: FlvVideoPacketType) -> Data {
     return Data([
         extendedVideoHeader | (frameType.rawValue << 4) | packetType.rawValue,
         Character("h").asciiValue!,
@@ -23,7 +23,7 @@ enum RtmpStreamCode: String {
     case publishStart = "NetStream.Publish.Start"
     case videoDimensionChange = "NetStream.Video.DimensionChange"
 
-    func eventData() -> ASObject {
+    func eventData() -> AsObject {
         return [
             "code": rawValue,
         ]
@@ -54,8 +54,8 @@ class RtmpStream: NetStream {
         didChangeReadyState(state, oldReadyState: oldState)
     }
 
-    static let aac = FLVAudioCodec.aac.rawValue << 4 | FLVSoundRate.kHz44.rawValue << 2 | FLVSoundSize
-        .snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
+    static let aac = FlvAudioCodec.aac.rawValue << 4 | FlvSoundRate.kHz44.rawValue << 2 | FlvSoundSize
+        .snd16bit.rawValue << 1 | FlvSoundType.stereo.rawValue
 
     // Inbound
     var audioTimestampZero = -1.0
@@ -156,7 +156,7 @@ class RtmpStream: NetStream {
         info.byteCount.mutate { $0 += Int64(length) }
     }
 
-    private func createMetaData() -> ASObject {
+    private func createMetaData() -> AsObject {
         var metadata: [String: Any] = [:]
         let settings = mixer.video.encoder.settings.value
         metadata["width"] = settings.videoSize.width
@@ -164,12 +164,12 @@ class RtmpStream: NetStream {
         metadata["framerate"] = mixer.video.frameRate
         switch settings.format {
         case .h264:
-            metadata["videocodecid"] = FLVVideoCodec.avc.rawValue
+            metadata["videocodecid"] = FlvVideoCodec.avc.rawValue
         case .hevc:
-            metadata["videocodecid"] = FLVVideoFourCC.hevc.rawValue
+            metadata["videocodecid"] = FlvVideoFourCC.hevc.rawValue
         }
         metadata["videodatarate"] = settings.bitRate / 1000
-        metadata["audiocodecid"] = FLVAudioCodec.aac.rawValue
+        metadata["audiocodecid"] = FlvAudioCodec.aac.rawValue
         metadata["audiodatarate"] = mixer.audio.encoder.settings.bitRate / 1000
         if let sampleRate = mixer.audio.encoder.inSourceFormat?.mSampleRate {
             metadata["audiosamplerate"] = sampleRate
@@ -248,7 +248,7 @@ class RtmpStream: NetStream {
 
     private func onInternal(event: Event) {
         guard let rtmpConnection,
-              let data = event.data as? ASObject,
+              let data = event.data as? AsObject,
               let code = data["code"] as? String
         else {
             return
@@ -304,7 +304,7 @@ class RtmpStream: NetStream {
         }
         let length = rtmpConnection.socket.write(chunk: RtmpChunk(
             type: audioChunkType,
-            chunkStreamId: FLVTagType.audio.streamId,
+            chunkStreamId: FlvTagType.audio.streamId,
             message: RtmpAudioMessage(streamId: id, timestamp: timestamp, payload: buffer)
         ))
         audioChunkType = .one
@@ -317,7 +317,7 @@ class RtmpStream: NetStream {
         }
         let length = rtmpConnection.socket.write(chunk: RtmpChunk(
             type: videoChunkType,
-            chunkStreamId: FLVTagType.video.streamId,
+            chunkStreamId: FlvTagType.video.streamId,
             message: RtmpVideoMessage(streamId: id, timestamp: timestamp, payload: buffer)
         ))
         videoChunkType = .one
@@ -325,7 +325,7 @@ class RtmpStream: NetStream {
     }
 
     private func audioCodecOutputFormatInner(_ format: AVAudioFormat) {
-        var buffer = Data([RtmpStream.aac, FLVAACPacketType.seq.rawValue])
+        var buffer = Data([RtmpStream.aac, FlvAacPacketType.seq.rawValue])
         buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
         handleEncodedAudioBuffer(buffer, 0)
     }
@@ -341,7 +341,7 @@ class RtmpStream: NetStream {
         guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }
-        var buffer = Data([RtmpStream.aac, FLVAACPacketType.raw.rawValue])
+        var buffer = Data([RtmpStream.aac, FlvAacPacketType.raw.rawValue])
         buffer.append(
             audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: Int(audioBuffer.byteLength)
@@ -396,7 +396,7 @@ class RtmpStream: NetStream {
             return
         }
         var buffer: Data
-        let frameType = sampleBuffer.isSync ? FLVFrameType.key : FLVFrameType.inter
+        let frameType = sampleBuffer.isSync ? FlvFrameType.key : FlvFrameType.inter
         switch format {
         case .h264:
             buffer = makeAvcVideoTagHeader(frameType, .nal)

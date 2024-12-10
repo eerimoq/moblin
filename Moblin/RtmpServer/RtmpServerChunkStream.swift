@@ -119,10 +119,10 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        let amf0 = AMF0Serializer(data: messageBody)
+        let amf0 = Amf0Serializer(data: messageBody)
         let commandName: String
         let transactionId: Int
-        let commandObject: ASObject
+        let commandObject: AsObject
         var arguments: [Any?]
         do {
             commandName = try amf0.deserialize()
@@ -162,7 +162,7 @@ class RtmpServerChunkStream {
         logger.info("rtmp-server: client: Ignoring AMF-0 data")
     }
 
-    private func processMessageAmf0CommandConnect(transactionId: Int, commandObject: ASObject) {
+    private func processMessageAmf0CommandConnect(transactionId: Int, commandObject: AsObject) {
         guard let client else {
             return
         }
@@ -329,10 +329,10 @@ class RtmpServerChunkStream {
             return
         }
         let control = messageBody[0]
-        guard let codec = FLVAudioCodec(rawValue: control >> 4),
-              let soundRate = FLVSoundRate(rawValue: (control & 0x0C) >> 2),
-              let soundSize = FLVSoundSize(rawValue: (control & 0x02) >> 1),
-              let soundType = FLVSoundType(rawValue: control & 0x01)
+        guard let codec = FlvAudioCodec(rawValue: control >> 4),
+              let soundRate = FlvSoundRate(rawValue: (control & 0x0C) >> 2),
+              let soundSize = FlvSoundSize(rawValue: (control & 0x02) >> 1),
+              let soundType = FlvSoundType(rawValue: control & 0x01)
         else {
             client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
@@ -343,7 +343,7 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported audio codec \(codec). Only AAC is supported.")
             return
         }
-        switch FLVAACPacketType(rawValue: messageBody[1]) {
+        switch FlvAacPacketType(rawValue: messageBody[1]) {
         case .seq:
             processMessageAudioTypeSeq(client: client, codec: codec)
         case .raw:
@@ -353,7 +353,7 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FLVAudioCodec) {
+    private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FlvAudioCodec) {
         if let config =
             MpegTsAudioConfig(bytes: [UInt8](messageBody[codec.headerSize ..< messageBody.count]))
         {
@@ -388,7 +388,7 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func processMessageAudioTypeRaw(client: RtmpServerClient, codec: FLVAudioCodec) {
+    private func processMessageAudioTypeRaw(client: RtmpServerClient, codec: FlvAudioCodec) {
         guard let audioBuffer else {
             return
         }
@@ -446,7 +446,7 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported video frame type \(frameType)")
             return
         }
-        guard let format = FLVVideoCodec(rawValue: control & 0xF) else {
+        guard let format = FlvVideoCodec(rawValue: control & 0xF) else {
             client.stopInternal(reason: "Unsupported video format \(control & 0xF)")
             return
         }
@@ -454,7 +454,7 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported video format \(format). Only AVC is supported.")
             return
         }
-        switch FLVAVCPacketType(rawValue: messageBody[1]) {
+        switch FlvAvcPacketType(rawValue: messageBody[1]) {
         case .seq:
             processMessageVideoTypeSeq(client: client)
         case .nal:
@@ -465,12 +465,12 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideoTypeSeq(client: RtmpServerClient) {
-        guard messageBody.count >= FLVTagType.video.headerSize else {
+        guard messageBody.count >= FlvTagType.video.headerSize else {
             client
                 .stopInternal(
                     reason: """
                     Got \(messageBody.count) bytes video message, \
-                    expected >= \(FLVTagType.video.headerSize)
+                    expected >= \(FlvTagType.video.headerSize)
                     """
                 )
             return
@@ -479,7 +479,7 @@ class RtmpServerChunkStream {
             return
         }
         var config = MpegTsVideoConfigAvc()
-        config.data = messageBody.subdata(in: FLVTagType.video.headerSize ..< messageBody.count)
+        config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
             videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
@@ -534,8 +534,8 @@ class RtmpServerChunkStream {
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
             decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
         )
-        let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FLVFrameType.key.rawValue
-        let blockBuffer = messageBody.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
+        let isKeyFrame = (messageBody[0] >> 4) & 0b0111 == FlvFrameType.key.rawValue
+        let blockBuffer = messageBody.makeBlockBuffer(advancedBy: FlvTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(

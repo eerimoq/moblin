@@ -255,10 +255,10 @@ final class RtmpSetPeerBandwidthMessage: RtmpMessage {
 final class RtmpCommandMessage: RtmpMessage {
     var commandName: String = ""
     var transactionId: Int = 0
-    var commandObject: ASObject?
+    var commandObject: AsObject?
     var arguments: [Any?] = []
 
-    private var serializer = AMF0Serializer()
+    private var serializer = Amf0Serializer()
 
     init(objectEncoding: RtmpObjectEncoding) {
         super.init(type: objectEncoding.commandType)
@@ -269,7 +269,7 @@ final class RtmpCommandMessage: RtmpMessage {
         transactionId: Int,
         objectEncoding: RtmpObjectEncoding,
         commandName: String,
-        commandObject: ASObject?,
+        commandObject: AsObject?,
         arguments: [Any?]
     ) {
         self.transactionId = transactionId
@@ -352,7 +352,7 @@ final class RtmpDataMessage: RtmpMessage {
     var handlerName: String = ""
     var arguments: [Any?] = []
 
-    private var serializer = AMF0Serializer()
+    private var serializer = Amf0Serializer()
 
     init(objectEncoding: RtmpObjectEncoding) {
         super.init(type: objectEncoding.dataType)
@@ -428,10 +428,10 @@ final class RtmpDataMessage: RtmpMessage {
  7.1.5. Audio Message (9)
  */
 final class RtmpAudioMessage: RtmpMessage {
-    private(set) var codec: FLVAudioCodec = .unknown
-    private(set) var soundRate: FLVSoundRate = .kHz44
-    private(set) var soundSize: FLVSoundSize = .snd8bit
-    private(set) var soundType: FLVSoundType = .stereo
+    private(set) var codec: FlvAudioCodec = .unknown
+    private(set) var soundRate: FlvSoundRate = .kHz44
+    private(set) var soundSize: FlvSoundSize = .snd8bit
+    private(set) var soundType: FlvSoundType = .stereo
 
     init() {
         super.init(type: .audio)
@@ -464,11 +464,11 @@ final class RtmpAudioMessage: RtmpMessage {
             stream.audioTimeStamp += Double(timestamp)
         }
         switch encoded[1] {
-        case FLVAACPacketType.seq.rawValue:
+        case FlvAacPacketType.seq.rawValue:
             let config = MpegTsAudioConfig(bytes: [UInt8](encoded[codec.headerSize ..< encoded.count]))
             stream.mixer.audio.encoder.settings.format = .pcm
             stream.mixer.audio.encoder.inSourceFormat = config?.audioStreamBasicDescription()
-        case FLVAACPacketType.raw.rawValue:
+        case FlvAacPacketType.raw.rawValue:
             if stream.mixer.audio.encoder.inSourceFormat == nil {
                 stream.mixer.audio.encoder.settings.format = .pcm
                 stream.mixer.audio.encoder.inSourceFormat = makeAudioStreamBasicDescription()
@@ -497,10 +497,10 @@ final class RtmpAudioMessage: RtmpMessage {
             }
             super.encoded = newValue
             if length == newValue.count && !newValue.isEmpty {
-                guard let codec = FLVAudioCodec(rawValue: newValue[0] >> 4),
-                      let soundRate = FLVSoundRate(rawValue: (newValue[0] & 0b0000_1100) >> 2),
-                      let soundSize = FLVSoundSize(rawValue: (newValue[0] & 0b0000_0010) >> 1),
-                      let soundType = FLVSoundType(rawValue: newValue[0] & 0b0000_0001)
+                guard let codec = FlvAudioCodec(rawValue: newValue[0] >> 4),
+                      let soundRate = FlvSoundRate(rawValue: (newValue[0] & 0b0000_1100) >> 2),
+                      let soundSize = FlvSoundSize(rawValue: (newValue[0] & 0b0000_0010) >> 1),
+                      let soundType = FlvSoundType(rawValue: newValue[0] & 0b0000_0001)
                 else {
                     return
                 }
@@ -557,17 +557,17 @@ final class RtmpVideoMessage: RtmpMessage {
             return
         }
         stream.info.byteCount.mutate { $0 += Int64(encoded.count) }
-        guard FLVTagType.video.headerSize <= encoded.count else {
+        guard FlvTagType.video.headerSize <= encoded.count else {
             return
         }
         if (encoded[0] & 0b1000_0000) == 0 {
-            guard encoded[0] & 0b0111_0000 >> 4 == FLVVideoCodec.avc.rawValue else {
+            guard encoded[0] & 0b0111_0000 >> 4 == FlvVideoCodec.avc.rawValue else {
                 return
             }
             switch encoded[1] {
-            case FLVAVCPacketType.seq.rawValue:
+            case FlvAvcPacketType.seq.rawValue:
                 makeFormatDescription(stream, format: .h264)
-            case FLVAVCPacketType.nal.rawValue:
+            case FlvAvcPacketType.nal.rawValue:
                 if let sampleBuffer = makeSampleBuffer(stream, type: type, offset: 0) {
                     stream.mixer.video.encoder.decodeSampleBuffer(sampleBuffer)
                 }
@@ -580,9 +580,9 @@ final class RtmpVideoMessage: RtmpMessage {
                 return
             }
             switch encoded[0] & 0b0000_1111 {
-            case FLVVideoPacketType.sequenceStart.rawValue:
+            case FlvVideoPacketType.sequenceStart.rawValue:
                 makeFormatDescription(stream, format: .hevc)
-            case FLVVideoPacketType.codedFrames.rawValue:
+            case FlvVideoPacketType.codedFrames.rawValue:
                 if let sampleBuffer = makeSampleBuffer(stream, type: type, offset: 3) {
                     stream.mixer.video.encoder.decodeSampleBuffer(sampleBuffer)
                 }
@@ -621,7 +621,7 @@ final class RtmpVideoMessage: RtmpMessage {
                 timescale: 1000
             )
         )
-        let blockBuffer = encoded.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize + offset)
+        let blockBuffer = encoded.makeBlockBuffer(advancedBy: FlvTagType.video.headerSize + offset)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(
@@ -640,7 +640,7 @@ final class RtmpVideoMessage: RtmpMessage {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isSync = encoded[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
+        sampleBuffer?.isSync = encoded[0] >> 4 & 0b0111 == FlvFrameType.key.rawValue
         return sampleBuffer
     }
 
@@ -649,11 +649,11 @@ final class RtmpVideoMessage: RtmpMessage {
         switch format {
         case .h264:
             var config = MpegTsVideoConfigAvc()
-            config.data = encoded.subdata(in: FLVTagType.video.headerSize ..< encoded.count)
+            config.data = encoded.subdata(in: FlvTagType.video.headerSize ..< encoded.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         case .hevc:
             var config = MpegTsVideoConfigHevc()
-            config.data = encoded.subdata(in: FLVTagType.video.headerSize ..< encoded.count)
+            config.data = encoded.subdata(in: FlvTagType.video.headerSize ..< encoded.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         }
         if status == noErr {

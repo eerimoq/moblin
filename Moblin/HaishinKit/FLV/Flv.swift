@@ -1,34 +1,98 @@
 import AVFoundation
 
-/// The type of flv supports audio codecs.
-enum FLVAudioCodec: UInt8 {
-    /// The PCM codec.
+enum FlvAacPacketType: UInt8 {
+    case seq = 0
+    case raw = 1
+}
+
+enum FlvAvcPacketType: UInt8 {
+    case seq = 0
+    case nal = 1
+}
+
+enum FlvFrameType: UInt8 {
+    case key = 1
+    case inter = 2
+}
+
+enum FlvSoundRate: UInt8 {
+    case kHz5_5 = 0
+    case kHz11 = 1
+    case kHz22 = 2
+    case kHz44 = 3
+
+    var floatValue: Float64 {
+        switch self {
+        case .kHz5_5:
+            return 5500
+        case .kHz11:
+            return 11025
+        case .kHz22:
+            return 22050
+        case .kHz44:
+            return 44100
+        }
+    }
+}
+
+enum FlvSoundSize: UInt8 {
+    case snd8bit = 0
+    case snd16bit = 1
+}
+
+enum FlvSoundType: UInt8 {
+    case mono = 0
+    case stereo = 1
+}
+
+enum FlvTagType: UInt8 {
+    case audio = 8
+    case video = 9
+    case data = 18
+
+    var streamId: UInt16 {
+        switch self {
+        case .audio, .video:
+            return UInt16(rawValue)
+        case .data:
+            return 0
+        }
+    }
+
+    var headerSize: Int {
+        switch self {
+        case .audio:
+            return 2
+        case .video:
+            return 5
+        case .data:
+            return 0
+        }
+    }
+}
+
+enum FlvVideoCodec: UInt8 {
+    case avc = 7
+}
+
+enum FlvVideoFourCC: UInt32 {
+    case hevc = 0x6876_6331 // { 'h', 'v', 'c', '1' }
+}
+
+enum FlvVideoPacketType: UInt8 {
+    case sequenceStart = 0
+    case codedFrames = 1
+}
+
+enum FlvAudioCodec: UInt8 {
     case pcm = 0
-    /// The ADPCM codec.
     case adpcm = 1
-    /// The MP3 codec.
     case mp3 = 2
-    /// The PCM little endian codec.
     case pcmle = 3
-    /// The Nellymoser 16kHz codec.
-    case nellymoser16K = 4
-    /// The Nellymoser 8kHz codec.
-    case nellymoser8K = 5
-    /// The Nellymoser codec.
-    case nellymoser = 6
-    /// The G.711 A-law codec.
-    case g711A = 7
-    /// The G.711 mu-law codec.
-    case g711MU = 8
-    /// The AAC codec.
     case aac = 10
-    /// The Speex codec.
     case speex = 11
-    /// The MP3 8kHz codec.
     case mp3_8k = 14
-    /// The Device-specific sound.
     case device = 15
-    /// The undefined codec
     case unknown = 0xFF
 
     var isSupported: Bool {
@@ -75,8 +139,8 @@ enum FLVAudioCodec: UInt8 {
         }
     }
 
-    func audioStreamBasicDescription(_ rate: FLVSoundRate, size _: FLVSoundSize,
-                                     type: FLVSoundType) -> AudioStreamBasicDescription?
+    func audioStreamBasicDescription(_ rate: FlvSoundRate, size _: FlvSoundSize,
+                                     type: FlvSoundType) -> AudioStreamBasicDescription?
     {
         guard isSupported else {
             return nil

@@ -102,7 +102,7 @@ final class RtmpSocket {
             connection = nil
         }
         if isDisconnected {
-            let data: ASObject
+            let data: AsObject
             if readyState == .handshakeDone {
                 data = RtmpConnectionCode.connectClosed.eventData()
             } else {

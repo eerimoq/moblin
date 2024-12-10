@@ -1,10 +1,10 @@
 import Foundation
 
-let kASUndefined = ASUndefined()
+let kASUndefined = AsUndefined()
 
-typealias ASObject = [String: Any?]
+typealias AsObject = [String: Any?]
 
-struct ASUndefined: CustomStringConvertible {
+struct AsUndefined: CustomStringConvertible {
     var description: String {
         "undefined"
     }
@@ -15,13 +15,13 @@ struct ASTypedObject {
 
     static var decoders: [String: TypedObjectDecoder] = [:]
 
-    static func decode(typeName: String, data _: ASObject) throws -> Any {
+    static func decode(typeName: String, data _: AsObject) throws -> Any {
         let decoder = decoders[typeName] ?? { ASTypedObject() }
         return try decoder()
     }
 }
 
-struct ASArray {
+struct AsArray {
     private(set) var data: [Any?]
     private(set) var dict: [String: Any?] = [:]
 
@@ -34,9 +34,9 @@ struct ASArray {
     }
 }
 
-extension ASArray: ExpressibleByArrayLiteral {
+extension AsArray: ExpressibleByArrayLiteral {
     init(arrayLiteral elements: Any?...) {
-        self = ASArray(data: elements)
+        self = AsArray(data: elements)
     }
 
     subscript(i: Any) -> Any? {
@@ -73,14 +73,14 @@ extension ASArray: ExpressibleByArrayLiteral {
     }
 }
 
-extension ASArray: CustomDebugStringConvertible {
+extension AsArray: CustomDebugStringConvertible {
     public var debugDescription: String {
         data.description
     }
 }
 
-extension ASArray: Equatable {
-    public static func == (lhs: ASArray, rhs: ASArray) -> Bool {
+extension AsArray: Equatable {
+    public static func == (lhs: AsArray, rhs: AsArray) -> Bool {
         (lhs.data.description == rhs.data.description) && (lhs.dict.description == rhs.dict.description)
     }
 }
@@ -88,7 +88,7 @@ extension ASArray: Equatable {
 // ActionScript 1.0 and 2.0 and flash.xml.XMLDocument in ActionScript 3.0
 /// - seealso: 2.17 XML Document Type (amf0-file-format-specification.pdf)
 /// - seealso: 3.9 XMLDocument type (amf-file-format-spec.pdf)
-public struct ASXMLDocument: CustomStringConvertible {
+public struct AsXmlDocument: CustomStringConvertible {
     public var description: String {
         data
     }
@@ -101,15 +101,15 @@ public struct ASXMLDocument: CustomStringConvertible {
     }
 }
 
-extension ASXMLDocument: Equatable {
-    public static func == (lhs: ASXMLDocument, rhs: ASXMLDocument) -> Bool {
+extension AsXmlDocument: Equatable {
+    public static func == (lhs: AsXmlDocument, rhs: AsXmlDocument) -> Bool {
         lhs.description == rhs.description
     }
 }
 
 /// ActionScript 3.0 introduces a new XML type.
 /// - seealso: 3.13 XML type (amf-file-format-spec.pdf)
-public struct ASXML: CustomStringConvertible {
+public struct AsXml: CustomStringConvertible {
     public var description: String {
         data
     }
@@ -117,8 +117,8 @@ public struct ASXML: CustomStringConvertible {
     private let data: String
 }
 
-extension ASXML: Equatable {
-    public static func == (lhs: ASXML, rhs: ASXML) -> Bool {
+extension AsXml: Equatable {
+    public static func == (lhs: AsXml, rhs: AsXml) -> Bool {
         lhs.description == rhs.description
     }
 }
