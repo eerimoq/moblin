@@ -14,7 +14,7 @@ private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
     }
 }
 
-struct TeslaSettingsView: View {
+private struct TeslaSettingsConfigurationView: View {
     @EnvironmentObject var model: Model
 
     private var tesla: SettingsTesla {
@@ -63,6 +63,23 @@ struct TeslaSettingsView: View {
                 .disabled(tesla.vin.isEmpty || tesla.privateKey.isEmpty || model.teslaVehicleState != .connected)
             } footer: {
                 Text("Remove keys in Controls → Locks on your Tesla's center screen.")
+            }
+        }
+        .navigationTitle("Configuration")
+    }
+}
+
+struct TeslaSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            Section {
+                NavigationLink {
+                    TeslaSettingsConfigurationView()
+                } label: {
+                    Text("Configuration")
+                }
             }
             Section {
                 HCenter {
