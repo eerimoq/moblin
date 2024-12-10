@@ -70,13 +70,26 @@ struct SettingsView: View {
                         IconAndTextView(image: "waveform", text: String(localized: "Audio"))
                     }
                     NavigationLink {
-                        MediaPlayersSettingsView()
+                        BitratePresetsSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "play.rectangle.on.rectangle",
-                            text: String(localized: "Media players")
-                        )
+                        IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
                     }
+                }
+                NavigationLink {
+                    LocationSettingsView()
+                } label: {
+                    IconAndTextView(image: "location", text: String(localized: "Location"))
+                }
+                if model.database.showAllSettings! {
+                    NavigationLink {
+                        WebBrowserSettingsView()
+                    } label: {
+                        IconAndTextView(image: "globe", text: String(localized: "Web browser"))
+                    }
+                }
+            }
+            if model.database.showAllSettings! {
+                Section {
                     NavigationLink {
                         RtmpServerSettingsView()
                     } label: {
@@ -88,10 +101,15 @@ struct SettingsView: View {
                         IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                     }
                     NavigationLink {
-                        BitratePresetsSettingsView()
+                        MediaPlayersSettingsView()
                     } label: {
-                        IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
+                        IconAndTextView(
+                            image: "play.rectangle.on.rectangle",
+                            text: String(localized: "Media players")
+                        )
                     }
+                }
+                Section {
                     NavigationLink {
                         GameControllersSettingsView()
                     } label: {
@@ -112,6 +130,8 @@ struct SettingsView: View {
                             text: String(localized: "Remote control")
                         )
                     }
+                }
+                Section {
                     NavigationLink {
                         DjiDevicesSettingsView()
                     } label: {
@@ -135,18 +155,6 @@ struct SettingsView: View {
                             image: "car.side",
                             text: String(localized: "Tesla")
                         )
-                    }
-                }
-                NavigationLink {
-                    LocationSettingsView()
-                } label: {
-                    IconAndTextView(image: "location", text: String(localized: "Location"))
-                }
-                if model.database.showAllSettings! {
-                    NavigationLink {
-                        WebBrowserSettingsView()
-                    } label: {
-                        IconAndTextView(image: "globe", text: String(localized: "Web browser"))
                     }
                 }
             }
