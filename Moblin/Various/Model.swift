@@ -37,15 +37,6 @@ struct SnapshotJob {
     let user: String?
 }
 
-private struct ChatBotMessage {
-    let platform: Platform
-    let user: String?
-    let isModerator: Bool
-    let isSubscriber: Bool
-    let userId: String?
-    let segments: [ChatPostSegment]
-}
-
 enum ShowingPanel {
     case none
     case settings
@@ -4627,42 +4618,38 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
-        guard message.segments.count > 1 else {
+        guard let command = ChatBotCommand(message: message) else {
             return
         }
-        var command = ""
-        for segment in message.segments.suffix(from: 1) {
-            if let text = segment.text {
-                command += text
-            }
-        }
-        command = command.trim()
-        switch command {
+        switch command.rest() {
         case "help":
             handleChatBotMessageHelp()
         case "tts on":
-            handleChatBotMessageTtsOn(message: message)
+            handleChatBotMessageTtsOn(command: command)
         case "tts off":
-            handleChatBotMessageTtsOff(message: message)
+            handleChatBotMessageTtsOff(command: command)
         case "obs fix":
-            handleChatBotMessageObsFix(message: message)
+            handleChatBotMessageObsFix(command: command)
         case "map zoom out":
-            handleChatBotMessageMapZoomOut(message: message)
+            handleChatBotMessageMapZoomOut(command: command)
         case "snapshot":
-            handleChatBotMessageSnapshot(message: message)
+            handleChatBotMessageSnapshot(command: command)
         default:
-            if command.starts(with: "alert ") {
-                handleChatBotMessageAlert(message: message, command: command)
-            } else if command.starts(with: "fax ") {
-                handleChatBotMessageFax(message: message, command: command)
-            } else if command.starts(with: "filter ") {
-                handleChatBotMessageFilter(message: message, command: command)
-            } else if command.starts(with: "say ") {
-                handleChatBotMessageTtsSay(message: message, command: command)
-            } else if command.starts(with: "tesla ") {
-                handleChatBotMessageTesla(message: message, command: command)
-            } else if command.starts(with: "snapshot ") {
-                handleChatBotMessageSnapshotWithMessage(message: message, command: command)
+            switch command.popFirst() {
+            case "alert":
+                handleChatBotMessageAlert(command: command)
+            case "fax":
+                handleChatBotMessageFax(command: command)
+            case "filter":
+                handleChatBotMessageFilter(command: command)
+            case "say":
+                handleChatBotMessageTtsSay(command: command)
+            case "tesla":
+                handleChatBotMessageTesla(command: command)
+            case "snapshot":
+                handleChatBotMessageSnapshotWithMessage(command: command)
+            default:
+                break
             }
         }
     }
@@ -4676,10 +4663,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
     }
 
-    private func handleChatBotMessageTtsOn(message: ChatBotMessage) {
+    private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
-            message: message
+            command: command
         ) {
             self.makeToast(
                 title: String(localized: "Chat bot"),
@@ -4689,10 +4676,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func handleChatBotMessageTtsOff(message: ChatBotMessage) {
+    private func handleChatBotMessageTtsOff(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
-            message: message
+            command: command
         ) {
             self.makeToast(
                 title: String(localized: "Chat bot"),
@@ -4703,25 +4690,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func handleChatBotMessageTtsSay(message: ChatBotMessage, command: String) {
+    private func handleChatBotMessageTtsSay(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tts,
-            message: message
+            command: command
         ) {
-            let parts = command.split(separator: " ")
-            guard parts.count > 2 else {
-                return
-            }
-            let user = message.user ?? "Unknown"
-            let message = parts.suffix(from: 2).joined(separator: " ")
-            self.chatTextToSpeech.say(user: user, message: message, isRedemption: false)
+            let user = command.user() ?? "Unknown"
+            self.chatTextToSpeech.say(user: user, message: command.rest(), isRedemption: false)
         }
     }
 
-    private func handleChatBotMessageObsFix(message: ChatBotMessage) {
+    private func handleChatBotMessageObsFix(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fix,
-            message: message
+            command: command
         ) {
             if self.obsWebSocket != nil {
                 self.makeToast(
@@ -4740,10 +4722,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func handleChatBotMessageMapZoomOut(message: ChatBotMessage) {
+    private func handleChatBotMessageMapZoomOut(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.map,
-            message: message
+            command: command
         ) {
             self.makeToast(
                 title: String(localized: "Chat bot"),
@@ -4759,12 +4741,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return String(localized: "Snapshot taken by \(user).")
     }
 
-    private func handleChatBotMessageSnapshot(message: ChatBotMessage) {
+    private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.snapshot!,
-            message: message
+            command: command
         ) {
-            if let user = message.user {
+            if let user = command.user() {
                 self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
             } else {
                 self.takeSnapshot(isChatBot: true)
@@ -4772,63 +4754,55 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func handleChatBotMessageSnapshotWithMessage(message: ChatBotMessage, command: String) {
+    private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.snapshot!,
-            message: message
+            command: command
         ) {
-            let parts = command.split(separator: " ")
-            guard parts.count > 1 else {
-                return
-            }
-            let messageFromUser = parts.suffix(from: 1).joined(separator: " ")
             self.takeSnapshotWithCountdown(
                 isChatBot: true,
-                message: messageFromUser,
-                user: message.user
+                message: command.rest(),
+                user: command.user()
             )
         }
     }
 
-    private func handleChatBotMessageAlert(message: ChatBotMessage, command: String) {
+    private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.alert!,
-            message: message
+            command: command
         ) {
-            let parts = command.split(separator: " ")
-            guard parts.count >= 2 else {
+            guard let alert = command.popFirst() else {
                 return
             }
             DispatchQueue.main.async {
-                self.playAlert(alert: .chatBotCommand(parts[1].trim(), message.user ?? "Unknown"))
+                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown"))
             }
         }
     }
 
-    private func handleChatBotMessageFax(message: ChatBotMessage, command: String) {
+    private func handleChatBotMessageFax(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.fax!,
-            message: message
+            command: command
         ) {
-            let parts = command.split(separator: " ")
-            guard parts.count >= 2 else {
+            guard let url = command.popFirst() else {
                 return
             }
-            self.faxReceiver.add(url: parts[1].trim())
+            self.faxReceiver.add(url: url)
         }
     }
 
-    private func handleChatBotMessageFilter(message: ChatBotMessage, command: String) {
+    private func handleChatBotMessageFilter(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.filter!,
-            message: message
+            command: command
         ) {
-            let parts = command.split(separator: " ")
-            guard parts.count == 3 else {
+            guard let filter = command.popFirst(), let state = command.popFirst() else {
                 return
             }
-            var type: SettingsButtonType
-            switch parts[1].trim() {
+            let type: SettingsButtonType
+            switch filter {
             case "movie":
                 type = .movie
             case "grayscale":
@@ -4844,37 +4818,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             default:
                 return
             }
-            self.setGlobalButtonState(type: type, isOn: parts[2].trim() == "on")
+            self.setGlobalButtonState(type: type, isOn: state == "on")
             self.sceneUpdated()
             self.updateButtonStates()
         }
     }
 
-    private func handleChatBotMessageTesla(message: ChatBotMessage, command: String) {
+    private func handleChatBotMessageTesla(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.tesla!,
-            message: message
+            command: command
         ) {
-            let parts = command.split(separator: " ")
-            guard parts.count >= 2 else {
-                return
-            }
-            switch parts[1].trim() {
+            switch command.popFirst() {
             case "trunk":
-                self.handleChatBotMessageTeslaTrunk(message: message, command: command, parts: parts)
+                self.handleChatBotMessageTeslaTrunk(command: command)
             case "media":
-                self.handleChatBotMessageTeslaMedia(message: message, command: command, parts: parts)
+                self.handleChatBotMessageTeslaMedia(command: command)
             default:
                 break
             }
         }
     }
 
-    private func handleChatBotMessageTeslaTrunk(message _: ChatBotMessage, command _: String, parts: [Substring]) {
-        guard parts.count == 3 else {
-            return
-        }
-        switch parts[2].trim() {
+    private func handleChatBotMessageTeslaTrunk(command: ChatBotCommand) {
+        switch command.popFirst() {
         case "open":
             teslaVehicle?.openTrunk()
         case "close":
@@ -4884,11 +4851,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func handleChatBotMessageTeslaMedia(message _: ChatBotMessage, command _: String, parts: [Substring]) {
-        guard parts.count == 3 else {
-            return
-        }
-        switch parts[2].trim() {
+    private func handleChatBotMessageTeslaMedia(command: ChatBotCommand) {
+        switch command.popFirst() {
         case "next":
             teslaVehicle?.mediaNextTrack()
         case "previous":
@@ -4902,17 +4866,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func executeIfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
-        message: ChatBotMessage,
+        command: ChatBotCommand,
         onCompleted: @escaping () -> Void
     ) {
-        if message.isModerator, permissions.moderatorsEnabled {
+        if command.message.isModerator, permissions.moderatorsEnabled {
             onCompleted()
             return
         }
-        if message.isSubscriber, permissions.subscribersEnabled! {
-            if message.platform == .twitch {
+        if command.message.isSubscriber, permissions.subscribersEnabled! {
+            if command.message.platform == .twitch {
                 if permissions.minimumSubscriberTier! > 1 {
-                    if let userId = message.userId {
+                    if let userId = command.message.userId {
                         TwitchApi(stream.twitchAccessToken!, urlSession).getBroadcasterSubscriptions(
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
@@ -4926,7 +4890,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                 }
                                 self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
                                     permissions: permissions,
-                                    message: message,
+                                    command: command,
                                     onCompleted: onCompleted
                                 )
                             }
@@ -4944,20 +4908,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
             permissions: permissions,
-            message: message,
+            command: command,
             onCompleted: onCompleted
         )
     }
 
     private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
         permissions: SettingsChatBotPermissionsCommand,
-        message: ChatBotMessage,
+        command: ChatBotCommand,
         onCompleted: @escaping () -> Void
     ) {
-        guard let user = message.user else {
+        guard let user = command.user() else {
             return
         }
-        switch message.platform {
+        switch command.message.platform {
         case .twitch:
             if isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user) {
                 onCompleted()
