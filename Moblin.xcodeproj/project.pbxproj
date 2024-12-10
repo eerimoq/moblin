@@ -1340,12 +1340,12 @@
 			path = Srt;
 			sourceTree = "<group>";
 		};
-		0324CD052BEBFB93004AA063 /* RIST */ = {
+		0324CD052BEBFB93004AA063 /* Rist */ = {
 			isa = PBXGroup;
 			children = (
 				0324CD062BEBFBBA004AA063 /* RistStream.swift */,
 			);
-			path = RIST;
+			path = Rist;
 			sourceTree = "<group>";
 		};
 		03279CF02B4D2AD3006CEA5A /* RealtimeIrl */ = {
@@ -1526,14 +1526,14 @@
 				0359F90E2BD3E038005BFDA8 /* LICENSE.md */,
 				0359F8152BD3DA5F005BFDA8 /* Codec */,
 				0359F8282BD3DA5F005BFDA8 /* Extension */,
-				0359F8342BD3DA5F005BFDA8 /* FLV */,
+				0359F8342BD3DA5F005BFDA8 /* Flv */,
 				0359F83B2BD3DA5F005BFDA8 /* Media */,
 				03FB42282C68D99A0009FB26 /* Moblink */,
-				0359F84B2BD3DA5F005BFDA8 /* MPEG */,
+				0359F84B2BD3DA5F005BFDA8 /* Mpeg */,
 				0359F84E2BD3DA5F005BFDA8 /* Net */,
-				0324CD052BEBFB93004AA063 /* RIST */,
-				0359F85F2BD3DA5F005BFDA8 /* RTMP */,
-				0359F8682BD3DA5F005BFDA8 /* SRT */,
+				0324CD052BEBFB93004AA063 /* Rist */,
+				0359F85F2BD3DA5F005BFDA8 /* Rtmp */,
+				0359F8682BD3DA5F005BFDA8 /* Srt */,
 				0359F8752BD3DA5F005BFDA8 /* Util */,
 				0359F8AA2BD3DA61005BFDA8 /* Vendor */,
 			);
@@ -1570,12 +1570,12 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
-		0359F8342BD3DA5F005BFDA8 /* FLV */ = {
+		0359F8342BD3DA5F005BFDA8 /* Flv */ = {
 			isa = PBXGroup;
 			children = (
 				03C3573A2D08150100B8B29F /* Flv.swift */,
 			);
-			path = FLV;
+			path = Flv;
 			sourceTree = "<group>";
 		};
 		0359F83B2BD3DA5F005BFDA8 /* Media */ = {
@@ -1593,7 +1593,7 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
-		0359F84B2BD3DA5F005BFDA8 /* MPEG */ = {
+		0359F84B2BD3DA5F005BFDA8 /* Mpeg */ = {
 			isa = PBXGroup;
 			children = (
 				0359F83C2BD3DA5F005BFDA8 /* Adts.swift */,
@@ -1613,7 +1613,7 @@
 				0359F84A2BD3DA5F005BFDA8 /* MpegTsWriter.swift */,
 				0359F83F2BD3DA5F005BFDA8 /* NalUnitStream.swift */,
 			);
-			path = MPEG;
+			path = Mpeg;
 			sourceTree = "<group>";
 		};
 		0359F84E2BD3DA5F005BFDA8 /* Net */ = {
@@ -1624,7 +1624,7 @@
 			path = Net;
 			sourceTree = "<group>";
 		};
-		0359F85F2BD3DA5F005BFDA8 /* RTMP */ = {
+		0359F85F2BD3DA5F005BFDA8 /* Rtmp */ = {
 			isa = PBXGroup;
 			children = (
 				0359F84F2BD3DA5F005BFDA8 /* Amf0Serializer.swift */,
@@ -1639,10 +1639,10 @@
 				0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */,
 				0359F85D2BD3DA5F005BFDA8 /* RtmpStreamInfo.swift */,
 			);
-			path = RTMP;
+			path = Rtmp;
 			sourceTree = "<group>";
 		};
-		0359F8682BD3DA5F005BFDA8 /* SRT */ = {
+		0359F8682BD3DA5F005BFDA8 /* Srt */ = {
 			isa = PBXGroup;
 			children = (
 				0359F8602BD3DA5F005BFDA8 /* SrtConnection.swift */,
@@ -1651,7 +1651,7 @@
 				0359F8662BD3DA5F005BFDA8 /* SrtSocketOption.swift */,
 				0359F8672BD3DA5F005BFDA8 /* SrtStream.swift */,
 			);
-			path = SRT;
+			path = Srt;
 			sourceTree = "<group>";
 		};
 		0359F8752BD3DA5F005BFDA8 /* Util */ = {
@@ -1779,7 +1779,7 @@
 				03CDEAA02C0AB8BB006121D0 /* Integrations */,
 				0391D2012CB2FFFC008AB44B /* Intents */,
 				03C3573E2D0818EF00B8B29F /* Media */,
-				03BDE2202B24364700DF193A /* OBS */,
+				03BDE2202B24364700DF193A /* Obs */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
 				039ADE452B55C20800FE0F59 /* RemoteControl */,
 				03BE504E2B3EC107004720AF /* Various */,
@@ -2422,12 +2422,12 @@
 			path = MyServers;
 			sourceTree = "<group>";
 		};
-		03BDE2202B24364700DF193A /* OBS */ = {
+		03BDE2202B24364700DF193A /* Obs */ = {
 			isa = PBXGroup;
 			children = (
 				03BDE2212B24367D00DF193A /* ObsWebSocket.swift */,
 			);
-			path = OBS;
+			path = Obs;
 			sourceTree = "<group>";
 		};
 		03BDE2242B24654E00DF193A /* ObsRemoteControl */ = {
