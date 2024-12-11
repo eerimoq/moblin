@@ -11,6 +11,8 @@
 | !moblin tts on | Turn on chat text to speech. |
 | !moblin tts off | Turn off chat text to speech. |
 | !moblin say \<message> | Say given message. |
+| !moblin mute | Mute audio. |
+| !moblin unmute | Unmute audio. |
 | !moblin tesla trunk open | Open the trunk. |
 | !moblin tesla trunk close | Close the trunk. |
 | !moblin tesla media next | Next track. |
