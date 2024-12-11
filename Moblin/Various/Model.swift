@@ -4776,6 +4776,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.audio!,
             command: command
         ) {
+            guard !self.isMuteOn else {
+                return
+            }
+            self.makeToast(
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Muting audio")
+            )
             self.setMuted(value: true)
             self.setGlobalButtonState(type: .mute, isOn: true)
             self.updateButtonStates()
@@ -4787,6 +4794,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.audio!,
             command: command
         ) {
+            guard self.isMuteOn else {
+                return
+            }
+            self.makeToast(
+                title: String(localized: "Chat bot"),
+                subTitle: String(localized: "Unmuting audio")
+            )
             self.setMuted(value: false)
             self.setGlobalButtonState(type: .mute, isOn: false)
             self.updateButtonStates()
