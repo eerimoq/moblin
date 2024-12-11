@@ -1205,6 +1205,12 @@
         }
       }
     },
+    "!moblin mute" : {
+
+    },
+    "!moblin mute/unmute" : {
+
+    },
     "!moblin obs fix" : {
       "localizations" : {
         "de" : {
@@ -1749,6 +1755,9 @@
           }
         }
       }
+    },
+    "!moblin unmute" : {
+
     },
     "???" : {
       "localizations" : {
@@ -67931,6 +67940,9 @@
         }
       }
     },
+    "Mute audio." : {
+
+    },
     "Muted" : {
       "localizations" : {
         "de" : {
@@ -113100,6 +113112,9 @@
           }
         }
       }
+    },
+    "Unmute audio." : {
+
     },
     "Unmutes audio." : {
       "localizations" : {

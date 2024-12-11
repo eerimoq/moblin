@@ -4634,6 +4634,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             handleChatBotMessageMapZoomOut(command: command)
         case "snapshot":
             handleChatBotMessageSnapshot(command: command)
+        case "mute":
+            handleChatBotMessageMute(command: command)
+        case "unmute":
+            handleChatBotMessageUnmute(command: command)
         default:
             switch command.popFirst() {
             case "alert":
@@ -4764,6 +4768,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 message: command.rest(),
                 user: command.user()
             )
+        }
+    }
+
+    private func handleChatBotMessageMute(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.audio!,
+            command: command
+        ) {
+            self.setMuted(value: true)
+            self.setGlobalButtonState(type: .mute, isOn: true)
+            self.updateButtonStates()
+        }
+    }
+
+    private func handleChatBotMessageUnmute(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.audio!,
+            command: command
+        ) {
+            self.setMuted(value: false)
+            self.setGlobalButtonState(type: .mute, isOn: false)
+            self.updateButtonStates()
         }
     }
 

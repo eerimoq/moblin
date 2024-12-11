@@ -1636,6 +1636,7 @@ class SettingsChatBotPermissions: Codable {
     var snapshot: SettingsChatBotPermissionsCommand? = .init()
     var filter: SettingsChatBotPermissionsCommand? = .init()
     var tesla: SettingsChatBotPermissionsCommand? = .init()
+    var audio: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -4284,6 +4285,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.twitchMultiTrackEnabled == nil {
             stream.twitchMultiTrackEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.audio == nil {
+            realDatabase.chat.botCommandPermissions!.audio = .init()
             store()
         }
     }

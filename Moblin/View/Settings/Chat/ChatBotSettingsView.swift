@@ -138,6 +138,21 @@ struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.audio!)
+                } label: {
+                    Text("!moblin mute/unmute")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin mute")
+                    Text("Mute audio.")
+                    Text("")
+                    Text("!moblin unmute")
+                    Text("Unmute audio.")
+                }
+            }
+            Section {
+                NavigationLink {
                     PermissionsSettingsView(permissions: permissions.tts)
                 } label: {
                     Text("!moblin say <message...>")
