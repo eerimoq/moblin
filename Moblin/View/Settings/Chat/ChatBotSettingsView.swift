@@ -122,19 +122,19 @@ struct ChatBotCommandsSettingsView: View {
                 NavigationLink {
                     PermissionsSettingsView(permissions: permissions.tts)
                 } label: {
+                    Text("!moblin tts/say ...")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
                     Text("!moblin tts on")
-                }
-            } footer: {
-                Text("Turn on chat text to speech.")
-            }
-            Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.tts)
-                } label: {
+                    Text("Turn on chat text to speech.")
+                    Text("")
                     Text("!moblin tts off")
+                    Text("Turn off chat text to speech.")
+                    Text("")
+                    Text("!moblin say <message>")
+                    Text("Say given message.")
                 }
-            } footer: {
-                Text("Turn off chat text to speech.")
             }
             Section {
                 NavigationLink {
@@ -150,15 +150,6 @@ struct ChatBotCommandsSettingsView: View {
                     Text("!moblin unmute")
                     Text("Unmute audio.")
                 }
-            }
-            Section {
-                NavigationLink {
-                    PermissionsSettingsView(permissions: permissions.tts)
-                } label: {
-                    Text("!moblin say <message...>")
-                }
-            } footer: {
-                Text("Say given message.")
             }
             Section {
                 NavigationLink {

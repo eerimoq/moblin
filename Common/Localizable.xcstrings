@@ -1341,7 +1341,7 @@
         }
       }
     },
-    "!moblin say <message...>" : {
+    "!moblin say <message>" : {
 
     },
     "!moblin snapshot" : {
@@ -1755,6 +1755,9 @@
           }
         }
       }
+    },
+    "!moblin tts/say ..." : {
+
     },
     "!moblin unmute" : {
 
