@@ -6661,6 +6661,8 @@ extension Model: RemoteControlStreamerDelegate {
         }
         state.zoom = zoomX
         state.debugLogging = database.debug.logLevel == .debug
+        state.streaming = isLive
+        state.recording = isRecording
         remoteControlStreamer?.stateChanged(state: state)
     }
 
