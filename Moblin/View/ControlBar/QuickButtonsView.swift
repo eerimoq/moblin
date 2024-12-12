@@ -91,11 +91,9 @@ struct QuickButtonsInnerView: View {
         model.updateButtonStates()
     }
 
-    private func imageAction(state: ButtonState) {
+    private func imageAction(state _: ButtonState) {
         model.showingCamera.toggle()
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .image, isOn: state.button.isOn)
-        model.updateButtonStates()
+        model.updateImageButtonState()
     }
 
     private func recordAction() {
@@ -178,9 +176,6 @@ struct QuickButtonsInnerView: View {
     }
 
     private func drawAction(state _: ButtonState) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .draw, isOn: state.button.isOn)
-        model.updateButtonStates()
         model.toggleDrawOnStream()
     }
 
@@ -205,9 +200,8 @@ struct QuickButtonsInnerView: View {
     }
 
     private func faceAction(state _: ButtonState) {
-        state.button.isOn.toggle()
-        model.updateButtonStates()
         model.showFace.toggle()
+        model.updateFaceFilterButtonState()
     }
 
     private func pollAction(state _: ButtonState) {

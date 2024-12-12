@@ -1384,6 +1384,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         MoblinShortcuts.updateAppShortcutParameters()
         bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
         reloadTeslaVehicle()
+        updateFaceFilterButtonState()
     }
 
     func reloadTeslaVehicle() {
@@ -1540,6 +1541,48 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             smoothAmount: settings.smoothAmount!,
             smoothRadius: settings.smoothRadius!
         ) }
+    }
+
+    func updateFaceFilterButtonState() {
+        var isOn = false
+        if showFace, !showDrawOnStream {
+            isOn = true
+        }
+        if database.debug.beautyFilter! {
+            isOn = true
+        }
+        if database.debug.beautyFilterSettings!.showBeauty! {
+            isOn = true
+        }
+        if database.debug.beautyFilterSettings!.showBlur {
+            isOn = true
+        }
+        if database.debug.beautyFilterSettings!.showBlurBackground! {
+            isOn = true
+        }
+        if database.debug.beautyFilterSettings!.showMoblin {
+            isOn = true
+        }
+        setGlobalButtonState(type: .face, isOn: isOn)
+        updateButtonStates()
+    }
+
+    func updateImageButtonState() {
+        var isOn = showingCamera
+        if bias != 0.0 {
+            isOn = true
+        }
+        if manualWhiteBalanceEnabled {
+            isOn = true
+        }
+        if manualIsoEnabled {
+            isOn = true
+        }
+        if manualFocusEnabled {
+            isOn = true
+        }
+        setGlobalButtonState(type: .image, isOn: isOn)
+        updateButtonStates()
     }
 
     func setPixelFormat() {
@@ -6042,6 +6085,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if let device = self.cameraDevice {
                     self.setIsoAfterCameraAttach(device: device)
                     self.setWhiteBalanceAfterCameraAttach(device: device)
+                    self.updateImageButtonState()
                 }
                 self.lastAttachCompletedTime = .now
             }
@@ -8431,6 +8475,7 @@ extension Model {
 extension Model {
     func toggleDrawOnStream() {
         showDrawOnStream.toggle()
+        drawOnStreamUpdateButtonState()
     }
 
     func drawOnStreamLineComplete() {
@@ -8441,6 +8486,7 @@ extension Model {
             mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
         )
         media.registerEffect(drawOnStreamEffect)
+        drawOnStreamUpdateButtonState()
     }
 
     func drawOnStreamWipe() {
@@ -8452,6 +8498,7 @@ extension Model {
             mirror: isFrontCameraSelected && !database.mirrorFrontCameraOnStream!
         )
         media.unregisterEffect(drawOnStreamEffect)
+        drawOnStreamUpdateButtonState()
     }
 
     func drawOnStreamUndo() {
@@ -8468,6 +8515,12 @@ extension Model {
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)
         }
+        drawOnStreamUpdateButtonState()
+    }
+
+    func drawOnStreamUpdateButtonState() {
+        setGlobalButtonState(type: .draw, isOn: showDrawOnStream || !drawOnStreamLines.isEmpty)
+        updateButtonStates()
     }
 }
 
@@ -8737,6 +8790,7 @@ extension Model {
         }
         manualWhiteBalancesEnabled[device] = false
         manualWhiteBalanceEnabled = false
+        updateImageButtonState()
     }
 
     func setManualWhiteBalance(factor: Float) {

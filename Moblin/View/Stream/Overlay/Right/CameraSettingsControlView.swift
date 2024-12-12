@@ -70,10 +70,12 @@ private struct ExposureBiasView: View {
                     return
                 }
                 model.setExposureBias(bias: model.bias)
+                model.updateImageButtonState()
             }
         )
         .onChange(of: model.bias) { _ in
             model.setExposureBias(bias: model.bias)
+            model.updateImageButtonState()
         }
         .padding([.top, .bottom], 5)
         .padding([.leading, .trailing], 7)
@@ -117,6 +119,7 @@ private struct WhiteBalanceView: View {
                     } else {
                         model.setManualWhiteBalance(factor: model.manualWhiteBalance)
                     }
+                    model.updateImageButtonState()
                 } label: {
                     Image(systemName: lockImage(locked: model.manualWhiteBalanceEnabled))
                         .font(.title2)
@@ -168,6 +171,7 @@ private struct IsoView: View {
                     } else {
                         model.setManualIso(factor: model.manualIso)
                     }
+                    model.updateImageButtonState()
                 } label: {
                     Image(systemName: lockImage(locked: model.manualIsoEnabled))
                         .font(.title2)
@@ -219,6 +223,7 @@ struct FocusView: View {
                     } else {
                         model.setManualFocus(lensPosition: model.manualFocus)
                     }
+                    model.updateImageButtonState()
                 } label: {
                     Image(systemName: lockImage(locked: model.manualFocusEnabled))
                         .font(.title2)

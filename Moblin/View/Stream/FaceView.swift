@@ -139,6 +139,7 @@ private struct FaceViewBeautyButtons: View {
             Button {
                 model.showFaceBeautyShape.toggle()
                 model.showFaceBeautySmooth = false
+                model.updateFaceFilterButtonState()
             } label: {
                 FaceButtonView(title: String(localized: "Shape"), on: model.showFaceBeautyShape)
             }
@@ -146,6 +147,7 @@ private struct FaceViewBeautyButtons: View {
                 Button {
                     model.showFaceBeautyShape = false
                     model.showFaceBeautySmooth.toggle()
+                    model.updateFaceFilterButtonState()
                 } label: {
                     FaceButtonView(title: String(localized: "Smooth"), on: model.showFaceBeautySmooth)
                 }
@@ -155,6 +157,7 @@ private struct FaceViewBeautyButtons: View {
                 model.sceneUpdated()
                 model.updateFaceFilterSettings()
                 beauty = model.database.debug.beautyFilterSettings!.showBeauty!
+                model.updateFaceFilterButtonState()
             } label: {
                 FaceButtonView(title: String(localized: "Enabled"), on: beauty)
             }
@@ -196,6 +199,7 @@ struct FaceView: View {
                         model.sceneUpdated()
                         model.updateFaceFilterSettings()
                         crop = model.database.debug.beautyFilter!
+                        model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Crop"),
@@ -207,6 +211,7 @@ struct FaceView: View {
                         model.sceneUpdated()
                         model.updateFaceFilterSettings()
                         mouth = settings.showMoblin
+                        model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Mouth"),
@@ -229,6 +234,7 @@ struct FaceView: View {
                         model.sceneUpdated()
                         model.updateFaceFilterSettings()
                         blurBackground = settings.showBlurBackground!
+                        model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Privacy"),
