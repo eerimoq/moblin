@@ -97,8 +97,10 @@ class RtmpServerChunkStream {
         if mediaTimestampZero == -1 {
             mediaTimestampZero = mediaTimestamp
         }
-        // logger.info("rtmp-server: client: Processing message \(messageType)
-        // \(isAbsoluteTimeStamp) \(messageTimestamp)")
+        // logger.info("""
+        //             rtmp-server: client: Processing message \(messageType) \
+        //             \(isAbsoluteTimeStamp) \(messageTimestamp)
+        //             """)
         switch messageType {
         case .amf0Command:
             processMessageAmf0Command()
