@@ -215,7 +215,7 @@ class RtmpServerClient {
             chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, streamId: chunkStreamId)
         }
         chunkStream = chunkStreams[chunkStreamId]
-        chunkStream.isMessageType0 = format == 0
+        // logger.info("rtmp-server: \(chunkStreamId): Chunk message header format: \(format)")
         switch format {
         case 0:
             receiveMessageHeaderType0()
@@ -235,6 +235,7 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in message header type 0 header")
             return
         }
+        chunkStream.isAbsoluteTimeStamp = true
         chunkStream.messageTimestamp = data.getThreeBytesBe()
         chunkStream.messageLength = Int(data.getThreeBytesBe(offset: 3))
         chunkStream.messageTypeId = data[6]
@@ -247,6 +248,7 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in message header type 1 header")
             return
         }
+        chunkStream.isAbsoluteTimeStamp = false
         chunkStream.messageTimestamp = data.getThreeBytesBe()
         chunkStream.messageLength = Int(data.getThreeBytesBe(offset: 3))
         chunkStream.messageTypeId = data[6]
@@ -258,6 +260,7 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in message header type 2 header")
             return
         }
+        chunkStream.isAbsoluteTimeStamp = false
         chunkStream.messageTimestamp = data.getThreeBytesBe()
         receiveExtendedTimestampOrData()
     }
