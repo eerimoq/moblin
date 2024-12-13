@@ -83,7 +83,11 @@ final class RtmpChunk {
         }
         self.size = size
         self.type = type
-        decode(data: data)
+        do {
+            try decode(data: data)
+        } catch {
+            logger.info("rtmp: Decode failed")
+        }
     }
 
     func ready() -> Bool {
@@ -117,45 +121,37 @@ final class RtmpChunk {
         return header + message.encoded
     }
 
-    private func decode(data: Data) {
-        var offset = 0
-        chunkStreamId = UInt16(data[offset] & 0b0011_1111)
-        offset += 1
+    private func decode(data: Data) throws {
+        let reader = ByteArray(data: data)
+        chunkStreamId = try UInt16(reader.readUInt8() & 0b0011_1111)
         switch chunkStreamId {
         case 0:
-            chunkStreamId = UInt16(data[offset]) + 64
-            offset += 1
+            chunkStreamId = try UInt16(reader.readUInt8()) + 64
         case 1:
-            chunkStreamId = UInt16(data: data[offset ... offset + 1]) + 64
-            offset += 2
+            chunkStreamId = try reader.readUInt16() + 64
         default:
             break
         }
         guard type == .zero || type == .one else {
             return
         }
-        let timestamp = UInt32(data: data[offset ..< offset + 3]).bigEndian
-        offset += 3
-        let length = Int(Int32(data: data[offset ..< offset + 3]).bigEndian)
-        offset += 3
-        guard let messageType = RtmpMessageType(rawValue: data[offset]) else {
+        let timestamp = try reader.readUInt24()
+        let length = try Int(reader.readUInt24())
+        guard let messageType = try RtmpMessageType(rawValue: reader.readUInt8()) else {
             return
         }
-        offset += 1
         let message = RtmpMessage.create(type: messageType)
         message.timestamp = timestamp
         message.length = length
         if type == .zero {
-            message.streamId = UInt32(data: data[offset ..< offset + 4])
-            offset += 4
+            message.streamId = try reader.readUInt32Le()
         }
         if message.timestamp == RtmpChunk.maxTimestamp {
-            message.timestamp = UInt32(data: data[offset ..< offset + 4]).bigEndian
-            offset += 4
+            message.timestamp = try reader.readUInt32()
         }
-        let end = min(message.length + offset, data.count)
-        fragmented = size + offset <= end
-        message.encoded = data.subdata(in: offset ..< min(size + offset, end))
+        let end = min(message.length + reader.position, data.count)
+        fragmented = size + reader.position <= end
+        message.encoded = data.subdata(in: reader.position ..< min(size + reader.position, end))
         self.message = message
     }
 

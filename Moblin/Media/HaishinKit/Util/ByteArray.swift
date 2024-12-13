@@ -115,6 +115,11 @@ open class ByteArray {
         return UInt32(data: data[position - ByteArray.sizeOfInt32 ..< position]).bigEndian
     }
 
+    func readUInt32Le() throws -> UInt32 {
+        return try UInt32(readUInt8()) | (UInt32(readUInt8()) << 8) | (UInt32(readUInt8()) << 16) |
+            (UInt32(readUInt8()) << 24)
+    }
+
     @discardableResult
     func writeUInt32(_ value: UInt32) -> Self {
         writeBytes(value.bigEndian.data)
