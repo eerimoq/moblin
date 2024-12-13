@@ -219,6 +219,7 @@ struct QuickButtonsInnerView: View {
 
     private func lutsAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .luts, panel: .luts)
+        model.updateLutsButtonState()
     }
 
     private func chatAction(state _: ButtonState) {
@@ -500,9 +501,7 @@ struct QuickButtonsInnerView: View {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
             }
-            if model.database.quickButtons!
-                .showName && !(model.stream.portrait! || model.database.portrait!)
-            {
+            if model.database.quickButtons!.showName && !(model.stream.portrait! || model.database.portrait!) {
                 Text(state.button.name)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)

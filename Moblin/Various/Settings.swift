@@ -2043,7 +2043,7 @@ class SettingsCatPrinters: Codable {
 
 class SettingsQuickButtons: Codable {
     var twoColumns: Bool = true
-    var showName: Bool = false
+    var showName: Bool = true
     var enableScroll: Bool = true
 }
 
@@ -2416,7 +2416,7 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable {
 
 class DeepLinkCreatorQuickButtons: Codable {
     var twoColumns: Bool = true
-    var showName: Bool = false
+    var showName: Bool = true
     var enableScroll: Bool = true
     var buttons: [DeepLinkCreatorQuickButton] = []
 }

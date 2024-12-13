@@ -1385,6 +1385,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bondingStatisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames!)
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
+        updateLutsButtonState()
     }
 
     func reloadTeslaVehicle() {
@@ -1582,6 +1583,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isOn = true
         }
         setGlobalButtonState(type: .image, isOn: isOn)
+        updateButtonStates()
+    }
+
+    func updateLutsButtonState() {
+        var isOn = showingPanel == .luts
+        for lut in allLuts() where lut.enabled! {
+            isOn = true
+        }
+        setGlobalButtonState(type: .luts, isOn: isOn)
         updateButtonStates()
     }
 

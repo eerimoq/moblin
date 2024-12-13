@@ -33,6 +33,7 @@ private struct CloseButtonPanelView: View {
     var body: some View {
         CloseButtonView {
             model.toggleShowingPanel(type: nil, panel: .none)
+            model.updateLutsButtonState()
         }
     }
 }
