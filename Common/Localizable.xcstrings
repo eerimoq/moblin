@@ -136,7 +136,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : " "
           }
         },
         "fr" : {
@@ -148,7 +148,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : " "
           }
         },
         "sv" : {
@@ -532,7 +532,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "-"
           }
         },
         "vi" : {
@@ -1210,19 +1210,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin stumm"
+            "value" : "!moblin mute"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin σίγαση"
+            "value" : "!moblin mute"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin mudo"
+            "value" : "!moblin mute"
           }
         },
         "fi" : {
@@ -1234,67 +1234,67 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin muet"
+            "value" : "!moblin mute"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइलम्यूट"
+            "value" : "!moblin mute"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin bisu"
+            "value" : "!moblin mute"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin muto"
+            "value" : "!moblin mute"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin ミュート"
+            "value" : "!moblin mute"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 뮤트"
+            "value" : "!moblin mute"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin dempen"
+            "value" : "!moblin mute"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin wycisz"
+            "value" : "!moblin mute"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin mudo"
+            "value" : "!moblin mute"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin mudo"
+            "value" : "!moblin mute"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin немой"
+            "value" : "!moblin mute"
           }
         },
         "sv" : {
@@ -1306,31 +1306,31 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin sessiz"
+            "value" : "!moblin mute"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin німий"
+            "value" : "!moblin mute"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin tắt tiếng"
+            "value" : "!moblin mute"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 静音"
+            "value" : "!moblin mute"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 靜音"
+            "value" : "!moblin mute"
           }
         }
       }
@@ -1340,19 +1340,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin stummschalten/Stummschaltung aufheben"
+            "value" : "!moblin mute/unmute"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin σίγαση/κατάργηση σίγασης"
+            "value" : "!moblin mute/unmute"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin silenciar/activar silencio"
+            "value" : "!moblin mute/unmute"
           }
         },
         "fi" : {
@@ -1364,67 +1364,67 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin couper/activer le son"
+            "value" : "!moblin mute/unmute"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन म्यूट/अनम्यूट"
+            "value" : "!moblin mute/unmute"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin bisukan/aktifkan suara"
+            "value" : "!moblin mute/unmute"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin disattiva/riattiva audio"
+            "value" : "!moblin mute/unmute"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin ミュート/ミュート解除"
+            "value" : "!moblin mute/unmute"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 음소거/음소거 해제"
+            "value" : "!moblin mute/unmute"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin dempen/dempen opheffen"
+            "value" : "!moblin mute/unmute"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin wycisz/wyłącz wyciszenie"
+            "value" : "!moblin mute/unmute"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin silenciar/ativar som"
+            "value" : "!moblin mute/unmute"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin silenciar/ativar som"
+            "value" : "!moblin mute/unmute"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin отключить/включить звук"
+            "value" : "!moblin mute/unmute"
           }
         },
         "sv" : {
@@ -1436,31 +1436,31 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin sessiz/sessiz"
+            "value" : "!moblin mute/unmute"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin вимкнути/увімкнути звук"
+            "value" : "!moblin mute/unmute"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tắt tiếng/bật tiếng"
+            "value" : "!moblin mute/unmute"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 静音/取消静音"
+            "value" : "!moblin mute/unmute"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 靜音/取消靜音"
+            "value" : "!moblin mute/unmute"
           }
         }
       }
@@ -1600,49 +1600,49 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin sage <Nachricht>"
+            "value" : "!moblin say <Nachricht>"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin πείτε <μήνυμα>"
+            "value" : "!moblin say <μήνυμα>"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin dice <mensaje>"
+            "value" : "!moblin say <mensaje>"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin sano <viesti>"
+            "value" : "!moblin say <viesti>"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin dit <message>"
+            "value" : "!moblin say <message>"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइलन कहो <संदेश>"
+            "value" : "!moblin sayकहो <संदेश>"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin mengatakan <pesan>"
+            "value" : "!moblin say <pesan>"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin dice <messaggio>"
+            "value" : "!moblin say <messaggio>"
           }
         },
         "ja" : {
@@ -1660,31 +1660,31 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin zegt <bericht>"
+            "value" : "!moblin say <bericht>"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin mówi <wiadomość>"
+            "value" : "!moblin say <wiadomość>"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin diz <mensagem>"
+            "value" : "!moblin say <mensagem>"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin diz <mensagem>"
+            "value" : "!moblin say <mensagem>"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin скажи <сообщение>"
+            "value" : "!moblin say <сообщение>"
           }
         },
         "sv" : {
@@ -1696,25 +1696,25 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin <mesaj> diyor"
+            "value" : "!moblin say <mesaj>"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin сказати <повідомлення>"
+            "value" : "!moblin say <повідомлення>"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin nói <tin nhắn>"
+            "value" : "!moblin say <tin nhắn>"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 说 <消息>"
+            "value" : "!moblin say <消息>"
           }
         },
         "zh-Hant" : {
@@ -1725,149 +1725,18 @@
         }
       }
     },
-    "!moblin snapshot" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin snapshot"
-          }
-        }
-      }
-    },
     "!moblin snapshot <optional message>" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin Snapshot <optionale Nachricht>"
+            "value" : "!moblin snapshot <optionale Nachricht>"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!snapshot moblin <προαιρετικό μήνυμα>"
+            "value" : "!moblin snapshot <προαιρετικό μήνυμα>"
           }
         },
         "es" : {
@@ -1885,13 +1754,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobilin snapshot <message facultatif>"
+            "value" : "!moblin snapshot <message facultatif>"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन स्नैपशॉट <वैकल्पिक संदेश>"
+            "value" : "!moblin snapshot ॉट <वैकल्पिक संदेश>"
           }
         },
         "id" : {
@@ -1909,13 +1778,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin スナップショット <オプションのメッセージ>"
+            "value" : "!moblin snapshot <オプションのメッセージ>"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 스냅샷 <선택 메시지>"
+            "value" : "!moblin snapshot <선택 메시지>"
           }
         },
         "nl" : {
@@ -1945,7 +1814,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin снимок <необязательное сообщение>"
+            "value" : "!moblin snapshot <необязательное сообщение>"
           }
         },
         "sv" : {
@@ -1957,25 +1826,25 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin anlık görüntüsü <isteğe bağlı mesaj>"
+            "value" : "!moblin snapshot <isteğe bağlı mesaj>"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin знімок <додаткове повідомлення>"
+            "value" : "!moblin snapshot <додаткове повідомлення>"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin snapshot <tin nhắn tùy chọn>"
+            "value" : "!moblin snapshot <tin nhắn tùy chọn>"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 快照 <可选消息>"
+            "value" : "!moblin snapshot <可选消息>"
           }
         },
         "zh-Hant" : {
@@ -1991,37 +1860,37 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobile Tesla …"
+            "value" : "!moblin tesla ..."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla..."
+            "value" : "!moblin tesla ..."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!móvil tesla..."
+            "value" : "!moblin tesla ..."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla..."
+            "value" : "!moblin tesla ..."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobil tesla ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइल टेस्ला ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "id" : {
@@ -2039,13 +1908,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!モブリンテスラ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 테슬라 ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "nl" : {
@@ -2075,7 +1944,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!моблин тесла ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "sv" : {
@@ -2087,7 +1956,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobil tesla ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "uk" : {
@@ -2099,19 +1968,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin tesla ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉 ..."
+            "value" : "!moblin tesla ..."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "！"
+            "value" : "!moblin tesla ..."
           }
         }
       }
@@ -2121,127 +1990,127 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media weiter"
+            "value" : "!moblin tesla media next"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media επόμενο"
+            "value" : "!moblin tesla media next"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "¡Moblin Tesla Media Next!: ¡Siguiente!"
+            "value" : "!moblin tesla media next"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media seuraavaksi"
+            "value" : "!moblin tesla media next"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobilin tesla média suivant"
+            "value" : "!moblin tesla media next"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइल टेस्ला मीडिया अगला"
+            "value" : "!moblin tesla media next"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media selanjutnya"
+            "value" : "!moblin tesla media next"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media successivo"
+            "value" : "!moblin tesla media next"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin テスラメディア 次"
+            "value" : "!moblin tesla media next"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 테슬라 미디어 넥스트"
+            "value" : "!moblin tesla media next"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media volgende"
+            "value" : "!moblin tesla media next"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media następny"
+            "value" : "!moblin tesla media next"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media próximo"
+            "value" : "!moblin tesla media next"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media próximo"
+            "value" : "!moblin tesla media next"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media следующий"
+            "value" : "!moblin tesla media next"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin tesla media nästa"
+            "state" : "translated",
+            "value" : "!moblin tesla media next"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla medya sonraki"
+            "value" : "!moblin tesla media next"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media далі"
+            "value" : "!moblin tesla media next"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin tesla media tiếp theo"
+            "value" : "!moblin tesla media next"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉 媒体 下一步"
+            "value" : "!moblin tesla media next"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉媒體下一步"
+            "value" : "!moblin tesla media next"
           }
         }
       }
@@ -2251,127 +2120,127 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media vorherige"
+            "value" : "!moblin tesla media previous"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media προηγούμενο"
+            "value" : "!moblin tesla media previous"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media anterior"
+            "value" : "!moblin tesla media previous"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media edellinen"
+            "value" : "!moblin tesla media previous"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobilin tesla media précédent"
+            "value" : "!moblin tesla media previous"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइल टेस्ला मीडिया पिछला"
+            "value" : "!moblin tesla media previous"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media sebelumnya"
+            "value" : "!moblin tesla media previous"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media precedente"
+            "value" : "!moblin tesla media previous"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin テスラメディア 前"
+            "value" : "!moblin tesla media previous"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 테슬라 미디어 이전"
+            "value" : "!moblin tesla media previous"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media vorige"
+            "value" : "!moblin tesla media previous"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media poprzedni"
+            "value" : "!moblin tesla media previous"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla mídia anterior"
+            "value" : "!moblin tesla media previous"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla mídia anterior"
+            "value" : "!moblin tesla media previous"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media предыдущий"
+            "value" : "!moblin tesla media previous"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media tidigare"
+            "value" : "!moblin tesla media previous"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla medya önceki"
+            "value" : "!moblin tesla media previous"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media попередній"
+            "value" : "!moblin tesla media previous"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media trước đó"
+            "value" : "!moblin tesla media previous"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉 媒体 上一个"
+            "value" : "!moblin tesla media previous"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉媒體 上一篇"
+            "value" : "!moblin tesla media previous"
           }
         }
       }
@@ -2381,61 +2250,61 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media - Wiedergabe ein-/ausschalten"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media εναλλαγή-αναπαραγωγή"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin Tesla Media Alternar reproducción"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla median vaihto-toisto"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media bascule-lecture"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन टेस्ला मीडिया टॉगल-प्लेबैक"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media putar-balik"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media alterna la riproduzione"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin テスラメディア再生切り替え"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 테슬라 미디어 토글 재생"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "nl" : {
@@ -2447,61 +2316,61 @@
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media przełącz-odtwarzanie"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media alternar-reprodução"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media alternar-reprodução"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media toggle-воспроизведение"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media växla-uppspelning"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla medya geçiş-oynatma"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media перемикання відтворення"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla phương tiện truyền thông chuyển đổi-phát lại"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla media 切换播放"
+            "value" : "!moblin tesla media toggle-playback"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin Tesla Media 切換播放"
+            "value" : "!moblin tesla media toggle-playback"
           }
         }
       }
@@ -2511,103 +2380,103 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla Kofferraum schließen"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla μπαούλο κλείσιμο"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla maletero cerrado"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla runko kiinni"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin coffre tesla fermé"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन टेस्ला ट्रंक बंद"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagasi dekat"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagagliaio chiuso"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin テスラ トランク 閉じる"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 테슬라 트렁크 닫기"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla kofferbak dicht"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagażnik zamknięty"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla tronco fechar"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla tronco fechar"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla багажник закрыть"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin tesla trunk nära"
+            "state" : "translated",
+            "value" : "!moblin tesla trunk close"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagajı kapat"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "uk" : {
@@ -2619,19 +2488,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin tesla trunk đóng lại"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla 后备箱关闭"
+            "value" : "!moblin tesla trunk close"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉後車箱關閉"
+            "value" : "!moblin tesla trunk close"
           }
         }
       }
@@ -2641,127 +2510,127 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla Kofferraum offen"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla πορτμπαγκάζ ανοιχτό"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!Moblin Tesla Baúl abierto"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla runko auki"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin coffre tesla ouvert"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन टेस्ला ट्रंक खुला"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!bagasi tesla moblin terbuka"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagagliaio aperto"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin テスラ トランクオープン"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 테슬라 트렁크 오픈"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla kofferbak open"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagażnik otwarty"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla porta-malas aberto"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla porta-malas aberto"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla багажник открыт"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin tesla bagagerum öppen"
+            "state" : "translated",
+            "value" : "!moblin tesla trunk open"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla bagajı açık"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla trunk відкритий"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla cốp xe mở"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tesla 后备箱打开"
+            "value" : "!moblin tesla trunk open"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 特斯拉後車箱打開"
+            "value" : "!moblin tesla trunk open"
           }
         }
       }
@@ -3031,7 +2900,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/sagen …"
+            "value" : "!moblin tts/say ..."
           }
         },
         "el" : {
@@ -3043,7 +2912,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/decir ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "fi" : {
@@ -3055,19 +2924,19 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/dites ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोबाइल टीटीएस/कहो..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/katakan ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "it" : {
@@ -3079,19 +2948,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/言ってください..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!모블린 tts/say ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/zeg ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "pl" : {
@@ -3103,55 +2972,55 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/diga ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/diga ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!моблин спс/скажи ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin tts/säg ..."
+            "state" : "translated",
+            "value" : "!moblin tts/say ..."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/de ki..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/скажи ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/nói ..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tts/说..."
+            "value" : "!moblin tts/say ..."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "！"
+            "value" : "!moblin tts/say ..."
           }
         }
       }
@@ -3161,7 +3030,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin Stummschaltung aufheben"
+            "value" : "!moblin unmute"
           }
         },
         "el" : {
@@ -3173,7 +3042,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin anular el silencio"
+            "value" : "!moblin unmute"
           }
         },
         "fi" : {
@@ -3185,103 +3054,103 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!mobilin réactiver le son"
+            "value" : "!moblin unmute"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!मोब्लिन अनम्यूट"
+            "value" : "!moblin unmute"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin tidak bersuara"
+            "value" : "!moblin unmute"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin riattiva audio"
+            "value" : "!moblin unmute"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin ミュート解除"
+            "value" : "!moblin unmute"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 음소거 해제"
+            "value" : "!moblin unmute"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin dempen"
+            "value" : "!moblin unmute"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin wycisz"
+            "value" : "!moblin unmute"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin ativar som"
+            "value" : "!moblin unmute"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin ativar som"
+            "value" : "!moblin unmute"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin включить звук"
+            "value" : "!moblin unmute"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin slå på ljudet"
+            "state" : "translated",
+            "value" : "!moblin unmute"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin sesini aç"
+            "value" : "!moblin unmute"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin увімкнути звук"
+            "value" : "!moblin unmute"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin bỏ tiếng"
+            "value" : "!moblin unmute"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 取消静音"
+            "value" : "!moblin unmute"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "!moblin 取消靜音"
+            "value" : "!moblin unmute"
           }
         }
       }
@@ -3393,7 +3262,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "???"
           }
         },
         "vi" : {
@@ -5863,7 +5732,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "/"
           }
         },
         "vi" : {
@@ -6519,7 +6388,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "%@"
           }
         },
         "vi" : {
@@ -6927,7 +6796,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "%1$@ (%2$@)"
           }
         },
         "vi" : {
@@ -9037,7 +8906,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "• %@"
           }
         },
         "vi" : {
@@ -9167,7 +9036,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "+"
           }
         },
         "vi" : {
@@ -9721,13 +9590,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "fi" : {
@@ -9739,19 +9608,19 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "it" : {
@@ -9769,31 +9638,31 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "ru" : {
@@ -9811,19 +9680,19 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ""
+            "value" : "⚠️"
           }
         },
         "zh-Hans" : {
@@ -14224,7 +14093,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "en nyckel"
           }
         },
@@ -16694,7 +16563,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lägg till nyckel till fordonet"
           }
         },
@@ -23200,7 +23069,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bas-URL"
           }
         },
@@ -31526,7 +31395,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stäng bagageluckan."
           }
         },
@@ -31656,8 +31525,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stäng stammen"
+            "state" : "translated",
+            "value" : "Stäng bagageluckan"
           }
         },
         "tr" : {
@@ -32566,7 +32435,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Konfiguration"
           }
         },
@@ -33606,8 +33475,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bekräfta genom att trycka på Tesla-nyckelkortet på mittkonsolen"
+            "state" : "translated",
+            "value" : "Bekräfta genom att swipa på Tesla-nyckelkortet på mittkonsolen"
           }
         },
         "tr" : {
@@ -33996,7 +33865,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ansluten till din Tesla"
           }
         },
@@ -45956,8 +45825,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Beräknad tittarfördröjning"
+            "state" : "translated",
+            "value" : "Uppskattad tittarfördröjning"
           }
         },
         "tr" : {
@@ -53106,8 +52975,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Blixtljus"
+            "state" : "translated",
+            "value" : "Blinka med lamporna"
           }
         },
         "tr" : {
@@ -55966,7 +55835,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skapa ny nyckel"
           }
         },
@@ -58566,7 +58435,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tuta"
           }
         },
@@ -62218,7 +62087,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tangentbord"
           }
         },
@@ -71838,8 +71707,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Flerspår"
+            "state" : "translated",
+            "value" : "Multi track"
           }
         },
         "tr" : {
@@ -72228,7 +72097,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stäng av ljudet."
           }
         },
@@ -72748,7 +72617,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stänger av ljudet"
           }
         },
@@ -75738,7 +75607,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nästa mediaspår"
           }
         },
@@ -79898,8 +79767,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Öppen bål"
+            "state" : "translated",
+            "value" : "Öppna bagageluckan"
           }
         },
         "tr" : {
@@ -81848,7 +81717,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plattformar"
           }
         },
@@ -84318,8 +84187,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tidigare mediaspår"
+            "state" : "translated",
+            "value" : "Föregående mediaspår"
           }
         },
         "tr" : {
@@ -84448,8 +84317,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Föregående spår."
+            "state" : "translated",
+            "value" : "Föregående mediaspår"
           }
         },
         "tr" : {
@@ -87958,7 +87827,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Relä"
           }
         },
@@ -89258,8 +89127,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ta bort nycklar i Kontroller → Lås på Teslas mittskärm."
+            "state" : "translated",
+            "value" : "Ta bort nycklar i Kontroller → Lås på Teslans mittskärm."
           }
         },
         "tr" : {
@@ -93028,8 +92897,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Säg givet meddelande."
+            "state" : "translated",
+            "value" : "Säg meddelande."
           }
         },
         "tr" : {
@@ -94458,7 +94327,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Scrolla ner i din Tesla-app och kopiera den."
           }
         },
@@ -99014,7 +98883,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ögonblicksbild tagen av %@."
           }
         },
@@ -109024,8 +108893,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tar ögonblicksbild in"
+            "state" : "translated",
+            "value" : "Tar ögonblicksbild om"
           }
         },
         "tr" : {
@@ -110454,7 +110323,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tesla"
           }
         },
@@ -110584,7 +110453,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tesla (kräver en Tesla)"
           }
         },
@@ -119944,7 +119813,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Slå på ljudet."
           }
         },
@@ -120204,7 +120073,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Slår på ljudet"
           }
         },
@@ -121504,7 +121373,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Använd ett tangentbord för att zooma, ställa in scen och mer."
           }
         },
@@ -121764,7 +121633,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Använd en reläserver när assistenten står bakom CGNAT eller liknande."
           }
         },
@@ -124754,7 +124623,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "VIN"
           }
         },
