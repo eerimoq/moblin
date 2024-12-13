@@ -114,7 +114,7 @@ final class RtmpSocket {
     }
 
     func write(chunk: RtmpChunk) -> Int {
-        for data in chunk.split(maximumChunkSizeToServer) {
+        for data in chunk.split(maximumSize: maximumChunkSizeToServer) {
             write(data: data)
         }
         return chunk.message!.length

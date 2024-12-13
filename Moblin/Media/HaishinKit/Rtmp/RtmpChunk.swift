@@ -198,17 +198,17 @@ final class RtmpChunk {
         return basicAndMessageHeadersSize() + message.length
     }
 
-    func split(_ size: Int) -> [Data] {
+    func split(maximumSize: Int) -> [Data] {
         let data = encode()
         message?.length = data.count
-        guard let message, size < message.encoded.count else {
+        guard let message, maximumSize < message.encoded.count else {
             return [data]
         }
-        let startIndex = size + basicAndMessageHeadersSize()
+        let startIndex = maximumSize + basicAndMessageHeadersSize()
         let header = RtmpChunkType.three.toBasicHeader(chunkStreamId)
         var chunks = [data.subdata(in: 0 ..< startIndex)]
-        for index in stride(from: startIndex, to: data.count, by: size) {
-            let endIndex = index.advanced(by: index + size < data.count ? size : data.count - index)
+        for index in stride(from: startIndex, to: data.count, by: maximumSize) {
+            let endIndex = index.advanced(by: index + maximumSize < data.count ? maximumSize : data.count - index)
             chunks.append(header + data.subdata(in: index ..< endIndex))
         }
         return chunks

@@ -363,7 +363,7 @@ class RtmpServerClient {
     }
 
     func sendMessage(chunk: RtmpChunk) {
-        for chunk in chunk.split(chunkSizeToClient) {
+        for chunk in chunk.split(maximumSize: chunkSizeToClient) {
             send(data: chunk)
         }
     }
