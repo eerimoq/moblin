@@ -3,7 +3,6 @@ import Foundation
 protocol RtmpEventDispatcherConvertible: AnyObject {
     func addEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
     func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject?)
-    func dispatch(_ type: RtmpEvent.Name, data: Any?)
 }
 
 class RtmpEvent {

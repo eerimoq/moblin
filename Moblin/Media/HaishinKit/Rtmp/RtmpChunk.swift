@@ -1,6 +1,6 @@
 import Foundation
 
-enum RTMPChunkType: UInt8 {
+enum RtmpChunkType: UInt8 {
     case zero = 0
     case one = 1
     case two = 2
@@ -44,7 +44,7 @@ final class RtmpChunk {
     static let defaultSize = 128
     static let maxTimestamp: UInt32 = 0xFFFFFF
     var size = 0
-    var type: RTMPChunkType = .zero
+    var type: RtmpChunkType = .zero
     var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
     private(set) var message: RtmpMessage?
     private(set) var fragmented = false
@@ -61,7 +61,7 @@ final class RtmpChunk {
         }
     }
 
-    init(type: RTMPChunkType, chunkStreamId: UInt16, message: RtmpMessage) {
+    init(type: RtmpChunkType, chunkStreamId: UInt16, message: RtmpMessage) {
         self.type = type
         self.chunkStreamId = chunkStreamId
         self.message = message
@@ -75,7 +75,7 @@ final class RtmpChunk {
         if data.isEmpty {
             return nil
         }
-        guard let type = RTMPChunkType(rawValue: (data[0] & 0b1100_0000) >> 6) else {
+        guard let type = RtmpChunkType(rawValue: (data[0] & 0b1100_0000) >> 6) else {
             return nil
         }
         guard type.areBasicAndMessageHeadersAvailable(data) else {
@@ -205,7 +205,7 @@ final class RtmpChunk {
             return [data]
         }
         let startIndex = size + basicAndMessageHeadersSize()
-        let header = RTMPChunkType.three.toBasicHeader(chunkStreamId)
+        let header = RtmpChunkType.three.toBasicHeader(chunkStreamId)
         var chunks = [data.subdata(in: 0 ..< startIndex)]
         for index in stride(from: startIndex, to: data.count, by: size) {
             let endIndex = index.advanced(by: index + size < data.count ? size : data.count - index)

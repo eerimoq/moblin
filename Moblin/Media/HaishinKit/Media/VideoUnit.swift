@@ -169,13 +169,6 @@ final class VideoUnit: NSObject {
     var captureSize = CGSize(width: 1920, height: 1080)
     var outputSize = CGSize(width: 1920, height: 1080)
     let session = makeCaptureSession()
-
-    var formatDescription: CMVideoFormatDescription? {
-        didSet {
-            encoder.formatDescription = formatDescription
-        }
-    }
-
     lazy var encoder = VideoCodec(lockQueue: lockQueue)
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []

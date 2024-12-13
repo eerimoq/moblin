@@ -22,12 +22,6 @@ private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: 
 enum RtmpStreamCode: String {
     case publishStart = "NetStream.Publish.Start"
     case videoDimensionChange = "NetStream.Video.DimensionChange"
-
-    func eventData() -> AsObject {
-        return [
-            "code": rawValue,
-        ]
-    }
 }
 
 class RtmpStream: NetStream {
@@ -57,17 +51,11 @@ class RtmpStream: NetStream {
     static let aac = FlvAudioCodec.aac.rawValue << 4 | FlvSoundRate.kHz44.rawValue << 2 | FlvSoundSize
         .snd16bit.rawValue << 1 | FlvSoundType.stereo.rawValue
 
-    // Inbound
-    var audioTimestampZero = -1.0
-    var videoTimestampZero = -1.0
-    var audioTimeStamp = 0.0
-    var videoTimeStamp = 0.0
-
     private var messages: [RtmpCommandMessage] = []
     private var startedAt = Date()
     private var dispatcher: (any RtmpEventDispatcherConvertible)!
-    private var audioChunkType: RTMPChunkType = .zero
-    private var videoChunkType: RTMPChunkType = .zero
+    private var audioChunkType: RtmpChunkType = .zero
+    private var videoChunkType: RtmpChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
     private weak var rtmpConnection: RtmpConnection?
 
@@ -141,7 +129,7 @@ class RtmpStream: NetStream {
             UInt32((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000) :
             UInt32(startedAt.timeIntervalSinceNow * -1000)
         let chunk = RtmpChunk(
-            type: dataWasSent ? RTMPChunkType.one : RTMPChunkType.zero,
+            type: dataWasSent ? RtmpChunkType.one : RtmpChunkType.zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.data.rawValue,
             message: RtmpDataMessage(
                 streamId: id,
@@ -443,10 +431,6 @@ extension RtmpStream: RtmpEventDispatcherConvertible {
 
     func removeEventListener(_ type: RtmpEvent.Name, selector: Selector, observer: AnyObject? = nil) {
         dispatcher.removeEventListener(type, selector: selector, observer: observer)
-    }
-
-    func dispatch(_ type: RtmpEvent.Name, data: Any?) {
-        dispatcher.dispatch(type, data: data)
     }
 }
 

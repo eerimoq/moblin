@@ -332,7 +332,7 @@ extension RtmpConnection: RtmpSocketDelegate {
             case .three:
                 break
             }
-            message.execute(self, type: chunk.type)
+            message.execute(self)
             currentChunk = nil
             messages[chunk.chunkStreamId] = message
             if position > 0 && position < data.count {

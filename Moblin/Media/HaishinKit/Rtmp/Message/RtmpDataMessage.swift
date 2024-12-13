@@ -24,7 +24,7 @@ final class RtmpDataMessage: RtmpMessage {
         self.streamId = streamId
     }
 
-    override func execute(_ connection: RtmpConnection, type _: RTMPChunkType) {
+    override func execute(_ connection: RtmpConnection) {
         guard let stream = connection.streams.first(where: { $0.id == streamId }) else {
             return
         }

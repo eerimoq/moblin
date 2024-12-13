@@ -20,19 +20,6 @@ enum FlvSoundRate: UInt8 {
     case kHz11 = 1
     case kHz22 = 2
     case kHz44 = 3
-
-    var floatValue: Float64 {
-        switch self {
-        case .kHz5_5:
-            return 5500
-        case .kHz11:
-            return 11025
-        case .kHz22:
-            return 22050
-        case .kHz44:
-            return 44100
-        }
-    }
 }
 
 enum FlvSoundSize: UInt8 {
@@ -95,41 +82,6 @@ enum FlvAudioCodec: UInt8 {
     case device = 15
     case unknown = 0xFF
 
-    var isSupported: Bool {
-        switch self {
-        case .aac:
-            return true
-        default:
-            return false
-        }
-    }
-
-    var formatID: AudioFormatID {
-        switch self {
-        case .pcm:
-            return kAudioFormatLinearPCM
-        case .mp3:
-            return kAudioFormatMPEGLayer3
-        case .pcmle:
-            return kAudioFormatLinearPCM
-        case .aac:
-            return kAudioFormatMPEG4AAC
-        case .mp3_8k:
-            return kAudioFormatMPEGLayer3
-        default:
-            return 0
-        }
-    }
-
-    var formatFlags: AudioFormatFlags {
-        switch self {
-        case .aac:
-            return AudioFormatFlags(MpegTsAudioConfig.AudioObjectType.aacMain.rawValue)
-        default:
-            return 0
-        }
-    }
-
     var headerSize: Int {
         switch self {
         case .aac:
@@ -137,24 +89,5 @@ enum FlvAudioCodec: UInt8 {
         default:
             return 1
         }
-    }
-
-    func audioStreamBasicDescription(_ rate: FlvSoundRate, size _: FlvSoundSize,
-                                     type: FlvSoundType) -> AudioStreamBasicDescription?
-    {
-        guard isSupported else {
-            return nil
-        }
-        return AudioStreamBasicDescription(
-            mSampleRate: rate.floatValue,
-            mFormatID: formatID,
-            mFormatFlags: formatFlags,
-            mBytesPerPacket: 0,
-            mFramesPerPacket: 1024,
-            mBytesPerFrame: 0,
-            mChannelsPerFrame: type == .stereo ? 2 : 1,
-            mBitsPerChannel: 0,
-            mReserved: 0
-        )
     }
 }

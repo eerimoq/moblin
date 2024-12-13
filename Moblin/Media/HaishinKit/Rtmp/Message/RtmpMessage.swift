@@ -27,7 +27,7 @@ class RtmpMessage {
         self.type = type
     }
 
-    func execute(_: RtmpConnection, type _: RTMPChunkType) {}
+    func execute(_: RtmpConnection) {}
 
     static func create(type: RtmpMessageType) -> RtmpMessage {
         switch type {

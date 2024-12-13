@@ -21,10 +21,6 @@ final class RtmpSetPeerBandwidthMessage: RtmpMessage {
         self.limit = limit
     }
 
-    override func execute(_: RtmpConnection, type _: RTMPChunkType) {
-        // connection.bandWidth = size
-    }
-
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {

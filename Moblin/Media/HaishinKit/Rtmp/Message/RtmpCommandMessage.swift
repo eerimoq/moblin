@@ -28,7 +28,7 @@ final class RtmpCommandMessage: RtmpMessage {
         self.streamId = streamId
     }
 
-    override func execute(_ connection: RtmpConnection, type _: RTMPChunkType) {
+    override func execute(_ connection: RtmpConnection) {
         guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
             switch commandName {
             case "close":

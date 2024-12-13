@@ -7,7 +7,7 @@ final class RtmpAcknowledgementMessage: RtmpMessage {
         super.init(type: .ack)
     }
 
-    override func execute(_ connection: RtmpConnection, type _: RTMPChunkType) {
+    override func execute(_ connection: RtmpConnection) {
         // We only have one stream
         guard let stream = connection.streams.first else {
             return

@@ -31,7 +31,7 @@ final class RtmpUserControlMessage: RtmpMessage {
         self.value = value
     }
 
-    override func execute(_ connection: RtmpConnection, type _: RTMPChunkType) {
+    override func execute(_ connection: RtmpConnection) {
         switch event {
         case .ping:
             _ = connection.socket.write(chunk: RtmpChunk(
