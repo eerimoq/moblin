@@ -307,9 +307,9 @@ enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
 }
 
 class SettingsStreamChat: Codable {
-    var bttvEmotes: Bool = true
-    var ffzEmotes: Bool = true
-    var seventvEmotes: Bool = true
+    var bttvEmotes: Bool = false
+    var ffzEmotes: Bool = false
+    var seventvEmotes: Bool = false
 
     func clone() -> SettingsStreamChat {
         let new = SettingsStreamChat()
@@ -1768,6 +1768,7 @@ class SettingsDebug: Codable {
     var removeWindNoise: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
     var tesla: SettingsTesla? = .init()
+    var prettySnapshot: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4289,6 +4290,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.audio == nil {
             realDatabase.chat.botCommandPermissions!.audio = .init()
+            store()
+        }
+        if realDatabase.debug.prettySnapshot == nil {
+            realDatabase.debug.prettySnapshot = false
             store()
         }
     }

@@ -563,9 +563,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var wizardObsRemoteControlBrbScene = ""
     @Published var wizardDirectIngest = ""
     @Published var wizardDirectStreamKey = ""
-    @Published var wizardChatBttv = true
-    @Published var wizardChatFfz = true
-    @Published var wizardChatSeventv = true
+    @Published var wizardChatBttv = false
+    @Published var wizardChatFfz = false
+    @Published var wizardChatSeventv = false
     @Published var wizardBelaboxUrl = ""
     @Published var wizardCustomSrtUrl = ""
     @Published var wizardCustomSrtStreamId = ""
@@ -1001,12 +1001,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
-        media.takeSnapshot(age: age) { image in
+        media.takeSnapshot(age: age) { image, prettyImage in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                if self.database.debug.prettySnapshot!, let prettyImage {
+                    UIImageWriteToSavedPhotosAlbum(prettyImage, nil, nil, nil)
+                }
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             }
@@ -8085,9 +8088,9 @@ extension Model {
         wizardObsRemoteControlPassword = ""
         wizardDirectIngest = ""
         wizardDirectStreamKey = ""
-        wizardChatBttv = true
-        wizardChatFfz = true
-        wizardChatSeventv = true
+        wizardChatBttv = false
+        wizardChatFfz = false
+        wizardChatSeventv = false
         wizardBelaboxUrl = ""
     }
 

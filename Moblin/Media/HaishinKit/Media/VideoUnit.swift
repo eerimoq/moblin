@@ -226,7 +226,7 @@ final class VideoUnit: NSObject {
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: ((UIImage) -> Void)?
+    private var takeSnapshotComplete: ((UIImage, UIImage?) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
@@ -355,7 +355,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
         lockQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
@@ -1030,16 +1030,44 @@ final class VideoUnit: NSObject {
     private func findBestSnapshot(_ sampleBuffer: CMSampleBuffer,
                                   _ sampleBuffers: Deque<CMSampleBuffer>,
                                   _ presentationTimeStamp: Double,
-                                  _ age: Float) -> CVImageBuffer?
+                                  _ age: Float,
+                                  _ onCompleted: @escaping (CVImageBuffer?, CVImageBuffer?) -> Void)
     {
         if age == 0.0 {
-            return sampleBuffer.imageBuffer
+            onCompleted(sampleBuffer.imageBuffer, nil)
         } else {
             let requestedPresentationTimeStamp = presentationTimeStamp - Double(age)
-            let sampleBuffer = sampleBuffers.last(where: {
+            let sampleBufferAtAge = sampleBuffers.last(where: {
                 $0.presentationTimeStamp.seconds <= requestedPresentationTimeStamp
-            }) ?? sampleBuffers.first
-            return sampleBuffer?.imageBuffer
+            }) ?? sampleBuffers.first ?? sampleBuffer
+            if #available(iOS 18, *) {
+                var sampleBuffers = sampleBuffers
+                sampleBuffers.append(sampleBuffer)
+                findBestSnapshotUsingAesthetics(sampleBufferAtAge, sampleBuffers, onCompleted)
+            } else {
+                onCompleted(sampleBufferAtAge.imageBuffer, nil)
+            }
+        }
+    }
+
+    @available(iOS 18, *)
+    private func findBestSnapshotUsingAesthetics(_ preferredSampleBuffer: CMSampleBuffer,
+                                                 _ sampleBuffers: Deque<CMSampleBuffer>,
+                                                 _ onComplete: @escaping (CVImageBuffer?, CVImageBuffer?) -> Void)
+    {
+        Task {
+            var bestSampleBuffer = preferredSampleBuffer
+            var bestResult = try? await CalculateImageAestheticsScoresRequest().perform(on: preferredSampleBuffer)
+            for sampleBuffer in sampleBuffers {
+                guard let result = try? await CalculateImageAestheticsScoresRequest().perform(on: sampleBuffer) else {
+                    continue
+                }
+                if bestResult == nil || result.overallScore > bestResult!.overallScore + 0.2 {
+                    bestSampleBuffer = sampleBuffer
+                    bestResult = result
+                }
+            }
+            onComplete(preferredSampleBuffer.imageBuffer, bestSampleBuffer.imageBuffer)
         }
     }
 
@@ -1047,16 +1075,27 @@ final class VideoUnit: NSObject {
                               _ sampleBuffers: Deque<CMSampleBuffer>,
                               _ presentationTimeStamp: Double,
                               _ age: Float,
-                              _ onComplete: @escaping (UIImage) -> Void)
+                              _ onComplete: @escaping (UIImage, UIImage?) -> Void)
     {
-        guard let imageBuffer = findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age)
-        else {
-            return
+        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer, prettyImageBuffer in
+            guard let imageBuffer else {
+                return
+            }
+            let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+            let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
+            let image = UIImage(cgImage: cgImage)
+            var prettyImage: UIImage?
+            if let prettyImageBuffer {
+                var ciImage = CIImage(cvPixelBuffer: prettyImageBuffer)
+                ciImage = CIImage.black.cropped(to: .init(
+                    origin: .zero,
+                    size: .init(width: 50, height: 50)
+                )).composited(over: ciImage)
+                let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
+                prettyImage = UIImage(cgImage: cgImage)
+            }
+            onComplete(image, prettyImage)
         }
-        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
-        let image = UIImage(cgImage: cgImage)
-        onComplete(image)
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {
