@@ -305,9 +305,8 @@ extension RtmpConnection: RtmpSocketDelegate {
             socket.inputBuffer.append(data)
             return
         }
-        let chunkData = chunk.encode()
-        var position = chunkData.count
-        if (chunkData.count >= 4) && (chunkData[1] == 0xFF) && (chunkData[2] == 0xFF) && (chunkData[3] == 0xFF) {
+        var position = chunk.data.count
+        if (chunk.data.count >= 4) && (chunk.data[1] == 0xFF) && (chunk.data[2] == 0xFF) && (chunk.data[3] == 0xFF) {
             position += 4
         }
         if currentChunk != nil {
