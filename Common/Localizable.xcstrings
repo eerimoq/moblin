@@ -1209,7 +1209,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin mute"
           }
         },
@@ -1339,7 +1339,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin mute/unmute"
           }
         },
@@ -1599,7 +1599,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin say <Nachricht>"
           }
         },
@@ -1729,7 +1729,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin snapshot <optionale Nachricht>"
           }
         },
@@ -1859,7 +1859,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla ..."
           }
         },
@@ -1989,7 +1989,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media next"
           }
         },
@@ -2119,7 +2119,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media previous"
           }
         },
@@ -2249,7 +2249,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media toggle-playback"
           }
         },
@@ -2379,7 +2379,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla trunk close"
           }
         },
@@ -2509,7 +2509,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla trunk open"
           }
         },
@@ -2899,7 +2899,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tts/say ..."
           }
         },
@@ -3029,7 +3029,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin unmute"
           }
         },
@@ -5239,7 +5239,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{teslaBatteryLevel} – Tesla-Batteriestand"
           }
         },
@@ -14003,7 +14003,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ein Schlüssel"
           }
         },
@@ -16473,7 +16473,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schlüssel zum Fahrzeug hinzufügen"
           }
         },
@@ -20119,8 +20119,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Laden Sie Quick Button-Snapshots und Chatbot-Snapshots automatisch in Kanäle auf Ihrem Discord-Server hoch."
+            "state" : "translated",
+            "value" : "Lade Quick Button-Snapshots und Chatbot-Snapshots automatisch in Kanäle auf deinem Discord-Server hoch."
           }
         },
         "el" : {
@@ -21419,7 +21419,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Automatische Reduzierung der Auflösung bei geringer verfügbarer Bandbreite. Im Allgemeinen ergibt sich bei niedrigen Bitraten (<750 Kbps) eine bessere Bildqualität."
           }
         },
@@ -22979,7 +22979,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Basis-URL"
           }
         },
@@ -26879,8 +26879,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Brücken-ID"
+            "state" : "translated",
+            "value" : "Bridge id"
           }
         },
         "el" : {
@@ -29349,7 +29349,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Webhook-URL für Chatbot-Snapshot"
           }
         },
@@ -31305,8 +31305,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schließen Sie den Kofferraum."
+            "state" : "translated",
+            "value" : "Schließe den Kofferraum."
           }
         },
         "el" : {
@@ -31435,7 +31435,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kofferraum schließen"
           }
         },
@@ -32345,7 +32345,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Konfiguration"
           }
         },
@@ -33385,8 +33385,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bestätigen Sie durch Antippen der Tesla-Schlüsselkarte auf der Mittelkonsole"
+            "state" : "translated",
+            "value" : "Bestätige durch Antippen der Tesla-Schlüsselkarte auf der Mittelkonsole"
           }
         },
         "el" : {
@@ -33775,8 +33775,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verbunden mit Ihrem Tesla"
+            "state" : "translated",
+            "value" : "Verbunden mit deinem Tesla"
           }
         },
         "el" : {
@@ -45735,7 +45735,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Geschätzte Zuschauerverzögerung"
           }
         },
@@ -45865,7 +45865,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Geschätzte Zuschauerverzögerung, wird beispielsweise verwendet, um das Aufnehmen von Schnappschüssen mit dem Chatbot zu erleichtern. Der Stream wird dadurch nicht verzögert."
           }
         },
@@ -52885,7 +52885,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Blitzlichter"
           }
         },
@@ -55745,7 +55745,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Neuen Schlüssel generieren"
           }
         },
@@ -58345,7 +58345,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hupen"
           }
         },
@@ -61997,7 +61997,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tastatur"
           }
         },
@@ -70317,8 +70317,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mit diesem Schlüssel identifiziert sich Moblin gegenüber dem Fahrzeug. Tippen Sie auf die Schaltfläche unten, um es Ihrem Fahrzeug hinzuzufügen."
+            "state" : "translated",
+            "value" : "Mit diesem Schlüssel identifiziert sich Moblin gegenüber dem Fahrzeug. Tippe auf die Schaltfläche unten, um es deinem Fahrzeug hinzuzufügen."
           }
         },
         "el" : {
@@ -71617,7 +71617,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mehrspur"
           }
         },
@@ -72007,8 +72007,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Audio stummschalten."
+            "state" : "translated",
+            "value" : "Ton stummschalten."
           }
         },
         "el" : {
@@ -72527,7 +72527,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ton stummschalten"
           }
         },
@@ -75517,7 +75517,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nächster Medientitel"
           }
         },
@@ -75647,7 +75647,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nächster Titel."
           }
         },
@@ -79547,7 +79547,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Öffne den Kofferraum."
           }
         },
@@ -79677,7 +79677,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Offener Kofferraum"
           }
         },
@@ -81627,7 +81627,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plattformen"
           }
         },
@@ -84097,7 +84097,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vorheriger Medientitel"
           }
         },
@@ -84227,7 +84227,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vorheriger Titel."
           }
         },
@@ -87737,8 +87737,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Relais"
+            "state" : "translated",
+            "value" : "Relay"
           }
         },
         "el" : {
@@ -89037,8 +89037,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Entfernen Sie die Schlüssel unter Steuerung → Schlösser auf dem zentralen Bildschirm Ihres Tesla."
+            "state" : "translated",
+            "value" : "Entferne die Schlüssel unter Steuerung → Schlüssel auf dem zentralen Bildschirm deines Tesla."
           }
         },
         "el" : {
@@ -92807,8 +92807,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sagen Sie die angegebene Nachricht."
+            "state" : "translated",
+            "value" : "Sage die angegebene Nachricht."
           }
         },
         "el" : {
@@ -94237,8 +94237,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Scrollen Sie in Ihrer Tesla-App nach unten und kopieren Sie es."
+            "state" : "translated",
+            "value" : "Scrolle in deiner Tesla-App nach unten und kopiere es."
           }
         },
         "el" : {
@@ -98793,7 +98793,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schnappschuss aufgenommen von %@."
           }
         },
@@ -108803,7 +108803,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schnappschuss machen in"
           }
         },
@@ -110233,7 +110233,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tesla"
           }
         },
@@ -110363,7 +110363,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tesla (erfordert einen Tesla)"
           }
         },
@@ -113613,8 +113613,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wenn die Uhr aktiviert ist, fungiert sie als Fernbedienungsassistent. Bitte beachten Sie, dass in diesem Fall Chat, Überspringen des aktuellen TTS und einige andere Funktionen nicht unterstützt werden."
+            "state" : "translated",
+            "value" : "Die Uhr fungiert als Fernbedienungsassistent, wenn aktiviert. Bitte beachte, dass in diesem Fall der Chat, Überspringen des aktuellen TTS und einige andere Funktionen nicht unterstützt werden."
           }
         },
         "el" : {
@@ -114913,7 +114913,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Medienwiedergabe umschalten"
           }
         },
@@ -115043,7 +115043,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wiedergabe umschalten."
           }
         },
@@ -119723,7 +119723,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ton einschalten."
           }
         },
@@ -119983,8 +119983,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stummschalten des Audiosignals"
+            "state" : "translated",
+            "value" : "Stummschalten des Tonsignals"
           }
         },
         "el" : {
@@ -121283,8 +121283,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie eine Tastatur zum Zoomen, zur Szeneneinstellung und mehr."
+            "state" : "translated",
+            "value" : "Verwende eine Tastatur zum Zoomen, zur Szeneneinstellung und mehr."
           }
         },
         "el" : {
@@ -121543,8 +121543,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie einen Relay-Server, wenn sich der Assistent hinter CGNAT oder ähnlichem befindet."
+            "state" : "translated",
+            "value" : "Verwende einen Relay-Server, wenn sich der Assistent hinter CGNAT oder ähnlichem befindet."
           }
         },
         "el" : {
@@ -124533,7 +124533,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fahrgestellnummer"
           }
         },
