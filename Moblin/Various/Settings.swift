@@ -2686,7 +2686,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .blackScreen
     button.imageType = "System name"
-    button.systemImageNameOn = "sunset"
+    button.systemImageNameOn = "sunset.fill"
     button.systemImageNameOff = "sunset"
     updateGlobalButton(database: database, button: button)
 
@@ -2710,7 +2710,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .recordings
     button.imageType = "System name"
-    button.systemImageNameOn = "photo.on.rectangle.angled"
+    button.systemImageNameOn = "photo.on.rectangle.angled.fill"
     button.systemImageNameOff = "photo.on.rectangle.angled"
     updateGlobalButton(database: database, button: button)
 
@@ -2734,7 +2734,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .remote
     button.imageType = "System name"
-    button.systemImageNameOn = "appletvremote.gen1"
+    button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
     updateGlobalButton(database: database, button: button)
 
@@ -2742,7 +2742,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .widgets
     button.imageType = "System name"
-    button.systemImageNameOn = "photo.on.rectangle"
+    button.systemImageNameOn = "photo.on.rectangle.fill"
     button.systemImageNameOff = "photo.on.rectangle"
     updateGlobalButton(database: database, button: button)
 
@@ -2758,7 +2758,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .image
     button.imageType = "System name"
-    button.systemImageNameOn = "camera"
+    button.systemImageNameOn = "camera.fill"
     button.systemImageNameOff = "camera"
     updateGlobalButton(database: database, button: button)
 
@@ -2782,7 +2782,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .face
     button.imageType = "System name"
-    button.systemImageNameOn = "theatermask.and.paintbrush"
+    button.systemImageNameOn = "theatermask.and.paintbrush.fill"
     button.systemImageNameOff = "theatermask.and.paintbrush"
     updateGlobalButton(database: database, button: button)
 
@@ -2798,7 +2798,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .fourThree
     button.imageType = "System name"
-    button.systemImageNameOn = "square"
+    button.systemImageNameOn = "square.fill"
     button.systemImageNameOff = "square"
     updateGlobalButton(database: database, button: button)
 
@@ -2814,7 +2814,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .sepia
     button.imageType = "System name"
-    button.systemImageNameOn = "moonphase.waxing.crescent"
+    button.systemImageNameOn = "moonphase.waxing.crescent.inverse"
     button.systemImageNameOff = "moonphase.waning.crescent"
     updateGlobalButton(database: database, button: button)
 
@@ -2878,7 +2878,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .ads
     button.imageType = "System name"
-    button.systemImageNameOn = "cup.and.saucer"
+    button.systemImageNameOn = "cup.and.saucer.fill"
     button.systemImageNameOff = "cup.and.saucer"
     updateGlobalButton(database: database, button: button)
 
@@ -2886,7 +2886,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .streamMarker
     button.imageType = "System name"
-    button.systemImageNameOn = "bookmark"
+    button.systemImageNameOn = "bookmark.fill"
     button.systemImageNameOff = "bookmark"
     updateGlobalButton(database: database, button: button)
 
