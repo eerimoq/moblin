@@ -3269,8 +3269,8 @@ final class Settings {
             store()
         }
         for button in realDatabase.globalButtons! where button.type == .image {
-            if button.name != "Camera" {
-                button.name = "Camera"
+            if button.name != String(localized: "Camera") {
+                button.name = String(localized: "Camera")
                 store()
             }
             if button.systemImageNameOn != "camera" {
