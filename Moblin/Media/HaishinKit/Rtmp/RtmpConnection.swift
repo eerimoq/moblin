@@ -327,9 +327,7 @@ extension RtmpConnection: RtmpSocketDelegate {
                 if let streamId = chunkStreamIdToStreamId[chunk.chunkStreamId] {
                     message.streamId = streamId
                 }
-            case .two:
-                break
-            case .three:
+            default:
                 break
             }
             message.execute(self)
