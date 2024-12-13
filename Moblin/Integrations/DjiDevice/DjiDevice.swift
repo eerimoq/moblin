@@ -362,6 +362,18 @@ extension DjiDevice: CBPeripheralDelegate {
                                          id: startStreamingTransactionId,
                                          type: startStreamingType,
                                          payload: payload.encode()))
+        
+        // Patch for OA5P: Send the confirmation payload to actually start the stream.
+        // This is an exact copy of the stop-streaming command, but the last data-bit in the payload is set to 1 instead of 2.
+        // It may probably work fine sending it on all devices, but limiting it to OA5P for now.
+        if(model == .osmoAction5Pro){
+            let confirmStartStreamPayload = DjiConfirmStartStreamingMessagePayload()
+            writeMessage(message: DjiMessage(target: stopStreamingTarget,
+                                             id: stopStreamingTransactionId,
+                                             type: stopStreamingType,
+                                             payload: confirmStartStreamPayload.encode()))
+        }
+        
         setState(state: .startingStream)
     }
 

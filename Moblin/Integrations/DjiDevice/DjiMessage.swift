@@ -200,6 +200,14 @@ class DjiStartStreamingMessagePayload {
     }
 }
 
+class DjiConfirmStartStreamingMessagePayload {
+    static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x01])
+
+    func encode() -> Data {
+        return DjiConfirmStartStreamingMessagePayload.payload
+    }
+}
+
 class DjiStopStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
 
