@@ -300,10 +300,9 @@ extension RtmpConnection: RtmpSocketDelegate {
         stream.info.onWritten(sequence: totalBytesOut)
     }
 
-    func socketDataReceived(_ socket: RtmpSocket, data: Data) {
+    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {
         guard let chunk = currentChunk ?? RtmpChunk(data: data, size: socket.maximumChunkSizeFromServer) else {
-            socket.inputBuffer.append(data)
-            return
+            return data
         }
         let encoded = chunk.encode()
         var offset = encoded.count
@@ -333,21 +332,19 @@ extension RtmpConnection: RtmpSocketDelegate {
             message.execute(self)
             currentChunk = nil
             messages[chunk.chunkStreamId] = message
-            if offset > 0 && offset < data.count {
-                socketDataReceived(socket, data: data.advanced(by: offset))
-            }
-            return
-        }
-        if chunk.fragmented {
-            fragmentedChunks[chunk.chunkStreamId] = chunk
-            currentChunk = nil
         } else {
-            currentChunk = chunk.type == .three ? fragmentedChunks[chunk.chunkStreamId] : chunk
-            fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
+            if chunk.fragmented {
+                fragmentedChunks[chunk.chunkStreamId] = chunk
+                currentChunk = nil
+            } else {
+                currentChunk = chunk.type == .three ? fragmentedChunks[chunk.chunkStreamId] : chunk
+                fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
+            }
         }
         if offset > 0 && offset < data.count {
-            socketDataReceived(socket, data: data.advanced(by: offset))
+            return socketDataReceived(socket, data: data.advanced(by: offset))
         }
+        return Data()
     }
 
     func socketDispatch(_: RtmpSocket, event: RtmpEvent) {

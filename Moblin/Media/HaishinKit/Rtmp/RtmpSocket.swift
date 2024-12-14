@@ -10,7 +10,7 @@ enum RtmpSocketReadyState {
 }
 
 protocol RtmpSocketDelegate: AnyObject {
-    func socketDataReceived(_ socket: RtmpSocket, data: Data)
+    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
     func socketReadyStateChanged(_ socket: RtmpSocket, readyState: RtmpSocketReadyState)
     func socketUpdateStats(_ socket: RtmpSocket, totalBytesOut: Int64)
     func socketDispatch(_ socket: RtmpSocket, event: RtmpEvent)
@@ -30,7 +30,7 @@ final class RtmpSocket {
         }
     }
 
-    var inputBuffer = Data()
+    private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
     private(set) var totalBytesIn: Atomic<Int64> = .init(0)
     private(set) var totalBytesOut: Atomic<Int64> = .init(0)
@@ -217,12 +217,10 @@ final class RtmpSocket {
     }
 
     private func processInputHandshakeDone() {
-        guard !inputBuffer.isEmpty else {
+        guard !inputBuffer.isEmpty, let delegate else {
             return
         }
-        let bytes = inputBuffer
-        inputBuffer.removeAll()
-        delegate?.socketDataReceived(self, data: bytes)
+        inputBuffer = delegate.socketDataReceived(self, data: inputBuffer)
     }
 
     private func handleConnectTimeout() {
