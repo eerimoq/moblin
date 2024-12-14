@@ -71,7 +71,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         if curBitrate == 0 {
             curBitrate = settings.minimumBitrate
         }
-        let srtLatency = Double(stats.latency ?? 2000)
+        let srtLatency = Double(stats.latency ?? defaultSrtLatency)
         let currentTime = ContinuousClock.now
         let bs = stats.packetsInFlight
         // Rolling average

@@ -4,8 +4,8 @@ import SwiftUI
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
-let defaultSrtLatency: Int32 = 2000
-let defaultRtmpLatency: Int32 = 2000
+let defaultSrtLatency: Int32 = 3000
+private let defaultRtmpLatency: Int32 = 2000
 let minZoomX: Float = 0.5
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
@@ -3229,7 +3229,7 @@ final class Settings {
             store()
         }
         for stream in realDatabase.rtmpServer!.streams where stream.latency == nil {
-            stream.latency = defaultSrtLatency
+            stream.latency = defaultRtmpLatency
             store()
         }
         if realDatabase.vibrate == nil {
