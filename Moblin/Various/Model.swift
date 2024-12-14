@@ -1393,7 +1393,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadTeslaVehicle() {
         stopTeslaVehicle()
-        let tesla = database.debug.tesla!
+        let tesla = database.tesla!
         if tesla.vin != "", tesla.privateKey != "" {
             teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKeyPem: tesla.privateKey)
             teslaVehicle?.delegate = self
@@ -1414,7 +1414,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func teslaAddKeyToVehicle() {
-        teslaVehicle?.addKeyRequestWithRole(privateKeyPem: database.debug.tesla!.privateKey)
+        teslaVehicle?.addKeyRequestWithRole(privateKeyPem: database.tesla!.privateKey)
         makeToast(title: String(localized: "Confirm by tapping Tesla key card on center console"))
     }
 

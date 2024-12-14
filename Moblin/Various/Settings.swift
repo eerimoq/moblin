@@ -2519,6 +2519,7 @@ class Database: Codable {
     var verboseStatuses: Bool? = false
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
+    var tesla: SettingsTesla? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3274,8 +3275,8 @@ final class Settings {
                 button.name = String(localized: "Camera")
                 store()
             }
-            if button.systemImageNameOn != "camera" {
-                button.systemImageNameOn = "camera"
+            if button.systemImageNameOn != "camera.fill" {
+                button.systemImageNameOn = "camera.fill"
                 store()
             }
             if button.systemImageNameOff != "camera" {
@@ -4294,6 +4295,12 @@ final class Settings {
         }
         if realDatabase.debug.prettySnapshot == nil {
             realDatabase.debug.prettySnapshot = false
+            store()
+        }
+        if realDatabase.tesla == nil {
+            realDatabase.tesla = .init()
+            realDatabase.tesla!.vin = realDatabase.debug.tesla!.vin
+            realDatabase.tesla!.privateKey = realDatabase.debug.tesla!.privateKey
             store()
         }
     }

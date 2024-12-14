@@ -18,7 +18,7 @@ private struct TeslaSettingsConfigurationView: View {
     @EnvironmentObject var model: Model
 
     private var tesla: SettingsTesla {
-        return model.database.debug.tesla!
+        return model.database.tesla!
     }
 
     private func onSubmitVin(value: String) {
