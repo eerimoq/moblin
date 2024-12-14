@@ -2618,6 +2618,8 @@ private func addDefaultFrontZoomPresets(database: Database) {
 
 private func addDefaultBitratePresets(database: Database) {
     database.bitratePresets = [
+        SettingsBitratePreset(id: UUID(), bitrate: 11_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 9_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 7_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 5_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 3_000_000),
