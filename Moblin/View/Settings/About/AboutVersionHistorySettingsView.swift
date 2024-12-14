@@ -8,6 +8,24 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.390.0", date: "2024-12-14", changes: [
+        "• Use chat bot command `!moblin snapshot <message>` to start countdown and show given message to the streamer. 💡 xcopy94",
+        "• !moblin help chat bot command for help.",
+        "• Settings groupings.",
+        "• Tesla settings configuration view.",
+        "• \"!moblin mute\" and \"!moblin unmute\" chat bot commands. 💡 G",
+        "• Fix initial remote control assistant live and recording states. 🐛  xcopy94",
+        "• Fix RTMP server timestamps for edge case.",
+        "• Show quick button as active if any filter/effect is controls is active.",
+        "  • Not yet implemented for the LUTs quick button.",
+        "• Show quick button names by default.",
+        "• Fill a few more quick button \"on\" icons.",
+        "• OA5P support as DJI device. 🧑‍🏭 Spillmaker",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Fix RTMP to YouTube? 🐛 anishmenon",
+        "• Experimental pretty snapshot finder. Will save two snapshots to Photos, one as today, and one that is \"pretty\" with a black square in bottom left corner.",
+        "  • Enable in Settings → Debug → Pretty snapshot.",
+    ]),
     Version(version: "0.389.0", date: "2024-12-08", changes: [
         "• Hammer Twitch API slightly less.",
         "• Major outbound RTMP refactoring.",
