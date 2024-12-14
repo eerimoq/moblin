@@ -306,18 +306,18 @@ extension RtmpConnection: RtmpSocketDelegate {
             return
         }
         let encoded = chunk.encode()
-        var position = encoded.count
+        var offset = encoded.count
         if (encoded.count >= 4) && (encoded[1] == 0xFF) && (encoded[2] == 0xFF) && (encoded[3] == 0xFF) {
-            position += 4
+            offset += 4
         }
         if currentChunk != nil {
-            position = chunk.append(data: data, maximumSize: socket.maximumChunkSizeFromServer)
+            offset = chunk.append(data: data, maximumSize: socket.maximumChunkSizeFromServer)
         }
         if chunk.type == .two {
-            position = chunk.append(data: data, message: messages[chunk.chunkStreamId])
+            offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
         if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
-            position = chunk.append(data: data, message: messages[chunk.chunkStreamId])
+            offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
         if let message = chunk.message, chunk.ready() {
             switch chunk.type {
@@ -333,8 +333,8 @@ extension RtmpConnection: RtmpSocketDelegate {
             message.execute(self)
             currentChunk = nil
             messages[chunk.chunkStreamId] = message
-            if position > 0 && position < data.count {
-                socketDataReceived(socket, data: data.advanced(by: position))
+            if offset > 0 && offset < data.count {
+                socketDataReceived(socket, data: data.advanced(by: offset))
             }
             return
         }
@@ -345,8 +345,8 @@ extension RtmpConnection: RtmpSocketDelegate {
             currentChunk = chunk.type == .three ? fragmentedChunks[chunk.chunkStreamId] : chunk
             fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
         }
-        if position > 0 && position < data.count {
-            socketDataReceived(socket, data: data.advanced(by: position))
+        if offset > 0 && offset < data.count {
+            socketDataReceived(socket, data: data.advanced(by: offset))
         }
     }
 
