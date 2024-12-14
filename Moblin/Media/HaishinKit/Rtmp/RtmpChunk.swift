@@ -207,13 +207,7 @@ final class RtmpChunk {
     }
 
     private func basicAndMessageHeadersSize() -> Int {
-        if chunkStreamId <= 63 {
-            return 1 + type.messageHeaderSize()
-        }
-        if chunkStreamId <= 319 {
-            return 2 + type.messageHeaderSize()
-        }
-        return 3 + type.messageHeaderSize()
+        return basicHeaderSize() + type.messageHeaderSize()
     }
 
     private func basicHeaderSize() -> Int {
