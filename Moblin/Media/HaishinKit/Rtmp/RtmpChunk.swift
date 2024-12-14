@@ -99,12 +99,7 @@ final class RtmpChunk {
         guard let message else {
             return header
         }
-        guard header.isEmpty else {
-            var data = Data()
-            data.append(header)
-            data.append(message.encoded)
-            return data
-        }
+        var header = Data()
         header.append(type.toBasicHeader(chunkStreamId))
         if RtmpChunk.maxTimestamp < message.timestamp {
             header.append(contentsOf: [0xFF, 0xFF, 0xFF])
@@ -119,10 +114,7 @@ final class RtmpChunk {
         if RtmpChunk.maxTimestamp < message.timestamp {
             header.append(message.timestamp.bigEndian.data)
         }
-        var data = Data()
-        data.append(header)
-        data.append(message.encoded)
-        return data
+        return header + message.encoded
     }
 
     private func decode(data: Data) throws {
