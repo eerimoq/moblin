@@ -37,6 +37,13 @@ struct DebugSettingsView: View {
                     value: String(model.database.debug.maximumLogLines!),
                     onSubmit: submitLogLines
                 )
+                Toggle("Debug overlay", isOn: Binding(get: {
+                    model.database.debug.srtOverlay
+                }, set: { value in
+                    model.database.debug.srtOverlay = value
+                }))
+            }
+            Section {
                 NavigationLink {
                     DebugAudioSettingsView()
                 } label: {
@@ -47,13 +54,6 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("Video")
                 }
-                Toggle("Debug overlay", isOn: Binding(get: {
-                    model.database.debug.srtOverlay
-                }, set: { value in
-                    model.database.debug.srtOverlay = value
-                }))
-            }
-            Section {
                 HStack {
                     Text("Video blackish")
                     Slider(
