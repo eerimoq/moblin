@@ -301,12 +301,13 @@ extension RtmpConnection: RtmpSocketDelegate {
     }
 
     func socketDataReceived(_ socket: RtmpSocket, data: Data) {
-        guard let chunk = currentChunk ?? RtmpChunk(data, size: socket.maximumChunkSizeFromServer) else {
+        guard let chunk = currentChunk ?? RtmpChunk(data: data, size: socket.maximumChunkSizeFromServer) else {
             socket.inputBuffer.append(data)
             return
         }
-        var position = chunk.data.count
-        if (chunk.data.count >= 4) && (chunk.data[1] == 0xFF) && (chunk.data[2] == 0xFF) && (chunk.data[3] == 0xFF) {
+        let encoded = chunk.encode()
+        var position = encoded.count
+        if (encoded.count >= 4) && (encoded[1] == 0xFF) && (encoded[2] == 0xFF) && (encoded[3] == 0xFF) {
             position += 4
         }
         if currentChunk != nil {
