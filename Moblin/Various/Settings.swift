@@ -1761,7 +1761,6 @@ class SettingsDebug: Codable {
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
-    var higherDataRateLimit: Bool? = true
     var preferStereoMic: Bool? = false
     var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
@@ -3621,10 +3620,6 @@ final class Settings {
         }
         if realDatabase.srtlaServer == nil {
             realDatabase.srtlaServer = .init()
-            store()
-        }
-        if realDatabase.debug.higherDataRateLimit == nil {
-            realDatabase.debug.higherDataRateLimit = true
             store()
         }
         for stream in realDatabase.streams

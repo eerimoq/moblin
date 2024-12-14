@@ -1270,7 +1270,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBatteryLevel()
         setPixelFormat()
         setMetalPetalFilters()
-        setHigherDataRateLimit()
         setupAudioSession()
         reloadSpeechToText()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -1516,10 +1515,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug.metalPetalFilters!
-    }
-
-    func setHigherDataRateLimit() {
-        videoCodecHigherDataRateLimit = database.debug.higherDataRateLimit!
     }
 
     func setMapPitch() {

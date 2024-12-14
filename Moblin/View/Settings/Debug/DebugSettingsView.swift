@@ -88,12 +88,6 @@ struct DebugSettingsView: View {
                     model.database.debug.metalPetalFilters = value
                     model.setMetalPetalFilters()
                 }))
-                Toggle("Higher data rate limit", isOn: Binding(get: {
-                    model.database.debug.higherDataRateLimit!
-                }, set: { value in
-                    model.database.debug.higherDataRateLimit = value
-                    model.setHigherDataRateLimit()
-                }))
                 HStack {
                     Text("Max map pitch")
                     Slider(

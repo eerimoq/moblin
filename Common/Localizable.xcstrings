@@ -57822,6 +57822,7 @@
       }
     },
     "Higher data rate limit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
