@@ -1753,7 +1753,7 @@ class SettingsDebug: Codable {
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
-    var bluetoothOutputOnly: Bool? = false
+    var bluetoothOutputOnly: Bool? = true
     var maximumLogLines: Int? = 500
     var pixelFormat: String? = pixelFormats[1]
     var beautyFilter: Bool? = false
@@ -3357,7 +3357,7 @@ final class Settings {
             store()
         }
         if realDatabase.debug.bluetoothOutputOnly == nil {
-            realDatabase.debug.bluetoothOutputOnly = false
+            realDatabase.debug.bluetoothOutputOnly = true
             store()
         }
         if realDatabase.debug.maximumLogLines == nil {

@@ -24,6 +24,31 @@ struct AudioSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Toggle("Bluetooth output only", isOn: Binding(get: {
+                    model.database.debug.bluetoothOutputOnly!
+                }, set: { value in
+                    model.database.debug.bluetoothOutputOnly = value
+                    model.reloadAudioSession()
+                }))
+            } footer: {
+                Text("Makes most Bluetooth speakers work better.")
+            }
+            Section {
+                Toggle("Prefer stereo mic", isOn: Binding(get: {
+                    model.database.debug.preferStereoMic!
+                }, set: { value in
+                    model.database.debug.preferStereoMic = value
+                    model.reloadAudioSession()
+                    model.setMic()
+                }))
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Only works when front or back mic is selected.")
+                    Text("")
+                    Text("Switching between mono and stereo mics may not work.")
+                }
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
                     value: String(model.database.audio!.audioOutputToInputChannelsMap!.channel1 + 1),

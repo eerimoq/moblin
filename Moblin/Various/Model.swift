@@ -8114,6 +8114,12 @@ extension Model {
 }
 
 extension Model {
+    func reloadAudioSession() {
+        teardownAudioSession()
+        setupAudioSession()
+        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+    }
+
     private func setupAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
@@ -8257,7 +8263,7 @@ extension Model {
         return mics
     }
 
-    private func setMic() {
+    func setMic() {
         var wantedOrientation: AVAudioSession.Orientation
         switch database.mic {
         case .bottom:

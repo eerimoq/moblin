@@ -6,24 +6,6 @@ struct DebugAudioSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Bluetooth output only", isOn: Binding(get: {
-                    model.database.debug.bluetoothOutputOnly!
-                }, set: { value in
-                    model.database.debug.bluetoothOutputOnly = value
-                }))
-            } footer: {
-                Text("App restart needed to take effect.")
-            }
-            Section {
-                Toggle("Prefer stereo mic", isOn: Binding(get: {
-                    model.database.debug.preferStereoMic!
-                }, set: { value in
-                    model.database.debug.preferStereoMic = value
-                }))
-            } footer: {
-                Text("Switching between mono and stereo mics may not work.")
-            }
-            Section {
                 Toggle("Remove wind noise", isOn: Binding(get: {
                     model.database.debug.removeWindNoise!
                 }, set: { value in

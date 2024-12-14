@@ -65763,6 +65763,9 @@
         }
       }
     },
+    "Makes most Bluetooth speakers work better." : {
+
+    },
     "Malformed IRL URL" : {
       "localizations" : {
         "de" : {
@@ -79152,6 +79155,9 @@
           }
         }
       }
+    },
+    "Only works when front or back mic is selected." : {
+
     },
     "Open Moblin in your Apple Watch to end it" : {
       "localizations" : {
