@@ -191,7 +191,7 @@ class RtmpStream: NetStream {
     }
 
     private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioCodec], _ videoEncoders: [VideoCodec]) -> AsObject {
-        var metadata = createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
+        let metadata = createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
         // var audioTrackIdInfoMap: [String: Any] = [:]
         // for (trackId, encoder) in audioEncoders.enumerated() {
         //     let settings = encoder.settings
