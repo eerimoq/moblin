@@ -67588,6 +67588,7 @@
       }
     },
     "Max map pitch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

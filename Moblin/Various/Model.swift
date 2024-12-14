@@ -1252,7 +1252,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         AppDependencyManager.shared.add(dependency: self)
         faxReceiver.delegate = self
         fixAlertMedias()
-        setMapPitch()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
@@ -1515,10 +1514,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug.metalPetalFilters!
-    }
-
-    func setMapPitch() {
-        maxMapPitch = database.debug.maxMapPitch!
     }
 
     private func setupSampleBufferReceiver() {

@@ -1762,7 +1762,6 @@ class SettingsDebug: Codable {
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
     var preferStereoMic: Bool? = false
-    var maxMapPitch: Double? = 0.0
     var twitchRewards: Bool? = false
     var removeWindNoise: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
@@ -3856,10 +3855,6 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.needsGeography == nil {
             widget.text.needsGeography = false
-            store()
-        }
-        if realDatabase.debug.maxMapPitch == nil {
-            realDatabase.debug.maxMapPitch = 0.0
             store()
         }
         for widget in database.widgets where widget.text.checkboxes == nil {
