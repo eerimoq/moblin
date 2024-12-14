@@ -50,17 +50,6 @@ final class RtmpChunk {
     private(set) var fragmented = false
     private var header = Data()
 
-    static func basicHeaderSize(_ byte: UInt8) -> Int {
-        switch byte & 0b0011_1111 {
-        case 0:
-            return 2
-        case 1:
-            return 3
-        default:
-            return 1
-        }
-    }
-
     init(type: RtmpChunkType, chunkStreamId: UInt16, message: RtmpMessage) {
         self.type = type
         self.chunkStreamId = chunkStreamId
@@ -99,22 +88,22 @@ final class RtmpChunk {
         guard let message else {
             return header
         }
-        var header = Data()
-        header.append(type.toBasicHeader(chunkStreamId))
-        if RtmpChunk.maxTimestamp < message.timestamp {
-            header.append(contentsOf: [0xFF, 0xFF, 0xFF])
+        let writer = ByteArray()
+        writer.writeBytes(type.toBasicHeader(chunkStreamId))
+        if message.timestamp > RtmpChunk.maxTimestamp {
+            writer.writeUInt24(0xFFFFFF)
         } else {
-            header.append(contentsOf: message.timestamp.bigEndian.data[1 ... 3])
+            writer.writeUInt24(message.timestamp)
         }
-        header.append(contentsOf: UInt32(message.encoded.count).bigEndian.data[1 ... 3])
-        header.append(message.type.rawValue)
+        writer.writeUInt24(UInt32(message.encoded.count))
+        writer.writeUInt8(message.type.rawValue)
         if type == .zero {
-            header.append(message.streamId.littleEndian.data)
+            writer.writeUInt32Le(message.streamId)
         }
-        if RtmpChunk.maxTimestamp < message.timestamp {
-            header.append(message.timestamp.bigEndian.data)
+        if message.timestamp > RtmpChunk.maxTimestamp {
+            writer.writeUInt32(message.timestamp)
         }
-        return header + message.encoded
+        return writer.data + message.encoded
     }
 
     private func decode(data: Data) throws {
@@ -218,5 +207,16 @@ final class RtmpChunk {
             return 2
         }
         return 3
+    }
+
+    static func basicHeaderSize(_ byte: UInt8) -> Int {
+        switch byte & 0b0011_1111 {
+        case 0:
+            return 2
+        case 1:
+            return 3
+        default:
+            return 1
+        }
     }
 }

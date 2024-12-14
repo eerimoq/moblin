@@ -101,6 +101,13 @@ open class ByteArray {
     }
 
     @discardableResult
+    func writeUInt24(_ value: UInt32) -> Self {
+        writeUInt8(UInt8((value >> 16) & 0xFF))
+        writeUInt8(UInt8((value >> 8) & 0xFF))
+        return writeUInt8(UInt8(value & 0xFF))
+    }
+
+    @discardableResult
     func writeUInt24Le(_ value: UInt32) -> Self {
         writeUInt8(UInt8(value & 0xFF))
         writeUInt8(UInt8((value >> 8) & 0xFF))
@@ -123,6 +130,14 @@ open class ByteArray {
     @discardableResult
     func writeUInt32(_ value: UInt32) -> Self {
         writeBytes(value.bigEndian.data)
+    }
+
+    @discardableResult
+    func writeUInt32Le(_ value: UInt32) -> Self {
+        writeUInt8(UInt8(value & 0xFF))
+        writeUInt8(UInt8((value >> 8) & 0xFF))
+        writeUInt8(UInt8((value >> 16) & 0xFF))
+        return writeUInt8(UInt8((value >> 24) & 0xFF))
     }
 
     @discardableResult
