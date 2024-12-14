@@ -214,7 +214,7 @@ private class ReplaceAudio {
 }
 
 final class AudioUnit: NSObject {
-    lazy var encoder: AudioCodec = .init(lockQueue: lockQueue)
+    private var encoders = [AudioCodec(lockQueue: lockQueue)]
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -229,7 +229,9 @@ final class AudioUnit: NSObject {
             guard inputSourceFormat != oldValue else {
                 return
             }
-            encoder.inSourceFormat = inputSourceFormat
+            for encoder in encoders {
+                encoder.inSourceFormat = inputSourceFormat
+            }
         }
     }
 
@@ -239,6 +241,10 @@ final class AudioUnit: NSObject {
 
     func stopRunning() {
         session.stopRunning()
+    }
+
+    func getEncoders() -> [AudioCodec] {
+        return encoders
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
@@ -265,18 +271,24 @@ final class AudioUnit: NSObject {
             mixer?.delegate?.mixer(audioSampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.streamBasicDescription?.pointee
-        encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+        for encoder in encoders {
+            encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+        }
         mixer?.recorder.appendAudio(sampleBuffer)
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
-        encoder.delegate = delegate
-        encoder.startRunning()
+        for encoder in encoders {
+            encoder.delegate = delegate
+            encoder.startRunning()
+        }
     }
 
     func stopEncoding() {
-        encoder.stopRunning()
-        encoder.delegate = nil
+        for encoder in encoders {
+            encoder.stopRunning()
+            encoder.delegate = nil
+        }
         inputSourceFormat = nil
     }
 

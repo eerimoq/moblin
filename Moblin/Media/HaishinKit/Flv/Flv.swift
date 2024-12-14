@@ -63,12 +63,15 @@ enum FlvVideoCodec: UInt8 {
 }
 
 enum FlvVideoFourCC: UInt32 {
+    case avc1 = 0x6176_6331 // {'a', 'v', 'c', '1'}
     case hevc = 0x6876_6331 // { 'h', 'v', 'c', '1' }
 }
 
 enum FlvVideoPacketType: UInt8 {
     case sequenceStart = 0
     case codedFrames = 1
+    case codedFramesX = 3
+    case multiTrack = 6
 }
 
 enum FlvAudioCodec: UInt8 {
@@ -90,4 +93,10 @@ enum FlvAudioCodec: UInt8 {
             return 1
         }
     }
+}
+
+enum FlvAvMultitrackType: UInt8 {
+    case oneTrack = 0
+    case manyTracks = 1
+    case manyTracksManyCodecs = 2
 }

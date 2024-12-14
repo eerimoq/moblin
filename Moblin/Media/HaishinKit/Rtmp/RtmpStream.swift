@@ -2,21 +2,36 @@ import AVFoundation
 
 private let extendedVideoHeader: UInt8 = 0b1000_0000
 
+private func makeVideoHeader(_ frameType: FlvFrameType,
+                             _ fourCc: FlvVideoFourCC,
+                             _ trackId: UInt8,
+                             _ avcPacketType: FlvAvcPacketType, // Not part of FLV?
+                             _ videoPacketType: FlvVideoPacketType) -> Data
+{
+    let writer = ByteArray()
+    if trackId == 0 {
+        if fourCc == .avc1 {
+            writer.writeUInt8((frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue)
+            writer.writeUInt8(avcPacketType.rawValue)
+        } else {
+            writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | videoPacketType.rawValue)
+            writer.writeUInt32(fourCc.rawValue)
+        }
+    } else {
+        writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | FlvVideoPacketType.multiTrack.rawValue)
+        writer.writeUInt8((FlvAvMultitrackType.oneTrack.rawValue << 4) | FlvVideoPacketType.codedFramesX.rawValue)
+        writer.writeUInt32(fourCc.rawValue)
+        writer.writeUInt8(trackId)
+    }
+    return writer.data
+}
+
 private func makeAvcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvAvcPacketType) -> Data {
-    return Data([
-        (frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue,
-        packetType.rawValue,
-    ])
+    return makeVideoHeader(frameType, .avc1, 0, packetType, .sequenceStart)
 }
 
 private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: FlvVideoPacketType) -> Data {
-    return Data([
-        extendedVideoHeader | (frameType.rawValue << 4) | packetType.rawValue,
-        Character("h").asciiValue!,
-        Character("v").asciiValue!,
-        Character("c").asciiValue!,
-        Character("1").asciiValue!,
-    ])
+    return makeVideoHeader(frameType, .hevc, 0, .nal, packetType)
 }
 
 enum RtmpStreamCode: String {
@@ -144,9 +159,19 @@ class RtmpStream: NetStream {
         info.byteCount.mutate { $0 += Int64(length) }
     }
 
-    private func createMetaData() -> AsObject {
+    private func createOnMetaData() -> AsObject {
+        let audioEncoders = mixer.audio.getEncoders()
+        let videoEncoders = mixer.video.getEncoders()
+        if audioEncoders.count == 1, videoEncoders.count == 1 {
+            return createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
+        } else {
+            return createOnMetaDataMultiTrack(audioEncoders, videoEncoders)
+        }
+    }
+
+    private func createOnMetaDataLegacy(_ audioEncoder: AudioCodec, _ videoEncoder: VideoCodec) -> AsObject {
         var metadata: [String: Any] = [:]
-        let settings = mixer.video.encoder.settings.value
+        let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
         metadata["height"] = settings.videoSize.height
         metadata["framerate"] = mixer.video.frameRate
@@ -158,10 +183,35 @@ class RtmpStream: NetStream {
         }
         metadata["videodatarate"] = settings.bitRate / 1000
         metadata["audiocodecid"] = FlvAudioCodec.aac.rawValue
-        metadata["audiodatarate"] = mixer.audio.encoder.settings.bitRate / 1000
-        if let sampleRate = mixer.audio.encoder.inSourceFormat?.mSampleRate {
+        metadata["audiodatarate"] = audioEncoder.settings.bitRate / 1000
+        if let sampleRate = audioEncoder.inSourceFormat?.mSampleRate {
             metadata["audiosamplerate"] = sampleRate
         }
+        return metadata
+    }
+
+    private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioCodec], _ videoEncoders: [VideoCodec]) -> AsObject {
+        var metadata = createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
+        // var audioTrackIdInfoMap: [String: Any] = [:]
+        // for (trackId, encoder) in audioEncoders.enumerated() {
+        //     let settings = encoder.settings
+        //     audioTrackIdInfoMap[String(trackId)] = [
+        //         "audiodatarate": settings.bitRate / 1000,
+        //         "channels": 1,
+        //         "samplerate": 48000,
+        //     ]
+        // }
+        // metadata["audioTrackIdInfoMap"] = audioTrackIdInfoMap
+        // var videoTrackIdInfoMap: [String: Any] = [:]
+        // for (trackId, encoder) in videoEncoders.enumerated() {
+        //     let settings = encoder.settings.value
+        //     videoTrackIdInfoMap[String(trackId)] = [
+        //         "width": settings.videoSize.width,
+        //         "height": settings.videoSize.height,
+        //         "videodatarate": settings.bitRate / 1000,
+        //     ]
+        // }
+        // metadata["videoTrackIdInfoMap"] = videoTrackIdInfoMap
         return metadata
     }
 
@@ -220,7 +270,7 @@ class RtmpStream: NetStream {
     }
 
     private func handlePublishing() {
-        send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
+        send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
         mixer.startEncoding(self)
     }
 

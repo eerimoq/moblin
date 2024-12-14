@@ -36,7 +36,6 @@ final class RtmpDataMessage: RtmpMessage {
             guard super.encoded.isEmpty else {
                 return super.encoded
             }
-
             if type == .amf3Data {
                 serializer.writeUInt8(0)
             }
@@ -46,14 +45,12 @@ final class RtmpDataMessage: RtmpMessage {
             }
             super.encoded = serializer.data
             serializer.clear()
-
             return super.encoded
         }
         set {
             guard super.encoded != newValue else {
                 return
             }
-
             if length == newValue.count {
                 serializer.writeBytes(newValue)
                 serializer.position = 0
@@ -70,7 +67,6 @@ final class RtmpDataMessage: RtmpMessage {
                 }
                 serializer.clear()
             }
-
             super.encoded = newValue
         }
     }

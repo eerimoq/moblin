@@ -169,7 +169,7 @@ final class VideoUnit: NSObject {
     var captureSize = CGSize(width: 1920, height: 1080)
     var outputSize = CGSize(width: 1920, height: 1080)
     let session = makeCaptureSession()
-    lazy var encoder = VideoCodec(lockQueue: lockQueue)
+    private var encoders = [VideoCodec(lockQueue: lockQueue)]
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -270,6 +270,10 @@ final class VideoUnit: NSObject {
     func stopRunning() {
         removeSessionObservers()
         session.stopRunning()
+    }
+
+    func getEncoders() -> [VideoCodec] {
+        return encoders
     }
 
     func getCIImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
@@ -397,13 +401,17 @@ final class VideoUnit: NSObject {
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
-        encoder.delegate = delegate
-        encoder.startRunning()
+        for encoder in encoders {
+            encoder.delegate = delegate
+            encoder.startRunning()
+        }
     }
 
     func stopEncoding() {
-        encoder.stopRunning()
-        encoder.delegate = nil
+        for encoder in encoders {
+            encoder.stopRunning()
+            encoder.delegate = nil
+        }
     }
 
     private func startFrameTimer() {
@@ -955,11 +963,13 @@ final class VideoUnit: NSObject {
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
         modSampleBuffer.setAttachmentDisplayImmediately()
         drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
-        encoder.encodeImageBuffer(
-            modImageBuffer,
-            presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
-            duration: modSampleBuffer.duration
-        )
+        for encoder in encoders {
+            encoder.encodeImageBuffer(
+                modImageBuffer,
+                presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
+                duration: modSampleBuffer.duration
+            )
+        }
         mixer?.recorder.appendVideo(modSampleBuffer)
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         handleLowFpsImage(modImageBuffer, presentationTimeStamp)

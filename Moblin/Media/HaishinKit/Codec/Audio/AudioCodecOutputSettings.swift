@@ -79,7 +79,7 @@ struct AudioCodecOutputSettings {
         }
     }
 
-    var bitRate: Int = 64 * 1000
+    var bitRate = 64 * 1000
     var channelsMap: [Int: Int] = [0: 0, 1: 1]
     var format: AudioCodecOutputSettings.Format = .aac
 
