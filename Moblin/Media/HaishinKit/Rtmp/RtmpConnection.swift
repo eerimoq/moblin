@@ -311,13 +311,13 @@ extension RtmpConnection: RtmpSocketDelegate {
             position += 4
         }
         if currentChunk != nil {
-            position = chunk.append(data, size: socket.maximumChunkSizeFromServer)
+            position = chunk.append(data: data, maximumSize: socket.maximumChunkSizeFromServer)
         }
         if chunk.type == .two {
-            position = chunk.append(data, message: messages[chunk.chunkStreamId])
+            position = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
         if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
-            position = chunk.append(data, message: messages[chunk.chunkStreamId])
+            position = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
         if let message = chunk.message, chunk.ready() {
             switch chunk.type {

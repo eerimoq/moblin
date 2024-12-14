@@ -141,7 +141,7 @@ final class RtmpChunk {
         self.message = message
     }
 
-    func append(_ data: Data, size: Int) -> Int {
+    func append(data: Data, maximumSize: Int) -> Int {
         fragmented = false
         guard let message else {
             return 0
@@ -150,18 +150,18 @@ final class RtmpChunk {
         if data.count < length {
             length = data.count
         }
-        let chunkSize = size - (message.encoded.count % size)
+        let chunkSize = maximumSize - (message.encoded.count % maximumSize)
         if chunkSize < length {
             length = chunkSize
         }
         if length > 0 {
             message.encoded.append(data[0 ..< length])
         }
-        fragmented = message.encoded.count % size == 0
+        fragmented = message.encoded.count % maximumSize == 0
         return length
     }
 
-    func append(_ data: Data, message: RtmpMessage?) -> Int {
+    func append(data: Data, message: RtmpMessage?) -> Int {
         guard let message else {
             return 0
         }
