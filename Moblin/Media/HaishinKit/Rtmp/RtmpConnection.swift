@@ -29,7 +29,7 @@ enum RtmpConnectionCode: String {
 }
 
 class RtmpConnection: RtmpEventDispatcher {
-    private(set) var uri: URL?
+    private var uri: URL?
     private(set) var connected = false
     var socket: RtmpSocket!
     var streams: [RtmpStream] = []
@@ -115,7 +115,7 @@ class RtmpConnection: RtmpEventDispatcher {
         _ = socket.write(chunk: RtmpChunk(message: message))
     }
 
-    func connectInternal(_ url: String) {
+    private func connectInternal(_ url: String) {
         guard let uri = URL(string: url),
               let scheme = uri.scheme,
               let host = uri.host,
@@ -294,10 +294,7 @@ extension RtmpConnection: RtmpSocketDelegate {
     }
 
     func socketUpdateStats(_: RtmpSocket, totalBytesOut: Int64) {
-        guard let stream = streams.first else {
-            return
-        }
-        stream.info.onWritten(sequence: totalBytesOut)
+        streams.first?.info.onWritten(sequence: totalBytesOut)
     }
 
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {
