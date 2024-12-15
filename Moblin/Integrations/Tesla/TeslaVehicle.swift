@@ -382,7 +382,11 @@ class TeslaVehicle: NSObject {
         message.sessionInfoRequest.publicKey = clientPublicKeyBytes
         message.uuid = uuid
         responseHandlers[address] = { response in
-            try self.handleSessionInfoResponse(message, response)
+            do {
+                try self.handleSessionInfoResponse(message, response)
+            } catch {
+                logger.debug("tesla-vehicle: Session info failed with \(error)")
+            }
         }
         try sendMessage(message: message)
     }

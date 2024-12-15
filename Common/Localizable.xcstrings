@@ -33382,6 +33382,7 @@
       }
     },
     "Confirm by tapping Tesla key card on center console" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -108939,6 +108940,9 @@
           }
         }
       }
+    },
+    "Tap Locks → Add Key in your Tesla and tap your key card" : {
+
     },
     "Tap screen to focus" : {
       "localizations" : {

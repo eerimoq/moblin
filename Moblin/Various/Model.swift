@@ -1413,7 +1413,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func teslaAddKeyToVehicle() {
         teslaVehicle?.addKeyRequestWithRole(privateKeyPem: database.tesla!.privateKey)
-        makeToast(title: String(localized: "Confirm by tapping Tesla key card on center console"))
+        makeToast(title: String(localized: "Tap Locks → Add Key in your Tesla and tap your key card"))
     }
 
     func teslaFlashLights() {
