@@ -56,17 +56,28 @@ private var url =
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
+protocol KickOusherDelegate: AnyObject {
+    func kickPusherMakeErrorToast(title: String, subTitle: String?)
+    func kickPusherAppendMessage(
+        user: String,
+        userColor: RgbColor?,
+        segments: [ChatPostSegment],
+        isSubscriber: Bool,
+        isModerator: Bool
+    )
+}
+
 final class KickPusher: NSObject {
-    private var model: Model
     private var channelName: String
     private var channelId: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private let settings: SettingsStreamChat
     private var gotInfo = false
+    private weak var delegate: (any KickOusherDelegate)?
 
-    init(model: Model, channelId: String, channelName: String, settings: SettingsStreamChat) {
-        self.model = model
+    init(delegate: KickOusherDelegate, channelId: String, channelName: String, settings: SettingsStreamChat) {
+        self.delegate = delegate
         self.channelId = channelId
         self.channelName = channelName
         self.settings = settings.clone()
@@ -142,13 +153,13 @@ final class KickPusher: NSObject {
 
     private func handleError(title: String, subTitle: String) {
         DispatchQueue.main.async {
-            self.model.makeErrorToast(title: title, subTitle: subTitle)
+            self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
         }
     }
 
     private func handleOk(title: String) {
         DispatchQueue.main.async {
-            self.model.makeToast(title: title)
+            self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: nil)
         }
     }
 
@@ -182,20 +193,12 @@ final class KickPusher: NSObject {
                 segments.append(segment)
             }
         }
-        model.appendChatMessage(
-            platform: .kick,
+        delegate?.kickPusherAppendMessage(
             user: message.sender.username,
-            userId: nil,
             userColor: RgbColor.fromHex(string: message.sender.identity.color),
-            userBadges: [],
             segments: segments,
-            timestamp: model.digitalClock,
-            timestampTime: .now,
-            isAction: false,
             isSubscriber: message.isSubscriber(),
-            isModerator: message.isModerator(),
-            bits: nil,
-            highlight: nil
+            isModerator: message.isModerator()
         )
     }
 

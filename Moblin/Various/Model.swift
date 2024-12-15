@@ -1285,7 +1285,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         frontZoomPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
-        twitchChat = TwitchChatMoblin(model: self)
+        twitchChat = TwitchChatMoblin(delegate: self)
         reloadStream()
         resetSelectedScene()
         setMic()
@@ -4329,7 +4329,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         kickPusher = nil
         setTextToSpeechStreamerMentions()
         if isKickPusherConfigured() {
-            kickPusher = KickPusher(model: self,
+            kickPusher = KickPusher(delegate: self,
                                     channelId: stream.kickChatroomId,
                                     channelName: stream.kickChannelName!,
                                     settings: stream.chat!)
@@ -9849,5 +9849,66 @@ extension Model: MediaDelegate {
 
     func mediaOnNoTorch() {
         handleNoTorch()
+    }
+}
+
+extension Model: TwitchChatMoblinDelegate {
+    func twitchChatMoblinMakeErrorToast(title: String, subTitle: String?) {
+        makeErrorToast(title: title, subTitle: subTitle)
+    }
+
+    func twitchChatMoblinAppendMessage(
+        user: String?,
+        userId: String?,
+        userColor: RgbColor?,
+        userBadges: [URL],
+        segments: [ChatPostSegment],
+        isAction: Bool,
+        isSubscriber: Bool,
+        isModerator: Bool,
+        bits: String?,
+        highlight: ChatHighlight?
+    ) {
+        appendChatMessage(platform: .twitch,
+                          user: user,
+                          userId: userId,
+                          userColor: userColor,
+                          userBadges: userBadges,
+                          segments: segments,
+                          timestamp: digitalClock,
+                          timestampTime: .now,
+                          isAction: isAction,
+                          isSubscriber: isSubscriber,
+                          isModerator: isModerator,
+                          bits: bits,
+                          highlight: highlight)
+    }
+}
+
+extension Model: KickOusherDelegate {
+    func kickPusherMakeErrorToast(title: String, subTitle: String?) {
+        makeErrorToast(title: title, subTitle: subTitle)
+    }
+
+    func kickPusherAppendMessage(
+        user: String,
+        userColor: RgbColor?,
+        segments: [ChatPostSegment],
+        isSubscriber: Bool,
+        isModerator: Bool
+    ) {
+        appendChatMessage(platform: .kick,
+                          user: user,
+                          userId: nil,
+                          userColor: userColor,
+                          userBadges: [],
+                          segments: segments,
+                          timestamp: digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: isSubscriber,
+                          isModerator: isModerator,
+                          bits: nil,
+                          highlight: nil)
     }
 }

@@ -150,16 +150,32 @@ private class Cheermotes {
     }
 }
 
+protocol TwitchChatMoblinDelegate: AnyObject {
+    func twitchChatMoblinMakeErrorToast(title: String, subTitle: String?)
+    func twitchChatMoblinAppendMessage(
+        user: String?,
+        userId: String?,
+        userColor: RgbColor?,
+        userBadges: [URL],
+        segments: [ChatPostSegment],
+        isAction: Bool,
+        isSubscriber: Bool,
+        isModerator: Bool,
+        bits: String?,
+        highlight: ChatHighlight?
+    )
+}
+
 final class TwitchChatMoblin {
-    private var model: Model
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: Badges
     private var cheermotes: Cheermotes
     private var channelName: String
+    private weak var delegate: (any TwitchChatMoblinDelegate)?
 
-    init(model: Model) {
-        self.model = model
+    init(delegate: TwitchChatMoblinDelegate) {
+        self.delegate = delegate
         channelName = ""
         emotes = Emotes()
         badges = Badges()
@@ -234,15 +250,12 @@ final class TwitchChatMoblin {
             emotesManager: self.emotes,
             bits: message.bits
         )
-        model.appendChatMessage(
-            platform: .twitch,
+        delegate?.twitchChatMoblinAppendMessage(
             user: message.sender,
             userId: message.userId,
             userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
             userBadges: badgeUrls,
             segments: segments,
-            timestamp: model.digitalClock,
-            timestampTime: .now,
             isAction: isAction,
             isSubscriber: message.subscriber,
             isModerator: message.moderator,
@@ -285,13 +298,13 @@ final class TwitchChatMoblin {
 
     private func handleError(title: String, subTitle: String) {
         DispatchQueue.main.async {
-            self.model.makeErrorToast(title: title, subTitle: subTitle)
+            self.delegate?.twitchChatMoblinMakeErrorToast(title: title, subTitle: subTitle)
         }
     }
 
     private func handleOk(title: String) {
         DispatchQueue.main.async {
-            self.model.makeToast(title: title)
+            self.delegate?.twitchChatMoblinMakeErrorToast(title: title, subTitle: nil)
         }
     }
 
