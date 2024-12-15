@@ -175,7 +175,7 @@ func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] 
     return segments
 }
 
-enum ChatHighlightKind {
+enum ChatHighlightKind: Codable {
     case redemption
     case other
     case firstMessage
@@ -6981,7 +6981,7 @@ extension Model: RemoteControlStreamerDelegate {
                           userBadges: message.userBadges,
                           segments: message.segments,
                           timestamp: message.timestamp,
-                          timestampTime: .now, // Fix!
+                          timestampTime: message.timestampTime,
                           isAction: message.isAction,
                           isSubscriber: message.isSubscriber,
                           isModerator: message.isModerator,

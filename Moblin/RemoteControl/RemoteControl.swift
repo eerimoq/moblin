@@ -47,6 +47,7 @@ struct RemoteControlChatMessage: Codable {
     var userBadges: [URL]
     var segments: [ChatPostSegment]
     var timestamp: String
+    var timestampTime: ContinuousClock.Instant
     var isAction: Bool
     var isModerator: Bool
     var isSubscriber: Bool
