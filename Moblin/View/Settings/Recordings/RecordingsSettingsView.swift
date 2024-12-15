@@ -73,6 +73,10 @@ private struct RecordingsSettingsRecordingsView: View {
                         recordingsStorage.store()
                     })
                 }
+            } footer: {
+                if !recordingsStorage.database.recordings.isEmpty {
+                    SwipeLeftToDeleteHelpView(kind: "a recording")
+                }
             }
         }
     }
