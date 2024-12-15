@@ -157,7 +157,7 @@ struct ChatMessageEmote: Identifiable {
     var range: ClosedRange<Int>
 }
 
-struct ChatPostSegment: Identifiable {
+struct ChatPostSegment: Identifiable, Codable {
     var id: Int
     var text: String?
     var url: URL?
@@ -6953,14 +6953,12 @@ extension Model: RemoteControlStreamerDelegate {
         enabled: Bool,
         onComplete: @escaping () -> Void
     ) {
-        DispatchQueue.main.async {
-            if let entry = self.stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
-                entry.priority = clampConnectionPriority(value: priority)
-                entry.enabled = enabled
-                self.updateSrtlaPriorities()
-            }
-            onComplete()
+        if let entry = stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
+            entry.priority = clampConnectionPriority(value: priority)
+            entry.enabled = enabled
+            updateSrtlaPriorities()
         }
+        onComplete()
     }
 
     private func sendPreviewToRemoteControlAssistant(preview: Data) {
@@ -6972,6 +6970,23 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerTwitchEventSubNotification(message: String) {
         twitchEventSub?.handleMessage(messageText: message)
+    }
+
+    func remoteControlStreamerChatMessage(message: RemoteControlChatMessage) {
+        logger.info("xxx: Got chat message \(message)")
+        appendChatMessage(platform: message.platform,
+                          user: message.user,
+                          userId: message.userId,
+                          userColor: message.userColor,
+                          userBadges: message.userBadges,
+                          segments: message.segments,
+                          timestamp: message.timestamp,
+                          timestampTime: .now, // Fix!
+                          isAction: message.isAction,
+                          isSubscriber: message.isSubscriber,
+                          isModerator: message.isModerator,
+                          bits: message.bits,
+                          highlight: nil)
     }
 
     func remoteControlStreamerStartPreview(onComplete _: @escaping () -> Void) {

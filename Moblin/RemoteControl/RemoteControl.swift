@@ -21,6 +21,7 @@ enum RemoteControlRequest: Codable {
     case twitchEventSubNotification(message: String)
     case startPreview
     case stopPreview
+    case chatMessage(message: RemoteControlChatMessage)
 }
 
 enum RemoteControlResponse: Codable {
@@ -36,6 +37,20 @@ enum RemoteControlEvent: Codable {
     case state(data: RemoteControlState)
     case log(entry: String)
     case mediaShareSegmentReceived(fileId: UUID)
+}
+
+struct RemoteControlChatMessage: Codable {
+    var platform: Platform
+    var user: String?
+    var userId: String?
+    var userColor: RgbColor?
+    var userBadges: [URL]
+    var segments: [ChatPostSegment]
+    var timestamp: String
+    var isAction: Bool
+    var isModerator: Bool
+    var isSubscriber: Bool
+    var bits: String?
 }
 
 struct RemoteControlStatusItem: Codable {

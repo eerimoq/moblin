@@ -1,6 +1,6 @@
 import Foundation
 
-enum Platform {
+enum Platform: Codable {
     case afreecaTv
     case kick
     case openStreamingPlatform
