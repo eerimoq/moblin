@@ -25,6 +25,12 @@ private let versions = [
         "• Fix RTMP to YouTube? 🐛 anishmenon",
         "• Experimental pretty snapshot finder. Will save two snapshots to Photos, one as today, and one that is \"pretty\" with a black square in bottom left corner.",
         "  • Enable in Settings → Debug → Pretty snapshot.",
+        "• Move \"Bluetooth output only\" toggle to Settings → Audio.",
+        "• Move \"Prefer stereo mic\" toggle to Settings → Audio.",
+        "• Remove higher data rate limit debug toggle.",
+        "• Remove \"Map pitch\" debug setting.",
+        "• Add 9 and 11 Mbps bitrate presents by default.",
+        "• Increase default SRT(LA) latency from 2 to 3 seconds.",
     ]),
     Version(version: "0.389.0", date: "2024-12-08", changes: [
         "• Hammer Twitch API slightly less.",
