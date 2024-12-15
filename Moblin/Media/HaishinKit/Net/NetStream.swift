@@ -177,15 +177,8 @@ open class NetStream: NSObject {
         mixer.audio.setSpeechToText(enabled: enabled)
     }
 
-    func startRecording(
-        url: URL,
-        audioSettings: [String: Any],
-        videoSettings: [String: Any]
-    ) {
-        mixer.recorder.url = url
-        mixer.recorder.audioOutputSettings = audioSettings
-        mixer.recorder.videoOutputSettings = videoSettings
-        mixer.recorder.startRunning()
+    func startRecording(url: URL, audioSettings: [String: Any], videoSettings: [String: Any]) {
+        mixer.recorder.startRunning(url: url, audioOutputSettings: audioSettings, videoOutputSettings: videoSettings)
     }
 
     func stopRecording() {

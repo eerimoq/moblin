@@ -8,22 +8,8 @@ protocol IORecorderDelegate: AnyObject {
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
 
 class Recorder: NSObject {
-    private static let defaultAudioOutputSettings: [String: Any] = [
-        AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-        AVSampleRateKey: 0,
-        AVNumberOfChannelsKey: 0,
-    ]
-
-    private static let defaultVideoOutputSettings: [String: Any] = [
-        AVVideoCodecKey: AVVideoCodecType.h264,
-        AVVideoHeightKey: 0,
-        AVVideoWidthKey: 0,
-    ]
-
-    weak var delegate: (any IORecorderDelegate)?
-    var audioOutputSettings = Recorder.defaultAudioOutputSettings
-    var videoOutputSettings = Recorder.defaultVideoOutputSettings
-    var url: URL?
+    private var audioOutputSettings: [String: Any] = [:]
+    private var videoOutputSettings: [String: Any] = [:]
     private var fileHandle: FileHandle?
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
     private var writer: AVAssetWriter?
@@ -31,6 +17,7 @@ class Recorder: NSObject {
     private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
     private var basePresentationTimeStamp: CMTime = .zero
+    weak var delegate: (any IORecorderDelegate)?
 
     func setAudioChannelsMap(map: [Int: Int]) {
         lockQueue.async {
@@ -50,9 +37,13 @@ class Recorder: NSObject {
         }
     }
 
-    func startRunning() {
+    func startRunning(url: URL, audioOutputSettings: [String: Any], videoOutputSettings: [String: Any]) {
         lockQueue.async {
-            self.startRunningInner()
+            self.startRunningInner(
+                url: url,
+                audioOutputSettings: audioOutputSettings,
+                videoOutputSettings: videoOutputSettings
+            )
         }
     }
 
@@ -262,8 +253,10 @@ class Recorder: NSObject {
         return .init(streamDescription: &basicDescription)
     }
 
-    private func startRunningInner() {
-        guard writer == nil, let url else {
+    private func startRunningInner(url: URL, audioOutputSettings: [String: Any], videoOutputSettings: [String: Any]) {
+        self.audioOutputSettings = audioOutputSettings
+        self.videoOutputSettings = videoOutputSettings
+        guard writer == nil else {
             logger.info("recorder: Will not start recording as it is already running or missing URL")
             return
         }
@@ -302,6 +295,9 @@ class Recorder: NSObject {
         writer = nil
         audioWriterInput = nil
         videoWriterInput = nil
+        audioConverter = nil
+        basePresentationTimeStamp = .zero
+        fileHandle = nil
     }
 
     private func isReadyForStartWriting(writer: AVAssetWriter, sampleBuffer _: CMSampleBuffer) -> Bool {
@@ -310,11 +306,7 @@ class Recorder: NSObject {
 }
 
 extension Recorder: AVAssetWriterDelegate {
-    func assetWriter(
-        _: AVAssetWriter,
-        didOutputSegmentData segmentData: Data,
-        segmentType _: AVAssetSegmentType
-    ) {
+    func assetWriter(_: AVAssetWriter, didOutputSegmentData segmentData: Data, segmentType _: AVAssetSegmentType) {
         lockQueue.async {
             self.fileHandle?.write(segmentData)
         }
