@@ -1651,7 +1651,7 @@ class SettingsChat: Codable {
     var boldMessage: Bool = true
     var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
-    var timestampColorEnabled: Bool = true
+    var timestampColorEnabled: Bool = false
     var height: Double? = 0.7
     var width: Double? = 1.0
     var maximumAge: Int? = 30
