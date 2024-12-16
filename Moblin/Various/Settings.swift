@@ -1640,15 +1640,15 @@ class SettingsChatBotPermissions: Codable {
 }
 
 class SettingsChat: Codable {
-    var fontSize: Float = 17.0
+    var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
-    var backgroundColorEnabled: Bool = true
+    var backgroundColorEnabled: Bool = false
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
-    var shadowColorEnabled: Bool = false
-    var boldUsername: Bool = false
-    var boldMessage: Bool = false
+    var shadowColorEnabled: Bool = true
+    var boldUsername: Bool = true
+    var boldMessage: Bool = true
     var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = true
