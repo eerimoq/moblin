@@ -31,7 +31,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
         onComplete: @escaping () -> Void
     )
     func remoteControlStreamerTwitchEventSubNotification(message: String)
-    func remoteControlStreamerChatMessage(message: RemoteControlChatMessage)
+    func remoteControlStreamerChatMessages(history: Bool, messages: [RemoteControlChatMessage])
     func remoteControlStreamerStartPreview(onComplete: @escaping () -> Void)
     func remoteControlStreamerStopPreview(onComplete: @escaping () -> Void)
 }
@@ -97,18 +97,14 @@ class RemoteControlStreamer {
         send(message: .preview(preview: preview))
     }
 
-    func twitchStart(channelId: String, accessToken: String) {
+    func twitchStart(channelName: String?, channelId: String, accessToken: String) {
         guard connected else {
             return
         }
         guard let accessToken = encryption.encrypt(data: accessToken.utf8Data)?.base64EncodedString() else {
             return
         }
-        send(message: .twitchStart(channelId: channelId, accessToken: accessToken))
-    }
-
-    func twitchStop() {
-        send(message: .twitchStop)
+        send(message: .twitchStart(channelName: channelName, channelId: channelId, accessToken: accessToken))
     }
 
     private func send(message: RemoteControlMessageToAssistant) {
@@ -231,8 +227,8 @@ class RemoteControlStreamer {
         case let .twitchEventSubNotification(message: message):
             delegate.remoteControlStreamerTwitchEventSubNotification(message: message)
             send(message: .response(id: id, result: .ok, data: nil))
-        case let .chatMessage(message: message):
-            delegate.remoteControlStreamerChatMessage(message: message)
+        case let .chatMessages(history: history, messages: messages):
+            delegate.remoteControlStreamerChatMessages(history: history, messages: messages)
             send(message: .response(id: id, result: .ok, data: nil))
         case .startPreview:
             delegate.remoteControlStreamerStartPreview {

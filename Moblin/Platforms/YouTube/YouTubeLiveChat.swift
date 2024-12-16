@@ -309,7 +309,7 @@ final class YouTubeLiveChat: NSObject {
                                     isSubscriber: false,
                                     isModerator: false,
                                     bits: nil,
-                                    highlight: highlight)
+                                    highlight: highlight, live: true)
         }
         return 1
     }

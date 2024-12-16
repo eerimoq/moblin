@@ -21,7 +21,7 @@ enum RemoteControlRequest: Codable {
     case twitchEventSubNotification(message: String)
     case startPreview
     case stopPreview
-    case chatMessage(message: RemoteControlChatMessage)
+    case chatMessages(history: Bool, messages: [RemoteControlChatMessage])
 }
 
 enum RemoteControlResponse: Codable {
@@ -40,6 +40,7 @@ enum RemoteControlEvent: Codable {
 }
 
 struct RemoteControlChatMessage: Codable {
+    var id: Int
     var platform: Platform
     var user: String?
     var userId: String?
@@ -47,7 +48,6 @@ struct RemoteControlChatMessage: Codable {
     var userBadges: [URL]
     var segments: [ChatPostSegment]
     var timestamp: String
-    var timestampTime: ContinuousClock.Instant
     var isAction: Bool
     var isModerator: Bool
     var isSubscriber: Bool
@@ -216,8 +216,7 @@ enum RemoteControlMessageToAssistant: Codable {
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
     case preview(preview: Data)
-    case twitchStart(channelId: String, accessToken: String)
-    case twitchStop
+    case twitchStart(channelName: String?, channelId: String, accessToken: String)
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {

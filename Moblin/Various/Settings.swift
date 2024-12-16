@@ -1767,6 +1767,7 @@ class SettingsDebug: Codable {
     var httpProxy: SettingsHttpProxy? = .init()
     var tesla: SettingsTesla? = .init()
     var prettySnapshot: Bool? = false
+    var reliableChat: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4293,6 +4294,10 @@ final class Settings {
             realDatabase.tesla = .init()
             realDatabase.tesla!.vin = realDatabase.debug.tesla!.vin
             realDatabase.tesla!.privateKey = realDatabase.debug.tesla!.privateKey
+            store()
+        }
+        if realDatabase.debug.reliableChat == nil {
+            realDatabase.debug.reliableChat = false
             store()
         }
     }

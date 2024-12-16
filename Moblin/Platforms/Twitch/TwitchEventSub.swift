@@ -308,10 +308,6 @@ final class TwitchEventSub: NSObject {
         webSocket.stop()
     }
 
-    func isRemoteControl() -> Bool {
-        return remoteControl
-    }
-
     func isConnected() -> Bool {
         return connected
     }

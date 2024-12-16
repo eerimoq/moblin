@@ -61,6 +61,12 @@ private struct StatusesView: View {
     func chatColor() -> Color {
         if !model.isChatConfigured() {
             return .white
+        } else if model.isChatRemoteControl() {
+            if model.isRemoteControlStreamerConnected() {
+                return .white
+            } else {
+                return .red
+            }
         } else if model.isChatConnected() && model.hasChatEmotes() {
             return .white
         } else {

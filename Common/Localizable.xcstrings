@@ -6683,6 +6683,16 @@
         }
       }
     },
+    "%@ (%@ total) (remote control)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$@ total) (remote control)"
+          }
+        }
+      }
+    },
     "%@ (%@)" : {
       "localizations" : {
         "de" : {
@@ -87874,6 +87884,12 @@
           }
         }
       }
+    },
+    "Reliable alerts and chat messages activated" : {
+
+    },
+    "Reliable chat" : {
+
     },
     "Reload browser widgets" : {
       "localizations" : {

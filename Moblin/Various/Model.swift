@@ -230,6 +230,7 @@ struct ChatPost: Identifiable, Equatable {
     var isSubscriber: Bool
     var bits: String?
     var highlight: ChatHighlight?
+    var live: Bool
 }
 
 class ButtonState {
@@ -603,6 +604,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var remoteControlAssistantShowPreviewFullScreen = false
     private var isRemoteControlAssistantRequestingPreview = false
     private var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
+    private var remoteControlStreamerLatestReceivedChatMessageId = -1
+    private var useRemoteControlForChatAndEvents = false
 
     private var currentWiFiSsid: String?
     @Published var djiDeviceStreamingState: DjiDeviceState?
@@ -2717,7 +2720,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isSubscriber: false,
             isModerator: false,
             bits: nil,
-            highlight: nil
+            highlight: nil,
+            live: true
         )
     }
 
@@ -2867,7 +2871,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
-        guard database.chat.textToSpeechEnabled! else {
+        guard database.chat.textToSpeechEnabled!, post.live else {
             return false
         }
         if database.chat.textToSpeechSubscribersOnly! {
@@ -3870,6 +3874,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func reloadConnections() {
+        useRemoteControlForChatAndEvents = false
         reloadChats()
         reloadTwitchPubSub()
         reloadTwitchEventSub()
@@ -4057,7 +4062,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isEventsRemoteControl() -> Bool {
-        return twitchEventSub?.isRemoteControl() ?? false
+        return useRemoteControlForChatAndEvents
     }
 
     func isTwitchEventsConnected() -> Bool {
@@ -4068,6 +4073,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
             isOpenStreamingPlatformChatConfigured()
+    }
+
+    func isChatRemoteControl() -> Bool {
+        return useRemoteControlForChatAndEvents && database.debug.reliableChat!
     }
 
     func isViewersConfigured() -> Bool {
@@ -4201,12 +4210,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         pausedInteractiveChatAlertsPosts = []
         newInteractiveChatAlertsPosts = []
         chatTextToSpeech.reset(running: true)
+        remoteControlStreamerLatestReceivedChatMessageId = -1
     }
 
     private func reloadTwitchChat() {
         twitchChat.stop()
         setTextToSpeechStreamerMentions()
-        if isTwitchChatConfigured() {
+        if isTwitchChatConfigured(), !isChatRemoteControl() {
             twitchChat.start(
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,
@@ -4230,12 +4240,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func reloadTwitchEventSub() {
+    private func reloadTwitchEventSub() {
         twitchEventSub?.stop()
         twitchEventSub = nil
         if isTwitchEventSubConfigured() {
             twitchEventSub = TwitchEventSub(
-                remoteControl: isRemoteControlStreamerConnected(),
+                remoteControl: useRemoteControlForChatAndEvents,
                 userId: stream.twitchChannelId,
                 accessToken: stream.twitchAccessToken!,
                 httpProxy: httpProxy(),
@@ -4243,7 +4253,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 delegate: self
             )
             twitchEventSub!.start()
-            updateRemoteControlStreamerTwitch()
         }
     }
 
@@ -4328,7 +4337,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         kickPusher?.stop()
         kickPusher = nil
         setTextToSpeechStreamerMentions()
-        if isKickPusherConfigured() {
+        if isKickPusherConfigured(), !isChatRemoteControl() {
             kickPusher = KickPusher(delegate: self,
                                     channelId: stream.kickChatroomId,
                                     channelName: stream.kickChannelName!,
@@ -4340,7 +4349,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func reloadYouTubeLiveChat() {
         youTubeLiveChat?.stop()
         youTubeLiveChat = nil
-        if isYouTubeLiveChatConfigured() {
+        if isYouTubeLiveChatConfigured(), !isChatRemoteControl() {
             youTubeLiveChat = YouTubeLiveChat(
                 model: self,
                 videoId: stream.youTubeVideoId!,
@@ -4354,7 +4363,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         afreecaTvChat?.stop()
         afreecaTvChat = nil
         setTextToSpeechStreamerMentions()
-        if isAfreecaTvChatConfigured() {
+        if isAfreecaTvChatConfigured(), !isChatRemoteControl() {
             afreecaTvChat = AfreecaTvChat(
                 model: self,
                 channelName: stream.afreecaTvChannelName!,
@@ -4367,7 +4376,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func reloadOpenStreamingPlatformChat() {
         openStreamingPlatformChat?.stop()
         openStreamingPlatformChat = nil
-        if isOpenStreamingPlatformChatConfigured() {
+        if isOpenStreamingPlatformChatConfigured(), !isChatRemoteControl() {
             openStreamingPlatformChat = OpenStreamingPlatformChat(
                 model: self,
                 url: stream.openStreamingPlatformUrl!,
@@ -5052,12 +5061,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         isSubscriber: Bool,
         isModerator: Bool,
         bits: String?,
-        highlight: ChatHighlight?
+        highlight: ChatHighlight?,
+        live: Bool
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
         }
-        if database.chat.botEnabled!, segments.first?.text?.trim().lowercased() == "!moblin" {
+        if database.chat.botEnabled!, live, segments.first?.text?.trim().lowercased() == "!moblin" {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(
                     platform: platform,
@@ -5069,7 +5079,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 ))
             }
         }
-        if pollEnabled {
+        if pollEnabled, live {
             handlePollVote(vote: segments.first?.text?.trim())
         }
         let post = ChatPost(
@@ -5083,7 +5093,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isAction: isAction,
             isSubscriber: isSubscriber,
             bits: bits,
-            highlight: highlight
+            highlight: highlight,
+            live: live
         )
         chatPostId += 1
         newChatPosts.append(post)
@@ -6621,6 +6632,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func statusChatText() -> String {
         if !isChatConfigured() {
             return String(localized: "Not configured")
+        } else if isChatRemoteControl() {
+            if isRemoteControlStreamerConnected() {
+                return String(
+                    format: String(localized: "%@ (%@ total) (remote control)"),
+                    chatPostsRate,
+                    countFormatter.format(chatPostsTotal)
+                )
+            } else {
+                return String(localized: "Disconnected (remote control)")
+            }
         } else if isChatConnected() {
             return String(
                 format: String(localized: "%@ (%@ total)"),
@@ -6693,11 +6714,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
 extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
-        makeToast(title: String(localized: "Remote control assistant connected"))
+        makeToast(
+            title: String(localized: "Remote control assistant connected"),
+            subTitle: String(localized: "Reliable alerts and chat messages activated")
+        )
+        useRemoteControlForChatAndEvents = true
+        remoteControlStreamerSendTwitchStart()
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
         updateRemoteControlStatus()
         reloadTwitchEventSub()
+        reloadChats()
         var state = RemoteControlState()
         if sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneIndex].id
@@ -6718,7 +6745,6 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
         updateRemoteControlStatus()
-        updateRemoteControlStreamerTwitch()
     }
 
     func remoteControlStreamerGetStatus(onComplete: @escaping (
@@ -6972,21 +6998,27 @@ extension Model: RemoteControlStreamerDelegate {
         twitchEventSub?.handleMessage(messageText: message)
     }
 
-    func remoteControlStreamerChatMessage(message: RemoteControlChatMessage) {
-        logger.info("xxx: Got chat message \(message)")
-        appendChatMessage(platform: message.platform,
-                          user: message.user,
-                          userId: message.userId,
-                          userColor: message.userColor,
-                          userBadges: message.userBadges,
-                          segments: message.segments,
-                          timestamp: message.timestamp,
-                          timestampTime: message.timestampTime,
-                          isAction: message.isAction,
-                          isSubscriber: message.isSubscriber,
-                          isModerator: message.isModerator,
-                          bits: message.bits,
-                          highlight: nil)
+    func remoteControlStreamerChatMessages(history: Bool, messages: [RemoteControlChatMessage]) {
+        logger.info("xxx \(history) \(remoteControlStreamerLatestReceivedChatMessageId)")
+        let live = !history || remoteControlStreamerLatestReceivedChatMessageId != -1
+        logger.info("xxx \(live)")
+        for message in messages where message.id > remoteControlStreamerLatestReceivedChatMessageId {
+            appendChatMessage(platform: message.platform,
+                              user: message.user,
+                              userId: message.userId,
+                              userColor: message.userColor,
+                              userBadges: message.userBadges,
+                              segments: message.segments,
+                              timestamp: message.timestamp,
+                              timestampTime: .now,
+                              isAction: message.isAction,
+                              isSubscriber: message.isSubscriber,
+                              isModerator: message.isModerator,
+                              bits: message.bits,
+                              highlight: nil,
+                              live: live)
+            remoteControlStreamerLatestReceivedChatMessageId = message.id
+        }
     }
 
     func remoteControlStreamerStartPreview(onComplete _: @escaping () -> Void) {
@@ -7015,10 +7047,12 @@ extension Model {
         remoteControlStreamer = nil
         guard isRemoteControlStreamerConfigured() else {
             reloadTwitchEventSub()
+            reloadChats()
             return
         }
         guard let url = URL(string: database.remoteControl!.server.url) else {
             reloadTwitchEventSub()
+            reloadChats()
             return
         }
         remoteControlStreamer = RemoteControlStreamer(
@@ -7029,15 +7063,12 @@ extension Model {
         remoteControlStreamer!.start()
     }
 
-    private func updateRemoteControlStreamerTwitch() {
-        if stream.twitchLoggedIn! {
-            remoteControlStreamer?.twitchStart(
-                channelId: stream.twitchChannelId,
-                accessToken: stream.twitchAccessToken!
-            )
-        } else {
-            remoteControlStreamer?.twitchStop()
-        }
+    private func remoteControlStreamerSendTwitchStart() {
+        remoteControlStreamer?.twitchStart(
+            channelName: database.debug.reliableChat! ? stream.twitchChannelName : nil,
+            channelId: stream.twitchChannelId,
+            accessToken: stream.twitchAccessToken!
+        )
     }
 
     private func updateRemoteControlStatus() {
@@ -9393,6 +9424,7 @@ extension Model {
         removeTwitchAccessTokenInKeychain(streamId: stream.id)
         if stream.enabled {
             reloadTwitchEventSub()
+            reloadChats()
         }
     }
 
@@ -9606,7 +9638,7 @@ extension Model: TwitchEventSubDelegate {
                               color: color,
                               image: image ?? "medal",
                               title: title
-                          ))
+                          ), live: true)
     }
 
     func twitchEventSubUnauthorized() {
@@ -9881,7 +9913,8 @@ extension Model: TwitchChatMoblinDelegate {
                           isSubscriber: isSubscriber,
                           isModerator: isModerator,
                           bits: bits,
-                          highlight: highlight)
+                          highlight: highlight,
+                          live: true)
     }
 }
 
@@ -9909,6 +9942,7 @@ extension Model: KickOusherDelegate {
                           isSubscriber: isSubscriber,
                           isModerator: isModerator,
                           bits: nil,
-                          highlight: nil)
+                          highlight: nil,
+                          live: true)
     }
 }

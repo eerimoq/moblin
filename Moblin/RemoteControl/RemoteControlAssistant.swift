@@ -1,3 +1,4 @@
+import Collections
 import CryptoKit
 import Foundation
 import Telegraph
@@ -24,19 +25,23 @@ class RemoteControlAssistant: NSObject {
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
     private var server: Server
-    var connectionErrorMessage: String = ""
+    var connectionErrorMessage = ""
     private var streamerWebSocket: Telegraph.WebSocket?
     private var retryStartTimer = SimpleTimer(queue: .main)
     private weak var delegate: (any RemoteControlAssistantDelegate)?
-    private var streamerIdentified: Bool = false
-    private var challenge: String = ""
-    private var salt: String = ""
+    private var streamerIdentified = false
+    private var challenge = ""
+    private var salt = ""
     private var encryption: RemoteControlEncryption
     private var twitchEventSub: TwitchEventSub?
+    private var twitchChat: TwitchChatMoblin?
+    private var twitchChannelName: String?
     private var twitchChannelId: String?
     private var twitchAccessToken: String?
     private var twitchEventSubNotitications: [String] = []
-    private var twitchEventSubNotiticationWaitForResponse: Bool = false
+    private var twitchEventSubNotiticationWaitForResponse = false
+    private var chatMessageHistory: Deque<RemoteControlChatMessage> = []
+    private var nextChatMessageId = 0
 
     init(
         port: UInt16,
@@ -192,6 +197,25 @@ class RemoteControlAssistant: NSObject {
         )
     }
 
+    private func getNextChatMessageId() -> Int {
+        nextChatMessageId += 1
+        return nextChatMessageId
+    }
+
+    private func sendChatMessage(message: RemoteControlChatMessage) {
+        performRequestNoResponseData(
+            data: .chatMessages(history: false, messages: [message]),
+            onSuccess: {}
+        )
+    }
+
+    private func sendChatMessageHistory() {
+        performRequestNoResponseData(
+            data: .chatMessages(history: true, messages: chatMessageHistory.map { $0 }),
+            onSuccess: {}
+        )
+    }
+
     private func startInternal() {
         do {
             try server.start(port: Endpoint.Port(port))
@@ -249,15 +273,14 @@ class RemoteControlAssistant: NSObject {
                 try handleResponse(id: id, result: result, data: data)
             case let .preview(preview: preview):
                 try handlePreview(preview: preview)
-            case let .twitchStart(channelId: channelId, accessToken: accessToken):
+            case let .twitchStart(channelName: channelName, channelId: channelId, accessToken: accessToken):
                 try handleTwitchStart(
+                    channelName: channelName,
                     channelId: channelId,
                     accessToken: accessToken,
                     httpProxy: httpProxy,
                     urlSession: urlSession
                 )
-            case .twitchStop:
-                try handleTwitchStop()
             }
         } catch {
             logger.debug("remote-control-assistant: Failed to process message with error \(error)")
@@ -276,6 +299,7 @@ class RemoteControlAssistant: NSObject {
             send(message: .identified(result: .ok))
             twitchEventSubNotiticationWaitForResponse = false
             tryNextTwitchEventSubNotification()
+            sendChatMessageHistory()
         } else {
             logger.info("remote-control-assistant: Streamer sent wrong password")
             send(message: .identified(result: .wrongPassword))
@@ -328,6 +352,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func handleTwitchStart(
+        channelName: String?,
         channelId: String,
         accessToken: String,
         httpProxy: HttpProxy?,
@@ -345,11 +370,13 @@ class RemoteControlAssistant: NSObject {
         guard let accessToken = String(data: data, encoding: .utf8) else {
             throw "Access token not UTF-8"
         }
-        guard channelId != twitchChannelId || accessToken != twitchAccessToken || twitchEventSub?
+        guard channelName != twitchChannelName || channelId != twitchChannelId || accessToken != twitchAccessToken ||
+            twitchEventSub?
             .isConnected() == false
         else {
             return
         }
+        twitchChannelName = channelName
         twitchChannelId = channelId
         twitchAccessToken = accessToken
         twitchEventSub?.stop()
@@ -362,16 +389,16 @@ class RemoteControlAssistant: NSObject {
             delegate: self
         )
         twitchEventSub?.start()
-    }
-
-    private func handleTwitchStop() throws {
-        guard streamerIdentified else {
-            throw "Streamer not identified"
+        twitchChat?.stop()
+        if let channelName {
+            twitchChat = TwitchChatMoblin(delegate: self)
+            twitchChat?.start(channelName: channelName,
+                              channelId: channelId,
+                              settings: SettingsStreamChat(),
+                              accessToken: accessToken,
+                              httpProxy: httpProxy,
+                              urlSession: urlSession)
         }
-        twitchChannelId = nil
-        twitchAccessToken = nil
-        twitchEventSub?.stop()
-        twitchEventSubNotitications.removeAll()
     }
 
     private func handleStateEvent(state: RemoteControlState) {
@@ -497,5 +524,41 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
     func twitchEventSubNotification(message: String) {
         twitchEventSubNotitications.append(message)
         tryNextTwitchEventSubNotification()
+    }
+}
+
+extension RemoteControlAssistant: TwitchChatMoblinDelegate {
+    func twitchChatMoblinMakeErrorToast(title _: String, subTitle _: String?) {}
+
+    func twitchChatMoblinAppendMessage(
+        user: String?,
+        userId: String?,
+        userColor: RgbColor?,
+        userBadges: [URL],
+        segments: [ChatPostSegment],
+        isAction: Bool,
+        isSubscriber: Bool,
+        isModerator: Bool,
+        bits: String?,
+        highlight _: ChatHighlight?
+    ) {
+        let timestamp = digitalClockFormatter.string(from: Date())
+        let message = RemoteControlChatMessage(id: getNextChatMessageId(),
+                                               platform: .twitch,
+                                               user: user,
+                                               userId: userId,
+                                               userColor: userColor,
+                                               userBadges: userBadges,
+                                               segments: segments,
+                                               timestamp: timestamp,
+                                               isAction: isAction,
+                                               isModerator: isModerator,
+                                               isSubscriber: isSubscriber,
+                                               bits: bits)
+        chatMessageHistory.append(message)
+        if chatMessageHistory.count > 100 {
+            chatMessageHistory.removeFirst()
+        }
+        sendChatMessage(message: message)
     }
 }

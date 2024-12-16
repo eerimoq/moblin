@@ -102,6 +102,11 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug.prettySnapshot = value
                 }))
+                Toggle("Reliable chat", isOn: Binding(get: {
+                    model.database.debug.reliableChat!
+                }, set: { value in
+                    model.database.debug.reliableChat = value
+                }))
             } header: {
                 Text("Experimental")
             }
