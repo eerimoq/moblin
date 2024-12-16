@@ -3110,7 +3110,7 @@ final class Settings {
 
     private func migrateFromOlderVersions() {
         if realDatabase.chat.height == nil {
-            realDatabase.chat.height = 1.0
+            realDatabase.chat.height = 0.7
             store()
         }
         if realDatabase.chat.width == nil {
