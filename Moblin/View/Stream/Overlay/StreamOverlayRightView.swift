@@ -250,9 +250,8 @@ private struct StatusesView: View {
     }
 }
 
-struct RightOverlayView: View {
+struct RightOverlayTopView: View {
     @EnvironmentObject var model: Model
-    let width: CGFloat
 
     private var database: Database {
         model.settings.database
@@ -282,6 +281,21 @@ struct RightOverlayView: View {
             .onTapGesture {
                 model.toggleVerboseStatuses()
             }
+            Spacer()
+        }
+    }
+}
+
+struct RightOverlayBottomView: View {
+    @EnvironmentObject var model: Model
+    let width: CGFloat
+
+    private var database: Database {
+        model.settings.database
+    }
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 1) {
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
                 if model.showMediaPlayerControls {
