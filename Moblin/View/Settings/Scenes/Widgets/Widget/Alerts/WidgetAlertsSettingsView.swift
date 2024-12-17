@@ -370,24 +370,27 @@ private struct TwitchRaidsView: View {
     }
 }
 
-private func formatTitle(cheerBit: SettingsWidgetAlertsCheerBitsAlert) -> String {
-    let bits = countFormatter.format(cheerBit.bits)
-    switch cheerBit.comparisonOperator {
+private func formatTitle(_ bits: Int, _ comparisonOperator: String) -> String {
+    let bitsText = countFormatter.format(bits)
+    switch SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator) {
     case .equal:
-        if cheerBit.bits == 1 {
-            return "Cheer \(bits) bit"
+        if bits == 1 {
+            return "Cheer \(bitsText) bit"
         } else {
-            return "Cheer \(bits) bits"
+            return "Cheer \(bitsText) bits"
         }
     case .greaterEqual:
-        return "Cheer \(bits)+ bits"
+        return "Cheer \(bitsText)+ bits"
+    default:
+        return ""
     }
 }
 
 private struct TwitchCheerView: View {
     @EnvironmentObject var model: Model
     var cheerBit: SettingsWidgetAlertsCheerBitsAlert
-    @State var comparisonOperator: String
+    @Binding var bits: Int
+    @Binding var comparisonOperator: String
 
     private var alert: SettingsWidgetAlertsAlert {
         return cheerBit.alert
@@ -405,13 +408,14 @@ private struct TwitchCheerView: View {
                     Text("Enabled")
                 }
             }
-            TextEditNavigationView(title: "Bits", value: String(cheerBit.bits)) { value in
+            TextEditNavigationView(title: "Bits", value: String(bits), onSubmit: { value in
                 guard let bits = Int(value) else {
                     return
                 }
+                self.bits = bits
                 cheerBit.bits = bits
                 model.updateAlertsSettings()
-            }
+            }, keyboardType: .numbersAndPunctuation)
             HStack {
                 Text("Comparison")
                 Spacer()
@@ -422,9 +426,8 @@ private struct TwitchCheerView: View {
                 }
             }
             .onChange(of: comparisonOperator) { _ in
-                cheerBit
-                    .comparisonOperator = SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator) ??
-                    .greaterEqual
+                let comparisonOperator = SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator)
+                cheerBit.comparisonOperator = comparisonOperator ?? .greaterEqual
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
@@ -456,7 +459,34 @@ private struct TwitchCheerView: View {
                 })
             }
         }
-        .navigationTitle(formatTitle(cheerBit: cheerBit))
+        .navigationTitle(formatTitle(cheerBit.bits, cheerBit.comparisonOperator.rawValue))
+    }
+}
+
+private struct TwitchCheerBitsItemView: View {
+    private var cheerBit: SettingsWidgetAlertsCheerBitsAlert
+    @State private var bits: Int
+    @State private var comparisonOperator: String
+
+    init(cheerBit: SettingsWidgetAlertsCheerBitsAlert) {
+        self.cheerBit = cheerBit
+        bits = cheerBit.bits
+        comparisonOperator = cheerBit.comparisonOperator.rawValue
+    }
+
+    var body: some View {
+        HStack {
+            DraggableItemPrefixView()
+            NavigationLink {
+                TwitchCheerView(
+                    cheerBit: cheerBit,
+                    bits: $bits,
+                    comparisonOperator: $comparisonOperator
+                )
+            } label: {
+                Text(formatTitle(bits, comparisonOperator))
+            }
+        }
     }
 }
 
@@ -469,17 +499,7 @@ private struct TwitchCheerBitsView: View {
             Section {
                 List {
                     ForEach(twitch.cheerBits!) { cheerBit in
-                        HStack {
-                            DraggableItemPrefixView()
-                            NavigationLink {
-                                TwitchCheerView(
-                                    cheerBit: cheerBit,
-                                    comparisonOperator: cheerBit.comparisonOperator.rawValue
-                                )
-                            } label: {
-                                Text(formatTitle(cheerBit: cheerBit))
-                            }
-                        }
+                        TwitchCheerBitsItemView(cheerBit: cheerBit)
                     }
                     .onMove(perform: { froms, to in
                         twitch.cheerBits!.move(fromOffsets: froms, toOffset: to)
