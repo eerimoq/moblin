@@ -387,6 +387,7 @@ private func formatTitle(cheerBit: SettingsWidgetAlertsCheerBitsAlert) -> String
 private struct TwitchCheerView: View {
     @EnvironmentObject var model: Model
     var cheerBit: SettingsWidgetAlertsCheerBitsAlert
+    @State var comparisonOperator: String
 
     private var alert: SettingsWidgetAlertsAlert {
         return cheerBit.alert
@@ -403,6 +404,28 @@ private struct TwitchCheerView: View {
                 })) {
                     Text("Enabled")
                 }
+            }
+            TextEditNavigationView(title: "Bits", value: String(cheerBit.bits)) { value in
+                guard let bits = Int(value) else {
+                    return
+                }
+                cheerBit.bits = bits
+                model.updateAlertsSettings()
+            }
+            HStack {
+                Text("Operator")
+                Spacer()
+                Picker("", selection: $comparisonOperator) {
+                    ForEach(twitchCheerBitsAlertOperators, id: \.self) {
+                        Text($0)
+                    }
+                }
+            }
+            .onChange(of: comparisonOperator) { _ in
+                cheerBit
+                    .comparisonOperator = SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator) ??
+                    .greaterEqual
+                model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
             AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
@@ -438,17 +461,46 @@ private struct TwitchCheerView: View {
 }
 
 private struct TwitchCheerBitsView: View {
-    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert]
+    @EnvironmentObject var model: Model
+    var twitch: SettingsWidgetAlertsTwitch
 
     var body: some View {
         Form {
-            List {
-                ForEach(cheerBits) { cheerBit in
-                    NavigationLink {
-                        TwitchCheerView(cheerBit: cheerBit)
-                    } label: {
-                        Text(formatTitle(cheerBit: cheerBit))
+            Section {
+                List {
+                    ForEach(twitch.cheerBits!) { cheerBit in
+                        HStack {
+                            DraggableItemPrefixView()
+                            NavigationLink {
+                                TwitchCheerView(
+                                    cheerBit: cheerBit,
+                                    comparisonOperator: cheerBit.comparisonOperator.rawValue
+                                )
+                            } label: {
+                                Text(formatTitle(cheerBit: cheerBit))
+                            }
+                        }
                     }
+                    .onMove(perform: { froms, to in
+                        twitch.cheerBits!.move(fromOffsets: froms, toOffset: to)
+                        model.updateAlertsSettings()
+                    })
+                    .onDelete(perform: { offsets in
+                        twitch.cheerBits!.remove(atOffsets: offsets)
+                        model.updateAlertsSettings()
+                    })
+                }
+                CreateButtonView {
+                    let cheerBits = SettingsWidgetAlertsCheerBitsAlert()
+                    twitch.cheerBits!.append(cheerBits)
+                    model.updateAlertsSettings()
+                    model.objectWillChange.send()
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("The first item that matches cheered bits will be played.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: "an item")
                 }
             }
         }
@@ -525,7 +577,7 @@ private struct WidgetAlertsSettingsTwitchView: View {
                     Text("Raids")
                 }
                 NavigationLink {
-                    TwitchCheerBitsView(cheerBits: twitch.cheerBits!)
+                    TwitchCheerBitsView(twitch: twitch)
                 } label: {
                     Text("Cheers")
                 }

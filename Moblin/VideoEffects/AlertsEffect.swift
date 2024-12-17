@@ -177,7 +177,7 @@ final class AlertsEffect: VideoEffect {
     private var twitchFollow = Medias()
     private var twitchSubscribe = Medias()
     private var twitchRaid = Medias()
-    private var twitchCheers = Medias()
+    private var twitchCheers: [Medias] = []
     private var chatBotCommands: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
@@ -200,7 +200,6 @@ final class AlertsEffect: VideoEffect {
         twitchFollow.fps = self.fps
         twitchSubscribe.fps = self.fps
         twitchRaid.fps = self.fps
-        twitchCheers.fps = self.fps
         audioPlayer = nil
         super.init()
         setSettings(settings: settings)
@@ -233,9 +232,15 @@ final class AlertsEffect: VideoEffect {
         (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids!)
         twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
         twitchRaid.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.cheerBits![0].alert)
-        twitchCheers.updateImages(image: image, loopCount: imageLoopCount)
-        twitchCheers.updateSoundUrl(sound: sound)
+        twitchCheers = []
+        for cheerBits in twitch.cheerBits! {
+            (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
+            let medias = Medias()
+            medias.fps = fps
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            twitchCheers.append(medias)
+        }
         chatBotCommands = []
         for command in settings.chatBot!.commands {
             (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
@@ -367,13 +372,23 @@ final class AlertsEffect: VideoEffect {
 
     @MainActor
     private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
-        for cheerBit in settings.twitch!.cheerBits! where cheerBit.alert.enabled {
-            guard event.bits >= cheerBit.bits else {
-                continue
+        for (index, cheerBit) in settings.twitch!.cheerBits!.enumerated() where cheerBit.alert.enabled {
+            switch cheerBit.comparisonOperator {
+            case .equal:
+                guard event.bits == cheerBit.bits else {
+                    continue
+                }
+            case .greaterEqual:
+                guard event.bits >= cheerBit.bits else {
+                    continue
+                }
+            }
+            guard index < twitchCheers.count else {
+                return
             }
             let bits = countFormatter.format(event.bits)
             play(
-                medias: twitchCheers,
+                medias: twitchCheers[index],
                 username: event.user_name ?? "Anonymous",
                 message: String(localized: "cheered \(bits) bits! \(event.message)"),
                 settings: cheerBit.alert

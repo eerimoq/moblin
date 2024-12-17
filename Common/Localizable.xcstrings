@@ -79822,6 +79822,9 @@
         }
       }
     },
+    "Operator" : {
+
+    },
     "Optional, but simplifies the setup." : {
       "localizations" : {
         "de" : {
@@ -111559,6 +111562,9 @@
           }
         }
       }
+    },
+    "The first item that matches cheered bits will be played." : {
+
     },
     "The log is empty." : {
       "localizations" : {
