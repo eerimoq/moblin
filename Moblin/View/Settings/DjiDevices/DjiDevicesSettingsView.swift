@@ -23,12 +23,12 @@ struct DjiDevicesSettingsView: View {
                         model.removeDjiDevices(offsets: offsets)
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     let device = SettingsDjiDevice()
                     device.name = "My device"
                     model.database.djiDevices!.devices.append(device)
                     model.objectWillChange.send()
-                })
+                }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a device"))
             }

@@ -36,11 +36,11 @@ private struct PlayersView: View {
                     model.sendScoreboardPlayersToWatch()
                 })
             }
-            CreateButtonView(action: {
+            CreateButtonView {
                 model.database.scoreboardPlayers!.append(.init())
                 model.sendScoreboardPlayersToWatch()
                 model.objectWillChange.send()
-            })
+            }
         } header: {
             Text("Players")
         } footer: {

@@ -48,10 +48,10 @@ private struct ScenesListView: View {
                     model.resetSelectedScene()
                 })
             }
-            CreateButtonView(action: {
+            CreateButtonView {
                 database.scenes.append(SettingsScene(name: String(localized: "My scene")))
                 model.resetSelectedScene()
-            })
+            }
         } header: {
             Text("Scenes")
         } footer: {

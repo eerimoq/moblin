@@ -27,11 +27,11 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                         model.store()
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     deepLinkCreator.streams.append(DeepLinkCreatorStream())
                     model.store()
                     model.objectWillChange.send()
-                })
+                }
             }
         }
         .navigationTitle("Streams")

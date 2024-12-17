@@ -63,7 +63,7 @@ struct LocationSettingsView: View {
                         model.reloadLocation()
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     let privacyRegion = SettingsPrivacyRegion()
                     if let (latitude, longitude) = model.getLatestKnownLocation() {
                         privacyRegion.latitude = latitude
@@ -74,7 +74,7 @@ struct LocationSettingsView: View {
                     model.database.location!.privacyRegions.append(privacyRegion)
                     model.objectWillChange.send()
                     model.reloadLocation()
-                })
+                }
             } header: {
                 Text("Privacy regions")
             } footer: {

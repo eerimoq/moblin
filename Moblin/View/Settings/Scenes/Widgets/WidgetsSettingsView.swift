@@ -43,11 +43,11 @@ struct WidgetsSettingsView: View {
                 model.removeDeadWidgetsFromScenes()
                 model.resetSelectedScene()
             })
-            CreateButtonView(action: {
+            CreateButtonView {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                 model.fixAlertMedias()
                 model.objectWillChange.send()
-            })
+            }
         } header: {
             Text("Widgets")
         } footer: {

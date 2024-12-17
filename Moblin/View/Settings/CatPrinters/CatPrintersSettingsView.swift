@@ -24,12 +24,12 @@ struct CatPrintersSettingsView: View {
                         model.database.catPrinters!.devices.remove(atOffsets: offsets)
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     let device = SettingsCatPrinter()
                     device.name = "My printer"
                     model.database.catPrinters!.devices.append(device)
                     model.objectWillChange.send()
-                })
+                }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a printer"))
             }

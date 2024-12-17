@@ -53,7 +53,7 @@ struct ZoomSettingsView: View {
                         model.backZoomUpdated()
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     model.database.zoom.back.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
@@ -61,7 +61,7 @@ struct ZoomSettingsView: View {
                         x: 1.0
                     ))
                     model.backZoomUpdated()
-                })
+                }
             } header: {
                 Text("Back camera presets")
             } footer: {
@@ -96,7 +96,7 @@ struct ZoomSettingsView: View {
                         model.frontZoomUpdated()
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     model.database.zoom.front.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
@@ -104,7 +104,7 @@ struct ZoomSettingsView: View {
                         x: 1.0
                     ))
                     model.frontZoomUpdated()
-                })
+                }
             } header: {
                 Text("Front camera presets")
             } footer: {

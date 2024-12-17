@@ -77,7 +77,7 @@ struct RtmpServerSettingsView: View {
                         list
                     }
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     let stream = SettingsRtmpServerStream()
                     while true {
                         stream.streamKey = randomHumanString()
@@ -87,7 +87,7 @@ struct RtmpServerSettingsView: View {
                     }
                     model.database.rtmpServer!.streams.append(stream)
                     model.objectWillChange.send()
-                })
+                }
                 .disabled(model.rtmpServerEnabled())
             } header: {
                 Text("Streams")

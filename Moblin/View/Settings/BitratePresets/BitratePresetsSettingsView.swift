@@ -28,12 +28,12 @@ struct BitratePresetsSettingsView: View {
                         model.database.bitratePresets.remove(atOffsets: offsets)
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     model.database.bitratePresets.append(SettingsBitratePreset(
                         id: UUID(),
                         bitrate: 1_000_000
                     ))
-                })
+                }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a preset"))
             }

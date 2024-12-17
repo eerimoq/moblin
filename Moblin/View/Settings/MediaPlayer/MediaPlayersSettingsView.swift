@@ -33,12 +33,12 @@ struct MediaPlayersSettingsView: View {
                         model.database.mediaPlayers!.players.remove(atOffsets: indexes)
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     let settings = SettingsMediaPlayer()
                     model.database.mediaPlayers!.players.append(settings)
                     model.objectWillChange.send()
                     model.addMediaPlayer(settings: settings)
-                })
+                }
             }
         }
         .navigationTitle("Media players")

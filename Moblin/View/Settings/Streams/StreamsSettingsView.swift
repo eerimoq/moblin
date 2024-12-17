@@ -63,10 +63,10 @@ struct StreamsSettingsView: View {
                         database.streams.move(fromOffsets: froms, toOffset: to)
                     })
                 }
-                CreateButtonView(action: {
+                CreateButtonView {
                     model.resetWizard()
                     model.isPresentingWizard = true
-                })
+                }
                 .disabled(model.isLive || model.isRecording)
                 .sheet(isPresented: $model.isPresentingWizard) {
                     NavigationStack {
