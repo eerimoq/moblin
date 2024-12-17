@@ -246,6 +246,10 @@ struct QuickButtonsInnerView: View {
         model.createStreamMarker()
     }
 
+    private func reloadBrowserWidgetsAction(state _: ButtonState) {
+        model.reloadBrowserWidgets()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -497,6 +501,12 @@ struct QuickButtonsInnerView: View {
             case .streamMarker:
                 Button(action: {
                     streamMarkerAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .reloadBrowserWidgets:
+                Button(action: {
+                    reloadBrowserWidgetsAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

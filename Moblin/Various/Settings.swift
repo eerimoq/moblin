@@ -1407,6 +1407,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case ads = "Ads"
     case skipCurrentTts = "Skip current TTS"
     case streamMarker = "Stream marker"
+    case reloadBrowserWidgets = "Reload browser widgets"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2891,6 +2892,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "bookmark.fill"
     button.systemImageNameOff = "bookmark"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Reload browser widgets"))
+    button.id = UUID()
+    button.type = .reloadBrowserWidgets
+    button.imageType = "System name"
+    button.systemImageNameOn = "arrow.clockwise"
+    button.systemImageNameOff = "arrow.clockwise"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in
