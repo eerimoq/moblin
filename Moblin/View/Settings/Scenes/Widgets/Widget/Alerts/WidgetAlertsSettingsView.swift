@@ -413,7 +413,7 @@ private struct TwitchCheerView: View {
                 model.updateAlertsSettings()
             }
             HStack {
-                Text("Operator")
+                Text("Comparison")
                 Spacer()
                 Picker("", selection: $comparisonOperator) {
                     ForEach(twitchCheerBitsAlertOperators, id: \.self) {

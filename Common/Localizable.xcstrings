@@ -32351,6 +32351,9 @@
         }
       }
     },
+    "Comparison" : {
+
+    },
     "Configuration" : {
       "localizations" : {
         "de" : {
@@ -79821,9 +79824,6 @@
           }
         }
       }
-    },
-    "Operator" : {
-
     },
     "Optional, but simplifies the setup." : {
       "localizations" : {
