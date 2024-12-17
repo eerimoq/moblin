@@ -73,6 +73,8 @@ class RemoteControlAssistant: NSObject {
         logger.debug("remote-control-assistant: stop")
         server.stop(immediately: true)
         stopRetryStartTimer()
+        twitchEventSub?.stop()
+        twitchChat?.stop()
     }
 
     func isConnected() -> Bool {

@@ -299,8 +299,9 @@ final class TwitchEventSub: NSObject {
 
     func stop() {
         logger.debug("twitch: event-sub: Stop")
-        stopInternal()
+        webSocket.delegate = nil
         started = false
+        stopInternal()
     }
 
     func stopInternal() {
