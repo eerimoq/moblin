@@ -6719,12 +6719,12 @@ extension Model: RemoteControlStreamerDelegate {
             subTitle: String(localized: "Reliable alerts and chat messages activated")
         )
         useRemoteControlForChatAndEvents = true
-        remoteControlStreamerSendTwitchStart()
-        isRemoteControlAssistantRequestingPreview = false
-        setLowFpsImage()
-        updateRemoteControlStatus()
         reloadTwitchEventSub()
         reloadChats()
+        isRemoteControlAssistantRequestingPreview = false
+        remoteControlStreamerSendTwitchStart()
+        setLowFpsImage()
+        updateRemoteControlStatus()
         var state = RemoteControlState()
         if sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneIndex].id
@@ -6999,9 +6999,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerChatMessages(history: Bool, messages: [RemoteControlChatMessage]) {
-        logger.info("xxx \(history) \(remoteControlStreamerLatestReceivedChatMessageId)")
         let live = !history || remoteControlStreamerLatestReceivedChatMessageId != -1
-        logger.info("xxx \(live)")
         for message in messages where message.id > remoteControlStreamerLatestReceivedChatMessageId {
             appendChatMessage(platform: message.platform,
                               user: message.user,

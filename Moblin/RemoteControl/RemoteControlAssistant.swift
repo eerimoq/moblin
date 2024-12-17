@@ -301,7 +301,6 @@ class RemoteControlAssistant: NSObject {
             send(message: .identified(result: .ok))
             twitchEventSubNotiticationWaitForResponse = false
             tryNextTwitchEventSubNotification()
-            sendChatMessageHistory()
         } else {
             logger.info("remote-control-assistant: Streamer sent wrong password")
             send(message: .identified(result: .wrongPassword))
@@ -371,6 +370,9 @@ class RemoteControlAssistant: NSObject {
         }
         guard let accessToken = String(data: data, encoding: .utf8) else {
             throw "Access token not UTF-8"
+        }
+        if channelName != nil {
+            sendChatMessageHistory()
         }
         guard channelName != twitchChannelName || channelId != twitchChannelId || accessToken != twitchAccessToken ||
             twitchEventSub?
