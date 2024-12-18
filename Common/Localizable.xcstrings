@@ -112870,6 +112870,7 @@
       }
     },
     "The streamed (and recorded) video is always in landscape, even if the portrait toggle is enabled. Rotate it in to portrait in OBS. To be improved in the future." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -126650,6 +126651,7 @@
       }
     },
     "Widgets will be wrongly rotated when the portrait toggle is enabled." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
