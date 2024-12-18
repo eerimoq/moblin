@@ -88,19 +88,41 @@ class VideoCodec {
         }
     }
 
+    private func getLandscapeVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
+        if settings.bitRate < 100_000 {
+            return .init(width: 284, height: 160)
+        } else if settings.bitRate < 250_000 {
+            return .init(width: 640, height: 360)
+        } else if settings.bitRate < 500_000 {
+            return .init(width: 854, height: 480)
+        } else if settings.bitRate < 750_000 {
+            return .init(width: 1280, height: 720)
+        } else {
+            return settings.videoSize
+        }
+    }
+
+    private func getPortraitVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
+        if settings.bitRate < 100_000 {
+            return .init(width: 160, height: 284)
+        } else if settings.bitRate < 250_000 {
+            return .init(width: 360, height: 640)
+        } else if settings.bitRate < 500_000 {
+            return .init(width: 480, height: 854)
+        } else if settings.bitRate < 750_000 {
+            return .init(width: 720, height: 1280)
+        } else {
+            return settings.videoSize
+        }
+    }
+
     private func updateAdaptiveResolution(settings: VideoCodecSettings) -> CMVideoDimensions {
         var videoSize: CMVideoDimensions
         if settings.adaptiveResolution {
-            if settings.bitRate < 100_000 {
-                videoSize = .init(width: 284, height: 160)
-            } else if settings.bitRate < 250_000 {
-                videoSize = .init(width: 640, height: 360)
-            } else if settings.bitRate < 500_000 {
-                videoSize = .init(width: 854, height: 480)
-            } else if settings.bitRate < 750_000 {
-                videoSize = .init(width: 1280, height: 720)
+            if settings.videoSize.width > settings.videoSize.height {
+                videoSize = getLandscapeVideoSize(settings: settings)
             } else {
-                videoSize = settings.videoSize
+                videoSize = getPortraitVideoSize(settings: settings)
             }
         } else {
             videoSize = settings.videoSize
