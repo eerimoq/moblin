@@ -59,11 +59,16 @@ struct StreamSettingsView: View {
                         stream.portrait!
                     }, set: { value in
                         stream.portrait = value
-                        model.updateOrientationLock()
+                        model.setCurrentStream(stream: stream)
+                        model.reloadStream()
+                        model.sceneUpdated()
+                        model.resetSelectedScene(changeScene: false)
+                        model.updateOrientation()
                         model.objectWillChange.send()
                     })) {
                         Text("Portrait")
                     }
+                    .disabled(stream.enabled && (model.isLive || model.isRecording))
                 }
                 if model.database.showAllSettings! {
                     if stream.getProtocol() == .srt {
