@@ -65,11 +65,11 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     InlinePickerView(
                         title: String(localized: "Resolution"),
                         onChange: onResolutionChange,
-                        items: InlinePickerItem.fromStrings(values: resolutions),
+                        items: resolutions.map { .init(id: $0.rawValue, text: $0.shortString()) },
                         selectedId: video.resolution!.rawValue
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Resolution"), value: video.resolution!.rawValue)
+                    TextItemView(name: String(localized: "Resolution"), value: video.resolution!.shortString())
                 }
                 NavigationLink {
                     InlinePickerView(

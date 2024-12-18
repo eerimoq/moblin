@@ -82,7 +82,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     }
 }
 
-let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
+let resolutions = SettingsStreamResolution.allCases
 
 let fpss = ["60", "50", "30", "25", "15"]
 

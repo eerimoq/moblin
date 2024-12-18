@@ -56,7 +56,8 @@ struct StreamVideoSettingsView: View {
                         stream.resolution.rawValue
                     }, set: onResolutionChange)) {
                         ForEach(resolutions, id: \.self) {
-                            Text($0)
+                            Text($0.shortString())
+                                .tag($0.rawValue)
                         }
                     }
                 }
