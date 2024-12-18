@@ -90,13 +90,6 @@ struct StreamSettingsView: View {
                 }
             } header: {
                 Text("Media")
-            } footer: {
-                Text("""
-                The streamed (and recorded) video is always in landscape, even if the portrait toggle \
-                is enabled. Rotate it in to portrait in OBS. To be improved in the future.
-                """)
-                Text("")
-                Text("Widgets will be wrongly rotated when the portrait toggle is enabled.")
             }
             Section {
                 NavigationLink { StreamTwitchSettingsView(
