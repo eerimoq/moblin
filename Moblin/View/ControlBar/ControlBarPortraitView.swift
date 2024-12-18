@@ -129,8 +129,6 @@ struct ControlBarPortraitView: View {
             }
             .frame(width: controlBarHeight())
         }
-        .padding([.top], 10)
-        .padding([.bottom], 0)
         .frame(height: controlBarHeight())
         .background(.black)
     }
