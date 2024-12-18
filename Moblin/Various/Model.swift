@@ -2126,7 +2126,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateOrientation() {
-        if stream.portrait! || database.portrait! {
+        if stream.portrait! {
             streamPreviewView.videoOrientation = .portrait
         } else {
             switch UIDevice.current.orientation {

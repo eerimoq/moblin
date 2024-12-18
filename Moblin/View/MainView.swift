@@ -143,7 +143,7 @@ struct MainView: View {
                 VStack(spacing: 0) {
                     ZStack {
                         HStack {
-                            Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
+                            Spacer(minLength: 0)
                             VStack {
                                 Spacer(minLength: 0)
                                 GeometryReader { metrics in
@@ -188,6 +188,7 @@ struct MainView: View {
                                 .aspectRatio(portraitAspectRatio(), contentMode: .fit)
                                 Spacer(minLength: 0)
                             }
+                            Spacer(minLength: 0)
                         }
                         .background(.black)
                         .ignoresSafeArea()
@@ -295,7 +296,7 @@ struct MainView: View {
                 HStack(spacing: 0) {
                     ZStack {
                         HStack {
-                            Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
+                            Spacer(minLength: 0)
                             VStack {
                                 Spacer(minLength: 0)
                                 GeometryReader { metrics in

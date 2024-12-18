@@ -438,6 +438,10 @@ func isPhone() -> Bool {
     return UIDevice.current.userInterfaceIdiom == .phone
 }
 
+func isPad() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .pad
+}
+
 func uploadImage(
     url: URL,
     paramName: String,

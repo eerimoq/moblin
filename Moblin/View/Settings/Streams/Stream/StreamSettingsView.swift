@@ -54,7 +54,7 @@ struct StreamSettingsView: View {
                         Text("Recording")
                     }
                 }
-                if isPhone() {
+                if isPhone() || isPad() {
                     Toggle(isOn: Binding(get: {
                         stream.portrait!
                     }, set: { value in
