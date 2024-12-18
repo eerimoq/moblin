@@ -408,14 +408,17 @@ private struct TwitchCheerView: View {
                     Text("Enabled")
                 }
             }
-            TextEditNavigationView(title: "Bits", value: String(bits), onSubmit: { value in
-                guard let bits = Int(value) else {
-                    return
-                }
-                self.bits = bits
-                cheerBit.bits = bits
-                model.updateAlertsSettings()
-            }, keyboardType: .numbersAndPunctuation)
+            TextEditNavigationView(title: String(localized: "Bits"),
+                                   value: String(bits),
+                                   onSubmit: { value in
+                                       guard let bits = Int(value) else {
+                                           return
+                                       }
+                                       self.bits = bits
+                                       cheerBit.bits = bits
+                                       model.updateAlertsSettings()
+                                   },
+                                   keyboardType: .numbersAndPunctuation)
             HStack {
                 Text("Comparison")
                 Spacer()
