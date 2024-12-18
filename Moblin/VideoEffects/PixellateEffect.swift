@@ -13,7 +13,7 @@ final class PixellateEffect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
         filter.center = .init(x: 0, y: 0)
-        filter.scale = 20 * (Float(image.extent.width) / 1920)
+        filter.scale = 20 * (Float(image.extent.size.maximum()) / 1920)
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
@@ -23,7 +23,7 @@ final class PixellateEffect: VideoEffect {
         }
         let filter = MTIPixellateFilter()
         filter.inputImage = image
-        let scale = 20 * (image.extent.width / 1920)
+        let scale = 20 * (image.extent.size.maximum() / 1920)
         filter.scale = .init(width: scale, height: scale)
         return filter.outputImage
     }

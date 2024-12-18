@@ -166,8 +166,8 @@ final class VideoUnit: NSObject {
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
-    var captureSize = CGSize(width: 1920, height: 1080)
-    var outputSize = CGSize(width: 1920, height: 1080)
+    private var captureSize = CGSize(width: 1920, height: 1080)
+    private var outputSize = CGSize(width: 1920, height: 1080)
     let session = makeCaptureSession()
     private var encoders = [VideoCodec(lockQueue: lockQueue)]
     weak var mixer: Mixer?
@@ -181,7 +181,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    var colorSpace = AVCaptureColorSpace.sRGB {
+    var colorSpace: AVCaptureColorSpace = .sRGB {
         didSet {
             setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
         }
@@ -414,6 +414,14 @@ final class VideoUnit: NSObject {
         }
     }
 
+    func setCaptureSize(size: CGSize) {
+        captureSize = size
+    }
+
+    func setOutputSize(size: CGSize) {
+        outputSize = size
+    }
+
     private func startFrameTimer() {
         let frameInterval = 1 / frameRate
         frameTimer.startPeriodic(interval: frameInterval) { [weak self] in
@@ -635,7 +643,7 @@ final class VideoUnit: NSObject {
                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
-        if imageBuffer.isPortrait() {
+        if videoOrientation != .portrait && imageBuffer.isPortrait() {
             image = image.oriented(.left)
         }
         if image.extent.size != outputSize {
@@ -706,7 +714,7 @@ final class VideoUnit: NSObject {
         }
         let filter = MTIMPSGaussianBlurFilter()
         filter.inputImage = image
-        filter.radius = Float(25 * (image.extent.height / 1080))
+        filter.radius = Float(25 * (image.extent.size.maximum() / 1920))
         return filter.outputImage
     }
 
@@ -766,7 +774,7 @@ final class VideoUnit: NSObject {
     private func blurImage(_ image: CIImage) -> CIImage {
         let filter = CIFilter.gaussianBlur()
         filter.inputImage = image
-        filter.radius = Float(25 * (image.extent.height / 1080))
+        filter.radius = Float(25 * (image.extent.size.maximum() / 1920))
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 

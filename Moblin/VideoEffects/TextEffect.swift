@@ -437,8 +437,8 @@ final class TextEffect: VideoEffect {
         return lines
     }
 
-    private func scaledFontSize(width: Double) -> CGFloat {
-        return fontSize * (width / 1920)
+    private func scaledFontSize(size: CGSize) -> CGFloat {
+        return fontSize * (size.maximum() / 1920)
     }
 
     private func updateOverlay(size: CGSize) {
@@ -519,7 +519,7 @@ final class TextEffect: VideoEffect {
                 }
             }
             .font(.system(
-                size: self.scaledFontSize(width: size.width),
+                size: self.scaledFontSize(size: size),
                 weight: self.fontWeight,
                 design: self.fontDesign
             ))
@@ -602,7 +602,7 @@ final class TextEffect: VideoEffect {
             .padding([.leading, .trailing], 7)
             .background(self.backgroundColor?.color() ?? .clear)
             .font(.system(
-                size: self.scaledFontSize(width: size.width),
+                size: self.scaledFontSize(size: size),
                 weight: self.fontWeight,
                 design: self.fontDesign
             ))

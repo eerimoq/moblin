@@ -27,7 +27,7 @@ class PreviewView: UIView {
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
-            currentStream?.mixer.video.videoOrientation = videoOrientation
+            currentStream?.setVideoOrientation(value: videoOrientation)
         }
     }
 
@@ -40,11 +40,7 @@ class PreviewView: UIView {
     var isMirrored = false
 
     private func applyIsMirrored() {
-        var transform = CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0)
-        if isPortrait {
-            transform = transform.rotated(by: .pi / 2)
-        }
-        layer.setAffineTransform(transform)
+        layer.setAffineTransform(CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0))
     }
 
     private weak var currentStream: NetStream? {

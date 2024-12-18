@@ -2127,7 +2127,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateOrientation() {
         if stream.portrait! || database.portrait! {
-            streamPreviewView.videoOrientation = .landscapeRight
+            streamPreviewView.videoOrientation = .portrait
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
@@ -3898,7 +3898,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setNetStream() {
-        media.setNetStream(proto: stream.getProtocol())
+        media.setNetStream(proto: stream.getProtocol(), portrait: stream.portrait!)
         updateTorch()
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())
@@ -3919,44 +3919,36 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setStreamResolution() {
+        var captureSize: CGSize
+        var outputSize: CGSize
         switch stream.resolution {
         case .r3840x2160:
-            media.setVideoSize(
-                capture: .init(width: 3840, height: 2160),
-                output: .init(width: 3840, height: 2160)
-            )
+            captureSize = .init(width: 3840, height: 2160)
+            outputSize = .init(width: 3840, height: 2160)
         case .r2560x1440:
             // Use 4K camera and downscale to 1440p.
-            media.setVideoSize(
-                capture: .init(width: 3840, height: 2160),
-                output: .init(width: 2560, height: 1440)
-            )
+            captureSize = .init(width: 3840, height: 2160)
+            outputSize = .init(width: 2560, height: 1440)
         case .r1920x1080:
-            media.setVideoSize(
-                capture: .init(width: 1920, height: 1080),
-                output: .init(width: 1920, height: 1080)
-            )
+            captureSize = .init(width: 1920, height: 1080)
+            outputSize = .init(width: 1920, height: 1080)
         case .r1280x720:
-            media.setVideoSize(
-                capture: .init(width: 1280, height: 720),
-                output: .init(width: 1280, height: 720)
-            )
+            captureSize = .init(width: 1280, height: 720)
+            outputSize = .init(width: 1280, height: 720)
         case .r854x480:
-            media.setVideoSize(
-                capture: .init(width: 1280, height: 720),
-                output: .init(width: 854, height: 480)
-            )
+            captureSize = .init(width: 1280, height: 720)
+            outputSize = .init(width: 854, height: 480)
         case .r640x360:
-            media.setVideoSize(
-                capture: .init(width: 1280, height: 720),
-                output: .init(width: 640, height: 360)
-            )
+            captureSize = .init(width: 1280, height: 720)
+            outputSize = .init(width: 640, height: 360)
         case .r426x240:
-            media.setVideoSize(
-                capture: .init(width: 1280, height: 720),
-                output: .init(width: 426, height: 240)
-            )
+            captureSize = .init(width: 1280, height: 720)
+            outputSize = .init(width: 426, height: 240)
         }
+        if stream.portrait! {
+            outputSize = .init(width: outputSize.height, height: outputSize.width)
+        }
+        media.setVideoSize(capture: captureSize, output: outputSize)
     }
 
     func setStreamFPS() {

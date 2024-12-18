@@ -96,7 +96,7 @@ final class Media: NSObject {
         netStream = nil
     }
 
-    func setNetStream(proto: SettingsStreamProtocol) {
+    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool) {
         netStream?.stopMixer()
         srtStopStream()
         rtmpStopStream()
@@ -130,7 +130,7 @@ final class Media: NSObject {
             netStream = irlStream
         }
         netStream!.delegate = self
-        netStream!.setVideoOrientation(value: .landscapeRight)
+        netStream!.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
         attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 

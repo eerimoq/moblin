@@ -298,7 +298,7 @@ final class FaceEffect: VideoEffect {
         }
         let filter = MTIMPSGaussianBlurFilter()
         filter.inputImage = image
-        filter.radius = Float(50 * (image.extent.height / 1080))
+        filter.radius = Float(50 * (image.extent.size.maximum() / 1920))
         return filter.outputImage
     }
 
