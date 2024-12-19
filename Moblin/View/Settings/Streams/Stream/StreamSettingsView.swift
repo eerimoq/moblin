@@ -59,11 +59,13 @@ struct StreamSettingsView: View {
                         stream.portrait!
                     }, set: { value in
                         stream.portrait = value
-                        model.setCurrentStream(stream: stream)
-                        model.reloadStream()
-                        model.sceneUpdated()
-                        model.resetSelectedScene(changeScene: false)
-                        model.updateOrientation()
+                        if stream.enabled {
+                            model.setCurrentStream(stream: stream)
+                            model.reloadStream()
+                            model.sceneUpdated()
+                            model.resetSelectedScene(changeScene: false)
+                            model.updateOrientation()
+                        }
                         model.objectWillChange.send()
                     })) {
                         Text("Portrait")
