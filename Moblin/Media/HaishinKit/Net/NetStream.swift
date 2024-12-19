@@ -153,8 +153,8 @@ open class NetStream: NSObject {
         mixer.video.unregisterEffect(effect)
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect]) {
-        mixer.video.setPendingAfterAttachEffects(effects: effects)
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
+        mixer.video.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
     }
 
     func usePendingAfterAttachEffects() {

@@ -644,6 +644,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
+    var videoSourceRotation: Double? = 0.0
 
     init(name: String) {
         self.name = name
@@ -668,6 +669,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
         for widget in widgets {
             new.widgets.append(widget.clone())
         }
+        new.videoSourceRotation = videoSourceRotation
         return new
     }
 
@@ -4309,6 +4311,10 @@ final class Settings {
         }
         if realDatabase.debug.reliableChat == nil {
             realDatabase.debug.reliableChat = false
+            store()
+        }
+        for scene in realDatabase.scenes where scene.videoSourceRotation == nil {
+            scene.videoSourceRotation = 0.0
             store()
         }
     }

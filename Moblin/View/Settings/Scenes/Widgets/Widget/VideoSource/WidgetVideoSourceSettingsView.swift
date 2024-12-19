@@ -275,16 +275,11 @@ struct WidgetVideoSourceSettingsView: View {
             Text("Corner radius")
         }
         Section {
-            Picker("Rotation", selection: $selectedRotation) {
-                ForEach([0.0, 90.0, 180.0, 270.0], id: \.self) { rotation in
-                    Text("\(Int(rotation))°")
-                        .tag(rotation)
+            VideoSourceRotationView(selectedRotation: $selectedRotation)
+                .onChange(of: selectedRotation) { rotation in
+                    widget.videoSource!.rotation = rotation
+                    setEffectSettings()
                 }
-            }
-            .onChange(of: selectedRotation) { rotation in
-                widget.videoSource!.rotation = rotation
-                setEffectSettings()
-            }
         }
         Section {
             Toggle(isOn: Binding(get: {

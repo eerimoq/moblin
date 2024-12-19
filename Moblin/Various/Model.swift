@@ -5191,7 +5191,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
             attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
-            attachExternalCamera(cameraId: scene.externalCameraId!)
+            attachExternalCamera()
         case .screenCapture:
             attachReplaceCamera(cameraId: screenCaptureCameraId)
         }
@@ -5427,7 +5427,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
-        media.setPendingAfterAttachEffects(effects: effects)
+        media.setPendingAfterAttachEffects(effects: effects, rotation: scene.videoSourceRotation!)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
         }
@@ -5667,7 +5667,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         showMediaPlayerControls = enabledScenes.first(where: { $0.id == id })?.cameraPosition == .mediaPlayer
     }
 
-    private func getSelectedScene() -> SettingsScene? {
+    func getSelectedScene() -> SettingsScene? {
         return findEnabledScene(id: selectedSceneId)
     }
 
@@ -6109,7 +6109,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.usePendingAfterAttachEffects()
     }
 
-    private func attachExternalCamera(cameraId _: String) {
+    private func attachExternalCamera() {
         attachCamera(position: .unspecified)
     }
 

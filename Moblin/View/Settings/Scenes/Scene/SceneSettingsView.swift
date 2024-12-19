@@ -6,6 +6,7 @@ struct SceneSettingsView: View {
     @State private var expandedWidget: SettingsSceneWidget?
     var scene: SettingsScene
     @State var name: String
+    @State var selectedRotation: Double
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -84,7 +85,7 @@ struct SceneSettingsView: View {
             Section {
                 NavigationLink {
                     InlinePickerView(
-                        title: String(localized: "Video source"),
+                        title: String(localized: "Name"),
                         onChange: onCameraChange,
                         footers: [
                             String(localized: """
@@ -105,7 +106,7 @@ struct SceneSettingsView: View {
                     )
                 } label: {
                     HStack {
-                        Text("Video source")
+                        Text("Name")
                         Spacer()
                         if !model.isSceneActive(scene: scene) {
                             Image(systemName: "cable.connector.slash")
@@ -115,6 +116,13 @@ struct SceneSettingsView: View {
                             .lineLimit(1)
                     }
                 }
+                VideoSourceRotationView(selectedRotation: $selectedRotation)
+                    .onChange(of: selectedRotation) { rotation in
+                        scene.videoSourceRotation = rotation
+                        model.sceneUpdated()
+                    }
+            } header: {
+                Text("Video source")
             }
             Section {
                 List {

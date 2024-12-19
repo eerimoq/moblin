@@ -456,6 +456,7 @@
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
+		03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
 		03FB422A2C68D9A70009FB26 /* MoblinkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* MoblinkStream.swift */; };
@@ -1012,6 +1013,7 @@
 		03F465E62C43DFF500630708 /* DjiDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDevice.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
+		03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceRotationView.swift; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		03FB42292C68D9A70009FB26 /* MoblinkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkStream.swift; sourceTree = "<group>"; };
@@ -1224,6 +1226,7 @@
 		0315A34F2AA322ED00295443 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */,
 				03C354672CF98DD600B8B29F /* HCenter.swift */,
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
@@ -3259,6 +3262,7 @@
 				038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */,
 				0359F8DC2BD3DA61005BFDA8 /* ElementaryStreamSpecificData.swift in Sources */,
 				03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */,
+				03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */,
 				0359F9022BD3DA61005BFDA8 /* ByteArray.swift in Sources */,
 				0380D5E52C2CB2C80071C12B /* ChatBotSettingsView.swift in Sources */,
 				0359F8F02BD3DA61005BFDA8 /* RtmpObjectEncoding.swift in Sources */,

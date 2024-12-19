@@ -632,8 +632,8 @@ final class Media: NSObject {
         netStream?.unregisterVideoEffect(effect)
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect]) {
-        netStream?.setPendingAfterAttachEffects(effects: effects)
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
+        netStream?.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
     }
 
     func usePendingAfterAttachEffects() {
