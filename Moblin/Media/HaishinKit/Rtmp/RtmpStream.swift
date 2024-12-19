@@ -73,6 +73,7 @@ class RtmpStream: NetStream {
     private var videoChunkType: RtmpChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
     private weak var rtmpConnection: RtmpConnection?
+    private var streamKey = ""
 
     // Outbound
     private var baseTimeStamp = -1.0
@@ -90,6 +91,7 @@ class RtmpStream: NetStream {
         addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         connection.addEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
         if connection.connected {
+            sendFCPublish()
             connection.createStream(self)
         }
     }
@@ -100,9 +102,13 @@ class RtmpStream: NetStream {
         rtmpConnection?.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
-    func publish(_ name: String) {
+    func setStreamKey(_ streamKey: String) {
+        self.streamKey = streamKey
+    }
+
+    func publish() {
         netStreamLockQueue.async {
-            self.publishInner(name)
+            self.publishInner()
         }
     }
 
@@ -112,22 +118,25 @@ class RtmpStream: NetStream {
         }
     }
 
-    private func publishInner(_ name: String) {
-        info.resourceName = name
+    private func publishInner() {
+        guard let rtmpConnection else {
+            return
+        }
+        info.resourceName = streamKey
         let message = RtmpCommandMessage(
             streamId: id,
-            transactionId: 0,
+            transactionId: rtmpConnection.getNextTransactionId(),
             objectEncoding: .amf0,
             commandName: "publish",
             commandObject: nil,
-            arguments: [name, "live"]
+            arguments: [streamKey, "live"]
         )
         switch readyState {
         case .initialized:
             messages.append(message)
         default:
             setReadyState(state: .publish)
-            _ = rtmpConnection?.socket.write(chunk: RtmpChunk(message: message))
+            _ = rtmpConnection.socket.write(chunk: RtmpChunk(message: message))
         }
     }
 
@@ -266,7 +275,6 @@ class RtmpStream: NetStream {
         videoChunkType = .zero
         audioChunkType = .zero
         dataTimeStamps.removeAll()
-        sendFCPublish()
     }
 
     private func handlePublishing() {
@@ -294,6 +302,7 @@ class RtmpStream: NetStream {
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)
+            sendFCPublish()
             rtmpConnection.createStream(self)
         case RtmpStreamCode.publishStart.rawValue:
             setReadyState(state: .publishing)
@@ -303,7 +312,7 @@ class RtmpStream: NetStream {
     }
 
     private func sendFCPublish() {
-        rtmpConnection?.call("FCPublish", arguments: [info.resourceName])
+        rtmpConnection?.call("FCPublish", arguments: [streamKey])
     }
 
     private func sendFCUnpublish() {

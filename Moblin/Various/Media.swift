@@ -44,7 +44,6 @@ final class Media: NSObject {
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
     private var srtConnectedObservation: NSKeyValueObservation?
-    private var rtmpStreamName = ""
     private var currentAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
     private var audioCapturePresentationTimestamp: Double = 0
@@ -532,7 +531,7 @@ final class Media: NSObject {
                          targetBitrate: UInt32,
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
-        rtmpStreamName = makeRtmpStreamName(url: url)
+        rtmpStream?.setStreamKey(makeRtmpStreamName(url: url))
         rtmpConnection.addEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
@@ -578,7 +577,7 @@ final class Media: NSObject {
         DispatchQueue.main.async {
             switch RtmpConnectionCode(rawValue: code) {
             case .connectSuccess:
-                self.rtmpStream?.publish(self.rtmpStreamName)
+                self.rtmpStream?.publish()
                 self.delegate?.mediaOnRtmpConnected()
             case .connectFailed, .connectClosed:
                 self.delegate?.mediaOnRtmpDisconnected("\(code)")
