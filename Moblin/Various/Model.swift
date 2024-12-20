@@ -426,6 +426,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
     private var padelScoreboardEffects: [UUID: PadelScoreboardEffect] = [:]
+    private var speechToTextAlertMatchOffset = 0
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     @Published var isTorchOn = false
@@ -1235,16 +1236,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isSpeechToTextNeeded() -> Bool {
         for widget in database.widgets {
-            guard widget.type == .text else {
-                continue
+            switch widget.type {
+            case .text:
+                if widget.enabled!, widget.text.needsSubtitles! {
+                    return true
+                }
+            case .alerts:
+                if widget.enabled!, widget.alerts!.needsSubtitles! {
+                    return true
+                }
+            default:
+                break
             }
-            guard widget.enabled! else {
-                continue
-            }
-            guard widget.text.needsSubtitles! else {
-                continue
-            }
-            return true
         }
         return false
     }
@@ -3409,7 +3412,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateAlertsSettings() {
         for widget in database.widgets where widget.type == .alerts {
+            widget.alerts!.needsSubtitles = !widget.alerts!.speechToText!.strings.filter { $0.alert.enabled }.isEmpty
             getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts!.clone())
+        }
+        if isSpeechToTextNeeded() {
+            reloadSpeechToText()
         }
     }
 
@@ -5567,6 +5574,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     }
                     alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
                     enabledAlertsEffects.append(alertsEffect)
+                    if widget.alerts!.needsSubtitles! {
+                        needsSpeechToText = true
+                    }
                 }
             case .videoSource:
                 if let videoSourceEffect = videoSourceEffects[widget.id] {
@@ -9727,8 +9737,39 @@ extension Model: TwitchApiDelegate {
 
 extension Model: SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
+        speechToTextPartialResultTextWidgets(position: position, text: text)
+        speechToTextPartialResultAlertsWidget(text: text)
+    }
+
+    private func speechToTextPartialResultTextWidgets(position: Int, text: String) {
         for textEffect in textEffects.values {
             textEffect.updateSubtitles(position: position, text: text)
+        }
+    }
+
+    private func speechToTextPartialResultAlertsWidget(text: String) {
+        guard text.count > speechToTextAlertMatchOffset else {
+            return
+        }
+        let startMatchIndex = text.index(text.startIndex, offsetBy: speechToTextAlertMatchOffset)
+        for alertEffect in enabledAlertsEffects {
+            let settings = alertEffect.getSettings().speechToText!
+            for string in settings.strings where string.alert.enabled {
+                guard let matchRange = text.range(
+                    of: string.string,
+                    options: .caseInsensitive,
+                    range: startMatchIndex ..< text.endIndex
+                ) else {
+                    continue
+                }
+                let offset = text.distance(from: text.startIndex, to: matchRange.upperBound)
+                if offset > speechToTextAlertMatchOffset {
+                    speechToTextAlertMatchOffset = offset
+                }
+                DispatchQueue.main.async {
+                    self.playAlert(alert: .speechToTextString(string.id))
+                }
+            }
         }
     }
 
@@ -9736,6 +9777,7 @@ extension Model: SpeechToTextDelegate {
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
         }
+        speechToTextAlertMatchOffset = 0
     }
 }
 

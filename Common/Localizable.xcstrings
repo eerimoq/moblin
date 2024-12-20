@@ -15309,6 +15309,9 @@
         }
       }
     },
+    "a string" : {
+
+    },
     "a username" : {
       "localizations" : {
         "de" : {
@@ -99993,6 +99996,9 @@
         }
       }
     },
+    "Speech to text" : {
+
+    },
     "Speed" : {
       "localizations" : {
         "de" : {
@@ -106752,6 +106758,9 @@
           }
         }
       }
+    },
+    "String" : {
+
     },
     "Subscribers" : {
       "localizations" : {
@@ -116770,6 +116779,9 @@
         }
       }
     },
+    "Trigger alerts when you say something." : {
+
+    },
     "Trigger alerts with chat bot commands." : {
       "localizations" : {
         "de" : {
@@ -117029,6 +117041,9 @@
           }
         }
       }
+    },
+    "Trigger by saying '%@'" : {
+
     },
     "Trigger with chat message '!moblin alert %@'" : {
       "localizations" : {

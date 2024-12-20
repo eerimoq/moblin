@@ -75,6 +75,7 @@ enum AlertsEffectAlert {
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
     case chatBotCommand(String, String)
+    case speechToTextString(UUID)
 }
 
 protocol AlertsEffectDelegate: AnyObject {
@@ -179,6 +180,7 @@ final class AlertsEffect: VideoEffect {
     private var twitchRaid = Medias()
     private var twitchCheers: [Medias] = []
     private var chatBotCommands: [Medias] = []
+    private var speechToTextStrings: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var landmarkSettings: LandmarkSettings?
@@ -250,6 +252,15 @@ final class AlertsEffect: VideoEffect {
             medias.updateSoundUrl(sound: sound)
             chatBotCommands.append(medias)
         }
+        speechToTextStrings = []
+        for string in settings.speechToText!.strings {
+            (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
+            let medias = Medias()
+            medias.fps = fps
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            speechToTextStrings.append(medias)
+        }
         self.settings = settings
     }
 
@@ -297,6 +308,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchCheer(event: event)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
+        case let .speechToTextString(id):
+            playSpeechToTextString(id: id)
         }
     }
 
@@ -412,6 +425,24 @@ final class AlertsEffect: VideoEffect {
             username: name,
             message: command,
             settings: settings.chatBot!.commands[commandIndex].alert
+        )
+    }
+
+    @MainActor
+    private func playSpeechToTextString(id: UUID) {
+        guard let stringIndex = settings.speechToText!.strings
+            .firstIndex(where: { $0.id == id && $0.alert.enabled })
+        else {
+            return
+        }
+        guard stringIndex < speechToTextStrings.count else {
+            return
+        }
+        play(
+            medias: speechToTextStrings[stringIndex],
+            username: "",
+            message: "",
+            settings: settings.speechToText!.strings[stringIndex].alert
         )
     }
 

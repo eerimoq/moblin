@@ -729,6 +729,102 @@ private struct WidgetAlertsSettingsChatBotView: View {
     }
 }
 
+private struct SpeechToTextStringView: View {
+    @EnvironmentObject var model: Model
+    var string: SettingsWidgetAlertsSpeechToTextString
+
+    private var alert: SettingsWidgetAlertsAlert {
+        string.alert
+    }
+
+    private func onSubmit(value: String) {
+        string.string = value
+        model.updateAlertsSettings()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    alert.enabled
+                }, set: { value in
+                    alert.enabled = value
+                    model.updateAlertsSettings()
+                })) {
+                    Text("Enabled")
+                }
+            }
+            Section {
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "String"),
+                        value: string.string,
+                        onSubmit: onSubmit
+                    )
+                } label: {
+                    TextItemView(
+                        name: String(localized: "String"),
+                        value: string.string
+                    )
+                }
+            } footer: {
+                Text("Trigger by saying '\(string.string)'")
+            }
+            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+            Section {
+                Button(action: {
+                    model.testAlert(alert: .speechToTextString(string.id))
+                }, label: {
+                    HCenter {
+                        Text("Test")
+                    }
+                })
+            }
+        }
+        .navigationTitle("String")
+    }
+}
+
+private struct WidgetAlertsSettingsSpeechToTextView: View {
+    @EnvironmentObject var model: Model
+    var speechToText: SettingsWidgetAlertsSpeechToText
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(speechToText.strings) { string in
+                        NavigationLink {
+                            SpeechToTextStringView(string: string)
+                        } label: {
+                            Text(string.string)
+                        }
+                    }
+                    .onDelete(perform: { indexes in
+                        speechToText.strings.remove(atOffsets: indexes)
+                        model.updateAlertsSettings()
+                    })
+                }
+                CreateButtonView {
+                    let string = SettingsWidgetAlertsSpeechToTextString()
+                    speechToText.strings.append(string)
+                    model.fixAlertMedias()
+                    model.updateAlertsSettings()
+                    model.objectWillChange.send()
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Trigger alerts when you say something.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a string"))
+                }
+            }
+        }
+        .navigationTitle("Speech to text")
+    }
+}
+
 struct WidgetAlertsSettingsView: View {
     var widget: SettingsWidget
 
@@ -743,6 +839,11 @@ struct WidgetAlertsSettingsView: View {
                 WidgetAlertsSettingsChatBotView(chatBot: widget.alerts!.chatBot!)
             } label: {
                 Text("Chat bot")
+            }
+            NavigationLink {
+                WidgetAlertsSettingsSpeechToTextView(speechToText: widget.alerts!.speechToText!)
+            } label: {
+                Text("Speech to text")
             }
         }
     }

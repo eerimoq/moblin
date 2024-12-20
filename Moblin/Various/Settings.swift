@@ -1063,6 +1063,31 @@ class SettingsWidgetAlertsChatBot: Codable {
     }
 }
 
+class SettingsWidgetAlertsSpeechToTextString: Codable, Identifiable {
+    var id: UUID = .init()
+    var string: String = ""
+    var alert: SettingsWidgetAlertsAlert = .init()
+
+    func clone() -> SettingsWidgetAlertsSpeechToTextString {
+        let new = SettingsWidgetAlertsSpeechToTextString()
+        new.string = string
+        new.alert = alert.clone()
+        return new
+    }
+}
+
+class SettingsWidgetAlertsSpeechToText: Codable {
+    var strings: [SettingsWidgetAlertsSpeechToTextString] = []
+
+    func clone() -> SettingsWidgetAlertsSpeechToText {
+        let new = SettingsWidgetAlertsSpeechToText()
+        for string in strings {
+            new.strings.append(string.clone())
+        }
+        return new
+    }
+}
+
 class SettingsWidgetAlerts: Codable {
     // To be removed
     // periphery:ignore
@@ -1089,11 +1114,15 @@ class SettingsWidgetAlerts: Codable {
     var fontWeight: SettingsFontWeight? = .regular
     var twitch: SettingsWidgetAlertsTwitch? = .init()
     var chatBot: SettingsWidgetAlertsChatBot? = .init()
+    var speechToText: SettingsWidgetAlertsSpeechToText? = .init()
+    var needsSubtitles: Bool? = false
 
     func clone() -> SettingsWidgetAlerts {
         let new = SettingsWidgetAlerts()
         new.twitch = twitch!.clone()
         new.chatBot = chatBot!.clone()
+        new.speechToText = speechToText!.clone()
+        new.needsSubtitles = needsSubtitles
         return new
     }
 }
@@ -4315,6 +4344,14 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.videoSourceRotation == nil {
             scene.videoSourceRotation = 0.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.alerts!.speechToText == nil {
+            widget.alerts!.speechToText = .init()
+            store()
+        }
+        for widget in realDatabase.widgets where widget.alerts!.needsSubtitles == nil {
+            widget.alerts!.needsSubtitles = false
             store()
         }
     }
