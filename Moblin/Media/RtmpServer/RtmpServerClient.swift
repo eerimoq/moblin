@@ -51,6 +51,8 @@ class RtmpServerClient {
     var cameraId: UUID = .init()
     var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: 2.0)
     private var basePresentationTimeStamp: Double
+    private var inputBuffer = Data()
+    private var receiveSize: Int = 0
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -67,8 +69,8 @@ class RtmpServerClient {
     func start() {
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
-        receiveData(size: 1 + 1536)
         connectionState = .connecting
+        receiveData(size: 1 + 1536)
     }
 
     func stop(reason: String) {
@@ -158,8 +160,8 @@ class RtmpServerClient {
         var s2 = Data([data[1], data[2], data[3], data[4], 0, 0, 0, 0])
         s2 += data[9...]
         send(data: s2)
-        receiveData(size: 1536)
         state = .ackSent
+        receiveData(size: 1536)
     }
 
     private func handleDataAckSent(data _: Data) {
@@ -284,28 +286,28 @@ class RtmpServerClient {
     }
 
     private func receiveExtendedTimestamp() {
-        receiveData(size: 4)
         chunkState = .extendedTimestamp
+        receiveData(size: 4)
     }
 
     private func receiveBasicHeaderFirstByte() {
-        receiveData(size: 1)
         chunkState = .basicHeaderFirstByte
+        receiveData(size: 1)
     }
 
     private func receiveMessageHeaderType0() {
-        receiveData(size: 11)
         chunkState = .messageHeaderType0
+        receiveData(size: 11)
     }
 
     private func receiveMessageHeaderType1() {
-        receiveData(size: 7)
         chunkState = .messageHeaderType1
+        receiveData(size: 7)
     }
 
     private func receiveMessageHeaderType2() {
-        receiveData(size: 3)
         chunkState = .messageHeaderType2
+        receiveData(size: 3)
     }
 
     private func receiveMessageHeaderType3() {
@@ -319,15 +321,28 @@ class RtmpServerClient {
     private func receiveChunkData() {
         let size = chunkStream.getChunkDataSize()
         if size > 0 {
-            receiveData(size: size)
             chunkState = .data
+            receiveData(size: size)
         } else {
             stopInternal(reason: "Unexpected data")
         }
     }
 
+    private var isProcessing = false
+
     func receiveData(size: Int) {
-        connection.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, error in
+        receiveSize = size
+        if isProcessing {
+            return
+        }
+        receiveDataFromNetwork()
+    }
+
+    private func receiveDataFromNetwork() {
+        connection.receive(minimumIncompleteLength: receiveSize, maximumLength: max(
+            receiveSize,
+            8192
+        )) { data, _, _, error in
             if let data {
                 // logger.info("rtmp-server: client: Got data \(data)")
                 self.totalBytesReceived += UInt64(data.count)
@@ -340,11 +355,21 @@ class RtmpServerClient {
                     }
                 }
                 self.latestReceiveTime = now
-                self.handleData(data: data)
+                self.inputBuffer.append(data)
+                self.isProcessing = true
+                var offset = 0
+                while self.inputBuffer.count - offset >= self.receiveSize {
+                    let data = self.inputBuffer.subdata(in: offset ..< offset + self.receiveSize)
+                    offset += self.receiveSize
+                    self.handleData(data: data)
+                }
+                self.inputBuffer = self.inputBuffer.advanced(by: offset)
                 if self.totalBytesReceived - self.totalBytesReceivedAcked > self.windowAcknowledgementSize {
                     self.sendAck()
                     self.totalBytesReceivedAcked = self.totalBytesReceived
                 }
+                self.isProcessing = false
+                self.receiveDataFromNetwork()
             }
             if let error {
                 self.stopInternal(reason: "Error \(error)")
