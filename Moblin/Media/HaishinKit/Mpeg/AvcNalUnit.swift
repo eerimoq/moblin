@@ -71,3 +71,42 @@ extension [AvcNalUnit] {
         }
     }
 }
+
+// vui_parameters_present_flag must be true in SPS for this to work as
+// VUI parameters contains pic_struct_present_flag, which must be true.
+// periphery:ignore
+func packSeiPictureTiming() -> Data {
+    let picStruct: UInt8 = 0
+    let clockTimestampFlag = true
+    let nuitFieldBasedFlag = true
+    let hours: UInt8 = 1
+    let minutes: UInt8 = 2
+    let seconds: UInt8 = 3
+    let timeOffset: UInt32 = 0xFFFF_FFFF
+    let numberOfFrames: UInt8 = 0
+    let writer = BitArray()
+    writer.writeBits(picStruct, count: 4)
+    writer.writeBit(clockTimestampFlag)
+    writer.writeBits(0, count: 2)
+    writer.writeBit(nuitFieldBasedFlag)
+    writer.writeBits(0, count: 5)
+    writer.writeBit(false)
+    writer.writeBit(false)
+    writer.writeBit(false)
+    writer.writeBits(numberOfFrames, count: 8)
+    writer.writeBits(seconds, count: 6)
+    writer.writeBits(minutes, count: 6)
+    writer.writeBits(hours, count: 5)
+    writer.writeBits(UInt8((timeOffset >> 16) & 0xFF), count: 8)
+    writer.writeBits(UInt8((timeOffset >> 8) & 0xFF), count: 8)
+    writer.writeBits(UInt8((timeOffset >> 0) & 0xFF), count: 8)
+    return packSei(payloadType: 1, payload: writer.data)
+}
+
+private func packSei(payloadType: UInt8, payload: Data) -> Data {
+    let writer = ByteArray()
+    writer.writeUInt8(payloadType)
+    writer.writeUInt8(UInt8(payload.count))
+    writer.writeBytes(payload)
+    return writer.data
+}

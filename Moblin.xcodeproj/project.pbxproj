@@ -457,6 +457,7 @@
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
 		03F655F02D147C0B0054D73E /* VideoSourceRotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */; };
+		03F655F22D16DFD60054D73E /* BitArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655F12D16DFD20054D73E /* BitArray.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
 		03FB422A2C68D9A70009FB26 /* MoblinkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* MoblinkStream.swift */; };
@@ -1014,6 +1015,7 @@
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
 		03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceRotationView.swift; sourceTree = "<group>"; };
+		03F655F12D16DFD20054D73E /* BitArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitArray.swift; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		03FB42292C68D9A70009FB26 /* MoblinkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkStream.swift; sourceTree = "<group>"; };
@@ -1681,6 +1683,7 @@
 		0359F8752BD3DA5F005BFDA8 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				03F655F12D16DFD20054D73E /* BitArray.swift */,
 				0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */,
 				0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */,
 				0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */,
@@ -3111,6 +3114,7 @@
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
+				03F655F22D16DFD60054D73E /* BitArray.swift in Sources */,
 				03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */,
 				0359F8B12BD3DA61005BFDA8 /* VTSessionConvertible.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,

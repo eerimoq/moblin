@@ -89,13 +89,13 @@ struct MpegTsVideoConfigAvc: MpegTsVideoConfig {
                 avcLevelIndication = try buffer.readUInt8()
                 lengthSizeMinusOneWithReserved = try buffer.readUInt8()
                 numOfSequenceParameterSetsWithReserved = try buffer.readUInt8()
-                let numOfSequenceParameterSets: UInt8 = numOfSequenceParameterSetsWithReserved &
+                let numOfSequenceParameterSets = numOfSequenceParameterSetsWithReserved &
                     ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
                 for _ in 0 ..< numOfSequenceParameterSets {
                     let length = try Int(buffer.readUInt16())
                     try sequenceParameterSets.append(buffer.readBytes(length).bytes)
                 }
-                let numPictureParameterSets: UInt8 = try buffer.readUInt8()
+                let numPictureParameterSets = try buffer.readUInt8()
                 for _ in 0 ..< numPictureParameterSets {
                     let length = try Int(buffer.readUInt16())
                     try pictureParameterSets.append(buffer.readBytes(length).bytes)
