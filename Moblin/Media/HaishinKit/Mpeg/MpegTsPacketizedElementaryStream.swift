@@ -182,16 +182,20 @@ struct MpegTsPacketizedElementaryStream {
         if let config {
             if let nal = config.array[.vps] {
                 data += nalUnitStartCode
-                data.append(nal[0])
+                data += nal[0]
             }
             if let nal = config.array[.sps] {
                 data += nalUnitStartCode
-                data.append(nal[0])
+                data += nal[0]
             }
             if let nal = config.array[.pps] {
                 data += nalUnitStartCode
-                data.append(nal[0])
+                data += nal[0]
             }
+        }
+        if false {
+            data += nalUnitStartCode
+            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: hevcPackSeiTimeCode()).encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)
         addNalUnitStartCodes(&payload)

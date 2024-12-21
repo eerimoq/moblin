@@ -17,6 +17,7 @@ enum HevcNalUnitType: UInt8 {
     case sps = 33
     case pps = 34
     case accessUnitDelimiter = 35
+    case prefixSeiNut = 39
     case unspec = 0xFF
 }
 
@@ -29,6 +30,12 @@ struct HevcNalUnit: NalUnit {
         type = HevcNalUnitType(rawValue: (data[0] & 0x7E) >> 1) ?? .unspec
         temporalIdPlusOne = data[1] & 0b0001_1111
         payload = data.subdata(in: 2 ..< data.count)
+    }
+
+    init(type: HevcNalUnitType, temporalIdPlusOne: UInt8, payload: Data) {
+        self.type = type
+        self.temporalIdPlusOne = temporalIdPlusOne
+        self.payload = payload
     }
 
     func encode() -> Data {
@@ -85,7 +92,7 @@ extension [HevcNalUnit] {
 }
 
 // periphery:ignore
-func packSeiTimeCode() -> Data {
+func hevcPackSeiTimeCode() -> Data {
     let numClockTs: UInt8 = 1
     let clockTimestampFlag = true
     let unitFieldBasedFlag = true
@@ -94,7 +101,7 @@ func packSeiTimeCode() -> Data {
     let minutes: UInt8 = 2
     let seconds: UInt8 = 3
     let timeOffset: UInt8 = 0xFF
-    let numberOfFrames: UInt32 = 0
+    let numberOfFrames: UInt32 = 30
     let writer = BitArray()
     writer.writeBits(numClockTs, count: 2)
     writer.writeBit(clockTimestampFlag)
@@ -112,15 +119,26 @@ func packSeiTimeCode() -> Data {
     } else {
         // To do...
     }
-    writer.writeBits(8, count: 5)
-    writer.writeBits(timeOffset, count: 8)
-    return packSei(payloadType: 136, payload: writer.data)
+    writer.writeBits(0, count: 5)
+    // writer.writeBits(timeOffset, count: 8)
+    // more_data_in_payload()
+    var padding = true
+    while writer.bitOffset != 0 {
+        writer.writeBit(padding)
+        padding = false
+    }
+    // rbsp_trailing_bits()
+    writer.writeBit(true)
+    while writer.bitOffset != 0 {
+        writer.writeBit(false)
+    }
+    return packSeiMessage(payloadType: 136, payload: writer.data)
 }
 
-private func packSei(payloadType: UInt8, payload: Data) -> Data {
+private func packSeiMessage(payloadType: UInt8, payload: Data) -> Data {
     let writer = ByteArray()
     writer.writeUInt8(payloadType)
-    writer.writeUInt8(UInt8(payload.count))
+    writer.writeUInt8(UInt8(payload.count) - 1)
     writer.writeBytes(payload)
     return writer.data
 }

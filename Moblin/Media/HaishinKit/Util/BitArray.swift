@@ -2,7 +2,7 @@ import Foundation
 
 open class BitArray {
     private(set) var data = Data()
-    private var bitOffset = 0
+    private(set) var bitOffset = 0
 
     init() {}
 
