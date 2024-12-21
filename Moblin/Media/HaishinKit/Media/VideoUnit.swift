@@ -931,7 +931,14 @@ final class VideoUnit: NSObject {
                             self.faceDetectionsComplete(completion)
                             return
                         }
-                        completion.faceDetections = (request as? VNDetectFaceLandmarksRequest)?.results
+                        // Only use 5 biggest to limit processing.
+                        if let results = (request as? VNDetectFaceLandmarksRequest)?
+                            .results?
+                            .sorted(by: { a, b in a.boundingBox.height > b.boundingBox.height })
+                            .prefix(5)
+                        {
+                            completion.faceDetections = Array(results)
+                        }
                         self.faceDetectionsComplete(completion)
                     }
                 }

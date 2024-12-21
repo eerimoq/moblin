@@ -589,8 +589,7 @@ final class AlertsEffect: VideoEffect {
         return landmarkSettings != nil
     }
 
-    private func getNext(image: CIImage)        -> (CIImage, CIImage?, Double, Double, LandmarkSettings?)
-    {
+    private func getNext(image: CIImage) -> (CIImage, CIImage?, Double, Double, LandmarkSettings?) {
         guard imageIndex < images.count else {
             toBeRemoved = true
             return (image, nil, x, y, landmarkSettings)
