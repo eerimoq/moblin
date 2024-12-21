@@ -1251,7 +1251,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin mute"
           }
         },
@@ -1381,7 +1381,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin mute/unmute"
           }
         },
@@ -1641,7 +1641,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin say <messaggio>"
           }
         },
@@ -1771,7 +1771,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin snapshot <messaggio facoltativo>"
           }
         },
@@ -1901,7 +1901,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla ..."
           }
         },
@@ -2031,7 +2031,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media next"
           }
         },
@@ -2161,7 +2161,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media previous"
           }
         },
@@ -2291,7 +2291,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media toggle-playback"
           }
         },
@@ -2421,7 +2421,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla trunk close"
           }
         },
@@ -2551,7 +2551,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla trunk open"
           }
         },
@@ -2941,7 +2941,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tts/say ..."
           }
         },
@@ -3071,7 +3071,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin unmute"
           }
         },
@@ -5281,8 +5281,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{teslaBatteryLevel} - Livello della batteria Tesla"
+            "state" : "translated",
+            "value" : "{teslaBatteryLevel} - Livello batteria Tesla"
           }
         },
         "ja" : {
@@ -14055,7 +14055,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "una chiave"
           }
         },
@@ -16528,7 +16528,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aggiungi la chiave al veicolo"
           }
         },
@@ -20174,7 +20174,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Carica automaticamente gli snapshot dei pulsanti rapidi e gli snapshot dei bot di chat sui canali del tuo server Discord."
           }
         },
@@ -21474,7 +21474,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Abbassa automaticamente la risoluzione quando la larghezza di banda disponibile è bassa. In genere offre una migliore qualità dell'immagine a bassi bitrate (<750 Kbps)."
           }
         },
@@ -23034,8 +23034,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL di base"
+            "state" : "translated",
+            "value" : "Base URL"
           }
         },
         "ja" : {
@@ -26937,8 +26937,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ID del ponte"
+            "state" : "translated",
+            "value" : "Bridge ID"
           }
         },
         "ja" : {
@@ -29407,7 +29407,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL del webhook dello snapshot del chatbot"
           }
         },
@@ -31363,7 +31363,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chiudere il bagagliaio."
           }
         },
@@ -31493,8 +31493,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chiudi il baule"
+            "state" : "translated",
+            "value" : "Chiudi bagaiaio"
           }
         },
         "ja" : {
@@ -32406,7 +32406,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Configurazione"
           }
         },
@@ -33447,7 +33447,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Conferma toccando la chiave magnetica Tesla sulla console centrale"
           }
         },
@@ -33837,7 +33837,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Connesso alla tua Tesla"
           }
         },
@@ -45797,7 +45797,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ritardo stimato dello spettatore"
           }
         },
@@ -45927,7 +45927,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ritardo stimato dello spettatore, ad esempio utilizzato per semplificare l'acquisizione di snapshot tramite il chat bot. Non ritarda lo streaming."
           }
         },
@@ -52947,7 +52947,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Luci flash"
           }
         },
@@ -55807,7 +55807,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Genera nuova chiave"
           }
         },
@@ -58408,8 +58408,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Suonare il clacson"
+            "state" : "translated",
+            "value" : "Clacson"
           }
         },
         "ja" : {
@@ -62060,7 +62060,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tastiera"
           }
         },
@@ -70384,8 +70384,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin si identifica con il veicolo con questa chiave. Tocca il pulsante qui sotto per aggiungerlo al tuo veicolo."
+            "state" : "translated",
+            "value" : "Moblin si interfaccia con il veicolo usando questa chiave. Tocca il pulsante qui sotto per aggiungerlo."
           }
         },
         "ja" : {
@@ -71684,7 +71684,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Multitraccia"
           }
         },
@@ -72074,7 +72074,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Disattiva l'audio."
           }
         },
@@ -72594,7 +72594,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Disattivazione dell'audio"
           }
         },
@@ -75584,8 +75584,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prossima traccia multimediale"
+            "state" : "translated",
+            "value" : "Prossima successiva multimediale"
           }
         },
         "ja" : {
@@ -75714,7 +75714,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Traccia successiva."
           }
         },
@@ -79617,7 +79617,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aprire il bagagliaio."
           }
         },
@@ -79665,7 +79665,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Öppna bagageluckan."
           }
         },
@@ -79747,8 +79747,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aprire il bagagliaio"
+            "state" : "translated",
+            "value" : "Apriri bagagliaio"
           }
         },
         "ja" : {
@@ -81697,7 +81697,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Piattaforme"
           }
         },
@@ -84170,7 +84170,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Traccia multimediale precedente"
           }
         },
@@ -84300,7 +84300,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Traccia precedente."
           }
         },
@@ -87810,8 +87810,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Staffetta"
+            "state" : "translated",
+            "value" : "Relay"
           }
         },
         "ja" : {
@@ -89116,8 +89116,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rimuovi le chiavi da Comandi → Serrature sullo schermo centrale della tua Tesla."
+            "state" : "translated",
+            "value" : "Rimuovi le chiavi dai Comandi → Chiusura sullo schermo centrale della tua Tesla."
           }
         },
         "ja" : {
@@ -92886,7 +92886,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pronuncia il messaggio ricevuto."
           }
         },
@@ -94316,7 +94316,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Scorri verso il basso nell'app Tesla e copiala."
           }
         },
@@ -97702,7 +97702,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Singoli"
           }
         },
@@ -98872,8 +98872,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Istantanea scattata da %@."
+            "state" : "translated",
+            "value" : "Snapshot scattato da %@."
           }
         },
         "ja" : {
@@ -108888,8 +108888,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Scattare un'istantanea in"
+            "state" : "translated",
+            "value" : "Scattare uno snapshot in"
           }
         },
         "ja" : {
@@ -110321,7 +110321,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tesla"
           }
         },
@@ -110451,7 +110451,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tesla (richiede una Tesla)"
           }
         },
@@ -113705,8 +113705,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "L'orologio funge da assistente di controllo remoto quando abilitato. Si prega di notare che in questo caso, la chat, il salto del TTS corrente e alcune altre funzionalità non sono supportate."
+            "state" : "translated",
+            "value" : "L'orologio funziona come assistente remoto quando abilitato. Si prega di notare che in questo caso, la chat, lo skip del TTS corrente e altre funzionalità non sono supportate."
           }
         },
         "ja" : {
@@ -115005,7 +115005,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Attiva/disattiva la riproduzione multimediale"
           }
         },
@@ -115135,7 +115135,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Attiva/disattiva la riproduzione."
           }
         },
@@ -119821,8 +119821,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Disattiva l'audio."
+            "state" : "translated",
+            "value" : "Riattiva l'audio."
           }
         },
         "ja" : {
@@ -120081,7 +120081,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Disattivazione dell'audio"
           }
         },
@@ -121381,7 +121381,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Utilizza una tastiera per ingrandire, impostare la scena e altro ancora."
           }
         },
@@ -121641,7 +121641,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Utilizzare un server relay quando l'assistente si trova dietro CGNAT o simile."
           }
         },
@@ -124631,8 +124631,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Numero di telaio"
+            "state" : "translated",
+            "value" : " VIN "
           }
         },
         "ja" : {
