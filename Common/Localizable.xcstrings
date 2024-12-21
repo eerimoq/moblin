@@ -117042,7 +117042,7 @@
         }
       }
     },
-    "Trigger by saying '%@'" : {
+    "Trigger by saying '%@'." : {
 
     },
     "Trigger with chat message '!moblin alert %@'" : {

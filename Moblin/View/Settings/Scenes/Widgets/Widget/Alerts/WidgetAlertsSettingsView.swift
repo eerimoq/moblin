@@ -620,6 +620,7 @@ private struct WidgetAlertsSettingsTwitchView: View {
 private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
     var command: SettingsWidgetAlertsChatBotCommand
+    @State var name: String
 
     private var alert: SettingsWidgetAlertsAlert {
         command.alert
@@ -631,62 +632,56 @@ private struct ChatBotCommandView: View {
             with: "",
             options: .regularExpression
         )
+        name = command.name
         model.updateAlertsSettings()
     }
 
     var body: some View {
-        Form {
-            Section {
-                Toggle(isOn: Binding(get: {
-                    alert.enabled
-                }, set: { value in
-                    alert.enabled = value
-                    model.updateAlertsSettings()
-                })) {
-                    Text("Enabled")
-                }
-            }
-            Section {
-                NavigationLink {
-                    TextEditView(
-                        title: String(localized: "Name"),
-                        value: command.name,
-                        onSubmit: onSubmit
-                    )
-                } label: {
-                    TextItemView(
-                        name: String(localized: "Name"),
-                        value: command.name
-                    )
-                }
-            } footer: {
-                Text("Trigger with chat message '!moblin alert \(command.name)'")
-            }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
-            AlertColorsView(
-                alert: alert,
-                textColor: alert.textColor.color(),
-                accentColor: alert.accentColor.color()
-            )
-            AlertFontView(
-                alert: alert,
-                fontSize: Float(alert.fontSize),
-                fontDesign: alert.fontDesign.toString(),
-                fontWeight: alert.fontWeight.toString()
-            )
-            AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
-            Section {
-                Button(action: {
-                    model.testAlert(alert: .chatBotCommand(command.name, testNames.randomElement()!))
-                }, label: {
-                    HCenter {
-                        Text("Test")
+        NavigationLink {
+            Form {
+                Section {
+                    Toggle(isOn: Binding(get: {
+                        alert.enabled
+                    }, set: { value in
+                        alert.enabled = value
+                        model.updateAlertsSettings()
+                    })) {
+                        Text("Enabled")
                     }
-                })
+                }
+                Section {
+                    TextEditNavigationView(title: String(localized: "Name"), value: name, onSubmit: onSubmit)
+                } footer: {
+                    Text("Trigger with chat message '!moblin alert \(name)'")
+                }
+                AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+                AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+                AlertColorsView(
+                    alert: alert,
+                    textColor: alert.textColor.color(),
+                    accentColor: alert.accentColor.color()
+                )
+                AlertFontView(
+                    alert: alert,
+                    fontSize: Float(alert.fontSize),
+                    fontDesign: alert.fontDesign.toString(),
+                    fontWeight: alert.fontWeight.toString()
+                )
+                AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
+                Section {
+                    Button(action: {
+                        model.testAlert(alert: .chatBotCommand(name, testNames.randomElement()!))
+                    }, label: {
+                        HCenter {
+                            Text("Test")
+                        }
+                    })
+                }
             }
+            .navigationTitle("Command")
+        } label: {
+            Text(name.capitalized)
         }
-        .navigationTitle("Command")
     }
 }
 
@@ -699,11 +694,7 @@ private struct WidgetAlertsSettingsChatBotView: View {
             Section {
                 List {
                     ForEach(chatBot.commands) { command in
-                        NavigationLink {
-                            ChatBotCommandView(command: command)
-                        } label: {
-                            Text(command.name.capitalized)
-                        }
+                        ChatBotCommandView(command: command, name: command.name)
                     }
                     .onDelete(perform: { indexes in
                         chatBot.commands.remove(atOffsets: indexes)
@@ -732,6 +723,7 @@ private struct WidgetAlertsSettingsChatBotView: View {
 private struct SpeechToTextStringView: View {
     @EnvironmentObject var model: Model
     var string: SettingsWidgetAlertsSpeechToTextString
+    @State var text: String
 
     private var alert: SettingsWidgetAlertsAlert {
         string.alert
@@ -739,50 +731,44 @@ private struct SpeechToTextStringView: View {
 
     private func onSubmit(value: String) {
         string.string = value
+        text = value
         model.updateAlertsSettings()
     }
 
     var body: some View {
-        Form {
-            Section {
-                Toggle(isOn: Binding(get: {
-                    alert.enabled
-                }, set: { value in
-                    alert.enabled = value
-                    model.updateAlertsSettings()
-                })) {
-                    Text("Enabled")
-                }
-            }
-            Section {
-                NavigationLink {
-                    TextEditView(
-                        title: String(localized: "String"),
-                        value: string.string,
-                        onSubmit: onSubmit
-                    )
-                } label: {
-                    TextItemView(
-                        name: String(localized: "String"),
-                        value: string.string
-                    )
-                }
-            } footer: {
-                Text("Trigger by saying '\(string.string)'")
-            }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
-            AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
-            Section {
-                Button(action: {
-                    model.testAlert(alert: .speechToTextString(string.id))
-                }, label: {
-                    HCenter {
-                        Text("Test")
+        NavigationLink {
+            Form {
+                Section {
+                    Toggle(isOn: Binding(get: {
+                        alert.enabled
+                    }, set: { value in
+                        alert.enabled = value
+                        model.updateAlertsSettings()
+                    })) {
+                        Text("Enabled")
                     }
-                })
+                }
+                Section {
+                    TextEditNavigationView(title: String(localized: "String"), value: text, onSubmit: onSubmit)
+                } footer: {
+                    Text("Trigger by saying '\(text)'.")
+                }
+                AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+                AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
+                Section {
+                    Button(action: {
+                        model.testAlert(alert: .speechToTextString(string.id))
+                    }, label: {
+                        HCenter {
+                            Text("Test")
+                        }
+                    })
+                }
             }
+            .navigationTitle("String")
+        } label: {
+            Text(text)
         }
-        .navigationTitle("String")
     }
 }
 
@@ -795,11 +781,7 @@ private struct WidgetAlertsSettingsSpeechToTextView: View {
             Section {
                 List {
                     ForEach(speechToText.strings) { string in
-                        NavigationLink {
-                            SpeechToTextStringView(string: string)
-                        } label: {
-                            Text(string.string)
-                        }
+                        SpeechToTextStringView(string: string, text: string.string)
                     }
                     .onDelete(perform: { indexes in
                         speechToText.strings.remove(atOffsets: indexes)

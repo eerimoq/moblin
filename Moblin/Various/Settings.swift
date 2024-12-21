@@ -1070,6 +1070,7 @@ class SettingsWidgetAlertsSpeechToTextString: Codable, Identifiable {
 
     func clone() -> SettingsWidgetAlertsSpeechToTextString {
         let new = SettingsWidgetAlertsSpeechToTextString()
+        new.id = id
         new.string = string
         new.alert = alert.clone()
         return new

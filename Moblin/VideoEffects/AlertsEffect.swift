@@ -170,6 +170,7 @@ final class AlertsEffect: VideoEffect {
     private weak var delegate: (any AlertsEffectDelegate)?
     private var toBeRemoved: Bool = true
     private var isPlaying: Bool = false
+    private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
     private var fps: Double
     private var x: Double = 0
@@ -430,8 +431,7 @@ final class AlertsEffect: VideoEffect {
 
     @MainActor
     private func playSpeechToTextString(id: UUID) {
-        guard let stringIndex = settings.speechToText!.strings
-            .firstIndex(where: { $0.id == id && $0.alert.enabled })
+        guard let stringIndex = settings.speechToText!.strings.firstIndex(where: { $0.id == id && $0.alert.enabled })
         else {
             return
         }
@@ -442,7 +442,8 @@ final class AlertsEffect: VideoEffect {
             medias: speechToTextStrings[stringIndex],
             username: "",
             message: "",
-            settings: settings.speechToText!.strings[stringIndex].alert
+            settings: settings.speechToText!.strings[stringIndex].alert,
+            delayAfterPlaying: 0.0
         )
     }
 
@@ -451,9 +452,11 @@ final class AlertsEffect: VideoEffect {
         medias: Medias,
         username: String,
         message: String,
-        settings: SettingsWidgetAlertsAlert
+        settings: SettingsWidgetAlertsAlert,
+        delayAfterPlaying: Double = 3.0
     ) {
         isPlaying = true
+        self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
         lockQueue.sync {
@@ -586,8 +589,7 @@ final class AlertsEffect: VideoEffect {
         return landmarkSettings != nil
     }
 
-    private func getNext(image: CIImage)
-        -> (CIImage, CIImage?, Double, Double, LandmarkSettings?)
+    private func getNext(image: CIImage)        -> (CIImage, CIImage?, Double, Double, LandmarkSettings?)
     {
         guard imageIndex < images.count else {
             toBeRemoved = true
@@ -794,9 +796,11 @@ final class AlertsEffect: VideoEffect {
     }
 
     override func removed() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.isPlaying = false
-            self.tryPlayNextAlert()
+        DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delayAfterPlaying) {
+                self.isPlaying = false
+                self.tryPlayNextAlert()
+            }
         }
     }
 }

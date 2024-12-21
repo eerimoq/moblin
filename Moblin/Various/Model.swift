@@ -3418,6 +3418,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isSpeechToTextNeeded() {
             reloadSpeechToText()
         }
+        sceneUpdated()
     }
 
     func updateOrientationLock() {
