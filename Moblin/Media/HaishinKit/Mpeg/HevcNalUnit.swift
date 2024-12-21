@@ -83,3 +83,44 @@ extension [HevcNalUnit] {
         }
     }
 }
+
+// periphery:ignore
+func packSeiTimeCode() -> Data {
+    let numClockTs: UInt8 = 1
+    let clockTimestampFlag = true
+    let unitFieldBasedFlag = true
+    let fullTimestampFlag = true
+    let hours: UInt8 = 1
+    let minutes: UInt8 = 2
+    let seconds: UInt8 = 3
+    let timeOffset: UInt8 = 0xFF
+    let numberOfFrames: UInt32 = 0
+    let writer = BitArray()
+    writer.writeBits(numClockTs, count: 2)
+    writer.writeBit(clockTimestampFlag)
+    writer.writeBit(unitFieldBasedFlag)
+    writer.writeBits(0, count: 5)
+    writer.writeBit(fullTimestampFlag)
+    writer.writeBit(false)
+    writer.writeBit(false)
+    writer.writeBits(UInt8((numberOfFrames >> 8) & 0xFF), count: 8)
+    writer.writeBits(UInt8((numberOfFrames >> 0) & 0xFF), count: 1)
+    if fullTimestampFlag {
+        writer.writeBits(seconds, count: 6)
+        writer.writeBits(minutes, count: 6)
+        writer.writeBits(hours, count: 5)
+    } else {
+        // To do...
+    }
+    writer.writeBits(8, count: 5)
+    writer.writeBits(timeOffset, count: 8)
+    return packSei(payloadType: 136, payload: writer.data)
+}
+
+private func packSei(payloadType: UInt8, payload: Data) -> Data {
+    let writer = ByteArray()
+    writer.writeUInt8(payloadType)
+    writer.writeUInt8(UInt8(payload.count))
+    writer.writeBytes(payload)
+    return writer.data
+}
