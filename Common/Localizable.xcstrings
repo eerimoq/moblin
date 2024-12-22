@@ -77748,6 +77748,9 @@
         }
       }
     },
+    "NTP pool address" : {
+
+    },
     "Number of times the GIF will be played each alert." : {
       "localizations" : {
         "de" : {
@@ -108452,6 +108455,9 @@
         }
       }
     },
+    "Synchronize multiple streams on your server using timecodes. Timecodes are in UTC and requires H.265/HEVC codec." : {
+
+    },
     "Take a snapshot." : {
       "localizations" : {
         "de" : {
@@ -114178,6 +114184,9 @@
           }
         }
       }
+    },
+    "Timecodes" : {
+
     },
     "Timer" : {
       "localizations" : {

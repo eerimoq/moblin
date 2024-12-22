@@ -80,7 +80,7 @@ protocol RistStreamDelegate: AnyObject {
 class RistStream: NetStream {
     private var context: RistContext?
     private var peers: [RistRemotePeer] = []
-    private let writer = MpegTsWriter()
+    private let writer = MpegTsWriter(timecodesEnabled: false)
     private var networkPathMonitor: NWPathMonitor?
     private var bonding: Bool = false
     private var url: String = ""

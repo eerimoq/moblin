@@ -440,6 +440,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var backgroundStreaming: Bool? = false
     var estimatedViewerDelay: Float? = 8.0
     var twitchMultiTrackEnabled: Bool? = false
+    var ntpPoolAddress: String? = "time.apple.com"
+    var timecodesEnabled: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -492,6 +494,9 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.portrait = portrait
         new.backgroundStreaming = backgroundStreaming
         new.estimatedViewerDelay = estimatedViewerDelay
+        new.twitchMultiTrackEnabled = twitchMultiTrackEnabled
+        new.ntpPoolAddress = ntpPoolAddress
+        new.timecodesEnabled = timecodesEnabled
         return new
     }
 
@@ -1803,6 +1808,7 @@ class SettingsDebug: Codable {
     var tesla: SettingsTesla? = .init()
     var prettySnapshot: Bool? = false
     var reliableChat: Bool? = false
+    var timecodesEnabled: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4353,6 +4359,18 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.alerts!.needsSubtitles == nil {
             widget.alerts!.needsSubtitles = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.ntpPoolAddress == nil {
+            stream.ntpPoolAddress = "time.apple.com"
+            store()
+        }
+        for stream in realDatabase.streams where stream.timecodesEnabled == nil {
+            stream.timecodesEnabled = false
+            store()
+        }
+        if realDatabase.debug.timecodesEnabled == nil {
+            realDatabase.debug.timecodesEnabled = false
             store()
         }
     }

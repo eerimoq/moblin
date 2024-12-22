@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 import libsrt
 
-public class SrtStream: NetStream {
+class SrtStream: NetStream {
     private enum ReadyState: UInt8 {
         case initialized = 0
         case open = 1
@@ -16,12 +16,7 @@ public class SrtStream: NetStream {
     private var action: (() -> Void)?
     private var keyValueObservations: [NSKeyValueObservation] = []
     private weak var connection: SrtConnection?
-
-    private lazy var writer: MpegTsWriter = {
-        var writer = MpegTsWriter()
-        writer.delegate = self
-        return writer
-    }()
+    private let writer: MpegTsWriter
 
     private var readyState: ReadyState = .initialized {
         didSet {
@@ -53,7 +48,8 @@ public class SrtStream: NetStream {
         }
     }
 
-    public init(_ connection: SrtConnection) {
+    init(_ connection: SrtConnection, timecodesEnabled: Bool) {
+        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled)
         super.init()
         self.connection = connection
         self.connection?.removeStream()
@@ -70,6 +66,7 @@ public class SrtStream: NetStream {
             }
         }
         keyValueObservations.append(keyValueObservation)
+        writer.delegate = self
     }
 
     deinit {
@@ -77,7 +74,7 @@ public class SrtStream: NetStream {
         keyValueObservations.removeAll()
     }
 
-    override public func attachCamera(
+    override func attachCamera(
         _ camera: AVCaptureDevice?,
         onError: ((Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
@@ -92,7 +89,7 @@ public class SrtStream: NetStream {
         )
     }
 
-    override public func attachAudio(
+    override func attachAudio(
         _ audio: AVCaptureDevice?,
         onError: ((Error) -> Void)? = nil,
         replaceAudioId: UUID? = nil
@@ -101,7 +98,7 @@ public class SrtStream: NetStream {
         super.attachAudio(audio, onError: onError, replaceAudioId: replaceAudioId)
     }
 
-    public func publish(_ name: String? = "") {
+    func publish(_ name: String? = "") {
         netStreamLockQueue.async {
             guard let name else {
                 switch self.readyState {
@@ -120,7 +117,7 @@ public class SrtStream: NetStream {
         }
     }
 
-    public func close() {
+    func close() {
         netStreamLockQueue.async {
             if self.readyState == .closed || self.readyState == .initialized {
                 return

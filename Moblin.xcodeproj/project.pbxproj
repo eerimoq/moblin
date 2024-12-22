@@ -337,6 +337,7 @@
 		03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */; };
 		03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */; };
 		03AC13CA2CDED772000BC82A /* DebugHttpProxySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AC13C92CDED767000BC82A /* DebugHttpProxySettingsView.swift */; };
+		03AC6B952D17786700832A7E /* TrueTime in Frameworks */ = {isa = PBXBuildFile; productRef = 03AC6B942D17786700832A7E /* TrueTime */; };
 		03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */; };
 		03AD38D22C5280B300824980 /* TextFormatStringLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */; };
 		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
@@ -1048,6 +1049,7 @@
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */,
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
+				03AC6B952D17786700832A7E /* TrueTime in Frameworks */,
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
@@ -2820,6 +2822,7 @@
 				03F465EB2C441D1400630708 /* CrcSwift */,
 				0318D3692CF51D6900E12F3B /* SwiftProtobuf */,
 				03C3572C2D0416CD00B8B29F /* AppleGPUInfo */,
+				03AC6B942D17786700832A7E /* TrueTime */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2936,6 +2939,7 @@
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */,
+				03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -4088,6 +4092,14 @@
 				kind = branch;
 			};
 		};
+		03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Gisman4ik/TrueTime.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.2.0;
+			};
+		};
 		03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/Rist";
@@ -4196,6 +4208,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */;
 			productName = TwitchChat;
+		};
+		03AC6B942D17786700832A7E /* TrueTime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */;
+			productName = TrueTime;
 		};
 		03AE56132BEA74D500FE8427 /* Rist */ = {
 			isa = XCSwiftPackageProductDependency;

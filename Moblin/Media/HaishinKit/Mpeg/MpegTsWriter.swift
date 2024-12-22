@@ -1,4 +1,5 @@
 import AVFoundation
+import TrueTime
 
 var payloadSize = 1316
 
@@ -40,10 +41,12 @@ class MpegTsWriter {
     private var programMappingTable = MpegTsProgramMapping()
     private var audioConfig: MpegTsAudioConfig?
     private var videoConfig: MpegTsVideoConfig?
-
     private var programClockReferenceTimestamp: CMTime?
+    private let timecodesEnabled: Bool
 
-    init() {}
+    init(timecodesEnabled: Bool) {
+        self.timecodesEnabled = timecodesEnabled
+    }
 
     private func setAudioConfig(_ config: MpegTsAudioConfig) {
         audioConfig = config
@@ -363,13 +366,20 @@ extension MpegTsWriter: VideoCodecDelegate {
                 streamId: MpegTsWriter.videoStreamId
             )
         } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
+            let timecode: Date?
+            if timecodesEnabled {
+                timecode = TrueTimeClient.sharedInstance.referenceTime?.now()
+            } else {
+                timecode = nil
+            }
             packetizedElementaryStream = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
                 config: randomAccessIndicator ? videoConfig : nil,
-                streamId: MpegTsWriter.videoStreamId
+                streamId: MpegTsWriter.videoStreamId,
+                timecode: timecode
             )
         } else {
             return

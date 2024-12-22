@@ -107,6 +107,12 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug.reliableChat = value
                 }))
+                Toggle("Timecodes", isOn: Binding(get: {
+                    model.database.debug.timecodesEnabled!
+                }, set: { value in
+                    model.database.debug.timecodesEnabled = value
+                    model.reloadNtpClient()
+                }))
             } header: {
                 Text("Experimental")
             }

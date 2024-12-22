@@ -95,7 +95,7 @@ final class Media: NSObject {
         netStream = nil
     }
 
-    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool) {
+    func setNetStream(proto: SettingsStreamProtocol, portrait: Bool, timecodesEnabled: Bool) {
         netStream?.stopMixer()
         srtStopStream()
         rtmpStopStream()
@@ -110,7 +110,7 @@ final class Media: NSObject {
             irlStream = nil
             netStream = rtmpStream
         case .srt:
-            srtStream = SrtStream(srtConnection)
+            srtStream = SrtStream(srtConnection, timecodesEnabled: timecodesEnabled)
             rtmpStream = nil
             ristStream = nil
             irlStream = nil

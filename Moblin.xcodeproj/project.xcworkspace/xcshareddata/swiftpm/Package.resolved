@@ -1,5 +1,5 @@
 {
-  "originHash" : "f4a4826bdf769ab1db89ff8d8fd4305d3a91e183dee3868b74f30bacd3aebcc0",
+  "originHash" : "4eecfd394833698e8f2a29b0195beed5442617bfe6a9b227834dc7289044c889",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -161,6 +161,15 @@
       "state" : {
         "revision" : "f56b6726195e271fea397b7dd11c4adc36d5a32d",
         "version" : "0.40.0"
+      }
+    },
+    {
+      "identity" : "truetime.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Gisman4ik/TrueTime.swift",
+      "state" : {
+        "revision" : "78f7945469ad8dd6344987f8e62afc13b8c32bc2",
+        "version" : "5.2.0"
       }
     },
     {

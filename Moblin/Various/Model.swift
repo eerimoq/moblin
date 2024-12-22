@@ -17,6 +17,7 @@ import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
 import SwiftUI
+import TrueTime
 import TwitchChat
 import VideoToolbox
 import WatchConnectivity
@@ -1393,6 +1394,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
         updateLutsButtonState()
+        reloadNtpClient()
+    }
+
+    func reloadNtpClient() {
+        stopNtpClient()
+        if database.debug.timecodesEnabled!, stream.timecodesEnabled!, !stream.ntpPoolAddress!.isEmpty {
+            logger.info("Starting NTP client for pool \(stream.ntpPoolAddress!)")
+            TrueTimeClient.sharedInstance.start(pool: [stream.ntpPoolAddress!])
+        }
+    }
+
+    func stopNtpClient() {
+        logger.info("Stopping NTP client")
+        TrueTimeClient.sharedInstance.pause()
     }
 
     func reloadTeslaVehicle() {
@@ -1835,6 +1850,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             speechToText.stop()
             stopWorkout(showToast: false)
             stopTeslaVehicle()
+            stopNtpClient()
         }
     }
 
@@ -3891,6 +3907,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRemoteControlAssistant()
         reloadRemoteControlRelay()
         reloadKickViewers()
+        reloadNtpClient()
     }
 
     func createUrlSession() {
@@ -3906,7 +3923,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setNetStream() {
-        media.setNetStream(proto: stream.getProtocol(), portrait: stream.portrait!)
+        media.setNetStream(
+            proto: stream.getProtocol(),
+            portrait: stream.portrait!,
+            timecodesEnabled: database.debug.timecodesEnabled! && stream.timecodesEnabled!
+        )
         updateTorch()
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())

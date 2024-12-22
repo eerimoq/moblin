@@ -91,16 +91,18 @@ extension [HevcNalUnit] {
     }
 }
 
-// periphery:ignore
-func hevcPackSeiTimeCode() -> Data {
+private let calendar: Calendar = {
+    var utcCalender = Calendar(identifier: .iso8601)
+    utcCalender.timeZone = TimeZone(abbreviation: "UTC")!
+    return utcCalender
+}()
+
+func hevcPackSeiTimeCode(clock: Date) -> Data {
     let numClockTs: UInt8 = 1
     let clockTimestampFlag = true
     let unitFieldBasedFlag = true
     let fullTimestampFlag = true
-    let hours: UInt8 = 1
-    let minutes: UInt8 = 2
-    let seconds: UInt8 = 3
-    let timeOffset: UInt8 = 0xFF
+    let timeOffset: UInt8 = 5
     let numberOfFrames: UInt32 = 30
     let writer = BitArray()
     writer.writeBits(numClockTs, count: 2)
@@ -113,14 +115,12 @@ func hevcPackSeiTimeCode() -> Data {
     writer.writeBits(UInt8((numberOfFrames >> 8) & 0xFF), count: 8)
     writer.writeBits(UInt8((numberOfFrames >> 0) & 0xFF), count: 1)
     if fullTimestampFlag {
-        writer.writeBits(seconds, count: 6)
-        writer.writeBits(minutes, count: 6)
-        writer.writeBits(hours, count: 5)
-    } else {
-        // To do...
+        writer.writeBits(UInt8(calendar.component(.second, from: clock)), count: 6)
+        writer.writeBits(UInt8(calendar.component(.minute, from: clock)), count: 6)
+        writer.writeBits(UInt8(calendar.component(.hour, from: clock)), count: 5)
     }
-    writer.writeBits(0, count: 5)
-    // writer.writeBits(timeOffset, count: 8)
+    writer.writeBits(8, count: 5)
+    writer.writeBits(timeOffset, count: 8)
     // more_data_in_payload()
     var padding = true
     while writer.bitOffset != 0 {
