@@ -101,11 +101,13 @@ struct HevcSeiPayloadTimeCode {
     private var hours: UInt8
     private var minutes: UInt8
     private var seconds: UInt8
+    private var offset: UInt32
 
     init(clock: Date) {
         hours = UInt8(calendar.component(.hour, from: clock))
         minutes = UInt8(calendar.component(.minute, from: clock))
         seconds = UInt8(calendar.component(.second, from: clock))
+        offset = UInt32((clock.timeIntervalSince1970 * 1000).truncatingRemainder(dividingBy: 1000))
     }
 
     init?(reader: BitArray) {
@@ -130,19 +132,18 @@ struct HevcSeiPayloadTimeCode {
                 minutes = try reader.readBits(count: 6)
                 hours = try reader.readBits(count: 5)
             } else {
+                logger.info("not full timestamp")
                 return nil
             }
+            let count = try reader.readBitsU32(count: 5)
+            guard count <= 32 else {
+                logger.info("too long offset")
+                return nil
+            }
+            offset = try reader.readBitsU32(count: Int(count))
         } catch {
             return nil
         }
-    }
-
-    func makeClock(vuiTimeScale: UInt32) -> Date {
-        var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
-        clockTimestamp *= Double(vuiTimeScale)
-        // Not good if close to new day
-        let startOfDay = calendar.startOfDay(for: .now)
-        return startOfDay.addingTimeInterval(clockTimestamp)
     }
 
     func encode() -> Data {
@@ -150,8 +151,7 @@ struct HevcSeiPayloadTimeCode {
         let clockTimestampFlag = true
         let unitFieldBasedFlag = true
         let fullTimestampFlag = true
-        let timeOffset: UInt8 = 5
-        let numberOfFrames: UInt32 = 30
+        let numberOfFrames: UInt32 = 0
         let writer = BitArray()
         writer.writeBits(numClockTs, count: 2)
         writer.writeBit(clockTimestampFlag)
@@ -160,17 +160,25 @@ struct HevcSeiPayloadTimeCode {
         writer.writeBit(fullTimestampFlag)
         writer.writeBit(false)
         writer.writeBit(false)
-        writer.writeBits(UInt8((numberOfFrames >> 8) & 0xFF), count: 8)
-        writer.writeBits(UInt8((numberOfFrames >> 0) & 0xFF), count: 1)
+        writer.writeBitsU32(numberOfFrames, count: 9)
         if fullTimestampFlag {
             writer.writeBits(seconds, count: 6)
             writer.writeBits(minutes, count: 6)
             writer.writeBits(hours, count: 5)
         }
-        writer.writeBits(8, count: 5)
-        writer.writeBits(timeOffset, count: 8)
+        writer.writeBits(16, count: 5)
+        writer.writeBitsU32(offset, count: 16)
         writeMoreDataInPayload(writer: writer)
         return writer.data
+    }
+
+    func makeClock(vuiTimeScale: UInt32) -> Date {
+        var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
+        clockTimestamp *= Double(vuiTimeScale)
+        clockTimestamp += Double(offset) / 1000
+        // Not good if close to new day
+        let startOfDay = calendar.startOfDay(for: .now)
+        return startOfDay.addingTimeInterval(clockTimestamp)
     }
 }
 

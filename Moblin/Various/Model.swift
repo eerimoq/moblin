@@ -1399,7 +1399,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadNtpClient() {
         stopNtpClient()
-        if database.debug.timecodesEnabled!, stream.timecodesEnabled!, !stream.ntpPoolAddress!.isEmpty {
+        if isTimecodesEnabled() {
             logger.info("Starting NTP client for pool \(stream.ntpPoolAddress!)")
             TrueTimeClient.sharedInstance.start(pool: [stream.ntpPoolAddress!])
         }
@@ -1917,7 +1917,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadSrtlaServer() {
         stopSrtlaServer()
         if database.srtlaServer!.enabled {
-            srtlaServer = SrtlaServer(settings: database.srtlaServer!)
+            srtlaServer = SrtlaServer(settings: database.srtlaServer!, timecodesEnabled: isTimecodesEnabled())
             srtlaServer!.delegate = self
             srtlaServer!.start()
         }
@@ -3926,12 +3926,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setNetStream(
             proto: stream.getProtocol(),
             portrait: stream.portrait!,
-            timecodesEnabled: database.debug.timecodesEnabled! && stream.timecodesEnabled!
+            timecodesEnabled: isTimecodesEnabled()
         )
         updateTorch()
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())
         setLowFpsImage()
+    }
+
+    private func isTimecodesEnabled() -> Bool {
+        return database.debug.timecodesEnabled! && stream.timecodesEnabled! && !stream.ntpPoolAddress!.isEmpty
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {

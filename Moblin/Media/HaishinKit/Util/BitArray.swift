@@ -45,7 +45,23 @@ open class BitArray {
 
     func readBits(count: Int) throws -> UInt8 {
         var value: UInt8 = 0
+        for _ in 0 ..< count {
+            value <<= 1
+            value |= try readBit() ? 1 : 0
+        }
+        return value
+    }
+
+    func writeBitsU32(_ value: UInt32, count: Int) {
         for i in 0 ..< count {
+            let mask = UInt32(1 << (count - i - 1))
+            writeBit((value & mask) == mask)
+        }
+    }
+
+    func readBitsU32(count: Int) throws -> UInt32 {
+        var value: UInt32 = 0
+        for _ in 0 ..< count {
             value <<= 1
             value |= try readBit() ? 1 : 0
         }

@@ -112,6 +112,7 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug.timecodesEnabled = value
                     model.reloadNtpClient()
+                    model.reloadSrtlaServer()
                 }))
             } header: {
                 Text("Experimental")

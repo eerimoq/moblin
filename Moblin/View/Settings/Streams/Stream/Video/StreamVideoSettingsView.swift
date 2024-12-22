@@ -10,7 +10,10 @@ private struct StreamTimecodesSettingsView: View {
                 NavigationLink {
                     TextEditView(title: String(localized: "NTP pool address"), value: stream.ntpPoolAddress!) {
                         stream.ntpPoolAddress = $0
-                        model.reloadNtpClient()
+                        if stream.enabled {
+                            model.reloadNtpClient()
+                            model.reloadSrtlaServer()
+                        }
                     }
                 } label: {
                     TextItemView(
@@ -190,7 +193,10 @@ struct StreamVideoSettingsView: View {
                                 stream.timecodesEnabled!
                             }, set: { value in
                                 stream.timecodesEnabled = value
-                                model.reloadNtpClient()
+                                if stream.enabled {
+                                    model.reloadNtpClient()
+                                    model.reloadSrtlaServer()
+                                }
                             }))
                             .disabled(stream.codec != .h265hevc || (stream.enabled && model.isLive))
                         }

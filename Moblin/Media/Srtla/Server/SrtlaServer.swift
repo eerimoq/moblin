@@ -38,9 +38,9 @@ class SrtlaServer {
     var totalBytesReceived: Atomic<UInt64> = .init(0)
     private var numberOfClients: Atomic<Int> = .init(0)
 
-    init(settings: SettingsSrtlaServer) {
+    init(settings: SettingsSrtlaServer, timecodesEnabled: Bool) {
         self.settings = settings.clone()
-        srtServer = SrtServer()
+        srtServer = SrtServer(timecodesEnabled: timecodesEnabled)
         srtServer.srtlaServer = self
     }
 
