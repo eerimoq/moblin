@@ -166,8 +166,8 @@ struct HevcSeiPayloadTimeCode {
             writer.writeBits(minutes, count: 6)
             writer.writeBits(hours, count: 5)
         }
-        writer.writeBits(16, count: 5)
-        writer.writeBitsU32(offset, count: 16)
+        writer.writeBits(10, count: 5)
+        writer.writeBitsU32(offset, count: 10)
         writeMoreDataInPayload(writer: writer)
         return writer.data
     }
