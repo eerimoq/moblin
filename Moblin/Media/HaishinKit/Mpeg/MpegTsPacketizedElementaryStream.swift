@@ -196,7 +196,7 @@ struct MpegTsPacketizedElementaryStream {
         }
         if let timecode {
             data += nalUnitStartCode
-            let payload = hevcPackSeiTimeCode(clock: timecode)
+            let payload = HevcSei(payload: .timeCode(HevcSeiPayloadTimeCode(clock: timecode))).encode()
             data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: payload).encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: count, deallocator: .none)

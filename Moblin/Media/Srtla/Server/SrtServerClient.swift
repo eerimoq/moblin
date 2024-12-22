@@ -255,9 +255,7 @@ class SrtServerClient {
         videoDecoder?.startRunning()
     }
 
-    private func tryMakeSampleBuffer(packetId: UInt16,
-                                     forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)?
-    {
+    private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)? {
         guard let data = elementaryStreamSpecificData[packetId] else {
             return nil
         }
@@ -352,11 +350,26 @@ class SrtServerClient {
                                          packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let units = readH265NalUnits(packetizedElementaryStream.data, [.sps, .pps, .vps])
+        let units = readH265NalUnits(packetizedElementaryStream.data, [.sps, .pps, .vps, .prefixSeiNut])
         let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
             handleVideoFormatDescription(formatDescription)
+        }
+        if false {
+            for unit in units {
+                switch unit.type {
+                case .prefixSeiNut:
+                    switch HevcSei(data: unit.payload)?.payload {
+                    case let .timeCode(timeCode):
+                        logger.info("xxx timecode \(timeCode.makeClock(vuiTimeScale: 1))")
+                    default:
+                        break
+                    }
+                default:
+                    break
+                }
+            }
         }
         guard let (sampleBuffer,
                    firstReceivedPresentationTimeStamp,

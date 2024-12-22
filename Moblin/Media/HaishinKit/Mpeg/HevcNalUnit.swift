@@ -97,48 +97,154 @@ private let calendar: Calendar = {
     return utcCalender
 }()
 
-func hevcPackSeiTimeCode(clock: Date) -> Data {
-    let numClockTs: UInt8 = 1
-    let clockTimestampFlag = true
-    let unitFieldBasedFlag = true
-    let fullTimestampFlag = true
-    let timeOffset: UInt8 = 5
-    let numberOfFrames: UInt32 = 30
-    let writer = BitArray()
-    writer.writeBits(numClockTs, count: 2)
-    writer.writeBit(clockTimestampFlag)
-    writer.writeBit(unitFieldBasedFlag)
-    writer.writeBits(0, count: 5)
-    writer.writeBit(fullTimestampFlag)
-    writer.writeBit(false)
-    writer.writeBit(false)
-    writer.writeBits(UInt8((numberOfFrames >> 8) & 0xFF), count: 8)
-    writer.writeBits(UInt8((numberOfFrames >> 0) & 0xFF), count: 1)
-    if fullTimestampFlag {
-        writer.writeBits(UInt8(calendar.component(.second, from: clock)), count: 6)
-        writer.writeBits(UInt8(calendar.component(.minute, from: clock)), count: 6)
-        writer.writeBits(UInt8(calendar.component(.hour, from: clock)), count: 5)
+struct HevcSeiPayloadTimeCode {
+    private var hours: UInt8
+    private var minutes: UInt8
+    private var seconds: UInt8
+
+    init(clock: Date) {
+        hours = UInt8(calendar.component(.hour, from: clock))
+        minutes = UInt8(calendar.component(.minute, from: clock))
+        seconds = UInt8(calendar.component(.second, from: clock))
     }
-    writer.writeBits(8, count: 5)
-    writer.writeBits(timeOffset, count: 8)
-    // more_data_in_payload()
+
+    init?(reader: BitArray) {
+        do {
+            guard try reader.readBits(count: 2) == 1 else {
+                logger.info("Not exactly one entry")
+                return nil
+            }
+            guard try reader.readBit() else {
+                logger.info("clockTimestampFlag not set")
+                return nil
+            }
+            _ = try reader.readBit()
+            _ = try reader.readBits(count: 5)
+            let fullTimestampFlag = try reader.readBit()
+            _ = try reader.readBit()
+            _ = try reader.readBit()
+            _ = try reader.readBits(count: 8)
+            _ = try reader.readBits(count: 1)
+            if fullTimestampFlag {
+                seconds = try reader.readBits(count: 6)
+                minutes = try reader.readBits(count: 6)
+                hours = try reader.readBits(count: 5)
+            } else {
+                return nil
+            }
+        } catch {
+            return nil
+        }
+    }
+
+    func makeClock(vuiTimeScale: UInt32) -> Date {
+        var clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
+        clockTimestamp *= Double(vuiTimeScale)
+        // Not good if close to new day
+        let startOfDay = calendar.startOfDay(for: .now)
+        return startOfDay.addingTimeInterval(clockTimestamp)
+    }
+
+    func encode() -> Data {
+        let numClockTs: UInt8 = 1
+        let clockTimestampFlag = true
+        let unitFieldBasedFlag = true
+        let fullTimestampFlag = true
+        let timeOffset: UInt8 = 5
+        let numberOfFrames: UInt32 = 30
+        let writer = BitArray()
+        writer.writeBits(numClockTs, count: 2)
+        writer.writeBit(clockTimestampFlag)
+        writer.writeBit(unitFieldBasedFlag)
+        writer.writeBits(0, count: 5)
+        writer.writeBit(fullTimestampFlag)
+        writer.writeBit(false)
+        writer.writeBit(false)
+        writer.writeBits(UInt8((numberOfFrames >> 8) & 0xFF), count: 8)
+        writer.writeBits(UInt8((numberOfFrames >> 0) & 0xFF), count: 1)
+        if fullTimestampFlag {
+            writer.writeBits(seconds, count: 6)
+            writer.writeBits(minutes, count: 6)
+            writer.writeBits(hours, count: 5)
+        }
+        writer.writeBits(8, count: 5)
+        writer.writeBits(timeOffset, count: 8)
+        writeMoreDataInPayload(writer: writer)
+        return writer.data
+    }
+}
+
+enum HevcSeiPayloadType: UInt8 {
+    case timeCode = 136
+}
+
+enum HevcSeiPayload {
+    case timeCode(HevcSeiPayloadTimeCode)
+}
+
+struct HevcSei {
+    private(set) var payload: HevcSeiPayload
+
+    init(payload: HevcSeiPayload) {
+        self.payload = payload
+    }
+
+    init?(data: Data) {
+        let reader = BitArray(data: data)
+        do {
+            let type = try reader.readBits(count: 8)
+            guard type != 0xFF else {
+                logger.info("nal: SEI message type too long")
+                return nil
+            }
+            let length = try reader.readBits(count: 8)
+            guard length != 0xFF else {
+                logger.info("nal: SEI message length too long")
+                return nil
+            }
+            switch HevcSeiPayloadType(rawValue: type) {
+            case .timeCode:
+                guard let timeCode = HevcSeiPayloadTimeCode(reader: reader) else {
+                    logger.info("nal: failed to decode time code payload")
+                    return nil
+                }
+                payload = .timeCode(timeCode)
+            default:
+                return nil
+            }
+        } catch {
+            return nil
+        }
+    }
+
+    func encode() -> Data {
+        let type: HevcSeiPayloadType
+        let data: Data
+        switch payload {
+        case let .timeCode(payload):
+            type = .timeCode
+            data = payload.encode()
+        }
+        let writer = BitArray()
+        writer.writeBits(type.rawValue, count: 8)
+        writer.writeBits(UInt8(data.count), count: 8)
+        writer.writeBytes(data)
+        writeRbspTrailingBits(writer: writer)
+        return writer.data
+    }
+}
+
+private func writeRbspTrailingBits(writer: BitArray) {
+    writer.writeBit(true)
+    while writer.bitOffset != 0 {
+        writer.writeBit(false)
+    }
+}
+
+private func writeMoreDataInPayload(writer: BitArray) {
     var padding = true
     while writer.bitOffset != 0 {
         writer.writeBit(padding)
         padding = false
     }
-    // rbsp_trailing_bits()
-    writer.writeBit(true)
-    while writer.bitOffset != 0 {
-        writer.writeBit(false)
-    }
-    return packSeiMessage(payloadType: 136, payload: writer.data)
-}
-
-private func packSeiMessage(payloadType: UInt8, payload: Data) -> Data {
-    let writer = ByteArray()
-    writer.writeUInt8(payloadType)
-    writer.writeUInt8(UInt8(payload.count) - 1)
-    writer.writeBytes(payload)
-    return writer.data
 }
