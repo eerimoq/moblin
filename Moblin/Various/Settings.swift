@@ -2006,9 +2006,9 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
 var djiDeviceImageStabilizations = SettingsDjiDeviceImageStabilization.allCases.map { $0.toString() }
 
 enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
-    case r480p = "480p"
-    case r720p = "720p"
     case r1080p = "1080p"
+    case r720p = "720p"
+    case r480p = "480p"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsDjiDeviceResolution(rawValue: decoder.singleValueContainer()
