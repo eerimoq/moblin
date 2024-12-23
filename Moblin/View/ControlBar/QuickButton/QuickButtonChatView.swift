@@ -434,18 +434,15 @@ private struct ControlView: View {
             Text("Send message")
                 .foregroundColor(.gray)
         }
+        .submitLabel(.send)
+        .onSubmit {
+            if !message.isEmpty {
+                model.sendChatMessage(message: message)
+            }
+            message = ""
+        }
         .padding(5)
         .foregroundColor(.white)
-        Button(action: {
-            model.sendChatMessage(message: message)
-            message = ""
-        }, label: {
-            Image(systemName: "paperplane")
-                .font(.title)
-                .padding(5)
-                .foregroundColor(message.isEmpty ? .gray : .accentColor)
-        })
-        .disabled(message.isEmpty)
         ControlAlertsButtonView()
     }
 }
