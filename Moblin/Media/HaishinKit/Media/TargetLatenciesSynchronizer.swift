@@ -18,10 +18,12 @@ class TargetLatenciesSynchronizer {
     }
 
     func update() -> (Double, Double)? {
-        guard let latestVideoPresentationTimeStamp, let latestAudioPresentationTimeStamp else {
+        guard let latestAudioPresentationTimeStamp, let latestVideoPresentationTimeStamp else {
             return nil
         }
         let audioVideoDiff = latestAudioPresentationTimeStamp - latestVideoPresentationTimeStamp
+        self.latestAudioPresentationTimeStamp = nil
+        self.latestVideoPresentationTimeStamp = nil
         estimatedAudioVideoDiff = estimatedAudioVideoDiff * 0.98 + audioVideoDiff * 0.02
         guard abs(estimatedAudioVideoDiff - currentAudioVideoDiff) > 0.1 else {
             return nil
