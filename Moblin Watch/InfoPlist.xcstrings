@@ -11,6 +11,12 @@
             "value" : "Moblin"
           }
         },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
