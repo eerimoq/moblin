@@ -2209,7 +2209,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media previous"
           }
         },
@@ -2339,7 +2339,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin tesla media toggle-playback"
           }
         },
@@ -5329,7 +5329,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{teslaBatteryLevel} - Teslas batterinivå"
           }
         },
@@ -15529,7 +15529,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ett snöre"
           }
         },
@@ -20475,7 +20475,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ladda automatiskt upp ögonblicksbilder av snabbknappar och ögonblicksbilder av chattbot till kanaler på din Discord-server."
           }
         },
@@ -21775,7 +21775,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sänk upplösningen automatiskt när den tillgängliga bandbredden är låg. Ger generellt bättre bildkvalitet vid låga (<750 Kbps) bithastigheter."
           }
         },
@@ -25415,7 +25415,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bits"
           }
         },
@@ -27365,7 +27365,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bro-id"
           }
         },
@@ -29835,7 +29835,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Webbhook-URL för chattbot-ögonblicksbild"
           }
         },
@@ -32831,7 +32831,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Jämförelse"
           }
         },
@@ -46482,7 +46482,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Uppskattad tittarfördröjning, används till exempel för att göra det enklare att ta ögonblicksbilder med chattboten. Det fördröjer inte strömmen."
           }
         },
@@ -66385,7 +66385,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Får de flesta Bluetooth-högtalare att fungera bättre."
           }
         },
@@ -71066,7 +71066,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin identifierar sig för fordonet med denna nyckel. Tryck på knappen nedan för att lägga till den i ditt fordon."
           }
         },
@@ -76396,7 +76396,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nästa spår."
           }
         },
@@ -78476,7 +78476,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "NTP-pooladress"
           }
         },
@@ -80036,7 +80036,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fungerar bara när främre eller bakre mikrofonen är vald."
           }
         },
@@ -84846,7 +84846,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Snygg ögonblicksbild"
           }
         },
@@ -89006,7 +89006,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pålitliga varningar och chattmeddelanden aktiverade"
           }
         },
@@ -89136,7 +89136,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pålitlig chatt"
           }
         },
@@ -101362,7 +101362,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tal till text"
           }
         },
@@ -108252,7 +108252,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sträng"
           }
         },
@@ -110072,7 +110072,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Synkronisera flera strömmar på din server med hjälp av tidskoder. Tidkoder är i UTC och kräver H.265/HEVC-codec."
           }
         },
@@ -110722,7 +110722,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tryck på Lås → Lägg till nyckel i din Tesla och tryck på ditt nyckelkort"
           }
         },
@@ -113452,7 +113452,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Det första objektet som matchar påhejade bitar kommer att spelas."
           }
         },
@@ -115663,7 +115663,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Klockan fungerar som fjärrkontrollassistent när den är aktiverad. Observera att i det här fallet stöds inte chatt, hoppa över aktuell TTS och några andra funktioner."
           }
         },
@@ -116183,7 +116183,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tidskoder"
           }
         },
@@ -117093,7 +117093,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Växla medieuppspelning"
           }
         },
@@ -117223,7 +117223,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Växla uppspelning."
           }
         },
@@ -118913,7 +118913,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Utlöser varningar när du säger något."
           }
         },
