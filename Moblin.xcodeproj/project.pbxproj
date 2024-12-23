@@ -226,6 +226,7 @@
 		036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
 		036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
 		036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
+		036C39A82D193CCF00F74D37 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 036C39A72D193CCF00F74D37 /* InfoPlist.xcstrings */; };
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
@@ -797,6 +798,8 @@
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
+		036C39A72D193CCF00F74D37 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		036C39A92D193CCF00F74D37 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2682,6 +2685,7 @@
 				032F3B3D2C950F08002FF97E /* MoblinWatch.entitlements */,
 				037CDEB62C9523A6007911A6 /* Info.plist */,
 				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
+				036C39A72D193CCF00F74D37 /* InfoPlist.xcstrings */,
 				03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */,
 			);
 			path = "Moblin Watch";
@@ -2996,6 +3000,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03ECDF502B8E4E6000BD920E /* Preview Assets.xcassets in Resources */,
+				036C39A82D193CCF00F74D37 /* InfoPlist.xcstrings in Resources */,
 				03ECDF4D2B8E4E6000BD920E /* Assets.xcassets in Resources */,
 				0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */,
 				0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */,
@@ -3495,6 +3500,7 @@
 			children = (
 				03EC1E782CBEE477009AEAB1 /* it */,
 				033FD7182CC52E1D0073C6EC /* de */,
+				036C39A92D193CCF00F74D37 /* zh-Hant */,
 			);
 			name = AppShortcuts.strings;
 			sourceTree = "<group>";

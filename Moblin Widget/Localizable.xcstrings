@@ -14,6 +14,12 @@
             "state" : "translated",
             "value" : "Moblin"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
         }
       }
     },
@@ -35,6 +41,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Виджет Moblin"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 小工具"
           }
         }
       }

@@ -16,6 +16,12 @@
             "state" : "new",
             "value" : "Moblin"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
         }
       }
     },
@@ -40,6 +46,12 @@
             "state" : "translated",
             "value" : "Registrazione schermo Moblin"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 螢幕錄製"
+          }
         }
       }
     },
@@ -63,6 +75,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
           }
         }
       }
@@ -100,6 +118,12 @@
             "state" : "translated",
             "value" : "Si"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
+          }
         }
       }
     },
@@ -124,6 +148,12 @@
             "state" : "translated",
             "value" : "Si"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
+          }
         }
       }
     },
@@ -147,6 +177,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
           }
         }
       }

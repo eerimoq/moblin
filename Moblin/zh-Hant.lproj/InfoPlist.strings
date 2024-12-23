@@ -4,8 +4,20 @@
 /* Bundle name */
 "CFBundleName" = "Moblin";
 
+/* Privacy - Bluetooth Always Usage Description */
+"NSBluetoothAlwaysUsageDescription" = "Moblin 使用藍芽與 DJI 設備進行連線";
+
 /* Privacy - Camera Usage Description */
 "NSCameraUsageDescription" = "Moblin 串流影像來自相機。";
+
+/* Privacy - Health Records Usage Description */
+"NSHealthClinicalHealthRecordsShareUsageDescription" = "Moblin 可以把你的心率顯示在實況上";
+
+/* Privacy - Health Share Usage Description */
+"NSHealthShareUsageDescription" = "Moblin 可以把你的心率顯示在實況上";
+
+/* Privacy - Health Update Usage Description */
+"NSHealthUpdateUsageDescription" = "Moblin 可以把你的心率顯示在實況上";
 
 /* Privacy - Local Network Usage Description */
 "NSLocalNetworkUsageDescription" = "Moblin 使用本地端作為 SRT 函式庫的輸入與輸出。";
@@ -21,4 +33,7 @@
 
 /* Privacy - Photo Library Usage Description */
 "NSPhotoLibraryUsageDescription" = "Moblin 顯示所選圖片為圖層。";
+
+/* Privacy - Speech Recognition Usage Description */
+"NSSpeechRecognitionUsageDescription" = "Moblin 可以增加轉場到實況中";
 

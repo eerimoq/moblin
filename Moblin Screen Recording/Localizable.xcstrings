@@ -14,6 +14,12 @@
             "state" : "translated",
             "value" : " %lld кан."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld ch"
+          }
         }
       }
     },
@@ -29,6 +35,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld дБ,"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB,"
           }
         }
       }
@@ -52,6 +64,12 @@
             "state" : "translated",
             "value" : "Хост не указан"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主機無法連接"
+          }
         }
       }
     },
@@ -67,6 +85,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL IRL non valido"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRL URL 格式錯誤"
           }
         }
       }
@@ -91,6 +115,12 @@
             "state" : "translated",
             "value" : "Некорректный URL IRLToolkit"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRLTookit URL 格式錯誤"
+          }
         }
       }
     },
@@ -112,6 +142,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Некорректный RIST URL"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RIST URL 格式錯誤"
           }
         }
       }
@@ -135,6 +171,12 @@
             "state" : "translated",
             "value" : "Некорректный RTMP URL"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP URL 格式錯誤"
+          }
         }
       }
     },
@@ -156,6 +198,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Некорректный SRT(LA) URL"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT 聚合 URL 格式錯誤"
           }
         }
       }
@@ -179,6 +227,12 @@
             "state" : "translated",
             "value" : "Некорректный URL"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL 格式錯誤"
+          }
         }
       }
     },
@@ -200,6 +254,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Отсутствует порт RIST"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 RIST 連接埠"
           }
         }
       }
@@ -223,6 +283,12 @@
             "state" : "translated",
             "value" : "Отсутствует имя RTMP стрима"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 RTMP 串流名稱"
+          }
         }
       }
     },
@@ -245,6 +311,12 @@
             "state" : "translated",
             "value" : "Протокол не указан"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "組合遺失"
+          }
         }
       }
     },
@@ -261,6 +333,12 @@
             "state" : "translated",
             "value" : "Порт SRT(LA) не указан"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 SRT聚合連接埠"
+          }
         }
       }
     },
@@ -276,6 +354,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Протокол не поддерживается: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支援的組合 %@"
           }
         }
       }
