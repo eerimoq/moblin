@@ -727,7 +727,7 @@ final class VideoUnit: NSObject {
     private func calcBlurRadius() -> Double {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
-            return 25 + min(offset.seconds, 2) * 25
+            return 15 + min(offset.seconds, 2) * 15
         } else {
             return 25
         }
