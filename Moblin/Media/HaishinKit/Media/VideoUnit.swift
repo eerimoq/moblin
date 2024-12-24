@@ -724,13 +724,22 @@ final class VideoUnit: NSObject {
         return filter.outputImage
     }
 
+    private func calcBlurRadius() -> Double {
+        if let latestSampleBufferTime {
+            let offset = ContinuousClock.now - latestSampleBufferTime
+            return 25 + min(offset.seconds, 5) * 25
+        } else {
+            return 25
+        }
+    }
+
     private func blurImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image else {
             return nil
         }
         let filter = MTIMPSGaussianBlurFilter()
         filter.inputImage = image
-        filter.radius = Float(25 * (image.extent.size.maximum() / 1920))
+        filter.radius = Float(calcBlurRadius() * (image.extent.size.maximum() / 1920))
         return filter.outputImage
     }
 
@@ -790,14 +799,7 @@ final class VideoUnit: NSObject {
     private func blurImage(_ image: CIImage) -> CIImage {
         let filter = CIFilter.gaussianBlur()
         filter.inputImage = image
-        let radius: Double
-        if let latestSampleBufferTime {
-            let offset = ContinuousClock.now - latestSampleBufferTime
-            radius = 25 + offset.seconds * 25
-        } else {
-            radius = 25
-        }
-        filter.radius = Float(radius * (image.extent.size.maximum() / 1920))
+        filter.radius = Float(calcBlurRadius() * (image.extent.size.maximum() / 1920))
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
