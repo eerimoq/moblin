@@ -247,9 +247,12 @@ class RemoteControlStreamer {
 }
 
 extension RemoteControlStreamer: WebSocketClientDelegate {
-    func webSocketClientConnected(_: WebSocketClient) {}
+    func webSocketClientConnected(_: WebSocketClient) {
+        logger.info("remote-control-streamer: Connected")
+    }
 
     func webSocketClientDisconnected(_: WebSocketClient) {
+        logger.info("remote-control-streamer: Disconnected")
         if connected {
             delegate?.remoteControlStreamerDisconnected()
         }

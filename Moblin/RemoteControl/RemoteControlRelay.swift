@@ -140,6 +140,9 @@ extension RemoteControlRelay: WebSocketClientDelegate {
 
     func webSocketClientDisconnected(_: WebSocketClient) {
         logger.info("remote-control-relay: Control disconnected.")
+        for connection in connections {
+            connection.close()
+        }
     }
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {

@@ -522,7 +522,9 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
     func twitchEventSubChannelHypeTrainEnd(event _: TwitchEventSubChannelHypeTrainEndEvent) {}
 
     func twitchEventSubUnauthorized() {
-        logger.info("remote-control-assistant: Twitch not authorized")
+        logger.info("remote-control-assistant: twitch-event-sub: Twitch not authorized")
+        twitchEventSub?.stop()
+        twitchEventSub = nil
     }
 
     func twitchEventSubNotification(message: String) {
