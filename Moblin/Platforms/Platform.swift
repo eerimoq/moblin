@@ -6,5 +6,4 @@ enum Platform: Codable {
     case openStreamingPlatform
     case twitch
     case youTube
-    case unknown
 }

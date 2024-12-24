@@ -1447,6 +1447,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case skipCurrentTts = "Skip current TTS"
     case streamMarker = "Stream marker"
     case reloadBrowserWidgets = "Reload browser widgets"
+    case interactiveChat = "Interactive chat"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2576,7 +2577,7 @@ class Database: Codable {
             addDefaultBitratePresets(database: database)
         }
         addMissingGlobalButtons(database: database)
-        for button in database.globalButtons! where button.type != .lut {
+        for button in database.globalButtons! where button.type != .interactiveChat {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
@@ -2724,6 +2725,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Interactive chat"))
+    button.id = UUID()
+    button.type = .interactiveChat
+    button.imageType = "System name"
+    button.systemImageNameOn = "arrow.up.message.fill"
+    button.systemImageNameOff = "arrow.up.message"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Black screen"))

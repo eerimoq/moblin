@@ -226,6 +226,13 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .chat, panel: .chat)
     }
 
+    private func interactiveChatAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .interactiveChat, isOn: state.button.isOn)
+        model.updateButtonStates()
+        model.interactiveChat = state.button.isOn
+    }
+
     private func micAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .mic, panel: .mic)
     }
@@ -288,6 +295,12 @@ struct QuickButtonsInnerView: View {
             case .chat:
                 Button(action: {
                     chatAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .interactiveChat:
+                Button(action: {
+                    interactiveChatAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

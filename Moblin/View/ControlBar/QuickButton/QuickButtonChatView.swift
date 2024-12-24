@@ -98,7 +98,7 @@ private struct LineView: View {
     }
 }
 
-private struct ChildSizeReader<Content: View>: View {
+struct ChildSizeReader<Content: View>: View {
     // periphery:ignore
     @Binding var size: CGSize
     let content: () -> Content
@@ -116,7 +116,7 @@ private struct ChildSizeReader<Content: View>: View {
     }
 }
 
-private struct SizePreferenceKey: PreferenceKey {
+struct SizePreferenceKey: PreferenceKey {
     static var defaultValue: CGSize = .zero
 
     static func reduce(value _: inout CGSize, nextValue: () -> CGSize) {
@@ -281,9 +281,7 @@ private struct ChatView: View {
             MessagesView()
             if model.interactiveChatPaused {
                 ChatInfo(
-                    message: String(
-                        localized: "Chat paused: \(model.pausedInteractiveChatPostsCount) new messages"
-                    )
+                    message: String(localized: "Chat paused: \(model.pausedInteractiveChatPostsCount) new messages")
                 )
                 .padding(2)
             }
@@ -399,9 +397,7 @@ private struct ChatAlertsView: View {
             AlertsMessagesView()
             if model.interactiveChatAlertsPaused {
                 ChatInfo(
-                    message: String(
-                        localized: "Chat paused: \(model.pausedInteractiveChatAlertsPostsCount) new alerts"
-                    )
+                    message: String(localized: "Chat paused: \(model.pausedInteractiveChatAlertsPostsCount) new alerts")
                 )
                 .padding(2)
             }

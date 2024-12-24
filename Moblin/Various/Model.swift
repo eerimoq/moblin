@@ -376,8 +376,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
+    @Published var interactiveChat = false
     @Published var chatPosts: Deque<ChatPost> = []
+    @Published var pausedChatPostsCount: Int = 0
+    @Published var chatPaused = false
     private var newChatPosts: Deque<ChatPost> = []
+    private var pausedChatPosts: Deque<ChatPost> = []
     private var chatBotMessages: Deque<ChatBotMessage> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
@@ -1266,6 +1270,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
+        interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
@@ -2701,6 +2706,38 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!)
     }
 
+    func pauseChat() {
+        chatPaused = true
+        pausedChatPostsCount = 0
+        pausedChatPosts = [createRedLineChatPost()]
+    }
+
+    private func createRedLineChatPost() -> ChatPost {
+        defer {
+            chatPostId += 1
+        }
+        return ChatPost(
+            id: chatPostId,
+            user: nil,
+            userColor: nil,
+            userBadges: [],
+            segments: [],
+            timestamp: "",
+            timestampTime: .now,
+            isAction: false,
+            isSubscriber: false,
+            bits: nil,
+            highlight: nil,
+            live: true
+        )
+    }
+
+    func pauseInteractiveChat() {
+        interactiveChatPaused = true
+        pausedInteractiveChatPostsCount = 0
+        pausedInteractiveChatPosts = [createRedLineChatPost()]
+    }
+
     func endOfInteractiveChatReachedWhenPaused() {
         var numberOfPostsAppended = 0
         while numberOfPostsAppended < 5, let post = pausedInteractiveChatPosts.popFirst() {
@@ -2723,25 +2760,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func pauseInteractiveChat() {
-        interactiveChatPaused = true
-        pausedInteractiveChatPostsCount = 0
-        appendChatMessage(
-            platform: .unknown,
-            user: nil,
-            userId: nil,
-            userColor: nil,
-            userBadges: [],
-            segments: [],
-            timestamp: "",
-            timestampTime: .now,
-            isAction: false,
-            isSubscriber: false,
-            isModerator: false,
-            bits: nil,
-            highlight: nil,
-            live: true
-        )
+    func endOfChatReachedWhenPaused() {
+        var numberOfPostsAppended = 0
+        while numberOfPostsAppended < 5, let post = pausedChatPosts.popFirst() {
+            if post.user == nil {
+                if let lastPost = chatPosts.first, lastPost.user == nil {
+                    continue
+                }
+                if pausedChatPosts.isEmpty {
+                    continue
+                }
+            }
+            if chatPosts.count > maximumNumberOfChatMessages - 1 {
+                chatPosts.removeLast()
+            }
+            chatPosts.prepend(post)
+            numberOfPostsAppended += 1
+        }
+        if numberOfPostsAppended == 0 {
+            chatPaused = false
+        }
+    }
+
+    func pauseInteractiveChatAlerts() {
+        interactiveChatAlertsPaused = true
+        pausedInteractiveChatAlertsPostsCount = 0
     }
 
     func endOfInteractiveChatAlertsReachedWhenPaused() {
@@ -2764,11 +2807,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if numberOfPostsAppended == 0 {
             interactiveChatAlertsPaused = false
         }
-    }
-
-    func pauseInteractiveChatAlerts() {
-        interactiveChatAlertsPaused = true
-        pausedInteractiveChatAlertsPostsCount = 0
     }
 
     private func removeOldChatMessages(now: ContinuousClock.Instant) {
@@ -2807,6 +2845,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
+        }
+        if chatPaused {
+            pausedChatPostsCount = max(pausedChatPosts.count - 1, 0)
+        } else {
+            while let post = newChatPosts.popFirst() {
+                if chatPosts.count > maximumNumberOfChatMessages - 1 {
+                    chatPosts.removeLast()
+                }
+                chatPosts.prepend(post)
+            }
         }
         if interactiveChatPaused {
             // The red line is one post.
@@ -5122,7 +5170,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             live: live
         )
         chatPostId += 1
-        newChatPosts.append(post)
+        if chatPaused {
+            if pausedChatPosts.count < 2 * maximumNumberOfChatMessages {
+                pausedChatPosts.append(post)
+            }
+        } else {
+            newChatPosts.append(post)
+        }
         if interactiveChatPaused {
             if pausedInteractiveChatPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
                 pausedInteractiveChatPosts.append(post)
