@@ -194,6 +194,7 @@ enum RemoteControlMessageToStreamer: Codable {
     case hello(apiVersion: String, authentication: RemoteControlAuthentication)
     case identified(result: RemoteControlResult)
     case request(id: Int, data: RemoteControlRequest)
+    case pong
 
     func toJson() -> String? {
         do {
@@ -217,6 +218,7 @@ enum RemoteControlMessageToAssistant: Codable {
     case event(data: RemoteControlEvent)
     case preview(preview: Data)
     case twitchStart(channelName: String?, channelId: String, accessToken: String)
+    case ping
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {

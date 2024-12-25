@@ -44,6 +44,8 @@ class RemoteControlStreamer {
     var connectionErrorMessage: String = ""
     private var connected = false
     private var encryption: RemoteControlEncryption
+    private let keepAliveTimer = SimpleTimer(queue: .main)
+    private var gotPong = true
 
     init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
@@ -65,6 +67,7 @@ class RemoteControlStreamer {
 
     private func startInternal() {
         stopInternal()
+        gotPong = true
         webSocket = .init(url: clientUrl)
         webSocket.delegate = self
         webSocket.start()
@@ -73,6 +76,7 @@ class RemoteControlStreamer {
     func stopInternal() {
         connected = false
         webSocket.stop()
+        stopKeepAlive()
     }
 
     func isConnected() -> Bool {
@@ -107,6 +111,25 @@ class RemoteControlStreamer {
         send(message: .twitchStart(channelName: channelName, channelId: channelId, accessToken: accessToken))
     }
 
+    private func startKeepAlive() {
+        keepAliveTimer.startPeriodic(interval: 30) { [weak self] in
+            guard let self else {
+                return
+            }
+            if gotPong {
+                gotPong = false
+                send(message: .ping)
+            } else {
+                logger.info("remote-control-streamer: Pong not received")
+                startInternal()
+            }
+        }
+    }
+
+    private func stopKeepAlive() {
+        keepAliveTimer.stop()
+    }
+
     private func send(message: RemoteControlMessageToAssistant) {
         do {
             let message = try message.toJson()
@@ -129,6 +152,8 @@ class RemoteControlStreamer {
                 }
             case let .request(id: id, data: data):
                 handleRequest(id: id, data: data)
+            case .pong:
+                gotPong = true
             }
         } catch {
             logger.info("remote-control-streamer: Decode failed")
@@ -249,10 +274,12 @@ class RemoteControlStreamer {
 extension RemoteControlStreamer: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {
         logger.info("remote-control-streamer: Connected")
+        startKeepAlive()
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {
         logger.info("remote-control-streamer: Disconnected")
+        stopKeepAlive()
         if connected {
             delegate?.remoteControlStreamerDisconnected()
         }

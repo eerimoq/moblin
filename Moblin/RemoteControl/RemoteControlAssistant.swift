@@ -42,6 +42,8 @@ class RemoteControlAssistant: NSObject {
     private var twitchEventSubNotiticationWaitForResponse = false
     private var chatMessageHistory: Deque<RemoteControlChatMessage> = []
     private var nextChatMessageId = 0
+    private let keepAliveTimer = SimpleTimer(queue: .main)
+    private var gotPing = false
 
     init(
         port: UInt16,
@@ -75,6 +77,7 @@ class RemoteControlAssistant: NSObject {
         stopRetryStartTimer()
         twitchEventSub?.stop()
         twitchChat?.stop()
+        stopKeepAlive()
     }
 
     func isConnected() -> Bool {
@@ -239,6 +242,29 @@ class RemoteControlAssistant: NSObject {
         retryStartTimer.stop()
     }
 
+    private func startKeepAlive() {
+        gotPing = false
+        keepAliveTimer.startPeriodic(interval: 60) { [weak self] in
+            guard let self else {
+                return
+            }
+            if !gotPing {
+                logger.info("remote-control-assistant: Ping not received")
+                closeStreamer()
+            }
+            gotPing = false
+        }
+    }
+
+    private func stopKeepAlive() {
+        keepAliveTimer.stop()
+    }
+
+    private func closeStreamer() {
+        streamerWebSocket?.close(immediately: false)
+        streamerWebSocket = nil
+    }
+
     private func handleConnected(webSocket: Telegraph.WebSocket) {
         logger.debug("remote-control-assistant: Streamer connected")
         streamerWebSocket = webSocket
@@ -249,6 +275,7 @@ class RemoteControlAssistant: NSObject {
             authentication: .init(challenge: challenge, salt: salt)
         ))
         streamerIdentified = false
+        startKeepAlive()
     }
 
     private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
@@ -257,6 +284,7 @@ class RemoteControlAssistant: NSObject {
         } else {
             logger.debug("remote-control-assistant: Streamer disconnected")
         }
+        stopKeepAlive()
         streamerWebSocket = nil
         connected = false
         delegate?.remoteControlAssistantDisconnected()
@@ -283,6 +311,8 @@ class RemoteControlAssistant: NSObject {
                     httpProxy: httpProxy,
                     urlSession: urlSession
                 )
+            case .ping:
+                handlePing()
             }
         } catch {
             logger.debug("remote-control-assistant: Failed to process message with error \(error)")
@@ -304,8 +334,7 @@ class RemoteControlAssistant: NSObject {
         } else {
             logger.info("remote-control-assistant: Streamer sent wrong password")
             send(message: .identified(result: .wrongPassword))
-            streamerWebSocket?.close(immediately: false)
-            streamerWebSocket = nil
+            closeStreamer()
         }
     }
 
@@ -403,6 +432,11 @@ class RemoteControlAssistant: NSObject {
                               httpProxy: httpProxy,
                               urlSession: urlSession)
         }
+    }
+
+    private func handlePing() {
+        send(message: .pong)
+        gotPing = true
     }
 
     private func handleStateEvent(state: RemoteControlState) {
