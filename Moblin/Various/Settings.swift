@@ -1514,7 +1514,7 @@ class SettingsColorLut: Codable, Identifiable {
 enum SettingsColorSpace: String, Codable, CaseIterable {
     case srgb = "Standard RGB"
     case p3D65 = "P3 D65"
-    // case hlgBt2020 = "HLG BT2020"
+    case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
 
     public init(from decoder: Decoder) throws {

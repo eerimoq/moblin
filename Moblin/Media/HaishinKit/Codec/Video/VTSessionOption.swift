@@ -57,6 +57,7 @@ struct VTSessionOptionKey {
         VTSessionOptionKey(value: kVTCompressionPropertyKey_MaxFrameDelayCount)
     static let encoderID = VTSessionOptionKey(value: kVTVideoEncoderSpecification_EncoderID)
     static let constantBitRate = VTSessionOptionKey(value: kVTCompressionPropertyKey_ConstantBitRate)
+    static let hdrMetadataInsertionMode = VTSessionOptionKey(value: kVTCompressionPropertyKey_HDRMetadataInsertionMode)
 
     let value: CFString
 }

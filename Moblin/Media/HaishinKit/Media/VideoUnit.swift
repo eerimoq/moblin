@@ -1209,10 +1209,10 @@ final class VideoUnit: NSObject {
         colorSpace: AVCaptureColorSpace
     ) -> (AVCaptureDevice.Format?, String?) {
         var formats = device.formats
-            .filter { $0.isFrameRateSupported(frameRate) }
-            .filter { $0.formatDescription.dimensions.width == width }
-            .filter { $0.formatDescription.dimensions.height == height }
-            .filter { $0.supportedColorSpaces.contains(colorSpace) }
+        formats = formats.filter { $0.isFrameRateSupported(frameRate) }
+        formats = formats.filter { $0.formatDescription.dimensions.width == width }
+        formats = formats.filter { $0.formatDescription.dimensions.height == height }
+        formats = formats.filter { $0.supportedColorSpaces.contains(colorSpace) }
         if formats.isEmpty {
             return (nil, "No video format found matching \(height)p\(Int(frameRate)), \(colorSpace)")
         }
@@ -1222,8 +1222,8 @@ final class VideoUnit: NSObject {
         }
         // 420v does not work with OA4.
         formats = formats.filter {
-            $0.formatDescription.mediaSubType
-                .rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange || allowVideoRangePixelFormat
+            $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+                || allowVideoRangePixelFormat
         }
         if formats.isEmpty {
             return (nil, "Unsupported video pixel format")

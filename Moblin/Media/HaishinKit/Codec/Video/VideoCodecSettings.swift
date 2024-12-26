@@ -70,6 +70,14 @@ struct VideoCodecSettings {
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
         ]
+        if profileLevel.contains("Main10") {
+            options += [
+                .init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto),
+                .init(key: .colorPrimaries, value: kCVImageBufferColorPrimaries_ITU_R_2020),
+                .init(key: .transferFunction, value: kCVImageBufferTransferFunction_ITU_R_2100_HLG),
+                .init(key: .YCbCrMatrix, value: kCVImageBufferYCbCrMatrix_ITU_R_2020),
+            ]
+        }
         if !isBaseline, profileLevel.contains("H264") {
             options.append(.init(key: .h264EntropyMode, value: kVTH264EntropyMode_CABAC))
         }

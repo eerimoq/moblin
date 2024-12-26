@@ -2505,7 +2505,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func colorSpaceUpdated() {
-        setColorSpace()
+        storeAndReloadStreamIfEnabled(stream: stream)
     }
 
     func lutEnabledUpdated() {
@@ -4043,6 +4043,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             colorSpace = .sRGB
         case .p3D65:
             colorSpace = .P3_D65
+        case .hlgBt2020:
+            colorSpace = .HLG_BT2020
         case .appleLog:
             if #available(iOS 17.0, *) {
                 colorSpace = .appleLog
@@ -4105,7 +4107,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .h264avc:
             media.setVideoProfile(profile: kVTProfileLevel_H264_Main_AutoLevel)
         case .h265hevc:
-            media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
+            if database.color!.space == .hlgBt2020 {
+                media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main10_AutoLevel)
+            } else {
+                media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
+            }
         }
         media.setAllowFrameReordering(value: stream.bFrames!)
     }
