@@ -6687,7 +6687,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ (%@ gesamt) (Fernbedienung)"
           }
         },
@@ -8154,7 +8154,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ Quell-Audio-Synchronisierung"
+            "value" : "%@ Quellen-Audio-Synchronisierung"
           }
         },
         "el" : {
@@ -15439,8 +15439,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "eine Zeichenfolge"
+            "state" : "translated",
+            "value" : "ein String"
           }
         },
         "el" : {
@@ -25325,8 +25325,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gebisse"
+            "state" : "translated",
+            "value" : "Bits"
           }
         },
         "el" : {
@@ -32741,7 +32741,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vergleich"
           }
         },
@@ -66042,7 +66042,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sorgt für eine bessere Funktion der meisten Bluetooth-Lautsprecher."
           }
         },
@@ -78002,7 +78002,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "NTP-Pooladresse"
           }
         },
@@ -79562,7 +79562,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Funktioniert nur, wenn das vordere oder hintere Mikrofon ausgewählt ist."
           }
         },
@@ -84372,8 +84372,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hübscher Schnappschuss"
+            "state" : "translated",
+            "value" : "Schöner Schnappschuss"
           }
         },
         "el" : {
@@ -88532,7 +88532,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zuverlässige Alarme und Chat-Nachrichten aktiviert"
           }
         },
@@ -88662,7 +88662,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zuverlässiger Chat"
           }
         },
@@ -100888,7 +100888,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sprache-zu-Text"
           }
         },
@@ -107784,8 +107784,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeichenfolge"
+            "state" : "translated",
+            "value" : "String"
           }
         },
         "el" : {
@@ -109604,8 +109604,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Synchronisieren Sie mehrere Streams auf Ihrem Server mithilfe von Timecodes. Timecodes sind in UTC und erfordern den H.265/HEVC-Codec."
+            "state" : "translated",
+            "value" : "Synchronisiere mehrere Streams auf deinem Server mithilfe von Timecodes. Timecodes sind in UTC und erfordern den H.265/HEVC-Codec."
           }
         },
         "el" : {
@@ -110254,8 +110254,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tippen Sie in Ihrem Tesla auf Schlösser → Schlüssel hinzufügen und tippen Sie auf Ihre Schlüsselkarte"
+            "state" : "translated",
+            "value" : "Tippe in deinem Tesla auf Schlösser → Schlüssel hinzufügen und tippe auf deine Schlüsselkarte"
           }
         },
         "el" : {
@@ -112984,8 +112984,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Das erste Element, das den angefeuerten Teilen entspricht, wird abgespielt."
+            "state" : "translated",
+            "value" : "Das erste Element, das den gecheerten Bits entspricht, wird abgespielt."
           }
         },
         "el" : {
@@ -115584,7 +115584,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zeitcodes"
           }
         },
@@ -118314,8 +118314,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lösen Sie Warnungen aus, wenn Sie etwas sagen."
+            "state" : "translated",
+            "value" : "Löse Alerts aus, wenn du etwas sagst."
           }
         },
         "el" : {
@@ -118704,7 +118704,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auslösen durch Sagen von „%@“."
           }
         },
