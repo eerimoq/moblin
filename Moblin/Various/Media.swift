@@ -1,4 +1,5 @@
 import AVFoundation
+import Network
 import SwiftUI
 
 let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
@@ -61,6 +62,7 @@ final class Media: NSObject {
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
+    private var srtlaRelayEndpoints: [NWEndpoint: String] = [:]
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -202,6 +204,9 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         srtlaClient!.start(uri: url, timeout: reconnectTime + 1)
+        for (srtlaRelayEndpoint, name) in srtlaRelayEndpoints {
+            srtlaClient?.addRelay(endpoint: srtlaRelayEndpoint, name: name)
+        }
     }
 
     private func srtInitStream(
@@ -241,6 +246,22 @@ final class Media: NSObject {
         srtlaClient = nil
         srtConnectedObservation = nil
         adaptiveBitrate = nil
+    }
+
+    func addSrtlaRelay(endpoint: NWEndpoint, name: String) {
+        guard srtlaRelayEndpoints[endpoint] == nil else {
+            return
+        }
+        srtlaClient?.addRelay(endpoint: endpoint, name: name)
+        srtlaRelayEndpoints[endpoint] = name
+    }
+
+    func removeSrtlaRelay(endpoint: NWEndpoint) {
+        guard srtlaRelayEndpoints[endpoint] != nil else {
+            return
+        }
+        srtlaClient?.removeRelay(endpoint: endpoint)
+        srtlaRelayEndpoints.removeValue(forKey: endpoint)
     }
 
     func srtSetAdaptiveBitrateAlgorithm(

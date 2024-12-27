@@ -663,6 +663,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private let faxReceiver = FaxReceiver()
 
+    private var srtlaRelayServer: SrtlaRelayServer?
+    private var srtlaRelayClient: SrtlaRelayClient?
+
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
@@ -1400,6 +1403,64 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterButtonState()
         updateLutsButtonState()
         reloadNtpClient()
+        reloadSrtlaRelayServer()
+        reloadSrtlaRelayClient()
+    }
+
+    func reloadSrtlaRelayServer() {
+        stopSrtlaRelayServer()
+        if isSrtlaRelayServerConfigured() {
+            guard let url = URL(string: stream.url), let host = url.host(), let port = url.port, port < 65536 else {
+                return
+            }
+            srtlaRelayServer = SrtlaRelayServer(
+                port: database.srtlaRelay!.server.port,
+                password: database.srtlaRelay!.password,
+                destination: .hostPort(
+                    host: NWEndpoint.Host(host),
+                    port: NWEndpoint.Port(integerLiteral: UInt16(port))
+                ),
+                delegate: self
+            )
+            srtlaRelayServer?.start()
+        }
+    }
+
+    func stopSrtlaRelayServer() {
+        srtlaRelayServer?.stop()
+        srtlaRelayServer = nil
+    }
+
+    func isSrtlaRelayServerConfigured() -> Bool {
+        let server = database.srtlaRelay!.server
+        return server.enabled && server.port > 0 && !database.srtlaRelay!.password.isEmpty && stream
+            .getProtocol() == .srt
+    }
+
+    func reloadSrtlaRelayClient() {
+        stopSrtlaRelayClient()
+        if isSrtlaRelayClientConfigured() {
+            guard let url = URL(string: database.srtlaRelay!.client.url) else {
+                return
+            }
+            srtlaRelayClient = SrtlaRelayClient(
+                name: database.srtlaRelay!.client.name,
+                clientUrl: url,
+                password: database.srtlaRelay!.password,
+                delegate: self
+            )
+            srtlaRelayClient?.start()
+        }
+    }
+
+    func isSrtlaRelayClientConfigured() -> Bool {
+        let client = database.srtlaRelay!.client
+        return client.enabled && !client.url.isEmpty && !database.srtlaRelay!.password.isEmpty
+    }
+
+    func stopSrtlaRelayClient() {
+        srtlaRelayClient?.stop()
+        srtlaRelayClient = nil
     }
 
     func reloadNtpClient() {
@@ -1856,6 +1917,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopWorkout(showToast: false)
             stopTeslaVehicle()
             stopNtpClient()
+            stopSrtlaRelayClient()
+            stopSrtlaRelayServer()
         }
     }
 
@@ -1879,6 +1942,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadSpeechToText()
             reloadTeslaVehicle()
+            reloadSrtlaRelayClient()
+            reloadSrtlaRelayServer()
         }
     }
 
@@ -1892,7 +1957,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func shouldStreamInBackground() -> Bool {
-        return (isLive || isRecording) && stream.backgroundStreaming!
+        if (isLive || isRecording) && stream.backgroundStreaming! {
+            return true
+        }
+        if isLive || isRecording {
+            return false
+        }
+        return database.srtlaRelay!.client.enabled
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -3762,6 +3833,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             startNetStreamSingleTrack()
         }
+        reloadSrtlaRelayServer()
     }
 
     private func startNetStreamMultiTrack() {
@@ -3874,6 +3946,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func stopNetStream(reconnect: Bool = false) {
+        stopSrtlaRelayServer()
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
@@ -10063,4 +10136,20 @@ extension Model: KickOusherDelegate {
                           highlight: nil,
                           live: true)
     }
+}
+
+extension Model: SrtlaRelayServerDelegate {
+    func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, name: String) {
+        media.addSrtlaRelay(endpoint: endpoint, name: name)
+    }
+
+    func srtlaRelayServerTunnelRemoved(endpoint: Network.NWEndpoint) {
+        media.removeSrtlaRelay(endpoint: endpoint)
+    }
+}
+
+extension Model: SrtlaRelayClientDelegate {
+    func srtlaRelayClientConnected() {}
+
+    func srtlaRelayClientDisconnected() {}
 }

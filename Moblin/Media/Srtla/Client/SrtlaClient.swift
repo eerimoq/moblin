@@ -106,7 +106,9 @@ class SrtlaClient {
             self.host = host
             self.port = port
             for connection in self.remoteConnections {
-                self.startRemote(connection: connection, host: host, port: port)
+                self.startRemote(connection: connection,
+                                 host: NWEndpoint.Host(host),
+                                 port: NWEndpoint.Port(integerLiteral: UInt16(port)))
             }
             logger.debug("srtla: Setting connect timer to \(timeout) seconds")
             self.connectTimer.startSingleShot(timeout: timeout) {
@@ -127,6 +129,47 @@ class SrtlaClient {
             self.cancelConnectTimer()
             self.state = .idle
             self.networkPathMonitor.cancel()
+        }
+    }
+
+    func addRelay(endpoint: NWEndpoint, name: String) {
+        guard case let .hostPort(host, port) = endpoint else {
+            return
+        }
+        srtlaClientQueue.async {
+            guard self.state != .idle else {
+                return
+            }
+            let remoteConnection = RemoteConnection(
+                type: .other,
+                mpegtsPacketsPerPacket: self.mpegtsPacketsPerPacket,
+                interface: nil,
+                networkInterfaces: self.networkInterfaces,
+                priority: 1.0, // Support prio at some point.
+                name: name
+            )
+            self.startRemote(connection: remoteConnection, host: host, port: port)
+            if let groupId = self.groupId {
+                remoteConnection.register(groupId: groupId)
+            }
+            self.remoteConnections.append(remoteConnection)
+        }
+    }
+
+    func removeRelay(endpoint: NWEndpoint) {
+        guard case let .hostPort(host, port) = endpoint else {
+            return
+        }
+        srtlaClientQueue.async {
+            guard self.state != .idle else {
+                return
+            }
+            guard let remoteConnection = self.remoteConnections.first(where: { $0.host == host && $0.port == port })
+            else {
+                return
+            }
+            self.stopRemote(connection: remoteConnection)
+            self.remoteConnections.removeAll(where: { $0 === remoteConnection })
         }
     }
 
@@ -196,7 +239,6 @@ class SrtlaClient {
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
-        logger.debug("srtla: interface: \(path.debugDescription)")
         var newRemoteConnections: [RemoteConnection] = []
         for connection in remoteConnections {
             if let interface = connection.interface {
@@ -222,7 +264,9 @@ class SrtlaClient {
                 networkInterfaces: self.networkInterfaces,
                 priority: getConnectionPriority(name: interface.name)
             ))
-            startRemote(connection: newRemoteConnections.last!, host: host, port: port)
+            startRemote(connection: newRemoteConnections.last!,
+                        host: NWEndpoint.Host(host),
+                        port: NWEndpoint.Port(integerLiteral: UInt16(port)))
             if let groupId {
                 newRemoteConnections.last!.register(groupId: groupId)
             }
@@ -260,7 +304,7 @@ class SrtlaClient {
         }
     }
 
-    private func startRemote(connection: RemoteConnection, host: String, port: Int) {
+    private func startRemote(connection: RemoteConnection, host: NWEndpoint.Host, port: NWEndpoint.Port) {
         connection.onSocketConnected = {
             self.handleRemoteConnected(connection: connection)
         }
@@ -272,7 +316,7 @@ class SrtlaClient {
         connection.onSrtAck = handleSrtAck(sn:)
         connection.onSrtNak = handleSrtNak(sn:)
         connection.onSrtlaAck = handleSrtlaAck(sn:)
-        connection.start(host: host, port: UInt16(port))
+        connection.start(host: host, port: port)
     }
 
     private func stopRemote(connection: RemoteConnection) {

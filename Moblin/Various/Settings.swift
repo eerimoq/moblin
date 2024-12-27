@@ -2379,6 +2379,23 @@ class SettingsRemoteControl: Codable {
     var password: String? = randomGoodPassword()
 }
 
+class SettingsSrtlaRelayServer: Codable {
+    var enabled: Bool = false
+    var port: UInt16 = 7777
+}
+
+class SettingsSrtlaRelayClient: Codable {
+    var enabled: Bool = false
+    var name: String = "Relay"
+    var url: String = ""
+}
+
+class SettingsSrtlaRelay: Codable {
+    var server: SettingsSrtlaRelayServer = .init()
+    var client: SettingsSrtlaRelayClient = .init()
+    var password: String = randomGoodPassword()
+}
+
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
     var latitude: Double = 0
@@ -2561,6 +2578,7 @@ class Database: Codable {
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
+    var srtlaRelay: SettingsSrtlaRelay? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4380,6 +4398,10 @@ final class Settings {
         }
         if realDatabase.debug.timecodesEnabled == nil {
             realDatabase.debug.timecodesEnabled = false
+            store()
+        }
+        if realDatabase.srtlaRelay == nil {
+            realDatabase.srtlaRelay = .init()
             store()
         }
     }

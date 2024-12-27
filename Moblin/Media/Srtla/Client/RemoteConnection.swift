@@ -60,8 +60,8 @@ class RemoteConnection {
         return packet
     }()
 
-    private var host: String!
-    private var port: UInt16!
+    private(set) var host: NWEndpoint.Host!
+    private(set) var port: NWEndpoint.Port!
     private let mpegtsPacketsPerPacket: Int
     var typeString: String {
         switch type {
@@ -72,9 +72,11 @@ class RemoteConnection {
         case .cellular:
             return "Cellular"
         default:
-            return "Any"
+            return name
         }
     }
+
+    private let name: String
 
     var onSocketConnected: (() -> Void)?
     var onReg2: ((_ groupId: Data) -> Void)?
@@ -90,13 +92,15 @@ class RemoteConnection {
         mpegtsPacketsPerPacket: Int,
         interface: NWInterface?,
         networkInterfaces: SrtlaNetworkInterfaces,
-        priority: Float
+        priority: Float,
+        name: String? = nil
     ) {
         self.type = type
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         self.interface = interface
         self.networkInterfaces = networkInterfaces
         self.priority = priority
+        self.name = name ?? "Any"
     }
 
     deinit {
@@ -107,7 +111,7 @@ class RemoteConnection {
         self.priority = priority
     }
 
-    func start(host: String, port: UInt16) {
+    func start(host: NWEndpoint.Host, port: NWEndpoint.Port) {
         self.host = host
         self.port = port
         startInternal()
@@ -124,11 +128,7 @@ class RemoteConnection {
         }
         params.prohibitExpensivePaths = false
         params.requiredInterface = interface
-        connection = NWConnection(
-            host: NWEndpoint.Host(host),
-            port: NWEndpoint.Port(integerLiteral: port),
-            using: params
-        )
+        connection = NWConnection(host: host, port: port, using: params)
         connection!.stateUpdateHandler = handleStateUpdate(to:)
         connection!.start(queue: srtlaClientQueue)
         receivePacket()

@@ -45867,6 +45867,9 @@
         }
       }
     },
+    "Enter one of the URLs as \"Streamer URL\" in the relay device to use it as an additional bonding connection." : {
+
+    },
     "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
       "localizations" : {
         "de" : {
@@ -46126,6 +46129,9 @@
           }
         }
       }
+    },
+    "Enter streamer's websocket URL. For example ws://132.23.43.43:2345." : {
+
     },
     "Estimated viewer delay" : {
       "localizations" : {
@@ -102698,6 +102704,9 @@
         }
       }
     },
+    "SRTLA relay" : {
+
+    },
     "SRTLA server" : {
       "localizations" : {
         "de" : {
@@ -107247,6 +107256,9 @@
           }
         }
       }
+    },
+    "Streamer URL" : {
+
     },
     "Streaming" : {
       "localizations" : {
@@ -123758,6 +123770,9 @@
         }
       }
     },
+    "Use phones as additional SRTLA bonding connections." : {
+
+    },
     "Use the Fast IRL algorithm unless you know what you are doing!" : {
       "localizations" : {
         "de" : {
@@ -124017,6 +124032,9 @@
           }
         }
       }
+    },
+    "Used by both relay and streamer." : {
+
     },
     "Used by both streamer and assistant." : {
       "localizations" : {
