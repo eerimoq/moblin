@@ -10,7 +10,7 @@ private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecord
 class Recorder: NSObject {
     private var audioOutputSettings: [String: Any] = [:]
     private var videoOutputSettings: [String: Any] = [:]
-    private var fileHandle: FileHandle?
+    private var fileHandle: Atomic<FileHandle?> = .init(nil)
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
     private var writer: AVAssetWriter?
     private var audioWriterInput: AVAssetWriterInput?
@@ -262,12 +262,13 @@ class Recorder: NSObject {
         }
         reset()
         writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
+        writer?.shouldOptimizeForNetworkUse = true
         writer?.outputFileTypeProfile = .mpeg4AppleHLS
         writer?.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
         writer?.delegate = self
         writer?.initialSegmentStartTime = .zero
         try? Data().write(to: url)
-        fileHandle = FileHandle(forWritingAtPath: url.path)
+        fileHandle.mutate { $0 = FileHandle(forWritingAtPath: url.path) }
     }
 
     private func stopRunningInner() {
@@ -297,7 +298,7 @@ class Recorder: NSObject {
         videoWriterInput = nil
         audioConverter = nil
         basePresentationTimeStamp = .zero
-        fileHandle = nil
+        fileHandle.mutate { $0 = nil }
     }
 
     private func isReadyForStartWriting(writer: AVAssetWriter, sampleBuffer _: CMSampleBuffer) -> Bool {
@@ -306,9 +307,11 @@ class Recorder: NSObject {
 }
 
 extension Recorder: AVAssetWriterDelegate {
-    func assetWriter(_: AVAssetWriter, didOutputSegmentData segmentData: Data, segmentType _: AVAssetSegmentType) {
-        lockQueue.async {
-            self.fileHandle?.write(segmentData)
-        }
+    func assetWriter(_: AVAssetWriter,
+                     didOutputSegmentData segmentData: Data,
+                     segmentType _: AVAssetSegmentType,
+                     segmentReport _: AVAssetSegmentReport?)
+    {
+        fileHandle.value?.write(segmentData)
     }
 }
