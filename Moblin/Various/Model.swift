@@ -10163,8 +10163,17 @@ extension Model: KickOusherDelegate {
 }
 
 extension Model: SrtlaRelayServerDelegate {
-    func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, name: String) {
-        media.addSrtlaRelay(endpoint: endpoint, name: name)
+    func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
+        for stream in database.streams
+            where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
+                priority.relayId == relayId
+            })
+        {
+            let priority = SettingsStreamSrtConnectionPriority(name: relayName)
+            priority.relayId = relayId
+            stream.srt.connectionPriorities!.priorities.append(priority)
+        }
+        media.addSrtlaRelay(endpoint: endpoint, id: relayId, name: relayName)
     }
 
     func srtlaRelayServerTunnelRemoved(endpoint: Network.NWEndpoint) {

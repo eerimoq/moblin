@@ -5,7 +5,7 @@ import Network
 import Telegraph
 
 protocol SrtlaRelayServerDelegate: AnyObject {
-    func srtlaRelayServerTunnelAdded(endpoint: NWEndpoint, name: String)
+    func srtlaRelayServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
     func srtlaRelayServerTunnelRemoved(endpoint: NWEndpoint)
 }
 
@@ -25,6 +25,8 @@ private class Client {
     private let destination: NWEndpoint
     weak var server: SrtlaRelayServer?
     private var tunnelEndpoint: NWEndpoint?
+    private var id = UUID()
+    private var name = ""
 
     init(websocket: Telegraph.WebSocket, password: String, destination: NWEndpoint, server: SrtlaRelayServer) {
         self.password = password
@@ -55,8 +57,8 @@ private class Client {
         do {
             let message = try SrtlaRelayMessageToServer.fromJson(data: message)
             switch message {
-            case let .identify(authentication: authentication):
-                handleIdentify(authentication: authentication)
+            case let .identify(id: id, name: name, authentication: authentication):
+                handleIdentify(id: id, name: name, authentication: authentication)
             case let .response(id: id, result: result, data: data):
                 try handleResponse(id: id, result: result, data: data)
             }
@@ -65,32 +67,34 @@ private class Client {
         }
     }
 
-    private func startTunnel(address: String, port: UInt16, onSuccess: @escaping (String, UInt16) -> Void) {
+    private func startTunnel(address: String, port: UInt16, onSuccess: @escaping (UUID, String, UInt16) -> Void) {
         performRequest(data: .startTunnel(address: address, port: port)) { response in
             guard let response else {
                 return
             }
             switch response {
-            case let .startTunnel(name: name, port: port):
-                onSuccess(name, port)
+            case let .startTunnel(port: port):
+                onSuccess(self.id, self.name, port)
             }
         } onError: { error in
             logger.info("srtla-relay-server: Start tunnel failed with \(error)")
         }
     }
 
-    private func handleIdentify(authentication: String) {
+    private func handleIdentify(id: UUID, name: String, authentication: String) {
         if authentication == remoteControlHashPassword(
             challenge: challenge,
             salt: salt,
             password: password
         ) {
+            self.id = id
+            self.name = name
             identified = true
             send(message: .identified(result: .ok))
             guard case let .hostPort(host, port) = destination else {
                 return
             }
-            startTunnel(address: "\(host)", port: port.rawValue) { name, port in
+            startTunnel(address: "\(host)", port: port.rawValue) { id, name, port in
                 guard let host = self.webSocket.remoteEndpoint?.host else {
                     logger.info("srtla-relay-server: Missing relay host")
                     return
@@ -100,7 +104,7 @@ private class Client {
                     port: NWEndpoint.Port(integerLiteral: port)
                 )
                 self.tunnelEndpoint = endpoint
-                self.server?.delegate?.srtlaRelayServerTunnelAdded(endpoint: endpoint, name: name)
+                self.server?.delegate?.srtlaRelayServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
             }
         } else {
             logger.info("srtla-relay-server: Streamer sent wrong password")

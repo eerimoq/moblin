@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import SwiftUI
 
 private let srtlaRelayClientQueue = DispatchQueue(label: "com.eerimoq.srtla-relay-client")
 
@@ -128,7 +129,8 @@ class SrtlaRelayClient {
     private var webSocket: WebSocketClient
     private var connected = false
     private var tunnels: [Tunnel] = []
-    private var name: String
+    private let name: String
+    @AppStorage("srtlaRelayId") var id = ""
 
     init(name: String, clientUrl: URL, password: String, delegate: SrtlaRelayClientDelegate) {
         self.name = name
@@ -136,6 +138,9 @@ class SrtlaRelayClient {
         self.password = password
         self.delegate = delegate
         webSocket = .init(url: clientUrl)
+        if id.isEmpty {
+            id = UUID().uuidString
+        }
     }
 
     func start() {
@@ -201,7 +206,10 @@ class SrtlaRelayClient {
             salt: authentication.salt,
             password: password
         )
-        send(message: .identify(authentication: hash))
+        guard let id = UUID(uuidString: id) else {
+            return
+        }
+        send(message: .identify(id: id, name: name, authentication: hash))
     }
 
     private func handleIdentified(result: SrtlaRelayResult) -> Bool {
@@ -233,11 +241,7 @@ class SrtlaRelayClient {
         ))
         tunnel.start { port in
             DispatchQueue.main.async {
-                self.send(message: .response(
-                    id: id,
-                    result: .ok,
-                    data: .startTunnel(name: self.name, port: port.rawValue)
-                ))
+                self.send(message: .response(id: id, result: .ok, data: .startTunnel(port: port.rawValue)))
             }
         }
         tunnels.append(tunnel)

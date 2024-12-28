@@ -72,11 +72,12 @@ class RemoteConnection {
         case .cellular:
             return "Cellular"
         default:
-            return name
+            return relayName ?? "Any"
         }
     }
 
-    private let name: String
+    let relayId: UUID?
+    private let relayName: String?
 
     var onSocketConnected: (() -> Void)?
     var onReg2: ((_ groupId: Data) -> Void)?
@@ -93,14 +94,16 @@ class RemoteConnection {
         interface: NWInterface?,
         networkInterfaces: SrtlaNetworkInterfaces,
         priority: Float,
-        name: String? = nil
+        relayId: UUID? = nil,
+        relayName: String? = nil
     ) {
         self.type = type
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         self.interface = interface
         self.networkInterfaces = networkInterfaces
         self.priority = priority
-        self.name = name ?? "Any"
+        self.relayId = relayId
+        self.relayName = relayName
     }
 
     deinit {

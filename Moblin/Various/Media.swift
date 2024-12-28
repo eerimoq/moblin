@@ -62,7 +62,7 @@ final class Media: NSObject {
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
-    private var srtlaRelayEndpoints: [NWEndpoint: String] = [:]
+    private var srtlaRelayEndpoints: [NWEndpoint: (UUID, String)] = [:]
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -204,8 +204,8 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         srtlaClient!.start(uri: url, timeout: reconnectTime + 1)
-        for (srtlaRelayEndpoint, name) in srtlaRelayEndpoints {
-            srtlaClient?.addRelay(endpoint: srtlaRelayEndpoint, name: name)
+        for (srtlaRelayEndpoint, (id, name)) in srtlaRelayEndpoints {
+            srtlaClient?.addRelay(endpoint: srtlaRelayEndpoint, id: id, name: name)
         }
     }
 
@@ -248,12 +248,12 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
-    func addSrtlaRelay(endpoint: NWEndpoint, name: String) {
+    func addSrtlaRelay(endpoint: NWEndpoint, id: UUID, name: String) {
         guard srtlaRelayEndpoints[endpoint] == nil else {
             return
         }
-        srtlaClient?.addRelay(endpoint: endpoint, name: name)
-        srtlaRelayEndpoints[endpoint] = name
+        srtlaClient?.addRelay(endpoint: endpoint, id: id, name: name)
+        srtlaRelayEndpoints[endpoint] = (id, name)
     }
 
     func removeSrtlaRelay(endpoint: NWEndpoint) {

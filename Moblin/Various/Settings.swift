@@ -103,6 +103,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     var name: String
     var priority: Int = 1
     var enabled: Bool? = true
+    var relayId: UUID?
 
     init(name: String) {
         self.name = name
@@ -112,6 +113,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
         let new = SettingsStreamSrtConnectionPriority(name: name)
         new.priority = priority
         new.enabled = enabled
+        new.relayId = relayId
         return new
     }
 }

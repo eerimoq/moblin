@@ -132,7 +132,7 @@ class SrtlaClient {
         }
     }
 
-    func addRelay(endpoint: NWEndpoint, name: String) {
+    func addRelay(endpoint: NWEndpoint, id: UUID, name: String) {
         guard case let .hostPort(host, port) = endpoint else {
             return
         }
@@ -145,8 +145,9 @@ class SrtlaClient {
                 mpegtsPacketsPerPacket: self.mpegtsPacketsPerPacket,
                 interface: nil,
                 networkInterfaces: self.networkInterfaces,
-                priority: 1.0, // Support prio at some point.
-                name: name
+                priority: self.getRelayConnectionPriority(relayId: id),
+                relayId: id,
+                relayName: name
             )
             self.startRemote(connection: remoteConnection, host: host, port: port)
             if let groupId = self.groupId {
@@ -207,20 +208,24 @@ class SrtlaClient {
         srtlaClientQueue.async {
             self.updateConnectionPriorities(connectionPriorities: connectionPriorities)
             for connection in self.remoteConnections {
-                var name: String
-                if let interface = connection.interface {
-                    name = interface.name
+                if let relayId = connection.relayId {
+                    connection.setPriority(priority: self.getRelayConnectionPriority(relayId: relayId))
                 } else {
-                    switch connection.type {
-                    case .cellular:
-                        name = "Cellular"
-                    case .wifi:
-                        name = "WiFi"
-                    default:
-                        name = ""
+                    var name: String
+                    if let interface = connection.interface {
+                        name = interface.name
+                    } else {
+                        switch connection.type {
+                        case .cellular:
+                            name = "Cellular"
+                        case .wifi:
+                            name = "WiFi"
+                        default:
+                            name = ""
+                        }
                     }
+                    connection.setPriority(priority: self.getConnectionPriority(name: name))
                 }
-                connection.setPriority(priority: self.getConnectionPriority(name: name))
             }
         }
     }
@@ -229,6 +234,20 @@ class SrtlaClient {
         guard let priority = connectionPriorities.first(where: { connection in
             connection.name == name
         }) else {
+            return 1
+        }
+        if priority.enabled! {
+            return Float(priority.priority)
+        } else {
+            return 0
+        }
+    }
+
+    private func getRelayConnectionPriority(relayId: UUID) -> Float {
+        guard let priority = connectionPriorities.first(where: { connection in
+            connection.relayId == relayId
+        }) else {
+            logger.info("relay not found \(relayId)")
             return 1
         }
         if priority.enabled! {

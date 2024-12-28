@@ -5,7 +5,7 @@ enum SrtlaRelayRequest: Codable {
 }
 
 enum SrtlaRelayResponse: Codable {
-    case startTunnel(name: String, port: UInt16)
+    case startTunnel(port: UInt16)
 }
 
 struct SrtlaRelayAuthentication: Codable {
@@ -43,7 +43,7 @@ enum SrtlaRelayMessageToClient: Codable {
 }
 
 enum SrtlaRelayMessageToServer: Codable {
-    case identify(authentication: String)
+    case identify(id: UUID, name: String, authentication: String)
     case response(id: Int, result: SrtlaRelayResult, data: SrtlaRelayResponse?)
 
     func toJson() throws -> String {
