@@ -153,6 +153,13 @@ private struct StatusesView: View {
         return .white
     }
 
+    private func srtlaRelayColor() -> Color {
+        if model.isSrtlaRelayClientConfigured() && !model.isSrtlaRelayClientConnnected() {
+            return .red
+        }
+        return .white
+    }
+
     var body: some View {
         if textPlacement == .hide {
             CollapsedHypeTrainView(show: model.isShowingStatusHypeTrain(), color: .white)
@@ -182,6 +189,13 @@ private struct StatusesView: View {
             text: model.serversSpeedAndTotal,
             textPlacement: textPlacement,
             color: .white
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusSrtlaRelay(),
+            icon: "app.connected.to.app.below.fill",
+            text: model.srtlaRelayInfo,
+            textPlacement: textPlacement,
+            color: srtlaRelayColor()
         )
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusRemoteControl(),

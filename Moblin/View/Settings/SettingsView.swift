@@ -103,7 +103,10 @@ struct SettingsView: View {
                     NavigationLink {
                         SrtlaRelaySettingsView()
                     } label: {
-                        IconAndTextView(image: "server.rack", text: String(localized: "SRTLA relay"))
+                        IconAndTextView(
+                            image: "app.connected.to.app.below.fill",
+                            text: String(localized: "SRTLA relay")
+                        )
                     }
                     NavigationLink {
                         MediaPlayersSettingsView()

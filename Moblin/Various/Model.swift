@@ -641,6 +641,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
+    @Published var srtlaRelayInfo = noValue
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -1403,7 +1404,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterButtonState()
         updateLutsButtonState()
         reloadNtpClient()
-        reloadSrtlaRelayServer()
         reloadSrtlaRelayClient()
     }
 
@@ -1456,6 +1456,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func isSrtlaRelayClientConfigured() -> Bool {
         let client = database.srtlaRelay!.client
         return client.enabled && !client.url.isEmpty && !database.srtlaRelay!.password.isEmpty
+    }
+
+    func isSrtlaRelayClientConnnected() -> Bool {
+        return srtlaRelayClient?.isConnected() ?? false
     }
 
     func stopSrtlaRelayClient() {
@@ -1943,7 +1947,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadSpeechToText()
             reloadTeslaVehicle()
             reloadSrtlaRelayClient()
-            reloadSrtlaRelayServer()
         }
     }
 
@@ -2424,6 +2427,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
             self.updateServersSpeed()
+            self.updateRelayInfo()
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -6087,6 +6091,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func updateRelayInfo() {
+        let newRelayInfo: String
+        if isSrtlaRelayClientConfigured() {
+            if srtlaRelayClient?.isConnected() == true {
+                newRelayInfo = "Connected (\(srtlaRelayClient?.numberOfTunnels() ?? 0))"
+            } else {
+                newRelayInfo = "Disconnected"
+            }
+        } else {
+            newRelayInfo = noValue
+        }
+        if newRelayInfo != srtlaRelayInfo {
+            srtlaRelayInfo = newRelayInfo
+        }
+    }
+
     func rtmpServerEnabled() -> Bool {
         return rtmpServer != nil
     }
@@ -6836,6 +6856,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusServers() -> Bool {
         return database.show.rtmpSpeed! && (rtmpServerEnabled() || srtlaServerEnabled())
+    }
+
+    func isShowingStatusSrtlaRelay() -> Bool {
+        return isSrtlaRelayClientConfigured()
     }
 
     func isShowingStatusRemoteControl() -> Bool {

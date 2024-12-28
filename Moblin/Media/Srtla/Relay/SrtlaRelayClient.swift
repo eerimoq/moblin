@@ -148,6 +148,14 @@ class SrtlaRelayClient {
         stopInternal()
     }
 
+    func isConnected() -> Bool {
+        return connected
+    }
+
+    func numberOfTunnels() -> Int {
+        return tunnels.count
+    }
+
     private func startInternal() {
         connected = false
         stopInternal()
@@ -156,7 +164,7 @@ class SrtlaRelayClient {
         webSocket.start()
     }
 
-    func stopInternal() {
+    private func stopInternal() {
         webSocket.stop()
     }
 
