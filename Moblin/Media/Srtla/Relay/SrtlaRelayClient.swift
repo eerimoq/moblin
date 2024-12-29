@@ -173,6 +173,7 @@ class SrtlaRelayClient {
         destinationConnection = NWConnection(host: host, port: port, using: params)
         destinationConnection?.stateUpdateHandler = handleDestinationStateUpdate(to:)
         destinationConnection?.start(queue: srtlaRelayClientQueue)
+        receiveDestinationPacket()
         setState(state: .waitingForCellular)
         startTunnelId = id
     }
@@ -188,32 +189,35 @@ class SrtlaRelayClient {
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {
-        switch state {
-        case .setup:
-            break
-        case .ready:
-            guard let serverListener, let startTunnelId else {
-                return
+        DispatchQueue.main.async {
+            switch state {
+            case .setup:
+                break
+            case .ready:
+                guard let serverListener = self.serverListener, let startTunnelId  = self.startTunnelId else {
+                    return
+                }
+                let port = serverListener.port!.rawValue
+                self.send(message: .response(id: startTunnelId, result: .ok, data: .startTunnel(port: port)))
+            case .failed:
+                self.reconnect(reason: "Listener failed")
+            default:
+                break
             }
-            let port = serverListener.port!.rawValue
-            send(message: .response(id: startTunnelId, result: .ok, data: .startTunnel(port: port)))
-        case .failed:
-            reconnect(reason: "Listener failed")
-        default:
-            break
         }
     }
 
     private func handleDestinationStateUpdate(to state: NWConnection.State) {
         logger.debug("srtla-relay-client: Destination state change to \(state)")
-        switch state {
-        case .ready:
-            setState(state: .connected)
-            receiveDestinationPacket()
-        case .failed:
-            reconnect(reason: "Destination connection failed")
-        default:
-            setState(state: .waitingForCellular)
+        DispatchQueue.main.async {
+            switch state {
+            case .ready:
+                self.setState(state: .connected)
+            case .failed:
+                self.reconnect(reason: "Destination connection failed")
+            default:
+                self.setState(state: .waitingForCellular)
+            }
         }
     }
 
