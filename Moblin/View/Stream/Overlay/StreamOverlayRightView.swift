@@ -154,7 +154,7 @@ private struct StatusesView: View {
     }
 
     private func srtlaRelayColor() -> Color {
-        if model.isSrtlaRelayClientConfigured() && !model.isSrtlaRelayClientConnnected() {
+        if model.isSrtlaRelayClientConfigured() && model.srtlaRelayClientState != .connected {
             return .red
         }
         return .white
@@ -193,7 +193,7 @@ private struct StatusesView: View {
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusSrtlaRelay(),
             icon: "app.connected.to.app.below.fill",
-            text: model.srtlaRelayInfo,
+            text: model.srtlaRelayClientState.rawValue,
             textPlacement: textPlacement,
             color: srtlaRelayColor()
         )

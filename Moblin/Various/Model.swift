@@ -641,7 +641,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    @Published var srtlaRelayInfo = noValue
+    @Published var srtlaRelayClientState: SrtlaRelayClientState = .none
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -1456,10 +1456,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func isSrtlaRelayClientConfigured() -> Bool {
         let client = database.srtlaRelay!.client
         return client.enabled && !client.url.isEmpty && !database.srtlaRelay!.password.isEmpty
-    }
-
-    func isSrtlaRelayClientConnnected() -> Bool {
-        return srtlaRelayClient?.isConnected() ?? false
     }
 
     func stopSrtlaRelayClient() {
@@ -2427,7 +2423,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
             self.updateServersSpeed()
-            self.updateRelayInfo()
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -6088,22 +6083,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if message != serversSpeedAndTotal {
             serversSpeedAndTotal = message
-        }
-    }
-
-    private func updateRelayInfo() {
-        let newRelayInfo: String
-        if isSrtlaRelayClientConfigured() {
-            if srtlaRelayClient?.isConnected() == true {
-                newRelayInfo = "Connected (\(srtlaRelayClient?.numberOfTunnels() ?? 0))"
-            } else {
-                newRelayInfo = "Disconnected"
-            }
-        } else {
-            newRelayInfo = noValue
-        }
-        if newRelayInfo != srtlaRelayInfo {
-            srtlaRelayInfo = newRelayInfo
         }
     }
 
@@ -10182,7 +10161,7 @@ extension Model: SrtlaRelayServerDelegate {
 }
 
 extension Model: SrtlaRelayClientDelegate {
-    func srtlaRelayClientConnected() {}
-
-    func srtlaRelayClientDisconnected() {}
+    func srtlaRelayClientNewState(state: SrtlaRelayClientState) {
+        srtlaRelayClientState = state
+    }
 }
