@@ -189,7 +189,6 @@ class SrtlaRelayServer: NSObject {
     }
 
     func stop() {
-        delegate = nil
         logger.info("srtla-relay-server: stop")
         server.stop(immediately: true)
         stopRetryStartTimer()
@@ -197,6 +196,7 @@ class SrtlaRelayServer: NSObject {
             client.stop()
         }
         clients.removeAll()
+        delegate = nil
     }
 
     private func startInternal() {
