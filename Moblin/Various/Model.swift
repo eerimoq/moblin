@@ -666,7 +666,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var srtlaRelayServer: SrtlaRelayServer?
     private var srtlaRelayClient: SrtlaRelayClient?
-    private var srtlaRelayServerDestinationAddress: String?
 
     override init() {
         super.init()
@@ -1406,23 +1405,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateLutsButtonState()
         reloadNtpClient()
         reloadSrtlaRelayClient()
+        reloadSrtlaRelayServer()
     }
 
     func reloadSrtlaRelayServer() {
         stopSrtlaRelayServer()
         if isSrtlaRelayServerConfigured() {
-            guard let url = URL(string: stream.url), let host = srtlaRelayServerDestinationAddress, let port = url.port,
-                  port < 65536
-            else {
-                return
-            }
             srtlaRelayServer = SrtlaRelayServer(
                 port: database.srtlaRelay!.server.port,
-                password: database.srtlaRelay!.password,
-                destination: .hostPort(
-                    host: NWEndpoint.Host(host),
-                    port: NWEndpoint.Port(integerLiteral: UInt16(port))
-                )
+                password: database.srtlaRelay!.password
             )
             srtlaRelayServer?.start(delegate: self)
         }
@@ -1435,8 +1426,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isSrtlaRelayServerConfigured() -> Bool {
         let server = database.srtlaRelay!.server
-        return server.enabled && server.port > 0 && !database.srtlaRelay!.password.isEmpty && stream
-            .getProtocol() == .srt && srtlaRelayServerDestinationAddress != nil
+        return server.enabled && server.port > 0 && !database.srtlaRelay!.password.isEmpty
     }
 
     func reloadSrtlaRelayClient() {
@@ -3829,9 +3819,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
-        // The server is started when the destination address is known (via delegate).
-        stopSrtlaRelayServer()
-        srtlaRelayServerDestinationAddress = nil
+        srtlaRelayServer?.stopTunnels()
         if stream.twitchMultiTrackEnabled! {
             startNetStreamMultiTrack()
         } else {
@@ -3949,7 +3937,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func stopNetStream(reconnect: Bool = false) {
-        stopSrtlaRelayServer()
+        srtlaRelayServer?.stopTunnels()
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
@@ -10081,9 +10069,8 @@ extension Model: MediaDelegate {
         handleNoTorch()
     }
 
-    func mediaStrlaRelayDestinationAddress(address: String) {
-        srtlaRelayServerDestinationAddress = address
-        reloadSrtlaRelayServer()
+    func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
+        srtlaRelayServer?.startTunnels(address: address, port: port)
     }
 }
 

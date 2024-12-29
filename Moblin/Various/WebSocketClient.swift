@@ -15,7 +15,7 @@ protocol WebSocketClientDelegate: AnyObject {
 final class WebSocketClient {
     private var webSocket: NWWebSocket
     private var connectTimer = SimpleTimer(queue: .main)
-    private var networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main)
+    private var networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
     private var pingTimer = SimpleTimer(queue: .main)
     private var pongReceived = true
     var delegate: (any WebSocketClientDelegate)?
@@ -25,9 +25,10 @@ final class WebSocketClient {
     private var connectDelayMs = shortestDelayMs
     private let proxyConfig: NWWebSocketProxyConfig?
 
-    init(url: URL, httpProxy: HttpProxy? = nil, loopback: Bool = false) {
+    init(url: URL, httpProxy: HttpProxy? = nil, loopback: Bool = false, cellular: Bool = true) {
         self.url = url
         self.loopback = loopback
+        networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: .main, cellular: cellular)
         if let httpProxy {
             proxyConfig = NWWebSocketProxyConfig(endpoint: .hostPort(
                 host: .init(httpProxy.host),

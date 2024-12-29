@@ -74,6 +74,7 @@ private struct PasswordView: View {
                                 submit()
                             }
                         }
+                        .disabled(model.isLive)
                     Button {
                         UIPasteboard.general.string = value
                         model.makeToast(title: "Password copied to clipboard")
@@ -97,6 +98,7 @@ private struct PasswordView: View {
                         Text("Generate")
                     }
                 }
+                .disabled(model.isLive)
             }
         }
         .navigationTitle("Password")
@@ -178,6 +180,7 @@ private struct StreamerView: View {
             })) {
                 Text("Enabled")
             }
+            .disabled(model.isLive)
             TextEditNavigationView(
                 title: String(localized: "Server port"),
                 value: String(model.database.srtlaRelay!.server.port),
@@ -185,6 +188,7 @@ private struct StreamerView: View {
                 keyboardType: .numbersAndPunctuation,
                 placeholder: "7777"
             )
+            .disabled(model.isLive)
         } header: {
             Text("Streamer")
         } footer: {

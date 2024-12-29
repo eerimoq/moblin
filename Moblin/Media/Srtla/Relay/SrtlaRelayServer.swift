@@ -22,16 +22,16 @@ private class Client {
     private var salt = ""
     private var requests: [Int: SrtlaRelayRequestResponse] = [:]
     private let password: String
-    private let destination: NWEndpoint
+    private var address: String?
+    private var port: UInt16?
     weak var server: SrtlaRelayServer?
     private var tunnelEndpoint: NWEndpoint?
     private var id = UUID()
     private var name = ""
 
-    init(websocket: Telegraph.WebSocket, password: String, destination: NWEndpoint, server: SrtlaRelayServer) {
+    init(websocket: Telegraph.WebSocket, password: String, server: SrtlaRelayServer) {
         self.password = password
         webSocket = websocket
-        self.destination = destination
         self.server = server
     }
 
@@ -46,10 +46,9 @@ private class Client {
     }
 
     func stop() {
-        guard let tunnelEndpoint else {
-            return
-        }
-        server?.delegate?.srtlaRelayServerTunnelRemoved(endpoint: tunnelEndpoint)
+        webSocket.close(immediately: true)
+        reportTunnelRemoved()
+        requests.removeAll()
     }
 
     func handleStringMessage(message: String) {
@@ -67,7 +66,45 @@ private class Client {
         }
     }
 
-    private func startTunnel(address: String, port: UInt16, onSuccess: @escaping (UUID, String, UInt16) -> Void) {
+    func startTunnel(address: String, port: UInt16) {
+        self.address = address
+        self.port = port
+        startTunnelInternal()
+    }
+
+    func stopTunnel() {
+        reportTunnelRemoved()
+    }
+
+    private func startTunnelInternal() {
+        guard identified, let address, let port else {
+            return
+        }
+        reportTunnelRemoved()
+        executeStartTunnel(address: address, port: port) { id, name, port in
+            guard let host = self.webSocket.remoteEndpoint?.host else {
+                logger.info("srtla-relay-server: Missing relay host")
+                return
+            }
+            let endpoint = NWEndpoint.hostPort(
+                host: NWEndpoint.Host(host),
+                port: NWEndpoint.Port(integerLiteral: port)
+            )
+            self.tunnelEndpoint = endpoint
+            self.server?.delegate?.srtlaRelayServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
+        }
+    }
+
+    private func reportTunnelRemoved() {
+        if let tunnelEndpoint {
+            server?.delegate?.srtlaRelayServerTunnelRemoved(endpoint: tunnelEndpoint)
+        }
+        tunnelEndpoint = nil
+    }
+
+    private func executeStartTunnel(address: String, port: UInt16,
+                                    onSuccess: @escaping (UUID, String, UInt16) -> Void)
+    {
         logger.info("srtla-relay-server: Starting tunnel to destination \(address):\(port)")
         performRequest(data: .startTunnel(address: address, port: port)) { response in
             guard let response else {
@@ -92,21 +129,7 @@ private class Client {
             self.name = name
             identified = true
             send(message: .identified(result: .ok))
-            guard case let .hostPort(host, port) = destination else {
-                return
-            }
-            startTunnel(address: "\(host)", port: port.rawValue) { id, name, port in
-                guard let host = self.webSocket.remoteEndpoint?.host else {
-                    logger.info("srtla-relay-server: Missing relay host")
-                    return
-                }
-                let endpoint = NWEndpoint.hostPort(
-                    host: NWEndpoint.Host(host),
-                    port: NWEndpoint.Port(integerLiteral: port)
-                )
-                self.tunnelEndpoint = endpoint
-                self.server?.delegate?.srtlaRelayServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
-            }
+            startTunnelInternal()
         } else {
             logger.info("srtla-relay-server: Streamer sent wrong password")
             send(message: .identified(result: .wrongPassword))
@@ -163,17 +186,17 @@ private class Client {
 class SrtlaRelayServer: NSObject {
     private let port: UInt16
     private let password: String
-    private let destination: NWEndpoint
     private var server: Server
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
     fileprivate weak var delegate: (any SrtlaRelayServerDelegate)?
     private var clients: [Client] = []
+    private var destinationAddress: String?
+    private var destinationPort: UInt16?
 
-    init(port: UInt16, password: String, destination: NWEndpoint) {
+    init(port: UInt16, password: String) {
         self.port = port
         self.password = password
-        self.destination = destination
         server = Server()
         super.init()
         server.webSocketConfig.pingInterval = 10
@@ -199,6 +222,22 @@ class SrtlaRelayServer: NSObject {
         delegate = nil
     }
 
+    func startTunnels(address: String, port: UInt16) {
+        destinationAddress = address
+        destinationPort = port
+        for client in clients {
+            client.startTunnel(address: address, port: port)
+        }
+    }
+
+    func stopTunnels() {
+        destinationAddress = nil
+        destinationPort = nil
+        for client in clients {
+            client.stopTunnel()
+        }
+    }
+
     private func startInternal() {
         do {
             try server.start(port: Endpoint.Port(port))
@@ -222,9 +261,13 @@ class SrtlaRelayServer: NSObject {
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
         logger.info("srtla-relay-server: Client connected")
-        let client = Client(websocket: webSocket, password: password, destination: destination, server: self)
+        let client = Client(websocket: webSocket, password: password, server: self)
         client.start()
         clients.append(client)
+        guard let destinationAddress, let destinationPort else {
+            return
+        }
+        client.startTunnel(address: destinationAddress, port: destinationPort)
     }
 
     private func handleDisconnected(webSocket: Telegraph.WebSocket, error: Error?) {

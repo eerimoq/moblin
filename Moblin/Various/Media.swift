@@ -30,7 +30,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderFinished()
     func mediaOnRecorderError()
     func mediaOnNoTorch()
-    func mediaStrlaRelayDestinationAddress(address: String)
+    func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
 }
 
 final class Media: NSObject {
@@ -1000,9 +1000,9 @@ extension Media: SrtlaDelegate {
         }
     }
 
-    func srtlaRelayDestinationAddress(address: String) {
+    func srtlaRelayDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
-            self.delegate?.mediaStrlaRelayDestinationAddress(address: address)
+            self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
     }
 }

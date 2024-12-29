@@ -62,7 +62,7 @@ class SrtlaRelayClient {
         }
         stopInternal()
         setState(state: .connecting)
-        webSocket = .init(url: clientUrl)
+        webSocket = .init(url: clientUrl, cellular: false)
         webSocket.delegate = self
         webSocket.start()
     }
@@ -179,10 +179,13 @@ class SrtlaRelayClient {
     }
 
     func stopTunnel() {
+        serverListener?.stateUpdateHandler = nil
         serverListener?.cancel()
         serverListener = nil
+        serverConnection?.stateUpdateHandler = nil
         serverConnection?.cancel()
         serverConnection = nil
+        destinationConnection?.stateUpdateHandler = nil
         destinationConnection?.cancel()
         destinationConnection = nil
         startTunnelId = nil
@@ -234,7 +237,9 @@ class SrtlaRelayClient {
             }
             if let error {
                 logger.info("srtla-relay-client: Server receive error \(error)")
-                self.reconnect(reason: "Server receive error")
+                DispatchQueue.main.async {
+                    self.reconnect(reason: "Server receive error")
+                }
                 return
             }
             self.receiveServerPacket()
@@ -253,7 +258,9 @@ class SrtlaRelayClient {
             }
             if let error {
                 logger.info("srtla-relay-client: Destination receive error \(error)")
-                self.reconnect(reason: "Destination receive error")
+                DispatchQueue.main.async {
+                    self.reconnect(reason: "Destination receive error")
+                }
                 return
             }
             self.receiveDestinationPacket()
@@ -267,7 +274,9 @@ class SrtlaRelayClient {
 }
 
 extension SrtlaRelayClient: WebSocketClientDelegate {
-    func webSocketClientConnected(_: WebSocketClient) {}
+    func webSocketClientConnected(_: WebSocketClient) {
+        setState(state: .connected)
+    }
 
     func webSocketClientDisconnected(_: WebSocketClient) {
         setState(state: .connecting)
