@@ -83,6 +83,7 @@
 		0323F3782D1E1AE700A57AC2 /* SrtlaRelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* SrtlaRelayClient.swift */; };
 		0323F37B2D1E7AD600A57AC2 /* SrtlaRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37A2D1E7ACF00A57AC2 /* SrtlaRelay.swift */; };
 		0323F37E2D1E8EDE00A57AC2 /* SrtlaRelaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37D2D1E8ED300A57AC2 /* SrtlaRelaySettingsView.swift */; };
+		0323F3832D21347700A57AC2 /* DnsLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3822D21346F00A57AC2 /* DnsLookup.swift */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
 		0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324CD062BEBFBBA004AA063 /* RistStream.swift */; };
 		0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */; };
@@ -607,6 +608,7 @@
 		0323F3772D1E1AE400A57AC2 /* SrtlaRelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelayClient.swift; sourceTree = "<group>"; };
 		0323F37A2D1E7ACF00A57AC2 /* SrtlaRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelay.swift; sourceTree = "<group>"; };
 		0323F37D2D1E8ED300A57AC2 /* SrtlaRelaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelaySettingsView.swift; sourceTree = "<group>"; };
+		0323F3822D21346F00A57AC2 /* DnsLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsLookup.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
 		0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourThreeEffect.swift; sourceTree = "<group>"; };
@@ -2492,6 +2494,7 @@
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
 				03C357362D0803B100B8B29F /* ChatBotCommand.swift */,
 				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
 				03D37EDF2CE08921006D14C2 /* UrlSession.swift */,
@@ -3439,6 +3442,7 @@
 				0359F8C32BD3DA61005BFDA8 /* VTCompressionSession+Extension.swift in Sources */,
 				0359F8E92BD3DA61005BFDA8 /* AmfFoundation.swift in Sources */,
 				030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */,
+				0323F3832D21347700A57AC2 /* DnsLookup.swift in Sources */,
 				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,
 				45E3E780842910145791546F /* DjiDeviceScanner.swift in Sources */,
 			);

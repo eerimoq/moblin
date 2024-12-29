@@ -60,8 +60,8 @@ class RemoteConnection {
         return packet
     }()
 
-    private(set) var host: NWEndpoint.Host!
-    private(set) var port: NWEndpoint.Port!
+    private(set) var host: NWEndpoint.Host?
+    private(set) var port: NWEndpoint.Port?
     private let mpegtsPacketsPerPacket: Int
     var typeString: String {
         switch type {
@@ -121,10 +121,10 @@ class RemoteConnection {
     }
 
     private func startInternal() {
-        logger.debug("srtla: \(typeString): Start")
-        guard state == .idle else {
+        guard state == .idle, let host, let port else {
             return
         }
+        logger.info("srtla: \(typeString): Start with destination \(host):\(port)")
         let params = NWParameters(dtls: .none)
         if let type {
             params.requiredInterfaceType = type

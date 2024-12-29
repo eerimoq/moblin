@@ -94,17 +94,21 @@ class SrtlaClient {
 
     func start(uri: String, timeout: Double) {
         srtlaClientQueue.async {
+            guard let url = URL(string: uri), var host = url.host, let port = url.port else {
+                logger.error("srtla: Malformed URL")
+                return
+            }
+            if IPv4Address(host) == nil, IPv6Address(host) == nil {
+                host = performDnsLookup(host: host) ?? host
+            }
             if !self.passThrough {
                 self.networkPathMonitor.pathUpdateHandler = self.handleNetworkPathUpdate(path:)
                 self.networkPathMonitor.start(queue: srtlaClientQueue)
             }
             self.totalByteCount = 0
-            guard let url = URL(string: uri), let host = url.host, let port = url.port else {
-                logger.error("srtla: Malformed URL")
-                return
-            }
             self.host = host
             self.port = port
+            logger.info("srtla: Using destination address \(host) and port \(port)")
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection,
                                  host: NWEndpoint.Host(host),
