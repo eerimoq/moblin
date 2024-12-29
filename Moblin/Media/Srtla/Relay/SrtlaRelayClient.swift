@@ -194,7 +194,7 @@ class SrtlaRelayClient {
             case .setup:
                 break
             case .ready:
-                guard let serverListener = self.serverListener, let startTunnelId  = self.startTunnelId else {
+                guard let serverListener = self.serverListener, let startTunnelId = self.startTunnelId else {
                     return
                 }
                 let port = serverListener.port!.rawValue
