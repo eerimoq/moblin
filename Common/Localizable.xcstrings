@@ -44177,6 +44177,12 @@
         }
       }
     },
+    "Enable this on the device you want to use as the extra bonding connection. The device must have cellular data enabled." : {
+
+    },
+    "Enable this on your streaming device. Configure relay devices to connect to this device." : {
+
+    },
     "Enable to allow an assistant to monitor and control this device from a different device." : {
       "localizations" : {
         "de" : {

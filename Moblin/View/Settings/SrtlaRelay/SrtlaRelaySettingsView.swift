@@ -148,6 +148,11 @@ private struct RelayView: View {
             )
         } header: {
             Text("Relay")
+        } footer: {
+            Text("""
+            Enable this on the device you want to use as the extra bonding connection. The device \
+            must have cellular data enabled.
+            """)
         }
     }
 }
@@ -182,6 +187,8 @@ private struct StreamerView: View {
             )
         } header: {
             Text("Streamer")
+        } footer: {
+            Text("Enable this on your streaming device. Configure relay devices to connect to this device.")
         }
     }
 }
