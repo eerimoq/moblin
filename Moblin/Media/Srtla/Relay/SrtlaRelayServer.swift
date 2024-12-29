@@ -213,7 +213,7 @@ class SrtlaRelayServer: NSObject {
 
     func stop() {
         logger.info("srtla-relay-server: stop")
-        server.stop(immediately: true)
+        server.stop(immediately: false)
         stopRetryStartTimer()
         for client in clients {
             client.stop()
