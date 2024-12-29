@@ -30,6 +30,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderFinished()
     func mediaOnRecorderError()
     func mediaOnNoTorch()
+    func mediaStrlaRelayDestinationAddress(address: String)
 }
 
 final class Media: NSObject {
@@ -62,7 +63,6 @@ final class Media: NSObject {
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
-    private var srtlaRelayEndpoints: [NWEndpoint: (UUID, String)] = [:]
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -204,9 +204,6 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         srtlaClient!.start(uri: url, timeout: reconnectTime + 1)
-        for (srtlaRelayEndpoint, (id, name)) in srtlaRelayEndpoints {
-            srtlaClient?.addRelay(endpoint: srtlaRelayEndpoint, id: id, name: name)
-        }
     }
 
     private func srtInitStream(
@@ -249,19 +246,11 @@ final class Media: NSObject {
     }
 
     func addSrtlaRelay(endpoint: NWEndpoint, id: UUID, name: String) {
-        guard srtlaRelayEndpoints[endpoint] == nil else {
-            return
-        }
         srtlaClient?.addRelay(endpoint: endpoint, id: id, name: name)
-        srtlaRelayEndpoints[endpoint] = (id, name)
     }
 
     func removeSrtlaRelay(endpoint: NWEndpoint) {
-        guard srtlaRelayEndpoints[endpoint] != nil else {
-            return
-        }
         srtlaClient?.removeRelay(endpoint: endpoint)
-        srtlaRelayEndpoints.removeValue(forKey: endpoint)
     }
 
     func srtSetAdaptiveBitrateAlgorithm(
@@ -1008,6 +997,12 @@ extension Media: SrtlaDelegate {
         DispatchQueue.main.async {
             logger.info("stream: SRT error: \(message)")
             self.delegate?.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
+        }
+    }
+
+    func srtlaRelayDestinationAddress(address: String) {
+        DispatchQueue.main.async {
+            self.delegate?.mediaStrlaRelayDestinationAddress(address: address)
         }
     }
 }

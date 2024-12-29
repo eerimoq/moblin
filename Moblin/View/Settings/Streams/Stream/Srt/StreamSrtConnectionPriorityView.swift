@@ -13,7 +13,7 @@ struct PriorityItemView: View {
     @State var prio: Float
 
     private func makeName() -> String {
-        if let relayId = priority.relayId {
+        if priority.relayId != nil {
             return priority.name
         } else if let name = model.database.networkInterfaceNames!.first(where: { interface in
             interface.interfaceName == priority.name

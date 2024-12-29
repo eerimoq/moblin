@@ -8,6 +8,7 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
+    func srtlaRelayDestinationAddress(address: String)
 }
 
 private enum State {
@@ -120,6 +121,7 @@ class SrtlaClient {
                 self.onDisconnected(message: "connect timer expired")
             }
             self.state = .waitForRemoteSocketConnected
+            self.delegate?.srtlaRelayDestinationAddress(address: host)
         }
     }
 
@@ -248,10 +250,9 @@ class SrtlaClient {
     }
 
     private func getRelayConnectionPriority(relayId: UUID) -> Float {
-        guard let priority = connectionPriorities.first(where: { connection in
-            connection.relayId == relayId
+        guard let priority = connectionPriorities.first(where: { priority in
+            priority.relayId == relayId
         }) else {
-            logger.info("relay not found \(relayId)")
             return 1
         }
         if priority.enabled! {

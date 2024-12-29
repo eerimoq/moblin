@@ -68,6 +68,7 @@ private class Client {
     }
 
     private func startTunnel(address: String, port: UInt16, onSuccess: @escaping (UUID, String, UInt16) -> Void) {
+        logger.info("srtla-relay-server: Starting tunnel to destination \(address):\(port)")
         performRequest(data: .startTunnel(address: address, port: port)) { response in
             guard let response else {
                 return
@@ -166,14 +167,13 @@ class SrtlaRelayServer: NSObject {
     private var server: Server
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
-    weak var delegate: (any SrtlaRelayServerDelegate)?
+    fileprivate weak var delegate: (any SrtlaRelayServerDelegate)?
     private var clients: [Client] = []
 
-    init(port: UInt16, password: String, destination: NWEndpoint, delegate: SrtlaRelayServerDelegate) {
+    init(port: UInt16, password: String, destination: NWEndpoint) {
         self.port = port
         self.password = password
         self.destination = destination
-        self.delegate = delegate
         server = Server()
         super.init()
         server.webSocketConfig.pingInterval = 10
@@ -181,13 +181,15 @@ class SrtlaRelayServer: NSObject {
         server.webSocketDelegate = self
     }
 
-    func start() {
+    func start(delegate: SrtlaRelayServerDelegate) {
         stop()
         logger.info("srtla-relay-server: start")
+        self.delegate = delegate
         startInternal()
     }
 
     func stop() {
+        delegate = nil
         logger.info("srtla-relay-server: stop")
         server.stop(immediately: true)
         stopRetryStartTimer()
