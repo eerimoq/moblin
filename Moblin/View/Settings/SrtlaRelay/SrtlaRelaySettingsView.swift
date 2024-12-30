@@ -161,6 +161,7 @@ private struct RelayView: View {
 
 private struct StreamerView: View {
     @EnvironmentObject var model: Model
+    @Binding var enabled: Bool
 
     private func submitPort(value: String) {
         guard let port = UInt16(value.trim()) else {
@@ -172,13 +173,12 @@ private struct StreamerView: View {
 
     var body: some View {
         Section {
-            Toggle(isOn: Binding(get: {
-                model.database.srtlaRelay!.server.enabled
-            }, set: { value in
+            Toggle(isOn: $enabled) {
+                Text("Enabled")
+            }
+            .onChange(of: enabled) { value in
                 model.database.srtlaRelay!.server.enabled = value
                 model.reloadSrtlaRelayServer()
-            })) {
-                Text("Enabled")
             }
             .disabled(model.isLive)
             TextEditNavigationView(
@@ -199,6 +199,7 @@ private struct StreamerView: View {
 
 struct SrtlaRelaySettingsView: View {
     @EnvironmentObject var model: Model
+    @State var streamerEnabled: Bool
 
     private func submitPassword(value: String) {
         model.database.srtlaRelay!.password = value.trim()
@@ -228,8 +229,8 @@ struct SrtlaRelaySettingsView: View {
                 Text("Used by both relay and streamer.")
             }
             RelayView(name: model.database.srtlaRelay!.client.name)
-            StreamerView()
-            if model.database.srtlaRelay!.server.enabled {
+            StreamerView(enabled: $streamerEnabled)
+            if streamerEnabled {
                 Section {
                     List {
                         ForEach(model.ipStatuses.filter { $0.interfaceType != .cellular }, id: \.name) { status in
