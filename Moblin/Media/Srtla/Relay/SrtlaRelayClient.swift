@@ -68,13 +68,16 @@ class SrtlaRelayClient {
     }
 
     private func stopInternal() {
+        reconnectTimer.stop()
         setState(state: .none)
+        webSocket.delegate = nil
         webSocket.stop()
         stopTunnel()
     }
 
     private func reconnect(reason: String) {
         logger.info("srtla-relay-client: Reconnecting soon with reason \(reason)")
+        stopInternal()
         reconnectTimer.startSingleShot(timeout: 5.0) {
             self.startInternal()
         }
@@ -108,6 +111,7 @@ class SrtlaRelayClient {
                     logger.info("srtla-relay-client: Failed to identify")
                     return
                 }
+                setState(state: .connected)
             case let .request(id: id, data: data):
                 handleRequest(id: id, data: data)
             }
@@ -133,8 +137,10 @@ class SrtlaRelayClient {
         case .ok:
             return true
         case .wrongPassword:
+            reconnect(reason: "Wrong password")
             setState(state: .wrongPassword)
         default:
+            reconnect(reason: "Unknown error")
             setState(state: .unknownError)
         }
         return false
@@ -275,7 +281,6 @@ class SrtlaRelayClient {
 
 extension SrtlaRelayClient: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {
-        setState(state: .connected)
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {
