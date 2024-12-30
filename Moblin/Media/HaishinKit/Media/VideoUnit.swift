@@ -1222,7 +1222,7 @@ final class VideoUnit: NSObject {
         }
         // 420v does not work with OA4.
         formats = formats.filter {
-            $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+            $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
                 || allowVideoRangePixelFormat
         }
         if formats.isEmpty {
