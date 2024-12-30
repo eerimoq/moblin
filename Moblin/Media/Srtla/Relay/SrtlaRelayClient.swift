@@ -280,8 +280,7 @@ class SrtlaRelayClient {
 }
 
 extension SrtlaRelayClient: WebSocketClientDelegate {
-    func webSocketClientConnected(_: WebSocketClient) {
-    }
+    func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {
         setState(state: .connecting)
