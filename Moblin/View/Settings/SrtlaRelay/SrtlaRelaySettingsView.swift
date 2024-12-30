@@ -232,7 +232,7 @@ struct SrtlaRelaySettingsView: View {
             if model.database.srtlaRelay!.server.enabled {
                 Section {
                     List {
-                        ForEach(model.ipStatuses, id: \.name) { status in
+                        ForEach(model.ipStatuses.filter { $0.interfaceType != .cellular }, id: \.name) { status in
                             InterfaceView(
                                 ip: status.ip,
                                 port: model.database.srtlaRelay!.server.port,
