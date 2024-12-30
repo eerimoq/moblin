@@ -1935,6 +1935,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadSpeechToText()
             reloadTeslaVehicle()
             reloadSrtlaRelayClient()
+            reloadSrtlaRelayServer()
         }
     }
 
