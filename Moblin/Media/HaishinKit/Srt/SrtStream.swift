@@ -49,7 +49,7 @@ class SrtStream: NetStream {
     }
 
     init(_ connection: SrtConnection, timecodesEnabled: Bool) {
-        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled)
+        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, queue: netStreamLockQueue)
         super.init()
         self.connection = connection
         self.connection?.removeStream()
