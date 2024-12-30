@@ -93,14 +93,24 @@ class SrtlaClient {
         logger.debug("srtla: srtla deinit")
     }
 
-    func start(uri: String, timeout: Double) {
+    func start(uri: String, timeout: Double, dnsLookupStrategy: SettingsDnsLookupStrategy) {
         srtlaClientQueue.async {
             guard let url = URL(string: uri), var host = url.host, let port = url.port else {
                 logger.error("srtla: Malformed URL")
                 return
             }
             if IPv4Address(host) == nil, IPv6Address(host) == nil {
-                host = performDnsLookup(host: host) ?? host
+                logger.info("dns: Lookup strategy \(dnsLookupStrategy)")
+                switch dnsLookupStrategy {
+                case .ipv4:
+                    host = performDnsLookup(host: host, family: .ipv4) ?? host
+                case .ipv6:
+                    host = performDnsLookup(host: host, family: .ipv6) ?? host
+                case .ipv4AndIpv6:
+                    host = performDnsLookup(host: host, family: .unspec) ?? host
+                case .system:
+                    break
+                }
             }
             if !self.passThrough {
                 self.networkPathMonitor.pathUpdateHandler = self.handleNetworkPathUpdate(path:)

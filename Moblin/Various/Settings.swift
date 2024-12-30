@@ -1789,6 +1789,20 @@ class SettingsTesla: Codable {
     var privateKey: String = ""
 }
 
+enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
+    case ipv4 = "IPv4"
+    case ipv6 = "IPv6"
+    case ipv4AndIpv6 = "IPv4 and IPv6"
+    case system = "System"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .ipv4AndIpv6
+    }
+}
+
+let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
+
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
@@ -1812,6 +1826,7 @@ class SettingsDebug: Codable {
     var prettySnapshot: Bool? = false
     var reliableChat: Bool? = false
     var timecodesEnabled: Bool? = false
+    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .ipv4AndIpv6
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4404,6 +4419,10 @@ final class Settings {
         }
         if realDatabase.srtlaRelay == nil {
             realDatabase.srtlaRelay = .init()
+            store()
+        }
+        if realDatabase.debug.dnsLookupStrategy == nil {
+            realDatabase.debug.dnsLookupStrategy = .ipv4AndIpv6
             store()
         }
     }

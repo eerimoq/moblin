@@ -3921,7 +3921,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames!,
-                connectionPriorities: stream.srt.connectionPriorities!
+                connectionPriorities: stream.srt.connectionPriorities!,
+                dnsLookupStrategy: database.debug.dnsLookupStrategy!
             )
             updateAdaptiveBitrateSrt(stream: stream)
         case .rist:

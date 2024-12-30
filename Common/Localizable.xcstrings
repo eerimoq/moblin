@@ -41967,6 +41967,9 @@
         }
       }
     },
+    "DNS lookup strategy" : {
+
+    },
     "Do not say messages that are likely spam or bot commands." : {
       "localizations" : {
         "de" : {

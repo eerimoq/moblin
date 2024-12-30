@@ -189,7 +189,8 @@ final class Media: NSObject {
         maximumBandwidthFollowInput: Bool,
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
-        connectionPriorities: SettingsStreamSrtConnectionPriorities
+        connectionPriorities: SettingsStreamSrtConnectionPriorities,
+        dnsLookupStrategy: SettingsDnsLookupStrategy
     ) {
         srtUrl = url
         srtInitStream(
@@ -203,7 +204,7 @@ final class Media: NSObject {
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities
         )
-        srtlaClient!.start(uri: url, timeout: reconnectTime + 1)
+        srtlaClient!.start(uri: url, timeout: reconnectTime + 1, dnsLookupStrategy: dnsLookupStrategy)
     }
 
     private func srtInitStream(

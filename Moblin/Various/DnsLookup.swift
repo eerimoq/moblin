@@ -1,9 +1,26 @@
 import Network
 
-func performDnsLookup(host: String) -> String? {
+enum DnsLookupFamily {
+    case ipv4
+    case ipv6
+    case unspec
+
+    func toCFamily() -> Int32 {
+        switch self {
+        case .ipv4:
+            return AF_INET
+        case .ipv6:
+            return AF_INET6
+        case .unspec:
+            return AF_UNSPEC
+        }
+    }
+}
+
+func performDnsLookup(host: String, family: DnsLookupFamily) -> String? {
     var hints = addrinfo(
         ai_flags: 0,
-        ai_family: AF_UNSPEC,
+        ai_family: family.toCFamily(),
         ai_socktype: SOCK_DGRAM,
         ai_protocol: 0,
         ai_addrlen: 0,
@@ -41,7 +58,6 @@ func performDnsLookup(host: String) -> String? {
     freeaddrinfo(infoPointer)
     for address in addresses {
         logger.info("dns: Found address \(address) for \(host)")
-        return address
     }
-    return nil
+    return addresses.first
 }

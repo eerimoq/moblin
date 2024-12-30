@@ -218,7 +218,8 @@ struct SettingsView: View {
                     }
                     NavigationLink {
                         DebugSettingsView(
-                            cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish!
+                            cameraSwitchRemoveBlackish: model.database.debug.cameraSwitchRemoveBlackish!,
+                            dnsLookupStrategy: model.database.debug.dnsLookupStrategy!.rawValue
                         )
                     } label: {
                         IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
