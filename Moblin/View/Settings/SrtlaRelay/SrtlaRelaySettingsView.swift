@@ -226,7 +226,7 @@ struct SrtlaRelaySettingsView: View {
                     )
                 }
             } footer: {
-                Text("Used by both relay and streamer.")
+                Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
             RelayView(name: model.database.srtlaRelay!.client.name)
             StreamerView(enabled: $streamerEnabled)
@@ -249,13 +249,13 @@ struct SrtlaRelaySettingsView: View {
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("""
-                        Enter one of the URLs as "Streamer URL" in the relay device to \
+                        Enter one of the URL:s as "Streamer URL" in the relay device to \
                         use it as an additional bonding connection.
                         """)
                     }
                 }
             }
         }
-        .navigationTitle("SRTLA relay")
+        .navigationTitle("Moblink")
     }
 }

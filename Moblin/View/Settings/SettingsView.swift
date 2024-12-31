@@ -105,7 +105,7 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(
                             image: "app.connected.to.app.below.fill",
-                            text: String(localized: "SRTLA relay")
+                            text: String(localized: "Moblink")
                         )
                     }
                     NavigationLink {
