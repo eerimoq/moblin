@@ -46,6 +46,7 @@ private class ReplaceAudio {
     private let driftTracker: DriftTracker
     private var isInitialBuffering = true
     weak var delegate: ReplaceAudioSampleBufferDelegate?
+    private var hasBufferBeenAppended = false
 
     init(cameraId: UUID, name: String, latency: Double, mixer: Mixer?) {
         self.cameraId = cameraId
@@ -60,6 +61,7 @@ private class ReplaceAudio {
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         sampleBuffers.append(sampleBuffer)
+        hasBufferBeenAppended = true
         if !isInitialized {
             isInitialized = true
             initialize(sampleBuffer: sampleBuffer)
@@ -134,7 +136,8 @@ private class ReplaceAudio {
             }
             sampleBuffer = latestSampleBuffer
         }
-        if !isInitialBuffering {
+        if !isInitialBuffering, hasBufferBeenAppended {
+            hasBufferBeenAppended = false
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
                 mixer?.setReplaceVideoDrift(cameraId: cameraId, drift: drift)
             }

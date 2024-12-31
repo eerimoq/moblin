@@ -50,6 +50,7 @@ private class ReplaceVideo {
     private let update: Bool
     private weak var mixer: Mixer?
     private let driftTracker: DriftTracker
+    private var hasBufferBeenAppended = false
 
     init(cameraId: UUID, name: String, update: Bool, latency: Double, mixer: Mixer?) {
         self.cameraId = cameraId
@@ -64,6 +65,7 @@ private class ReplaceVideo {
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        hasBufferBeenAppended = true
         if let index = sampleBuffers
             .lastIndex(where: { $0.presentationTimeStamp < sampleBuffer.presentationTimeStamp })
         {
@@ -134,7 +136,8 @@ private class ReplaceVideo {
         if sampleBuffer != nil {
             currentSampleBuffer = sampleBuffer
         }
-        if !isInitialBuffering {
+        if !isInitialBuffering, hasBufferBeenAppended {
+            hasBufferBeenAppended = false
             if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
                 mixer?.setReplaceAudioDrift(cameraId: cameraId, drift: drift)
             }
