@@ -101,7 +101,7 @@ private class ReplaceAudio {
             numberOfBuffersConsumed += 1
             isInitialBuffering = false
         }
-        if logger.debugEnabled {
+        if logger.debugEnabled, !isInitialBuffering {
             let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
             let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
             let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
