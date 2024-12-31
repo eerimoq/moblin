@@ -1792,10 +1792,10 @@ class SettingsTesla: Codable {
 }
 
 enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
+    case system = "System"
     case ipv4 = "IPv4"
     case ipv6 = "IPv6"
     case ipv4AndIpv6 = "IPv4 and IPv6"
-    case system = "System"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -4423,12 +4423,12 @@ final class Settings {
             realDatabase.srtlaRelay = .init()
             store()
         }
-        for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
-            stream.srt.dnsLookupStrategy = realDatabase.debug.dnsLookupStrategy ?? .system
-            store()
-        }
         if realDatabase.debug.dnsLookupStrategy == nil {
             realDatabase.debug.dnsLookupStrategy = .system
+            store()
+        }
+        for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
+            stream.srt.dnsLookupStrategy = .system
             store()
         }
     }
