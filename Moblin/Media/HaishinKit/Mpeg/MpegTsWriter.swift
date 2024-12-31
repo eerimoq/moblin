@@ -25,7 +25,10 @@ class MpegTsWriter {
     private var patContinuityCounter: UInt8 = 0
     private var pmtContinuityCounter: UInt8 = 0
     private var rotatedTimestamp: CMTime = .zero
-    private let queue: DispatchQueue
+    private let outputLock = DispatchQueue(
+        label: "com.haishinkit.HaishinKit.MpegTsWriter",
+        qos: .userInitiated
+    )
     private var videoData: [Data?] = [nil, nil]
     private var videoDataOffset = 0
 
@@ -41,9 +44,8 @@ class MpegTsWriter {
     private var programClockReferenceTimestamp: CMTime?
     private let timecodesEnabled: Bool
 
-    init(timecodesEnabled: Bool, queue: DispatchQueue) {
+    init(timecodesEnabled: Bool) {
         self.timecodesEnabled = timecodesEnabled
-        self.queue = queue
     }
 
     private func setAudioConfig(_ config: MpegTsAudioConfig) {
@@ -164,7 +166,9 @@ class MpegTsWriter {
     }
 
     private func write(_ data: Data) {
-        writeBytes(data)
+        outputLock.sync {
+            self.writeBytes(data)
+        }
     }
 
     private func writePacket(_ data: Data) {
@@ -198,37 +202,41 @@ class MpegTsWriter {
     }
 
     private func writeVideo(data: Data) {
-        if let videoData = videoData[0] {
-            videoData.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-                writeBytesPointer(
-                    pointer: UnsafeRawBufferPointer(
-                        rebasing: pointer[videoDataOffset ..< videoData.count]
-                    ),
-                    count: videoData.count - videoDataOffset
-                )
+        outputLock.sync {
+            if let videoData = videoData[0] {
+                videoData.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+                    writeBytesPointer(
+                        pointer: UnsafeRawBufferPointer(
+                            rebasing: pointer[videoDataOffset ..< videoData.count]
+                        ),
+                        count: videoData.count - videoDataOffset
+                    )
+                }
             }
+            self.appendVideoData(data: data)
         }
-        appendVideoData(data: data)
     }
 
     private func writeAudio(data: Data) {
-        if let videoData = videoData[0] {
-            for var packet in data.chunks(payloadSize) {
-                let videoSize = payloadSize - packet.count
-                if videoSize > 0 {
-                    let endOffset = min(videoDataOffset + videoSize, videoData.count)
-                    if videoDataOffset != endOffset {
-                        packet = videoData[videoDataOffset ..< endOffset] + packet
-                        videoDataOffset = endOffset
+        outputLock.sync {
+            if let videoData = videoData[0] {
+                for var packet in data.chunks(payloadSize) {
+                    let videoSize = payloadSize - packet.count
+                    if videoSize > 0 {
+                        let endOffset = min(videoDataOffset + videoSize, videoData.count)
+                        if videoDataOffset != endOffset {
+                            packet = videoData[videoDataOffset ..< endOffset] + packet
+                            videoDataOffset = endOffset
+                        }
                     }
+                    self.writePacket(packet)
                 }
-                writePacket(packet)
+                if videoDataOffset == videoData.count {
+                    self.appendVideoData(data: nil)
+                }
+            } else {
+                self.writeBytes(data)
             }
-            if videoDataOffset == videoData.count {
-                appendVideoData(data: nil)
-            }
-        } else {
-            writeBytes(data)
         }
     }
 
@@ -300,8 +308,10 @@ extension MpegTsWriter: AudioCodecDelegate {
         }
         writeAudio(data: encode(MpegTsWriter.audioPacketId, presentationTimeStamp, true, packetizedElementaryStream))
     }
+}
 
-    private func videoCodecOutputFormatInternal(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+extension MpegTsWriter: VideoCodecDelegate {
+    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
         data.elementaryPacketId = MpegTsWriter.videoPacketId
         videoContinuityCounter = 0
@@ -335,7 +345,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         }
     }
 
-    private func videoCodecOutputSampleBufferInternal(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
         guard let dataBuffer = sampleBuffer.dataBuffer,
               let (buffer, length) = dataBuffer.getDataPointer(),
               canWriteFor(),
@@ -380,19 +390,5 @@ extension MpegTsWriter: AudioCodecDelegate {
             randomAccessIndicator,
             packetizedElementaryStream
         ))
-    }
-}
-
-extension MpegTsWriter: VideoCodecDelegate {
-    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
-        queue.async {
-            self.videoCodecOutputFormatInternal(codec, formatDescription)
-        }
-    }
-
-    func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        queue.async {
-            self.videoCodecOutputSampleBufferInternal(codec, sampleBuffer)
-        }
     }
 }
