@@ -57,7 +57,7 @@ class MpegTsWriter {
             self.stopRunningInternal()
         }
     }
-    
+
     private func startRunningInternal() {
         isRunning.mutate { $0 = true }
     }
@@ -80,7 +80,7 @@ class MpegTsWriter {
         programClockReferenceTimestamp = nil
         isRunning.mutate { $0 = false }
     }
-    
+
     private func setAudioConfig(_ config: MpegTsAudioConfig) {
         audioConfig = config
         writeProgramIfNeeded()
@@ -273,7 +273,7 @@ class MpegTsWriter {
         }
         return packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
     }
-    
+
     private func videoCodecOutputFormatInternal(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
         data.elementaryPacketId = MpegTsWriter.videoPacketId

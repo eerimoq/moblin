@@ -7,6 +7,7 @@ class MoblinSettingsWebBrowser: Codable {
 class MoblinSettingsSrt: Codable {
     var latency: Int32?
     var adaptiveBitrateEnabled: Bool?
+    var dnsLookupStrategy: SettingsDnsLookupStrategy?
 }
 
 class MoblinSettingsUrlStreamVideo: Codable {

@@ -172,6 +172,7 @@ private struct DeepLinkCreatorStreamAudioView: View {
 private struct DeepLinkCreatorStreamSrtView: View {
     @EnvironmentObject var model: Model
     var srt: DeepLinkCreatorStreamSrt
+    @State var dnsLookupStrategy: String
 
     func submitLatency(value: String) {
         guard let latency = Int32(value) else {
@@ -206,6 +207,14 @@ private struct DeepLinkCreatorStreamSrtView: View {
                     srt.adaptiveBitrateEnabled = value
                     model.store()
                 }))
+                Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
+                    ForEach(dnsLookupStrategies, id: \.self) { strategy in
+                        Text(strategy)
+                    }
+                }
+                .onChange(of: dnsLookupStrategy) { strategy in
+                    srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
+                }
             }
         }
         .navigationTitle("SRT(LA)")
@@ -353,7 +362,10 @@ struct DeepLinkCreatorStreamSettingsView: View {
                 }
                 if let url = URL(string: stream.url), ["srt", "srtla"].contains(url.scheme) {
                     NavigationLink {
-                        DeepLinkCreatorStreamSrtView(srt: stream.srt)
+                        DeepLinkCreatorStreamSrtView(
+                            srt: stream.srt,
+                            dnsLookupStrategy: stream.srt.dnsLookupStrategy.rawValue
+                        )
                     } label: {
                         Text("SRT(LA)")
                     }

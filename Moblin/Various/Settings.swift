@@ -2457,6 +2457,7 @@ class DeepLinkCreatorStreamAudio: Codable {
 class DeepLinkCreatorStreamSrt: Codable {
     var latency: Int32 = defaultSrtLatency
     var adaptiveBitrateEnabled: Bool = true
+    var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
 }
 
 class DeepLinkCreatorStreamObs: Codable {

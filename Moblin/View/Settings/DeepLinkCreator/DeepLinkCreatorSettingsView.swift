@@ -51,7 +51,8 @@ struct DeepLinkCreatorSettingsView: View {
         }
         newStream.srt = .init()
         newStream.srt!.latency = stream.srt.latency
-        newStream.srt!.adaptiveBitrateEnabled = false
+        newStream.srt!.adaptiveBitrateEnabled = stream.srt.adaptiveBitrateEnabled
+        newStream.srt!.dnsLookupStrategy = stream.srt.dnsLookupStrategy
         if !stream.obs.webSocketUrl.isEmpty {
             newStream.obs = .init(
                 webSocketUrl: stream.obs.webSocketUrl,

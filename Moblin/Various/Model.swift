@@ -2287,6 +2287,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if let adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled {
                     newStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
                 }
+                if let dnsLookupStrategy = srt.dnsLookupStrategy {
+                    newStream.srt.dnsLookupStrategy = dnsLookupStrategy
+                }
             }
             if let obs = stream.obs {
                 newStream.obsWebSocketEnabled = true
