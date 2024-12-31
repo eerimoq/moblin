@@ -75,7 +75,10 @@ struct StreamSettingsView: View {
                 if model.database.showAllSettings! {
                     if stream.getProtocol() == .srt {
                         NavigationLink {
-                            StreamSrtSettingsView(stream: stream)
+                            StreamSrtSettingsView(
+                                stream: stream,
+                                dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
+                            )
                         } label: {
                             Text("SRT(LA)")
                         }

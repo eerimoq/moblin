@@ -3,6 +3,7 @@ import SwiftUI
 struct StreamSrtSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
+    @State var dnsLookupStrategy: String
 
     func submitLatency(value: String) {
         guard let latency = Int32(value) else {
@@ -93,6 +94,19 @@ struct StreamSrtSettingsView: View {
                         """
                     )
                 }
+            }
+            Section {
+                Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
+                    ForEach(dnsLookupStrategies, id: \.self) { strategy in
+                        Text(strategy)
+                    }
+                }
+                .onChange(of: dnsLookupStrategy) { strategy in
+                    stream.srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
+                }
+                .disabled(stream.enabled && model.isLive)
+            } footer: {
+                Text("System seems to work best for TMobile. IPv4 probably best for IRLToolkit.")
             }
         }
         .navigationTitle("SRT(LA)")

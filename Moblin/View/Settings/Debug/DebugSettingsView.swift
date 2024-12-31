@@ -4,7 +4,6 @@ import WebKit
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
-    @State var dnsLookupStrategy: String
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -115,15 +114,6 @@ struct DebugSettingsView: View {
                     model.reloadNtpClient()
                     model.reloadSrtlaServer()
                 }))
-                Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
-                    ForEach(dnsLookupStrategies, id: \.self) { strategy in
-                        Text(strategy)
-                    }
-                }
-                .onChange(of: dnsLookupStrategy) { strategy in
-                    model.database.debug
-                        .dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .ipv4AndIpv6
-                }
             } header: {
                 Text("Experimental")
             }

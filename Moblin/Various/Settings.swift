@@ -254,6 +254,7 @@ class SettingsStreamSrt: Codable {
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate? = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities? = .init()
     var mpegtsPacketsPerPacket: Int = 7
+    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
 
     func clone() -> SettingsStreamSrt {
         let new = SettingsStreamSrt()
@@ -264,6 +265,7 @@ class SettingsStreamSrt: Codable {
         new.adaptiveBitrate = adaptiveBitrate!.clone()
         new.connectionPriorities = connectionPriorities!.clone()
         new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        new.dnsLookupStrategy = dnsLookupStrategy
         return new
     }
 }
@@ -1797,7 +1799,7 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
 
     public init(from decoder: Decoder) throws {
         self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .ipv4AndIpv6
+            .system
     }
 }
 
@@ -1826,7 +1828,7 @@ class SettingsDebug: Codable {
     var prettySnapshot: Bool? = false
     var reliableChat: Bool? = false
     var timecodesEnabled: Bool? = false
-    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .ipv4AndIpv6
+    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4421,8 +4423,12 @@ final class Settings {
             realDatabase.srtlaRelay = .init()
             store()
         }
+        for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
+            stream.srt.dnsLookupStrategy = realDatabase.debug.dnsLookupStrategy ?? .system
+            store()
+        }
         if realDatabase.debug.dnsLookupStrategy == nil {
-            realDatabase.debug.dnsLookupStrategy = .ipv4AndIpv6
+            realDatabase.debug.dnsLookupStrategy = .system
             store()
         }
     }

@@ -3923,7 +3923,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!,
-                dnsLookupStrategy: database.debug.dnsLookupStrategy!
+                dnsLookupStrategy: stream.srt.dnsLookupStrategy!
             )
             updateAdaptiveBitrateSrt(stream: stream)
         case .rist:
