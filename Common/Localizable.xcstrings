@@ -45746,6 +45746,9 @@
         }
       }
     },
+    "Enter one of the URL:s as \"Streamer URL\" in the relay device to use it as an additional bonding connection." : {
+
+    },
     "Enter one of the URLs as \"Assistant URL\" in the streamer device to connect to this device." : {
       "localizations" : {
         "de" : {
@@ -45875,9 +45878,6 @@
           }
         }
       }
-    },
-    "Enter one of the URLs as \"Streamer URL\" in the relay device to use it as an additional bonding connection." : {
-
     },
     "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
       "localizations" : {
@@ -71116,6 +71116,9 @@
           }
         }
       }
+    },
+    "Moblink" : {
+
     },
     "Moderators" : {
       "localizations" : {
@@ -102713,9 +102716,6 @@
         }
       }
     },
-    "SRTLA relay" : {
-
-    },
     "SRTLA server" : {
       "localizations" : {
         "de" : {
@@ -124045,7 +124045,7 @@
         }
       }
     },
-    "Used by both relay and streamer." : {
+    "Used by both relay and streamer devices. Copy the streamer's password to the relay device." : {
 
     },
     "Used by both streamer and assistant." : {

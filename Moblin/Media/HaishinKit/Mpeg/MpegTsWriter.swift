@@ -46,23 +46,21 @@ class MpegTsWriter {
         self.queue = queue
     }
 
+    private func setAudioConfig(_ config: MpegTsAudioConfig) {
+        audioConfig = config
+        writeProgramIfNeeded()
+    }
+
+    private func setVideoConfig(_ config: MpegTsVideoConfig) {
+        videoConfig = config
+        writeProgramIfNeeded()
+    }
+
     func startRunning() {
-        queue.async {
-            self.startRunningInternal()
-        }
-    }
-
-    func stopRunning() {
-        queue.async {
-            self.stopRunningInternal()
-        }
-    }
-
-    private func startRunningInternal() {
         isRunning.mutate { $0 = true }
     }
 
-    private func stopRunningInternal() {
+    func stopRunning() {
         guard isRunning.value else {
             return
         }
@@ -79,16 +77,6 @@ class MpegTsWriter {
         videoData = [nil, nil]
         programClockReferenceTimestamp = nil
         isRunning.mutate { $0 = false }
-    }
-
-    private func setAudioConfig(_ config: MpegTsAudioConfig) {
-        audioConfig = config
-        writeProgramIfNeeded()
-    }
-
-    private func setVideoConfig(_ config: MpegTsVideoConfig) {
-        videoConfig = config
-        writeProgramIfNeeded()
     }
 
     private func canWriteFor() -> Bool {
@@ -273,6 +261,45 @@ class MpegTsWriter {
         }
         return packetizedElementaryStream.arrayOfPackets(packetId, programClockReference)
     }
+}
+
+extension MpegTsWriter: AudioCodecDelegate {
+    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+        logger.info("ts-writer: Audio setup \(format)")
+        var data = ElementaryStreamSpecificData()
+        switch format.formatDescription.audioStreamBasicDescription?.mFormatID {
+        case kAudioFormatMPEG4AAC:
+            data.streamType = .adtsAac
+        case kAudioFormatOpus:
+            data.streamType = .mpeg2PacketizedData
+        default:
+            logger.info("ts-writer: Unsupported audio format.")
+            return
+        }
+        data.elementaryPacketId = MpegTsWriter.audioPacketId
+        programMappingTable.elementaryStreamSpecificDatas.append(data)
+        audioContinuityCounter = 0
+        setAudioConfig(MpegTsAudioConfig(formatDescription: format.formatDescription))
+    }
+
+    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+        guard let audioBuffer = buffer as? AVAudioCompressedBuffer,
+              canWriteFor(),
+              let audioConfig
+        else {
+            return
+        }
+        guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
+            bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
+            count: audioBuffer.byteLength,
+            presentationTimeStamp: presentationTimeStamp,
+            config: audioConfig,
+            streamId: MpegTsWriter.audioStreamId
+        ) else {
+            return
+        }
+        writeAudio(data: encode(MpegTsWriter.audioPacketId, presentationTimeStamp, true, packetizedElementaryStream))
+    }
 
     private func videoCodecOutputFormatInternal(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
@@ -353,57 +380,6 @@ class MpegTsWriter {
             randomAccessIndicator,
             packetizedElementaryStream
         ))
-    }
-
-    private func audioCodecOutputFormatInternal(_ format: AVAudioFormat) {
-        logger.info("ts-writer: Audio setup \(format)")
-        var data = ElementaryStreamSpecificData()
-        switch format.formatDescription.audioStreamBasicDescription?.mFormatID {
-        case kAudioFormatMPEG4AAC:
-            data.streamType = .adtsAac
-        case kAudioFormatOpus:
-            data.streamType = .mpeg2PacketizedData
-        default:
-            logger.info("ts-writer: Unsupported audio format.")
-            return
-        }
-        data.elementaryPacketId = MpegTsWriter.audioPacketId
-        programMappingTable.elementaryStreamSpecificDatas.append(data)
-        audioContinuityCounter = 0
-        setAudioConfig(MpegTsAudioConfig(formatDescription: format.formatDescription))
-    }
-
-    private func audioCodecOutputBufferInternal(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        guard let audioBuffer = buffer as? AVAudioCompressedBuffer,
-              canWriteFor(),
-              let audioConfig
-        else {
-            return
-        }
-        guard let packetizedElementaryStream = MpegTsPacketizedElementaryStream(
-            bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
-            count: audioBuffer.byteLength,
-            presentationTimeStamp: presentationTimeStamp,
-            config: audioConfig,
-            streamId: MpegTsWriter.audioStreamId
-        ) else {
-            return
-        }
-        writeAudio(data: encode(MpegTsWriter.audioPacketId, presentationTimeStamp, true, packetizedElementaryStream))
-    }
-}
-
-extension MpegTsWriter: AudioCodecDelegate {
-    func audioCodecOutputFormat(_ format: AVAudioFormat) {
-        queue.async {
-            self.audioCodecOutputFormatInternal(format)
-        }
-    }
-
-    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
-        queue.async {
-            self.audioCodecOutputBufferInternal(buffer, presentationTimeStamp)
-        }
     }
 }
 
