@@ -496,3 +496,31 @@ extension CGSize {
         return max(height, width)
     }
 }
+
+public func getCpuUsage() -> Float {
+    var result: Int32
+    var threadList = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
+    var threadCount = UInt32(MemoryLayout<mach_task_basic_info_data_t>.size / MemoryLayout<natural_t>.size)
+    var threadInfo = thread_basic_info()
+    result = withUnsafeMutablePointer(to: &threadList) {
+        $0.withMemoryRebound(to: thread_act_array_t?.self, capacity: 1) {
+            task_threads(mach_task_self_, $0, &threadCount)
+        }
+    }
+    if result != KERN_SUCCESS {
+        return 0
+    }
+    return (0 ..< Int(threadCount))
+        .compactMap { index -> Float? in
+            var threadInfoCount = UInt32(THREAD_INFO_MAX)
+            result = withUnsafeMutablePointer(to: &threadInfo) {
+                $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                    thread_info(threadList[index], UInt32(THREAD_BASIC_INFO), $0, &threadInfoCount)
+                }
+            }
+            if result != KERN_SUCCESS { return nil }
+            let isIdle = threadInfo.flags == TH_FLAGS_IDLE
+            return !isIdle ? (Float(threadInfo.cpu_usage) / Float(TH_USAGE_SCALE)) * 100 : nil
+        }
+        .reduce(0, +)
+}

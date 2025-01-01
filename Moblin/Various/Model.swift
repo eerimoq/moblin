@@ -627,6 +627,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
     @Published var debugLines: [String] = []
+    @Published var cpuUsage: Float = 0.0
+    var cpuUsageNeeded = false
     private var latestDebugLines: [String] = []
     private var latestDebugActions: [String] = []
     @Published var streamingHistory = StreamingHistory()
@@ -2440,6 +2442,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateBitrateStatus()
             self.updateAdsRemainingTimer(now: now)
             self.keepSpeakerAlive(now: monotonicNow)
+            if self.cpuUsageNeeded {
+                self.cpuUsage = getCpuUsage()
+            }
         })
         Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.teslaGetDriveState()

@@ -364,7 +364,7 @@ struct DeepLinkCreatorStreamSettingsView: View {
                     NavigationLink {
                         DeepLinkCreatorStreamSrtView(
                             srt: stream.srt,
-                            dnsLookupStrategy: stream.srt.dnsLookupStrategy.rawValue
+                            dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
                         )
                     } label: {
                         Text("SRT(LA)")

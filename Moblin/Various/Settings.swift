@@ -2457,7 +2457,7 @@ class DeepLinkCreatorStreamAudio: Codable {
 class DeepLinkCreatorStreamSrt: Codable {
     var latency: Int32 = defaultSrtLatency
     var adaptiveBitrateEnabled: Bool = true
-    var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
+    var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
 }
 
 class DeepLinkCreatorStreamObs: Codable {
@@ -4431,6 +4431,12 @@ final class Settings {
         for stream in realDatabase.streams where stream.srt.dnsLookupStrategy == nil {
             stream.srt.dnsLookupStrategy = .system
             store()
+        }
+        for stream in realDatabase.deepLinkCreator!.streams {
+            if stream.srt.dnsLookupStrategy == nil {
+                stream.srt.dnsLookupStrategy = .system
+                store()
+            }
         }
     }
 }
