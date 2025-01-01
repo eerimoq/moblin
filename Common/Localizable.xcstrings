@@ -102329,6 +102329,9 @@
         }
       }
     },
+    "SRT(LA) batch send" : {
+
+    },
     "SRT(LA) port number missing" : {
       "localizations" : {
         "de" : {

@@ -5,6 +5,8 @@
 import Foundation
 import Network
 
+var srtlaBatchSend = false
+
 private enum State {
     case idle
     case socketConnecting
@@ -238,11 +240,34 @@ class RemoteConnection {
                     numberOfMpegTsPackets += 1
                     numberOfNullPacketsSent += 1
                 }
-                sendPacketInternal(packet: paddedPacket)
+                sendDataPacketInternal(packet: paddedPacket)
                 totalDataSentByteCount += UInt64(paddedPacket.count)
             } else {
-                sendPacketInternal(packet: packet)
+                sendDataPacketInternal(packet: packet)
                 totalDataSentByteCount += UInt64(packet.count)
+            }
+        } else {
+            sendPacketInternal(packet: packet)
+        }
+    }
+
+    private var dataPacketsToSend: [Data] = []
+    private var latestDataSentTime = ContinuousClock.now
+
+    private func sendDataPacketInternal(packet: Data) {
+        if srtlaBatchSend {
+            let now = ContinuousClock.now
+            dataPacketsToSend.append(packet)
+            // For slightly better performance.
+            if latestDataSentTime.duration(to: now) > .milliseconds(10) {
+                latestSentTime = now
+                latestDataSentTime = now
+                connection?.batch {
+                    for packet in dataPacketsToSend {
+                        connection?.send(content: packet, completion: .idempotent)
+                    }
+                }
+                dataPacketsToSend.removeAll()
             }
         } else {
             sendPacketInternal(packet: packet)

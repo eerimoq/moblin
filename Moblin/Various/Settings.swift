@@ -1829,6 +1829,7 @@ class SettingsDebug: Codable {
     var reliableChat: Bool? = false
     var timecodesEnabled: Bool? = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
+    var srtlaBatchSend: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4432,11 +4433,13 @@ final class Settings {
             stream.srt.dnsLookupStrategy = .system
             store()
         }
-        for stream in realDatabase.deepLinkCreator!.streams {
-            if stream.srt.dnsLookupStrategy == nil {
-                stream.srt.dnsLookupStrategy = .system
-                store()
-            }
+        for stream in realDatabase.deepLinkCreator!.streams where stream.srt.dnsLookupStrategy == nil {
+            stream.srt.dnsLookupStrategy = .system
+            store()
+        }
+        if realDatabase.debug.srtlaBatchSend == nil {
+            realDatabase.debug.srtlaBatchSend = false
+            store()
         }
     }
 }

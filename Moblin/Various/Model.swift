@@ -1271,6 +1271,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
         setBlurSceneSwitch()
+        setSrtlaBatchSend()
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
@@ -1595,6 +1596,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug.metalPetalFilters!
+    }
+
+    func setSrtlaBatchSend() {
+        srtlaBatchSend = database.debug.srtlaBatchSend!
     }
 
     private func setupSampleBufferReceiver() {

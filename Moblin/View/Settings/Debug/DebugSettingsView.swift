@@ -114,6 +114,12 @@ struct DebugSettingsView: View {
                     model.reloadNtpClient()
                     model.reloadSrtlaServer()
                 }))
+                Toggle("SRT(LA) batch send", isOn: Binding(get: {
+                    model.database.debug.srtlaBatchSend!
+                }, set: { value in
+                    model.database.debug.srtlaBatchSend = value
+                    model.setSrtlaBatchSend()
+                }))
             } header: {
                 Text("Experimental")
             }

@@ -497,7 +497,7 @@ extension CGSize {
     }
 }
 
-public func getCpuUsage() -> Float {
+func getCpuUsage() -> Float {
     var result: Int32
     var threadList = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
     var threadCount = UInt32(MemoryLayout<mach_task_basic_info_data_t>.size / MemoryLayout<natural_t>.size)
@@ -510,17 +510,15 @@ public func getCpuUsage() -> Float {
     if result != KERN_SUCCESS {
         return 0
     }
-    return (0 ..< Int(threadCount))
-        .compactMap { index -> Float? in
-            var threadInfoCount = UInt32(THREAD_INFO_MAX)
-            result = withUnsafeMutablePointer(to: &threadInfo) {
-                $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-                    thread_info(threadList[index], UInt32(THREAD_BASIC_INFO), $0, &threadInfoCount)
-                }
+    return (0 ..< Int(threadCount)).compactMap { index -> Float? in
+        var threadInfoCount = UInt32(THREAD_INFO_MAX)
+        result = withUnsafeMutablePointer(to: &threadInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                thread_info(threadList[index], UInt32(THREAD_BASIC_INFO), $0, &threadInfoCount)
             }
-            if result != KERN_SUCCESS { return nil }
-            let isIdle = threadInfo.flags == TH_FLAGS_IDLE
-            return !isIdle ? (Float(threadInfo.cpu_usage) / Float(TH_USAGE_SCALE)) * 100 : nil
         }
-        .reduce(0, +)
+        if result != KERN_SUCCESS { return nil }
+        let isIdle = threadInfo.flags == TH_FLAGS_IDLE
+        return !isIdle ? (Float(threadInfo.cpu_usage) / Float(TH_USAGE_SCALE)) * 100 : nil
+    }.reduce(0, +)
 }
