@@ -10154,14 +10154,15 @@ extension Model: KickOusherDelegate {
 
 extension Model: SrtlaRelayServerDelegate {
     func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
-        for stream in database.streams
-            where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
-                priority.relayId == relayId
-            })
-        {
-            let priority = SettingsStreamSrtConnectionPriority(name: relayName)
-            priority.relayId = relayId
-            stream.srt.connectionPriorities!.priorities.append(priority)
+        for stream in database.streams {
+            var connectionPriorities = stream.srt.connectionPriorities!
+            if let priority = connectionPriorities.priorities.first(where: {  $0.relayId == relayId }) {
+                priority.name = relayName
+            } else {
+                let priority = SettingsStreamSrtConnectionPriority(name: relayName)
+                priority.relayId = relayId
+                connectionPriorities.priorities.append(priority)
+            }
         }
         media.addSrtlaRelay(endpoint: endpoint, id: relayId, name: relayName)
     }
