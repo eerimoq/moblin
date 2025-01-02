@@ -410,8 +410,6 @@ class SrtlaClient {
 
     func handleLocalPacket(packet: Data) {
         guard let connection = selectRemoteConnection() else {
-            logger.warning("srtla: local: No remote connection found")
-            onDisconnected(message: "no remote connection found")
             return
         }
         connection.sendSrtPacket(packet: packet)
