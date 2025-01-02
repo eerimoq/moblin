@@ -131,7 +131,7 @@ private class Client {
             send(message: .identified(result: .ok))
             startTunnelInternal()
         } else {
-            logger.info("srtla-relay-server: Streamer sent wrong password")
+            logger.info("srtla-relay-server: Client sent wrong password")
             send(message: .identified(result: .wrongPassword))
             webSocket.close(immediately: false)
         }
