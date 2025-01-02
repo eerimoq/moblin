@@ -10155,8 +10155,8 @@ extension Model: KickOusherDelegate {
 extension Model: SrtlaRelayServerDelegate {
     func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
         for stream in database.streams {
-            var connectionPriorities = stream.srt.connectionPriorities!
-            if let priority = connectionPriorities.priorities.first(where: {  $0.relayId == relayId }) {
+            let connectionPriorities = stream.srt.connectionPriorities!
+            if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
                 priority.name = relayName
             } else {
                 let priority = SettingsStreamSrtConnectionPriority(name: relayName)
