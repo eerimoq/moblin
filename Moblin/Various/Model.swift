@@ -1686,11 +1686,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
         ipStatuses = statuses
         for status in statuses where status.interfaceType == .wiredEthernet {
-            for stream in database.streams
-                where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
-                    priority.name == status.name
-                })
-            {
+            if !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
+                priority.name == status.name
+            }) {
                 stream.srt.connectionPriorities!.priorities
                     .append(SettingsStreamSrtConnectionPriority(name: status.name))
             }
@@ -10154,15 +10152,13 @@ extension Model: KickOusherDelegate {
 
 extension Model: SrtlaRelayServerDelegate {
     func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
-        for stream in database.streams {
-            let connectionPriorities = stream.srt.connectionPriorities!
-            if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
-                priority.name = relayName
-            } else {
-                let priority = SettingsStreamSrtConnectionPriority(name: relayName)
-                priority.relayId = relayId
-                connectionPriorities.priorities.append(priority)
-            }
+        let connectionPriorities = stream.srt.connectionPriorities!
+        if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
+            priority.name = relayName
+        } else {
+            let priority = SettingsStreamSrtConnectionPriority(name: relayName)
+            priority.relayId = relayId
+            connectionPriorities.priorities.append(priority)
         }
         media.addSrtlaRelay(endpoint: endpoint, id: relayId, name: relayName)
     }
