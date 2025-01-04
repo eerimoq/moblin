@@ -1686,9 +1686,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
         ipStatuses = statuses
         for status in statuses where status.interfaceType == .wiredEthernet {
-            if !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
-                priority.name == status.name
-            }) {
+            for stream in database.streams
+                where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
+                    priority.name == status.name
+                })
+            {
                 stream.srt.connectionPriorities!.priorities
                     .append(SettingsStreamSrtConnectionPriority(name: status.name))
             }
@@ -2777,7 +2779,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateSrtlaPriorities() {
-        media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!)
+        media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!.clone())
     }
 
     func pauseChat() {

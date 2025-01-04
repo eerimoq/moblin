@@ -71,15 +71,24 @@ struct StreamSrtConnectionPriorityView: View {
             Section {
                 ForEach(stream.srt.connectionPriorities!.priorities) { priority in
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
+                        .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
                 }
+                .onDelete(perform: { offsets in
+                    stream.srt.connectionPriorities!.priorities.remove(atOffsets: offsets)
+                    model.updateSrtlaPriorities()
+                })
             } footer: {
-                Text("""
-                A connection with high priority will be used more than a connection with \
-                low priority if the high priority connection is stable. Unstable connections \
-                will get lowest priority regardless of configured priority until they are stable again.
-                """)
-                Text("")
-                Text("Disabled connections will not be used.")
+                VStack(alignment: .leading) {
+                    Text("""
+                    A connection with high priority will be used more than a connection with \
+                    low priority if the high priority connection is stable. Unstable connections \
+                    will get lowest priority regardless of configured priority until they are stable again.
+                    """)
+                    Text("")
+                    Text("Disabled connections will not be used.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a connection"))
+                }
             }
         }
         .navigationTitle("Connection priorities")
