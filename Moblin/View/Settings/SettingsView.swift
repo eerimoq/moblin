@@ -45,6 +45,7 @@ struct SettingsView: View {
                         shadowColor: chat.shadowColor.color(),
                         height: chat.height!,
                         width: chat.width!,
+                        bottom: chat.bottom!,
                         fontSize: chat.fontSize
                     )
                 } label: {

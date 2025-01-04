@@ -33,29 +33,46 @@ struct ChatInfo: View {
     }
 }
 
-private struct ChatOverlayView: View {
+private struct ChatPausedView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        ZStack {
-            if model.stream.portrait! || model.database.portrait! {
-                VStack {
+        if model.chatPaused {
+            ChatInfo(
+                message: String(localized: "Chat paused: \(model.pausedChatPostsCount) new messages")
+            )
+            .padding(2)
+        }
+    }
+}
+
+private struct ChatOverlayView: View {
+    @EnvironmentObject var model: Model
+    let height: CGFloat
+
+    var body: some View {
+        if model.stream.portrait! || model.database.portrait! {
+            VStack {
+                ZStack {
                     StreamOverlayChatView()
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 85)
+                    ChatPausedView()
                 }
-            } else {
-                GeometryReader { metrics in
-                    StreamOverlayChatView()
-                        .frame(width: metrics.size.width * 0.95)
-                }
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(height: 85)
             }
-            if model.chatPaused {
-                ChatInfo(
-                    message: String(localized: "Chat paused: \(model.pausedChatPostsCount) new messages")
-                )
-                .padding(2)
+        } else {
+            VStack {
+                ZStack {
+                    GeometryReader { metrics in
+                        StreamOverlayChatView()
+                            .frame(width: metrics.size.width * 0.95)
+                    }
+                    ChatPausedView()
+                }
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(height: height * model.database.chat.bottom!)
             }
         }
     }
@@ -112,6 +129,7 @@ private struct FrontTorchView: View {
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     let width: CGFloat
+    let height: CGFloat
 
     private func leadingPadding() -> CGFloat {
         if UIDevice.current
@@ -129,19 +147,14 @@ struct StreamOverlayView: View {
                 FrontTorchView()
             }
             ZStack {
-                if model.showingPanel != .chat, model.interactiveChat {
-                    ChatOverlayView()
+                if model.showingPanel != .chat {
+                    ChatOverlayView(height: height)
                         .opacity(model.database.chat.enabled! ? 1 : 0)
-                        .allowsHitTesting(true)
+                        .allowsHitTesting(model.interactiveChat)
                 }
                 HStack {
                     Spacer()
                     RightOverlayBottomView(width: width)
-                }
-                if model.showingPanel != .chat, !model.interactiveChat {
-                    ChatOverlayView()
-                        .opacity(model.database.chat.enabled! ? 1 : 0)
-                        .allowsHitTesting(false)
                 }
                 HStack {
                     LeftOverlayView()

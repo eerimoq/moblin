@@ -9,6 +9,7 @@ struct ChatSettingsView: View {
     @State var shadowColor: Color
     @State var height: Double
     @State var width: Double
+    @State var bottom: Double
     @State var fontSize: Float
 
     func submitMaximumAge(value: String) {
@@ -171,7 +172,7 @@ struct ChatSettingsView: View {
                     Slider(
                         value: $height,
                         in: 0.2 ... 1.0,
-                        step: 0.05,
+                        step: 0.01,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
@@ -191,7 +192,7 @@ struct ChatSettingsView: View {
                     Slider(
                         value: $width,
                         in: 0.2 ... 1.0,
-                        step: 0.05,
+                        step: 0.01,
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
@@ -204,6 +205,26 @@ struct ChatSettingsView: View {
                         model.database.chat.width = value
                     }
                     Text("\(Int(100 * width)) %")
+                        .frame(width: 55)
+                }
+                HStack {
+                    Text("Bottom")
+                    Slider(
+                        value: $bottom,
+                        in: 0.0 ... 0.5,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.bottom = bottom
+                            model.reloadChatMessages()
+                        }
+                    )
+                    .onChange(of: bottom) { value in
+                        model.database.chat.bottom = value
+                    }
+                    Text("\(Int(100 * bottom)) %")
                         .frame(width: 55)
                 }
             }

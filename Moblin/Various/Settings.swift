@@ -1720,6 +1720,7 @@ class SettingsChat: Codable {
     var badges: Bool? = true
     var showFirstTimeChatterMessage: Bool? = true
     var showNewFollowerMessage: Bool? = true
+    var bottom: Double? = 0.0
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -4439,6 +4440,10 @@ final class Settings {
         }
         if realDatabase.debug.srtlaBatchSend == nil {
             realDatabase.debug.srtlaBatchSend = false
+            store()
+        }
+        if realDatabase.chat.bottom == nil {
+            realDatabase.chat.bottom = 0.0
             store()
         }
     }
