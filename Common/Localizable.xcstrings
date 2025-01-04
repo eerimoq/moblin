@@ -6735,8 +6735,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@ totale) (telecomando)"
+            "state" : "translated",
+            "value" : "%@ (%@ totale) (controllo remoto)"
           }
         },
         "ja" : {
@@ -15484,8 +15484,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "una corda"
+            "state" : "translated",
+            "value" : "una stringa"
           }
         },
         "ja" : {
@@ -25370,8 +25370,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pezzi"
+            "state" : "translated",
+            "value" : "Bit"
           }
         },
         "ja" : {
@@ -32786,7 +32786,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Confronto"
           }
         },
@@ -66099,7 +66099,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Migliora il funzionamento della maggior parte degli altoparlanti Bluetooth."
           }
         },
@@ -78062,7 +78062,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Indirizzo del pool NTP"
           }
         },
@@ -79622,8 +79622,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Funziona solo quando è selezionato il microfono anteriore o posteriore."
+            "state" : "translated",
+            "value" : "Funziona solamente quando è selezionato il microfono anteriore o posteriore."
           }
         },
         "ja" : {
@@ -84432,8 +84432,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bella istantanea"
+            "state" : "translated",
+            "value" : "Grazioso snapshot"
           }
         },
         "ja" : {
@@ -88592,7 +88592,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Avvisi affidabili e messaggi di chat attivati"
           }
         },
@@ -88722,7 +88722,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat affidabile"
           }
         },
@@ -100948,8 +100948,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Da parlato a testo"
+            "state" : "translated",
+            "value" : "Speech to text"
           }
         },
         "ja" : {
@@ -107844,8 +107844,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Corda"
+            "state" : "translated",
+            "value" : "Stringa"
           }
         },
         "ja" : {
@@ -109664,8 +109664,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sincronizza più flussi sul tuo server usando i timecode. I timecode sono in UTC e richiedono il codec H.265/HEVC."
+            "state" : "translated",
+            "value" : "Sincronizza più stream sul tuo server usando i timecode. I timecode sono in UTC e richiedono il codec H.265/HEVC."
           }
         },
         "ja" : {
@@ -110317,8 +110317,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tocca Serrature → Aggiungi chiave nella tua Tesla e tocca la tua tessera magnetica"
+            "state" : "translated",
+            "value" : "Tocca la Serratura → Aggiungi chiave nella tua Tesla e tocca la tua tessera magnetica"
           }
         },
         "ja" : {
@@ -113047,8 +113047,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verrà giocato il primo oggetto che corrisponde ai pezzi applauditi."
+            "state" : "translated",
+            "value" : "Il primo elemento che corrisponde ai bit di incoraggiamento verrà riprodotto-"
           }
         },
         "ja" : {
@@ -115647,8 +115647,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Codici temporali"
+            "state" : "translated",
+            "value" : "Tmecode"
           }
         },
         "ja" : {
@@ -118377,7 +118377,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Attiva gli avvisi quando dici qualcosa."
           }
         },
@@ -118767,7 +118767,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Attivalo pronunciando '%@'."
           }
         },
