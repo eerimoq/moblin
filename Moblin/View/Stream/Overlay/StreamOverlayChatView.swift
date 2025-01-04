@@ -186,7 +186,7 @@ struct StreamOverlayChatView: View {
             VStack {
                 Spacer()
                 ChildSizeReader(size: $wholeSize) {
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         ChildSizeReader(size: $scrollViewSize) {
                             VStack {
                                 LazyVStack(alignment: .leading, spacing: 1) {
