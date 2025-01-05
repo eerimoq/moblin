@@ -210,7 +210,10 @@ struct SrtlaRelaySettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("Use phones as additional SRTLA bonding connections.")
+                Text("""
+                Use phones as additional SRTLA bonding connections. Install Moblink on Android \
+                phones to use them.
+                """)
             }
             Section {
                 NavigationLink {
