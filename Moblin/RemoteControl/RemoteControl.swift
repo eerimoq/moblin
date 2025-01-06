@@ -131,6 +131,7 @@ struct RemoteControlStatusTopRight: Codable {
     var srtla: RemoteControlStatusItem?
     var recording: RemoteControlStatusItem?
     var browserWidgets: RemoteControlStatusItem?
+    var moblink: RemoteControlStatusItem?
 }
 
 struct RemoteControlSettingsScene: Codable, Identifiable {

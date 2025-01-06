@@ -7058,6 +7058,9 @@ extension Model: RemoteControlStreamerDelegate {
         if isShowingStatusBrowserWidgets() {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
         }
+        if isShowingStatusSrtlaRelay() {
+            topRight.moblink = RemoteControlStatusItem(message: srtlaRelayStatus)
+        }
         onComplete(general, topLeft, topRight)
     }
 
