@@ -10223,7 +10223,6 @@ extension Model: SrtlaRelayServerDelegate {
 extension Model: SrtlaRelayClientDelegate {
     func srtlaRelayClientNewState(state: SrtlaRelayClientState) {
         srtlaRelayClientState = state
-        srtlaRelayServer?.updateStatus()
     }
 
     func srtlaRelayClientGetBatteryPercentage() -> Int {

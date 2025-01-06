@@ -140,6 +140,7 @@ private class Client {
             identified = true
             send(message: .identified(result: .ok))
             startTunnelInternal()
+            updateStatus()
         } else {
             send(message: .identified(result: .wrongPassword))
             throw "Client sent wrong password"
