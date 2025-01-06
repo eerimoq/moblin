@@ -57,12 +57,13 @@ private class Client {
             let message = try SrtlaRelayMessageToServer.fromJson(data: message)
             switch message {
             case let .identify(id: id, name: name, authentication: authentication):
-                handleIdentify(id: id, name: name, authentication: authentication)
+                try handleIdentify(id: id, name: name, authentication: authentication)
             case let .response(id: id, result: result, data: data):
                 try handleResponse(id: id, result: result, data: data)
             }
         } catch {
             logger.info("srtla-relay-server: Failed to process message with error \(error)")
+            webSocket.close(immediately: false)
         }
     }
 
@@ -119,7 +120,7 @@ private class Client {
         }
     }
 
-    private func handleIdentify(id: UUID, name: String, authentication: String) {
+    private func handleIdentify(id: UUID, name: String, authentication: String) throws {
         if authentication == remoteControlHashPassword(
             challenge: challenge,
             salt: salt,
@@ -131,9 +132,8 @@ private class Client {
             send(message: .identified(result: .ok))
             startTunnelInternal()
         } else {
-            logger.info("srtla-relay-server: Client sent wrong password")
             send(message: .identified(result: .wrongPassword))
-            webSocket.close(immediately: false)
+            throw "Client sent wrong password"
         }
     }
 
