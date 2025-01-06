@@ -2,10 +2,12 @@ import Foundation
 
 enum SrtlaRelayRequest: Codable {
     case startTunnel(address: String, port: UInt16)
+    case status
 }
 
 enum SrtlaRelayResponse: Codable {
     case startTunnel(port: UInt16)
+    case status(batteryPercentage: Int?)
 }
 
 struct SrtlaRelayAuthentication: Codable {

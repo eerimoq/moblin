@@ -644,6 +644,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
     @Published var srtlaRelayClientState: SrtlaRelayClientState = .none
+    @Published var srtlaRelayServerOk = true
+    @Published var srtlaRelayStatus = noValue
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -1456,6 +1458,49 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func stopSrtlaRelayClient() {
         srtlaRelayClient?.stop()
         srtlaRelayClient = nil
+    }
+
+    private func updateSrtlaRelayStatus() {
+        var status: String
+        var serverOk = true
+        if isSrtlaRelayClientConfigured(), isSrtlaRelayServerConfigured() {
+            let (serverStatus, ok) = srtlaRelayServerStatus()
+            status = "\(serverStatus), \(srtlaRelayClientState.rawValue)"
+            serverOk = ok
+        } else if isSrtlaRelayClientConfigured() {
+            status = srtlaRelayClientState.rawValue
+        } else if isSrtlaRelayServerConfigured() {
+            let (serverStatus, ok) = srtlaRelayServerStatus()
+            status = serverStatus
+            serverOk = ok
+        } else {
+            status = noValue
+        }
+        if status != srtlaRelayStatus {
+            srtlaRelayStatus = status
+        }
+        if serverOk != srtlaRelayServerOk {
+            srtlaRelayServerOk = serverOk
+        }
+    }
+
+    private func srtlaRelayServerStatus() -> (String, Bool) {
+        guard let srtlaRelayServer else {
+            return ("", true)
+        }
+        var statuses: [String] = []
+        var ok = true
+        for (name, batteryPercentage) in srtlaRelayServer.getStatuses() {
+            if let batteryPercentage {
+                statuses.append("\(name) \(batteryPercentage)%")
+                if batteryPercentage < 10 {
+                    ok = false
+                }
+            } else {
+                statuses.append("\(name) -")
+            }
+        }
+        return (statuses.joined(separator: " "), ok)
     }
 
     func reloadNtpClient() {
@@ -2450,6 +2495,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if self.cpuUsageNeeded {
                 self.cpuUsage = getCpuUsage()
             }
+            self.updateSrtlaRelayStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.teslaGetDriveState()
@@ -2474,6 +2520,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateCurrentSsid()
             self.rtmpServerInfo()
             self.teslaGetChargeState()
+            self.srtlaRelayServer?.updateStatus()
         })
     }
 
@@ -6845,7 +6892,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusSrtlaRelay() -> Bool {
-        return isSrtlaRelayClientConfigured()
+        return isSrtlaRelayClientConfigured() || isSrtlaRelayServerConfigured()
     }
 
     func isShowingStatusRemoteControl() -> Bool {
@@ -10173,5 +10220,10 @@ extension Model: SrtlaRelayServerDelegate {
 extension Model: SrtlaRelayClientDelegate {
     func srtlaRelayClientNewState(state: SrtlaRelayClientState) {
         srtlaRelayClientState = state
+        srtlaRelayServer?.updateStatus()
+    }
+
+    func srtlaRelayClientGetBatteryPercentage() -> Int {
+        return Int(100 * batteryLevel)
     }
 }

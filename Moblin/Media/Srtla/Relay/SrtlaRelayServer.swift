@@ -26,8 +26,9 @@ private class Client {
     private var port: UInt16?
     weak var server: SrtlaRelayServer?
     private var tunnelEndpoint: NWEndpoint?
-    private var id = UUID()
-    private var name = ""
+    private var relayId = UUID()
+    var name = ""
+    var batteryPercentage: Int?
 
     init(websocket: Telegraph.WebSocket, password: String, server: SrtlaRelayServer) {
         self.password = password
@@ -56,8 +57,8 @@ private class Client {
         do {
             let message = try SrtlaRelayMessageToServer.fromJson(data: message)
             switch message {
-            case let .identify(id: id, name: name, authentication: authentication):
-                try handleIdentify(id: id, name: name, authentication: authentication)
+            case let .identify(id: relayId, name: name, authentication: authentication):
+                try handleIdentify(relayId: relayId, name: name, authentication: authentication)
             case let .response(id: id, result: result, data: data):
                 try handleResponse(id: id, result: result, data: data)
             }
@@ -75,6 +76,17 @@ private class Client {
 
     func stopTunnel() {
         reportTunnelRemoved()
+    }
+
+    func updateStatus() {
+        performRequest(data: .status) { response in
+            guard case let .status(batteryPercentage: batteryPercentage) = response else {
+                return
+            }
+            self.batteryPercentage = batteryPercentage
+        } onError: { error in
+            logger.info("srtla-relay-server: Status failed with \(error)")
+        }
     }
 
     private func startTunnelInternal() {
@@ -108,25 +120,22 @@ private class Client {
     {
         logger.info("srtla-relay-server: Starting tunnel to destination \(address):\(port)")
         performRequest(data: .startTunnel(address: address, port: port)) { response in
-            guard let response else {
+            guard case let .startTunnel(port: port) = response else {
                 return
             }
-            switch response {
-            case let .startTunnel(port: port):
-                onSuccess(self.id, self.name, port)
-            }
+            onSuccess(self.relayId, self.name, port)
         } onError: { error in
             logger.info("srtla-relay-server: Start tunnel failed with \(error)")
         }
     }
 
-    private func handleIdentify(id: UUID, name: String, authentication: String) throws {
+    private func handleIdentify(relayId: UUID, name: String, authentication: String) throws {
         if authentication == remoteControlHashPassword(
             challenge: challenge,
             salt: salt,
             password: password
         ) {
-            self.id = id
+            self.relayId = relayId
             self.name = name
             identified = true
             send(message: .identified(result: .ok))
@@ -235,6 +244,16 @@ class SrtlaRelayServer: NSObject {
         destinationPort = nil
         for client in clients {
             client.stopTunnel()
+        }
+    }
+
+    func getStatuses() -> [(String, Int?)] {
+        return clients.map { ($0.name, $0.batteryPercentage) }
+    }
+
+    func updateStatus() {
+        for client in clients {
+            client.updateStatus()
         }
     }
 

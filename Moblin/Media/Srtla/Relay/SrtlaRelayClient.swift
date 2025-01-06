@@ -15,6 +15,7 @@ enum SrtlaRelayClientState: String {
 
 protocol SrtlaRelayClientDelegate: AnyObject {
     func srtlaRelayClientNewState(state: SrtlaRelayClientState)
+    func srtlaRelayClientGetBatteryPercentage() -> Int
 }
 
 class SrtlaRelayClient {
@@ -150,6 +151,8 @@ class SrtlaRelayClient {
         switch data {
         case let .startTunnel(address: address, port: port):
             handleStartTunnel(id: id, address: address, port: port)
+        case .status:
+            handleStatus(id: id)
         }
     }
 
@@ -182,6 +185,11 @@ class SrtlaRelayClient {
         receiveDestinationPacket()
         setState(state: .waitingForCellular)
         startTunnelId = id
+    }
+
+    private func handleStatus(id: Int) {
+        let batteryPercentage = delegate?.srtlaRelayClientGetBatteryPercentage()
+        send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
     }
 
     func stopTunnel() {
