@@ -87,10 +87,10 @@ class SrtlaServerClientConnection {
         }
     }
 
-    private func handleSrtlaControlPacket(type: SrtlaPacketType, packet _: Data) {
+    private func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {
         switch type {
         case .keepalive:
-            handleSrtlaKeepalive()
+            handleSrtlaKeepalive(packet: packet)
         default:
             logger.info("srtla-server-client: Unexpected packet \(type)")
         }
@@ -100,9 +100,7 @@ class SrtlaServerClientConnection {
         delegate?.handlePacketFromSrtClient(self, packet: packet)
     }
 
-    private func handleSrtlaKeepalive() {
-        var packet = Data(count: srtControlTypeSize)
-        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | srtControlPacketTypeBit)
+    private func handleSrtlaKeepalive(packet: Data) {
         sendPacket(packet: packet)
     }
 
