@@ -42629,6 +42629,9 @@
         }
       }
     },
+    "Double tap to unlock" : {
+
+    },
     "Doubles" : {
       "localizations" : {
         "de" : {
@@ -64365,6 +64368,9 @@
           }
         }
       }
+    },
+    "Lock screen" : {
+
     },
     "Log" : {
       "localizations" : {
@@ -95048,6 +95054,12 @@
           }
         }
       }
+    },
+    "Screen locked" : {
+
+    },
+    "Screen unlocked" : {
+
     },
     "Scroll" : {
       "localizations" : {

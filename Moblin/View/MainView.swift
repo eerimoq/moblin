@@ -467,6 +467,14 @@ struct MainView: View {
                         model.toggleBlackScreen()
                     }
             }
+            if model.lockScreen {
+                Text("")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.black.opacity(0.01))
+                    .onTapGesture(count: 2) { _ in
+                        model.toggleLockScreen()
+                    }
+            }
             if model.findFace {
                 FindFaceView()
             }

@@ -1452,6 +1452,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case streamMarker = "Stream marker"
     case reloadBrowserWidgets = "Reload browser widgets"
     case interactiveChat = "Interactive chat"
+    case lockScreen = "Lock screen"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2781,6 +2782,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "sunset.fill"
     button.systemImageNameOff = "sunset"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Lock screen"))
+    button.id = UUID()
+    button.type = .lockScreen
+    button.imageType = "System name"
+    button.systemImageNameOn = "lock.fill"
+    button.systemImageNameOff = "lock"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Record"))

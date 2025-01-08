@@ -344,6 +344,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @Published var showingPanel: ShowingPanel = .none
     @Published var blackScreen = false
+    @Published var lockScreen = false
     @Published var findFace = false
     private var findFaceTimer: Timer?
     private var streaming = false
@@ -5346,6 +5347,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBlackScreen() {
         blackScreen.toggle()
+    }
+
+    func toggleLockScreen() {
+        lockScreen.toggle()
+        setGlobalButtonState(type: .lockScreen, isOn: lockScreen)
+        updateButtonStates()
+        if lockScreen {
+            makeToast(
+                title: String(localized: "Screen locked"),
+                subTitle: String(localized: "Double tap to unlock")
+            )
+        } else {
+            makeToast(title: String(localized: "Screen unlocked"))
+        }
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
