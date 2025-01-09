@@ -236,9 +236,11 @@ struct SrtlaRelaySettingsView: View {
             if streamerEnabled {
                 Section {
                     List {
-                        ForEach(model.ipStatuses.filter { $0.interfaceType != .cellular }, id: \.name) { status in
+                        ForEach(model.ipStatuses
+                            .filter { $0.interfaceType != .cellular && $0.ipType == .ipv4 })
+                        { status in
                             InterfaceView(
-                                ip: status.ip,
+                                ip: status.ipType.formatAddress(status.ip),
                                 port: model.database.srtlaRelay!.server.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
@@ -248,6 +250,15 @@ struct SrtlaRelaySettingsView: View {
                             port: model.database.srtlaRelay!.server.port,
                             image: "personalhotspot"
                         )
+                        ForEach(model.ipStatuses
+                            .filter { $0.interfaceType != .cellular && $0.ipType == .ipv6 })
+                        { status in
+                            InterfaceView(
+                                ip: status.ipType.formatAddress(status.ip),
+                                port: model.database.srtlaRelay!.server.port,
+                                image: urlImage(interfaceType: status.interfaceType)
+                            )
+                        }
                     }
                 } footer: {
                     VStack(alignment: .leading) {

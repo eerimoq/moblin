@@ -99,54 +99,22 @@ class RistStream: NetStream {
         }
     }
 
-    private func startInner(url: String, bonding: Bool) {
-        state = .connecting
-        self.url = url
-        self.bonding = bonding
-        guard let context = RistContext() else {
-            logger.info("rist: Failed to create context")
-            return
-        }
-        context.onStats = handleStats(stats:)
-        context.onPeerConnected = handlePeerConnected(peerId:)
-        context.onPeerDisconnected = handlePeerDisonnected(peerId:)
-        self.context = context
-        if bonding {
-            networkPathMonitor = .init()
-            networkPathMonitor?.pathUpdateHandler = handleNetworkPathUpdate(path:)
-            networkPathMonitor?.start(queue: ristQueue)
-        } else {
-            addPeer(url, "")
-        }
-        if !context.start() {
-            logger.info("rist: Failed to start")
-            return
-        }
-        netStreamLockQueue.async {
-            self.writer.expectedMedias.insert(.video)
-            self.writer.expectedMedias.insert(.audio)
-            self.mixer.startEncoding(self.writer)
-            self.mixer.startRunning()
-            self.writer.startRunning()
-        }
-    }
-
     func stop() {
         ristQueue.async {
             self.stopInner()
         }
     }
 
-    private func stopInner() {
-        state = .disconnected
-        networkPathMonitor?.cancel()
-        networkPathMonitor = nil
-        netStreamLockQueue.async {
-            self.writer.stopRunning()
-            self.mixer.stopEncoding()
+    func addRelay(endpoint: NWEndpoint, id: UUID, name: String) {
+        ristQueue.async {
+            self.addRelayInner(endpoint: endpoint, id: id, name: name)
         }
-        peers.removeAll()
-        context = nil
+    }
+
+    func removeRelay(endpoint: NWEndpoint) {
+        ristQueue.async {
+            self.removeRelayInner(endpoint: endpoint)
+        }
     }
 
     func getSpeed() -> UInt64 {
@@ -186,6 +154,54 @@ class RistStream: NetStream {
             self.updateConnectionsWeightsInner()
         }
     }
+
+    private func startInner(url: String, bonding: Bool) {
+        state = .connecting
+        self.url = url
+        self.bonding = bonding
+        guard let context = RistContext() else {
+            logger.info("rist: Failed to create context")
+            return
+        }
+        context.onStats = handleStats(stats:)
+        context.onPeerConnected = handlePeerConnected(peerId:)
+        context.onPeerDisconnected = handlePeerDisonnected(peerId:)
+        self.context = context
+        if bonding {
+            networkPathMonitor = .init()
+            networkPathMonitor?.pathUpdateHandler = handleNetworkPathUpdate(path:)
+            networkPathMonitor?.start(queue: ristQueue)
+        } else {
+            addPeer(url, "")
+        }
+        if !context.start() {
+            logger.info("rist: Failed to start")
+            return
+        }
+        netStreamLockQueue.async {
+            self.writer.expectedMedias.insert(.video)
+            self.writer.expectedMedias.insert(.audio)
+            self.mixer.startEncoding(self.writer)
+            self.mixer.startRunning()
+            self.writer.startRunning()
+        }
+    }
+
+    private func stopInner() {
+        state = .disconnected
+        networkPathMonitor?.cancel()
+        networkPathMonitor = nil
+        netStreamLockQueue.async {
+            self.writer.stopRunning()
+            self.mixer.stopEncoding()
+        }
+        peers.removeAll()
+        context = nil
+    }
+
+    private func addRelayInner(endpoint _: NWEndpoint, id _: UUID, name _: String) {}
+
+    private func removeRelayInner(endpoint _: NWEndpoint) {}
 
     private func updateConnectionsWeightsInner() {
         for peer in peers {

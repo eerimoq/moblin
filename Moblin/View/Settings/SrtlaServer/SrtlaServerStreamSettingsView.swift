@@ -94,12 +94,12 @@ struct SrtlaServerStreamSettingsView: View {
             Section {
                 if model.srtlaServerEnabled() {
                     List {
-                        ForEach(model.ipStatuses, id: \.name) { status in
+                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 srtlaPort: srtlaPort,
                                 streamId: stream.streamId,
                                 image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ip
+                                ip: status.ipType.formatAddress(status.ip)
                             )
                         }
                         InterfaceView(
@@ -108,6 +108,14 @@ struct SrtlaServerStreamSettingsView: View {
                             image: "personalhotspot",
                             ip: personalHotspotLocalAddress
                         )
+                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                            InterfaceView(
+                                srtlaPort: srtlaPort,
+                                streamId: stream.streamId,
+                                image: urlImage(interfaceType: status.interfaceType),
+                                ip: status.ipType.formatAddress(status.ip)
+                            )
+                        }
                     }
                 } else {
                     Text("Enable the SRT(LA) server to see URLs.")

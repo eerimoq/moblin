@@ -42,9 +42,9 @@ struct DjiDeviceSettingsView: View {
             return []
         }
         var serverUrls: [String] = []
-        for status in model.ipStatuses {
+        for status in model.ipStatuses.filter({ $0.ipType == .ipv4 }) {
             serverUrls.append(rtmpStreamUrl(
-                address: status.ip,
+                address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer!.port,
                 streamKey: stream.streamKey
             ))
@@ -54,6 +54,13 @@ struct DjiDeviceSettingsView: View {
             port: model.database.rtmpServer!.port,
             streamKey: stream.streamKey
         ))
+        for status in model.ipStatuses.filter({ $0.ipType == .ipv6 }) {
+            serverUrls.append(rtmpStreamUrl(
+                address: status.ipType.formatAddress(status.ip),
+                port: model.database.rtmpServer!.port,
+                streamKey: stream.streamKey
+            ))
+        }
         return serverUrls
     }
 

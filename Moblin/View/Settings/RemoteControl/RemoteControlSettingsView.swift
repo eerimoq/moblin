@@ -295,9 +295,9 @@ struct RemoteControlSettingsView: View {
             if model.database.remoteControl!.client.enabled {
                 Section {
                     List {
-                        ForEach(model.ipStatuses, id: \.name) { status in
+                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
-                                ip: status.ip,
+                                ip: status.ipType.formatAddress(status.ip),
                                 port: model.database.remoteControl!.client.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
@@ -307,6 +307,13 @@ struct RemoteControlSettingsView: View {
                             port: model.database.remoteControl!.client.port,
                             image: "personalhotspot"
                         )
+                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                            InterfaceView(
+                                ip: status.ipType.formatAddress(status.ip),
+                                port: model.database.remoteControl!.client.port,
+                                image: urlImage(interfaceType: status.interfaceType)
+                            )
+                        }
                         if model.database.remoteControl!.client.relay!.enabled {
                             InterfaceViewUrl(url: relayUrl(), image: "globe")
                         }

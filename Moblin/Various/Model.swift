@@ -729,7 +729,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var streamTotalBytes: UInt64 = 0
     private var streamTotalChatMessages: Int = 0
     private var streamLog: Deque<String> = []
-    var ipMonitor = IPMonitor(ipType: .ipv4)
+    private var ipMonitor = IPMonitor()
     @Published var ipStatuses: [IPMonitor.Status] = []
     private var faceEffect = FaceEffect(fps: 30)
     private var movieEffect = MovieEffect()

@@ -111,12 +111,12 @@ struct RtmpServerStreamSettingsView: View {
             Section {
                 if model.rtmpServerEnabled() {
                     List {
-                        ForEach(model.ipStatuses, id: \.name) { status in
+                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 port: port,
                                 streamKey: stream.streamKey,
                                 image: urlImage(interfaceType: status.interfaceType),
-                                ip: status.ip
+                                ip: status.ipType.formatAddress(status.ip)
                             )
                         }
                         InterfaceView(
@@ -125,6 +125,14 @@ struct RtmpServerStreamSettingsView: View {
                             image: "personalhotspot",
                             ip: personalHotspotLocalAddress
                         )
+                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                            InterfaceView(
+                                port: port,
+                                streamKey: stream.streamKey,
+                                image: urlImage(interfaceType: status.interfaceType),
+                                ip: status.ipType.formatAddress(status.ip)
+                            )
+                        }
                     }
                 } else {
                     Text("Enable the RTMP server to see URLs.")
