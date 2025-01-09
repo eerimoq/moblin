@@ -2415,7 +2415,7 @@ class SettingsSrtlaRelayClient: Codable {
 class SettingsSrtlaRelay: Codable {
     var server: SettingsSrtlaRelayServer = .init()
     var client: SettingsSrtlaRelayClient = .init()
-    var password: String = randomGoodPassword()
+    var password = "1234"
 }
 
 class SettingsPrivacyRegion: Codable, Identifiable {

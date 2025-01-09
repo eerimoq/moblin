@@ -38,16 +38,20 @@ private struct PasswordView: View {
     @State private var submitted = false
     @State private var message: String?
 
+    private func isAllowedPassword(password: String) -> Bool {
+        return !password.isEmpty
+    }
+
     private func submit() {
         value = value.trim()
-        if isGoodPassword(password: value) {
+        if isAllowedPassword(password: value) {
             submitted = true
             onSubmit(value)
         }
     }
 
     private func createMessage() -> String? {
-        if isGoodPassword(password: value) {
+        if isAllowedPassword(password: value) {
             return nil
         } else {
             return "Not long and random enough"
@@ -91,11 +95,11 @@ private struct PasswordView: View {
             }
             Section {
                 Button {
-                    value = randomGoodPassword()
+                    value = "1234"
                     submit()
                 } label: {
                     HCenter {
-                        Text("Generate")
+                        Text("Reset to default")
                     }
                 }
                 .disabled(model.isLive)
