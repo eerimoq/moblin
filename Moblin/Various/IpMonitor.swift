@@ -73,7 +73,7 @@ class IPMonitor {
                             socklen_t(0),
                             NI_NUMERICHOST
                         )
-                        let hostnameString = removeIpv6Interface(address: String(cString: hostname))
+                        let hostnameString = String(cString: hostname)
                         let type: IPMonitor.IPType = addrFamily == UInt8(AF_INET) ? .ipv4 : .ipv6
                         let address = (hostnameString, type)
                         if !addresses.contains(where: { $0 == address }) {
@@ -86,8 +86,4 @@ class IPMonitor {
         freeifaddrs(ifaddr)
         return addresses
     }
-}
-
-private func removeIpv6Interface(address: String) -> String {
-    return String(address.prefix(while: { $0 != "%" }))
 }
