@@ -109,107 +109,211 @@ private struct PasswordView: View {
     }
 }
 
-private struct RelayView: View {
+private struct RelayUrlsView: View {
     @EnvironmentObject var model: Model
-    @State var name: String
-
-    private func submitUrl(value: String) {
-        guard isValidWebSocketUrl(url: value) == nil else {
-            return
-        }
-        model.database.srtlaRelay!.client.url = value
-        model.reloadSrtlaRelayClient()
-    }
 
     var body: some View {
         Section {
-            Toggle(isOn: Binding(get: {
-                model.database.srtlaRelay!.client.enabled
-            }, set: { value in
-                model.database.srtlaRelay!.client.enabled = value
-                model.reloadSrtlaRelayClient()
-            })) {
-                Text("Enabled")
+            List {
+                ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
+                    InterfaceView(
+                        ip: status.ipType.formatAddress(status.ip),
+                        port: model.database.srtlaRelay!.server.port,
+                        image: urlImage(interfaceType: status.interfaceType)
+                    )
+                }
+                InterfaceView(
+                    ip: personalHotspotLocalAddress,
+                    port: model.database.srtlaRelay!.server.port,
+                    image: "personalhotspot"
+                )
+                ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
+                    InterfaceView(
+                        ip: status.ipType.formatAddress(status.ip),
+                        port: model.database.srtlaRelay!.server.port,
+                        image: urlImage(interfaceType: status.interfaceType)
+                    )
+                }
             }
-            NavigationLink {
-                NameEditView(name: $name)
-            } label: {
-                TextItemView(name: String(localized: "Name"), value: name)
-            }
-            .onChange(of: name) { name in
-                model.database.srtlaRelay!.client.name = name
-                model.reloadSrtlaRelayClient()
-            }
-            TextEditNavigationView(
-                title: String(localized: "Streamer URL"),
-                value: model.database.srtlaRelay!.client.url,
-                onSubmit: submitUrl,
-                footers: [
-                    String(
-                        localized: "Enter streamer's websocket URL. For example ws://132.23.43.43:2345."
-                    ),
-                ],
-                keyboardType: .URL,
-                placeholder: "ws://32.143.32.12:2345"
-            )
-        } header: {
-            Text("Relay")
         } footer: {
-            Text("""
-            Enable this on the device you want to use as the extra bonding connection. The device \
-            must have cellular data enabled.
-            """)
+            VStack(alignment: .leading) {
+                Text("""
+                Enter one of the URL:s as "Streamer URL" in the relay device to \
+                use it as an additional bonding connection.
+                """)
+            }
         }
     }
 }
 
-private struct StreamerView: View {
+private struct RelayView: View {
     @EnvironmentObject var model: Model
-    @Binding var enabled: Bool
+    @State var enabled: Bool
+    @State var name: String
+    @State var port: UInt16
+    @State var password: String
 
     private func submitPort(value: String) {
         guard let port = UInt16(value.trim()) else {
             return
         }
         model.database.srtlaRelay!.server.port = port
-        model.reloadSrtlaRelayServer()
+        model.reloadSrtlaRelayRelay()
+    }
+
+    private func submitPassword(value: String) {
+        model.database.srtlaRelay!.server.password = value.trim()
+        model.reloadSrtlaRelayRelay()
     }
 
     var body: some View {
-        Section {
-            Toggle(isOn: $enabled) {
-                Text("Enabled")
+        Form {
+            Section {
+                Toggle(isOn: $enabled) {
+                    Text("Enabled")
+                }
+                .onChange(of: enabled) { value in
+                    model.database.srtlaRelay!.server.enabled = value
+                    model.reloadSrtlaRelayRelay()
+                }
+            } footer: {
+                Text("""
+                Enable this on the device you want to use as the extra bonding connection. The device \
+                must have cellular data enabled.
+                """)
             }
-            .onChange(of: enabled) { value in
-                model.database.srtlaRelay!.server.enabled = value
-                model.reloadSrtlaRelayServer()
+            Section {
+                NavigationLink {
+                    NameEditView(name: $name)
+                } label: {
+                    TextItemView(name: String(localized: "Name"), value: name)
+                }
+                .onChange(of: name) { name in
+                    model.database.srtlaRelay!.server.name = name
+                    model.reloadSrtlaRelayRelay()
+                }
+                NavigationLink {
+                    PasswordView(
+                        value: model.database.srtlaRelay!.server.password!,
+                        onSubmit: submitPassword
+                    )
+                } label: {
+                    TextItemView(
+                        name: String(localized: "Password"),
+                        value: model.database.srtlaRelay!.server.password!,
+                        sensitive: true
+                    )
+                }
+                TextEditNavigationView(
+                    title: String(localized: "Server port"),
+                    value: String(model.database.srtlaRelay!.server.port),
+                    onSubmit: submitPort,
+                    keyboardType: .numbersAndPunctuation,
+                    placeholder: "7777"
+                )
             }
-            .disabled(model.isLive)
-            TextEditNavigationView(
-                title: String(localized: "Server port"),
-                value: String(model.database.srtlaRelay!.server.port),
-                onSubmit: submitPort,
-                keyboardType: .numbersAndPunctuation,
-                placeholder: "7777"
-            )
-            .disabled(model.isLive)
-        } header: {
-            Text("Streamer")
-        } footer: {
-            Text("Enable this on your streaming device. Configure relay devices to connect to this device.")
+            if enabled {
+                RelayUrlsView()
+            }
         }
+        .navigationTitle("Relay")
+    }
+}
+
+private struct StreamerServerView: View {
+    @EnvironmentObject var model: Model
+    var server: SettingsSrtlaRelayClientServer
+
+    private func submitUrl(value: String) {
+        guard isValidWebSocketUrl(url: value) == nil else {
+            return
+        }
+        server.url = value
+        model.reloadSrtlaRelayStreamer()
+    }
+
+    private func submitPassword(value: String) {
+        server.password = value.trim()
+        model.reloadSrtlaRelayStreamer()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Relay URL"),
+                    value: server.url,
+                    onSubmit: submitUrl,
+                    footers: [
+                        String(
+                            localized: "Enter relay's websocket URL. For example ws://132.23.43.43:2345."
+                        ),
+                    ],
+                    keyboardType: .URL,
+                    placeholder: "ws://32.143.32.12:2345"
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Password"),
+                    value: server.password,
+                    onSubmit: submitPassword
+                )
+            }
+        }.navigationTitle(server.name)
+    }
+}
+
+private struct StreamerView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.srtlaRelay!.client.enabled
+                }, set: { value in
+                    model.database.srtlaRelay!.client.enabled = value
+                    model.reloadSrtlaRelayStreamer()
+                })) {
+                    Text("Enabled")
+                }
+                .disabled(model.isLive)
+            } footer: {
+                Text("Enable this on your streaming device. Add relay devices to connect to.")
+            }
+            Section {
+                List {
+                    ForEach(model.database.srtlaRelay!.client.servers!) { server in
+                        NavigationLink {
+                            StreamerServerView(server: server)
+                        } label: {
+                            Toggle(isOn: Binding(get: {
+                                server.enabled
+                            }, set: {
+                                server.enabled = $0
+                                model.reloadSrtlaRelayStreamer()
+                            })) {
+                                Text(server.name)
+                            }
+                        }
+                    }
+                    .onDelete(perform: { offsets in
+                        model.database.srtlaRelay!.client.servers!.remove(atOffsets: offsets)
+                        model.objectWillChange.send()
+                    })
+                }
+                AddButtonView {
+                    model.database.srtlaRelay!.client.servers!.append(SettingsSrtlaRelayClientServer())
+                    model.objectWillChange.send()
+                }
+            } header: {
+                Text("Relays")
+            }
+        }.navigationTitle("Streamer")
     }
 }
 
 struct SrtlaRelaySettingsView: View {
     @EnvironmentObject var model: Model
-    @State var streamerEnabled: Bool
-
-    private func submitPassword(value: String) {
-        model.database.srtlaRelay!.password = value.trim()
-        model.reloadSrtlaRelayClient()
-        model.reloadSrtlaRelayServer()
-    }
 
     var body: some View {
         Form {
@@ -219,55 +323,20 @@ struct SrtlaRelaySettingsView: View {
                 phones to use them.
                 """)
             }
-            Section {
-                NavigationLink {
-                    PasswordView(
-                        value: model.database.srtlaRelay!.password,
-                        onSubmit: submitPassword
-                    )
-                } label: {
-                    TextItemView(
-                        name: String(localized: "Password"),
-                        value: model.database.srtlaRelay!.password,
-                        sensitive: true
-                    )
-                }
-            } footer: {
-                Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
+            NavigationLink {
+                StreamerView()
+            } label: {
+                Text("Streamer")
             }
-            RelayView(name: model.database.srtlaRelay!.client.name)
-            StreamerView(enabled: $streamerEnabled)
-            if streamerEnabled {
-                Section {
-                    List {
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
-                            InterfaceView(
-                                ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.srtlaRelay!.server.port,
-                                image: urlImage(interfaceType: status.interfaceType)
-                            )
-                        }
-                        InterfaceView(
-                            ip: personalHotspotLocalAddress,
-                            port: model.database.srtlaRelay!.server.port,
-                            image: "personalhotspot"
-                        )
-                        ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
-                            InterfaceView(
-                                ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.srtlaRelay!.server.port,
-                                image: urlImage(interfaceType: status.interfaceType)
-                            )
-                        }
-                    }
-                } footer: {
-                    VStack(alignment: .leading) {
-                        Text("""
-                        Enter one of the URL:s as "Streamer URL" in the relay device to \
-                        use it as an additional bonding connection.
-                        """)
-                    }
-                }
+            NavigationLink {
+                RelayView(
+                    enabled: model.database.srtlaRelay!.server.enabled,
+                    name: model.database.srtlaRelay!.server.name!,
+                    port: model.database.srtlaRelay!.server.port,
+                    password: model.database.srtlaRelay!.server.password!
+                )
+            } label: {
+                Text("Relay")
             }
         }
         .navigationTitle("Moblink")

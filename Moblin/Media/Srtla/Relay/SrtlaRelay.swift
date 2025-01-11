@@ -1,5 +1,7 @@
 import Foundation
 
+let srtlaRelayApiVersion = "1.0"
+
 enum SrtlaRelayRequest: Codable {
     case startTunnel(address: String, port: UInt16)
     case status
@@ -24,9 +26,9 @@ enum SrtlaRelayResult: Codable {
 }
 
 enum SrtlaRelayMessageToClient: Codable {
-    case hello(apiVersion: String, authentication: SrtlaRelayAuthentication)
+    case hello(apiVersion: String, id: UUID, name: String, authentication: SrtlaRelayAuthentication)
     case identified(result: SrtlaRelayResult)
-    case request(id: Int, data: SrtlaRelayRequest)
+    case response(id: Int, result: SrtlaRelayResult, data: SrtlaRelayResponse?)
 
     func toJson() -> String? {
         do {
@@ -45,8 +47,8 @@ enum SrtlaRelayMessageToClient: Codable {
 }
 
 enum SrtlaRelayMessageToServer: Codable {
-    case identify(id: UUID, name: String, authentication: String)
-    case response(id: Int, result: SrtlaRelayResult, data: SrtlaRelayResponse?)
+    case identify(authentication: String)
+    case request(id: Int, data: SrtlaRelayRequest)
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {

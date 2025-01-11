@@ -13,7 +13,7 @@ protocol WebSocketClientDelegate: AnyObject {
 }
 
 final class WebSocketClient {
-    private var webSocket: NWWebSocket
+    var webSocket: NWWebSocket
     private var connectTimer = SimpleTimer(queue: .main)
     private var networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
     private var pingTimer = SimpleTimer(queue: .main)
@@ -66,7 +66,6 @@ final class WebSocketClient {
             logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
             webSocket.connect()
-            startPingTimer()
         } else {
             connectDelayMs = shortestDelayMs
             startConnectTimer()
@@ -122,6 +121,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         logger.debug("websocket: Connected")
         connectDelayMs = shortestDelayMs
         stopConnectTimer()
+        startPingTimer()
         connected = true
         delegate?.webSocketClientConnected(self)
     }
@@ -151,11 +151,11 @@ extension WebSocketClient: WebSocketConnectionDelegate {
 
     func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
         logger.debug("websocket: Error \(error.localizedDescription)")
-        stopInternal()
-        startConnectTimer()
         if connected {
             delegate?.webSocketClientDisconnected(self)
         }
+        stopInternal()
+        startConnectTimer()
     }
 
     func webSocketDidReceivePong(connection _: WebSocketConnection) {

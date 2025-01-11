@@ -102,7 +102,7 @@ struct SettingsView: View {
                         IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                     }
                     NavigationLink {
-                        SrtlaRelaySettingsView(streamerEnabled: model.database.srtlaRelay!.server.enabled)
+                        SrtlaRelaySettingsView()
                     } label: {
                         IconAndTextView(
                             image: "app.connected.to.app.below.fill",

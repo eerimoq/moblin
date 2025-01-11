@@ -14,6 +14,7 @@
 		030499652C4039EF003488F4 /* QrCodeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499642C4039EF003488F4 /* QrCodeEffect.swift */; };
 		030499682C404813003488F4 /* EffectUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499672C404812003488F4 /* EffectUtils.swift */; };
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
+		0305D6B32D32665E006EA5DE /* SrtlaRelayDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0305D6B22D326653006EA5DE /* SrtlaRelayDiscovery.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
 		03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
@@ -545,6 +546,7 @@
 		030499642C4039EF003488F4 /* QrCodeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeEffect.swift; sourceTree = "<group>"; };
 		030499672C404812003488F4 /* EffectUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectUtils.swift; sourceTree = "<group>"; };
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
+		0305D6B22D326653006EA5DE /* SrtlaRelayDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelayDiscovery.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
 		03085C0E2B487D950009DAB6 /* PixellateEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixellateEffect.swift; sourceTree = "<group>"; };
@@ -1367,6 +1369,7 @@
 		0323F3792D1E7AAC00A57AC2 /* Relay */ = {
 			isa = PBXGroup;
 			children = (
+				0305D6B22D326653006EA5DE /* SrtlaRelayDiscovery.swift */,
 				0323F37A2D1E7ACF00A57AC2 /* SrtlaRelay.swift */,
 				0323F3772D1E1AE400A57AC2 /* SrtlaRelayClient.swift */,
 				0323F3722D1DCDA400A57AC2 /* SrtlaRelayServer.swift */,
@@ -3401,6 +3404,7 @@
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				03C357502D081D8400B8B29F /* RtmpAudioMessage.swift in Sources */,
 				031863C72C8C4BEA00CECA33 /* FaxReceiver.swift in Sources */,
+				0305D6B32D32665E006EA5DE /* SrtlaRelayDiscovery.swift in Sources */,
 				034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */,
 				0342F1A32C627A87004DD3EA /* MoblinkServer.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,

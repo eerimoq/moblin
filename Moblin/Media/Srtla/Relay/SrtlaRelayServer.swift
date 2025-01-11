@@ -2,33 +2,28 @@ import Collections
 import CryptoKit
 import Foundation
 import Network
+import SwiftUI
 import Telegraph
 
-protocol SrtlaRelayServerDelegate: AnyObject {
-    func srtlaRelayServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
-    func srtlaRelayServerTunnelRemoved(endpoint: NWEndpoint)
-}
+private let srtlaRelayServerQueue = DispatchQueue(label: "com.eerimoq.srtla-relay-server")
 
-private struct SrtlaRelayRequestResponse {
-    let onSuccess: (SrtlaRelayResponse?) -> Void
-    let onError: (String) -> Void
+protocol SrtlaRelayServerDelegate: AnyObject {
+    func srtlaRelayServerStatusChanged(status: String)
+    func srtlaRelayServerGetBatteryPercentage() -> Int
 }
 
 private class Client {
     let webSocket: Telegraph.WebSocket
-    private var nextId: Int = 0
     private var identified = false
     private var challenge = ""
     private var salt = ""
-    private var requests: [Int: SrtlaRelayRequestResponse] = [:]
     private let password: String
-    private var address: String?
-    private var port: UInt16?
-    weak var server: SrtlaRelayServer?
-    private var tunnelEndpoint: NWEndpoint?
-    private var relayId = UUID()
-    var name = ""
-    var batteryPercentage: Int?
+    weak var server: SrtlaRelayServer!
+    private var clientListener: NWListener?
+    private var clientConnection: NWConnection?
+    private var destinationConnection: NWConnection?
+    private var destination: NWEndpoint?
+    private var startTunnelId: Int?
 
     init(websocket: Telegraph.WebSocket, password: String, server: SrtlaRelayServer) {
         self.password = password
@@ -40,7 +35,9 @@ private class Client {
         challenge = randomString()
         salt = randomString()
         send(message: .hello(
-            apiVersion: remoteControlApiVersion,
+            apiVersion: srtlaRelayApiVersion,
+            id: UUID(uuidString: server.id) ?? .init(),
+            name: server.name,
             authentication: .init(challenge: challenge, salt: salt)
         ))
         identified = false
@@ -48,8 +45,6 @@ private class Client {
 
     func stop() {
         webSocket.close(immediately: true)
-        reportTunnelRemoved()
-        requests.removeAll()
     }
 
     func handleStringMessage(message: String) {
@@ -57,10 +52,10 @@ private class Client {
         do {
             let message = try SrtlaRelayMessageToServer.fromJson(data: message)
             switch message {
-            case let .identify(id: relayId, name: name, authentication: authentication):
-                try handleIdentify(relayId: relayId, name: name, authentication: authentication)
-            case let .response(id: id, result: result, data: data):
-                try handleResponse(id: id, result: result, data: data)
+            case let .identify(authentication: authentication):
+                try handleIdentify(authentication: authentication)
+            case let .request(id: id, data: data):
+                try handleRequest(id: id, data: data)
             }
         } catch {
             logger.info("srtla-relay-server: Failed to process message with error \(error)")
@@ -68,120 +63,58 @@ private class Client {
         }
     }
 
-    func startTunnel(address: String, port: UInt16) {
-        self.address = address
-        self.port = port
-        startTunnelInternal()
-    }
-
-    func stopTunnel() {
-        reportTunnelRemoved()
-    }
-
-    func updateStatus() {
-        performRequest(data: .status) { response in
-            guard case let .status(batteryPercentage: batteryPercentage) = response else {
-                return
-            }
-            self.batteryPercentage = batteryPercentage
-        } onError: { error in
-            logger.info("srtla-relay-server: Status failed with \(error)")
-        }
-    }
-
-    private func startTunnelInternal() {
-        guard identified, let address, let port else {
-            return
-        }
-        reportTunnelRemoved()
-        executeStartTunnel(address: address, port: port) { id, name, port in
-            guard let host = self.webSocket.remoteEndpoint?.host else {
-                logger.info("srtla-relay-server: Missing relay host")
-                return
-            }
-            let endpoint = NWEndpoint.hostPort(
-                host: NWEndpoint.Host(host),
-                port: NWEndpoint.Port(integerLiteral: port)
-            )
-            self.tunnelEndpoint = endpoint
-            self.server?.delegate?.srtlaRelayServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
-        }
-    }
-
-    private func reportTunnelRemoved() {
-        if let tunnelEndpoint {
-            server?.delegate?.srtlaRelayServerTunnelRemoved(endpoint: tunnelEndpoint)
-        }
-        tunnelEndpoint = nil
-    }
-
-    private func executeStartTunnel(address: String, port: UInt16,
-                                    onSuccess: @escaping (UUID, String, UInt16) -> Void)
-    {
-        logger.info("srtla-relay-server: Starting tunnel to destination \(address):\(port)")
-        performRequest(data: .startTunnel(address: address, port: port)) { response in
-            guard case let .startTunnel(port: port) = response else {
-                return
-            }
-            onSuccess(self.relayId, self.name, port)
-        } onError: { error in
-            logger.info("srtla-relay-server: Start tunnel failed with \(error)")
-        }
-    }
-
-    private func handleIdentify(relayId: UUID, name: String, authentication: String) throws {
-        if authentication == remoteControlHashPassword(
-            challenge: challenge,
-            salt: salt,
-            password: password
-        ) {
-            self.relayId = relayId
-            self.name = name
+    private func handleIdentify(authentication: String) throws {
+        if authentication == remoteControlHashPassword(challenge: challenge, salt: salt, password: password) {
             identified = true
             send(message: .identified(result: .ok))
-            startTunnelInternal()
-            updateStatus()
         } else {
             send(message: .identified(result: .wrongPassword))
             throw "Client sent wrong password"
         }
     }
 
-    private func handleResponse(id: Int, result: SrtlaRelayResult, data: SrtlaRelayResponse?) throws {
+    private func handleRequest(id: Int, data: SrtlaRelayRequest) throws {
         guard identified else {
             throw "Streamer not identified"
         }
-        guard let request = requests[id] else {
-            logger.info("srtla-relay-server: Unexpected id in response")
+        switch data {
+        case let .startTunnel(address: address, port: port):
+            handleStartTunnel(id: id, address: address, port: port)
+        case .status:
+            handleStatus(id: id)
+        }
+    }
+
+    private func handleStartTunnel(id: Int, address: String, port: UInt16) {
+        stopTunnel()
+        logger.info("srtla-relay-server: Start tunnel to \(address):\(port)")
+        destination = .hostPort(host: NWEndpoint.Host(address), port: NWEndpoint.Port(integerLiteral: port))
+        do {
+            let options = NWProtocolUDP.Options()
+            let parameters = NWParameters(dtls: .none, udp: options)
+            clientListener = try NWListener(using: parameters)
+            clientListener?.stateUpdateHandler = handleListenerStateChange
+            clientListener?.newConnectionHandler = handleNewListenerConnection
+            clientListener?.start(queue: srtlaRelayServerQueue)
+        } catch {
+            logger.error("srtla-relay-server: Failed to create server listener with error \(error)")
+        }
+        let params = NWParameters(dtls: .none)
+        params.requiredInterfaceType = .cellular
+        params.prohibitExpensivePaths = false
+        guard case let .hostPort(host, port) = destination else {
             return
         }
-        switch result {
-        case .ok:
-            request.onSuccess(data)
-        case .wrongPassword:
-            request.onError("Wrong password")
-        case .notIdentified:
-            logger.info("srtla-relay-server: Not identified")
-        case .alreadyIdentified:
-            logger.info("srtla-relay-server: Already identified")
-        case .unknownRequest:
-            logger.info("srtla-relay-server: Unknown request")
-        }
+        destinationConnection = NWConnection(host: host, port: port, using: params)
+        destinationConnection?.stateUpdateHandler = handleDestinationStateUpdate(to:)
+        destinationConnection?.start(queue: srtlaRelayServerQueue)
+        receiveDestinationPacket()
+        startTunnelId = id
     }
 
-    private func performRequest(
-        data: SrtlaRelayRequest,
-        onSuccess: @escaping (SrtlaRelayResponse?) -> Void,
-        onError: @escaping (String) -> Void
-    ) {
-        let id = getNextId()
-        requests[id] = SrtlaRelayRequestResponse(onSuccess: onSuccess, onError: onError)
-        send(message: .request(id: id, data: data))
-    }
-
-    private func getNextId() -> Int {
-        nextId += 1
-        return nextId
+    private func handleStatus(id: Int) {
+        let batteryPercentage = server?.delegate?.srtlaRelayServerGetBatteryPercentage()
+        send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
     }
 
     private func send(message: SrtlaRelayMessageToClient) {
@@ -191,9 +124,84 @@ private class Client {
         // logger.info("srtla-relay-server: Sending \(text)")
         webSocket.send(text: text)
     }
+
+    func stopTunnel() {
+        clientListener?.stateUpdateHandler = nil
+        clientListener?.cancel()
+        clientListener = nil
+        clientConnection?.stateUpdateHandler = nil
+        clientConnection?.cancel()
+        clientConnection = nil
+        destinationConnection?.stateUpdateHandler = nil
+        destinationConnection?.cancel()
+        destinationConnection = nil
+    }
+
+    private func handleListenerStateChange(to state: NWListener.State) {
+        switch state {
+        case .setup:
+            break
+        case .ready:
+            guard let clientListener = clientListener, let startTunnelId = startTunnelId else {
+                return
+            }
+            let port = clientListener.port!.rawValue
+            send(message: .response(id: startTunnelId, result: .ok, data: .startTunnel(port: port)))
+        default:
+            break
+        }
+    }
+
+    private func handleNewListenerConnection(connection: NWConnection) {
+        clientConnection = connection
+        clientConnection?.start(queue: srtlaRelayServerQueue)
+        receiveServerPacket()
+    }
+
+    private func handleDestinationStateUpdate(to state: NWConnection.State) {
+        logger.debug("srtla-relay-client: Destination state change to \(state)")
+    }
+
+    private func receiveServerPacket() {
+        clientConnection?.receiveMessage { data, _, _, error in
+            if let data, !data.isEmpty {
+                self.handlePacketFromServer(packet: data)
+            }
+            if let error {
+                logger.info("srtla-relay-server: Server receive error \(error)")
+                return
+            }
+            self.receiveServerPacket()
+        }
+    }
+
+    private func handlePacketFromServer(packet: Data) {
+        destinationConnection?.send(content: packet, completion: .contentProcessed { _ in
+        })
+    }
+
+    private func receiveDestinationPacket() {
+        destinationConnection?.receiveMessage { data, _, _, error in
+            if let data, !data.isEmpty {
+                self.handlePacketFromDestination(packet: data)
+            }
+            if let error {
+                logger.info("srtla-relay-server: Destination receive error \(error)")
+                return
+            }
+            self.receiveDestinationPacket()
+        }
+    }
+
+    private func handlePacketFromDestination(packet: Data) {
+        clientConnection?.send(content: packet, completion: .contentProcessed { _ in
+        })
+    }
 }
 
 class SrtlaRelayServer: NSObject {
+    @AppStorage("srtlaRelayId") var id = ""
+    let name: String
     private let port: UInt16
     private let password: String
     private var server: Server
@@ -201,14 +209,16 @@ class SrtlaRelayServer: NSObject {
     private var retryStartTimer = SimpleTimer(queue: .main)
     fileprivate weak var delegate: (any SrtlaRelayServerDelegate)?
     private var clients: [Client] = []
-    private var destinationAddress: String?
-    private var destinationPort: UInt16?
 
-    init(port: UInt16, password: String) {
+    init(name: String, port: UInt16, password: String) {
+        self.name = name
         self.port = port
         self.password = password
         server = Server()
         super.init()
+        if id.isEmpty {
+            id = UUID().uuidString
+        }
         server.webSocketConfig.pingInterval = 10
         server.webSocketConfig.readTimeout = 20
         server.webSocketDelegate = self
@@ -230,32 +240,6 @@ class SrtlaRelayServer: NSObject {
         }
         clients.removeAll()
         delegate = nil
-    }
-
-    func startTunnels(address: String, port: UInt16) {
-        destinationAddress = address
-        destinationPort = port
-        for client in clients {
-            client.startTunnel(address: address, port: port)
-        }
-    }
-
-    func stopTunnels() {
-        destinationAddress = nil
-        destinationPort = nil
-        for client in clients {
-            client.stopTunnel()
-        }
-    }
-
-    func getStatuses() -> [(String, Int?)] {
-        return clients.map { ($0.name, $0.batteryPercentage) }
-    }
-
-    func updateStatus() {
-        for client in clients {
-            client.updateStatus()
-        }
     }
 
     private func startInternal() {
@@ -284,10 +268,7 @@ class SrtlaRelayServer: NSObject {
         let client = Client(websocket: webSocket, password: password, server: self)
         client.start()
         clients.append(client)
-        guard let destinationAddress, let destinationPort else {
-            return
-        }
-        client.startTunnel(address: destinationAddress, port: destinationPort)
+        updateStatus()
     }
 
     private func handleDisconnected(webSocket: Telegraph.WebSocket, error: Error?) {
@@ -300,19 +281,28 @@ class SrtlaRelayServer: NSObject {
             client.stop()
         }
         clients.removeAll(where: { $0.webSocket.isSame(other: webSocket) })
+        updateStatus()
     }
 
     private func handleMessage(webSocket: Telegraph.WebSocket, message: Telegraph.WebSocketMessage) {
         switch message.payload {
         case let .text(data):
             // logger.info("srtla-relay-server: Got \(data)")
-            guard let client = clients.first(where: { $0.webSocket.isSame(other: webSocket) }) else {
-                return
-            }
-            client.handleStringMessage(message: data)
+            let client = clients.first(where: { $0.webSocket.isSame(other: webSocket) })
+            client?.handleStringMessage(message: data)
         default:
             break
         }
+    }
+
+    func updateStatus() {
+        var status: String
+        if clients.count == 1 {
+            status = "1 streamer connected"
+        } else {
+            status = "\(clients.count) streamers connected"
+        }
+        delegate?.srtlaRelayServerStatusChanged(status: status)
     }
 }
 
