@@ -261,6 +261,11 @@ struct QuickButtonsInnerView: View {
         model.reloadBrowserWidgets()
     }
 
+    private func djiDevicesAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .djiDevices, panel: .djiDevices)
+        model.updateLutsButtonState()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -530,6 +535,12 @@ struct QuickButtonsInnerView: View {
             case .reloadBrowserWidgets:
                 Button(action: {
                     reloadBrowserWidgetsAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .djiDevices:
+                Button(action: {
+                    djiDevicesAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

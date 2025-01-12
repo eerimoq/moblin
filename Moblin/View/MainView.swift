@@ -259,6 +259,10 @@ struct MainView: View {
                                 NavigationStack {
                                     QuickButtonChatView()
                                 }
+                            case .djiDevices:
+                                NavigationStack {
+                                    QuickButtonDjiDevicesView()
+                                }
                             case .none:
                                 EmptyView()
                             }
@@ -432,6 +436,11 @@ struct MainView: View {
                         case .chat:
                             NavigationStack {
                                 QuickButtonChatView()
+                            }
+                            .frame(width: settingsHalfWidth)
+                        case .djiDevices:
+                            NavigationStack {
+                                QuickButtonDjiDevicesView()
                             }
                             .frame(width: settingsHalfWidth)
                         case .none:

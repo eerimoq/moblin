@@ -50,6 +50,7 @@ enum ShowingPanel {
     case recordings
     case cosmetics
     case chat
+    case djiDevices
 }
 
 class Browser: Identifiable {
@@ -812,6 +813,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             SettingsButtonType.recordings,
             SettingsButtonType.stream,
             SettingsButtonType.obs,
+            SettingsButtonType.djiDevices,
         ].contains(type)
     }
 

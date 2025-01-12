@@ -1453,6 +1453,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case reloadBrowserWidgets = "Reload browser widgets"
     case interactiveChat = "Interactive chat"
     case lockScreen = "Lock screen"
+    case djiDevices = "DJI devices"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -3013,6 +3014,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "arrow.clockwise"
     button.systemImageNameOff = "arrow.clockwise"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "DJI devices"))
+    button.id = UUID()
+    button.type = .djiDevices
+    button.imageType = "System name"
+    button.systemImageNameOn = "appletvremote.gen1.fill"
+    button.systemImageNameOff = "appletvremote.gen1"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in
