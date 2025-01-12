@@ -13,7 +13,7 @@ protocol WebSocketClientDelegate: AnyObject {
 }
 
 final class WebSocketClient {
-    var webSocket: NWWebSocket
+    private var webSocket: NWWebSocket
     private var connectTimer = SimpleTimer(queue: .main)
     private var networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
     private var pingTimer = SimpleTimer(queue: .main)
@@ -151,11 +151,12 @@ extension WebSocketClient: WebSocketConnectionDelegate {
 
     func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
         logger.debug("websocket: Error \(error.localizedDescription)")
+        let connected = self.connected
+        stopInternal()
+        startConnectTimer()
         if connected {
             delegate?.webSocketClientDisconnected(self)
         }
-        stopInternal()
-        startConnectTimer()
     }
 
     func webSocketDidReceivePong(connection _: WebSocketConnection) {
