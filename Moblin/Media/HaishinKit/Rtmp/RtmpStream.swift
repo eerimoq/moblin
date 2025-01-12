@@ -299,13 +299,16 @@ class RtmpStream: NetStream {
         else {
             return
         }
+        logger.info("rtmp: Got event: \(code)")
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
             setReadyState(state: .initialized)
             sendFCPublish()
             rtmpConnection.createStream(self)
         case RtmpStreamCode.publishStart.rawValue:
-            setReadyState(state: .publishing)
+            if readyState != .initialized {
+                setReadyState(state: .publishing)
+            }
         default:
             break
         }
