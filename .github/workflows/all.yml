@@ -25,4 +25,5 @@ jobs:
           make lint
       - name: Build
         run: |
+          xcodebuild -list
           xcodebuild -scheme Moblin -skipPackagePluginValidation build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
