@@ -2405,33 +2405,18 @@ class SettingsRemoteControl: Codable {
 class SettingsSrtlaRelayServer: Codable {
     var enabled: Bool = false
     var port: UInt16 = 7777
-    var name: String? = "Apple"
-    var password: String? = "1234"
 }
 
 class SettingsSrtlaRelayClient: Codable {
     var enabled: Bool = false
-    // periphery:ignore
-    var name: String? = "Relay"
-    // periphery:ignore
-    var url: String? = ""
-    var servers: [SettingsSrtlaRelayClientServer]? = []
-}
-
-class SettingsSrtlaRelayClientServer: Codable, Identifiable {
-    var id = UUID()
-    var enabled: Bool = true
-    var serverId: UUID = .init()
-    var name: String = "Relay name"
+    var name: String = "Relay"
     var url: String = ""
-    var password: String = "1234"
 }
 
 class SettingsSrtlaRelay: Codable {
     var server: SettingsSrtlaRelayServer = .init()
     var client: SettingsSrtlaRelayClient = .init()
-    // periphery:ignore
-    var password: String? = ""
+    var password = "1234"
 }
 
 class SettingsPrivacyRegion: Codable, Identifiable {
@@ -4477,30 +4462,6 @@ final class Settings {
         }
         if realDatabase.chat.bottom == nil {
             realDatabase.chat.bottom = 0.0
-            store()
-        }
-        if realDatabase.srtlaRelay!.client.name == nil {
-            realDatabase.srtlaRelay!.client.name = "Relay"
-            store()
-        }
-        if realDatabase.srtlaRelay!.client.url == nil {
-            realDatabase.srtlaRelay!.client.url = ""
-            store()
-        }
-        if realDatabase.srtlaRelay!.client.servers == nil {
-            realDatabase.srtlaRelay!.client.servers = []
-            store()
-        }
-        if realDatabase.srtlaRelay!.server.name == nil {
-            realDatabase.srtlaRelay!.server.name = "Apple"
-            store()
-        }
-        if realDatabase.srtlaRelay!.server.password == nil {
-            realDatabase.srtlaRelay!.server.password = "1234"
-            store()
-        }
-        if realDatabase.srtlaRelay!.password == nil {
-            realDatabase.srtlaRelay!.password = "1234"
             store()
         }
     }

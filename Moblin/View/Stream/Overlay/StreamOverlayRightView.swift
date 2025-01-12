@@ -154,7 +154,10 @@ private struct StatusesView: View {
     }
 
     private func srtlaRelayColor() -> Color {
-        if !model.srtlaRelayClientOk {
+        if model.isSrtlaRelayClientConfigured() && model.srtlaRelayClientState != .connected {
+            return .red
+        }
+        if !model.srtlaRelayServerOk {
             return .red
         }
         return .white

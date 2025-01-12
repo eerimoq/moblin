@@ -320,7 +320,11 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func handleIdentify(authentication: String) {
-        if authentication == remoteControlHashPassword(challenge: challenge, salt: salt, password: password) {
+        if authentication == remoteControlHashPassword(
+            challenge: challenge,
+            salt: salt,
+            password: password
+        ) {
             streamerIdentified = true
             connected = true
             delegate?.remoteControlAssistantConnected()
@@ -469,7 +473,7 @@ class RemoteControlAssistant: NSObject {
         return nextId
     }
 
-    private func send(message: RemoteControlMessageToClient) {
+    private func send(message: RemoteControlMessageToStreamer) {
         guard let text = message.toJson() else {
             return
         }

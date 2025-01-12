@@ -44195,7 +44195,7 @@
     "Enable this on the device you want to use as the extra bonding connection. The device must have cellular data enabled." : {
 
     },
-    "Enable this on your streaming device. Add relay devices to connect to." : {
+    "Enable this on your streaming device. Configure relay devices to connect to this device." : {
 
     },
     "Enable to allow an assistant to monitor and control this device from a different device." : {
@@ -46151,7 +46151,7 @@
         }
       }
     },
-    "Enter relay's websocket URL. For example ws://132.23.43.43:2345." : {
+    "Enter streamer's websocket URL. For example ws://132.23.43.43:2345." : {
 
     },
     "Estimated viewer delay" : {
@@ -88555,12 +88555,6 @@
         }
       }
     },
-    "Relay URL" : {
-
-    },
-    "Relays" : {
-
-    },
     "Reliable alerts and chat messages activated" : {
       "localizations" : {
         "de" : {
@@ -107299,6 +107293,9 @@
         }
       }
     },
+    "Streamer URL" : {
+
+    },
     "Streaming" : {
       "localizations" : {
         "de" : {
@@ -124074,6 +124071,9 @@
           }
         }
       }
+    },
+    "Used by both relay and streamer devices. Copy the streamer's password to the relay device." : {
+
     },
     "Used by both streamer and assistant." : {
       "localizations" : {

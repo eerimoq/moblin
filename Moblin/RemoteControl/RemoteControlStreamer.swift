@@ -142,7 +142,7 @@ class RemoteControlStreamer {
 
     private func handleMessage(message: String) throws {
         do {
-            switch try RemoteControlMessageToClient.fromJson(data: message) {
+            switch try RemoteControlMessageToStreamer.fromJson(data: message) {
             case let .hello(apiVersion: apiVersion, authentication: authentication):
                 handleHello(apiVersion: apiVersion, authentication: authentication)
             case let .identified(result: result):

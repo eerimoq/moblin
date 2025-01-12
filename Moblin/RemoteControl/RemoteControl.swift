@@ -191,7 +191,7 @@ enum RemoteControlResult: Codable {
     case alreadyIdentified
 }
 
-enum RemoteControlMessageToClient: Codable {
+enum RemoteControlMessageToStreamer: Codable {
     case hello(apiVersion: String, authentication: RemoteControlAuthentication)
     case identified(result: RemoteControlResult)
     case request(id: Int, data: RemoteControlRequest)
@@ -205,11 +205,11 @@ enum RemoteControlMessageToClient: Codable {
         }
     }
 
-    static func fromJson(data: String) throws -> RemoteControlMessageToClient {
+    static func fromJson(data: String) throws -> RemoteControlMessageToStreamer {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(RemoteControlMessageToClient.self, from: data)
+        return try JSONDecoder().decode(RemoteControlMessageToStreamer.self, from: data)
     }
 }
 

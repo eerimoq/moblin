@@ -66,6 +66,7 @@ final class WebSocketClient {
             logger.debug("websocket: Connecting to \(url) over \(interfaceType)")
             webSocket.delegate = self
             webSocket.connect()
+            startPingTimer()
         } else {
             connectDelayMs = shortestDelayMs
             startConnectTimer()
@@ -121,7 +122,6 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         logger.debug("websocket: Connected")
         connectDelayMs = shortestDelayMs
         stopConnectTimer()
-        startPingTimer()
         connected = true
         delegate?.webSocketClientConnected(self)
     }
