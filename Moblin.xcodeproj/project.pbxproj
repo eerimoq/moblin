@@ -127,9 +127,9 @@
 		033FD71B2CC622D80073C6EC /* PadelScoreboardEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033FD71A2CC622D40073C6EC /* PadelScoreboardEffect.swift */; };
 		033FD71E2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033FD71D2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
-		0342F1A12C627A70004DD3EA /* MoblinkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A02C627A70004DD3EA /* MoblinkClient.swift */; };
-		0342F1A32C627A87004DD3EA /* MoblinkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A22C627A87004DD3EA /* MoblinkServer.swift */; };
-		0342F1A52C627A8F004DD3EA /* MoblinkCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A42C627A8F004DD3EA /* MoblinkCommon.swift */; };
+		0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A02C627A70004DD3EA /* MirlClient.swift */; };
+		0342F1A32C627A87004DD3EA /* MirlServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A22C627A87004DD3EA /* MirlServer.swift */; };
+		0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342F1A42C627A8F004DD3EA /* MirlCommon.swift */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
 		0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */; };
 		0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */; };
@@ -468,7 +468,7 @@
 		03F655F22D16DFD60054D73E /* BitArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F655F12D16DFD20054D73E /* BitArray.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
-		03FB422A2C68D9A70009FB26 /* MoblinkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* MoblinkStream.swift */; };
+		03FB422A2C68D9A70009FB26 /* MirlStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB42292C68D9A70009FB26 /* MirlStream.swift */; };
 		03FB42332C68EE6D0009FB26 /* PROTOCOL.md in Resources */ = {isa = PBXBuildFile; fileRef = 03FB42322C68EE6D0009FB26 /* PROTOCOL.md */; };
 		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
@@ -653,9 +653,9 @@
 		033FD71A2CC622D40073C6EC /* PadelScoreboardEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadelScoreboardEffect.swift; sourceTree = "<group>"; };
 		033FD71D2CC8A4A50073C6EC /* WidgetScoreboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetScoreboardSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
-		0342F1A02C627A70004DD3EA /* MoblinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkClient.swift; sourceTree = "<group>"; };
-		0342F1A22C627A87004DD3EA /* MoblinkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkServer.swift; sourceTree = "<group>"; };
-		0342F1A42C627A8F004DD3EA /* MoblinkCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkCommon.swift; sourceTree = "<group>"; };
+		0342F1A02C627A70004DD3EA /* MirlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlClient.swift; sourceTree = "<group>"; };
+		0342F1A22C627A87004DD3EA /* MirlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlServer.swift; sourceTree = "<group>"; };
+		0342F1A42C627A8F004DD3EA /* MirlCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlCommon.swift; sourceTree = "<group>"; };
 		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarRemoteControlAssistantView.swift; sourceTree = "<group>"; };
@@ -1027,7 +1027,7 @@
 		03F655F12D16DFD20054D73E /* BitArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitArray.swift; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		03FB42292C68D9A70009FB26 /* MoblinkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkStream.swift; sourceTree = "<group>"; };
+		03FB42292C68D9A70009FB26 /* MirlStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlStream.swift; sourceTree = "<group>"; };
 		03FB42322C68EE6D0009FB26 /* PROTOCOL.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = PROTOCOL.md; sourceTree = "<group>"; };
 		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -1505,15 +1505,15 @@
 			path = Browser;
 			sourceTree = "<group>";
 		};
-		0342F19F2C627A3D004DD3EA /* Moblink */ = {
+		0342F19F2C627A3D004DD3EA /* Mirl */ = {
 			isa = PBXGroup;
 			children = (
-				0342F1A02C627A70004DD3EA /* MoblinkClient.swift */,
-				0342F1A42C627A8F004DD3EA /* MoblinkCommon.swift */,
-				0342F1A22C627A87004DD3EA /* MoblinkServer.swift */,
+				0342F1A02C627A70004DD3EA /* MirlClient.swift */,
+				0342F1A42C627A8F004DD3EA /* MirlCommon.swift */,
+				0342F1A22C627A87004DD3EA /* MirlServer.swift */,
 				03FB42322C68EE6D0009FB26 /* PROTOCOL.md */,
 			);
-			path = Moblink;
+			path = Mirl;
 			sourceTree = "<group>";
 		};
 		0346B5F22B9AF4D300999109 /* RemoteControlAssistant */ = {
@@ -1585,7 +1585,7 @@
 				0359F8282BD3DA5F005BFDA8 /* Extension */,
 				0359F8342BD3DA5F005BFDA8 /* Flv */,
 				0359F83B2BD3DA5F005BFDA8 /* Media */,
-				03FB42282C68D99A0009FB26 /* Moblink */,
+				03FB42282C68D99A0009FB26 /* Mirl */,
 				0359F84B2BD3DA5F005BFDA8 /* Mpeg */,
 				0359F84E2BD3DA5F005BFDA8 /* Net */,
 				0324CD052BEBFB93004AA063 /* Rist */,
@@ -2579,7 +2579,7 @@
 			children = (
 				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
 				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
-				0342F19F2C627A3D004DD3EA /* Moblink */,
+				0342F19F2C627A3D004DD3EA /* Mirl */,
 				034D26FD2B3A034A0097C619 /* RtmpServer */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 			);
@@ -2782,12 +2782,12 @@
 			path = AdaptiveBitrate;
 			sourceTree = "<group>";
 		};
-		03FB42282C68D99A0009FB26 /* Moblink */ = {
+		03FB42282C68D99A0009FB26 /* Mirl */ = {
 			isa = PBXGroup;
 			children = (
-				03FB42292C68D9A70009FB26 /* MoblinkStream.swift */,
+				03FB42292C68D9A70009FB26 /* MirlStream.swift */,
 			);
-			path = Moblink;
+			path = Mirl;
 			sourceTree = "<group>";
 		};
 		03FB4B2C2AD8CF6B005AA183 /* BitratePresets */ = {
@@ -3146,7 +3146,7 @@
 				0318D3642CF4FB3100E12F3B /* TeslaVehicle.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
-				0342F1A52C627A8F004DD3EA /* MoblinkCommon.swift in Sources */,
+				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
@@ -3194,7 +3194,7 @@
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
 				03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */,
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
-				03FB422A2C68D9A70009FB26 /* MoblinkStream.swift in Sources */,
+				03FB422A2C68D9A70009FB26 /* MirlStream.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
 				0359F8F72BD3DA61005BFDA8 /* SrtConnection.swift in Sources */,
 				03A9300E2C1442E500BB9679 /* HevcNalUnit.swift in Sources */,
@@ -3376,7 +3376,7 @@
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
-				0342F1A12C627A70004DD3EA /* MoblinkClient.swift in Sources */,
+				0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				0359F8D42BD3DA61005BFDA8 /* PreviewView.swift in Sources */,
 				032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */,
@@ -3410,7 +3410,7 @@
 				031863C72C8C4BEA00CECA33 /* FaxReceiver.swift in Sources */,
 				0305D6B32D32665E006EA5DE /* SrtlaRelayDiscovery.swift in Sources */,
 				034FA1BB2C151E3600695825 /* AdaptiveBitrateRistExperiment.swift in Sources */,
-				0342F1A32C627A87004DD3EA /* MoblinkServer.swift in Sources */,
+				0342F1A32C627A87004DD3EA /* MirlServer.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
 				0359F8EC2BD3DA61005BFDA8 /* RtmpConnection.swift in Sources */,
 				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,

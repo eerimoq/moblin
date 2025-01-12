@@ -1,4 +1,4 @@
-# Moblink (MK) protocol specification
+# Mirl protocol specification
 
 ## Goals
 - Bonding.
@@ -14,16 +14,16 @@
 Format:
 
 ```
-moblink://<address>:<port>/<stream-id>
+mirl://<address>:<port>/<stream-id>
 ```
 
 Examples:
 
 ```
-moblink://foobar.org:5566/ce4e0960-af23-40d4-85aa-d5b3245a6c92
-moblink://kalle.com/1ecee59b-4200-4577-b1f0-b3bdaf6cb81b
-moblink://184.65.22.133/ac10433a-ae84-4df6-bcb8-218a9488d065
-moblink://192.168.0.53:5888/a6255ed8-fd3f-45bd-8e66-d144d7267e12
+mirl://foobar.org:5566/ce4e0960-af23-40d4-85aa-d5b3245a6c92
+mirl://kalle.com/1ecee59b-4200-4577-b1f0-b3bdaf6cb81b
+mirl://184.65.22.133/ac10433a-ae84-4df6-bcb8-218a9488d065
+mirl://192.168.0.53:5888/a6255ed8-fd3f-45bd-8e66-d144d7267e12
 ```
 
 ## Protocol

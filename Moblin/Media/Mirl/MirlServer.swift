@@ -1,7 +1,7 @@
 import Foundation
 
 // periphery:ignore
-class MoblinkServer {
+class MirlServer {
     init() {}
 
     func start() {}

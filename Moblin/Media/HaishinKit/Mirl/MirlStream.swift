@@ -1,11 +1,11 @@
 import AVFoundation
 import Foundation
 
-class MoblinkStream: NetStream {
-    var client: MoblinkClient?
+class MirlStream: NetStream {
+    var client: MirlClient?
 
     override init() {
-        client = MoblinkClient()
+        client = MirlClient()
         super.init()
     }
 
@@ -27,7 +27,7 @@ class MoblinkStream: NetStream {
     }
 }
 
-extension MoblinkStream: VideoCodecDelegate {
+extension MirlStream: VideoCodecDelegate {
     func videoCodecOutputFormat(_: VideoCodec, _ formatDescription: CMFormatDescription) {
         client?.writeVideoFormat(formatDescription: formatDescription)
     }
@@ -37,7 +37,7 @@ extension MoblinkStream: VideoCodecDelegate {
     }
 }
 
-extension MoblinkStream: AudioCodecDelegate {
+extension MirlStream: AudioCodecDelegate {
     func audioCodecOutputFormat(_ audioFormat: AVAudioFormat) {
         client?.writeAudioFormat(audioFormat: audioFormat)
     }
