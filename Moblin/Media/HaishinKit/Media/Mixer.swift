@@ -19,6 +19,8 @@ protocol MixerDelegate: AnyObject {
     func mixer(findVideoFormatError: String, activeFormat: String)
     func mixer(audioSampleBuffer: CMSampleBuffer)
     func mixerNoTorch()
+    func mixerSetZoomX(x: Float)
+    func mixerSetExposureBias(bias: Float)
 }
 
 class Mixer {

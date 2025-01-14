@@ -120,6 +120,12 @@ struct DebugSettingsView: View {
                     model.database.debug.srtlaBatchSend = value
                     model.setSrtlaBatchSend()
                 }))
+                Toggle("Camera controls", isOn: Binding(get: {
+                    model.database.debug.cameraControlsEnabled!
+                }, set: { value in
+                    model.database.debug.cameraControlsEnabled = value
+                    model.setCameraControlsEnabled()
+                }))
             } header: {
                 Text("Experimental")
             }

@@ -16,6 +16,8 @@ protocol NetStreamDelegate: AnyObject {
     func streamRecorderError()
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
+    func streamSetZoomX(x: Float)
+    func streamSetExposureBias(bias: Float)
 }
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
@@ -106,6 +108,12 @@ open class NetStream: NSObject {
             } catch {
                 onError?(error)
             }
+        }
+    }
+
+    func setCameraControls(enabled: Bool) {
+        netStreamLockQueue.async {
+            self.mixer.video.setCameraControl(enabled: enabled)
         }
     }
 
@@ -232,5 +240,13 @@ extension NetStream: MixerDelegate {
 
     func mixerNoTorch() {
         delegate?.streamNoTorch()
+    }
+
+    func mixerSetZoomX(x: Float) {
+        delegate?.streamSetZoomX(x: x)
+    }
+
+    func mixerSetExposureBias(bias: Float) {
+        delegate?.streamSetExposureBias(bias: bias)
     }
 }

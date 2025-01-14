@@ -1833,6 +1833,7 @@ class SettingsDebug: Codable {
     var timecodesEnabled: Bool? = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
     var srtlaBatchSend: Bool? = false
+    var cameraControlsEnabled: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4472,6 +4473,10 @@ final class Settings {
         }
         if realDatabase.moblink == nil {
             realDatabase.moblink = realDatabase.srtlaRelay
+            store()
+        }
+        if realDatabase.debug.cameraControlsEnabled == nil {
+            realDatabase.debug.cameraControlsEnabled = false
             store()
         }
     }

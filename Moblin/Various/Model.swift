@@ -676,6 +676,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var moblinkClient: MoblinkClient?
     private var moblinkScanner: MoblinkScanner?
 
+    @Published var cameraControlEnabled = false
+
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
@@ -1417,6 +1419,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadNtpClient()
         reloadMoblinkClient()
         reloadMoblinkServer()
+        setCameraControlsEnabled()
     }
 
     func reloadMoblinkServer() {
@@ -1663,6 +1666,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setSrtlaBatchSend() {
         srtlaBatchSend = database.debug.srtlaBatchSend!
+    }
+
+    func setCameraControlsEnabled() {
+        cameraControlEnabled = database.debug.cameraControlsEnabled!
+        media.setCameraControls(enabled: database.debug.cameraControlsEnabled!)
     }
 
     private func setupSampleBufferReceiver() {
@@ -4125,6 +4133,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())
         setLowFpsImage()
+        updateCameraControls()
     }
 
     private func isTimecodesEnabled() -> Bool {
@@ -6372,7 +6381,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         attachCamera(position: .unspecified)
     }
 
-    private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
+    func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
         let level = media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate)
         if let level {
             return level * cameraZoomLevelToXScale
@@ -6462,6 +6471,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         forceUpdateTextEffects()
     }
 
+    private func updateCameraControls() {
+        media.setCameraControls(enabled: database.debug.cameraControlsEnabled!)
+    }
+
     func setCameraZoomPreset(id: UUID) {
         switch cameraPosition {
         case .back:
@@ -6483,7 +6496,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func setZoomX(x: Float, setPinch: Bool = true) {
+    func setZoomX(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
             backZoomX = x
@@ -10173,6 +10186,17 @@ extension Model: MediaDelegate {
 
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
         moblinkServer?.startTunnels(address: address, port: port)
+    }
+
+    func mediaSetZoomX(x: Float) {
+        clearZoomId()
+        if let x = setCameraZoomX(x: x) {
+            setZoomX(x: x)
+        }
+    }
+
+    func mediaSetExposureBias(bias: Float) {
+        setExposureBias(bias: bias)
     }
 }
 

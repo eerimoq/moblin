@@ -31,6 +31,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderError()
     func mediaOnNoTorch()
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
+    func mediaSetZoomX(x: Float)
+    func mediaSetExposureBias(bias: Float)
 }
 
 final class Media: NSObject {
@@ -657,6 +659,10 @@ final class Media: NSObject {
         netStream?.setLowFpsImage(fps: fps)
     }
 
+    func setCameraControls(enabled: Bool) {
+        netStream?.setCameraControls(enabled: enabled)
+    }
+
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
         netStream?.takeSnapshot(age: age, onComplete: onComplete)
     }
@@ -976,6 +982,14 @@ extension Media: NetStreamDelegate {
 
     func streamNoTorch() {
         delegate?.mediaOnNoTorch()
+    }
+
+    func streamSetZoomX(x: Float) {
+        delegate?.mediaSetZoomX(x: x)
+    }
+
+    func streamSetExposureBias(bias: Float) {
+        delegate?.mediaSetExposureBias(bias: bias)
     }
 }
 
