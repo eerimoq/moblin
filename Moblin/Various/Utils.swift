@@ -82,6 +82,11 @@ func randomHumanString() -> String {
     )
 }
 
+func randomName() -> String {
+    let colors = ["Black", "Red", "Green", "Yellow", "Blue", "Purple", "Cyan", "White"]
+    return colors.randomElement() ?? "Black"
+}
+
 func isGoodPassword(password: String) -> Bool {
     guard password.count >= 16 else {
         return false

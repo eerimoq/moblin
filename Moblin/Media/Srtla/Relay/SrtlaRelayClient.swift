@@ -32,6 +32,8 @@ class SrtlaRelayClient {
     private var state: SrtlaRelayClientState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
+    private let networkPathMonitor = NWPathMonitor()
+    private var cellularInterface: NWInterface?
     @AppStorage("srtlaRelayId") var id = ""
 
     init(name: String, clientUrl: URL, password: String, delegate: SrtlaRelayClientDelegate) {
@@ -66,6 +68,8 @@ class SrtlaRelayClient {
         webSocket = .init(url: clientUrl, cellular: false)
         webSocket.delegate = self
         webSocket.start()
+        networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
+        networkPathMonitor.start(queue: .main)
     }
 
     private func stopInternal() {
@@ -74,6 +78,7 @@ class SrtlaRelayClient {
         webSocket.delegate = nil
         webSocket.stop()
         stopTunnel()
+        networkPathMonitor.cancel()
     }
 
     private func reconnect(reason: String) {
@@ -82,6 +87,10 @@ class SrtlaRelayClient {
         reconnectTimer.startSingleShot(timeout: 5.0) {
             self.startInternal()
         }
+    }
+
+    private func handleNetworkPathUpdate(path: NWPath) {
+        cellularInterface = path.availableInterfaces.first(where: { $0.type == .cellular })
     }
 
     private func setState(state: SrtlaRelayClientState) {
@@ -172,8 +181,12 @@ class SrtlaRelayClient {
         serverListener?.stateUpdateHandler = handleListenerStateChange(to:)
         serverListener?.newConnectionHandler = handleNewListenerConnection(connection:)
         serverListener?.start(queue: srtlaRelayClientQueue)
+        guard let cellularInterface else {
+            reconnect(reason: "No cellular interface")
+            return
+        }
         let params = NWParameters(dtls: .none)
-        params.requiredInterfaceType = .cellular
+        params.requiredInterface = cellularInterface
         params.prohibitExpensivePaths = false
         guard case let .hostPort(host, port) = destination else {
             reconnect(reason: "Failed to parse host and port")

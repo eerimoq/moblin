@@ -2409,7 +2409,7 @@ class SettingsSrtlaRelayServer: Codable {
 
 class SettingsSrtlaRelayClient: Codable {
     var enabled: Bool = false
-    var name: String = "Relay"
+    var name: String = randomName()
     var url: String = ""
 }
 

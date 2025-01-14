@@ -128,9 +128,6 @@ class RemoteConnection {
         }
         logger.info("srtla: \(typeString): Start with destination \(host):\(port)")
         let params = NWParameters(dtls: .none)
-        if let type {
-            params.requiredInterfaceType = type
-        }
         params.prohibitExpensivePaths = false
         params.requiredInterface = interface
         connection = NWConnection(host: host, port: port, using: params)

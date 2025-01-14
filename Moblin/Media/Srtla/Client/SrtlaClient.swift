@@ -71,21 +71,6 @@ class SrtlaClient {
                 networkInterfaces: networkInterfaces,
                 priority: 1.0
             ))
-        } else {
-            remoteConnections.append(RemoteConnection(
-                type: .cellular,
-                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                interface: nil,
-                networkInterfaces: networkInterfaces,
-                priority: getConnectionPriority(name: "Cellular")
-            ))
-            remoteConnections.append(RemoteConnection(
-                type: .wifi,
-                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                interface: nil,
-                networkInterfaces: networkInterfaces,
-                priority: getConnectionPriority(name: "WiFi")
-            ))
         }
     }
 
@@ -227,19 +212,7 @@ class SrtlaClient {
                 if let relayId = connection.relayId {
                     connection.setPriority(priority: self.getRelayConnectionPriority(relayId: relayId))
                 } else {
-                    var name: String
-                    if let interface = connection.interface {
-                        name = interface.name
-                    } else {
-                        switch connection.type {
-                        case .cellular:
-                            name = "Cellular"
-                        case .wifi:
-                            name = "WiFi"
-                        default:
-                            name = ""
-                        }
-                    }
+                    var name = interfaceName(type: connection.type, interface: connection.interface)
                     connection.setPriority(priority: self.getConnectionPriority(name: name))
                 }
             }
@@ -285,18 +258,20 @@ class SrtlaClient {
                 newRemoteConnections.append(connection)
             }
         }
-        for interface in path.availableInterfaces where interface.type == .wiredEthernet {
+        let interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet]
+        for interface in path.availableInterfaces where interfaceTypes.contains(interface.type) {
             guard !newRemoteConnections.contains(where: { connection in
                 connection.interface == interface
             }) else {
                 continue
             }
+            let name = interfaceName(type: interface.type, interface: interface)
             newRemoteConnections.append(RemoteConnection(
-                type: .wiredEthernet,
+                type: interface.type,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
                 interface: interface,
-                networkInterfaces: self.networkInterfaces,
-                priority: getConnectionPriority(name: interface.name)
+                networkInterfaces: networkInterfaces,
+                priority: getConnectionPriority(name: name)
             ))
             startRemote(connection: newRemoteConnections.last!,
                         host: NWEndpoint.Host(host),
@@ -305,7 +280,19 @@ class SrtlaClient {
                 newRemoteConnections.last!.register(groupId: groupId)
             }
         }
-        remoteConnections = newRemoteConnections
+        remoteConnections = newRemoteConnections.sorted(by: { first, second in
+            if first.type == .cellular {
+                return true
+            } else if second.type == .cellular {
+                return false
+            } else if first.type == .wifi {
+                return true
+            } else if second.type == .wifi {
+                return false
+            } else {
+                return true
+            }
+        })
     }
 
     func connectionStatistics() -> [BondingConnection] {
@@ -480,5 +467,16 @@ class SrtlaClient {
             }
         }
         return selectedConnection
+    }
+}
+
+private func interfaceName(type: NWInterface.InterfaceType?, interface: NWInterface?) -> String {
+    switch type {
+    case .cellular:
+        return "Cellular"
+    case .wifi:
+        return "WiFi"
+    default:
+        return interface?.name ?? ""
     }
 }
