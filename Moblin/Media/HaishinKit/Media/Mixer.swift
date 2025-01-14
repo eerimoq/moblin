@@ -19,6 +19,7 @@ protocol MixerDelegate: AnyObject {
     func mixer(findVideoFormatError: String, activeFormat: String)
     func mixer(audioSampleBuffer: CMSampleBuffer)
     func mixerNoTorch()
+    func getNetStreamDelegate() -> NetStreamDelegate?
 }
 
 class Mixer {

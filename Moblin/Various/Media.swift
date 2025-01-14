@@ -31,6 +31,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderError()
     func mediaOnNoTorch()
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
+    func getModel() -> Model // TODO: may want to refactor this
 }
 
 final class Media: NSObject {
@@ -923,6 +924,10 @@ extension Media: NetStreamDelegate {
             self.numberOfAudioChannels = numberOfAudioChannels
             self.audioCapturePresentationTimestamp = presentationTimestamp
         }
+    }
+
+    func getMediaDelegate() -> (any MediaDelegate)? {
+        delegate
     }
 
     func streamVideo(_: NetStream, presentationTimestamp: Double) {

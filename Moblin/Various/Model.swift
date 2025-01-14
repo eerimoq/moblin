@@ -1414,9 +1414,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadNtpClient()
         reloadSrtlaRelayClient()
         reloadSrtlaRelayServer()
-        if #available(iOS 18.0, *) {
-            addCameraControls(session: media.getNetStream()?.videoCapture()?.session)
-        }
     }
 
     func reloadSrtlaRelayServer() {
@@ -6355,7 +6352,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         attachCamera(position: .unspecified)
     }
 
-    private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
+    func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
         let level = media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate)
         if let level {
             return level * cameraZoomLevelToXScale
@@ -6466,7 +6463,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func setZoomX(x: Float, setPinch: Bool = true) {
+    func setZoomX(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
             backZoomX = x
@@ -10102,6 +10099,10 @@ extension Model: FaxReceiverDelegate {
 }
 
 extension Model: MediaDelegate {
+    func getModel() -> Model {
+        self
+    }
+    
     func mediaOnSrtConnected() {
         handleSrtConnected()
     }
@@ -10250,43 +10251,3 @@ extension Model: SrtlaRelayClientDelegate {
     }
 }
 
-@available(iOS 18.0, *)
-private let cameraControlQueue = DispatchQueue(label: "com.eerimoq.cameraControl")
-
-@available(iOS 18.0, *)
-extension Model: AVCaptureSessionControlsDelegate {
-    // minimal AVCaptureSessionControlsDelegate protocol compliance
-    @objc func sessionControlsDidBecomeActive(_ session: AVCaptureSession) { return }
-    @objc func sessionControlsWillEnterFullscreenAppearance(_ session: AVCaptureSession) { return }
-    @objc func sessionControlsWillExitFullscreenAppearance(_ session: AVCaptureSession) { return }
-    @objc func sessionControlsDidBecomeInactive(_ session: AVCaptureSession) { return }
-    
-    func addCameraControls(session: AVCaptureSession?) {
-        print("Adding camera controls")
-        guard let session else {
-            print("Camera controls cannot be added since the session is not yet configured")
-            return
-        }
-        if session.supportsControls {
-            guard let cameraDevice else { return }
-            let zoomSlider = AVCaptureSystemZoomSlider(device: cameraDevice) { zoomFactor in
-                let displayZoom = Float(cameraDevice.displayVideoZoomFactorMultiplier * zoomFactor)
-                self.zoomX = self.media.setCameraZoomLevel(level: displayZoom, rate: 0.1) ?? 1.0
-            }
-            if session.canAddControl(zoomSlider) {
-                session.addControl(zoomSlider)
-            }
-            let exposureBiasSlider = AVCaptureSystemExposureBiasSlider(device: cameraDevice) { exposureBias in
-                self.setExposureBias(bias: exposureBias)
-            }
-            if session.canAddControl(exposureBiasSlider) {
-                session.addControl(exposureBiasSlider)
-            }
-            session.setControlsDelegate(self, queue: cameraControlQueue)
-            print("Camera controls added")
-        }
-        else {
-            print("Session does not support camera controls")
-        }
-    }
-}

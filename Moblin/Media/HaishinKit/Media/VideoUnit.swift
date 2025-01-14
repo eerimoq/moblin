@@ -328,6 +328,9 @@ final class VideoUnit: NSObject {
         }
         setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: lockQueue)
+        if #available(iOS 18.0, *) {
+            addCameraControls()
+        }
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -1378,4 +1381,54 @@ private func createBlackImage(width: Double, height: Double) -> CIImage {
     let image = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)!
     UIGraphicsEndImageContext()
     return image
+}
+
+
+@available(iOS 18.0, *)
+private let cameraControlQueue = DispatchQueue(label: "com.eerimoq.cameraControl")
+
+@available(iOS 18.0, *)
+extension VideoUnit: AVCaptureSessionControlsDelegate {
+    // minimal AVCaptureSessionControlsDelegate protocol compliance
+    @objc func sessionControlsDidBecomeActive(_ session: AVCaptureSession) { return }
+    @objc func sessionControlsWillEnterFullscreenAppearance(_ session: AVCaptureSession) { return }
+    @objc func sessionControlsWillExitFullscreenAppearance(_ session: AVCaptureSession) { return }
+    @objc func sessionControlsDidBecomeInactive(_ session: AVCaptureSession) { return }
+    
+    func addCameraControls() {
+        print("Adding camera controls")
+        if session.supportsControls {
+            guard let device else {
+                print("Capture device not configured yet")
+                return
+            }
+            let zoomSlider = AVCaptureSystemZoomSlider(device: device) { zoomFactor in
+                let displayZoom = Float(device.displayVideoZoomFactorMultiplier * zoomFactor)
+                guard let model = self.mixer?.delegate?.getNetStreamDelegate()?.getMediaDelegate()?.getModel() else {
+                    return
+                }
+                print("Zooming to \(displayZoom)")
+                let x = model.setCameraZoomX(x: displayZoom) ?? 1.0
+                model.setZoomX(x: x)
+            }
+            if session.canAddControl(zoomSlider) {
+                session.addControl(zoomSlider)
+            }
+            let exposureBiasSlider = AVCaptureSystemExposureBiasSlider(device: device) { exposureBias in
+                guard let model = self.mixer?.delegate?.getNetStreamDelegate()?.getMediaDelegate()?.getModel() else {
+                    return
+                }
+                print("Setting exposure bias to \(exposureBias)")
+                model.setExposureBias(bias: exposureBias)
+            }
+            if session.canAddControl(exposureBiasSlider) {
+                session.addControl(exposureBiasSlider)
+            }
+            session.setControlsDelegate(self, queue: cameraControlQueue)
+            print("Camera controls added")
+        }
+        else {
+            print("Session does not support camera controls")
+        }
+    }
 }

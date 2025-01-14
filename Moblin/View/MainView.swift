@@ -528,7 +528,41 @@ struct MainView: View {
             )
         }
         .persistentSystemOverlays(.hidden)
-        if #available(iOS 17.0, *) {
+        if #available(iOS 18.0, *) {
+            all
+                .focusable()
+                .focused($focused)
+                .onKeyPress { press in
+                    model.handleKeyPress(press: press)
+                }
+                .onChange(of: model.showingPanel) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.showBrowser) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.showTwitchAuth) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.isPresentingWizard) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.isPresentingSetupWizard) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onChange(of: model.wizardShowTwitchAuth) { _ in
+                    focused = model.isKeyboardActive()
+                }
+                .onAppear {
+                    focused = true
+                }
+                .onCameraCaptureEvent() { event in
+                    if event.phase == .ended {
+                        // TODO: something useful here
+                    }
+                }
+        }
+        else if #available(iOS 17.0, *) {
             all
                 .focusable()
                 .focused($focused)
