@@ -80,10 +80,10 @@
 		031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
-		0323F3732D1DCDA800A57AC2 /* SrtlaRelayServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3722D1DCDA400A57AC2 /* SrtlaRelayServer.swift */; };
-		0323F3782D1E1AE700A57AC2 /* SrtlaRelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* SrtlaRelayClient.swift */; };
-		0323F37B2D1E7AD600A57AC2 /* SrtlaRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37A2D1E7ACF00A57AC2 /* SrtlaRelay.swift */; };
-		0323F37E2D1E8EDE00A57AC2 /* SrtlaRelaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37D2D1E8ED300A57AC2 /* SrtlaRelaySettingsView.swift */; };
+		0323F3732D1DCDA800A57AC2 /* MoblinkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */; };
+		0323F3782D1E1AE700A57AC2 /* MoblinkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */; };
+		0323F37B2D1E7AD600A57AC2 /* MoblinkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */; };
+		0323F37E2D1E8EDE00A57AC2 /* MoblinkSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37D2D1E8ED300A57AC2 /* MoblinkSettingsView.swift */; };
 		0323F3832D21347700A57AC2 /* DnsLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3822D21346F00A57AC2 /* DnsLookup.swift */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
 		0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324CD062BEBFBBA004AA063 /* RistStream.swift */; };
@@ -607,10 +607,10 @@
 		031F41402C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAlertsTextSettingsView.swift; sourceTree = "<group>"; };
 		031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutAttributionsSettingsView.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
-		0323F3722D1DCDA400A57AC2 /* SrtlaRelayServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelayServer.swift; sourceTree = "<group>"; };
-		0323F3772D1E1AE400A57AC2 /* SrtlaRelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelayClient.swift; sourceTree = "<group>"; };
-		0323F37A2D1E7ACF00A57AC2 /* SrtlaRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelay.swift; sourceTree = "<group>"; };
-		0323F37D2D1E8ED300A57AC2 /* SrtlaRelaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaRelaySettingsView.swift; sourceTree = "<group>"; };
+		0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkServer.swift; sourceTree = "<group>"; };
+		0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkClient.swift; sourceTree = "<group>"; };
+		0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkProtocol.swift; sourceTree = "<group>"; };
+		0323F37D2D1E8ED300A57AC2 /* MoblinkSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkSettingsView.swift; sourceTree = "<group>"; };
 		0323F3822D21346F00A57AC2 /* DnsLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsLookup.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0324CD062BEBFBBA004AA063 /* RistStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RistStream.swift; sourceTree = "<group>"; };
@@ -802,7 +802,6 @@
 		0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0364B6202BD36806002F828D /* StreamButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButton.swift; sourceTree = "<group>"; };
 		0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarPortraitView.swift; sourceTree = "<group>"; };
-		036A342C2C0B38C300AE45B5 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
@@ -1185,7 +1184,6 @@
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
 			isa = PBXGroup;
 			children = (
-				0323F3792D1E7AAC00A57AC2 /* Relay */,
 				03A22DA52C0ECB1200A59208 /* Common */,
 				03A22DA32C0ECAFC00A59208 /* Client */,
 				03A9D1312C0E659300F0B917 /* Server */,
@@ -1368,22 +1366,22 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		0323F3792D1E7AAC00A57AC2 /* Relay */ = {
+		0323F3792D1E7AAC00A57AC2 /* Moblink */ = {
 			isa = PBXGroup;
 			children = (
-				0323F37A2D1E7ACF00A57AC2 /* SrtlaRelay.swift */,
-				0323F3772D1E1AE400A57AC2 /* SrtlaRelayClient.swift */,
-				0323F3722D1DCDA400A57AC2 /* SrtlaRelayServer.swift */,
+				0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */,
+				0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */,
+				0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */,
 			);
-			path = Relay;
+			path = Moblink;
 			sourceTree = "<group>";
 		};
-		0323F37C2D1E8EC600A57AC2 /* SrtlaRelay */ = {
+		0323F37C2D1E8EC600A57AC2 /* Moblink */ = {
 			isa = PBXGroup;
 			children = (
-				0323F37D2D1E8ED300A57AC2 /* SrtlaRelaySettingsView.swift */,
+				0323F37D2D1E8ED300A57AC2 /* MoblinkSettingsView.swift */,
 			);
-			path = SrtlaRelay;
+			path = Moblink;
 			sourceTree = "<group>";
 		};
 		032469A72AE1B2D80097B18B /* Srt */ = {
@@ -1815,7 +1813,6 @@
 				0312E4312C00F24E00C6F878 /* Moblin Screen Recording */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
-				036A342C2C0B38C300AE45B5 /* Config.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1836,6 +1833,7 @@
 				03CDEAA02C0AB8BB006121D0 /* Integrations */,
 				0391D2012CB2FFFC008AB44B /* Intents */,
 				03C3573E2D0818EF00B8B29F /* Media */,
+				0323F3792D1E7AAC00A57AC2 /* Moblink */,
 				03BDE2202B24364700DF193A /* Obs */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
 				039ADE452B55C20800FE0F59 /* RemoteControl */,
@@ -2331,7 +2329,7 @@
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0332EF5B2B3CAED000BC3C16 /* RtmpServer */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
-				0323F37C2D1E8EC600A57AC2 /* SrtlaRelay */,
+				0323F37C2D1E8EC600A57AC2 /* Moblink */,
 				03D2B0DE2C11BD7D0051BFB5 /* SrtlaServer */,
 				03487F222B334AB4003D9ED9 /* StreamingHistory */,
 				0379BB982AAD804F00B718B6 /* Streams */,
@@ -3123,7 +3121,7 @@
 				038E7BE32C32F391008994BA /* MediaPlayerSettingsView.swift in Sources */,
 				03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
-				0323F37B2D1E7AD600A57AC2 /* SrtlaRelay.swift in Sources */,
+				0323F37B2D1E7AD600A57AC2 /* MoblinkProtocol.swift in Sources */,
 				ABF045852C1CEAF800D07696 /* AdaptiveBitrateSrtBela.swift in Sources */,
 				030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */,
 				0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */,
@@ -3176,7 +3174,7 @@
 				03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
 				03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */,
-				0323F3782D1E1AE700A57AC2 /* SrtlaRelayClient.swift in Sources */,
+				0323F3782D1E1AE700A57AC2 /* MoblinkClient.swift in Sources */,
 				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
 				03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */,
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
@@ -3185,7 +3183,7 @@
 				03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */,
 				032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
-				0323F3732D1DCDA800A57AC2 /* SrtlaRelayServer.swift in Sources */,
+				0323F3732D1DCDA800A57AC2 /* MoblinkServer.swift in Sources */,
 				0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
@@ -3274,7 +3272,7 @@
 				0318D37D2CF51DEB00E12F3B /* errors.pb.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03A3504D2C12E15A0015FAC8 /* SrtServer.swift in Sources */,
-				0323F37E2D1E8EDE00A57AC2 /* SrtlaRelaySettingsView.swift in Sources */,
+				0323F37E2D1E8EDE00A57AC2 /* MoblinkSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
@@ -3603,7 +3601,6 @@
 		};
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 036A342C2C0B38C300AE45B5 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -3673,7 +3670,6 @@
 		};
 		035E9E402A9A02D7009D4F5A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 036A342C2C0B38C300AE45B5 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

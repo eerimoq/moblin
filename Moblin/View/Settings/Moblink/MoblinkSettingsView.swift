@@ -117,17 +117,17 @@ private struct RelayView: View {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
-        model.database.srtlaRelay!.client.url = value
-        model.reloadSrtlaRelayClient()
+        model.database.moblink!.client.url = value
+        model.reloadMoblinkClient()
     }
 
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                model.database.srtlaRelay!.client.enabled
+                model.database.moblink!.client.enabled
             }, set: { value in
-                model.database.srtlaRelay!.client.enabled = value
-                model.reloadSrtlaRelayClient()
+                model.database.moblink!.client.enabled = value
+                model.reloadMoblinkClient()
             })) {
                 Text("Enabled")
             }
@@ -137,12 +137,12 @@ private struct RelayView: View {
                 TextItemView(name: String(localized: "Name"), value: name)
             }
             .onChange(of: name) { name in
-                model.database.srtlaRelay!.client.name = name
-                model.reloadSrtlaRelayClient()
+                model.database.moblink!.client.name = name
+                model.reloadMoblinkClient()
             }
             TextEditNavigationView(
                 title: String(localized: "Streamer URL"),
-                value: model.database.srtlaRelay!.client.url,
+                value: model.database.moblink!.client.url,
                 onSubmit: submitUrl,
                 footers: [
                     String(
@@ -171,8 +171,8 @@ private struct StreamerView: View {
         guard let port = UInt16(value.trim()) else {
             return
         }
-        model.database.srtlaRelay!.server.port = port
-        model.reloadSrtlaRelayServer()
+        model.database.moblink!.server.port = port
+        model.reloadMoblinkServer()
     }
 
     var body: some View {
@@ -181,13 +181,13 @@ private struct StreamerView: View {
                 Text("Enabled")
             }
             .onChange(of: enabled) { value in
-                model.database.srtlaRelay!.server.enabled = value
-                model.reloadSrtlaRelayServer()
+                model.database.moblink!.server.enabled = value
+                model.reloadMoblinkServer()
             }
             .disabled(model.isLive)
             TextEditNavigationView(
                 title: String(localized: "Server port"),
-                value: String(model.database.srtlaRelay!.server.port),
+                value: String(model.database.moblink!.server.port),
                 onSubmit: submitPort,
                 keyboardType: .numbersAndPunctuation,
                 placeholder: "7777"
@@ -201,41 +201,40 @@ private struct StreamerView: View {
     }
 }
 
-struct SrtlaRelaySettingsView: View {
+struct MoblinkSettingsView: View {
     @EnvironmentObject var model: Model
     @State var streamerEnabled: Bool
 
     private func submitPassword(value: String) {
-        model.database.srtlaRelay!.password = value.trim()
-        model.reloadSrtlaRelayClient()
-        model.reloadSrtlaRelayServer()
+        model.database.moblink!.password = value.trim()
+        model.reloadMoblinkClient()
+        model.reloadMoblinkServer()
     }
 
     var body: some View {
         Form {
             Section {
                 Text("""
-                Use phones as additional SRTLA bonding connections. Install Moblink on Android \
+                Use phones as additional SRTLA and RIST bonding connections. Install Moblink on Android \
                 phones to use them.
                 """)
             }
             Section {
                 NavigationLink {
                     PasswordView(
-                        value: model.database.srtlaRelay!.password,
+                        value: model.database.moblink!.password,
                         onSubmit: submitPassword
                     )
                 } label: {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.srtlaRelay!.password,
-                        sensitive: true
+                        value: model.database.moblink!.password
                     )
                 }
             } footer: {
                 Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
-            RelayView(name: model.database.srtlaRelay!.client.name)
+            RelayView(name: model.database.moblink!.client.name)
             StreamerView(enabled: $streamerEnabled)
             if streamerEnabled {
                 Section {
@@ -243,19 +242,19 @@ struct SrtlaRelaySettingsView: View {
                         ForEach(model.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.srtlaRelay!.server.port,
+                                port: model.database.moblink!.server.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
                         }
                         InterfaceView(
                             ip: personalHotspotLocalAddress,
-                            port: model.database.srtlaRelay!.server.port,
+                            port: model.database.moblink!.server.port,
                             image: "personalhotspot"
                         )
                         ForEach(model.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                             InterfaceView(
                                 ip: status.ipType.formatAddress(status.ip),
-                                port: model.database.srtlaRelay!.server.port,
+                                port: model.database.moblink!.server.port,
                                 image: urlImage(interfaceType: status.interfaceType)
                             )
                         }

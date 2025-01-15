@@ -2,9 +2,9 @@ import Foundation
 import Network
 import SwiftUI
 
-private let srtlaRelayClientQueue = DispatchQueue(label: "com.eerimoq.srtla-relay-client")
+private let moblinkClientQueue = DispatchQueue(label: "com.eerimoq.moblink-client")
 
-enum SrtlaRelayClientState: String {
+enum MoblinkClientState: String {
     case none = "None"
     case connecting = "Connecting"
     case connected = "Connected"
@@ -13,15 +13,15 @@ enum SrtlaRelayClientState: String {
     case unknownError = "Unknown error"
 }
 
-protocol SrtlaRelayClientDelegate: AnyObject {
-    func srtlaRelayClientNewState(state: SrtlaRelayClientState)
-    func srtlaRelayClientGetBatteryPercentage() -> Int
+protocol MoblinkClientDelegate: AnyObject {
+    func moblinkClientNewState(state: MoblinkClientState)
+    func moblinkClientGetBatteryPercentage() -> Int
 }
 
-class SrtlaRelayClient {
+class MoblinkClient {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: (any SrtlaRelayClientDelegate)?
+    private weak var delegate: (any MoblinkClientDelegate)?
     private var webSocket: WebSocketClient
     private let name: String
     private var startTunnelId: Int?
@@ -29,14 +29,14 @@ class SrtlaRelayClient {
     private var serverListener: NWListener?
     private var serverConnection: NWConnection?
     private var destinationConnection: NWConnection?
-    private var state: SrtlaRelayClientState = .none
+    private var state: MoblinkClientState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
     private let networkPathMonitor = NWPathMonitor()
     private var cellularInterface: NWInterface?
     @AppStorage("srtlaRelayId") var id = ""
 
-    init(name: String, clientUrl: URL, password: String, delegate: SrtlaRelayClientDelegate) {
+    init(name: String, clientUrl: URL, password: String, delegate: MoblinkClientDelegate) {
         self.name = name
         self.clientUrl = clientUrl
         self.password = password
@@ -48,13 +48,13 @@ class SrtlaRelayClient {
     }
 
     func start() {
-        logger.info("srtla-relay-client: start")
+        logger.info("moblink-client: Start")
         started = true
         startInternal()
     }
 
     func stop() {
-        logger.info("srtla-relay-client: stop")
+        logger.info("moblink-client: Stop")
         stopInternal()
         started = false
     }
@@ -82,7 +82,7 @@ class SrtlaRelayClient {
     }
 
     private func reconnect(reason: String) {
-        logger.info("srtla-relay-client: Reconnecting soon with reason \(reason)")
+        logger.info("moblink-client: Reconnecting soon with reason \(reason)")
         stopInternal()
         reconnectTimer.startSingleShot(timeout: 5.0) {
             self.startInternal()
@@ -93,32 +93,32 @@ class SrtlaRelayClient {
         cellularInterface = path.availableInterfaces.first(where: { $0.type == .cellular })
     }
 
-    private func setState(state: SrtlaRelayClientState) {
+    private func setState(state: MoblinkClientState) {
         guard state != self.state else {
             return
         }
-        logger.info("srtla-relay-client: State change \(self.state) -> \(state)")
+        logger.info("moblink-client: State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.srtlaRelayClientNewState(state: state)
+        delegate?.moblinkClientNewState(state: state)
     }
 
-    private func send(message: SrtlaRelayMessageToServer) {
+    private func send(message: MoblinkMessageToServer) {
         do {
             let message = try message.toJson()
             webSocket.send(string: message)
         } catch {
-            logger.info("srtla-relay-client: Encode failed")
+            logger.info("moblink-client: Encode failed")
         }
     }
 
     private func handleMessage(message: String) throws {
         do {
-            switch try SrtlaRelayMessageToClient.fromJson(data: message) {
+            switch try MoblinkMessageToClient.fromJson(data: message) {
             case let .hello(apiVersion: apiVersion, authentication: authentication):
                 handleHello(apiVersion: apiVersion, authentication: authentication)
             case let .identified(result: result):
                 if !handleIdentified(result: result) {
-                    logger.info("srtla-relay-client: Failed to identify")
+                    logger.info("moblink-client: Failed to identify")
                     return
                 }
                 setState(state: .connected)
@@ -126,11 +126,11 @@ class SrtlaRelayClient {
                 handleRequest(id: id, data: data)
             }
         } catch {
-            logger.info("srtla-relay-client: Decode failed")
+            logger.info("moblink-client: Decode failed")
         }
     }
 
-    private func handleHello(apiVersion _: String, authentication: SrtlaRelayAuthentication) {
+    private func handleHello(apiVersion _: String, authentication: MoblinkAuthentication) {
         let hash = remoteControlHashPassword(
             challenge: authentication.challenge,
             salt: authentication.salt,
@@ -142,7 +142,7 @@ class SrtlaRelayClient {
         send(message: .identify(id: id, name: name, authentication: hash))
     }
 
-    private func handleIdentified(result: SrtlaRelayResult) -> Bool {
+    private func handleIdentified(result: MoblinkResult) -> Bool {
         switch result {
         case .ok:
             return true
@@ -156,7 +156,7 @@ class SrtlaRelayClient {
         return false
     }
 
-    private func handleRequest(id: Int, data: SrtlaRelayRequest) {
+    private func handleRequest(id: Int, data: MoblinkRequest) {
         switch data {
         case let .startTunnel(address: address, port: port):
             handleStartTunnel(id: id, address: address, port: port)
@@ -167,20 +167,20 @@ class SrtlaRelayClient {
 
     private func handleStartTunnel(id: Int, address: String, port: UInt16) {
         stopTunnel()
-        logger.info("srtla-relay-client: Start tunnel to \(address):\(port)")
+        logger.info("moblink-client: Start tunnel to \(address):\(port)")
         destination = .hostPort(host: NWEndpoint.Host(address), port: NWEndpoint.Port(integerLiteral: port))
         do {
             let options = NWProtocolUDP.Options()
             let parameters = NWParameters(dtls: .none, udp: options)
             serverListener = try NWListener(using: parameters)
         } catch {
-            logger.error("srtla-relay-client: Failed to create server listener with error \(error)")
+            logger.error("moblink-client: Failed to create server listener with error \(error)")
             reconnect(reason: "Failed to create listener")
             return
         }
         serverListener?.stateUpdateHandler = handleListenerStateChange(to:)
         serverListener?.newConnectionHandler = handleNewListenerConnection(connection:)
-        serverListener?.start(queue: srtlaRelayClientQueue)
+        serverListener?.start(queue: moblinkClientQueue)
         guard let cellularInterface else {
             reconnect(reason: "No cellular interface")
             return
@@ -194,14 +194,14 @@ class SrtlaRelayClient {
         }
         destinationConnection = NWConnection(host: host, port: port, using: params)
         destinationConnection?.stateUpdateHandler = handleDestinationStateUpdate(to:)
-        destinationConnection?.start(queue: srtlaRelayClientQueue)
+        destinationConnection?.start(queue: moblinkClientQueue)
         receiveDestinationPacket()
         setState(state: .waitingForCellular)
         startTunnelId = id
     }
 
     private func handleStatus(id: Int) {
-        let batteryPercentage = delegate?.srtlaRelayClientGetBatteryPercentage()
+        let batteryPercentage = delegate?.moblinkClientGetBatteryPercentage()
         send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
     }
 
@@ -238,7 +238,7 @@ class SrtlaRelayClient {
     }
 
     private func handleDestinationStateUpdate(to state: NWConnection.State) {
-        logger.debug("srtla-relay-client: Destination state change to \(state)")
+        logger.debug("moblink-client: Destination state change to \(state)")
         DispatchQueue.main.async {
             switch state {
             case .ready:
@@ -253,7 +253,7 @@ class SrtlaRelayClient {
 
     private func handleNewListenerConnection(connection: NWConnection) {
         serverConnection = connection
-        serverConnection?.start(queue: srtlaRelayClientQueue)
+        serverConnection?.start(queue: moblinkClientQueue)
         receiveServerPacket()
     }
 
@@ -263,7 +263,7 @@ class SrtlaRelayClient {
                 self.handlePacketFromServer(packet: data)
             }
             if let error {
-                logger.info("srtla-relay-client: Server receive error \(error)")
+                logger.info("moblink-client: Server receive error \(error)")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Server receive error")
                 }
@@ -284,7 +284,7 @@ class SrtlaRelayClient {
                 self.handlePacketFromDestination(packet: data)
             }
             if let error {
-                logger.info("srtla-relay-client: Destination receive error \(error)")
+                logger.info("moblink-client: Destination receive error \(error)")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Destination receive error")
                 }
@@ -300,7 +300,7 @@ class SrtlaRelayClient {
     }
 }
 
-extension SrtlaRelayClient: WebSocketClientDelegate {
+extension MoblinkClient: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {

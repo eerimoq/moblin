@@ -2402,20 +2402,20 @@ class SettingsRemoteControl: Codable {
     var password: String? = randomGoodPassword()
 }
 
-class SettingsSrtlaRelayServer: Codable {
+class SettingsMoblinkServer: Codable {
     var enabled: Bool = false
     var port: UInt16 = 7777
 }
 
-class SettingsSrtlaRelayClient: Codable {
+class SettingsMoblinkClient: Codable {
     var enabled: Bool = false
     var name: String = randomName()
     var url: String = ""
 }
 
-class SettingsSrtlaRelay: Codable {
-    var server: SettingsSrtlaRelayServer = .init()
-    var client: SettingsSrtlaRelayClient = .init()
+class SettingsMoblinkRelay: Codable {
+    var server: SettingsMoblinkServer = .init()
+    var client: SettingsMoblinkClient = .init()
     var password = "1234"
 }
 
@@ -2602,8 +2602,9 @@ class Database: Codable {
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
-    var srtlaRelay: SettingsSrtlaRelay? = .init()
+    var srtlaRelay: SettingsMoblinkRelay? = .init()
     var pixellateStrength: Float? = 0.3
+    var moblink: SettingsMoblinkRelay? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4467,6 +4468,10 @@ final class Settings {
         }
         if realDatabase.pixellateStrength == nil {
             realDatabase.pixellateStrength = 0.3
+            store()
+        }
+        if realDatabase.moblink == nil {
+            realDatabase.moblink = realDatabase.srtlaRelay
             store()
         }
     }

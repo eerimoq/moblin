@@ -646,9 +646,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    @Published var srtlaRelayClientState: SrtlaRelayClientState = .none
-    @Published var srtlaRelayServerOk = true
-    @Published var srtlaRelayStatus = noValue
+    @Published var moblinkClientState: MoblinkClientState = .none
+    @Published var moblinkServerOk = true
+    @Published var moblinkStatus = noValue
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -671,8 +671,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private let faxReceiver = FaxReceiver()
 
-    private var srtlaRelayServer: SrtlaRelayServer?
-    private var srtlaRelayClient: SrtlaRelayClient?
+    private var moblinkServer: MoblinkServer?
+    private var moblinkClient: MoblinkClient?
 
     override init() {
         super.init()
@@ -1413,88 +1413,88 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterButtonState()
         updateLutsButtonState()
         reloadNtpClient()
-        reloadSrtlaRelayClient()
-        reloadSrtlaRelayServer()
+        reloadMoblinkClient()
+        reloadMoblinkServer()
     }
 
-    func reloadSrtlaRelayServer() {
-        stopSrtlaRelayServer()
-        if isSrtlaRelayServerConfigured() {
-            srtlaRelayServer = SrtlaRelayServer(
-                port: database.srtlaRelay!.server.port,
-                password: database.srtlaRelay!.password
+    func reloadMoblinkServer() {
+        stopMoblinkServer()
+        if isMoblinkServerConfigured() {
+            moblinkServer = MoblinkServer(
+                port: database.moblink!.server.port,
+                password: database.moblink!.password
             )
-            srtlaRelayServer?.start(delegate: self)
+            moblinkServer?.start(delegate: self)
         }
     }
 
-    func stopSrtlaRelayServer() {
-        srtlaRelayServer?.stop()
-        srtlaRelayServer = nil
+    func stopMoblinkServer() {
+        moblinkServer?.stop()
+        moblinkServer = nil
     }
 
-    func isSrtlaRelayServerConfigured() -> Bool {
-        let server = database.srtlaRelay!.server
-        return server.enabled && server.port > 0 && !database.srtlaRelay!.password.isEmpty
+    func isMoblinkServerConfigured() -> Bool {
+        let server = database.moblink!.server
+        return server.enabled && server.port > 0 && !database.moblink!.password.isEmpty
     }
 
-    func reloadSrtlaRelayClient() {
-        stopSrtlaRelayClient()
-        if isSrtlaRelayClientConfigured() {
-            guard let url = URL(string: database.srtlaRelay!.client.url) else {
+    func reloadMoblinkClient() {
+        stopMoblinkClient()
+        if isMoblinkClientConfigured() {
+            guard let url = URL(string: database.moblink!.client.url) else {
                 return
             }
-            srtlaRelayClient = SrtlaRelayClient(
-                name: database.srtlaRelay!.client.name,
+            moblinkClient = MoblinkClient(
+                name: database.moblink!.client.name,
                 clientUrl: url,
-                password: database.srtlaRelay!.password,
+                password: database.moblink!.password,
                 delegate: self
             )
-            srtlaRelayClient?.start()
+            moblinkClient?.start()
         }
     }
 
-    func isSrtlaRelayClientConfigured() -> Bool {
-        let client = database.srtlaRelay!.client
-        return client.enabled && !client.url.isEmpty && !database.srtlaRelay!.password.isEmpty
+    func isMoblinkClientConfigured() -> Bool {
+        let client = database.moblink!.client
+        return client.enabled && !client.url.isEmpty && !database.moblink!.password.isEmpty
     }
 
-    func stopSrtlaRelayClient() {
-        srtlaRelayClient?.stop()
-        srtlaRelayClient = nil
+    func stopMoblinkClient() {
+        moblinkClient?.stop()
+        moblinkClient = nil
     }
 
-    private func updateSrtlaRelayStatus() {
+    private func updateMoblinkStatus() {
         var status: String
         var serverOk = true
-        if isSrtlaRelayClientConfigured(), isSrtlaRelayServerConfigured() {
-            let (serverStatus, ok) = srtlaRelayServerStatus()
-            status = "\(serverStatus), \(srtlaRelayClientState.rawValue)"
+        if isMoblinkClientConfigured(), isMoblinkServerConfigured() {
+            let (serverStatus, ok) = moblinkServerStatus()
+            status = "\(serverStatus), \(moblinkClientState.rawValue)"
             serverOk = ok
-        } else if isSrtlaRelayClientConfigured() {
-            status = srtlaRelayClientState.rawValue
-        } else if isSrtlaRelayServerConfigured() {
-            let (serverStatus, ok) = srtlaRelayServerStatus()
+        } else if isMoblinkClientConfigured() {
+            status = moblinkClientState.rawValue
+        } else if isMoblinkServerConfigured() {
+            let (serverStatus, ok) = moblinkServerStatus()
             status = serverStatus
             serverOk = ok
         } else {
             status = noValue
         }
-        if status != srtlaRelayStatus {
-            srtlaRelayStatus = status
+        if status != moblinkStatus {
+            moblinkStatus = status
         }
-        if serverOk != srtlaRelayServerOk {
-            srtlaRelayServerOk = serverOk
+        if serverOk != moblinkServerOk {
+            moblinkServerOk = serverOk
         }
     }
 
-    private func srtlaRelayServerStatus() -> (String, Bool) {
-        guard let srtlaRelayServer else {
+    private func moblinkServerStatus() -> (String, Bool) {
+        guard let moblinkServer else {
             return ("", true)
         }
         var statuses: [String] = []
         var ok = true
-        for (name, batteryPercentage) in srtlaRelayServer.getStatuses() {
+        for (name, batteryPercentage) in moblinkServer.getStatuses() {
             if let batteryPercentage {
                 statuses.append("\(name) \(batteryPercentage)%")
                 if batteryPercentage < 10 {
@@ -1965,8 +1965,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopWorkout(showToast: false)
             stopTeslaVehicle()
             stopNtpClient()
-            stopSrtlaRelayClient()
-            stopSrtlaRelayServer()
+            stopMoblinkClient()
+            stopMoblinkServer()
         }
     }
 
@@ -1990,8 +1990,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadSpeechToText()
             reloadTeslaVehicle()
-            reloadSrtlaRelayClient()
-            reloadSrtlaRelayServer()
+            reloadMoblinkClient()
+            reloadMoblinkServer()
         }
     }
 
@@ -2011,7 +2011,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return false
         }
-        return database.srtlaRelay!.client.enabled
+        return database.moblink!.client.enabled
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -2499,7 +2499,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if self.cpuUsageNeeded {
                 self.cpuUsage = getCpuUsage()
             }
-            self.updateSrtlaRelayStatus()
+            self.updateMoblinkStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.teslaGetDriveState()
@@ -2524,7 +2524,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateCurrentSsid()
             self.rtmpServerInfo()
             self.teslaGetChargeState()
-            self.srtlaRelayServer?.updateStatus()
+            self.moblinkServer?.updateStatus()
         })
     }
 
@@ -3885,7 +3885,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
-        srtlaRelayServer?.stopTunnels()
+        moblinkServer?.stopTunnels()
         if stream.twitchMultiTrackEnabled! {
             startNetStreamMultiTrack()
         } else {
@@ -4004,7 +4004,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func stopNetStream(reconnect: Bool = false) {
-        srtlaRelayServer?.stopTunnels()
+        moblinkServer?.stopTunnels()
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
@@ -6914,8 +6914,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.rtmpSpeed! && (rtmpServerEnabled() || srtlaServerEnabled())
     }
 
-    func isShowingStatusSrtlaRelay() -> Bool {
-        return isSrtlaRelayClientConfigured() || isSrtlaRelayServerConfigured()
+    func isShowingStatusMoblink() -> Bool {
+        return isMoblinkClientConfigured() || isMoblinkServerConfigured()
     }
 
     func isShowingStatusRemoteControl() -> Bool {
@@ -7081,8 +7081,8 @@ extension Model: RemoteControlStreamerDelegate {
         if isShowingStatusBrowserWidgets() {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
         }
-        if isShowingStatusSrtlaRelay() {
-            topRight.moblink = RemoteControlStatusItem(message: srtlaRelayStatus)
+        if isShowingStatusMoblink() {
+            topRight.moblink = RemoteControlStatusItem(message: moblinkStatus)
         }
         onComplete(general, topLeft, topRight)
     }
@@ -10158,7 +10158,7 @@ extension Model: MediaDelegate {
     }
 
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
-        srtlaRelayServer?.startTunnels(address: address, port: port)
+        moblinkServer?.startTunnels(address: address, port: port)
     }
 }
 
@@ -10225,8 +10225,8 @@ extension Model: KickOusherDelegate {
     }
 }
 
-extension Model: SrtlaRelayServerDelegate {
-    func srtlaRelayServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
+extension Model: MoblinkServerDelegate {
+    func moblinkServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
         let connectionPriorities = stream.srt.connectionPriorities!
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
             priority.name = relayName
@@ -10235,20 +10235,20 @@ extension Model: SrtlaRelayServerDelegate {
             priority.relayId = relayId
             connectionPriorities.priorities.append(priority)
         }
-        media.addSrtlaRelay(endpoint: endpoint, id: relayId, name: relayName)
+        media.addMoblink(endpoint: endpoint, id: relayId, name: relayName)
     }
 
-    func srtlaRelayServerTunnelRemoved(endpoint: Network.NWEndpoint) {
-        media.removeSrtlaRelay(endpoint: endpoint)
+    func moblinkServerTunnelRemoved(endpoint: Network.NWEndpoint) {
+        media.removeMoblink(endpoint: endpoint)
     }
 }
 
-extension Model: SrtlaRelayClientDelegate {
-    func srtlaRelayClientNewState(state: SrtlaRelayClientState) {
-        srtlaRelayClientState = state
+extension Model: MoblinkClientDelegate {
+    func moblinkClientNewState(state: MoblinkClientState) {
+        moblinkClientState = state
     }
 
-    func srtlaRelayClientGetBatteryPercentage() -> Int {
+    func moblinkClientGetBatteryPercentage() -> Int {
         return Int(100 * batteryLevel)
     }
 }

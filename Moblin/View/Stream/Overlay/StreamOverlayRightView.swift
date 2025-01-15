@@ -153,11 +153,11 @@ private struct StatusesView: View {
         return .white
     }
 
-    private func srtlaRelayColor() -> Color {
-        if model.isSrtlaRelayClientConfigured() && model.srtlaRelayClientState != .connected {
+    private func moblinkColor() -> Color {
+        if model.isMoblinkClientConfigured() && model.moblinkClientState != .connected {
             return .red
         }
-        if !model.srtlaRelayServerOk {
+        if !model.moblinkServerOk {
             return .red
         }
         return .white
@@ -194,11 +194,11 @@ private struct StatusesView: View {
             color: .white
         )
         StreamOverlayIconAndTextView(
-            show: model.isShowingStatusSrtlaRelay(),
+            show: model.isShowingStatusMoblink(),
             icon: "app.connected.to.app.below.fill",
-            text: model.srtlaRelayStatus,
+            text: model.moblinkStatus,
             textPlacement: textPlacement,
-            color: srtlaRelayColor()
+            color: moblinkColor()
         )
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusRemoteControl(),
