@@ -246,14 +246,14 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
-    func addSrtlaRelay(endpoint: NWEndpoint, id: UUID, name: String) {
-        srtlaClient?.addRelay(endpoint: endpoint, id: id, name: name)
-        ristStream?.addRelay(endpoint: endpoint, id: id, name: name)
+    func addMoblink(endpoint: NWEndpoint, id: UUID, name: String) {
+        srtlaClient?.addMoblink(endpoint: endpoint, id: id, name: name)
+        ristStream?.addMoblink(endpoint: endpoint, id: id, name: name)
     }
 
-    func removeSrtlaRelay(endpoint: NWEndpoint) {
-        srtlaClient?.removeRelay(endpoint: endpoint)
-        ristStream?.removeRelay(endpoint: endpoint)
+    func removeMoblink(endpoint: NWEndpoint) {
+        srtlaClient?.removeMoblink(endpoint: endpoint)
+        ristStream?.removeMoblink(endpoint: endpoint)
     }
 
     func srtSetAdaptiveBitrateAlgorithm(
@@ -1003,7 +1003,7 @@ extension Media: SrtlaDelegate {
         }
     }
 
-    func srtlaRelayDestinationAddress(address: String, port: UInt16) {
+    func moblinkServerDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
             self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }

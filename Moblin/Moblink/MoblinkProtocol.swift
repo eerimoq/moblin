@@ -1,21 +1,21 @@
 import Foundation
 
-enum SrtlaRelayRequest: Codable {
+enum MoblinkRequest: Codable {
     case startTunnel(address: String, port: UInt16)
     case status
 }
 
-enum SrtlaRelayResponse: Codable {
+enum MoblinkResponse: Codable {
     case startTunnel(port: UInt16)
     case status(batteryPercentage: Int?)
 }
 
-struct SrtlaRelayAuthentication: Codable {
+struct MoblinkAuthentication: Codable {
     var challenge: String
     var salt: String
 }
 
-enum SrtlaRelayResult: Codable {
+enum MoblinkResult: Codable {
     case ok
     case wrongPassword
     case unknownRequest
@@ -23,10 +23,10 @@ enum SrtlaRelayResult: Codable {
     case alreadyIdentified
 }
 
-enum SrtlaRelayMessageToClient: Codable {
-    case hello(apiVersion: String, authentication: SrtlaRelayAuthentication)
-    case identified(result: SrtlaRelayResult)
-    case request(id: Int, data: SrtlaRelayRequest)
+enum MoblinkMessageToClient: Codable {
+    case hello(apiVersion: String, authentication: MoblinkAuthentication)
+    case identified(result: MoblinkResult)
+    case request(id: Int, data: MoblinkRequest)
 
     func toJson() -> String? {
         do {
@@ -36,17 +36,17 @@ enum SrtlaRelayMessageToClient: Codable {
         }
     }
 
-    static func fromJson(data: String) throws -> SrtlaRelayMessageToClient {
+    static func fromJson(data: String) throws -> MoblinkMessageToClient {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(SrtlaRelayMessageToClient.self, from: data)
+        return try JSONDecoder().decode(MoblinkMessageToClient.self, from: data)
     }
 }
 
-enum SrtlaRelayMessageToServer: Codable {
+enum MoblinkMessageToServer: Codable {
     case identify(id: UUID, name: String, authentication: String)
-    case response(id: Int, result: SrtlaRelayResult, data: SrtlaRelayResponse?)
+    case response(id: Int, result: MoblinkResult, data: MoblinkResponse?)
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {
@@ -55,10 +55,10 @@ enum SrtlaRelayMessageToServer: Codable {
         return encoded
     }
 
-    static func fromJson(data: String) throws -> SrtlaRelayMessageToServer {
+    static func fromJson(data: String) throws -> MoblinkMessageToServer {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(SrtlaRelayMessageToServer.self, from: data)
+        return try JSONDecoder().decode(MoblinkMessageToServer.self, from: data)
     }
 }

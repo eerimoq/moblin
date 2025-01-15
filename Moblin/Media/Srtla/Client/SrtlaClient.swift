@@ -8,7 +8,7 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
-    func srtlaRelayDestinationAddress(address: String, port: UInt16)
+    func moblinkServerDestinationAddress(address: String, port: UInt16)
 }
 
 private enum State {
@@ -116,7 +116,7 @@ class SrtlaClient {
                 self.onDisconnected(message: "connect timer expired")
             }
             self.state = .waitForRemoteSocketConnected
-            self.delegate?.srtlaRelayDestinationAddress(address: host, port: UInt16(port))
+            self.delegate?.moblinkServerDestinationAddress(address: host, port: UInt16(port))
         }
     }
 
@@ -133,7 +133,7 @@ class SrtlaClient {
         }
     }
 
-    func addRelay(endpoint: NWEndpoint, id: UUID, name: String) {
+    func addMoblink(endpoint: NWEndpoint, id: UUID, name: String) {
         guard case let .hostPort(host, port) = endpoint else {
             return
         }
@@ -158,7 +158,7 @@ class SrtlaClient {
         }
     }
 
-    func removeRelay(endpoint: NWEndpoint) {
+    func removeMoblink(endpoint: NWEndpoint) {
         guard case let .hostPort(host, port) = endpoint else {
             return
         }

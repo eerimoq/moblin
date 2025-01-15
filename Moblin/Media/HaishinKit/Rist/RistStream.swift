@@ -108,13 +108,13 @@ class RistStream: NetStream {
         }
     }
 
-    func addRelay(endpoint: NWEndpoint, id: UUID, name: String) {
+    func addMoblink(endpoint: NWEndpoint, id: UUID, name: String) {
         ristQueue.async {
             self.addRelayInner(endpoint: endpoint, id: id, name: name)
         }
     }
 
-    func removeRelay(endpoint: NWEndpoint) {
+    func removeMoblink(endpoint: NWEndpoint) {
         ristQueue.async {
             self.removeRelayInner(endpoint: endpoint)
         }

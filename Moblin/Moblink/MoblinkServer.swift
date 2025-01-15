@@ -4,13 +4,13 @@ import Foundation
 import Network
 import Telegraph
 
-protocol SrtlaRelayServerDelegate: AnyObject {
-    func srtlaRelayServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
-    func srtlaRelayServerTunnelRemoved(endpoint: NWEndpoint)
+protocol MoblinkServerDelegate: AnyObject {
+    func moblinkServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
+    func moblinkServerTunnelRemoved(endpoint: NWEndpoint)
 }
 
-private struct SrtlaRelayRequestResponse {
-    let onSuccess: (SrtlaRelayResponse?) -> Void
+private struct RequestResponse {
+    let onSuccess: (MoblinkResponse?) -> Void
     let onError: (String) -> Void
 }
 
@@ -20,17 +20,17 @@ private class Client {
     private var identified = false
     private var challenge = ""
     private var salt = ""
-    private var requests: [Int: SrtlaRelayRequestResponse] = [:]
+    private var requests: [Int: RequestResponse] = [:]
     private let password: String
     private var address: String?
     private var port: UInt16?
-    weak var server: SrtlaRelayServer?
+    weak var server: MoblinkServer?
     private var tunnelEndpoint: NWEndpoint?
     private var relayId = UUID()
     var name = ""
     var batteryPercentage: Int?
 
-    init(websocket: Telegraph.WebSocket, password: String, server: SrtlaRelayServer) {
+    init(websocket: Telegraph.WebSocket, password: String, server: MoblinkServer) {
         self.password = password
         webSocket = websocket
         self.server = server
@@ -53,9 +53,9 @@ private class Client {
     }
 
     func handleStringMessage(message: String) {
-        // logger.info("srtla-relay-server: Received \(message)")
+        // logger.info("moblink-server: Received \(message)")
         do {
-            let message = try SrtlaRelayMessageToServer.fromJson(data: message)
+            let message = try MoblinkMessageToServer.fromJson(data: message)
             switch message {
             case let .identify(id: relayId, name: name, authentication: authentication):
                 try handleIdentify(relayId: relayId, name: name, authentication: authentication)
@@ -63,7 +63,7 @@ private class Client {
                 try handleResponse(id: id, result: result, data: data)
             }
         } catch {
-            logger.info("srtla-relay-server: Failed to process message with error \(error)")
+            logger.info("moblink-server: Failed to process message with error \(error)")
             webSocket.close(immediately: false)
         }
     }
@@ -85,7 +85,7 @@ private class Client {
             }
             self.batteryPercentage = batteryPercentage
         } onError: { error in
-            logger.info("srtla-relay-server: Status failed with \(error)")
+            logger.info("moblink-server: Status failed with \(error)")
         }
     }
 
@@ -96,7 +96,7 @@ private class Client {
         reportTunnelRemoved()
         executeStartTunnel(address: address, port: port) { id, name, port in
             guard let host = self.webSocket.remoteEndpoint?.host else {
-                logger.info("srtla-relay-server: Missing relay host")
+                logger.info("moblink-server: Missing relay host")
                 return
             }
             let endpoint = NWEndpoint.hostPort(
@@ -104,13 +104,13 @@ private class Client {
                 port: NWEndpoint.Port(integerLiteral: port)
             )
             self.tunnelEndpoint = endpoint
-            self.server?.delegate?.srtlaRelayServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
+            self.server?.delegate?.moblinkServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
         }
     }
 
     private func reportTunnelRemoved() {
         if let tunnelEndpoint {
-            server?.delegate?.srtlaRelayServerTunnelRemoved(endpoint: tunnelEndpoint)
+            server?.delegate?.moblinkServerTunnelRemoved(endpoint: tunnelEndpoint)
         }
         tunnelEndpoint = nil
     }
@@ -118,14 +118,14 @@ private class Client {
     private func executeStartTunnel(address: String, port: UInt16,
                                     onSuccess: @escaping (UUID, String, UInt16) -> Void)
     {
-        logger.info("srtla-relay-server: Starting tunnel to destination \(address):\(port)")
+        logger.info("moblink-server: Starting tunnel to destination \(address):\(port)")
         performRequest(data: .startTunnel(address: address, port: port)) { response in
             guard case let .startTunnel(port: port) = response else {
                 return
             }
             onSuccess(self.relayId, self.name, port)
         } onError: { error in
-            logger.info("srtla-relay-server: Start tunnel failed with \(error)")
+            logger.info("moblink-server: Start tunnel failed with \(error)")
         }
     }
 
@@ -147,12 +147,12 @@ private class Client {
         }
     }
 
-    private func handleResponse(id: Int, result: SrtlaRelayResult, data: SrtlaRelayResponse?) throws {
+    private func handleResponse(id: Int, result: MoblinkResult, data: MoblinkResponse?) throws {
         guard identified else {
             throw "Streamer not identified"
         }
         guard let request = requests[id] else {
-            logger.info("srtla-relay-server: Unexpected id in response")
+            logger.info("moblink-server: Unexpected id in response")
             return
         }
         switch result {
@@ -161,21 +161,21 @@ private class Client {
         case .wrongPassword:
             request.onError("Wrong password")
         case .notIdentified:
-            logger.info("srtla-relay-server: Not identified")
+            logger.info("moblink-server: Not identified")
         case .alreadyIdentified:
-            logger.info("srtla-relay-server: Already identified")
+            logger.info("moblink-server: Already identified")
         case .unknownRequest:
-            logger.info("srtla-relay-server: Unknown request")
+            logger.info("moblink-server: Unknown request")
         }
     }
 
     private func performRequest(
-        data: SrtlaRelayRequest,
-        onSuccess: @escaping (SrtlaRelayResponse?) -> Void,
+        data: MoblinkRequest,
+        onSuccess: @escaping (MoblinkResponse?) -> Void,
         onError: @escaping (String) -> Void
     ) {
         let id = getNextId()
-        requests[id] = SrtlaRelayRequestResponse(onSuccess: onSuccess, onError: onError)
+        requests[id] = RequestResponse(onSuccess: onSuccess, onError: onError)
         send(message: .request(id: id, data: data))
     }
 
@@ -184,22 +184,22 @@ private class Client {
         return nextId
     }
 
-    private func send(message: SrtlaRelayMessageToClient) {
+    private func send(message: MoblinkMessageToClient) {
         guard let text = message.toJson() else {
             return
         }
-        // logger.info("srtla-relay-server: Sending \(text)")
+        // logger.info("moblink-server: Sending \(text)")
         webSocket.send(text: text)
     }
 }
 
-class SrtlaRelayServer: NSObject {
+class MoblinkServer: NSObject {
     private let port: UInt16
     private let password: String
     private var server: Server
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
-    fileprivate weak var delegate: (any SrtlaRelayServerDelegate)?
+    fileprivate weak var delegate: (any MoblinkServerDelegate)?
     private var clients: [Client] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?
@@ -214,15 +214,15 @@ class SrtlaRelayServer: NSObject {
         server.webSocketDelegate = self
     }
 
-    func start(delegate: SrtlaRelayServerDelegate) {
+    func start(delegate: MoblinkServerDelegate) {
         stop()
-        logger.info("srtla-relay-server: start")
+        logger.info("moblink-server: start")
         self.delegate = delegate
         startInternal()
     }
 
     func stop() {
-        logger.info("srtla-relay-server: stop")
+        logger.info("moblink-server: stop")
         server.stop(immediately: false)
         stopRetryStartTimer()
         for client in clients {
@@ -263,7 +263,7 @@ class SrtlaRelayServer: NSObject {
             try server.start(port: Endpoint.Port(port))
             stopRetryStartTimer()
         } catch {
-            logger.debug("srtla-relay-server: Failed to start server with error \(error)")
+            logger.debug("moblink-server: Failed to start server with error \(error)")
             connectionErrorMessage = error.localizedDescription
             startRetryStartTimer()
         }
@@ -280,7 +280,7 @@ class SrtlaRelayServer: NSObject {
     }
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
-        logger.info("srtla-relay-server: Client connected")
+        logger.info("moblink-server: Client connected")
         let client = Client(websocket: webSocket, password: password, server: self)
         client.start()
         clients.append(client)
@@ -292,9 +292,9 @@ class SrtlaRelayServer: NSObject {
 
     private func handleDisconnected(webSocket: Telegraph.WebSocket, error: Error?) {
         if let error {
-            logger.info("srtla-relay-server: Client disconnected \(error)")
+            logger.info("moblink-server: Client disconnected \(error)")
         } else {
-            logger.info("srtla-relay-server: Client disconnected")
+            logger.info("moblink-server: Client disconnected")
         }
         if let client = clients.first(where: { $0.webSocket.isSame(other: webSocket) }) {
             client.stop()
@@ -305,7 +305,7 @@ class SrtlaRelayServer: NSObject {
     private func handleMessage(webSocket: Telegraph.WebSocket, message: Telegraph.WebSocketMessage) {
         switch message.payload {
         case let .text(data):
-            // logger.info("srtla-relay-server: Got \(data)")
+            // logger.info("moblink-server: Got \(data)")
             guard let client = clients.first(where: { $0.webSocket.isSame(other: webSocket) }) else {
                 return
             }
@@ -316,7 +316,7 @@ class SrtlaRelayServer: NSObject {
     }
 }
 
-extension SrtlaRelayServer: ServerWebSocketDelegate {
+extension MoblinkServer: ServerWebSocketDelegate {
     func server(
         _: Telegraph.Server,
         webSocketDidConnect webSocket: Telegraph.WebSocket,
