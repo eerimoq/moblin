@@ -486,6 +486,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showingCameraWhiteBalance = false
     @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
+    @Published var showingPixellate = false
     @Published var showingGrid = false
     @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
@@ -738,7 +739,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
-    private var pixellateEffect = PixellateEffect()
+    private var pixellateEffect = PixellateEffect(strength: 0.0)
     private var pollEffect = PollEffect()
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
@@ -3178,7 +3179,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()
         tripleEffect = TripleEffect()
-        pixellateEffect = PixellateEffect()
+        pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
         pollEffect = PollEffect()
     }
 
@@ -3216,6 +3217,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             effects.append(tripleEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
+            pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
             effects.append(pixellateEffect)
         }
         return effects
@@ -4159,6 +4161,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             outputSize = .init(width: outputSize.height, height: outputSize.width)
         }
         media.setVideoSize(capture: captureSize, output: outputSize)
+    }
+
+    func setPixellateStrength(strength: Float) {
+        pixellateEffect.strength.mutate { $0 = strength }
     }
 
     func setStreamFPS() {

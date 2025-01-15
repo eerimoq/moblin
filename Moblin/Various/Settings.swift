@@ -2603,6 +2603,7 @@ class Database: Codable {
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
     var srtlaRelay: SettingsSrtlaRelay? = .init()
+    var pixellateStrength: Float? = 0.3
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4462,6 +4463,10 @@ final class Settings {
         }
         if realDatabase.chat.bottom == nil {
             realDatabase.chat.bottom = 0.0
+            store()
+        }
+        if realDatabase.pixellateStrength == nil {
+            realDatabase.pixellateStrength = 0.3
             store()
         }
     }

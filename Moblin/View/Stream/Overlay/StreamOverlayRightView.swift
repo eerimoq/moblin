@@ -318,6 +318,9 @@ struct RightOverlayBottomView: View {
                 if model.showMediaPlayerControls {
                     StreamOverlayRightMediaPlayerControlsView()
                 } else {
+                    if model.showingPixellate {
+                        StreamOverlayRightPixellateView(strength: model.database.pixellateStrength!)
+                    }
                     if model.showingCamera {
                         StreamOverlayRightCameraSettingsControlView()
                     }

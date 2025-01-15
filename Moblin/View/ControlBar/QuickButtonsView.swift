@@ -137,6 +137,7 @@ struct QuickButtonsInnerView: View {
 
     private func pixellateAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pixellate)
+        model.showingPixellate.toggle()
     }
 
     private func streamAction(state _: ButtonState) {
