@@ -19244,7 +19244,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avustaja ja striimaaja"
+            "value" : "Avustaja ja lähettäjä"
           }
         },
         "fr" : {
@@ -21584,7 +21584,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lähetä automaattisesti, kun striimiä vaihdetaan."
+            "value" : "Lähetä automaattisesti, kun lähetyskohdetta vaihdetaan."
           }
         },
         "fr" : {
@@ -44242,7 +44242,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ota tämä käyttöön striimiä lähettävällä laitteella. Konfiguroi välittävä laite ottamaan yhteys tähän laitteeseen."
+            "value" : "Ota tämä käyttöön lähettävällä laitteella. Konfiguroi välittävä laite ottamaan yhteys tähän laitteeseen."
           }
         }
       }
@@ -50920,7 +50920,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tilannekuvan lataaminen Discordiin epäonnistui"
+            "value" : "Kuvankaappauksen lataaminen Discordiin epäonnistui"
           }
         },
         "fr" : {
@@ -51310,7 +51310,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Faksaa striimauskuvat."
+            "value" : "Faksaa lähettäjän kuvat."
           }
         },
         "fr" : {
@@ -76832,7 +76832,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tilannekuvaa ei ole vielä saatu."
+            "value" : "Kuvankaappausta ei ole vielä saatu."
           }
         },
         "fr" : {
@@ -99628,7 +99628,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esikatselukuva"
+            "value" : "Kuvankaappaus"
           }
         },
         "fr" : {
@@ -100018,7 +100018,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tilannekuva ladattu Discordiin"
+            "value" : "Kuvankaappaus ladattu Discordiin"
           }
         },
         "fr" : {
@@ -100148,7 +100148,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tilannekuvan webhookin URL-osoite"
+            "value" : "Kuvankaappausten webhookin URL-osoite"
           }
         },
         "fr" : {
