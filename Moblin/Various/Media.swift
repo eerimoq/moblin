@@ -248,10 +248,12 @@ final class Media: NSObject {
 
     func addSrtlaRelay(endpoint: NWEndpoint, id: UUID, name: String) {
         srtlaClient?.addRelay(endpoint: endpoint, id: id, name: name)
+        ristStream?.addRelay(endpoint: endpoint, id: id, name: name)
     }
 
     func removeSrtlaRelay(endpoint: NWEndpoint) {
         srtlaClient?.removeRelay(endpoint: endpoint)
+        ristStream?.removeRelay(endpoint: endpoint)
     }
 
     func srtSetAdaptiveBitrateAlgorithm(
@@ -1022,5 +1024,11 @@ extension Media: RistStreamDelegate {
 
     func ristStreamOnDisconnected() {
         delegate?.mediaOnRistDisconnected()
+    }
+
+    func ristStreamRelayDestinationAddress(address: String, port: UInt16) {
+        DispatchQueue.main.async {
+            self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
+        }
     }
 }

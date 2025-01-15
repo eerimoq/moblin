@@ -212,7 +212,7 @@ class SrtlaClient {
                 if let relayId = connection.relayId {
                     connection.setPriority(priority: self.getRelayConnectionPriority(relayId: relayId))
                 } else {
-                    var name = interfaceName(type: connection.type, interface: connection.interface)
+                    let name = interfaceName(type: connection.type, interface: connection.interface)
                     connection.setPriority(priority: self.getConnectionPriority(name: name))
                 }
             }

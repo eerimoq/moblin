@@ -13,6 +13,7 @@ private enum RistPeerState {
 
 private class RistRemotePeer: AdaptiveBitrateDelegate {
     let interfaceName: String
+    let relayEndpoint: NWEndpoint?
     let peer: RistPeer
     var stats: RistSenderStats?
     var adaptiveWeight: AdaptiveBitrateRistExperiment?
@@ -20,8 +21,9 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     private var connectingTimer = SimpleTimer(queue: ristQueue)
     weak var stream: RistStream?
 
-    init(interfaceName: String, peer: RistPeer, stream: RistStream) {
+    init(interfaceName: String, relayEndpoint: NWEndpoint?, peer: RistPeer, stream: RistStream) {
         self.interfaceName = interfaceName
+        self.relayEndpoint = relayEndpoint
         self.peer = peer
         self.stream = stream
         adaptiveWeight = nil
@@ -75,6 +77,7 @@ private enum RistStreamState {
 protocol RistStreamDelegate: AnyObject {
     func ristStreamOnConnected()
     func ristStreamOnDisconnected()
+    func ristStreamRelayDestinationAddress(address: String, port: UInt16)
 }
 
 class RistStream: NetStream {
@@ -172,7 +175,7 @@ class RistStream: NetStream {
             networkPathMonitor?.pathUpdateHandler = handleNetworkPathUpdate(path:)
             networkPathMonitor?.start(queue: ristQueue)
         } else {
-            addPeer(url, "")
+            addPeer(url: url, interfaceName: "")
         }
         if !context.start() {
             logger.info("rist: Failed to start")
@@ -185,6 +188,10 @@ class RistStream: NetStream {
             self.mixer.startRunning()
             self.writer.startRunning()
         }
+        guard let url = URL(string: url), let host = url.host(), let port = url.port else {
+            return
+        }
+        ristDelegate?.ristStreamRelayDestinationAddress(address: host, port: UInt16(port))
     }
 
     private func stopInner() {
@@ -199,9 +206,19 @@ class RistStream: NetStream {
         context = nil
     }
 
-    private func addRelayInner(endpoint _: NWEndpoint, id _: UUID, name _: String) {}
+    private func addRelayInner(endpoint: NWEndpoint, id _: UUID, name: String) {
+        guard bonding else {
+            return
+        }
+        addPeer(url: makeBondingUrl("rist://\(endpoint)"), interfaceName: name, relayEndpoint: endpoint)
+    }
 
-    private func removeRelayInner(endpoint _: NWEndpoint) {}
+    private func removeRelayInner(endpoint: NWEndpoint) {
+        guard bonding else {
+            return
+        }
+        peers.removeAll(where: { $0.relayEndpoint == endpoint })
+    }
 
     private func updateConnectionsWeightsInner() {
         for peer in peers {
@@ -227,7 +244,7 @@ class RistStream: NetStream {
         }
         let interfaceNames = path.availableInterfaces.map { $0.name }
         var removedInterfaceNames: [String] = []
-        for peer in peers {
+        for peer in peers where peer.relayEndpoint == nil {
             if interfaceNames.contains(peer.interfaceName) {
                 continue
             }
@@ -241,11 +258,11 @@ class RistStream: NetStream {
             if peers.contains(where: { $0.interfaceName == interfaceName }) {
                 continue
             }
-            addPeer(makeBondingUrl(url, interfaceName), interfaceName)
+            addPeer(url: makeBondingUrl(url, interfaceName), interfaceName: interfaceName)
         }
     }
 
-    private func makeBondingUrl(_ url: String, _ interfaceName: String) -> String? {
+    private func makeBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String? {
         guard let url = URL(string: url) else {
             return nil
         }
@@ -254,7 +271,9 @@ class RistStream: NetStream {
         }
         urlComponents.query = url.query
         var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
-        queryItems.append(URLQueryItem(name: "miface", value: interfaceName))
+        if let interfaceName {
+            queryItems.append(URLQueryItem(name: "miface", value: interfaceName))
+        }
         queryItems.append(URLQueryItem(name: "weight", value: "1"))
         urlComponents.queryItems = queryItems
         return urlComponents.url?.absoluteString
@@ -301,13 +320,18 @@ class RistStream: NetStream {
         getPeerById(peerId: stats.sender.peerId)?.stats = stats.sender
     }
 
-    private func addPeer(_ url: String?, _ interfaceName: String) {
+    private func addPeer(url: String?, interfaceName: String, relayEndpoint: NWEndpoint? = nil) {
         logger.info("rist: Adding peer for interface \(interfaceName)")
         guard let url, let peer = context?.addPeer(url: url) else {
             logger.info("rist: Failed to add peer")
             return
         }
-        peers.append(RistRemotePeer(interfaceName: interfaceName, peer: peer, stream: self))
+        peers.append(RistRemotePeer(
+            interfaceName: interfaceName,
+            relayEndpoint: relayEndpoint,
+            peer: peer,
+            stream: self
+        ))
     }
 
     private func getPeerById(peerId: UInt32) -> RistRemotePeer? {
