@@ -109,11 +109,34 @@ private struct PasswordView: View {
     }
 }
 
+private struct RelayStreamerServerView: View {
+    var server: MoblinkClientDiscoveredServer
+    @Binding var streamerUrl: String
+    var submitUrl: (String) -> Void
+
+    var body: some View {
+        Section {
+            List {
+                ForEach(server.urls, id: \.self) { url in
+                    Button {
+                        streamerUrl = url
+                        submitUrl(streamerUrl)
+                    } label: {
+                        Text(url)
+                    }
+                }
+            }
+        } header: {
+            Text(server.name)
+        }
+    }
+}
+
 private struct RelayStreamerUrlView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var model: Model
     @Binding var streamerUrl: String
-    
+
     private func submitUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
@@ -122,7 +145,7 @@ private struct RelayStreamerUrlView: View {
         model.reloadMoblinkClient()
         dismiss()
     }
-    
+
     var body: some View {
         Form {
             Section {
@@ -135,25 +158,17 @@ private struct RelayStreamerUrlView: View {
                         submitUrl(value: streamerUrl)
                     }
             }
-            Section {
-                if model.moblinkClientDiscoveredStreamers.isEmpty {
-                    Text("No streamers discovered yet.")
-                } else {
-                    List {
-                        ForEach(model.moblinkClientDiscoveredStreamers) { streamer in
-                            Button {
-                                streamerUrl = streamer.url
-                                submitUrl(value: streamerUrl)
-                            } label: {
-                                Text(streamer.url)
-                            }
-                        }
+            if model.moblinkClientDiscoveredStreamers.isEmpty {
+                Text("No streamers discovered yet.")
+            } else {
+                List {
+                    ForEach(model.moblinkClientDiscoveredStreamers) { server in
+                        RelayStreamerServerView(server: server, streamerUrl: $streamerUrl, submitUrl: submitUrl)
                     }
                 }
-            } header: {
-                Text("Discovered streamers")
             }
-        }.navigationTitle("Streamer URL")
+        }
+        .navigationTitle("Streamer URL")
     }
 }
 
@@ -161,14 +176,6 @@ private struct RelayView: View {
     @EnvironmentObject var model: Model
     @State var name: String
     @State var streamerUrl: String
-
-    private func submitUrl(value: String) {
-        guard isValidWebSocketUrl(url: value) == nil else {
-            return
-        }
-        model.database.moblink!.client.url = value
-        model.reloadMoblinkClient()
-    }
 
     var body: some View {
         Section {

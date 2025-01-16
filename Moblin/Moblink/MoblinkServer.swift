@@ -273,9 +273,9 @@ class MoblinkServer: NSObject {
         }
         bonjourService?.stop()
         bonjourService = NetService(domain: moblinkBonjourDomain,
-                                type: moblinkBonjourType,
-                                name: UIDevice.current.name,
-                                port: Int32(port))
+                                    type: moblinkBonjourType,
+                                    name: UIDevice.current.name,
+                                    port: Int32(port))
         bonjourService?.publish(options: .noAutoRename)
     }
 
