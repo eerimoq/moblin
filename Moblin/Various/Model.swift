@@ -649,6 +649,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var moblinkClientState: MoblinkClientState = .none
     @Published var moblinkServerOk = true
     @Published var moblinkStatus = noValue
+    @Published var moblinkClientDiscoveredStreamers: [MoblinkClientDiscoveredServer] = []
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -10250,5 +10251,18 @@ extension Model: MoblinkClientDelegate {
 
     func moblinkClientGetBatteryPercentage() -> Int {
         return Int(100 * batteryLevel)
+    }
+    
+    func moblinkClientServerFound(server: MoblinkClientDiscoveredServer) {
+        logger.info("moblink found \(server.url)")
+        guard !moblinkClientDiscoveredStreamers.contains(where: {$0.url == server.url}) else {
+            return
+        }
+        moblinkClientDiscoveredStreamers.append(server)
+    }
+    
+    func moblinkClientServerLost(server: MoblinkClientDiscoveredServer) {
+        logger.info("moblink lost \(server.url)")
+        moblinkClientDiscoveredStreamers.removeAll(where: {$0.url == server.url})
     }
 }

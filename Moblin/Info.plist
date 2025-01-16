@@ -40,5 +40,9 @@
 		<string>audio</string>
 		<string>location</string>
 	</array>
+        <key>NSBonjourServices</key>
+	<array>
+		<string>_moblink._tcp</string>
+	</array>
 </dict>
 </plist>

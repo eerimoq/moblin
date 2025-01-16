@@ -4,6 +4,21 @@ import SwiftUI
 
 private let moblinkClientQueue = DispatchQueue(label: "com.eerimoq.moblink-client")
 
+struct MoblinkClientDiscoveredServer: Identifiable {
+    var id = UUID()
+    var url: String
+}
+
+class DiscoveredSerivce {
+    var service: NetService
+    var urls: [String]
+    
+    init(service: NetService) {
+        self.service = service
+        self.urls = []
+    }
+}
+
 enum MoblinkClientState: String {
     case none = "None"
     case connecting = "Connecting"
@@ -16,9 +31,11 @@ enum MoblinkClientState: String {
 protocol MoblinkClientDelegate: AnyObject {
     func moblinkClientNewState(state: MoblinkClientState)
     func moblinkClientGetBatteryPercentage() -> Int
+    func moblinkClientServerFound(server: MoblinkClientDiscoveredServer)
+    func moblinkClientServerLost(server: MoblinkClientDiscoveredServer)
 }
 
-class MoblinkClient {
+class MoblinkClient: NSObject {
     private var clientUrl: URL
     private var password: String
     private weak var delegate: (any MoblinkClientDelegate)?
@@ -34,6 +51,8 @@ class MoblinkClient {
     private let reconnectTimer = SimpleTimer(queue: .main)
     private let networkPathMonitor = NWPathMonitor()
     private var cellularInterface: NWInterface?
+    private var bonjourBrowser: NetServiceBrowser?
+    private var discoveredServices: [DiscoveredSerivce] = []
     @AppStorage("srtlaRelayId") var id = ""
 
     init(name: String, clientUrl: URL, password: String, delegate: MoblinkClientDelegate) {
@@ -42,6 +61,7 @@ class MoblinkClient {
         self.password = password
         self.delegate = delegate
         webSocket = .init(url: clientUrl)
+        super.init()
         if id.isEmpty {
             id = UUID().uuidString
         }
@@ -70,6 +90,15 @@ class MoblinkClient {
         webSocket.start()
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
         networkPathMonitor.start(queue: .main)
+        bonjourBrowser = NetServiceBrowser()
+        bonjourBrowser?.delegate = self
+        bonjourBrowser?.searchForServices(ofType: moblinkBonjourType, inDomain: moblinkBonjourDomain)
+    }
+    
+    private func handleBrowseResultsChangedHandler(_ newResults: Set<NWBrowser.Result>, _ changes: Set<NWBrowser.Result.Change> ) {
+        for result in newResults {
+            logger.info("moblink-client: Discovered server at \(result.endpoint)")
+        }
     }
 
     private func stopInternal() {
@@ -79,6 +108,14 @@ class MoblinkClient {
         webSocket.stop()
         stopTunnel()
         networkPathMonitor.cancel()
+        bonjourBrowser?.stop()
+        bonjourBrowser = nil
+        for discoveredService in discoveredServices {
+            for url in discoveredService.urls {
+                delegate?.moblinkClientServerLost(server: .init(url: url))
+            }
+        }
+        discoveredServices.removeAll()
     }
 
     private func reconnect(reason: String) {
@@ -310,5 +347,72 @@ extension MoblinkClient: WebSocketClientDelegate {
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         try? handleMessage(message: string)
+    }
+}
+
+extension MoblinkClient: NetServiceBrowserDelegate {
+     func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
+         logger.info("moblink-client: Found service \(service)")
+         guard !discoveredServices.contains(where: {$0.service == service}) else {
+             return
+         }
+         discoveredServices.append(.init(service: service))
+         service.delegate = self
+         service.resolve(withTimeout: 5.0)
+    }
+    
+    func netServiceBrowser(_ browser: NetServiceBrowser, didRemove service: NetService, moreComing: Bool) {
+        logger.info("moblink-client: Lost service \(service)")
+        guard let index = discoveredServices.firstIndex(where: {$0.service == service}) else {
+            return
+        }
+        for url in discoveredServices[index].urls {
+            delegate?.moblinkClientServerLost(server: .init(url: url))
+        }
+        discoveredServices.remove(at: index)
+    }
+}
+
+extension MoblinkClient: NetServiceDelegate {
+    func netServiceDidResolveAddress(_ service: NetService) {
+        guard let discoveredService = discoveredServices.first(where: {$0.service == service}) else {
+            return
+        }
+        for address in service.addresses ?? [] {
+            var ipv6 = false
+            var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            address.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) -> Void in
+                let sockaddrPtr = pointer.bindMemory(to: sockaddr.self)
+                guard let unsafePtr = sockaddrPtr.baseAddress else {
+                    return
+                }
+                guard getnameinfo(unsafePtr, socklen_t(address.count), &hostname, socklen_t(hostname.count), nil, 0, NI_NUMERICHOST) == 0 else {
+                    return
+                }
+                ipv6 = unsafePtr.pointee.sa_family == AF_INET6
+            }
+            let ipAddress = String(cString: hostname)
+            var host: String
+            if ipv6 {
+                if IPv6Address(ipAddress)?.isLinkLocal  == true {
+                    continue
+                }
+                if IPv6Address(ipAddress)?.isLoopback  == true {
+                    continue
+                }
+                host = "[\(ipAddress)]"
+            } else {
+                if IPv4Address(ipAddress)?.isLinkLocal == true {
+                    continue
+                }
+                if IPv4Address(ipAddress)?.isLoopback == true {
+                    continue
+                }
+                host = ipAddress
+            }
+            let url = "ws://\(host):\(service.port)"
+            discoveredService.urls.append(url)
+            delegate?.moblinkClientServerFound(server: .init(url: url))
+        }
     }
 }

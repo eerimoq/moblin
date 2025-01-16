@@ -1,5 +1,8 @@
 import Foundation
 
+let moblinkBonjourType = "_moblink._tcp"
+let moblinkBonjourDomain = "local"
+
 enum MoblinkRequest: Codable {
     case startTunnel(address: String, port: UInt16)
     case status

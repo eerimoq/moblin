@@ -109,9 +109,58 @@ private struct PasswordView: View {
     }
 }
 
+private struct RelayStreamerUrlView: View {
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var model: Model
+    @Binding var streamerUrl: String
+    
+    private func submitUrl(value: String) {
+        guard isValidWebSocketUrl(url: value) == nil else {
+            return
+        }
+        model.database.moblink!.client.url = value
+        model.reloadMoblinkClient()
+        dismiss()
+    }
+    
+    var body: some View {
+        Form {
+            Section {
+                TextField("ws://32.143.32.12:2345", text: $streamerUrl)
+                    .keyboardType(.URL)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        submitUrl(value: streamerUrl)
+                    }
+            }
+            Section {
+                if model.moblinkClientDiscoveredStreamers.isEmpty {
+                    Text("No streamers discovered yet.")
+                } else {
+                    List {
+                        ForEach(model.moblinkClientDiscoveredStreamers) { streamer in
+                            Button {
+                                streamerUrl = streamer.url
+                                submitUrl(value: streamerUrl)
+                            } label: {
+                                Text(streamer.url)
+                            }
+                        }
+                    }
+                }
+            } header: {
+                Text("Discovered streamers")
+            }
+        }.navigationTitle("Streamer URL")
+    }
+}
+
 private struct RelayView: View {
     @EnvironmentObject var model: Model
     @State var name: String
+    @State var streamerUrl: String
 
     private func submitUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
@@ -140,18 +189,11 @@ private struct RelayView: View {
                 model.database.moblink!.client.name = name
                 model.reloadMoblinkClient()
             }
-            TextEditNavigationView(
-                title: String(localized: "Streamer URL"),
-                value: model.database.moblink!.client.url,
-                onSubmit: submitUrl,
-                footers: [
-                    String(
-                        localized: "Enter streamer's websocket URL. For example ws://132.23.43.43:2345."
-                    ),
-                ],
-                keyboardType: .URL,
-                placeholder: "ws://32.143.32.12:2345"
-            )
+            NavigationLink {
+                RelayStreamerUrlView(streamerUrl: $streamerUrl)
+            } label: {
+                TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink!.client.url)
+            }
         } header: {
             Text("Relay")
         } footer: {
@@ -234,7 +276,7 @@ struct MoblinkSettingsView: View {
             } footer: {
                 Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
-            RelayView(name: model.database.moblink!.client.name)
+            RelayView(name: model.database.moblink!.client.name, streamerUrl: model.database.moblink!.client.url)
             StreamerView(enabled: $streamerEnabled)
             if streamerEnabled {
                 Section {

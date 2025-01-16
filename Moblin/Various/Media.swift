@@ -866,6 +866,19 @@ final class Media: NSObject {
         keyFrameInterval: Int?,
         audioBitrate: Int?
     ) {
+        netStream?.startRecording(url: url,
+                                  audioSettings: makeAudioCompressionSettings(audioBitrate: audioBitrate),
+                                  videoSettings: makeVideoCompressionSettings(
+                                      videoCodec: videoCodec,
+                                      videoBitrate: videoBitrate,
+                                      keyFrameInterval: keyFrameInterval
+                                  ))
+    }
+
+    private func makeVideoCompressionSettings(videoCodec: SettingsStreamCodec,
+                                              videoBitrate: Int?,
+                                              keyFrameInterval: Int?) -> [String: Any]
+    {
         var codec: AVVideoCodecType
         switch videoCodec {
         case .h264avc:
@@ -873,10 +886,10 @@ final class Media: NSObject {
         case .h265hevc:
             codec = AVVideoCodecType.hevc
         }
-        var videoSettings: [String: Any] = [
+        var settings: [String: Any] = [
             AVVideoCodecKey: codec,
-            AVVideoHeightKey: 0,
             AVVideoWidthKey: 0,
+            AVVideoHeightKey: 0,
         ]
         var compressionProperties: [String: Any] = [:]
         if let videoBitrate {
@@ -886,19 +899,21 @@ final class Media: NSObject {
             compressionProperties[AVVideoMaxKeyFrameIntervalDurationKey] = keyFrameInterval
         }
         if !compressionProperties.isEmpty {
-            videoSettings[AVVideoCompressionPropertiesKey] = compressionProperties
+            settings[AVVideoCompressionPropertiesKey] = compressionProperties
         }
-        var audioSettings = [
+        return settings
+    }
+
+    private func makeAudioCompressionSettings(audioBitrate: Int?) -> [String: Any] {
+        var settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 0,
             AVNumberOfChannelsKey: 0,
         ]
         if let audioBitrate {
-            audioSettings[AVEncoderBitRateKey] = audioBitrate
+            settings[AVEncoderBitRateKey] = audioBitrate
         }
-        netStream?.startRecording(url: url,
-                                  audioSettings: audioSettings,
-                                  videoSettings: videoSettings)
+        return settings
     }
 
     func stopRecording() {

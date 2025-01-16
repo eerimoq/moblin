@@ -3,6 +3,7 @@ import CryptoKit
 import Foundation
 import Network
 import Telegraph
+import UIKit
 
 protocol MoblinkServerDelegate: AnyObject {
     func moblinkServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
@@ -203,6 +204,7 @@ class MoblinkServer: NSObject {
     private var clients: [Client] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?
+    private var bonjourService: NetService?
 
     init(port: UInt16, password: String) {
         self.port = port
@@ -230,6 +232,8 @@ class MoblinkServer: NSObject {
         }
         clients.removeAll()
         delegate = nil
+        bonjourService?.stop()
+        bonjourService = nil
     }
 
     func startTunnels(address: String, port: UInt16) {
@@ -267,6 +271,12 @@ class MoblinkServer: NSObject {
             connectionErrorMessage = error.localizedDescription
             startRetryStartTimer()
         }
+        bonjourService?.stop()
+        bonjourService = NetService(domain: moblinkBonjourDomain,
+                                type: moblinkBonjourType,
+                                name: UIDevice.current.name,
+                                port: Int32(port))
+        bonjourService?.publish(options: .noAutoRename)
     }
 
     private func startRetryStartTimer() {

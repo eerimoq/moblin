@@ -41066,6 +41066,9 @@
         }
       }
     },
+    "Discovered streamers" : {
+
+    },
     "Discovering" : {
       "localizations" : {
         "de" : {
@@ -46150,9 +46153,6 @@
           }
         }
       }
-    },
-    "Enter streamer's websocket URL. For example ws://132.23.43.43:2345." : {
-
     },
     "Estimated viewer delay" : {
       "localizations" : {
@@ -76984,6 +76984,9 @@
           }
         }
       }
+    },
+    "No streamers discovered yet." : {
+
     },
     "No widgets found. Create widgets in Settings → Scenes → Widgets." : {
       "localizations" : {
@@ -129407,6 +129410,9 @@
           }
         }
       }
+    },
+    "ws://32.143.32.12:2345" : {
+
     },
     "ws://213.33.45.132:4567" : {
       "localizations" : {
