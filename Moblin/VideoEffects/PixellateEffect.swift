@@ -34,6 +34,8 @@ final class PixellateEffect: VideoEffect {
     }
 
     private func calcScale(size: CGSize) -> Float {
-        return 20 * (Float(size.maximum()) / 1920) * (1 + 5 * strength.value)
+        let maximum = Float(size.maximum())
+        let sizeInPixels = 20 * (maximum / 1920) * (1 + 5 * strength.value)
+        return maximum / Float(Int(maximum / sizeInPixels))
     }
 }
