@@ -44,8 +44,18 @@ class MoblinkScanner: NSObject {
 
     private func discoveredServersUpdated() {
         var servers: [MoblinkScannerServer] = []
-        for discoveredService in services {
-            servers.append(.init(name: discoveredService.service.name, urls: discoveredService.urls))
+        for service in services {
+            guard let data = service.service.txtRecordData() else {
+                continue
+            }
+            let metadata = NetService.dictionary(fromTXTRecord: data)
+            guard let nameData = metadata["name"] else {
+                return
+            }
+            guard let name = String(bytes: nameData, encoding: .utf8) else {
+                return
+            }
+            servers.append(.init(name: name, urls: service.urls))
         }
         delegate?.moblinkScannerDiscoveredServers(servers: servers)
     }

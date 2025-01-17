@@ -5,6 +5,8 @@ import Network
 import Telegraph
 import UIKit
 
+private let serviceName = UUID().uuidString
+
 protocol MoblinkServerDelegate: AnyObject {
     func moblinkServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
     func moblinkServerTunnelRemoved(endpoint: NWEndpoint)
@@ -274,8 +276,10 @@ class MoblinkServer: NSObject {
         bonjourService?.stop()
         bonjourService = NetService(domain: moblinkBonjourDomain,
                                     type: moblinkBonjourType,
-                                    name: UIDevice.current.name,
+                                    name: serviceName,
                                     port: Int32(port))
+        let data = NetService.data(fromTXTRecord: ["name": UIDevice.current.name.utf8Data])
+        bonjourService?.setTXTRecord(data)
         bonjourService?.publish(options: .noAutoRename)
     }
 
