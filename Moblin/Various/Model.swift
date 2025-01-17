@@ -649,7 +649,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var moblinkClientState: MoblinkClientState = .none
     @Published var moblinkServerOk = true
     @Published var moblinkStatus = noValue
-    @Published var moblinkClientDiscoveredStreamers: [MoblinkClientDiscoveredServer] = []
+    @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerServer] = []
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -674,6 +674,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var moblinkServer: MoblinkServer?
     private var moblinkClient: MoblinkClient?
+    private var moblinkScanner: MoblinkScanner?
 
     override init() {
         super.init()
@@ -1463,6 +1464,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func stopMoblinkClient() {
         moblinkClient?.stop()
         moblinkClient = nil
+    }
+
+    func reloadMoblinkScanner() {
+        stopMoblinkScanner()
+        moblinkScanner = MoblinkScanner(delegate: self)
+        moblinkScanner?.start()
+    }
+
+    func stopMoblinkScanner() {
+        moblinkScanner?.stop()
+        moblinkScanner = nil
+        moblinkScannerDiscoveredStreamers.removeAll()
     }
 
     private func updateMoblinkStatus() {
@@ -10252,8 +10265,10 @@ extension Model: MoblinkClientDelegate {
     func moblinkClientGetBatteryPercentage() -> Int {
         return Int(100 * batteryLevel)
     }
+}
 
-    func moblinkClientDiscoveredServers(servers: [MoblinkClientDiscoveredServer]) {
-        moblinkClientDiscoveredStreamers = servers
+extension Model: MoblinkScannerDelegate {
+    func moblinkScannerDiscoveredServers(servers: [MoblinkScannerServer]) {
+        moblinkScannerDiscoveredStreamers = servers
     }
 }

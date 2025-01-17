@@ -110,7 +110,7 @@ private struct PasswordView: View {
 }
 
 private struct RelayStreamerServerView: View {
-    var server: MoblinkClientDiscoveredServer
+    var server: MoblinkScannerServer
     @Binding var streamerUrl: String
     var submitUrl: (String) -> Void
 
@@ -158,15 +158,21 @@ private struct RelayStreamerUrlView: View {
                         submitUrl(value: streamerUrl)
                     }
             }
-            if model.moblinkClientDiscoveredStreamers.isEmpty {
-                Text("No streamers discovered yet.")
+            if model.moblinkScannerDiscoveredStreamers.isEmpty {
+                Text("No streamers discovered yet on your local network.")
             } else {
                 List {
-                    ForEach(model.moblinkClientDiscoveredStreamers) { server in
+                    ForEach(model.moblinkScannerDiscoveredStreamers) { server in
                         RelayStreamerServerView(server: server, streamerUrl: $streamerUrl, submitUrl: submitUrl)
                     }
                 }
             }
+        }
+        .onAppear {
+            model.reloadMoblinkScanner()
+        }
+        .onDisappear {
+            model.stopMoblinkScanner()
         }
         .navigationTitle("Streamer URL")
     }

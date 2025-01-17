@@ -4,22 +4,6 @@ import SwiftUI
 
 private let moblinkClientQueue = DispatchQueue(label: "com.eerimoq.moblink-client")
 
-struct MoblinkClientDiscoveredServer: Identifiable {
-    var id = UUID()
-    var name: String
-    var urls: [String]
-}
-
-class DiscoveredSerivce {
-    var service: NetService
-    var urls: [String]
-
-    init(service: NetService) {
-        self.service = service
-        urls = []
-    }
-}
-
 enum MoblinkClientState: String {
     case none = "None"
     case connecting = "Connecting"
@@ -32,7 +16,6 @@ enum MoblinkClientState: String {
 protocol MoblinkClientDelegate: AnyObject {
     func moblinkClientNewState(state: MoblinkClientState)
     func moblinkClientGetBatteryPercentage() -> Int
-    func moblinkClientDiscoveredServers(servers: [MoblinkClientDiscoveredServer])
 }
 
 class MoblinkClient: NSObject {
@@ -51,8 +34,6 @@ class MoblinkClient: NSObject {
     private let reconnectTimer = SimpleTimer(queue: .main)
     private let networkPathMonitor = NWPathMonitor()
     private var cellularInterface: NWInterface?
-    private var bonjourBrowser: NetServiceBrowser?
-    private var discoveredServices: [DiscoveredSerivce] = []
     @AppStorage("srtlaRelayId") var id = ""
 
     init(name: String, clientUrl: URL, password: String, delegate: MoblinkClientDelegate) {
@@ -90,9 +71,6 @@ class MoblinkClient: NSObject {
         webSocket.start()
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
         networkPathMonitor.start(queue: .main)
-        bonjourBrowser = NetServiceBrowser()
-        bonjourBrowser?.delegate = self
-        bonjourBrowser?.searchForServices(ofType: moblinkBonjourType, inDomain: moblinkBonjourDomain)
     }
 
     private func stopInternal() {
@@ -102,10 +80,6 @@ class MoblinkClient: NSObject {
         webSocket.stop()
         stopTunnel()
         networkPathMonitor.cancel()
-        bonjourBrowser?.stop()
-        bonjourBrowser = nil
-        delegate?.moblinkClientDiscoveredServers(servers: [])
-        discoveredServices.removeAll()
     }
 
     private func reconnect(reason: String) {
@@ -325,14 +299,6 @@ class MoblinkClient: NSObject {
         serverConnection?.send(content: packet, completion: .contentProcessed { _ in
         })
     }
-
-    private func discoveredServersUpdated() {
-        var servers: [MoblinkClientDiscoveredServer] = []
-        for discoveredService in discoveredServices {
-            servers.append(.init(name: discoveredService.service.name, urls: discoveredService.urls))
-        }
-        delegate?.moblinkClientDiscoveredServers(servers: servers)
-    }
 }
 
 extension MoblinkClient: WebSocketClientDelegate {
@@ -345,79 +311,5 @@ extension MoblinkClient: WebSocketClientDelegate {
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         try? handleMessage(message: string)
-    }
-}
-
-extension MoblinkClient: NetServiceBrowserDelegate {
-    func netServiceBrowser(_: NetServiceBrowser, didFind service: NetService, moreComing _: Bool) {
-        guard !discoveredServices.contains(where: { $0.service == service }) else {
-            return
-        }
-        discoveredServices.append(.init(service: service))
-        service.delegate = self
-        service.resolve(withTimeout: 5.0)
-    }
-
-    func netServiceBrowser(_: NetServiceBrowser, didRemove service: NetService, moreComing _: Bool) {
-        guard let index = discoveredServices.firstIndex(where: { $0.service == service }) else {
-            return
-        }
-        discoveredServices.remove(at: index)
-        discoveredServersUpdated()
-    }
-}
-
-extension MoblinkClient: NetServiceDelegate {
-    func netServiceDidResolveAddress(_ service: NetService) {
-        guard let discoveredService = discoveredServices.first(where: { $0.service == service }) else {
-            return
-        }
-        for address in service.addresses ?? [] {
-            let (address, ipv6) = getAddressInfo(address: address)
-            if let url = formatWebsocketUrl(address: address, ipv6: ipv6, port: service.port) {
-                discoveredService.urls.append(url)
-            }
-        }
-        discoveredServersUpdated()
-    }
-
-    private func getAddressInfo(address: Data) -> (String, Bool) {
-        var ipv6 = false
-        var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-        address.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-            let sockaddrPtr = pointer.bindMemory(to: sockaddr.self)
-            guard let unsafePtr = sockaddrPtr.baseAddress else {
-                return
-            }
-            guard getnameinfo(
-                unsafePtr,
-                socklen_t(address.count),
-                &hostname,
-                socklen_t(hostname.count),
-                nil,
-                0,
-                NI_NUMERICHOST
-            ) == 0 else {
-                return
-            }
-            ipv6 = unsafePtr.pointee.sa_family == AF_INET6
-        }
-        return (String(cString: hostname), ipv6)
-    }
-
-    private func formatWebsocketUrl(address: String, ipv6: Bool, port: Int) -> String? {
-        var host: String
-        if ipv6 {
-            guard let address6 = IPv6Address(address), !address6.isLinkLocal, !address6.isLoopback else {
-                return nil
-            }
-            host = "[\(address)]"
-        } else {
-            guard let address4 = IPv4Address(address), !address4.isLinkLocal, !address4.isLoopback else {
-                return nil
-            }
-            host = address
-        }
-        return "ws://\(host):\(port)"
     }
 }
