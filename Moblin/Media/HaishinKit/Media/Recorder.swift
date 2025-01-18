@@ -1,5 +1,4 @@
 import AVFoundation
-import VideoToolbox
 
 protocol IORecorderDelegate: AnyObject {
     func recorderFinished()
@@ -65,7 +64,6 @@ class Recorder: NSObject {
         else {
             return
         }
-        // logger.info("recorder: Audio audio \(sampleBuffer.presentationTimeStamp.seconds)")
         if !input.append(sampleBuffer) {
             logger.info("""
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
@@ -113,7 +111,6 @@ class Recorder: NSObject {
         else {
             return
         }
-        // logger.info("recorder: Append video \(sampleBuffer.presentationTimeStamp.seconds)")
         if !input.append(sampleBuffer) {
             logger.info("""
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
@@ -144,11 +141,7 @@ class Recorder: NSObject {
 
     private func makeAudioWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
         if audioWriterInput == nil {
-            logger.info("recorder: Creating audio input")
             audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer)
-        }
-        if !audioWriterInput!.isReadyForMoreMediaData {
-            logger.info("recorder: Audio not ready")
         }
         return audioWriterInput
     }
@@ -168,25 +161,12 @@ class Recorder: NSObject {
                 outputSettings[key] = value
             }
         }
-        outputSettings = [
-            AVVideoCodecKey: AVVideoCodecType.h264,
-            AVVideoWidthKey: 1920,
-            AVVideoHeightKey: 1080,
-            AVVideoCompressionPropertiesKey: [
-                kVTCompressionPropertyKey_AverageBitRate: 6_000_000,
-                kVTCompressionPropertyKey_ProfileLevel: kVTProfileLevel_H264_High_4_2,
-            ],
-        ]
         return makeWriterInput(.video, outputSettings, sampleBuffer: sampleBuffer)
     }
 
     private func makeVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
         if videoWriterInput == nil {
-            logger.info("recorder: Creating video input")
             videoWriterInput = createVideoWriterInput(sampleBuffer: sampleBuffer)
-        }
-        if !videoWriterInput!.isReadyForMoreMediaData {
-            logger.info("recorder: Video not ready")
         }
         return videoWriterInput
     }
@@ -281,19 +261,14 @@ class Recorder: NSObject {
             return
         }
         reset()
-        do {
-            writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
-        } catch {
-            logger.info("Failed to create asset writer \(error)")
-        }
-        // writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
-        // writer?.shouldOptimizeForNetworkUse = true
-        // writer?.outputFileTypeProfile = .mpeg4AppleHLS
-        // writer?.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
-        // writer?.delegate = self
-        // writer?.initialSegmentStartTime = .zero
-        // try? Data().write(to: url)
-        // fileHandle.mutate { $0 = FileHandle(forWritingAtPath: url.path) }
+        writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
+        writer?.shouldOptimizeForNetworkUse = true
+        writer?.outputFileTypeProfile = .mpeg4AppleHLS
+        writer?.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
+        writer?.delegate = self
+        writer?.initialSegmentStartTime = .zero
+        try? Data().write(to: url)
+        fileHandle.mutate { $0 = FileHandle(forWritingAtPath: url.path) }
     }
 
     private func stopRunningInner() {
