@@ -2,10 +2,9 @@ import Collections
 import CryptoKit
 import Foundation
 import Network
+import SwiftUI
 import Telegraph
 import UIKit
-
-private let serviceName = UUID().uuidString
 
 protocol MoblinkServerDelegate: AnyObject {
     func moblinkServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
@@ -207,6 +206,7 @@ class MoblinkServer: NSObject {
     private var destinationAddress: String?
     private var destinationPort: UInt16?
     private var bonjourService: NetService?
+    @AppStorage("moblinkServerId") var id = ""
 
     init(port: UInt16, password: String) {
         self.port = port
@@ -216,6 +216,9 @@ class MoblinkServer: NSObject {
         server.webSocketConfig.pingInterval = 10
         server.webSocketConfig.readTimeout = 20
         server.webSocketDelegate = self
+        if id.isEmpty {
+            id = UUID().uuidString
+        }
     }
 
     func start(delegate: MoblinkServerDelegate) {
@@ -276,7 +279,7 @@ class MoblinkServer: NSObject {
         bonjourService?.stop()
         bonjourService = NetService(domain: moblinkBonjourDomain,
                                     type: moblinkBonjourType,
-                                    name: serviceName,
+                                    name: id,
                                     port: Int32(port))
         let data = NetService.data(fromTXTRecord: ["name": UIDevice.current.name.utf8Data])
         bonjourService?.setTXTRecord(data)
