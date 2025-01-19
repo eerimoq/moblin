@@ -8,6 +8,25 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.392.0", date: "2025-01-19", changes: [
+        "• Show Moblink status in remote control. 💡 djandrea.",
+        "• Update Moblink battery percentage earlier.",
+        "• Make the recordings folder browsable in the Files app.",
+        "• Lock screen quick button. 💡 AUTdany",
+        "• Show IPv6 addresses in various places. 💡 Scyc",
+        "• Major Moblink changes. Not compatible with old implementation. 💡 mikeful",
+        "• Fix RTMP to Restream. 🐛 Real Life Doomer",
+        "• DJI devices quick button. 💡 AUTdany and others",
+        "• Fix for SRTLA bonding problems with t-mobile (and maybe more). 🧑‍🏭 3l3ktr0l4mpe",
+        "  • No need to toggle WiFi off and on anymore.",
+        "• Pixellate strength. 💡 BoostedBen",
+        "• Moblink for RIST.",
+        "• Moblink relays discovers streamers on the same local network, showing them in a list.",
+        "• Always fill width (for landscape) in pixellate filter.",
+        "• Experimental camera controls. 🧑‍🏭 Roenbaeck",
+        "  • Enable in debug settings.",
+        "• Show DJI device battery percentage. 💡 djandrea.",
+    ]),
     Version(version: "0.391.0", date: "2025-01-06", changes: [
         "• Make chat messages slightly bigger, bold, no timestamp and with border by default.",
         "• Top status icons in front of chat.",
