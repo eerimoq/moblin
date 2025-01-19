@@ -132,6 +132,7 @@ struct RemoteControlStatusTopRight: Codable {
     var recording: RemoteControlStatusItem?
     var browserWidgets: RemoteControlStatusItem?
     var moblink: RemoteControlStatusItem?
+    var djiDevices: RemoteControlStatusItem?
 }
 
 struct RemoteControlSettingsScene: Codable, Identifiable {

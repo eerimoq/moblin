@@ -106,6 +106,10 @@ class DjiDevice: NSObject {
         setState(state: .stoppingStream)
     }
 
+    func getBatteryPercentage() -> UInt8? {
+        return batteryPercentage
+    }
+
     private func reset() {
         stopStartStreamingTimer()
         stopStopStreamingTimer()

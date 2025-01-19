@@ -369,10 +369,6 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setCameraControls(enabled: Bool) {
-        cameraControlsEnabled = enabled
-    }
-
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
         lockQueue.async {
             self.takeSnapshotAge = age

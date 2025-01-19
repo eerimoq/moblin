@@ -649,6 +649,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var moblinkClientState: MoblinkClientState = .none
     @Published var moblinkServerOk = true
     @Published var moblinkStatus = noValue
+    @Published var djiDevicesStatus = noValue
     @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerServer] = []
 
     @Published var snapshotCountdown = 0
@@ -2547,6 +2548,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.rtmpServerInfo()
             self.teslaGetChargeState()
             self.moblinkServer?.updateStatus()
+            self.updateDjiDevicesStatus()
         })
     }
 
@@ -6950,6 +6952,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .remoteControl! && (isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured())
     }
 
+    func isShowingStatusDjiDevices() -> Bool {
+        return database.show.djiDevices! && djiDevicesStatus != noValue
+    }
+
     func isShowingStatusGameController() -> Bool {
         return database.show.gameController! && isGameControllerConnected()
     }
@@ -7110,6 +7116,9 @@ extension Model: RemoteControlStreamerDelegate {
         }
         if isShowingStatusMoblink() {
             topRight.moblink = RemoteControlStatusItem(message: moblinkStatus)
+        }
+        if isShowingStatusDjiDevices() {
+            topRight.djiDevices = RemoteControlStatusItem(message: djiDevicesStatus)
         }
         onComplete(general, topLeft, topRight)
     }
@@ -9662,6 +9671,24 @@ extension Model {
             djiDeviceWrappers.removeValue(forKey: device.id)
         }
         database.djiDevices!.devices.remove(atOffsets: offsets)
+    }
+
+    private func updateDjiDevicesStatus() {
+        var statuses: [String] = []
+        for device in database.djiDevices!.devices {
+            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+                continue
+            }
+            guard getDjiDeviceState(device: device) == .streaming else {
+                continue
+            }
+            if let batteryPercentage = djiDeviceWrapper.device.getBatteryPercentage() {
+                statuses.append("\(device.name) \(batteryPercentage) %")
+            } else {
+                statuses.append("\(device.name) -")
+            }
+        }
+        djiDevicesStatus = statuses.joined(separator: " ")
     }
 }
 

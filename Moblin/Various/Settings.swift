@@ -1568,6 +1568,7 @@ class SettingsShow: Codable {
     var browserWidgets: Bool? = true
     var bonding: Bool? = true
     var events: Bool? = true
+    var djiDevices: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -4477,6 +4478,10 @@ final class Settings {
         }
         if realDatabase.debug.cameraControlsEnabled == nil {
             realDatabase.debug.cameraControlsEnabled = false
+            store()
+        }
+        if realDatabase.show.djiDevices == nil {
+            realDatabase.show.djiDevices = true
             store()
         }
     }

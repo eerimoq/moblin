@@ -313,6 +313,7 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
                             icon: "appletvremote.gen1",
                             status: status.remoteControl
                         )
+                        StatusItemView(icon: "appletvremote.gen1", status: status.djiDevices)
                         StatusItemView(icon: "gamecontroller", status: status.gameController)
                         StatusItemView(icon: "speedometer", status: status.bitrate)
                         StatusItemView(icon: "deskclock", status: status.uptime)

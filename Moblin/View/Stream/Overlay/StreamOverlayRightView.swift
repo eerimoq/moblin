@@ -163,6 +163,10 @@ private struct StatusesView: View {
         return .white
     }
 
+    private func djiDevicesColor() -> Color {
+        return .white
+    }
+
     var body: some View {
         if textPlacement == .hide {
             CollapsedHypeTrainView(show: model.isShowingStatusHypeTrain(), color: .white)
@@ -206,6 +210,13 @@ private struct StatusesView: View {
             text: model.remoteControlStatus,
             textPlacement: textPlacement,
             color: remoteControlColor()
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusDjiDevices(),
+            icon: "appletvremote.gen1",
+            text: model.djiDevicesStatus,
+            textPlacement: textPlacement,
+            color: djiDevicesColor()
         )
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusGameController(),

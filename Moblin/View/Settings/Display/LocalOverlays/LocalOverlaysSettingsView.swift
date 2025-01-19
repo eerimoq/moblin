@@ -93,6 +93,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.remoteControl = value
                 }
+                InfoView(icon: "appletvremote.gen1", text: String(localized: "DJI devices")) {
+                    show.djiDevices!
+                } set: { value in
+                    show.djiDevices = value
+                }
                 InfoView(icon: "gamecontroller", text: String(localized: "Game controllers")) {
                     show.gameController!
                 } set: { value in
