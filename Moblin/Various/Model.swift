@@ -2748,7 +2748,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateAdaptiveBitrateDebug() {
         if database.debug.srtOverlay {
             debugLines = latestDebugLines + latestDebugActions
-            debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled, isLive {
                 logger.debug(latestDebugLines.joined(separator: ", "))
             }

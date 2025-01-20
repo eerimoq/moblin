@@ -51,8 +51,6 @@ final class Media: NSObject {
     private var srtConnectedObservation: NSKeyValueObservation?
     private var currentAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
-    private var audioCapturePresentationTimestamp: Double = 0
-    private var videoCapturePresentationTimestamp: Double = 0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
@@ -144,41 +142,6 @@ final class Media: NSObject {
 
     func getNumberOfAudioChannels() -> Int {
         return numberOfAudioChannels
-    }
-
-    func getAudioCapturePresentationTimestamp() -> Double {
-        return audioCapturePresentationTimestamp
-    }
-
-    func getVideoCapturePresentationTimestamp() -> Double {
-        return videoCapturePresentationTimestamp
-    }
-
-    func getCaptureDelta() -> Double {
-        return audioCapturePresentationTimestamp - videoCapturePresentationTimestamp
-    }
-
-    // periphery:ignore
-    func logTiming() {
-        let audioPts = getAudioCapturePresentationTimestamp()
-        let videoPts = getVideoCapturePresentationTimestamp()
-        let delta = getCaptureDelta()
-        logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
-        logger.debug("""
-        CapturePts: audio: \(CMClock.hostTimeClock.time.seconds - audioPts), \
-        video: \(CMClock.hostTimeClock.time.seconds - videoPts)
-        """)
-        if let audioClock = netStream?.mixer.audio.session.synchronizationClock,
-           let videoClock = netStream?.mixer.video.session.synchronizationClock
-        {
-            let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
-            let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
-            logger.debug("""
-            CapturePts: rate: audio: \(audioRate) video: \(videoRate) \
-            h: \(CMClock.hostTimeClock.time.seconds) a: \(audioClock.time.seconds) \
-            v: \(videoClock.time.seconds)
-            """)
-        }
     }
 
     func srtStartStream(
@@ -937,7 +900,7 @@ final class Media: NSObject {
 }
 
 extension Media: NetStreamDelegate {
-    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
+    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp _: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -949,15 +912,10 @@ extension Media: NetStreamDelegate {
                 self.currentAudioLevel = audioLevel
             }
             self.numberOfAudioChannels = numberOfAudioChannels
-            self.audioCapturePresentationTimestamp = presentationTimestamp
         }
     }
 
-    func streamVideo(_: NetStream, presentationTimestamp: Double) {
-        DispatchQueue.main.async {
-            self.videoCapturePresentationTimestamp = presentationTimestamp
-        }
-    }
+    func streamVideo(_: NetStream, presentationTimestamp _: Double) {}
 
     func streamVideo(_: NetStream, failedEffect: String?) {
         DispatchQueue.main.async {
