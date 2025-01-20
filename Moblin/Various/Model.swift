@@ -6855,7 +6855,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let audioBitrate = stream.audioBitrateString()
         let fps: String
         if autoFps {
-            fps = "\(selectedFps ?? stream.fps) 🔦"
+            fps = "\(selectedFps ?? stream.fps) LLB"
         } else {
             fps = String(selectedFps ?? stream.fps)
         }

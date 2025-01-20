@@ -109,7 +109,7 @@ struct StreamVideoSettingsView: View {
             }
             if #available(iOS 18, *) {
                 Section {
-                    Toggle("Low light boost", isOn: Binding(get: {
+                    Toggle("Low light boost (LLB)", isOn: Binding(get: {
                         stream.autoFps!
                     }, set: { value in
                         stream.autoFps = value
