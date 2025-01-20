@@ -296,14 +296,21 @@ func format(distance: Double) -> String {
     return distanceFormatter.string(fromMeters: distance)
 }
 
-private var altitudeFormatter: LengthFormatter {
-    let formatter = LengthFormatter()
-    formatter.numberFormatter.maximumFractionDigits = 1
+private var altitudeFormatter: MeasurementFormatter {
+    let formatter = MeasurementFormatter()
+    var options: MeasurementFormatter.UnitOptions = []
+    options.insert(.providedUnit)
+    formatter.unitOptions = options
+    formatter.numberFormatter.maximumFractionDigits = 0
     return formatter
 }
 
 func format(altitude: Double) -> String {
-    return altitudeFormatter.string(fromMeters: altitude)
+    var measurement = Measurement(value: altitude, unit: UnitLength.meters)
+    if UnitLength(forLocale: .current) == .feet {
+        measurement = measurement.converted(to: .feet)
+    }
+    return altitudeFormatter.string(from: measurement)
 }
 
 extension ProcessInfo.ThermalState {
