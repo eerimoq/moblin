@@ -243,6 +243,7 @@ final class VideoUnit: NSObject {
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
     private var cameraControlsEnabled = false
+    private var isRunning = false
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -271,15 +272,28 @@ final class VideoUnit: NSObject {
 
     @objc
     private func handleSessionRuntimeError(_ notification: NSNotification) {
-        logger.error("Video session error: \(notification)")
+        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
+            return
+        }
+        logger.error("Video session error: \(error.code)")
+        guard error.code == .mediaServicesWereReset else {
+            return
+        }
+        netStreamLockQueue.async {
+            if self.isRunning {
+                self.session.startRunning()
+            }
+        }
     }
 
     func startRunning() {
+        isRunning = true
         addSessionObservers()
         session.startRunning()
     }
 
     func stopRunning() {
+        isRunning = false
         removeSessionObservers()
         session.stopRunning()
     }
