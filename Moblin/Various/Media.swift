@@ -33,6 +33,7 @@ protocol MediaDelegate: AnyObject {
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
+    func mediaSelectedFps(fps: Double, auto: Bool)
 }
 
 final class Media: NSObject {
@@ -681,8 +682,12 @@ final class Media: NSObject {
         return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
     }
 
-    func setStreamFPS(fps: Int) {
+    func setStreamFps(fps: Int) {
         netStream?.setFrameRate(value: Double(fps))
+    }
+
+    func setStreamPreferAutoFps(value: Bool) {
+        netStream?.setPreferFrameRate(value: value)
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
@@ -990,6 +995,10 @@ extension Media: NetStreamDelegate {
 
     func streamSetExposureBias(bias: Float) {
         delegate?.mediaSetExposureBias(bias: bias)
+    }
+
+    func streamSelectedFps(fps: Double, auto: Bool) {
+        delegate?.mediaSelectedFps(fps: fps, auto: auto)
     }
 }
 

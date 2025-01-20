@@ -43935,6 +43935,9 @@
         }
       }
     },
+    "Enable low light boost to make builtin cameras automatically lower the selected FPS for brighter image when dark (if supported)." : {
+
+    },
     "Enable the RTMP server to see URLs." : {
       "localizations" : {
         "de" : {
@@ -65151,6 +65154,9 @@
           }
         }
       }
+    },
+    "Low light boost" : {
+
     },
     "Lower FPS generally gives brighter image in low light conditions." : {
       "localizations" : {

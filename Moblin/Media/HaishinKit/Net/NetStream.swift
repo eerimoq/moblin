@@ -18,6 +18,7 @@ protocol NetStreamDelegate: AnyObject {
     func streamNoTorch()
     func streamSetZoomX(x: Float)
     func streamSetExposureBias(bias: Float)
+    func streamSelectedFps(fps: Double, auto: Bool)
 }
 
 let netStreamLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
@@ -40,6 +41,12 @@ open class NetStream: NSObject {
     func setFrameRate(value: Float64) {
         netStreamLockQueue.async {
             self.mixer.video.frameRate = value
+        }
+    }
+
+    func setPreferFrameRate(value: Bool) {
+        netStreamLockQueue.async {
+            self.mixer.video.preferAutoFrameRate = value
         }
     }
 
@@ -248,5 +255,9 @@ extension NetStream: MixerDelegate {
 
     func mixerSetExposureBias(bias: Float) {
         delegate?.streamSetExposureBias(bias: bias)
+    }
+
+    func mixerSelectedFps(fps: Double, auto: Bool) {
+        delegate?.streamSelectedFps(fps: fps, auto: auto)
     }
 }

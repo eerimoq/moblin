@@ -424,6 +424,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var discordSnapshotWebhookOnlyWhenLive: Bool? = true
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
+    var autoFps: Bool? = false
     var bitrate: UInt32 = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
@@ -4482,6 +4483,10 @@ final class Settings {
         }
         if realDatabase.show.djiDevices == nil {
             realDatabase.show.djiDevices = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.autoFps == nil {
+            stream.autoFps = false
             store()
         }
     }

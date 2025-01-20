@@ -319,6 +319,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
 
+    private var selectedFps: Int?
+    private var autoFps = false
+
     private var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
     private var manualFocuses: [AVCaptureDevice: Float] = [:]
     @Published var manualFocus: Float = 1.0
@@ -4074,7 +4077,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopStream()
         setNetStream()
         setStreamResolution()
-        setStreamFPS()
+        setStreamFps()
+        setStreamPreferAutoFps()
         setColorSpace()
         setStreamCodec()
         setStreamAdaptiveResolution()
@@ -4192,8 +4196,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         pixellateEffect.strength.mutate { $0 = strength }
     }
 
-    func setStreamFPS() {
-        media.setStreamFPS(fps: stream.fps)
+    func setStreamFps() {
+        media.setStreamFps(fps: stream.fps)
+    }
+
+    func setStreamPreferAutoFps() {
+        media.setStreamPreferAutoFps(value: stream.autoFps!)
     }
 
     func setColorSpace() {
@@ -6845,8 +6853,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let bitrate = stream.bitrateString()
         let audioCodec = stream.audioCodecString()
         let audioBitrate = stream.audioBitrateString()
+        let fps: String
+        if autoFps {
+            fps = "\(selectedFps ?? stream.fps) 🔦"
+        } else {
+            fps = String(selectedFps ?? stream.fps)
+        }
         return """
-        \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
+        \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(bitrate), \
         \(audioCodec) \(audioBitrate))
         """
     }
@@ -10224,6 +10238,13 @@ extension Model: MediaDelegate {
 
     func mediaSetExposureBias(bias: Float) {
         setExposureBias(bias: bias)
+    }
+
+    func mediaSelectedFps(fps: Double, auto: Bool) {
+        DispatchQueue.main.async {
+            self.selectedFps = Int(fps)
+            self.autoFps = auto
+        }
     }
 }
 

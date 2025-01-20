@@ -180,14 +180,20 @@ final class VideoUnit: NSObject {
 
     var frameRate = VideoUnit.defaultFrameRate {
         didSet {
-            setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
+            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
             startFrameTimer()
+        }
+    }
+
+    var preferAutoFrameRate = false {
+        didSet {
+            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         }
     }
 
     var colorSpace: AVCaptureColorSpace = .sRGB {
         didSet {
-            setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
+            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         }
     }
 
@@ -334,7 +340,7 @@ final class VideoUnit: NSObject {
                 connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
             }
         }
-        setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
+        setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: lockQueue)
         updateCameraControls()
     }
@@ -1218,19 +1224,28 @@ final class VideoUnit: NSObject {
         width: Int32,
         height: Int32,
         frameRate: Float64,
+        preferAutoFrameRate: Bool,
         colorSpace: AVCaptureColorSpace
-    ) -> (AVCaptureDevice.Format?, String?) {
+    ) -> (AVCaptureDevice.Format?, Bool, String?) {
+        var useAutoFrameRate = false
         var formats = device.formats
         formats = formats.filter { $0.isFrameRateSupported(frameRate) }
+        if #available(iOS 18, *), preferAutoFrameRate {
+            let autoFrameRateFormats = formats.filter { $0.isAutoVideoFrameRateSupported }
+            if !autoFrameRateFormats.isEmpty {
+                formats = autoFrameRateFormats
+                useAutoFrameRate = true
+            }
+        }
         formats = formats.filter { $0.formatDescription.dimensions.width == width }
         formats = formats.filter { $0.formatDescription.dimensions.height == height }
         formats = formats.filter { $0.supportedColorSpaces.contains(colorSpace) }
         if formats.isEmpty {
-            return (nil, "No video format found matching \(height)p\(Int(frameRate)), \(colorSpace)")
+            return (nil, useAutoFrameRate, "No video format found matching \(height)p\(Int(frameRate)), \(colorSpace)")
         }
         formats = formats.filter { !$0.isVideoBinned }
         if formats.isEmpty {
-            return (nil, "No unbinned video format found")
+            return (nil, useAutoFrameRate, "No unbinned video format found")
         }
         // 420v does not work with OA4.
         formats = formats.filter {
@@ -1238,9 +1253,9 @@ final class VideoUnit: NSObject {
                 || allowVideoRangePixelFormat
         }
         if formats.isEmpty {
-            return (nil, "Unsupported video pixel format")
+            return (nil, useAutoFrameRate, "Unsupported video pixel format")
         }
-        return (formats.first, nil)
+        return (formats.first, useAutoFrameRate, nil)
     }
 
     private func reportFormatNotFound(_ device: AVCaptureDevice, _ error: String) {
@@ -1260,15 +1275,16 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func setDeviceFormat(frameRate: Float64, colorSpace: AVCaptureColorSpace) {
+    private func setDeviceFormat(frameRate: Float64, preferAutoFrameRate: Bool, colorSpace: AVCaptureColorSpace) {
         guard let device else {
             return
         }
-        let (format, error) = findVideoFormat(
+        let (format, useAutoFrameRate, error) = findVideoFormat(
             device: device,
             width: Int32(captureSize.width),
             height: Int32(captureSize.height),
             frameRate: frameRate,
+            preferAutoFrameRate: preferAutoFrameRate,
             colorSpace: colorSpace
         )
         if let error {
@@ -1285,8 +1301,13 @@ final class VideoUnit: NSObject {
                 device.activeFormat = format
             }
             device.activeColorSpace = colorSpace
-            device.activeVideoMinFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
-            device.activeVideoMaxFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
+            if useAutoFrameRate {
+                device.setAutoFps()
+                mixer?.delegate?.mixerSelectedFps(fps: frameRate, auto: true)
+            } else {
+                device.setFps(frameRate: frameRate)
+                mixer?.delegate?.mixerSelectedFps(fps: frameRate, auto: false)
+            }
             device.unlockForConfiguration()
         } catch {
             logger.error("while locking device for fps: \(error)")

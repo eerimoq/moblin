@@ -21,6 +21,7 @@ protocol MixerDelegate: AnyObject {
     func mixerNoTorch()
     func mixerSetZoomX(x: Float)
     func mixerSetExposureBias(bias: Float)
+    func mixerSelectedFps(fps: Double, auto: Bool)
 }
 
 class Mixer {

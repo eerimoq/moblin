@@ -160,6 +160,22 @@ extension AVCaptureDevice {
     var fps: (Double, Double) {
         (1 / activeVideoMinFrameDuration.seconds, 1 / activeVideoMaxFrameDuration.seconds)
     }
+
+    func setFps(frameRate: Float64) {
+        if #available(iOS 18, *) {
+            isAutoVideoFrameRateEnabled = false
+        }
+        activeVideoMinFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
+        activeVideoMaxFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
+    }
+
+    func setAutoFps() {
+        activeVideoMinFrameDuration = .invalid
+        activeVideoMaxFrameDuration = .invalid
+        if #available(iOS 18, *) {
+            isAutoVideoFrameRateEnabled = true
+        }
+    }
 }
 
 func cameraName(device: AVCaptureDevice?) -> String {

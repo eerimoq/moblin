@@ -90,6 +90,8 @@ struct StreamVideoSettingsView: View {
                     }
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
+            }
+            Section {
                 HStack {
                     Text("FPS")
                     Spacer()
@@ -104,6 +106,22 @@ struct StreamVideoSettingsView: View {
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
             } footer: {
                 Text("Lower FPS generally gives brighter image in low light conditions.")
+            }
+            if #available(iOS 18, *) {
+                Section {
+                    Toggle("Low light boost", isOn: Binding(get: {
+                        stream.autoFps!
+                    }, set: { value in
+                        stream.autoFps = value
+                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                    }))
+                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                } footer: {
+                    Text("""
+                    Enable low light boost to make builtin cameras automatically \
+                    lower the selected FPS for brighter image when dark (if supported).
+                    """)
+                }
             }
             if model.database.showAllSettings! {
                 Section {
