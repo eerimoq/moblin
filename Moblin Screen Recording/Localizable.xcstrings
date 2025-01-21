@@ -70,6 +70,12 @@
             "state" : "translated",
             "value" : "主機無法連接"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到主機"
+          }
         }
       }
     },
@@ -91,6 +97,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "IRL URL 格式錯誤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRL URL格式錯誤"
           }
         }
       }
@@ -121,6 +133,12 @@
             "state" : "translated",
             "value" : "IRLTookit URL 格式錯誤"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRLToolkit URL格式錯誤"
+          }
         }
       }
     },
@@ -148,6 +166,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RIST URL 格式錯誤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RIST URL格式錯誤"
           }
         }
       }
@@ -177,6 +201,12 @@
             "state" : "translated",
             "value" : "RTMP URL 格式錯誤"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP URL格式錯誤"
+          }
         }
       }
     },
@@ -205,6 +235,12 @@
             "state" : "translated",
             "value" : "SRT 聚合 URL 格式錯誤"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA) URL格式錯誤"
+          }
         }
       }
     },
@@ -229,6 +265,12 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL 格式錯誤"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL 格式錯誤"
@@ -261,6 +303,12 @@
             "state" : "translated",
             "value" : "缺少 RIST 連接埠"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到RIST連接埠"
+          }
         }
       }
     },
@@ -288,6 +336,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缺少 RTMP 串流名稱"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到RTMP串流名稱"
           }
         }
       }
@@ -338,6 +392,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缺少 SRT聚合連接埠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到SRT(LA)連接埠"
           }
         }
       }

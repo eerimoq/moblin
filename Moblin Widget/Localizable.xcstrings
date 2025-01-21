@@ -48,6 +48,12 @@
             "state" : "translated",
             "value" : "Moblin 小工具"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 小工具"
+          }
         }
       }
     }

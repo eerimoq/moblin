@@ -1026,6 +1026,7 @@
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
 		03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceRotationView.swift; sourceTree = "<group>"; };
 		03F655F12D16DFD20054D73E /* BitArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitArray.swift; sourceTree = "<group>"; };
+		03F6E3042D40267A00942826 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		03FB42292C68D9A70009FB26 /* MirlStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirlStream.swift; sourceTree = "<group>"; };
@@ -3521,6 +3522,7 @@
 				03EC1E782CBEE477009AEAB1 /* it */,
 				033FD7182CC52E1D0073C6EC /* de */,
 				036C39A92D193CCF00F74D37 /* zh-Hant */,
+				03F6E3042D40267A00942826 /* zh-HK */,
 			);
 			name = AppShortcuts.strings;
 			sourceTree = "<group>";
