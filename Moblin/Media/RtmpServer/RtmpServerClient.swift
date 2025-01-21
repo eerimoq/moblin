@@ -358,10 +358,16 @@ class RtmpServerClient {
                 self.inputBuffer.append(data)
                 self.isProcessing = true
                 var offset = 0
-                while self.inputBuffer.count - offset >= self.receiveSize {
-                    let data = self.inputBuffer.subdata(in: offset ..< offset + self.receiveSize)
-                    offset += self.receiveSize
-                    self.handleData(data: data)
+                self.inputBuffer.withUnsafeMutableBytes { inputBuffer in
+                    while inputBuffer.count - offset >= self.receiveSize {
+                        let data = Data(
+                            bytesNoCopy: inputBuffer.baseAddress! + offset,
+                            count: self.receiveSize,
+                            deallocator: .none
+                        )
+                        offset += self.receiveSize
+                        self.handleData(data: data)
+                    }
                 }
                 self.inputBuffer = self.inputBuffer.advanced(by: offset)
                 if self.totalBytesReceived - self.totalBytesReceivedAcked > self.windowAcknowledgementSize {
