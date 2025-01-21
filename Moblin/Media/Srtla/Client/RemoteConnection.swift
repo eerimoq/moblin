@@ -51,6 +51,8 @@ class RemoteConnection {
     }
 
     let interface: NWInterface?
+    private var dataPacketsToSend: [Data] = []
+    private var latestDataSentTime = ContinuousClock.now
 
     private var totalDataSentByteCount: UInt64 = 0
 
@@ -247,9 +249,6 @@ class RemoteConnection {
             sendPacketInternal(packet: packet)
         }
     }
-
-    private var dataPacketsToSend: [Data] = []
-    private var latestDataSentTime = ContinuousClock.now
 
     private func sendDataPacketInternal(packet: Data) {
         if srtlaBatchSend {
