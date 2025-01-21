@@ -2545,7 +2545,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if self.stream.enabled {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
-            // self.media.logTiming()
             self.updateViewers()
             self.updateCurrentSsid()
             self.rtmpServerInfo()
