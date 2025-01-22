@@ -262,11 +262,7 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func appendSampleBuffer(
-        _ sampleBuffer: CMSampleBuffer,
-        _ presentationTimeStamp: CMTime,
-        isFirstAfterAttach _: Bool
-    ) {
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let sampleBuffer = sampleBuffer.muted(muted) else {
             return
         }
@@ -406,7 +402,7 @@ final class AudioUnit: NSObject {
             numberOfAudioChannels: numberOfAudioChannels,
             presentationTimestamp: presentationTimeStamp.seconds
         )
-        appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
+        appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
 }
 
