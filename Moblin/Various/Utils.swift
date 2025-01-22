@@ -162,8 +162,7 @@ extension AVCaptureDevice {
     }
 
     func setFps(frameRate: Float64) {
-        // Assigning isAutoVideoFrameRateEnabled makes iPad with USB cam crash. Reading seems fine.
-        if #available(iOS 18, *), isAutoVideoFrameRateEnabled {
+        if #available(iOS 18, *), activeFormat.isAutoVideoFrameRateSupported {
             isAutoVideoFrameRateEnabled = false
         }
         activeVideoMinFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
