@@ -1311,9 +1311,7 @@ final class VideoUnit: NSObject {
         logger.debug("Selected video format: \(format)")
         do {
             try device.lockForConfiguration()
-            if device.activeFormat != format {
-                device.activeFormat = format
-            }
+            device.activeFormat = format
             device.activeColorSpace = colorSpace
             if useAutoFrameRate {
                 device.setAutoFps()
