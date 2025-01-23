@@ -24,6 +24,7 @@
 		030B413A2C24CB83000F7134 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 030B41392C24CB83000F7134 /* InfoPlist.xcstrings */; };
 		030B413C2C24CB83000F7134 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 030B413B2C24CB83000F7134 /* Localizable.xcstrings */; };
 		030C76302CBBF5470062D8FD /* WidgetVideoSourceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030C762F2CBBF5360062D8FD /* WidgetVideoSourceSettingsView.swift */; };
+		030E066C2D42A63900563457 /* StreamWizardObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030E066B2D42A62F00563457 /* StreamWizardObsSettingsView.swift */; };
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
@@ -557,6 +558,7 @@
 		030B41392C24CB83000F7134 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		030B413B2C24CB83000F7134 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		030C762F2CBBF5360062D8FD /* WidgetVideoSourceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoSourceSettingsView.swift; sourceTree = "<group>"; };
+		030E066B2D42A62F00563457 /* StreamWizardObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsSettingsView.swift; sourceTree = "<group>"; };
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
@@ -2657,10 +2659,11 @@
 		03DBD10C2B3013C7004B0BE6 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
-				0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */,
-				03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */,
-				038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */,
 				038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */,
+				03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */,
+				030E066B2D42A62F00563457 /* StreamWizardObsSettingsView.swift */,
+				0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */,
+				038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -3263,6 +3266,7 @@
 				03987B392C82846F00226C03 /* QuickButtonWidgetsView.swift in Sources */,
 				0359F8D32BD3DA61005BFDA8 /* VideoUnit.swift in Sources */,
 				03BBAE9A2B2EB4FD0033D425 /* StreamEmotesSettingsView.swift in Sources */,
+				030E066C2D42A63900563457 /* StreamWizardObsSettingsView.swift in Sources */,
 				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0318D3752CF51DEB00E12F3B /* car_server.pb.swift in Sources */,
 				03C3574E2D081CF500B8B29F /* RtmpDataMessage.swift in Sources */,

@@ -272,6 +272,7 @@ enum WizardPlatform {
     case youTube
     case afreecaTv
     case custom
+    case obs
 }
 
 enum WizardNetworkSetup {
@@ -8370,6 +8371,8 @@ extension Model {
                 stream.afreecaTvChannelName = wizardAfreecaTvChannelName.trim()
                 stream.afreecaTvStreamId = wizardAfreecsTvCStreamId.trim()
             }
+        case .obs:
+            break
         case .custom:
             break
         }

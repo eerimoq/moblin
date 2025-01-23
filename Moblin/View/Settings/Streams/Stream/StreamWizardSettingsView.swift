@@ -63,6 +63,11 @@ struct StreamWizardSettingsView: View {
                 } label: {
                     Text("AfreecaTV")
                 }
+                NavigationLink {
+                    StreamWizardObsSettingsView()
+                } label: {
+                    Text("OBS")
+                }
             } header: {
                 Text("Platform to stream to")
             }
