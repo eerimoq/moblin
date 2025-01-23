@@ -22,6 +22,12 @@
             "state" : "translated",
             "value" : "Moblin"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
         }
       }
     },
