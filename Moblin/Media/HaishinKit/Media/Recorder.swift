@@ -5,8 +5,6 @@ protocol IORecorderDelegate: AnyObject {
     func recorderError()
 }
 
-private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
-
 class Recorder: NSObject {
     private var audioOutputSettings: [String: Any] = [:]
     private var videoOutputSettings: [String: Any] = [:]
@@ -20,25 +18,13 @@ class Recorder: NSObject {
     weak var delegate: (any IORecorderDelegate)?
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.outputChannelsMap = map
         }
     }
 
-    func appendAudio(_ sampleBuffer: CMSampleBuffer) {
-        lockQueue.async {
-            self.appendAudioInner(sampleBuffer)
-        }
-    }
-
-    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
-        lockQueue.async {
-            self.appendVideoInner(sampleBuffer)
-        }
-    }
-
     func startRunning(url: URL, audioOutputSettings: [String: Any], videoOutputSettings: [String: Any]) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.startRunningInner(
                 url: url,
                 audioOutputSettings: audioOutputSettings,
@@ -48,9 +34,17 @@ class Recorder: NSObject {
     }
 
     func stopRunning() {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.stopRunningInner()
         }
+    }
+
+    func appendAudio(_ sampleBuffer: CMSampleBuffer) {
+        appendAudioInner(sampleBuffer)
+    }
+
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        appendVideoInner(sampleBuffer)
     }
 
     private func appendAudioInner(_ sampleBuffer: CMSampleBuffer) {

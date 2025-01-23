@@ -10,10 +10,6 @@ var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
-private let lockQueue = DispatchQueue(
-    label: "com.haishinkit.HaishinKit.VideoIOComponent",
-    qos: .userInteractive
-)
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent
@@ -172,7 +168,7 @@ final class VideoUnit: NSObject {
     private var captureSize = CGSize(width: 1920, height: 1080)
     private var outputSize = CGSize(width: 1920, height: 1080)
     let session = makeCaptureSession()
-    private var encoders = [VideoCodec(lockQueue: lockQueue)]
+    private var encoders = [VideoCodec(lockQueue: mixerLockQueue)]
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -227,7 +223,7 @@ final class VideoUnit: NSObject {
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
     private var latestSampleBufferTime: ContinuousClock.Instant?
-    private var frameTimer = SimpleTimer(queue: lockQueue)
+    private var frameTimer = SimpleTimer(queue: mixerLockQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
     private var rotation: Double = 0.0
@@ -320,26 +316,26 @@ final class VideoUnit: NSObject {
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
-        let isOtherReplaceVideo = lockQueue.sync {
+        let isOtherReplaceVideo = mixerLockQueue.sync {
             let oldReplaceVideo = self.selectedReplaceVideoCameraId
             self.selectedReplaceVideoCameraId = replaceVideo
             return replaceVideo != oldReplaceVideo
         }
         if self.device == device {
             if isOtherReplaceVideo {
-                lockQueue.async {
+                mixerLockQueue.async {
                     self.prepareFirstFrame()
                 }
             }
             return
         }
-        output?.setSampleBufferDelegate(nil, queue: lockQueue)
+        output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
         }
         try attachDevice(device, session)
-        lockQueue.async {
+        mixerLockQueue.async {
             self.prepareFirstFrame()
         }
         self.device = device
@@ -355,67 +351,67 @@ final class VideoUnit: NSObject {
             }
         }
         setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
-        output?.setSampleBufferDelegate(self, queue: lockQueue)
+        output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
         updateCameraControls()
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        lockQueue.sync {
+        mixerLockQueue.sync {
             self.registerEffectInner(effect)
         }
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
-        lockQueue.sync {
+        mixerLockQueue.sync {
             self.unregisterEffectInner(effect)
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        lockQueue.sync {
+        mixerLockQueue.sync {
             self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
         }
     }
 
     func usePendingAfterAttachEffects() {
-        lockQueue.sync {
+        mixerLockQueue.sync {
             self.usePendingAfterAttachEffectsInner()
         }
     }
 
     func setLowFpsImage(fps: Float) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.setLowFpsImageInner(fps: fps)
         }
     }
 
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
         }
     }
 
     func addReplaceVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.addReplaceVideoSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
 
     func addReplaceVideo(cameraId: UUID, name: String, latency: Double) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.addReplaceVideoInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
     func removeReplaceVideo(cameraId: UUID) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.removeReplaceVideoInner(cameraId: cameraId)
         }
     }
 
     func setReplaceVideoDrift(cameraId: UUID, drift: Double) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.setReplaceVideoDriftInner(cameraId: cameraId, drift: drift)
         }
     }
@@ -425,7 +421,7 @@ final class VideoUnit: NSObject {
     }
 
     func setReplaceVideoTargetLatency(cameraId: UUID, latency: Double) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.setReplaceVideoTargetLatencyInner(cameraId: cameraId, latency: latency)
         }
     }
@@ -967,7 +963,7 @@ final class VideoUnit: NSObject {
             detectionsQueue.async {
                 let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
                 let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
-                    lockQueue.async {
+                    mixerLockQueue.async {
                         guard error == nil else {
                             self.faceDetectionsComplete(completion)
                             return
@@ -986,7 +982,7 @@ final class VideoUnit: NSObject {
                 do {
                     try imageRequestHandler.perform([faceLandmarksRequest])
                 } catch {
-                    lockQueue.async {
+                    mixerLockQueue.async {
                         self.faceDetectionsComplete(completion)
                     }
                 }
@@ -1213,7 +1209,7 @@ final class VideoUnit: NSObject {
     @objc
     private func sessionWasInterrupted(_: Notification) {
         logger.debug("Video session interruption started")
-        lockQueue.async {
+        mixerLockQueue.async {
             self.prepareFirstFrame()
         }
     }

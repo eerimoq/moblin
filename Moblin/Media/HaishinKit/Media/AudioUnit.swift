@@ -1,11 +1,6 @@
 import AVFoundation
 import Collections
 
-private let lockQueue = DispatchQueue(
-    label: "com.haishinkit.HaishinKit.AudioIOUnit.lock",
-    qos: .userInteractive
-)
-
 private let deltaLimit = 0.03
 var audioUnitRemoveWindNoise = false
 
@@ -37,7 +32,7 @@ private class ReplaceAudio {
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
-    private var outputTimer = SimpleTimer(queue: lockQueue)
+    private var outputTimer = SimpleTimer(queue: mixerLockQueue)
     private var isInitialized: Bool = false
     private var isOutputting: Bool = false
     private var latestSampleBuffer: CMSampleBuffer?
@@ -217,7 +212,7 @@ private class ReplaceAudio {
 }
 
 final class AudioUnit: NSObject {
-    private var encoders = [AudioCodec(lockQueue: lockQueue)]
+    private var encoders = [AudioCodec(lockQueue: mixerLockQueue)]
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -251,13 +246,13 @@ final class AudioUnit: NSObject {
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
-        lockQueue.sync {
+        mixerLockQueue.sync {
             self.selectedReplaceAudioId = replaceAudio
         }
         if let device {
-            output?.setSampleBufferDelegate(nil, queue: lockQueue)
+            output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
             try attachDevice(device, session)
-            output?.setSampleBufferDelegate(self, queue: lockQueue)
+            output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
             session.automaticallyConfiguresApplicationAudioSession = false
         }
     }
@@ -292,7 +287,7 @@ final class AudioUnit: NSObject {
     }
 
     func setSpeechToText(enabled: Bool) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.speechToTextEnabled = enabled
         }
     }
@@ -340,7 +335,7 @@ final class AudioUnit: NSObject {
     }
 
     func addReplaceAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.addReplaceAudioSampleBufferInner(cameraId: cameraId, sampleBuffer)
         }
     }
@@ -350,7 +345,7 @@ final class AudioUnit: NSObject {
     }
 
     func addReplaceAudio(cameraId: UUID, name: String, latency: Double) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.addReplaceAudioInner(cameraId: cameraId, name: name, latency: latency)
         }
     }
@@ -362,7 +357,7 @@ final class AudioUnit: NSObject {
     }
 
     func removeReplaceAudio(cameraId: UUID) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.removeReplaceAudioInner(cameraId: cameraId)
         }
     }
@@ -372,7 +367,7 @@ final class AudioUnit: NSObject {
     }
 
     func setReplaceAudioDrift(cameraId: UUID, drift: Double) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.setReplaceAudioDriftInner(cameraId: cameraId, drift: drift)
         }
     }
@@ -382,7 +377,7 @@ final class AudioUnit: NSObject {
     }
 
     func setReplaceAudioTargetLatency(cameraId: UUID, latency: Double) {
-        lockQueue.async {
+        mixerLockQueue.async {
             self.setReplaceAudioTargetLatencyInner(cameraId: cameraId, latency: latency)
         }
     }

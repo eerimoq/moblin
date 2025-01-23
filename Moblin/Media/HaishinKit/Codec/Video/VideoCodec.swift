@@ -155,13 +155,15 @@ class VideoCodec {
             guard let self else {
                 return
             }
-            guard let sampleBuffer, status == noErr else {
-                logger.info("video: Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)")
-                numberOfFailedEncodings += 1
-                return
+            self.lockQueue.async {
+                guard let sampleBuffer, status == noErr else {
+                    logger.info("video: Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)")
+                    numberOfFailedEncodings += 1
+                    return
+                }
+                self.formatDescription = sampleBuffer.formatDescription
+                self.delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
             }
-            formatDescription = sampleBuffer.formatDescription
-            delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
         if err == kVTInvalidSessionErr {
             logger.info("video: Encode failed. Resetting session.")
@@ -197,7 +199,9 @@ class VideoCodec {
                 else {
                     return
                 }
-                delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
+                self.lockQueue.async {
+                    self.delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
+                }
             }
         if err == kVTInvalidSessionErr {
             logger.info("video: Decode failed. Resetting session.")

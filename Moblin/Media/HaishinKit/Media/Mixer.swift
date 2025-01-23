@@ -1,6 +1,11 @@
 import AVFoundation
 import SwiftUI
 
+let mixerLockQueue = DispatchQueue(
+    label: "com.haishinkit.HaishinKit.Mixer",
+    qos: .userInteractive
+)
+
 func makeCaptureSession() -> AVCaptureSession {
     let session = AVCaptureSession()
     if session.isMultitaskingCameraAccessSupported {
