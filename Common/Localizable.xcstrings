@@ -65752,7 +65752,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "剛剛重新訂閱了層級 %1lld 共 %2lld 個月！ %3$@"
+            "value" : "剛剛重新訂閱了層級 %1$lld 共 %2$lld 個月！ %3$@"
           }
         }
       }
