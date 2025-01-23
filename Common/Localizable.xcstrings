@@ -27957,8 +27957,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Botten"
+            "state" : "translated",
+            "value" : "Nere"
           }
         },
         "tr" : {
@@ -38517,7 +38517,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CPU: %lld"
           }
         },
@@ -44081,7 +44081,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "DNS-uppslagsstrategi"
           }
         },
@@ -44891,7 +44891,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dubbeltryck för att låsa upp"
           }
         },
@@ -46375,7 +46375,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktivera lågljusförstärkning för att få inbyggda kameror att automatiskt sänka den valda FPS för ljusare bild när det är mörkt (om det stöds)."
           }
         },
@@ -46777,7 +46777,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktivera detta på den enhet du vill använda som extra bindningsanslutning. Enheten måste ha mobildata aktiverat."
           }
         },
@@ -46907,8 +46907,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivera detta på din streamingenhet. Konfigurera reläenheter för att ansluta till den här enheten."
+            "state" : "translated",
+            "value" : "Aktivera detta på din strömningsenhet. Konfigurera reläenheter för att ansluta till den här enheten."
           }
         },
         "tr" : {
@@ -48669,7 +48669,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ange en av URL:erna som \"Streamer URL\" i reläenheten för att använda den som en extra bindningsanslutning."
           }
         },
@@ -96455,7 +96455,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Återställ till standard"
           }
         },
@@ -101031,7 +101031,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skärmen låst"
           }
         },
@@ -101161,7 +101161,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skärmen upplåst"
           }
         },
@@ -116877,7 +116877,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Systemet verkar fungera bäst för TMobile. IPv4 förmodligen bäst för IRLToolkit."
           }
         },
@@ -131683,7 +131683,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Använd telefoner som ytterligare SRTLA- och RIST-bindningsanslutningar. Installera Moblink på Android-telefoner för att använda dem."
           }
         },
@@ -132085,8 +132085,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Används av både relä- och streamerenheter. Kopiera streamerns lösenord till reläenheten."
+            "state" : "translated",
+            "value" : "Används av både relä- och strömningsenheter. Kopiera strömmarens lösenord till reläenheten."
           }
         },
         "tr" : {
@@ -137785,7 +137785,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://32.143.32.12:2345"
           }
         },
