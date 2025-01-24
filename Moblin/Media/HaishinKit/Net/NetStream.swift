@@ -90,13 +90,24 @@ open class NetStream: NSObject {
 
     func attachCamera(
         _ device: AVCaptureDevice?,
+        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
+        _ showCameraPreview: Bool,
+        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
+        _ isVideoMirrored: Bool,
         onError: ((_ error: Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
     ) {
         netStreamLockQueue.async {
             do {
-                try self.mixer.attachCamera(device, replaceVideoCameraId)
+                try self.mixer.attachCamera(
+                    device,
+                    cameraPreviewLayer,
+                    showCameraPreview,
+                    replaceVideoCameraId,
+                    preferredVideoStabilizationMode,
+                    isVideoMirrored
+                )
                 onSuccess?()
             } catch {
                 onError?(error)

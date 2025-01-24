@@ -240,6 +240,7 @@ final class VideoUnit: NSObject {
     private var poolFormatDescriptionExtension: CFDictionary?
     private var cameraControlsEnabled = false
     private var isRunning = false
+    private var showCameraPreview = false
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -315,7 +316,14 @@ final class VideoUnit: NSObject {
         return CIImage(cvPixelBuffer: imageBuffer)
     }
 
-    func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
+    func attach(
+        _ device: AVCaptureDevice?,
+        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
+        _ showCameraPreview: Bool,
+        _ replaceVideo: UUID?,
+        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
+        _ isVideoMirrored: Bool
+    ) throws {
         let isOtherReplaceVideo = mixerLockQueue.sync {
             let oldReplaceVideo = self.selectedReplaceVideoCameraId
             self.selectedReplaceVideoCameraId = replaceVideo
@@ -353,6 +361,12 @@ final class VideoUnit: NSObject {
         setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
         updateCameraControls()
+        self.showCameraPreview = showCameraPreview
+        session.commitConfiguration()
+        cameraPreviewLayer?.session = nil
+        if showCameraPreview {
+            cameraPreviewLayer?.session = session
+        }
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -1035,7 +1049,9 @@ final class VideoUnit: NSObject {
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
         modSampleBuffer.setAttachmentDisplayImmediately()
-        drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+        if !showCameraPreview {
+            drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+        }
         for encoder in encoders {
             encoder.encodeImageBuffer(
                 modImageBuffer,
@@ -1217,16 +1233,6 @@ final class VideoUnit: NSObject {
     @objc
     private func sessionInterruptionEnded(_: Notification) {
         logger.debug("Video session interruption ended")
-    }
-
-    var isVideoMirrored = false
-
-    var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode = .off {
-        didSet {
-            for connection in output?.connections.filter({ $0.isVideoStabilizationSupported }) ?? [] {
-                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
-            }
-        }
     }
 
     private func findVideoFormat(

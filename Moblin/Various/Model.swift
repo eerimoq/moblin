@@ -423,6 +423,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     let streamPreviewView = PreviewView(frame: .zero)
     let cameraPreviewView = CameraPreviewUiView()
+    var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     @Published var remoteControlPreview: UIImage?
     @Published var showCameraPreview = false
     private var textEffects: [UUID: TextEffect] = [:]
@@ -1029,6 +1030,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         buttonPairs = pairs.reversed()
     }
 
+    func updateShowCameraPreview() {
+        reattachCamera()
+    }
+
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
         media.takeSnapshot(age: age) { image, prettyImage in
@@ -1279,6 +1284,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        cameraPreviewLayer = cameraPreviewView.previewLayer
         media.delegate = self
         createUrlSession()
         AppDependencyManager.shared.add(dependency: self)
@@ -1293,6 +1299,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
+        showCameraPreview = getGlobalButton(type: .cameraPreview)?.isOn ?? false
+        updateShowCameraPreview()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
@@ -2019,6 +2027,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadTeslaVehicle()
             reloadMoblinkClient()
             reloadMoblinkServer()
+            updateOrientation()
         }
     }
 
@@ -2308,6 +2317,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 break
             }
         }
+        updateCameraPreviewRotation()
     }
 
     @objc private func orientationDidChange(animated _: Bool) {
@@ -3650,13 +3660,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             AppDelegate.orientationLock = .landscape
             streamPreviewView.isPortrait = false
         }
-        if #available(iOS 17.0, *) {
-            if stream.portrait! {
-                cameraPreviewView.previewLayer.connection?.videoRotationAngle = 90
-            } else {
-                cameraPreviewView.previewLayer.connection?.videoRotationAngle = 0
-            }
-        }
+        updateCameraPreviewRotation()
     }
 
     private func toggleRecording() {
@@ -4129,6 +4133,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setNetStream() {
+        cameraPreviewLayer?.session = nil
         media.setNetStream(
             proto: stream.getProtocol(),
             portrait: stream.portrait!,
@@ -6245,7 +6250,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func detachCamera() {
-        media.attachCamera(device: nil, videoStabilizationMode: .off, videoMirrored: false)
+        media.attachCamera(
+            device: nil,
+            cameraPreviewLayer: nil,
+            showCameraPreview: showCameraPreview,
+            videoStabilizationMode: .off,
+            videoMirrored: false
+        )
     }
 
     func attachCamera() {
@@ -6253,11 +6264,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
+            cameraPreviewLayer: cameraPreviewLayer,
+            showCameraPreview: showCameraPreview,
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream()
         ) {
             self.streamPreviewView.isMirrored = isMirrored
             self.lastAttachCompletedTime = .now
+            self.updateCameraPreviewRotation()
+        }
+    }
+
+    private func updateCameraPreviewRotation() {
+        if self.stream.portrait! {
+            self.cameraPreviewLayer?.connection?.videoOrientation = .portrait
+        } else {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                self.cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
+            case .landscapeRight:
+                self.cameraPreviewLayer?.connection?.videoOrientation = .landscapeLeft
+            default:
+                self.cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
+            }
         }
     }
 
@@ -6358,6 +6387,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
+            cameraPreviewLayer: cameraPreviewLayer,
+            showCameraPreview: showCameraPreview,
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream(),
             onSuccess: {
@@ -6371,6 +6402,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     self.updateImageButtonState()
                 }
                 self.lastAttachCompletedTime = .now
+                self.updateCameraPreviewRotation()
             }
         )
         zoomXPinch = zoomX
@@ -6382,7 +6414,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         hasZoom = false
-        media.attachReplaceCamera(device: getVideoSourceBuiltinCameraDevice(), cameraId: cameraId)
+        media.attachReplaceCamera(
+            device: getVideoSourceBuiltinCameraDevice(),
+            cameraPreviewLayer: cameraPreviewLayer,
+            showCameraPreview: showCameraPreview,
+            cameraId: cameraId
+        )
         media.usePendingAfterAttachEffects()
     }
 

@@ -76,6 +76,10 @@ class SrtStream: NetStream {
 
     override func attachCamera(
         _ camera: AVCaptureDevice?,
+        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
+        _ showCameraPreview: Bool,
+        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
+        _ isVideoMirrored: Bool,
         onError: ((Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
@@ -83,6 +87,10 @@ class SrtStream: NetStream {
         writer.expectedMedias.insert(.video)
         super.attachCamera(
             camera,
+            cameraPreviewLayer,
+            showCameraPreview,
+            preferredVideoStabilizationMode,
+            isVideoMirrored,
             onError: onError,
             onSuccess: onSuccess,
             replaceVideoCameraId: replaceVideoCameraId

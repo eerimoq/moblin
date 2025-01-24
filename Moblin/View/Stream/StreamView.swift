@@ -19,16 +19,6 @@ class CameraPreviewUiView: UIView {
     var previewLayer: AVCaptureVideoPreviewLayer {
         layer as! AVCaptureVideoPreviewLayer
     }
-
-    // periphery:ignore
-    var session: AVCaptureSession? {
-        get {
-            previewLayer.session
-        }
-        set {
-            previewLayer.session = newValue
-        }
-    }
 }
 
 struct CameraPreviewView: UIViewRepresentable {

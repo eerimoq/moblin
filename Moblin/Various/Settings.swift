@@ -2625,7 +2625,7 @@ class Database: Codable {
             addDefaultBitratePresets(database: database)
         }
         addMissingGlobalButtons(database: database)
-        for button in database.globalButtons! where button.type != .interactiveChat {
+        for button in database.globalButtons! where button.type != .interactiveChat && button.type != .cameraPreview {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
@@ -3013,6 +3013,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Camera preview"))
+    button.id = UUID()
+    button.type = .cameraPreview
+    button.imageType = "System name"
+    button.systemImageNameOn = "arrow.trianglehead.2.clockwise.rotate.90.camera"
+    button.systemImageNameOff = "arrow.trianglehead.2.clockwise.rotate.90.camera"
     updateGlobalButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in

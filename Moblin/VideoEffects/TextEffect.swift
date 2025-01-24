@@ -565,9 +565,9 @@ final class TextEffect: VideoEffect {
                 return
             }
             self.previousLinesMetalPetal = lines
-            let text = VStack(alignment: .leading) {
+            let text = VStack(alignment: .leading, spacing: 2) {
                 ForEach(lines) { line in
-                    HStack {
+                    HStack(spacing: 0) {
                         ForEach(line.parts) { part in
                             switch part.data {
                             case let .text(text):
@@ -597,16 +597,16 @@ final class TextEffect: VideoEffect {
                             }
                         }
                     }
+                    .padding([.leading, .trailing], 7)
+                    .background(self.backgroundColor?.color() ?? .clear)
+                    .cornerRadius(10)
                 }
             }
-            .padding([.leading, .trailing], 7)
-            .background(self.backgroundColor?.color() ?? .clear)
             .font(.system(
                 size: self.scaledFontSize(size: size),
                 weight: self.fontWeight,
                 design: self.fontDesign
             ))
-            .cornerRadius(10)
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {

@@ -768,23 +768,43 @@ final class Media: NSObject {
 
     func attachCamera(
         device: AVCaptureDevice?,
+        cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
+        showCameraPreview: Bool,
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         videoMirrored: Bool,
         onSuccess: (() -> Void)? = nil
     ) {
-        netStream?.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
-        netStream?.videoCapture()?.isVideoMirrored = videoMirrored
-        netStream?.attachCamera(device, onError: { error in
-            logger.error("stream: Attach camera error: \(error)")
-        }, onSuccess: {
-            DispatchQueue.main.async {
-                onSuccess?()
+        netStream?.attachCamera(
+            device,
+            cameraPreviewLayer,
+            showCameraPreview,
+            videoStabilizationMode,
+            videoMirrored,
+            onError: { error in
+                logger.error("stream: Attach camera error: \(error)")
+            },
+            onSuccess: {
+                DispatchQueue.main.async {
+                    onSuccess?()
+                }
             }
-        })
+        )
     }
 
-    func attachReplaceCamera(device: AVCaptureDevice?, cameraId: UUID) {
-        netStream?.attachCamera(device, replaceVideoCameraId: cameraId)
+    func attachReplaceCamera(
+        device: AVCaptureDevice?,
+        cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
+        showCameraPreview: Bool,
+        cameraId: UUID
+    ) {
+        netStream?.attachCamera(
+            device,
+            cameraPreviewLayer,
+            showCameraPreview,
+            .off,
+            false,
+            replaceVideoCameraId: cameraId
+        )
     }
 
     func attachReplaceAudio(cameraId: UUID?) {
