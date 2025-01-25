@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GlobalQuickButtonsSettingsView: View {
+struct QuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
     private func onBackgroundColorChange(button: SettingsButton, color: Color) {
@@ -49,7 +49,7 @@ struct GlobalQuickButtonsSettingsView: View {
                     ForEach(model.database.globalButtons!) { button in
                         if model.database.showAllSettings! {
                             NavigationLink {
-                                GlobalQuickButtonsButtonSettingsView(
+                                QuickButtonsButtonSettingsView(
                                     name: button.name,
                                     background: button.backgroundColor!.color(),
                                     onChange: { color in
