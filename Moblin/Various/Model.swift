@@ -6276,16 +6276,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateCameraPreviewRotation() {
-        if self.stream.portrait! {
-            self.cameraPreviewLayer?.connection?.videoOrientation = .portrait
+        if stream.portrait! {
+            cameraPreviewLayer?.connection?.videoOrientation = .portrait
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
-                self.cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
+                cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
             case .landscapeRight:
-                self.cameraPreviewLayer?.connection?.videoOrientation = .landscapeLeft
+                cameraPreviewLayer?.connection?.videoOrientation = .landscapeLeft
             default:
-                self.cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
+                cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
             }
         }
     }
