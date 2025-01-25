@@ -3014,7 +3014,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .cameraPreview
     button.imageType = "System name"
-    button.systemImageNameOn = "arrow.trianglehead.2.clockwise.rotate.90.camera"
+    button.systemImageNameOn = "arrow.trianglehead.2.clockwise.rotate.90.camera.fill"
     button.systemImageNameOff = "arrow.trianglehead.2.clockwise.rotate.90.camera"
     updateGlobalButton(database: database, button: button)
 
