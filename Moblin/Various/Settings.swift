@@ -1725,6 +1725,7 @@ class SettingsChat: Codable {
     var showFirstTimeChatterMessage: Bool? = true
     var showNewFollowerMessage: Bool? = true
     var bottom: Double? = 0.0
+    var newMessagesAtTop: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -4487,6 +4488,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.autoFps == nil {
             stream.autoFps = false
+            store()
+        }
+        if realDatabase.chat.newMessagesAtTop == nil {
+            realDatabase.chat.newMessagesAtTop = false
             store()
         }
     }

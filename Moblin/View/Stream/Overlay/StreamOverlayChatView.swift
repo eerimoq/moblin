@@ -181,7 +181,41 @@ struct StreamOverlayChatView: View {
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
 
+    private func getRotation() -> Double {
+        if model.database.chat.newMessagesAtTop! {
+            return 0.0
+        } else {
+            return 180.0
+        }
+    }
+
+    private func getScaleX() -> Double {
+        if model.database.chat.newMessagesAtTop! {
+            return 1.0
+        } else {
+            return -1.0
+        }
+    }
+
+    private func isCloseToStart(offset: Double) -> Bool {
+        if model.database.chat.newMessagesAtTop! {
+            return offset < 50
+        } else {
+            return offset >= scrollViewSize.height - wholeSize.height - 50.0
+        }
+    }
+
+    private func isMirrored() -> CGFloat {
+        if model.database.chat.mirrored! {
+            return -1
+        } else {
+            return 1
+        }
+    }
+
     var body: some View {
+        let rotation = getRotation()
+        let scaleX = getScaleX()
         GeometryReader { metrics in
             VStack {
                 Spacer()
@@ -209,21 +243,21 @@ struct StreamOverlayChatView: View {
                                                         )
                                                     }
                                                 }
-                                                .rotationEffect(Angle(degrees: 180))
-                                                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                                .rotationEffect(Angle(degrees: rotation))
+                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                             } else {
                                                 LineView(post: post, chat: model.database.chat)
                                                     .padding([.leading], 3)
-                                                    .rotationEffect(Angle(degrees: 180))
-                                                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                                    .rotationEffect(Angle(degrees: rotation))
+                                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                             }
                                         } else {
                                             Rectangle()
                                                 .fill(.red)
                                                 .frame(width: metrics.size.width, height: 1.5)
                                                 .padding(2)
-                                                .rotationEffect(Angle(degrees: 180))
-                                                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                                                .rotationEffect(Angle(degrees: rotation))
+                                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                                         }
                                     }
                                 }
@@ -241,7 +275,7 @@ struct StreamOverlayChatView: View {
                                 ViewOffsetKey.self,
                                 perform: { scrollViewOffsetFromTop in
                                     let offset = max(scrollViewOffsetFromTop, 0)
-                                    if offset >= scrollViewSize.height - wholeSize.height - 50 {
+                                    if isCloseToStart(offset: offset) {
                                         if model.chatPaused, offset >= previousOffset {
                                             model.endOfChatReachedWhenPaused()
                                         }
@@ -257,8 +291,8 @@ struct StreamOverlayChatView: View {
                         }
                     }
                     .foregroundColor(.white)
-                    .rotationEffect(Angle(degrees: 180))
-                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                    .rotationEffect(Angle(degrees: rotation))
+                    .scaleEffect(x: scaleX * isMirrored(), y: 1.0, anchor: .center)
                     .coordinateSpace(name: spaceName)
                     .frame(width: metrics.size.width * model.database.chat.width!,
                            height: metrics.size.height * model.database.chat.height!)

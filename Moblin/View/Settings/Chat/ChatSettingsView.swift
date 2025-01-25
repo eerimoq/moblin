@@ -95,6 +95,22 @@ struct ChatSettingsView: View {
                     })) {
                         Text("Animated emotes")
                     }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.newMessagesAtTop!
+                    }, set: { value in
+                        model.database.chat.newMessagesAtTop = value
+                        model.objectWillChange.send()
+                    })) {
+                        Text("New messages at top")
+                    }
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.mirrored!
+                    }, set: { value in
+                        model.database.chat.mirrored = value
+                        model.objectWillChange.send()
+                    })) {
+                        Text("Mirrored")
+                    }
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Maximum age"),
@@ -147,16 +163,6 @@ struct ChatSettingsView: View {
                         model.database.chat.botEnabled = value
                     })) {
                         Text("Bot")
-                    }
-                }
-                if model.database.showAllSettings! {
-                    Toggle(isOn: Binding(get: {
-                        model.database.chat.mirrored!
-                    }, set: { value in
-                        model.database.chat.mirrored = value
-                        model.objectWillChange.send()
-                    })) {
-                        Text("Mirrored")
                     }
                 }
             } header: {
