@@ -1536,11 +1536,6 @@ private let allBundledLuts = [
     SettingsColorLut(type: .bundled, name: "Moblin Meme"),
 ]
 
-private let bundledLutsButtonIcons = [
-    "Apple Log To Rec 709": "apple.logo",
-    "Moblin Meme": "tornado",
-]
-
 class SettingsColor: Codable {
     var space: SettingsColorSpace = .srgb
     var lutEnabled: Bool = true
@@ -3057,20 +3052,6 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
     }
 }
 
-private func addMissingBundledLutButton(database: Database, lut: SettingsColorLut) {
-    if lut.buttonId == nil {
-        let button = SettingsButton(name: lut.name)
-        button.type = .lut
-        lut.buttonId = button.id
-        database.globalButtons!.append(button)
-    }
-    if let button = database.globalButtons!.first(where: { $0.id == lut.buttonId }) {
-        let imageName = bundledLutsButtonIcons[lut.name] ?? "apple.logo"
-        button.systemImageNameOn = imageName
-        button.systemImageNameOff = imageName
-    }
-}
-
 private func addMissingBundledLuts(database: Database) {
     if database.color == nil {
         database.color = .init()
@@ -3078,10 +3059,8 @@ private func addMissingBundledLuts(database: Database) {
     var bundledLuts: [SettingsColorLut] = []
     for lut in allBundledLuts {
         if let existingLut = database.color!.bundledLuts.first(where: { $0.name == lut.name }) {
-            addMissingBundledLutButton(database: database, lut: existingLut)
             bundledLuts.append(existingLut)
         } else {
-            addMissingBundledLutButton(database: database, lut: lut)
             bundledLuts.append(lut)
         }
     }
