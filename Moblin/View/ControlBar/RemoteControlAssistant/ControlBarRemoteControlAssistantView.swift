@@ -309,16 +309,14 @@ private struct ControlBarRemoteControlAssistantLeftView: View {
                         }
                         StatusItemView(icon: "server.rack", status: status.rtmpServer)
                         StatusItemView(icon: "app.connected.to.app.below.fill", status: status.moblink)
-                        StatusItemView(
-                            icon: "appletvremote.gen1",
-                            status: status.remoteControl
-                        )
+                        StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
                         StatusItemView(icon: "appletvremote.gen1", status: status.djiDevices)
                         StatusItemView(icon: "gamecontroller", status: status.gameController)
                         StatusItemView(icon: "speedometer", status: status.bitrate)
                         StatusItemView(icon: "deskclock", status: status.uptime)
                         StatusItemView(icon: "location", status: status.location)
                         StatusItemView(icon: "phone.connection", status: status.srtla)
+                        StatusItemView(icon: "phone.connection", status: status.srtlaRtts)
                         StatusItemView(icon: "record.circle", status: status.recording)
                         StatusItemView(icon: "globe", status: status.browserWidgets)
                     }

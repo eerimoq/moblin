@@ -27343,6 +27343,9 @@
         }
       }
     },
+    "Bonding RTTs" : {
+
+    },
     "Border" : {
       "localizations" : {
         "de" : {

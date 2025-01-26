@@ -459,6 +459,10 @@ extension Data {
         return map { String(format: "%02hhx", $0) }.joined()
     }
 
+    func getInt64Be(offset: Int = 0) -> Int64 {
+        return Int64(UInt64(getFourBytesBe(offset: offset)) << 32 | UInt64(getFourBytesBe(offset: offset + 4)))
+    }
+
     func getUInt32Be(offset: Int = 0) -> UInt32 {
         return withUnsafeBytes { data in
             data.load(fromByteOffset: offset, as: UInt32.self)
@@ -501,6 +505,14 @@ extension Data {
             of: value.bigEndian,
             toByteOffset: offset,
             as: UInt32.self
+        ) }
+    }
+
+    mutating func setInt64Be(value: Int64, offset: Int = 0) {
+        withUnsafeMutableBytes { data in data.storeBytes(
+            of: value.bigEndian,
+            toByteOffset: offset,
+            as: Int64.self
         ) }
     }
 

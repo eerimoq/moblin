@@ -248,6 +248,13 @@ private struct StatusesView: View {
             )
         }
         StreamOverlayIconAndTextView(
+            show: model.isShowingStatusBondingRtts(),
+            icon: "phone.connection",
+            text: model.bondingRtts,
+            textPlacement: textPlacement,
+            color: netStreamColor()
+        )
+        StreamOverlayIconAndTextView(
             show: model.isShowingStatusUptime(),
             icon: "deskclock",
             text: model.uptime,

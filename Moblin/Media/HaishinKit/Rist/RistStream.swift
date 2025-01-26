@@ -136,9 +136,10 @@ class RistStream: NetStream {
         var connections: [BondingConnection] = []
         ristQueue.sync {
             for peer in peers {
-                var connection = BondingConnection(name: peer.interfaceName, usage: 0)
+                var connection = BondingConnection(name: peer.interfaceName, usage: 0, rtt: nil)
                 if let stats = peer.stats {
                     connection.usage = stats.bandwidth + stats.retryBandwidth
+                    connection.rtt = Int(stats.rtt)
                 }
                 connections.append(connection)
             }

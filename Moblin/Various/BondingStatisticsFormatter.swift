@@ -3,6 +3,7 @@ import SwiftUI
 struct BondingConnection {
     let name: String
     var usage: UInt64
+    var rtt: Int?
 }
 
 struct BondingPercentage: Identifiable {
@@ -28,7 +29,7 @@ class BondingStatisticsFormatter {
         self.networkInterfaceNames = networkInterfaceNames
     }
 
-    func format(_ connections: [BondingConnection]) -> (String, [BondingPercentage])? {
+    func format(_ connections: [BondingConnection]) -> (String, String, [BondingPercentage])? {
         guard !connections.isEmpty else {
             return nil
         }
@@ -39,7 +40,7 @@ class BondingStatisticsFormatter {
             totalUsage = 1
         }
         var percentges = connections.map { connection in
-            BondingConnection(name: connection.name, usage: 100 * connection.usage / totalUsage)
+            BondingConnection(name: connection.name, usage: 100 * connection.usage / totalUsage, rtt: nil)
         }
         percentges[percentges.count - 1].usage = 100 - percentges
             .prefix(upTo: percentges.count - 1)
@@ -49,8 +50,12 @@ class BondingStatisticsFormatter {
         let message = percentges.map { percentage in
             "\(percentage.usage)% \(percentage.name)"
         }.joined(separator: ", ")
+        let rtts = connections.map { connection in
+            "\(connection.rtt ?? -1) ms \(connection.name)"
+        }.joined(separator: ", ")
         return (
             message,
+            rtts,
             percentges.enumerated()
                 .map { .init(id: $0, percentage: $1.usage, color: getNameColor($1.name)) }
         )

@@ -366,6 +366,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var bondingStatistics = noValue
+    @Published var bondingRtts = noValue
     private var bondingStatisticsFormatter = BondingStatisticsFormatter()
     @Published var audioLevel: Float = defaultAudioLevel
     @Published var numberOfAudioChannels: Int = 0
@@ -2839,15 +2840,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateBondingStatistics() {
         if isStreamConnected() {
             if let connections = media.srtlaConnectionStatistics() {
-                if let (message, percentages) = bondingStatisticsFormatter.format(connections) {
+                if let (message, rtts, percentages) = bondingStatisticsFormatter.format(connections) {
                     bondingStatistics = message
+                    bondingRtts = rtts
                     bondingPieChartPercentages = percentages
                 }
                 return
             }
             if let connections = media.ristBondingStatistics() {
-                if let (message, percentages) = bondingStatisticsFormatter.format(connections) {
+                if let (message, rtts, percentages) = bondingStatisticsFormatter.format(connections) {
                     bondingStatistics = message
+                    bondingRtts = rtts
                     bondingPieChartPercentages = percentages
                 }
                 return
@@ -7014,6 +7017,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.bonding! && stream.isBonding() && isLive
     }
 
+    func isShowingStatusBondingRtts() -> Bool {
+        return database.show.bondingRtts! && stream.isBonding() && isLive
+    }
+
     func isShowingStatusRecording() -> Bool {
         return isRecording
     }
@@ -7145,6 +7152,9 @@ extension Model: RemoteControlStreamerDelegate {
         }
         if isShowingStatusBonding() {
             topRight.srtla = RemoteControlStatusItem(message: bondingStatistics)
+        }
+        if isShowingStatusBondingRtts() {
+            topRight.srtlaRtts = RemoteControlStatusItem(message: bondingRtts)
         }
         if isShowingStatusRecording() {
             topRight.recording = RemoteControlStatusItem(message: recordingLength)

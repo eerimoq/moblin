@@ -304,7 +304,8 @@ class SrtlaClient {
                 }
                 connections.append(BondingConnection(
                     name: connection.typeString,
-                    usage: byteCount
+                    usage: byteCount,
+                    rtt: connection.rtt
                 ))
             }
         }

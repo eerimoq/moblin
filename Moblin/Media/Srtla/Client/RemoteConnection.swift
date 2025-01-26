@@ -50,6 +50,8 @@ class RemoteConnection {
         }
     }
 
+    private var keepAliveSendBaseTime = ContinuousClock.now
+    var rtt: Int = 0
     let interface: NWInterface?
     private var dataPacketsToSend: [Data] = []
     private var latestDataSentTime = ContinuousClock.now
@@ -307,8 +309,13 @@ class RemoteConnection {
     }
 
     private func sendSrtlaKeepalive() {
-        let packet = createSrtlaPacket(type: .keepalive, length: srtControlTypeSize)
+        var packet = createSrtlaPacket(type: .keepalive, length: srtControlTypeSize + 8)
+        packet.setInt64Be(value: getKeepAliveTime(), offset: srtControlTypeSize)
         sendPacket(packet: packet)
+    }
+
+    private func getKeepAliveTime() -> Int64 {
+        return keepAliveSendBaseTime.duration(to: .now).milliseconds
     }
 
     private func handleSrtAck(packet: Data) {
@@ -336,7 +343,13 @@ class RemoteConnection {
         windowSize = max(windowSize - windowDecrement, windowMinimum * windowMultiply)
     }
 
-    private func handleSrtlaKeepalive() {}
+    private func handleSrtlaKeepalive(packet: Data) {
+        guard packet.count >= 10 else {
+            return
+        }
+        let sendTime = packet.getInt64Be(offset: srtControlTypeSize)
+        rtt = Int((getKeepAliveTime() - sendTime).clamped(to: 0 ... 10000))
+    }
 
     private func handleSrtlaAck(packet: Data) {
         guard (packet.count % 4) == 0 else {
@@ -384,9 +397,7 @@ class RemoteConnection {
         connectTimer.stop()
         keepaliveTimer.startPeriodic(interval: 1) {
             let now = ContinuousClock.now
-            if self.latestSentTime < now - .seconds(0.5) {
-                self.sendSrtlaKeepalive()
-            }
+            self.sendSrtlaKeepalive()
             if self.latestReceivedTime < now - .seconds(5) {
                 self.reconnect(reason: "No packet received in 5 seconds")
             }
@@ -408,7 +419,7 @@ class RemoteConnection {
     private func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {
         switch type {
         case .keepalive:
-            handleSrtlaKeepalive()
+            handleSrtlaKeepalive(packet: packet)
         case .ack:
             handleSrtlaAck(packet: packet)
         case .reg1:

@@ -129,6 +129,7 @@ struct RemoteControlStatusTopRight: Codable {
     var uptime: RemoteControlStatusItem?
     var location: RemoteControlStatusItem?
     var srtla: RemoteControlStatusItem?
+    var srtlaRtts: RemoteControlStatusItem?
     var recording: RemoteControlStatusItem?
     var browserWidgets: RemoteControlStatusItem?
     var moblink: RemoteControlStatusItem?

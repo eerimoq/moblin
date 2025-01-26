@@ -1575,6 +1575,7 @@ class SettingsShow: Codable {
     var bonding: Bool? = true
     var events: Bool? = true
     var djiDevices: Bool? = true
+    var bondingRtts: Bool? = false
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -4497,6 +4498,10 @@ final class Settings {
         }
         if realDatabase.color!.diskLutsCube == nil {
             realDatabase.color!.diskLutsCube = []
+            store()
+        }
+        if realDatabase.show.bondingRtts == nil {
+            realDatabase.show.bondingRtts = false
             store()
         }
     }

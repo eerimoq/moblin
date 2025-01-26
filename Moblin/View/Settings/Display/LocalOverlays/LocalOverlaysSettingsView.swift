@@ -123,6 +123,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.bonding = value
                 }
+                InfoView(icon: "phone.connection", text: String(localized: "Bonding RTTs")) {
+                    show.bondingRtts!
+                } set: { value in
+                    show.bondingRtts = value
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
