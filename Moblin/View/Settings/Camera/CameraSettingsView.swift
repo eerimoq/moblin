@@ -15,29 +15,33 @@ struct CustomLutView: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                NavigationLink {
-                    NameEditView(name: $name)
-                } label: {
-                    TextItemView(name: String(localized: "Name"), value: name)
+        NavigationLink {
+            Form {
+                Section {
+                    NavigationLink {
+                        NameEditView(name: $name)
+                    } label: {
+                        TextItemView(name: String(localized: "Name"), value: name)
+                    }
+                    .onChange(of: name) { name in
+                        model.setLutName(lut: lut, name: name)
+                    }
                 }
-                .onChange(of: name) { name in
-                    model.setLutName(lut: lut, name: name)
-                }
-            }
-            Section {
-                if let image = loadImage() {
-                    HCenter {
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 1920 / 6, height: 1080 / 6)
+                Section {
+                    if let image = loadImage() {
+                        HCenter {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 1920 / 6, height: 1080 / 6)
+                        }
                     }
                 }
             }
+            .navigationTitle("Custom LUT")
+        } label: {
+            Text(name)
         }
-        .navigationTitle("Custom LUT")
     }
 }
 
@@ -53,12 +57,8 @@ private struct CameraSettingsCubeLutsView: View {
         Section {
             List {
                 ForEach(model.database.color!.diskLutsCube!) { lut in
-                    NavigationLink {
-                        CustomLutView(lut: lut, name: lut.name)
-                    } label: {
-                        Text(lut.name)
-                    }
-                    .tag(lut.id)
+                    CustomLutView(lut: lut, name: lut.name)
+                        .tag(lut.id)
                 }
                 .onDelete(perform: { offsets in
                     model.removeLutCube(offsets: offsets)
@@ -90,12 +90,8 @@ private struct CameraSettingsPngLutsView: View {
         Section {
             List {
                 ForEach(model.database.color!.diskLutsPng!) { lut in
-                    NavigationLink {
-                        CustomLutView(lut: lut, name: lut.name)
-                    } label: {
-                        Text(lut.name)
-                    }
-                    .tag(lut.id)
+                    CustomLutView(lut: lut, name: lut.name)
+                        .tag(lut.id)
                 }
                 .onDelete(perform: { offsets in
                     model.removeLutPng(offsets: offsets)
