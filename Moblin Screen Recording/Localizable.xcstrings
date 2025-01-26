@@ -20,6 +20,12 @@
             "state" : "translated",
             "value" : " %lld ch"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld ch"
+          }
         }
       }
     },
@@ -38,6 +44,12 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB,"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld dB,"
@@ -74,7 +86,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到主機"
+            "value" : "缺少主機"
           }
         }
       }
@@ -273,7 +285,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL 格式錯誤"
+            "value" : "URL格式錯誤"
           }
         }
       }
@@ -307,7 +319,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到RIST連接埠"
+            "value" : "缺少RIST連接埠"
           }
         }
       }
@@ -341,7 +353,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到RTMP串流名稱"
+            "value" : "缺少RTMP串流名稱"
           }
         }
       }
@@ -397,7 +409,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到SRT(LA)連接埠"
+            "value" : "缺少SRT(LA)連接埠"
           }
         }
       }
