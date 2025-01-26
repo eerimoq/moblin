@@ -189,6 +189,7 @@ struct QuickButtonWidgetsView: View {
                             widget.enabled!
                         }, set: { value in
                             widget.enabled = value
+                            model.reloadSpeechToText()
                             model.sceneUpdated()
                         })) {
                             IconAndTextView(
