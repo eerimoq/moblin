@@ -51809,6 +51809,9 @@
         }
       }
     },
+    "Failed to create LUT image" : {
+
+    },
     "Failed to create stream marker" : {
       "localizations" : {
         "de" : {
@@ -52624,6 +52627,15 @@
           }
         }
       }
+    },
+    "Failed to get LUT data" : {
+
+    },
+    "Failed to get LUT pixels" : {
+
+    },
+    "Failed to load .cube file" : {
+
     },
     "Failed to render %@" : {
       "localizations" : {
@@ -69534,6 +69546,18 @@
           }
         }
       }
+    },
+    "LUT dimension %lld too big (over 64)" : {
+
+    },
+    "LUT image convertion failed" : {
+
+    },
+    "LUT image is not 8 or 16 bits per pixel component" : {
+
+    },
+    "LUT image is not a cube" : {
+
     },
     "LUTs" : {
       "localizations" : {

@@ -11,20 +11,20 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
     let height = image.size.height * image.scale
     let dimension = Int(cbrt(Double(width * height)))
     guard Int(width) % dimension == 0, Int(height) % dimension == 0 else {
-        throw "LUT image is not a cube"
+        throw String(localized: "LUT image is not a cube")
     }
     guard dimension * dimension * dimension == Int(width * height) else {
-        throw "LUT image is not a cube"
+        throw String(localized: "LUT image is not a cube")
     }
     guard let cgImage = image.cgImage else {
-        throw "LUT image convertion failed"
+        throw String(localized: "LUT image convertion failed")
     }
     guard let data = cgImage.dataProvider?.data else {
-        throw "Failed to get LUT data"
+        throw String(localized: "Failed to get LUT data")
     }
     let length = CFDataGetLength(data)
     guard let data = CFDataGetBytePtr(data) else {
-        throw "Failed to get LUT pixels"
+        throw String(localized: "Failed to get LUT pixels")
     }
     var pixels: [Float]
     if cgImage.bitsPerComponent == 8 {
@@ -34,7 +34,7 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
             stride(from: 0, to: length / 2, by: 1).map { Float(data[$0].littleEndian) / 65535.0 }
         }
     } else {
-        throw "LUT image is not 8 or 16 bits per pixel component"
+        throw String(localized: "LUT image is not 8 or 16 bits per pixel component")
     }
     let numberOfPixels = Int(width * height)
     let numberOutputOfComponents = numberOfPixels * 4
@@ -86,6 +86,8 @@ final class LutEffect: VideoEffect {
         DispatchQueue.global().async {
             do {
                 try self.loadLut(lut: lut, imageStorage: imageStorage)
+            } catch is SwiftCubeError {
+                onError(String(localized: "Failed to load .cube file"))
             } catch {
                 onError("\(error)")
             }
@@ -116,7 +118,7 @@ final class LutEffect: VideoEffect {
     private func loadDiskLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
         let data = try Data(contentsOf: imageStorage.makePath(id: lut.id))
         guard let image = UIImage(data: data) else {
-            throw "Failed to create LUT image"
+            throw String(localized: "Failed to create LUT image")
         }
         try loadImageLut(image: image)
     }
@@ -124,7 +126,7 @@ final class LutEffect: VideoEffect {
     private func loadDiskCubeLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
         let sc3dLut = try SC3DLut(contentsOf: imageStorage.makePath(id: lut.id))
         guard sc3dLut.size <= 64 else {
-            throw "LUT dimension \(sc3dLut.size ?? 0) too big (over 64)"
+            throw String(localized: "LUT dimension \(sc3dLut.size ?? 0) too big (over 64)")
         }
         let filter = try sc3dLut.ciFilter()
         lutQueue.sync {
