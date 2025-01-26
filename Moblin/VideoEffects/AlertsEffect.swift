@@ -87,10 +87,14 @@ private enum MediaItem {
     case customUrl(URL)
 }
 
+private struct GifImage {
+    let image: CIImage
+    let timeOffset: Double
+}
+
 private class Medias {
-    var images: [CIImage] = []
+    var images: Deque<GifImage> = []
     var soundUrl: URL?
-    var fps: Double = 1.0
 
     func updateSoundUrl(sound: MediaItem) {
         switch sound {
@@ -107,7 +111,7 @@ private class Medias {
 
     func updateImages(image: MediaItem, loopCount: Int) {
         DispatchQueue.global().async {
-            var images: [CIImage] = []
+            var images: Deque<GifImage> = []
             switch image {
             case let .bundledName(name):
                 if let url = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "gif") {
@@ -122,20 +126,15 @@ private class Medias {
         }
     }
 
-    private func loadImages(url: URL, loopCount: Int) -> [CIImage] {
-        var fpsTime = 0.0
-        var gifTime = 0.0
-        var images: [CIImage] = []
+    private func loadImages(url: URL, loopCount: Int) -> Deque<GifImage> {
+        var timeOffset = 0.0
+        var images: Deque<GifImage> = []
         for _ in 0 ..< loopCount {
             if let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) {
                 for index in 0 ..< animatedImage.animatedImageFrameCount {
                     if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
-                        gifTime += animatedImage.animatedImageDuration(at: index)
-                        let image = CIImage(cgImage: cgImage)
-                        while fpsTime < gifTime {
-                            images.append(image)
-                            fpsTime += 1 / fps
-                        }
+                        timeOffset += animatedImage.animatedImageDuration(at: index)
+                        images.append(GifImage(image: CIImage(cgImage: cgImage), timeOffset: timeOffset))
                     }
                 }
             }
@@ -159,8 +158,8 @@ private struct LandmarkSettings {
 }
 
 final class AlertsEffect: VideoEffect {
-    private var images: [CIImage] = []
-    private var imageIndex: Int = 0
+    private var images: Deque<GifImage> = []
+    private var basePresentationTimeStamp: Double?
     private var messageImage: CIImage?
     private var audioPlayer: AVAudioPlayer?
     private var rate: Float = 0.4
@@ -172,7 +171,6 @@ final class AlertsEffect: VideoEffect {
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
-    private var fps: Double
     private var x: Double = 0
     private var y: Double = 0
     private let mediaStorage: AlertMediaStorage
@@ -188,21 +186,16 @@ final class AlertsEffect: VideoEffect {
 
     init(
         settings: SettingsWidgetAlerts,
-        fps: Int,
         delegate: AlertsEffectDelegate,
         mediaStorage: AlertMediaStorage,
         bundledImages: [SettingsAlertsMediaGalleryItem],
         bundledSounds: [SettingsAlertsMediaGalleryItem]
     ) {
         self.settings = settings
-        self.fps = Double(fps)
         self.delegate = delegate
         self.mediaStorage = mediaStorage
         self.bundledImages = bundledImages
         self.bundledSounds = bundledSounds
-        twitchFollow.fps = self.fps
-        twitchSubscribe.fps = self.fps
-        twitchRaid.fps = self.fps
         audioPlayer = nil
         super.init()
         setSettings(settings: settings)
@@ -239,7 +232,6 @@ final class AlertsEffect: VideoEffect {
         for cheerBits in twitch.cheerBits! {
             (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
             let medias = Medias()
-            medias.fps = fps
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             twitchCheers.append(medias)
@@ -248,7 +240,6 @@ final class AlertsEffect: VideoEffect {
         for command in settings.chatBot!.commands {
             (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
             let medias = Medias()
-            medias.fps = fps
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             chatBotCommands.append(medias)
@@ -257,7 +248,6 @@ final class AlertsEffect: VideoEffect {
         for string in settings.speechToText!.strings {
             (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
             let medias = Medias()
-            medias.fps = fps
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             speechToTextStrings.append(medias)
@@ -282,7 +272,7 @@ final class AlertsEffect: VideoEffect {
         tryPlayNextAlert()
     }
 
-    func shoudRegisterEffect() -> Bool {
+    func shouldRegisterEffect() -> Bool {
         return lockQueue.sync { !toBeRemoved }
     }
 
@@ -461,7 +451,7 @@ final class AlertsEffect: VideoEffect {
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
         lockQueue.sync {
             self.images = medias.images
-            imageIndex = 0
+            self.basePresentationTimeStamp = nil
             self.messageImage = messageImage
             toBeRemoved = false
             self.landmarkSettings = landmarkSettings
@@ -589,16 +579,22 @@ final class AlertsEffect: VideoEffect {
         return landmarkSettings != nil
     }
 
-    private func getNext(image: CIImage) -> (CIImage, CIImage?, Double, Double, LandmarkSettings?) {
-        guard imageIndex < images.count else {
-            toBeRemoved = true
-            return (image, nil, x, y, landmarkSettings)
-        }
+    private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
         defer {
-            imageIndex += 1
-            toBeRemoved = imageIndex == images.count
+            toBeRemoved = images.isEmpty
         }
-        return (images[imageIndex], messageImage, x, y, landmarkSettings)
+        if basePresentationTimeStamp == nil {
+            basePresentationTimeStamp = presentationTimeStamp
+        }
+        let timeOffset = presentationTimeStamp - basePresentationTimeStamp!
+        while let image = images.first {
+            if timeOffset >= image.timeOffset {
+                images.removeFirst()
+                continue
+            }
+            return (image.image, messageImage, x, y, landmarkSettings)
+        }
+        return (nil, nil, x, y, landmarkSettings)
     }
 
     private func calcMinXMaxYWidthHeight(points: [CGPoint]) -> (CGFloat, CGFloat, CGFloat, CGFloat)? {
@@ -764,9 +760,9 @@ final class AlertsEffect: VideoEffect {
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let (alertImage, messageImage, x, y, landmarkSettings) = lockQueue.sync {
-            getNext(image: image)
+            getNext(info.presentationTimeStamp.seconds)
         }
-        guard let messageImage else {
+        guard let alertImage, let messageImage else {
             return image
         }
         if let landmarkSettings {
@@ -778,14 +774,7 @@ final class AlertsEffect: VideoEffect {
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
         return lockQueue.sync {
-            guard imageIndex < images.count else {
-                self.toBeRemoved = true
-                return image
-            }
-            defer {
-                self.imageIndex += 1
-                self.toBeRemoved = imageIndex == images.count
-            }
+            self.toBeRemoved = true
             return image
         }
     }

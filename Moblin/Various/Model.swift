@@ -3575,7 +3575,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for widget in database.widgets where widget.type == .alerts {
             alertsEffects[widget.id] = AlertsEffect(
                 settings: widget.alerts!.clone(),
-                fps: stream.fps,
                 delegate: self,
                 mediaStorage: alertMediaStorage,
                 bundledImages: database.alertsMediaGallery!.bundledImages,
@@ -5830,7 +5829,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             case .alerts:
                 if let alertsEffect = alertsEffects[widget.id] {
-                    if alertsEffect.shoudRegisterEffect() {
+                    if alertsEffect.shouldRegisterEffect() {
                         effects.append(alertsEffect)
                     }
                     alertsEffect.setPosition(x: sceneWidget.x, y: sceneWidget.y)
