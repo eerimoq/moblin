@@ -2733,7 +2733,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func allLuts() -> [SettingsColorLut] {
-        return database.color!.bundledLuts + database.color!.diskLutsPng! + database.color!.diskLutsCube!
+        return database.color!.bundledLuts + database.color!.diskLutsCube! + database.color!.diskLutsPng!
     }
 
     func getLogLutById(id: UUID) -> SettingsColorLut? {
