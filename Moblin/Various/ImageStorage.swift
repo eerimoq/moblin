@@ -40,6 +40,14 @@ class ImageStorage {
         }
     }
 
+    func write(id: UUID, url: URL) {
+        do {
+            try write(id: id, data: Data(contentsOf: url))
+        } catch {
+            logger.error("image-storage: Write URL failed with error \(error)")
+        }
+    }
+
     func read(id: UUID) -> Data? {
         do {
             return try Data(contentsOf: makePath(id: id))

@@ -1005,6 +1005,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func makeErrorToastMain(title: String, font: Font? = nil, subTitle: String? = nil, vibrate: Bool = false) {
+        DispatchQueue.main.async {
+            self.makeErrorToast(title: title, font: font, subTitle: subTitle, vibrate: vibrate)
+        }
+    }
+
     func scrollQuickButtonsToBottom() {
         scrollQuickButtons += 1
     }
@@ -2680,48 +2686,34 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func loadLutImage(lut: SettingsColorLut) -> UIImage? {
-        var image: UIImage?
-        switch lut.type {
-        case .bundled:
-            guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil) else {
-                return nil
-            }
-            image = UIImage(contentsOfFile: path)
-        case .disk:
-            if let data = try? Data(contentsOf: imageStorage.makePath(id: lut.id)) {
-                image = UIImage(data: data)
-            }
-        }
-        guard let image else {
-            let message = "Failed to load LUT image \(lut.name)"
-            makeErrorToast(title: message)
-            logger.info(message)
-            return nil
-        }
-        return image
-    }
-
     func lutUpdated() {
         guard let lut = getLogLutById(id: database.color!.lut) else {
             media.unregisterEffect(lutEffect)
             return
         }
-        guard let image = loadLutImage(lut: lut) else {
-            return
+        lutEffect
+            .setLut(lut: lut.clone(), imageStorage: imageStorage) { message in self.makeErrorToastMain(title: message)
+            }
+    }
+
+    func addLutCube(url: URL) {
+        let lut = SettingsColorLut(type: .diskCube, name: "My LUT")
+        imageStorage.write(id: lut.id, url: url)
+        database.color!.diskLutsCube!.append(lut)
+        resetSelectedScene()
+    }
+
+    func removeLutCube(offsets: IndexSet) {
+        for offset in offsets {
+            let lut = database.color!.diskLutsCube![offset]
+            imageStorage.remove(id: lut.id)
         }
-        do {
-            try lutEffect.setLut(image: image)
-        } catch {
-            let message = "\(error)"
-            makeErrorToast(title: message)
-            logger.info(message)
-        }
+        database.color!.diskLutsCube!.remove(atOffsets: offsets)
+        resetSelectedScene()
     }
 
     func addLutPng(data: Data) {
         let lut = SettingsColorLut(type: .disk, name: "My LUT")
-        lut.buttonId = .init()
         imageStorage.write(id: lut.id, data: data)
         database.color!.diskLutsPng!.append(lut)
         resetSelectedScene()
@@ -2778,9 +2770,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     break
                 }
             }
-            if database.color!.diskLutsPng!.contains(where: { lut in
-                lut.id == id
-            }) {
+            if database.color!.diskLutsPng!.contains(where: { lut in lut.id == id }) {
+                used = true
+            }
+            if database.color!.diskLutsCube!.contains(where: { lut in lut.id == id }) {
                 used = true
             }
             if !used {
@@ -3603,15 +3596,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         lutEffects.removeAll()
         for lut in allLuts() {
-            guard let image = loadLutImage(lut: lut) else {
-                continue
-            }
             let lutEffect = LutEffect()
-            do {
-                try lutEffect.setLut(image: image)
-            } catch {
-                continue
-            }
+            lutEffect
+                .setLut(lut: lut.clone(), imageStorage: imageStorage) { message in
+                    self.makeErrorToastMain(title: message)
+                }
             lutEffects[lut.id] = lutEffect
         }
         sceneUpdated(imageEffectChanged: true)

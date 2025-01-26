@@ -17440,6 +17440,7 @@
       }
     },
     "Add your own LUTs." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -77538,6 +77539,12 @@
         }
       }
     },
+    "My .cube LUTs" : {
+
+    },
+    "My .png LUTs" : {
+
+    },
     "My BRB scene" : {
       "localizations" : {
         "de" : {
@@ -77947,6 +77954,7 @@
       }
     },
     "My LUTs" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

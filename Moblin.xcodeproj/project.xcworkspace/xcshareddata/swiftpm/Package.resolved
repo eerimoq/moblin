@@ -1,5 +1,5 @@
 {
-  "originHash" : "0ad8b7c27ace5b3ff00b54edf57d3dc6790dfa39b594aa3d552ad8382d1038f2",
+  "originHash" : "e671b8ad5d542d911ad60805b747f3cb37dd3eb6eec37fd3f405c067fb95e8cf",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -17,6 +17,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "24226431095c614c88de686ea5afcc99d7cb31f5"
+      }
+    },
+    {
+      "identity" : "binarycodable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/christophhagen/BinaryCodable",
+      "state" : {
+        "revision" : "f4bdd82c5da4a825634bd32c3b2ef70faa773143",
+        "version" : "3.0.3"
       }
     },
     {
@@ -152,6 +161,15 @@
       "state" : {
         "revision" : "ebc7251dd5b37f627c93698e4374084d98409633",
         "version" : "1.28.2"
+      }
+    },
+    {
+      "identity" : "swiftcube",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/SwiftCube",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0b5b040814a3bf458fceb5074cf336b8301847a6"
       }
     },
     {

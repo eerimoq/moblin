@@ -41,7 +41,94 @@ struct CustomLutView: View {
     }
 }
 
-struct CameraSettingsLutsView: View {
+private struct CameraSettingsCubeLutsView: View {
+    @EnvironmentObject var model: Model
+    @State var showPicker = false
+
+    private func onUrl(url: URL) {
+        model.addLutCube(url: url)
+    }
+
+    var body: some View {
+        Section {
+            List {
+                ForEach(model.database.color!.diskLutsCube!) { lut in
+                    NavigationLink {
+                        CustomLutView(lut: lut, name: lut.name)
+                    } label: {
+                        Text(lut.name)
+                    }
+                    .tag(lut.id)
+                }
+                .onDelete(perform: { offsets in
+                    model.removeLutCube(offsets: offsets)
+                    model.objectWillChange.send()
+                })
+            }
+            Button {
+                showPicker = true
+                model.onDocumentPickerUrl = onUrl
+            } label: {
+                HCenter {
+                    Text("Add")
+                }
+            }
+            .sheet(isPresented: $showPicker) {
+                AlertPickerView(type: .item)
+            }
+        } header: {
+            Text("My .cube LUTs")
+        }
+    }
+}
+
+private struct CameraSettingsPngLutsView: View {
+    @EnvironmentObject var model: Model
+    @State var selectedImageItem: PhotosPickerItem?
+
+    var body: some View {
+        Section {
+            List {
+                ForEach(model.database.color!.diskLutsPng!) { lut in
+                    NavigationLink {
+                        CustomLutView(lut: lut, name: lut.name)
+                    } label: {
+                        Text(lut.name)
+                    }
+                    .tag(lut.id)
+                }
+                .onDelete(perform: { offsets in
+                    model.removeLutPng(offsets: offsets)
+                    model.objectWillChange.send()
+                })
+            }
+            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+                HCenter {
+                    Text("Add")
+                }
+            }
+            .onChange(of: selectedImageItem) { imageItem in
+                imageItem?.loadTransferable(type: Data.self) { result in
+                    switch result {
+                    case let .success(data?):
+                        DispatchQueue.main.async {
+                            model.addLutPng(data: data)
+                            selectedImageItem = nil
+                        }
+                    case .success(nil):
+                        logger.error("widget: image is nil")
+                    case let .failure(error):
+                        logger.error("widget: image error: \(error)")
+                    }
+                }
+            }
+        } header: {
+            Text("My .png LUTs")
+        }
+    }
+}
+
+private struct CameraSettingsLutsView: View {
     @EnvironmentObject var model: Model
     @State var selectedImageItem: PhotosPickerItem?
 
@@ -57,46 +144,8 @@ struct CameraSettingsLutsView: View {
             } header: {
                 Text("Bundled")
             }
-            Section {
-                List {
-                    ForEach(model.database.color!.diskLutsPng!) { lut in
-                        NavigationLink {
-                            CustomLutView(lut: lut, name: lut.name)
-                        } label: {
-                            Text(lut.name)
-                        }
-                        .tag(lut.id)
-                    }
-                    .onDelete(perform: { offsets in
-                        model.removeLutPng(offsets: offsets)
-                        model.objectWillChange.send()
-                    })
-                }
-                PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                    HCenter {
-                        Text("Add")
-                    }
-                }
-                .onChange(of: selectedImageItem) { imageItem in
-                    imageItem?.loadTransferable(type: Data.self) { result in
-                        switch result {
-                        case let .success(data?):
-                            DispatchQueue.main.async {
-                                model.addLutPng(data: data)
-                                selectedImageItem = nil
-                            }
-                        case .success(nil):
-                            logger.error("widget: image is nil")
-                        case let .failure(error):
-                            logger.error("widget: image error: \(error)")
-                        }
-                    }
-                }
-            } header: {
-                Text("My LUTs")
-            } footer: {
-                Text("Add your own LUTs.")
-            }
+            CameraSettingsCubeLutsView()
+            CameraSettingsPngLutsView()
         }
         .navigationTitle("LUTs")
     }

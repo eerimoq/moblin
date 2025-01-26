@@ -1,5 +1,6 @@
 import AVFoundation
 import MetalPetal
+import SwiftCube
 import UIKit
 import Vision
 
@@ -81,7 +82,57 @@ final class LutEffect: VideoEffect {
         return "LUT"
     }
 
-    func setLut(image: UIImage) throws {
+    func setLut(lut: SettingsColorLut, imageStorage: ImageStorage, onError: @escaping (String) -> Void) {
+        DispatchQueue.global().async {
+            do {
+                try self.loadLut(lut: lut, imageStorage: imageStorage)
+            } catch {
+                onError("\(error)")
+            }
+        }
+    }
+
+    private func loadLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
+        switch lut.type {
+        case .bundled:
+            try loadBundledLut(lut: lut)
+        case .disk:
+            try loadDiskLut(lut: lut, imageStorage: imageStorage)
+        case .diskCube:
+            try loadDiskCubeLut(lut: lut, imageStorage: imageStorage)
+        }
+    }
+
+    private func loadBundledLut(lut: SettingsColorLut) throws {
+        guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil) else {
+            return
+        }
+        guard let image = UIImage(contentsOfFile: path) else {
+            return
+        }
+        try loadImageLut(image: image)
+    }
+
+    private func loadDiskLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
+        let data = try Data(contentsOf: imageStorage.makePath(id: lut.id))
+        guard let image = UIImage(data: data) else {
+            throw "Failed to create LUT image"
+        }
+        try loadImageLut(image: image)
+    }
+
+    private func loadDiskCubeLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
+        let sc3dLut = try SC3DLut(contentsOf: imageStorage.makePath(id: lut.id))
+        guard sc3dLut.size <= 64 else {
+            throw "LUT dimension \(sc3dLut.size ?? 0) too big (over 64)"
+        }
+        let filter = try sc3dLut.ciFilter()
+        lutQueue.sync {
+            self.filter = filter
+        }
+    }
+
+    private func loadImageLut(image: UIImage) throws {
         let (dimension, data) = try convertLut(image: image)
         let filter = CIFilter.colorCubeWithColorSpace()
         filter.cubeData = data

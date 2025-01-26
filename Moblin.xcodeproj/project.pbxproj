@@ -357,6 +357,7 @@
 		03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */; };
 		03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B2189E2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift */; };
 		03B21A3B2CD09A6200E22590 /* PadelScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B21A3A2CD09A5E00E22590 /* PadelScoreboardView.swift */; };
+		03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */ = {isa = PBXBuildFile; productRef = 03B279822D45EB9C007DEDB2 /* SwiftCube */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarLandscapeView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
@@ -1068,6 +1069,7 @@
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
 				0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */,
 				0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */,
+				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
 				03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
@@ -2859,6 +2861,7 @@
 				0318D3692CF51D6900E12F3B /* SwiftProtobuf */,
 				03C3572C2D0416CD00B8B29F /* AppleGPUInfo */,
 				03AC6B942D17786700832A7E /* TrueTime */,
+				03B279822D45EB9C007DEDB2 /* SwiftCube */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2976,6 +2979,7 @@
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				03C3572B2D0416CD00B8B29F /* XCRemoteSwiftPackageReference "applegpuinfo" */,
 				03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */,
+				03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -4142,6 +4146,14 @@
 				kind = branch;
 			};
 		};
+		03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/SwiftCube";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/CoreOffice/XMLCoder";
@@ -4252,6 +4264,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */;
 			productName = Rist;
+		};
+		03B279822D45EB9C007DEDB2 /* SwiftCube */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */;
+			productName = SwiftCube;
 		};
 		03B7DAB42BA640C100CEFC1B /* XMLCoder */ = {
 			isa = XCSwiftPackageProductDependency;

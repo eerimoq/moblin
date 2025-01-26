@@ -1493,6 +1493,7 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
 enum SettingsColorLutType: String, Codable {
     case bundled
     case disk
+    case diskCube
 
     public init(from decoder: Decoder) throws {
         do {
@@ -1515,6 +1516,13 @@ class SettingsColorLut: Codable, Identifiable {
     init(type: SettingsColorLutType, name: String) {
         self.type = type
         self.name = name
+    }
+
+    func clone() -> SettingsColorLut {
+        let new = SettingsColorLut(type: type, name: name)
+        new.id = id
+        new.enabled = enabled
+        return new
     }
 }
 
