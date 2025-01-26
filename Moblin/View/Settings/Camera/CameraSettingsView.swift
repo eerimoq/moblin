@@ -59,7 +59,7 @@ struct CameraSettingsLutsView: View {
             }
             Section {
                 List {
-                    ForEach(model.database.color!.diskLuts!) { lut in
+                    ForEach(model.database.color!.diskLutsPng!) { lut in
                         NavigationLink {
                             CustomLutView(lut: lut, name: lut.name)
                         } label: {
@@ -68,7 +68,7 @@ struct CameraSettingsLutsView: View {
                         .tag(lut.id)
                     }
                     .onDelete(perform: { offsets in
-                        model.removeLut(offsets: offsets)
+                        model.removeLutPng(offsets: offsets)
                         model.objectWillChange.send()
                     })
                 }
@@ -82,7 +82,7 @@ struct CameraSettingsLutsView: View {
                         switch result {
                         case let .success(data?):
                             DispatchQueue.main.async {
-                                model.addLut(data: data)
+                                model.addLutPng(data: data)
                                 selectedImageItem = nil
                             }
                         case .success(nil):
@@ -112,10 +112,6 @@ struct CameraSettingsAppleLogLutView: View {
         model.objectWillChange.send()
     }
 
-    private func luts() -> [SettingsColorLut] {
-        return model.database.color!.bundledLuts + model.database.color!.diskLuts!
-    }
-
     var body: some View {
         Form {
             Section {
@@ -132,7 +128,7 @@ struct CameraSettingsAppleLogLutView: View {
             }
             Section {
                 Picker("", selection: $selectedId) {
-                    ForEach(luts()) { lut in
+                    ForEach(model.allLuts()) { lut in
                         Text(lut.name)
                             .tag(lut.id)
                     }

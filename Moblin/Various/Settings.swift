@@ -1542,6 +1542,8 @@ class SettingsColor: Codable {
     var lut: UUID = .init()
     var bundledLuts = allBundledLuts
     var diskLuts: [SettingsColorLut]? = []
+    var diskLutsPng: [SettingsColorLut]? = []
+    var diskLutsCube: [SettingsColorLut]? = []
 }
 
 class SettingsShow: Codable {
@@ -4479,6 +4481,14 @@ final class Settings {
         }
         if realDatabase.chat.newMessagesAtTop == nil {
             realDatabase.chat.newMessagesAtTop = false
+            store()
+        }
+        if realDatabase.color!.diskLutsPng == nil {
+            realDatabase.color!.diskLutsPng = realDatabase.color!.diskLuts
+            store()
+        }
+        if realDatabase.color!.diskLutsCube == nil {
+            realDatabase.color!.diskLutsCube = []
             store()
         }
     }

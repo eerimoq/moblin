@@ -2719,20 +2719,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func addLut(data: Data) {
+    func addLutPng(data: Data) {
         let lut = SettingsColorLut(type: .disk, name: "My LUT")
         lut.buttonId = .init()
         imageStorage.write(id: lut.id, data: data)
-        database.color!.diskLuts!.append(lut)
+        database.color!.diskLutsPng!.append(lut)
         resetSelectedScene()
     }
 
-    func removeLut(offsets: IndexSet) {
+    func removeLutPng(offsets: IndexSet) {
         for offset in offsets {
-            let lut = database.color!.diskLuts![offset]
+            let lut = database.color!.diskLutsPng![offset]
             imageStorage.remove(id: lut.id)
         }
-        database.color!.diskLuts!.remove(atOffsets: offsets)
+        database.color!.diskLutsPng!.remove(atOffsets: offsets)
         resetSelectedScene()
     }
 
@@ -2741,7 +2741,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func allLuts() -> [SettingsColorLut] {
-        return database.color!.bundledLuts + database.color!.diskLuts!
+        return database.color!.bundledLuts + database.color!.diskLutsPng! + database.color!.diskLutsCube!
     }
 
     func getLogLutById(id: UUID) -> SettingsColorLut? {
@@ -2778,7 +2778,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     break
                 }
             }
-            if database.color!.diskLuts!.contains(where: { lut in
+            if database.color!.diskLutsPng!.contains(where: { lut in
                 lut.id == id
             }) {
                 used = true
