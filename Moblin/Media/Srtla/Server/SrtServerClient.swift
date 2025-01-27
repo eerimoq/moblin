@@ -299,8 +299,10 @@ class SrtServerClient {
                                         packetizedElementaryStream: inout MpegTsPacketizedElementaryStream)
         -> (CMSampleBuffer, ElementaryStreamType)?
     {
-        let formatDescription = AdtsHeader(data: packetizedElementaryStream.data).makeFormatDescription()
-        if let formatDescription, formatDescriptions[packetId] != formatDescription {
+        guard let formatDescription = AdtsHeader(data: packetizedElementaryStream.data)?.makeFormatDescription() else {
+            return nil
+        }
+        if formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
             handleAudioFormatDescription(formatDescription)
         }

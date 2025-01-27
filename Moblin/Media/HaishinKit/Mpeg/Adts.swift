@@ -15,32 +15,20 @@ struct AdtsHeader: Equatable {
     var copyrightIdStart = false
     var aacFrameLength: UInt16 = 0
 
-    var data: Data {
-        get {
-            Data()
+    init?(data: Data) {
+        guard AdtsHeader.size <= data.count else {
+            return nil
         }
-        set {
-            guard AdtsHeader.size <= newValue.count else {
-                return
-            }
-            sync = newValue[0]
-            protectionAbsent = (newValue[1] & 0b0000_0001) == 1
-            profile = newValue[2] >> 6 & 0b11
-            sampleFrequencyIndex = (newValue[2] >> 2) & 0b0000_1111
-            channelConfiguration = ((newValue[2] & 0b1) << 2) | newValue[3] >> 6
-            originalOrCopy = (newValue[3] & 0b0010_0000) == 0b0010_0000
-            home = (newValue[3] & 0b0001_0000) == 0b0001_0000
-            copyrightIdBit = (newValue[3] & 0b0000_1000) == 0b0000_1000
-            copyrightIdStart = (newValue[3] & 0b0000_0100) == 0b0000_0100
-            aacFrameLength = UInt16(newValue[3] & 0b0000_0011) << 11 | UInt16(newValue[4]) << 3 |
-                UInt16(newValue[5] >> 5)
-        }
-    }
-
-    init() {}
-
-    init(data: Data) {
-        self.data = data
+        sync = data[0]
+        protectionAbsent = (data[1] & 0b0000_0001) == 1
+        profile = data[2] >> 6 & 0b11
+        sampleFrequencyIndex = (data[2] >> 2) & 0b0000_1111
+        channelConfiguration = ((data[2] & 0b1) << 2) | data[3] >> 6
+        originalOrCopy = (data[3] & 0b0010_0000) == 0b0010_0000
+        home = (data[3] & 0b0001_0000) == 0b0001_0000
+        copyrightIdBit = (data[3] & 0b0000_1000) == 0b0000_1000
+        copyrightIdStart = (data[3] & 0b0000_0100) == 0b0000_0100
+        aacFrameLength = UInt16(data[3] & 0b0000_0011) << 11 | UInt16(data[4]) << 3 | UInt16(data[5] >> 5)
     }
 
     func makeFormatDescription() -> CMFormatDescription? {
@@ -94,7 +82,6 @@ class ADTSReader: Sequence {
 struct ADTSReaderIterator: IteratorProtocol {
     private let data: Data
     private var cursor: Int = 0
-    private var header = AdtsHeader()
 
     init(data: Data) {
         self.data = data
@@ -104,7 +91,9 @@ struct ADTSReaderIterator: IteratorProtocol {
         guard cursor < data.count else {
             return nil
         }
-        header.data = data.advanced(by: cursor)
+        guard let header = AdtsHeader(data: data.advanced(by: cursor)) else {
+            return nil
+        }
         defer {
             cursor += Int(header.aacFrameLength)
         }
