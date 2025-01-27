@@ -12,6 +12,7 @@ struct DjiDevicesSettingsView: View {
                             DjiDeviceSettingsView(device: device)
                         } label: {
                             HStack {
+                                DraggableItemPrefixView()
                                 Text(device.name)
                                 Spacer()
                                 Text(formatDjiDeviceState(state: model.getDjiDeviceState(device: device)))
@@ -19,6 +20,9 @@ struct DjiDevicesSettingsView: View {
                             }
                         }
                     }
+                    .onMove(perform: { froms, to in
+                        model.database.djiDevices!.devices.move(fromOffsets: froms, toOffset: to)
+                    })
                     .onDelete(perform: { offsets in
                         model.removeDjiDevices(offsets: offsets)
                     })
