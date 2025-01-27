@@ -15,6 +15,28 @@ struct AdtsHeader: Equatable {
     var copyrightIdStart = false
     var aacFrameLength: UInt16 = 0
 
+    var data: Data {
+        get {
+            Data()
+        }
+        set {
+            guard AdtsHeader.size <= newValue.count else {
+                return
+            }
+            sync = newValue[0]
+            protectionAbsent = (newValue[1] & 0b0000_0001) == 1
+            profile = newValue[2] >> 6 & 0b11
+            sampleFrequencyIndex = (newValue[2] >> 2) & 0b0000_1111
+            channelConfiguration = ((newValue[2] & 0b1) << 2) | newValue[3] >> 6
+            originalOrCopy = (newValue[3] & 0b0010_0000) == 0b0010_0000
+            home = (newValue[3] & 0b0001_0000) == 0b0001_0000
+            copyrightIdBit = (newValue[3] & 0b0000_1000) == 0b0000_1000
+            copyrightIdStart = (newValue[3] & 0b0000_0100) == 0b0000_0100
+            aacFrameLength = UInt16(newValue[3] & 0b0000_0011) << 11 | UInt16(newValue[4]) << 3 |
+                UInt16(newValue[5] >> 5)
+        }
+    }
+
     init() {}
 
     init(data: Data) {
@@ -57,34 +79,10 @@ struct AdtsHeader: Equatable {
     }
 }
 
-extension AdtsHeader {
-    var data: Data {
-        get {
-            Data()
-        }
-        set {
-            guard AdtsHeader.size <= newValue.count else {
-                return
-            }
-            sync = newValue[0]
-            protectionAbsent = (newValue[1] & 0b0000_0001) == 1
-            profile = newValue[2] >> 6 & 0b11
-            sampleFrequencyIndex = (newValue[2] >> 2) & 0b0000_1111
-            channelConfiguration = ((newValue[2] & 0b1) << 2) | newValue[3] >> 6
-            originalOrCopy = (newValue[3] & 0b0010_0000) == 0b0010_0000
-            home = (newValue[3] & 0b0001_0000) == 0b0001_0000
-            copyrightIdBit = (newValue[3] & 0b0000_1000) == 0b0000_1000
-            copyrightIdStart = (newValue[3] & 0b0000_0100) == 0b0000_0100
-            aacFrameLength = UInt16(newValue[3] & 0b0000_0011) << 11 | UInt16(newValue[4]) << 3 |
-                UInt16(newValue[5] >> 5)
-        }
-    }
-}
-
 class ADTSReader: Sequence {
-    private var data: Data = .init()
+    private var data: Data
 
-    func read(_ data: Data) {
+    init(data: Data) {
         self.data = data
     }
 
@@ -96,7 +94,7 @@ class ADTSReader: Sequence {
 struct ADTSReaderIterator: IteratorProtocol {
     private let data: Data
     private var cursor: Int = 0
-    private var header: AdtsHeader = .init()
+    private var header = AdtsHeader()
 
     init(data: Data) {
         self.data = data

@@ -316,8 +316,7 @@ struct MpegTsPacketizedElementaryStream {
     ) -> (CMSampleBuffer, CMTime, CMTime)? {
         var sampleSizes: [Int] = []
         let blockBuffer = data.makeBlockBuffer(advancedBy: 7)
-        let reader = ADTSReader()
-        reader.read(data)
+        let reader = ADTSReader(data: data)
         var iterator = reader.makeIterator()
         while let next = iterator.next() {
             sampleSizes.append(next)
