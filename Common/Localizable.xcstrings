@@ -52867,6 +52867,7 @@
       }
     },
     "Failed to select mic" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -8485,30 +8485,35 @@ extension Model {
     }
 
     private func setupAudioSession() {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            let bluetoothOption: AVAudioSession.CategoryOptions
-            if database.debug.bluetoothOutputOnly! {
-                bluetoothOption = .allowBluetoothA2DP
-            } else {
-                bluetoothOption = .allowBluetooth
+        let bluetoothOutputOnly = database.debug.bluetoothOutputOnly!
+        netStreamLockQueue.async {
+            let session = AVAudioSession.sharedInstance()
+            do {
+                let bluetoothOption: AVAudioSession.CategoryOptions
+                if bluetoothOutputOnly {
+                    bluetoothOption = .allowBluetoothA2DP
+                } else {
+                    bluetoothOption = .allowBluetooth
+                }
+                try session.setCategory(
+                    .playAndRecord,
+                    options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
+                )
+                try session.setActive(true)
+            } catch {
+                logger.error("app: Session error \(error)")
             }
-            try session.setCategory(
-                .playAndRecord,
-                options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
-            )
-            try session.setActive(true)
-        } catch {
-            logger.error("app: Session error \(error)")
+            self.setAllowHapticsAndSystemSoundsDuringRecording()
         }
-        setAllowHapticsAndSystemSoundsDuringRecording()
     }
 
     private func teardownAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setActive(false)
-        } catch {
-            logger.info("Failed to stop audio session with error: \(error)")
+        netStreamLockQueue.async {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false)
+            } catch {
+                logger.info("Failed to stop audio session with error: \(error)")
+            }
         }
     }
 
@@ -8639,22 +8644,26 @@ extension Model {
         case .top:
             wantedOrientation = .top
         }
-        let session = AVAudioSession.sharedInstance()
-        for inputPort in session.availableInputs ?? [] {
-            if inputPort.portType != .builtInMic {
-                continue
-            }
-            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources where dataSource.orientation == wantedOrientation {
-                    do {
-                        try setBuiltInMicAudioMode(dataSource: dataSource)
-                        try inputPort.setPreferredDataSource(dataSource)
-                    } catch {
-                        logger.error("Failed to set mic as preferred with error \(error)")
+        let preferStereoMic = database.debug.preferStereoMic!
+        netStreamLockQueue.async {
+            let session = AVAudioSession.sharedInstance()
+            for inputPort in session.availableInputs ?? [] {
+                if inputPort.portType != .builtInMic {
+                    continue
+                }
+                if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+                    for dataSource in dataSources where dataSource.orientation == wantedOrientation {
+                        do {
+                            try self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+                            try inputPort.setPreferredDataSource(dataSource)
+                        } catch {
+                            logger.error("Failed to set mic as preferred with error \(error)")
+                        }
                     }
                 }
             }
         }
+        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func setMicFromSettings() {
@@ -8736,33 +8745,29 @@ extension Model {
 
     private func selectMicDefault(mic: Mic) {
         media.attachReplaceAudio(cameraId: nil)
-        let session = AVAudioSession.sharedInstance()
-        do {
+        let preferStereoMic = database.debug.preferStereoMic!
+        netStreamLockQueue.async {
+            let session = AVAudioSession.sharedInstance()
             for inputPort in session.availableInputs ?? [] {
                 if mic.inputUid != inputPort.uid {
                     continue
                 }
-                try session.setPreferredInput(inputPort)
+                try? session.setPreferredInput(inputPort)
                 if let dataSourceID = mic.dataSourceID {
                     for dataSource in inputPort.dataSources ?? [] {
                         if dataSourceID != dataSource.dataSourceID {
                             continue
                         }
-                        try setBuiltInMicAudioMode(dataSource: dataSource)
-                        try session.setInputDataSource(dataSource)
+                        try? self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+                        try? session.setInputDataSource(dataSource)
                     }
                 }
             }
-            currentMic = mic
-            saveSelectedMic(mic: mic)
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-        } catch {
-            logger.error("Failed to select mic: \(error)")
-            makeErrorToast(
-                title: String(localized: "Failed to select mic"),
-                subTitle: error.localizedDescription
-            )
         }
+        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        currentMic = mic
+        saveSelectedMic(mic: mic)
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
     }
 
     private func saveSelectedMic(mic: Mic) {
@@ -8772,15 +8777,13 @@ extension Model {
         database.mic = orientation
     }
 
-    private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        if database.debug.preferStereoMic! {
+    private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription, preferStereoMic: Bool) throws {
+        if preferStereoMic {
             if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
                 try dataSource.setPreferredPolarPattern(.stereo)
             } else {
                 try dataSource.setPreferredPolarPattern(.none)
             }
-            setupAudioSession()
-            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
         } else {
             try dataSource.setPreferredPolarPattern(.none)
         }
