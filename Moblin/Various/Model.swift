@@ -2840,24 +2840,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateBondingStatistics() {
         if isStreamConnected() {
             if let connections = media.srtlaConnectionStatistics() {
-                if let (message, rtts, percentages) = bondingStatisticsFormatter.format(connections) {
-                    bondingStatistics = message
-                    bondingRtts = rtts
-                    bondingPieChartPercentages = percentages
-                }
+                handleBondingStatistics(connections: connections)
                 return
             }
             if let connections = media.ristBondingStatistics() {
-                if let (message, rtts, percentages) = bondingStatisticsFormatter.format(connections) {
-                    bondingStatistics = message
-                    bondingRtts = rtts
-                    bondingPieChartPercentages = percentages
-                }
+                handleBondingStatistics(connections: connections)
                 return
             }
         }
         if bondingStatistics != noValue {
             bondingStatistics = noValue
+        }
+    }
+
+    private func handleBondingStatistics(connections: [BondingConnection]) {
+        if let (message, rtts, percentages) = bondingStatisticsFormatter.format(connections) {
+            bondingStatistics = message
+            bondingRtts = rtts
+            bondingPieChartPercentages = percentages
         }
     }
 
