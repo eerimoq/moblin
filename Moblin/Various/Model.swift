@@ -7091,81 +7091,86 @@ extension Model: RemoteControlStreamerDelegate {
         general.isRecording = isRecording
         general.isMuted = isMuteOn
         var topLeft = RemoteControlStatusTopLeft()
-        if isShowingStatusStream() {
-            topLeft.stream = RemoteControlStatusItem(message: statusStreamText())
+        var status = statusStreamText()
+        if !status.isEmpty {
+            topLeft.stream = RemoteControlStatusItem(message: status)
         }
-        if isShowingStatusCamera() {
-            topLeft.camera = RemoteControlStatusItem(message: statusCameraText())
+        status = statusCameraText()
+        if !status.isEmpty {
+            topLeft.camera = RemoteControlStatusItem(message: status)
         }
-        if isShowingStatusMic() {
+        if !currentMic.name.isEmpty {
             topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
         }
-        if isShowingStatusZoom() {
-            topLeft.zoom = RemoteControlStatusItem(message: statusZoomText())
+        status = statusZoomText()
+        if !status.isEmpty {
+            topLeft.zoom = RemoteControlStatusItem(message: status)
         }
-        if isShowingStatusObs() {
-            topLeft.obs = RemoteControlStatusItem(message: statusObsText())
+        status = statusObsText()
+        if !status.isEmpty {
+            topLeft.obs = RemoteControlStatusItem(message: status)
         }
-        if isShowingStatusEvents() {
-            topLeft.events = RemoteControlStatusItem(message: statusEventsText())
+        status = statusEventsText()
+        if !status.isEmpty {
+            topLeft.events = RemoteControlStatusItem(message: status)
         }
-        if isShowingStatusChat() {
-            topLeft.chat = RemoteControlStatusItem(message: statusChatText())
+        status = statusChatText()
+        if !status.isEmpty {
+            topLeft.chat = RemoteControlStatusItem(message: status)
         }
-        if isShowingStatusViewers() {
-            topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
+        status = statusViewersText()
+        if !status.isEmpty {
+            topLeft.viewers = RemoteControlStatusItem(message: status)
         }
         var topRight = RemoteControlStatusTopRight()
-        if isShowingStatusAudioLevel() {
-            let level = formatAudioLevel(level: audioLevel) +
-                formatAudioLevelChannels(channels: numberOfAudioChannels)
-            topRight.audioLevel = RemoteControlStatusItem(message: level)
-            topRight.audioInfo = .init(
-                audioLevel: .unknown,
-                numberOfAudioChannels: numberOfAudioChannels
-            )
-            if audioLevel.isNaN {
-                topRight.audioInfo!.audioLevel = .muted
-            } else if audioLevel.isInfinite {
-                topRight.audioInfo!.audioLevel = .unknown
-            } else {
-                topRight.audioInfo!.audioLevel = .value(audioLevel)
-            }
+        let level = formatAudioLevel(level: audioLevel) +
+            formatAudioLevelChannels(channels: numberOfAudioChannels)
+        topRight.audioLevel = RemoteControlStatusItem(message: level)
+        topRight.audioInfo = .init(
+            audioLevel: .unknown,
+            numberOfAudioChannels: numberOfAudioChannels
+        )
+        if audioLevel.isNaN {
+            topRight.audioInfo!.audioLevel = .muted
+        } else if audioLevel.isInfinite {
+            topRight.audioInfo!.audioLevel = .unknown
+        } else {
+            topRight.audioInfo!.audioLevel = .value(audioLevel)
         }
-        if isShowingStatusServers() {
+        if !serversSpeedAndTotal.isEmpty {
             topRight.rtmpServer = RemoteControlStatusItem(message: serversSpeedAndTotal)
         }
-        if isShowingStatusRemoteControl() {
+        if !remoteControlStatus.isEmpty {
             topRight.remoteControl = RemoteControlStatusItem(message: remoteControlStatus)
         }
-        if isShowingStatusGameController() {
+        if !gameControllersTotal.isEmpty {
             topRight.gameController = RemoteControlStatusItem(message: gameControllersTotal)
         }
-        if isShowingStatusBitrate() {
+        if !speedAndTotal.isEmpty {
             topRight.bitrate = RemoteControlStatusItem(message: speedAndTotal)
         }
-        if isShowingStatusUptime() {
+        if !uptime.isEmpty {
             topRight.uptime = RemoteControlStatusItem(message: uptime)
         }
-        if isShowingStatusLocation() {
+        if !location.isEmpty {
             topRight.location = RemoteControlStatusItem(message: location)
         }
-        if isShowingStatusBonding() {
+        if !bondingStatistics.isEmpty {
             topRight.srtla = RemoteControlStatusItem(message: bondingStatistics)
         }
-        if isShowingStatusBondingRtts() {
+        if !bondingRtts.isEmpty {
             topRight.srtlaRtts = RemoteControlStatusItem(message: bondingRtts)
         }
-        if isShowingStatusRecording() {
+        if !recordingLength.isEmpty {
             topRight.recording = RemoteControlStatusItem(message: recordingLength)
         }
-        if isShowingStatusBrowserWidgets() {
+        if !browserWidgetsStatus.isEmpty {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
         }
-        if isShowingStatusMoblink() {
+        if !moblinkStatus.isEmpty {
             topRight.moblink = RemoteControlStatusItem(message: moblinkStatus)
         }
-        if isShowingStatusDjiDevices() {
+        if !djiDevicesStatus.isEmpty {
             topRight.djiDevices = RemoteControlStatusItem(message: djiDevicesStatus)
         }
         onComplete(general, topLeft, topRight)
