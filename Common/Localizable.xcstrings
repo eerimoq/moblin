@@ -3344,7 +3344,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La \"camera frontale a specchio in streaming\" è supportata solo durante lo streaming in orizzontale, non in verticale."
+            "value" : "La \"camera frontale specchiata in streaming\" è supportata solo durante lo streaming in orizzontale, non in verticale."
           }
         },
         "ja" : {
@@ -7412,7 +7412,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ %2$@ Pubblicità iniziata"
+            "value" : "%1$@ %2$@ Inizio pubblicità"
           }
         },
         "ja" : {
@@ -8216,7 +8216,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ livelli audio della sorgente"
+            "value" : "%@ livelli sorgente audio"
           }
         },
         "ja" : {
@@ -14103,7 +14103,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "una connessione"
           }
         },
@@ -16416,7 +16416,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un widget può essere utilizzato in nessuna o più scene."
+            "value" : "Un widget può essere utilizzato in zero o più scene."
           }
         },
         "ja" : {
@@ -27800,8 +27800,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Metter il fondo a"
+            "state" : "translated",
+            "value" : "Inferiore"
           }
         },
         "ja" : {
@@ -29420,8 +29420,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Controlli della fotocamera"
+            "state" : "translated",
+            "value" : "Controlli fotocamera"
           }
         },
         "ja" : {
@@ -29556,8 +29556,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Anteprima della fotocamera"
+            "state" : "translated",
+            "value" : "Anteprima fotocamera"
           }
         },
         "ja" : {
@@ -38514,8 +38514,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Processore: %lld"
+            "state" : "translated",
+            "value" : "CPU: %lld"
           }
         },
         "ja" : {
@@ -44084,8 +44084,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Strategia di ricerca DNS"
+            "state" : "translated",
+            "value" : "Metodo di risoluzione DNS"
           }
         },
         "ja" : {
@@ -46384,8 +46384,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abilitare l'aumento della luce bassa per fare in modo che le telecamere integrate abbassino automaticamente gli FPS selezionati per immagini più luminose quando è buio (se supportato)."
+            "state" : "translated",
+            "value" : "Attiva l'incremento di luminosità in condizioni di scarsa luce per consentire alla fotocamera di ridurre automaticamente gli FPS, migliorando la luminosità dell'immagine al buio (se supportato)."
           }
         },
         "ja" : {
@@ -46792,8 +46792,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abilita questa opzione sul dispositivo che vuoi usare come connessione di bonding extra. Il dispositivo deve avere i dati cellulari abilitati."
+            "state" : "translated",
+            "value" : "Abilita questa opzione sul dispositivo che vuoi usare come connessione in bonding extra. Il dispositivo deve avere i dati cellulari abilitati."
           }
         },
         "ja" : {
@@ -46928,8 +46928,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abilita questa opzione sul tuo dispositivo di streaming. Configura i dispositivi relay per connettersi a questo dispositivo."
+            "state" : "translated",
+            "value" : "Abilita questa opzione su questo dispositivo. Configura i dispositivi relay per connettersi."
           }
         },
         "ja" : {
@@ -48696,8 +48696,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Immettere uno degli URL come \"URL dello streamer\" nel dispositivo relay per utilizzarlo come connessione di bonding aggiuntiva."
+            "state" : "translated",
+            "value" : "Inserire uno degli URL come \"URL dello streamer\" nel dispositivo relay per utilizzarlo come connessione aggiuntiva in bonding."
           }
         },
         "ja" : {
@@ -64845,7 +64845,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat interattiva"
           }
         },
@@ -68369,7 +68369,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schermata di blocco"
           }
         },
@@ -69321,8 +69321,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Potenziamento della bassa luminosità (LLB)"
+            "state" : "translated",
+            "value" : "Incremento luminosità con scarsa luce (LLB)"
           }
         },
         "ja" : {
@@ -75701,8 +75701,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Collegamento mobile"
+            "state" : "translated",
+            "value" : "Connessione mobile"
           }
         },
         "ja" : {
@@ -77741,8 +77741,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Le mie LUT .cube"
+            "state" : "translated",
+            "value" : "LUT Personali .cube"
           }
         },
         "ja" : {
@@ -77871,8 +77871,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "I miei LUT .png"
+            "state" : "translated",
+            "value" : "LUT Personali .png"
           }
         },
         "ja" : {
@@ -80437,7 +80437,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nuovi messaggi in alto"
           }
         },
@@ -82205,8 +82205,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nessuno streamer è stato ancora scoperto sulla tua rete locale."
+            "state" : "translated",
+            "value" : "Nessuno streamer è stato trovato nella tua rete locale."
           }
         },
         "ja" : {
@@ -87633,8 +87633,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FORZA PIXELLATA"
+            "state" : "translated",
+            "value" : "INTENSITÀ PIXEL"
           }
         },
         "ja" : {
@@ -96839,7 +96839,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ripristinare le impostazioni predefinite"
           }
         },
@@ -101421,7 +101421,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schermo bloccato"
           }
         },
@@ -101557,7 +101557,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schermo sbloccato"
           }
         },
@@ -109297,7 +109297,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Invio batch SRT(LA)"
           }
         },
@@ -114565,8 +114565,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL dello streamer"
+            "state" : "translated",
+            "value" : "URL streamer"
           }
         },
         "ja" : {
@@ -117279,8 +117279,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Il sistema sembra funzionare meglio per TMobile. IPv4 probabilmente è il migliore per IRLToolkit."
+            "state" : "translated",
+            "value" : "Il sistema sembra funzionare meglio per TMobile. IPv4 potrebbe funzionare meglio per IRLToolkit."
           }
         },
         "ja" : {
@@ -132085,8 +132085,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilizza i telefoni come connessioni di bonding SRTLA e RIST aggiuntive. Installa Moblink sui telefoni Android per utilizzarli."
+            "state" : "translated",
+            "value" : "Usa i telefoni come connessioni di bonding SRTLA e RIST aggiuntive. Installa Moblink su telefoni Android per utilizzarli."
           }
         },
         "ja" : {
@@ -132493,7 +132493,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Utilizzato sia dai dispositivi relay che streamer. Copia la password dello streamer sul dispositivo relay."
           }
         },
@@ -138199,7 +138199,7 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://32.143.32.12:2345"
           }
         },
