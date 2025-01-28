@@ -37,7 +37,12 @@ struct QuickButtonDjiDevicesView: View {
                                 model.stopDjiDeviceLiveStream(device: device)
                             }
                         })) {
-                            Text(device.name)
+                            HStack {
+                                Text(device.name)
+                                Spacer()
+                                Text(formatDjiDeviceState(state: model.getDjiDeviceState(device: device)))
+                                    .foregroundColor(.gray)
+                            }
                         }
                         .disabled(!canStartLive(device: device))
                     }
