@@ -1577,6 +1577,7 @@ class SettingsShow: Codable {
     var events: Bool? = true
     var djiDevices: Bool? = true
     var bondingRtts: Bool? = false
+    var moblink: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -4514,6 +4515,10 @@ final class Settings {
         }
         if realDatabase.show.bondingRtts == nil {
             realDatabase.show.bondingRtts = false
+            store()
+        }
+        if realDatabase.show.moblink == nil {
+            realDatabase.show.moblink = true
             store()
         }
     }

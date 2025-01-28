@@ -6988,16 +6988,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusServers() -> Bool {
-        return database.show.rtmpSpeed! && (rtmpServerEnabled() || srtlaServerEnabled())
+        return database.show.rtmpSpeed! && isServersConfigured()
+    }
+
+    private func isServersConfigured() -> Bool {
+        return rtmpServerEnabled() || srtlaServerEnabled()
     }
 
     func isShowingStatusMoblink() -> Bool {
+        return database.show.moblink! && isAnyMoblinkConfigured()
+    }
+
+    private func isAnyMoblinkConfigured() -> Bool {
         return isMoblinkClientConfigured() || isMoblinkServerConfigured()
     }
 
     func isShowingStatusRemoteControl() -> Bool {
-        return database.show
-            .remoteControl! && (isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured())
+        return database.show.remoteControl! && isAnyRemoteControlConfigured()
+    }
+
+    private func isAnyRemoteControlConfigured() -> Bool {
+        return isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured()
     }
 
     func isShowingStatusDjiDevices() -> Bool {
@@ -7021,11 +7032,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusBonding() -> Bool {
-        return database.show.bonding! && stream.isBonding() && isLive
+        return database.show.bonding! && isStatusBondingActive()
+    }
+
+    private func isStatusBondingActive() -> Bool {
+        return stream.isBonding() && isLive
     }
 
     func isShowingStatusBondingRtts() -> Bool {
-        return database.show.bondingRtts! && stream.isBonding() && isLive
+        return database.show.bondingRtts! && isStatusBondingRttsActive()
+    }
+
+    private func isStatusBondingRttsActive() -> Bool {
+        return stream.isBonding() && isLive
     }
 
     func isShowingStatusRecording() -> Bool {
@@ -7033,8 +7052,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusBrowserWidgets() -> Bool {
-        return database.show.browserWidgets! && !browserWidgetsStatus
-            .isEmpty && browserWidgetsStatusChanged
+        return database.show.browserWidgets! && isStatusBrowserWidgetsActive()
+    }
+
+    private func isStatusBrowserWidgetsActive() -> Bool {
+        return !browserWidgetsStatus.isEmpty && browserWidgetsStatusChanged
     }
 }
 
@@ -7098,81 +7120,75 @@ extension Model: RemoteControlStreamerDelegate {
         general.isRecording = isRecording
         general.isMuted = isMuteOn
         var topLeft = RemoteControlStatusTopLeft()
-        if isShowingStatusStream() {
+        if isStreamConfigured() {
             topLeft.stream = RemoteControlStatusItem(message: statusStreamText())
         }
-        if isShowingStatusCamera() {
-            topLeft.camera = RemoteControlStatusItem(message: statusCameraText())
-        }
-        if isShowingStatusMic() {
-            topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
-        }
-        if isShowingStatusZoom() {
+        topLeft.camera = RemoteControlStatusItem(message: statusCameraText())
+        topLeft.mic = RemoteControlStatusItem(message: currentMic.name)
+        if hasZoom {
             topLeft.zoom = RemoteControlStatusItem(message: statusZoomText())
         }
-        if isShowingStatusObs() {
+        if isObsRemoteControlConfigured() {
             topLeft.obs = RemoteControlStatusItem(message: statusObsText())
         }
-        if isShowingStatusEvents() {
+        if isEventsConfigured() {
             topLeft.events = RemoteControlStatusItem(message: statusEventsText())
         }
-        if isShowingStatusChat() {
+        if isChatConfigured() {
             topLeft.chat = RemoteControlStatusItem(message: statusChatText())
         }
-        if isShowingStatusViewers() {
+        if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         var topRight = RemoteControlStatusTopRight()
-        if isShowingStatusAudioLevel() {
-            let level = formatAudioLevel(level: audioLevel) +
-                formatAudioLevelChannels(channels: numberOfAudioChannels)
-            topRight.audioLevel = RemoteControlStatusItem(message: level)
-            topRight.audioInfo = .init(
-                audioLevel: .unknown,
-                numberOfAudioChannels: numberOfAudioChannels
-            )
-            if audioLevel.isNaN {
-                topRight.audioInfo!.audioLevel = .muted
-            } else if audioLevel.isInfinite {
-                topRight.audioInfo!.audioLevel = .unknown
-            } else {
-                topRight.audioInfo!.audioLevel = .value(audioLevel)
-            }
+        let level = formatAudioLevel(level: audioLevel) +
+            formatAudioLevelChannels(channels: numberOfAudioChannels)
+        topRight.audioLevel = RemoteControlStatusItem(message: level)
+        topRight.audioInfo = .init(
+            audioLevel: .unknown,
+            numberOfAudioChannels: numberOfAudioChannels
+        )
+        if audioLevel.isNaN {
+            topRight.audioInfo!.audioLevel = .muted
+        } else if audioLevel.isInfinite {
+            topRight.audioInfo!.audioLevel = .unknown
+        } else {
+            topRight.audioInfo!.audioLevel = .value(audioLevel)
         }
-        if isShowingStatusServers() {
+        if isServersConfigured() {
             topRight.rtmpServer = RemoteControlStatusItem(message: serversSpeedAndTotal)
         }
-        if isShowingStatusRemoteControl() {
+        if isAnyRemoteControlConfigured() {
             topRight.remoteControl = RemoteControlStatusItem(message: remoteControlStatus)
         }
-        if isShowingStatusGameController() {
+        if isGameControllerConnected() {
             topRight.gameController = RemoteControlStatusItem(message: gameControllersTotal)
         }
-        if isShowingStatusBitrate() {
+        if isLive {
             topRight.bitrate = RemoteControlStatusItem(message: speedAndTotal)
         }
-        if isShowingStatusUptime() {
+        if isLive {
             topRight.uptime = RemoteControlStatusItem(message: uptime)
         }
-        if isShowingStatusLocation() {
+        if isLocationEnabled() {
             topRight.location = RemoteControlStatusItem(message: location)
         }
-        if isShowingStatusBonding() {
+        if isStatusBondingActive() {
             topRight.srtla = RemoteControlStatusItem(message: bondingStatistics)
         }
-        if isShowingStatusBondingRtts() {
+        if isStatusBondingRttsActive() {
             topRight.srtlaRtts = RemoteControlStatusItem(message: bondingRtts)
         }
-        if isShowingStatusRecording() {
+        if isRecording {
             topRight.recording = RemoteControlStatusItem(message: recordingLength)
         }
-        if isShowingStatusBrowserWidgets() {
+        if isStatusBrowserWidgetsActive() {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)
         }
-        if isShowingStatusMoblink() {
+        if isAnyMoblinkConfigured() {
             topRight.moblink = RemoteControlStatusItem(message: moblinkStatus)
         }
-        if isShowingStatusDjiDevices() {
+        if !djiDevicesStatus.isEmpty {
             topRight.djiDevices = RemoteControlStatusItem(message: djiDevicesStatus)
         }
         onComplete(general, topLeft, topRight)

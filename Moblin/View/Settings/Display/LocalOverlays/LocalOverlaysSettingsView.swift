@@ -88,6 +88,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.rtmpSpeed = value
                 }
+                InfoView(icon: "app.connected.to.app.below.fill", text: String(localized: "Moblink")) {
+                    show.moblink!
+                } set: { value in
+                    show.moblink = value
+                }
                 InfoView(icon: "appletvremote.gen1", text: String(localized: "Remote control")) {
                     show.remoteControl!
                 } set: { value in
