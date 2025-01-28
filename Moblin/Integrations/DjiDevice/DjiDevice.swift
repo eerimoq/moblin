@@ -445,3 +445,25 @@ extension DjiDevice: CBPeripheralDelegate {
 
     func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {}
 }
+
+extension SettingsDjiDevice {
+    func canStartLive() -> Bool {
+        if bluetoothPeripheralId == nil {
+            return false
+        }
+        if wifiSsid.isEmpty {
+            return false
+        }
+        switch rtmpUrlType! {
+        case .server:
+            if serverRtmpUrl!.isEmpty {
+                return false
+            }
+        case .custom:
+            if customRtmpUrl!.isEmpty {
+                return false
+            }
+        }
+        return true
+    }
+}
