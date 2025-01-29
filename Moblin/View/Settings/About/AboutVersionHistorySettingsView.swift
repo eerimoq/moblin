@@ -8,6 +8,30 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.393.0", date: "2025-01-29", changes: [
+        "• Low light boost toggle. 💡 JohannesLiv",
+        "  • Automatically change FPS based on light.",
+        "• Always show altitude in meters or feet. 💡 Waidwerker",
+        "• RTMP server optimizations for less CPU usage.",
+        "• Chinese Hong Kong translation updated. ✍️ tkg2222",
+        "• OBS as platform in setup stream wizard.",
+        "• New chat messages at top toggle. 💡 Terry B",
+        "• Camera preview quick button to show low latency camera feed for builtin cameras.",
+        "• Quite big internal changes. Hopefully ok.",
+        "• Remove LUT quick buttons. Use LUTs quick button instead.",
+        "• Load .cube LUT files. 💡 Lots of people",
+        "  • Dimension must be 64 or less.",
+        "• Fix alerts playback speed when using low light boost.",
+        "• Fix UI freeze when changing mic. 🐛 JohannesLiv",
+        "• Show RTT per bonding connection in top right and assistant. 💡 xcopy94 and djandrea.",
+        "• Potential fix for SRT(LA) server crash. 🐛 AUTdany",
+        "• Scale go live button text size.",
+        "• Move DJI devices around in the list. 💡 AUTdany",
+        "• Show DJI device state in quick button view.",
+        "• Italian translation updated. ✍️ Alfa",
+        "• Portrait quick button. 🧑‍🏭 gantiplex",
+        "• More status in remote control assistant. 💡 djandrea. and 3l3ktr0l4mpe",
+    ]),
     Version(version: "0.392.0", date: "2025-01-19", changes: [
         "• Show Moblink status in remote control. 💡 djandrea.",
         "• Update Moblink battery percentage earlier.",
