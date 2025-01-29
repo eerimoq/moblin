@@ -1307,7 +1307,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         supportsAppleLog = hasAppleLog()
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         showCameraPreview = getGlobalButton(type: .cameraPreview)?.isOn ?? false
-        updateShowCameraPreview()
+        setDisplayPortrait(portrait: database.portrait!)
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
@@ -3768,6 +3768,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
+    }
+
+    func setDisplayPortrait(portrait: Bool) {
+        database.portrait = portrait
+        setGlobalButtonState(type: .portrait, isOn: portrait)
+        updateButtonStates()
+        updateOrientationLock()
     }
 
     func getGlobalButton(type: SettingsButtonType) -> SettingsButton? {

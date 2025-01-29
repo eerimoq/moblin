@@ -93,9 +93,8 @@ struct DisplaySettingsView: View {
                     Section {
                         Toggle(isOn: Binding(get: {
                             model.database.portrait!
-                        }, set: { value in
-                            model.database.portrait = value
-                            model.updateOrientationLock()
+                        }, set: { _ in
+                            model.setDisplayPortrait(portrait: !model.database.portrait!)
                         })) {
                             Text("Portrait")
                         }

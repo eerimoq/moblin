@@ -3029,7 +3029,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "camera.rotate.fill"
     button.systemImageNameOff = "camera.rotate"
     updateGlobalButton(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Portrait"))
     button.id = UUID()
     button.type = .portrait
@@ -3037,7 +3037,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "rectangle.portrait.rotate"
     button.systemImageNameOff = "rectangle.portrait.rotate"
     updateGlobalButton(database: database, button: button)
-    
+
     database.globalButtons = database.globalButtons!.filter { button in
         if button.type == .unknown {
             return false

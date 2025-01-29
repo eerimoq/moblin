@@ -267,10 +267,9 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .djiDevices, panel: .djiDevices)
         model.updateLutsButtonState()
     }
-    
+
     private func portraitAction(state _: ButtonState) {
-        model.database.portrait?.toggle()
-        model.updateOrientationLock()
+        model.setDisplayPortrait(portrait: !model.database.portrait!)
     }
 
     var body: some View {
