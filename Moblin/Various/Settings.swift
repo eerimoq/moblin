@@ -3045,7 +3045,7 @@ private func addMissingGlobalButtons(database: Database) {
         if button.type == .workout, !isPhone() {
             return false
         }
-        if button.type == .portrait, !isPhone() {
+        if button.type == .portrait, ProcessInfo().isiOSAppOnMac {
             return false
         }
         return true

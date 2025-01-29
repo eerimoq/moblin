@@ -3770,13 +3770,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func setDisplayPortrait(portrait: Bool) {
-        database.portrait = portrait
-        setGlobalButtonState(type: .portrait, isOn: portrait)
-        updateButtonStates()
-        updateOrientationLock()
-    }
-
     func getGlobalButton(type: SettingsButtonType) -> SettingsButton? {
         return database.globalButtons!.first(where: { $0.type == type })
     }
@@ -3795,6 +3788,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
+    }
+
+    func setDisplayPortrait(portrait: Bool) {
+        database.portrait = portrait
+        setGlobalButtonState(type: .portrait, isOn: portrait)
+        updateButtonStates()
+        updateOrientationLock()
     }
 
     private func toggleStream() {
