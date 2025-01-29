@@ -1455,6 +1455,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case interactiveChat = "Interactive chat"
     case lockScreen = "Lock screen"
     case djiDevices = "DJI devices"
+    case portrait = "Portrait"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -3028,12 +3029,23 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "camera.rotate.fill"
     button.systemImageNameOff = "camera.rotate"
     updateGlobalButton(database: database, button: button)
-
+    
+    button = SettingsButton(name: String(localized: "Portrait"))
+    button.id = UUID()
+    button.type = .portrait
+    button.imageType = "System name"
+    button.systemImageNameOn = "rectangle.portrait.rotate"
+    button.systemImageNameOff = "rectangle.portrait.rotate"
+    updateGlobalButton(database: database, button: button)
+    
     database.globalButtons = database.globalButtons!.filter { button in
         if button.type == .unknown {
             return false
         }
         if button.type == .workout, !isPhone() {
+            return false
+        }
+        if button.type == .portrait, !isPhone() {
             return false
         }
         return true

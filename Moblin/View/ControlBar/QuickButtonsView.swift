@@ -267,6 +267,11 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .djiDevices, panel: .djiDevices)
         model.updateLutsButtonState()
     }
+    
+    private func portraitAction(state _: ButtonState) {
+        model.database.portrait?.toggle()
+        model.updateOrientationLock()
+    }
 
     var body: some View {
         VStack {
@@ -543,6 +548,12 @@ struct QuickButtonsInnerView: View {
             case .djiDevices:
                 Button(action: {
                     djiDevicesAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .portrait:
+                Button(action: {
+                    portraitAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })
