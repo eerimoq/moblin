@@ -213,6 +213,9 @@ class VideoCodec {
     func startRunning() {
         lockQueue.async {
             self.isRunning = true
+            self.invalidateSession = true
+            self.currentBitrate = 0
+            self.formatDescription = nil
             numberOfFailedEncodings = 0
         }
     }
