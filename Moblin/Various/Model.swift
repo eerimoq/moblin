@@ -1037,8 +1037,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         buttonPairs = pairs.reversed()
     }
 
-    func updateShowCameraPreview() {
-        reattachCamera()
+    func updateShowCameraPreview() -> Bool {
+        showCameraPreview = shouldShowCameraPreview()
+        return showCameraPreview
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
@@ -1306,7 +1307,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
-        showCameraPreview = getGlobalButton(type: .cameraPreview)?.isOn ?? false
+        _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait!)
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
         let webPCoder = SDImageWebPCoder.shared
@@ -1440,6 +1441,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadMoblinkClient()
         reloadMoblinkServer()
         setCameraControlsEnabled()
+    }
+
+    private func shouldShowCameraPreview() -> Bool {
+        if !(getGlobalButton(type: .cameraPreview)?.isOn ?? false) {
+            return false
+        }
+        return cameraDevice != nil
     }
 
     func reloadMoblinkServer() {
@@ -6251,26 +6259,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.attachCamera(
             device: nil,
             cameraPreviewLayer: nil,
-            showCameraPreview: showCameraPreview,
+            showCameraPreview: false,
             videoStabilizationMode: .off,
             videoMirrored: false
         )
     }
 
     func attachCamera() {
-        lastAttachCompletedTime = nil
-        let isMirrored = getVideoMirroredOnScreen()
-        media.attachCamera(
-            device: cameraDevice,
-            cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: showCameraPreview,
-            videoStabilizationMode: getVideoStabilizationMode(),
-            videoMirrored: getVideoMirroredOnStream()
-        ) {
-            self.streamPreviewView.isMirrored = isMirrored
-            self.lastAttachCompletedTime = .now
-            self.updateCameraPreviewRotation()
+        guard let scene = getSelectedScene() else {
+            return
         }
+        attachSingleLayout(scene: scene)
     }
 
     private func updateCameraPreviewRotation() {
@@ -6331,39 +6330,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return false
     }
 
-    private func hasCameraChanged(
-        oldCameraDevice: AVCaptureDevice?,
-        oldPosition: AVCaptureDevice.Position?,
-        newPosition: AVCaptureDevice.Position?
-    ) -> Bool {
-        if oldPosition != newPosition {
-            return true
-        }
-        if let newPosition {
-            return oldCameraDevice != preferredCamera(position: newPosition)
-        } else {
-            return oldCameraDevice != nil
-        }
-    }
-
     private func attachCamera(position: AVCaptureDevice.Position) {
-        guard hasCameraChanged(
-            oldCameraDevice: cameraDevice,
-            oldPosition: cameraPosition,
-            newPosition: position
-        ) else {
-            media.usePendingAfterAttachEffects()
-            return
-        }
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
-        cameraZoomLevelToXScale = cameraDevice?
-            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
+        cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera()) ?? (
-                1.0,
-                1.0
-            )
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera()) ?? (1.0, 1.0)
         cameraPosition = position
         switch position {
         case .back:
@@ -6386,7 +6358,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.attachCamera(
             device: cameraDevice,
             cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: showCameraPreview,
+            showCameraPreview: updateShowCameraPreview(),
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream(),
             onSuccess: {
@@ -6415,7 +6387,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.attachReplaceCamera(
             device: getVideoSourceBuiltinCameraDevice(),
             cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: showCameraPreview,
+            showCameraPreview: updateShowCameraPreview(),
             cameraId: cameraId
         )
         media.usePendingAfterAttachEffects()

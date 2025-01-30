@@ -201,8 +201,7 @@ struct QuickButtonsInnerView: View {
     private func cameraPreviewAction(state _: ButtonState) {
         state.button.isOn.toggle()
         model.updateButtonStates()
-        model.showCameraPreview.toggle()
-        model.updateShowCameraPreview()
+        model.reattachCamera()
     }
 
     private func faceAction(state _: ButtonState) {

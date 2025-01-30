@@ -324,28 +324,17 @@ final class VideoUnit: NSObject {
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool
     ) throws {
-        let isOtherReplaceVideo = mixerLockQueue.sync {
-            let oldReplaceVideo = self.selectedReplaceVideoCameraId
-            self.selectedReplaceVideoCameraId = replaceVideo
-            return replaceVideo != oldReplaceVideo
-        }
-        if self.device == device {
-            if isOtherReplaceVideo {
-                mixerLockQueue.async {
-                    self.prepareFirstFrame()
-                }
-            }
-            return
-        }
         output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+        mixerLockQueue.async {
+            self.selectedReplaceVideoCameraId = replaceVideo
+            self.prepareFirstFrame()
+            self.showCameraPreview = showCameraPreview
+        }
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
         }
         try attachDevice(device, session)
-        mixerLockQueue.async {
-            self.prepareFirstFrame()
-        }
         self.device = device
         for connection in output?.connections ?? [] {
             if connection.isVideoMirroringSupported {
@@ -361,7 +350,6 @@ final class VideoUnit: NSObject {
         setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
         updateCameraControls()
-        self.showCameraPreview = showCameraPreview
         session.commitConfiguration()
         cameraPreviewLayer?.session = nil
         if showCameraPreview {
