@@ -210,12 +210,12 @@ class VideoCodec {
         }
     }
 
-    func startRunning() {
+    func startRunning(formatDescription: CMFormatDescription? = nil) {
         lockQueue.async {
             self.isRunning = true
             self.invalidateSession = true
             self.currentBitrate = 0
-            self.formatDescription = nil
+            self.formatDescription = formatDescription
             numberOfFailedEncodings = 0
         }
     }

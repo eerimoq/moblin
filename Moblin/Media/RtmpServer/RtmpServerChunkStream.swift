@@ -487,9 +487,8 @@ class RtmpServerChunkStream {
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
             videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
-            videoDecoder!.formatDescription = formatDescription
             videoDecoder!.delegate = self
-            videoDecoder!.startRunning()
+            videoDecoder!.startRunning(formatDescription: formatDescription)
         } else {
             client.stopInternal(reason: "Format description error \(status)")
         }

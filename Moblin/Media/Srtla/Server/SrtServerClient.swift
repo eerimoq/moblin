@@ -252,9 +252,8 @@ class SrtServerClient {
         logger.info("srt-server-client: Got new video dimensions \(dimentions)")
         videoDecoder?.stopRunning()
         videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
-        videoDecoder?.formatDescription = formatDescription
         videoDecoder?.delegate = self
-        videoDecoder?.startRunning()
+        videoDecoder?.startRunning(formatDescription: formatDescription)
     }
 
     private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)? {
