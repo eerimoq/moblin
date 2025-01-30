@@ -31,7 +31,9 @@ struct StreamSettingsView: View {
                     StreamVideoSettingsView(
                         stream: stream,
                         codec: stream.codec.rawValue,
-                        bitrate: stream.bitrate
+                        bitrate: stream.bitrate,
+                        resolution: stream.resolution.rawValue,
+                        fps: String(stream.fps)
                     )
                 } label: {
                     Text("Video")

@@ -33,19 +33,25 @@ struct StreamVideoSettingsView: View {
     var stream: SettingsStream
     @State var codec: String
     @State var bitrate: UInt32
+    @State var resolution: String
+    @State var fps: String
 
     private func onResolutionChange(resolution: String) {
         stream.resolution = SettingsStreamResolution(rawValue: resolution)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
-        model.resetSelectedScene(changeScene: false)
-        model.updateOrientation()
+        if stream.enabled {
+            model.resetSelectedScene(changeScene: false)
+            model.updateOrientation()
+        }
     }
 
     private func onFpsChange(fps: String) {
         stream.fps = Int(fps)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
-        model.resetSelectedScene(changeScene: false)
-        model.updateOrientation()
+        if stream.enabled {
+            model.resetSelectedScene(changeScene: false)
+            model.updateOrientation()
+        }
     }
 
     private func onBitrateChange(bitrate: UInt32) {
@@ -71,7 +77,9 @@ struct StreamVideoSettingsView: View {
         }
         stream.maxKeyFrameInterval = interval
         model.storeAndReloadStreamIfEnabled(stream: stream)
-        model.updateOrientation()
+        if stream.enabled {
+            model.updateOrientation()
+        }
     }
 
     var body: some View {
@@ -80,14 +88,15 @@ struct StreamVideoSettingsView: View {
                 HStack {
                     Text("Resolution")
                     Spacer()
-                    Picker("", selection: Binding(get: {
-                        stream.resolution.rawValue
-                    }, set: onResolutionChange)) {
+                    Picker("", selection: $resolution) {
                         ForEach(resolutions, id: \.self) {
                             Text($0.shortString())
                                 .tag($0.rawValue)
                         }
                     }
+                }
+                .onChange(of: resolution) {_ in
+                    onResolutionChange(resolution: resolution)
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
             }
@@ -95,13 +104,14 @@ struct StreamVideoSettingsView: View {
                 HStack {
                     Text("FPS")
                     Spacer()
-                    Picker("", selection: Binding(get: {
-                        String(stream.fps)
-                    }, set: onFpsChange)) {
+                    Picker("", selection: $fps) {
                         ForEach(fpss, id: \.self) {
                             Text($0)
                         }
                     }
+                }
+                .onChange(of: fps) {_ in
+                    onFpsChange(fps: fps)
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
             } footer: {
