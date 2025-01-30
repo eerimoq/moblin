@@ -95,7 +95,7 @@ struct StreamVideoSettingsView: View {
                         }
                     }
                 }
-                .onChange(of: resolution) {_ in
+                .onChange(of: resolution) { _ in
                     onResolutionChange(resolution: resolution)
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
@@ -110,7 +110,7 @@ struct StreamVideoSettingsView: View {
                         }
                     }
                 }
-                .onChange(of: fps) {_ in
+                .onChange(of: fps) { _ in
                     onFpsChange(fps: fps)
                 }
                 .disabled(stream.enabled && (model.isLive || model.isRecording))
