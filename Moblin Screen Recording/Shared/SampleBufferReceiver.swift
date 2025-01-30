@@ -93,9 +93,8 @@ class SampleBufferReceiver {
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr, let formatDescription {
             videoDecoder = VideoCodec(lockQueue: lockQueue)
-            videoDecoder!.formatDescription = formatDescription
             videoDecoder!.delegate = self
-            videoDecoder!.startRunning()
+            videoDecoder!.startRunning(formatDescription: formatDescription)
         }
     }
 

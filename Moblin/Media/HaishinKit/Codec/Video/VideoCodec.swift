@@ -30,7 +30,7 @@ class VideoCodec {
 
     private var isRunning = false
     private let lockQueue: DispatchQueue
-    var formatDescription: CMFormatDescription? {
+    private(set) var formatDescription: CMFormatDescription? {
         didSet {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
                 return
