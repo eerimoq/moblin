@@ -30,17 +30,7 @@ class VideoCodec {
 
     private var isRunning = false
     private let lockQueue: DispatchQueue
-    private(set) var formatDescription: CMFormatDescription? {
-        didSet {
-            guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
-                return
-            }
-            guard let formatDescription else {
-                return
-            }
-            delegate?.videoCodecOutputFormat(self, formatDescription)
-        }
-    }
+    private(set) var formatDescription: CMFormatDescription?
 
     var attributes: [NSString: AnyObject]? {
         guard VideoCodec.defaultAttributes != nil else {
@@ -70,6 +60,17 @@ class VideoCodec {
 
     init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue
+    }
+
+    private func setFormatDescription(formatDescription: CMFormatDescription?) {
+        guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: self.formatDescription) else {
+            return
+        }
+        self.formatDescription = formatDescription
+        guard let formatDescription else {
+            return
+        }
+        delegate?.videoCodecOutputFormat(self, formatDescription)
     }
 
     private func updateBitrate(settings: VideoCodecSettings) {
@@ -164,7 +165,7 @@ class VideoCodec {
                     numberOfFailedEncodings += 1
                     return
                 }
-                self.formatDescription = sampleBuffer.formatDescription
+                self.setFormatDescription(formatDescription: sampleBuffer.formatDescription)
                 self.delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
             }
         }
