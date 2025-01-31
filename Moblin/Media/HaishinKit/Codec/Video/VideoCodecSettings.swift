@@ -57,7 +57,7 @@ struct VideoCodecSettings {
             profileLevel == other.profileLevel)
     }
 
-    func options(_: VideoCodec) -> [VTSessionOption] {
+    func options(_: VideoEncoder) -> [VTSessionOption] {
         let isBaseline = profileLevel.contains("Baseline")
         var options: [VTSessionOption] = [
             .init(key: .realTime, value: kCFBooleanTrue),

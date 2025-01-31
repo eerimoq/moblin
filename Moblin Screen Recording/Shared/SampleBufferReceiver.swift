@@ -41,7 +41,7 @@ class SampleBufferReceiver {
     private var listenerFd: Int32
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?
-    private var videoDecoder: VideoCodec?
+    private var videoDecoder: VideoDecoder?
 
     init() {
         listenerFd = -1
@@ -92,7 +92,7 @@ class SampleBufferReceiver {
         let config = MpegTsVideoConfigHevc(data: hvcC)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr, let formatDescription {
-            videoDecoder = VideoCodec(lockQueue: lockQueue)
+            videoDecoder = VideoDecoder(lockQueue: lockQueue)
             videoDecoder!.delegate = self
             videoDecoder!.startRunning(formatDescription: formatDescription)
         }
@@ -159,10 +159,8 @@ class SampleBufferReceiver {
     }
 }
 
-extension SampleBufferReceiver: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
-
-    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+extension SampleBufferReceiver: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
         delegate?.handleSampleBuffer(type: .video, sampleBuffer: sampleBuffer)
     }
 }

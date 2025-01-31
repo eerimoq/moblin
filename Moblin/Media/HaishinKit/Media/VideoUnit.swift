@@ -168,7 +168,7 @@ final class VideoUnit: NSObject {
     private var captureSize = CGSize(width: 1920, height: 1080)
     private var outputSize = CGSize(width: 1920, height: 1080)
     let session = makeCaptureSession()
-    private var encoders = [VideoCodec(lockQueue: mixerLockQueue)]
+    private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -302,7 +302,7 @@ final class VideoUnit: NSObject {
         session.commitConfiguration()
     }
 
-    func getEncoders() -> [VideoCodec] {
+    func getEncoders() -> [VideoEncoder] {
         return encoders
     }
 
@@ -432,7 +432,7 @@ final class VideoUnit: NSObject {
         replaceVideos[cameraId]?.setTargetLatency(latency: latency)
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
+    func startEncoding(_ delegate: any VideoEncoderDelegate) {
         for encoder in encoders {
             encoder.delegate = delegate
             encoder.startRunning()

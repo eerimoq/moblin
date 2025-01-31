@@ -2,11 +2,11 @@ import VideoToolbox
 
 // periphery:ignore
 class MultiTrackVideoEncoder {
-    private let encoders: [VideoCodec]
+    private let encoders: [VideoEncoder]
 
     init(settings: [VideoCodecSettings], lockQueue: DispatchQueue) {
         encoders = settings.map { setting in
-            let encoder = VideoCodec(lockQueue: lockQueue)
+            let encoder = VideoEncoder(lockQueue: lockQueue)
             encoder.settings.mutate { $0 = setting }
             return encoder
         }
@@ -26,12 +26,12 @@ class MultiTrackVideoEncoder {
 }
 
 // periphery:ignore
-extension MultiTrackVideoEncoder: VideoCodecDelegate {
-    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+extension MultiTrackVideoEncoder: VideoEncoderDelegate {
+    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
         logger.info("multi-track-video-encoder: Format for \(codec) \(formatDescription)")
     }
 
-    func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
         logger.info("multi-track-video-encoder: Frame for \(codec) \(sampleBuffer.presentationTimeStamp)")
     }
 }

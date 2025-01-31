@@ -271,7 +271,7 @@ final class AudioUnit: NSObject {
         mixer?.recorder.appendAudio(sampleBuffer)
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
+    func startEncoding(_ delegate: any AudioCodecDelegate) {
         for encoder in encoders {
             encoder.delegate = delegate
             encoder.startRunning()

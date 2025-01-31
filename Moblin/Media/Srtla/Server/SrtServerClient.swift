@@ -19,7 +19,7 @@ class SrtServerClient {
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private let streamId: String
-    private var videoDecoder: VideoCodec?
+    private var videoDecoder: VideoDecoder?
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var targetLatenciesSynchronizer =
         TargetLatenciesSynchronizer(targetLatency: srtServerClientLatency)
@@ -251,7 +251,7 @@ class SrtServerClient {
         let dimentions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         logger.info("srt-server-client: Got new video dimensions \(dimentions)")
         videoDecoder?.stopRunning()
-        videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+        videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
@@ -411,10 +411,8 @@ class SrtServerClient {
     }
 }
 
-extension SrtServerClient: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
-
-    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+extension SrtServerClient: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
         server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
             streamId: streamId,
             sampleBuffer: sampleBuffer

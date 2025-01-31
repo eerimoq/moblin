@@ -178,7 +178,7 @@ class RtmpStream: NetStream {
         }
     }
 
-    private func createOnMetaDataLegacy(_ audioEncoder: AudioCodec, _ videoEncoder: VideoCodec) -> AsObject {
+    private func createOnMetaDataLegacy(_ audioEncoder: AudioCodec, _ videoEncoder: VideoEncoder) -> AsObject {
         var metadata: [String: Any] = [:]
         let settings = videoEncoder.settings.value
         metadata["width"] = settings.videoSize.width
@@ -199,7 +199,9 @@ class RtmpStream: NetStream {
         return metadata
     }
 
-    private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioCodec], _ videoEncoders: [VideoCodec]) -> AsObject {
+    private func createOnMetaDataMultiTrack(_ audioEncoders: [AudioCodec],
+                                            _ videoEncoders: [VideoEncoder]) -> AsObject
+    {
         let metadata = createOnMetaDataLegacy(audioEncoders.first!, videoEncoders.first!)
         // var audioTrackIdInfoMap: [String: Any] = [:]
         // for (trackId, encoder) in audioEncoders.enumerated() {
@@ -510,15 +512,15 @@ extension RtmpStream: AudioCodecDelegate {
     }
 }
 
-extension RtmpStream: VideoCodecDelegate {
-    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+extension RtmpStream: VideoEncoderDelegate {
+    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
         let format = codec.settings.value.format
         netStreamLockQueue.async {
             self.videoCodecOutputFormatInner(format, formatDescription)
         }
     }
 
-    func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
         let format = codec.settings.value.format
         netStreamLockQueue.async {
             self.videoCodecOutputSampleBufferInner(format, sampleBuffer)

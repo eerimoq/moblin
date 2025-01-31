@@ -16,7 +16,7 @@ class RtmpServerChunkStream {
     private var mediaTimestampZero: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
-    private var videoDecoder: VideoCodec?
+    private var videoDecoder: VideoDecoder?
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
     private var audioBuffer: AVAudioCompressedBuffer?
     private var audioDecoder: AVAudioConverter?
@@ -486,7 +486,7 @@ class RtmpServerChunkStream {
         config.data = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
-            videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+            videoDecoder = VideoDecoder(lockQueue: videoCodecLockQueue)
             videoDecoder!.delegate = self
             videoDecoder!.startRunning(formatDescription: formatDescription)
         } else {
@@ -572,10 +572,8 @@ class RtmpServerChunkStream {
     }
 }
 
-extension RtmpServerChunkStream: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
-
-    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+extension RtmpServerChunkStream: VideoDecoderDelegate {
+    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
         guard let client else {
             return
         }

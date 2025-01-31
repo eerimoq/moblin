@@ -64,7 +64,7 @@ class Mixer {
         try audio.attach(device, replaceAudio)
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
+    func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
         video.startEncoding(delegate)
         audio.startEncoding(delegate)
     }

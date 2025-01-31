@@ -27,12 +27,12 @@ class MirlStream: NetStream {
     }
 }
 
-extension MirlStream: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _ formatDescription: CMFormatDescription) {
+extension MirlStream: VideoEncoderDelegate {
+    func videoEncoderOutputFormat(_: VideoEncoder, _ formatDescription: CMFormatDescription) {
         client?.writeVideoFormat(formatDescription: formatDescription)
     }
 
-    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
         client?.writeVideo(sampleBuffer: sampleBuffer)
     }
 }

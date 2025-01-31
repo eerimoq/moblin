@@ -300,8 +300,8 @@ extension MpegTsWriter: AudioCodecDelegate {
     }
 }
 
-extension MpegTsWriter: VideoCodecDelegate {
-    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+extension MpegTsWriter: VideoEncoderDelegate {
+    func videoEncoderOutputFormat(_ codec: VideoEncoder, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
         data.elementaryPacketId = MpegTsWriter.videoPacketId
         videoContinuityCounter = 0
@@ -335,7 +335,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         }
     }
 
-    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
+    func videoEncoderOutputSampleBuffer(_: VideoEncoder, _ sampleBuffer: CMSampleBuffer) {
         guard let dataBuffer = sampleBuffer.dataBuffer,
               let (buffer, length) = dataBuffer.getDataPointer(),
               canWriteFor(),
