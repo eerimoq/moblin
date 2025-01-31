@@ -80,11 +80,11 @@ class VideoCodec {
         let bitRate = currentBitrate
         let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
         if let status = session?.setOption(option), status != noErr {
-            logger.info("video: Failed to set option \(status) \(option)")
+            logger.info("video-encoder: Failed to set option \(status) \(option)")
         }
         let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
         if let status = session?.setOption(optionLimit), status != noErr {
-            logger.info("video: Failed to set option \(status) \(optionLimit)")
+            logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
         }
     }
 
@@ -157,7 +157,10 @@ class VideoCodec {
             }
             self.lockQueue.async {
                 guard let sampleBuffer, status == noErr else {
-                    logger.info("video: Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)")
+                    logger.info("""
+                    video-encoder: Failed to encode frame status \(status) an got \
+                    buffer \(sampleBuffer != nil)
+                    """)
                     numberOfFailedEncodings += 1
                     return
                 }
@@ -166,7 +169,7 @@ class VideoCodec {
             }
         }
         if err == kVTInvalidSessionErr {
-            logger.info("video: Encode failed. Resetting session.")
+            logger.info("video-encoder: Encode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
         }
@@ -185,7 +188,7 @@ class VideoCodec {
                     return
                 }
                 guard let imageBuffer, status == noErr else {
-                    logger.info("video: Failed to decode frame status \(status)")
+                    logger.info("video-decoder: Failed to decode frame status \(status)")
                     return
                 }
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -204,7 +207,7 @@ class VideoCodec {
                 }
             }
         if err == kVTInvalidSessionErr {
-            logger.info("video: Decode failed. Resetting session.")
+            logger.info("video-decoder: Decode failed. Resetting session.")
             invalidateSession = true
             currentBitrate = 0
         }
@@ -237,7 +240,7 @@ private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
 {
     var session: VTCompressionSession?
     for attribute in videoCodec.attributes ?? [:] {
-        logger.debug("video: Codec attribute: \(attribute.key) \(attribute.value)")
+        logger.debug("video-encoder: Codec attribute: \(attribute.key) \(attribute.value)")
     }
     var status = VTCompressionSessionCreate(
         allocator: kCFAllocatorDefault,
@@ -252,17 +255,17 @@ private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
         compressionSessionOut: &session
     )
     guard status == noErr, let session else {
-        logger.info("video: Failed to create status \(status)")
+        logger.info("video-encoder: Failed to create session with status \(status)")
         return nil
     }
     status = session.setOptions(settings.options(videoCodec))
     guard status == noErr else {
-        logger.info("video: Failed to prepare status \(status)")
+        logger.info("video-encoder: Failed to set options with status \(status)")
         return nil
     }
     status = session.prepareToEncodeFrames()
     guard status == noErr else {
-        logger.info("video: Failed to prepare status \(status)")
+        logger.info("video-encoder: Failed to prepare with status \(status)")
         return nil
     }
     return session
@@ -270,7 +273,7 @@ private func makeVideoCompressionSession(_ videoCodec: VideoCodec,
 
 private func makeVideoDecompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
     guard let formatDescription = videoCodec.formatDescription else {
-        logger.info("video: Failed to create status \(kVTParameterErr)")
+        logger.info("video-decoder: Format description missing")
         return nil
     }
     var attributes = videoCodec.attributes
@@ -286,7 +289,7 @@ private func makeVideoDecompressionSession(_ videoCodec: VideoCodec) -> (any VTS
         decompressionSessionOut: &session
     )
     guard status == noErr else {
-        logger.info("video: Failed to create status \(status)")
+        logger.info("video-decoder: Failed to create session with status \(status)")
         return nil
     }
     return session
