@@ -61,77 +61,25 @@ class VideoCodec {
     init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue
     }
-
-    private func setFormatDescription(formatDescription: CMFormatDescription?) {
-        guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: self.formatDescription) else {
-            return
-        }
-        self.formatDescription = formatDescription
-        guard let formatDescription else {
-            return
-        }
-        delegate?.videoCodecOutputFormat(self, formatDescription)
-    }
-
-    private func updateBitrate(settings: VideoCodecSettings) {
-        guard currentBitrate != settings.bitRate else {
-            return
-        }
-        currentBitrate = settings.bitRate
-        let bitRate = currentBitrate
-        let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
-        if let status = session?.setOption(option), status != noErr {
-            logger.info("video-encoder: Failed to set option \(status) \(option)")
-        }
-        let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
-        if let status = session?.setOption(optionLimit), status != noErr {
-            logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
+    
+    func startRunning(formatDescription: CMFormatDescription? = nil) {
+        lockQueue.async {
+            self.isRunning = true
+            self.invalidateSession = true
+            self.currentBitrate = 0
+            self.formatDescription = formatDescription
+            numberOfFailedEncodings = 0
         }
     }
 
-    private func getLandscapeVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
-        if settings.bitRate < 100_000 {
-            return .init(width: 284, height: 160)
-        } else if settings.bitRate < 250_000 {
-            return .init(width: 640, height: 360)
-        } else if settings.bitRate < 500_000 {
-            return .init(width: 854, height: 480)
-        } else if settings.bitRate < 750_000 {
-            return .init(width: 1280, height: 720)
-        } else {
-            return settings.videoSize
+    func stopRunning() {
+        lockQueue.async {
+            self.session = nil
+            self.invalidateSession = true
+            self.currentBitrate = 0
+            self.formatDescription = nil
+            self.isRunning = false
         }
-    }
-
-    private func getPortraitVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
-        if settings.bitRate < 100_000 {
-            return .init(width: 160, height: 284)
-        } else if settings.bitRate < 250_000 {
-            return .init(width: 360, height: 640)
-        } else if settings.bitRate < 500_000 {
-            return .init(width: 480, height: 854)
-        } else if settings.bitRate < 750_000 {
-            return .init(width: 720, height: 1280)
-        } else {
-            return settings.videoSize
-        }
-    }
-
-    private func updateAdaptiveResolution(settings: VideoCodecSettings) -> CMVideoDimensions {
-        var videoSize: CMVideoDimensions
-        if settings.adaptiveResolution {
-            if settings.videoSize.width > settings.videoSize.height {
-                videoSize = getLandscapeVideoSize(settings: settings)
-            } else {
-                videoSize = getPortraitVideoSize(settings: settings)
-            }
-        } else {
-            videoSize = settings.videoSize
-        }
-        if videoSize.height > settings.videoSize.height {
-            videoSize = settings.videoSize
-        }
-        return videoSize
     }
 
     func encodeImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
@@ -213,25 +161,77 @@ class VideoCodec {
             currentBitrate = 0
         }
     }
+    
+    private func setFormatDescription(formatDescription: CMFormatDescription?) {
+        guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: self.formatDescription) else {
+            return
+        }
+        self.formatDescription = formatDescription
+        guard let formatDescription else {
+            return
+        }
+        delegate?.videoCodecOutputFormat(self, formatDescription)
+    }
 
-    func startRunning(formatDescription: CMFormatDescription? = nil) {
-        lockQueue.async {
-            self.isRunning = true
-            self.invalidateSession = true
-            self.currentBitrate = 0
-            self.formatDescription = formatDescription
-            numberOfFailedEncodings = 0
+    private func updateBitrate(settings: VideoCodecSettings) {
+        guard currentBitrate != settings.bitRate else {
+            return
+        }
+        currentBitrate = settings.bitRate
+        let bitRate = currentBitrate
+        let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
+        if let status = session?.setOption(option), status != noErr {
+            logger.info("video-encoder: Failed to set option \(status) \(option)")
+        }
+        let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
+        if let status = session?.setOption(optionLimit), status != noErr {
+            logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
         }
     }
 
-    func stopRunning() {
-        lockQueue.async {
-            self.session = nil
-            self.invalidateSession = true
-            self.currentBitrate = 0
-            self.formatDescription = nil
-            self.isRunning = false
+    private func getLandscapeVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
+        if settings.bitRate < 100_000 {
+            return .init(width: 284, height: 160)
+        } else if settings.bitRate < 250_000 {
+            return .init(width: 640, height: 360)
+        } else if settings.bitRate < 500_000 {
+            return .init(width: 854, height: 480)
+        } else if settings.bitRate < 750_000 {
+            return .init(width: 1280, height: 720)
+        } else {
+            return settings.videoSize
         }
+    }
+
+    private func getPortraitVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
+        if settings.bitRate < 100_000 {
+            return .init(width: 160, height: 284)
+        } else if settings.bitRate < 250_000 {
+            return .init(width: 360, height: 640)
+        } else if settings.bitRate < 500_000 {
+            return .init(width: 480, height: 854)
+        } else if settings.bitRate < 750_000 {
+            return .init(width: 720, height: 1280)
+        } else {
+            return settings.videoSize
+        }
+    }
+
+    private func updateAdaptiveResolution(settings: VideoCodecSettings) -> CMVideoDimensions {
+        var videoSize: CMVideoDimensions
+        if settings.adaptiveResolution {
+            if settings.videoSize.width > settings.videoSize.height {
+                videoSize = getLandscapeVideoSize(settings: settings)
+            } else {
+                videoSize = getPortraitVideoSize(settings: settings)
+            }
+        } else {
+            videoSize = settings.videoSize
+        }
+        if videoSize.height > settings.videoSize.height {
+            videoSize = settings.videoSize
+        }
+        return videoSize
     }
 }
 
