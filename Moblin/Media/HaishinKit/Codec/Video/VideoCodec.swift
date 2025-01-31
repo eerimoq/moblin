@@ -1,6 +1,4 @@
 import AVFoundation
-import CoreFoundation
-import UIKit
 import VideoToolbox
 
 var numberOfFailedEncodings = 0
