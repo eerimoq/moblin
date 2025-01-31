@@ -321,6 +321,9 @@ struct MpegTsPacketizedElementaryStream {
         while let next = iterator.next() {
             sampleSizes.append(next)
         }
+        guard !sampleSizes.isEmpty else {
+            return nil
+        }
         return makeSampleBuffer(
             basePresentationTimeStamp,
             firstReceivedPresentationTimeStamp,
