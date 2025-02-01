@@ -222,7 +222,7 @@ struct WidgetVideoSourceSettingsView: View {
     private func onCameraChange(cameraId: String) {
         widget.videoSource!
             .updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated()
+        model.sceneUpdated(attachCamera: true)
     }
 
     private func setEffectSettings() {

@@ -17,7 +17,7 @@ struct QuickButtonStreamView: View {
                     model.stopRecording()
                     if model.setCurrentStream(streamId: model.currentStreamId) {
                         model.reloadStream()
-                        model.sceneUpdated()
+                        model.sceneUpdated(attachCamera: true)
                         model.setIsLive(value: true)
                         DispatchQueue.main
                             .asyncAfter(deadline: .now() + 3) {

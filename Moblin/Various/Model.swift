@@ -2026,7 +2026,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if !shouldStreamInBackground() {
             reloadStream(continueRecording: isRecording)
-            sceneUpdated()
+            sceneUpdated(attachCamera: true)
             setupAudioSession()
             media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             reloadRtmpServer()
@@ -3613,7 +3613,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             lutEffects[lut.id] = lutEffect
         }
-        sceneUpdated(imageEffectChanged: true)
+        sceneUpdated(imageEffectChanged: true, attachCamera: true)
     }
 
     func store() {
@@ -4134,7 +4134,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         store()
         if stream.enabled {
             reloadStream()
-            sceneUpdated()
+            sceneUpdated(attachCamera: true)
         }
     }
 
@@ -5677,7 +5677,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return scene.widgets.first(where: { $0.widgetId == widgetId })
     }
 
-    private func sceneUpdatedOn(scene: SettingsScene) {
+    private func sceneUpdatedOn(scene: SettingsScene, attachCamera: Bool) {
         var effects: [VideoEffect] = []
         if database.color!.lutEnabled, database.color!.space == .appleLog {
             effects.append(lutEffect)
@@ -5727,7 +5727,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         }
         media.setSpeechToText(enabled: needsSpeechToText)
-        attachSingleLayout(scene: scene)
+        if attachCamera {
+            attachSingleLayout(scene: scene)
+        } else {
+            media.usePendingAfterAttachEffects()
+        }
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStreamLines.isEmpty {
             drawOnStreamEffect.updateOverlay(
@@ -5968,7 +5972,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false) {
+    func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false) {
         if imageEffectChanged {
             reloadImageEffects()
         }
@@ -5976,7 +5980,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             sceneUpdatedOff()
             return
         }
-        sceneUpdatedOn(scene: scene)
+        sceneUpdatedOn(scene: scene, attachCamera: attachCamera)
         startWeatherManager()
         startGeographyManager()
     }
@@ -8426,7 +8430,7 @@ extension Model {
         database.streams.append(stream)
         setCurrentStream(stream: stream)
         reloadStream()
-        sceneUpdated()
+        sceneUpdated(attachCamera: true)
     }
 
     func resetWizard() {

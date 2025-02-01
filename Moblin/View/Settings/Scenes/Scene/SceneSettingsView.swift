@@ -65,7 +65,7 @@ struct SceneSettingsView: View {
 
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated()
+        model.sceneUpdated(attachCamera: true)
     }
 
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
