@@ -25853,6 +25853,9 @@
         }
       }
     },
+    "Bitrate drop fix" : {
+
+    },
     "Bitrate increase speed" : {
       "localizations" : {
         "de" : {
@@ -40084,6 +40087,9 @@
           }
         }
       }
+    },
+    "Data rate limit" : {
+
     },
     "Date" : {
       "localizations" : {

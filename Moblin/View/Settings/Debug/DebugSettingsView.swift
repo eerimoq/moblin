@@ -4,6 +4,7 @@ import WebKit
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
+    @State var dataRateLimitFactor: Float
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -68,6 +69,29 @@ struct DebugSettingsView: View {
                         }
                     )
                     Text("\(formatOneDecimal(cameraSwitchRemoveBlackish)) s")
+                        .frame(width: 40)
+                }
+                Toggle("Bitrate drop fix", isOn: Binding(get: {
+                    model.database.debug.bitrateDropFix!
+                }, set: { value in
+                    model.database.debug.bitrateDropFix = value
+                    model.setBitrateDropFix()
+                }))
+                HStack {
+                    Text("Data rate limit")
+                    Slider(
+                        value: $dataRateLimitFactor,
+                        in: 1.2 ... 2.5,
+                        step: 0.1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.debug.dataRateLimitFactor = dataRateLimitFactor
+                            model.setBitrateDropFix()
+                        }
+                    )
+                    Text(formatOneDecimal(dataRateLimitFactor))
                         .frame(width: 40)
                 }
                 Toggle("Blur scene switch", isOn: Binding(get: {

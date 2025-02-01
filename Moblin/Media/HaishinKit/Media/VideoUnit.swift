@@ -6,6 +6,7 @@ import UIKit
 import Vision
 
 var ioVideoBlurSceneSwitch = true
+var ioVideoBitrateDropFix = false
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
@@ -754,12 +755,25 @@ final class VideoUnit: NSObject {
         return filter.outputImage
     }
 
-    private func calcBlurRadius() -> Double {
+    private func calcBlurRadius() -> Float {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
-            return 15 + min(offset.seconds, 2) * 15
+            if ioVideoBitrateDropFix {
+                return 0 + min(Float(offset.seconds), 5) * 5
+            } else {
+                return 15 + min(Float(offset.seconds), 2) * 15
+            }
         } else {
             return 25
+        }
+    }
+
+    private func calcBlurScale() -> Double {
+        if let latestSampleBufferTime {
+            let offset = ContinuousClock.now - latestSampleBufferTime
+            return 1.0 - min(offset.seconds, 5) * 0.05
+        } else {
+            return 0.75
         }
     }
 
@@ -769,7 +783,7 @@ final class VideoUnit: NSObject {
         }
         let filter = MTIMPSGaussianBlurFilter()
         filter.inputImage = image
-        filter.radius = Float(calcBlurRadius() * (image.extent.size.maximum() / 1920))
+        filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
         return filter.outputImage
     }
 
@@ -827,10 +841,29 @@ final class VideoUnit: NSObject {
     }
 
     private func blurImage(_ image: CIImage) -> CIImage {
-        let filter = CIFilter.gaussianBlur()
-        filter.inputImage = image
-        filter.radius = Float(calcBlurRadius() * (image.extent.size.maximum() / 1920))
-        return filter.outputImage?.cropped(to: image.extent) ?? image
+        if ioVideoBitrateDropFix {
+            let filter = CIFilter.gaussianBlur()
+            filter.inputImage = image
+            filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
+            let width = image.extent.width
+            let height = image.extent.height
+            let cropScaleDownFactor = calcBlurScale()
+            let scaleUpFactor = 1 / cropScaleDownFactor
+            let smallWidth = width * cropScaleDownFactor
+            let smallHeight = height * cropScaleDownFactor
+            let smallOffsetX = (width - smallWidth) / 2
+            let smallOffsetY = (height - smallHeight) / 2
+            return filter.outputImage?
+                .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
+                .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
+                .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
+                .cropped(to: image.extent) ?? image
+        } else {
+            let filter = CIFilter.gaussianBlur()
+            filter.inputImage = image
+            filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
+            return filter.outputImage?.cropped(to: image.extent) ?? image
+        }
     }
 
     private func registerEffectInner(_ effect: VideoEffect) {

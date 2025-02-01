@@ -1310,6 +1310,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait!)
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
+        setBitrateDropFix()
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -1441,6 +1442,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadMoblinkClient()
         reloadMoblinkServer()
         setCameraControlsEnabled()
+    }
+
+    func setBitrateDropFix() {
+        if database.debug.bitrateDropFix! {
+            videoCodecDataRateLimitFactor = Double(database.debug.dataRateLimitFactor!)
+        } else {
+            videoCodecDataRateLimitFactor = 1.2
+        }
+        ioVideoBitrateDropFix = database.debug.bitrateDropFix!
     }
 
     private func shouldShowCameraPreview() -> Bool {

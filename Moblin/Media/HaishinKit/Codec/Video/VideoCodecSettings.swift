@@ -1,9 +1,15 @@
 import Foundation
 import VideoToolbox
 
+var videoCodecDataRateLimitFactor = 1.2
+
 func createDataRateLimits(bitRate: UInt32) -> CFArray {
     var bitRate = Double(bitRate)
-    bitRate *= 1.2
+    if bitRate < 1_000_000 {
+        bitRate *= 1.2
+    } else {
+        bitRate *= videoCodecDataRateLimitFactor
+    }
     let bytesLimit = (bitRate / 8) as CFNumber
     let secondsLimit = Double(1.0) as CFNumber
     return [bytesLimit, secondsLimit] as CFArray

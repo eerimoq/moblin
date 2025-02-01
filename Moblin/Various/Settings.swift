@@ -1845,6 +1845,8 @@ class SettingsDebug: Codable {
     var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
     var srtlaBatchSend: Bool? = false
     var cameraControlsEnabled: Bool? = false
+    var dataRateLimitFactor: Float? = 2.0
+    var bitrateDropFix: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4519,6 +4521,14 @@ final class Settings {
         }
         if realDatabase.show.moblink == nil {
             realDatabase.show.moblink = true
+            store()
+        }
+        if realDatabase.debug.dataRateLimitFactor == nil {
+            realDatabase.debug.dataRateLimitFactor = 2.0
+            store()
+        }
+        if realDatabase.debug.bitrateDropFix == nil {
+            realDatabase.debug.bitrateDropFix = false
             store()
         }
     }
