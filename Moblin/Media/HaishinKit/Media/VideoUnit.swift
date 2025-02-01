@@ -771,9 +771,9 @@ final class VideoUnit: NSObject {
     private func calcBlurScale() -> Double {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
-            return 1.0 - min(offset.seconds, 5) * 0.05
+            return 1.0 - min(offset.seconds, 5) * 0.15
         } else {
-            return 0.75
+            return 0.25
         }
     }
 
