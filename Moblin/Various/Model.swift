@@ -1309,7 +1309,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait!)
-        ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug.cameraSwitchRemoveBlackish!)
         setBitrateDropFix()
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
@@ -6275,7 +6274,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             cameraPreviewLayer: nil,
             showCameraPreview: false,
             videoStabilizationMode: .off,
-            videoMirrored: false
+            videoMirrored: false,
+            ignoreFramesAfterAttachSeconds: 0.0
         )
     }
 
@@ -6375,6 +6375,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             showCameraPreview: updateShowCameraPreview(),
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream(),
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
@@ -6391,6 +6392,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
         zoomXPinch = zoomX
         hasZoom = true
+    }
+
+    private func getIgnoreFramesAfterAttachSeconds() -> Double {
+        return Double(database.debug.cameraSwitchRemoveBlackish!)
     }
 
     private func attachReplaceCamera(cameraId: UUID) {

@@ -64,7 +64,6 @@ struct DebugSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(cameraSwitchRemoveBlackish)
                             model.database.debug.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
                         }
                     )

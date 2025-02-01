@@ -94,6 +94,7 @@ open class NetStream: NSObject {
         _ showCameraPreview: Bool,
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool,
+        _ ignoreFramesAfterAttachSeconds: Double,
         onError: ((_ error: Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
@@ -106,7 +107,8 @@ open class NetStream: NSObject {
                     showCameraPreview,
                     replaceVideoCameraId,
                     preferredVideoStabilizationMode,
-                    isVideoMirrored
+                    isVideoMirrored,
+                    ignoreFramesAfterAttachSeconds
                 )
                 onSuccess?()
             } catch {

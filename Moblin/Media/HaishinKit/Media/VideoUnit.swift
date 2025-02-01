@@ -7,7 +7,6 @@ import Vision
 
 var ioVideoBlurSceneSwitch = true
 var ioVideoBitrateDropFix = false
-var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
@@ -227,6 +226,8 @@ final class VideoUnit: NSObject {
     private var frameTimer = SimpleTimer(queue: mixerLockQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
+    private var ignoreFramesAfterAttachSeconds = 0.0
+    private var configuredIgnoreFramesAfterAttachSeconds = 0.0
     private var rotation: Double = 0.0
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var lowFpsImageEnabled: Bool = false
@@ -323,10 +324,12 @@ final class VideoUnit: NSObject {
         _ showCameraPreview: Bool,
         _ replaceVideo: UUID?,
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool
+        _ isVideoMirrored: Bool,
+        _ ignoreFramesAfterAttachSeconds: Double
     ) throws {
         output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         mixerLockQueue.async {
+            self.configuredIgnoreFramesAfterAttachSeconds = ignoreFramesAfterAttachSeconds
             self.selectedReplaceVideoCameraId = replaceVideo
             self.prepareFirstFrame()
             self.showCameraPreview = showCameraPreview
@@ -524,6 +527,7 @@ final class VideoUnit: NSObject {
     private func prepareFirstFrame() {
         firstFrameTime = nil
         isFirstAfterAttach = true
+        ignoreFramesAfterAttachSeconds = configuredIgnoreFramesAfterAttachSeconds
     }
 
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
@@ -1410,7 +1414,7 @@ final class VideoUnit: NSObject {
         if firstFrameTime == nil {
             firstFrameTime = now
         }
-        guard firstFrameTime!.duration(to: now) > .seconds(ioVideoUnitIgnoreFramesAfterAttachSeconds) else {
+        guard firstFrameTime!.duration(to: now) > .seconds(ignoreFramesAfterAttachSeconds) else {
             return
         }
         latestSampleBuffer = sampleBuffer

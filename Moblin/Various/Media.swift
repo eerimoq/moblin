@@ -772,6 +772,7 @@ final class Media: NSObject {
         showCameraPreview: Bool,
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         videoMirrored: Bool,
+        ignoreFramesAfterAttachSeconds: Double,
         onSuccess: (() -> Void)? = nil
     ) {
         netStream?.attachCamera(
@@ -780,6 +781,7 @@ final class Media: NSObject {
             showCameraPreview,
             videoStabilizationMode,
             videoMirrored,
+            ignoreFramesAfterAttachSeconds,
             onError: { error in
                 logger.error("stream: Attach camera error: \(error)")
             },
@@ -803,6 +805,7 @@ final class Media: NSObject {
             false,
             .off,
             false,
+            0.0,
             replaceVideoCameraId: cameraId
         )
     }

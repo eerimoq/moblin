@@ -80,6 +80,7 @@ class SrtStream: NetStream {
         _ showCameraPreview: Bool,
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool,
+        _ ignoreFramesAfterAttachSeconds: Double,
         onError: ((Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
@@ -91,6 +92,7 @@ class SrtStream: NetStream {
             showCameraPreview,
             preferredVideoStabilizationMode,
             isVideoMirrored,
+            ignoreFramesAfterAttachSeconds,
             onError: onError,
             onSuccess: onSuccess,
             replaceVideoCameraId: replaceVideoCameraId
