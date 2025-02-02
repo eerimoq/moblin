@@ -14061,7 +14061,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "eine Verbindung"
           }
         },
@@ -27888,7 +27888,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unten"
           }
         },
@@ -29508,7 +29508,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kamerasteuerung"
           }
         },
@@ -29644,7 +29644,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kameravorschau"
           }
         },
@@ -38602,7 +38602,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CPU: %lld"
           }
         },
@@ -44175,7 +44175,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "DNS-Lookup-Strategie"
           }
         },
@@ -44985,7 +44985,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zum Entsperren doppeltippen"
           }
         },
@@ -46475,8 +46475,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie die Low Light Boost-Funktion, damit integrierte Kameras bei Dunkelheit automatisch die ausgewählte FPS verringern, um ein helleres Bild zu erhalten (sofern unterstützt)."
+            "state" : "translated",
+            "value" : "Aktiviere die Low Light Boost-Funktion, damit integrierte Kameras bei Dunkelheit automatisch die ausgewählte FPS verringern, um ein helleres Bild zu erhalten (sofern unterstützt)."
           }
         },
         "el" : {
@@ -46883,8 +46883,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie dies auf dem Gerät, das Sie als zusätzliche Bonding-Verbindung verwenden möchten. Auf dem Gerät müssen mobile Daten aktiviert sein."
+            "state" : "translated",
+            "value" : "Aktiviere dies auf dem Gerät, das als zusätzliche Bonding-Verbindung verwendet werden soll. Auf dem Gerät müssen mobile Daten aktiviert sein."
           }
         },
         "el" : {
@@ -47019,8 +47019,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie dies auf Ihrem Streaming-Gerät. Konfigurieren Sie Relay-Geräte für die Verbindung mit diesem Gerät."
+            "state" : "translated",
+            "value" : "Aktiviere dies auf deinem Streaming-Gerät. Konfiguriere Relay-Geräte für die Verbindung mit diesem Gerät."
           }
         },
         "el" : {
@@ -48787,8 +48787,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tragen Sie eine der URLs als „Streamer-URL“ in das Relay-Gerät ein, um diese als zusätzliche Bonding-Verbindung zu nutzen."
+            "state" : "translated",
+            "value" : "Trage eine der URLs als „Streamer-URL“ in das Relay-Gerät ein, um diese als zusätzliche Bonding-Verbindung zu nutzen."
           }
         },
         "el" : {
@@ -65307,7 +65307,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Interaktiver Chat"
           }
         },
@@ -68831,7 +68831,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bildschirm sperren"
           }
         },
@@ -69783,8 +69783,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schwachlichtverstärkung (LLB)"
+            "state" : "translated",
+            "value" : "Low light Boost (LLB)"
           }
         },
         "el" : {
@@ -76671,7 +76671,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblink"
           }
         },
@@ -78711,7 +78711,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Meine .cube LUTs"
           }
         },
@@ -78841,7 +78841,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Meine .png LUTs"
           }
         },
@@ -81407,7 +81407,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Neue Nachrichten oben"
           }
         },
@@ -83175,8 +83175,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "In Ihrem lokalen Netzwerk wurden noch keine Streamer gefunden."
+            "state" : "translated",
+            "value" : "Im lokalen Netzwerk wurden noch keine Streamer gefunden."
           }
         },
         "el" : {
@@ -88603,7 +88603,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PIXELLATE-STÄRKE"
           }
         },
@@ -97812,7 +97812,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auf Standard zurücksetzen"
           }
         },
@@ -102394,7 +102394,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bildschirm gesperrt"
           }
         },
@@ -102530,7 +102530,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bildschirm entsperrt"
           }
         },
@@ -110270,8 +110270,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT(LA) Stapelversand"
+            "state" : "translated",
+            "value" : "SRT(LA) Batch Versand"
           }
         },
         "el" : {
@@ -115538,8 +115538,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Streamer-URL"
+            "state" : "translated",
+            "value" : "Streamer URL"
           }
         },
         "el" : {
@@ -118252,7 +118252,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das System scheint für T-Mobile am besten zu funktionieren. IPv4 ist wahrscheinlich am besten für IRLToolkit."
           }
         },
@@ -133058,8 +133058,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie Telefone als zusätzliche SRTLA- und RIST-Bonding-Verbindungen. Installieren Sie Moblink auf Android-Telefonen, um sie zu verwenden."
+            "state" : "translated",
+            "value" : "Verwende Telefone als zusätzliche SRTLA- und RIST-Bonding-Verbindungen. Installiere Moblink auf Android-Telefonen, um sie zu verwenden."
           }
         },
         "el" : {
@@ -133466,8 +133466,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wird sowohl von Relay- als auch von Streamer-Geräten verwendet. Kopieren Sie das Kennwort des Streamers auf das Relay-Gerät."
+            "state" : "translated",
+            "value" : "Wird sowohl von Relay- als auch von Streamer-Geräten verwendet. Kopiere das Kennwort des Streamers auf das Relay-Gerät."
           }
         },
         "el" : {
@@ -139172,7 +139172,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://32.143.32.12:2345"
           }
         },
