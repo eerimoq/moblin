@@ -64,6 +64,53 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         return (throughput / 8) * rtt / 1316
     }
 
+    private func updateSendBufferSizeAverage(sendBufferSize: Double) {
+        sendBufferSizeAvg = sendBufferSizeAvg * 0.99 + sendBufferSize * 0.01
+    }
+
+    private func updateSendBufferSizeJitter(sendBufferSize: Double) {
+        sendBufferSizeJitter = 0.99 * sendBufferSizeJitter
+        let deltaSendBufferSize = sendBufferSize - prevSendBufferSize
+        if deltaSendBufferSize > sendBufferSizeJitter {
+            sendBufferSizeJitter = deltaSendBufferSize
+        }
+        prevSendBufferSize = sendBufferSize
+    }
+
+    private func updateRttAverage(rtt: Double) {
+        if rttAvg == 0.0 {
+            rttAvg = rtt
+        } else {
+            rttAvg = rttAvg * 0.99 + 0.01 * rtt
+        }
+    }
+
+    private func updateAverageRttDelta(rtt: Double) -> Double {
+        let deltaRtt = rtt - prevRtt
+        rttAvgDelta = rttAvgDelta * 0.8 + deltaRtt * 0.2
+        prevRtt = rtt
+        return deltaRtt
+    }
+
+    private func updateRttMin(rtt: Double) {
+        rttMin *= 1.001
+        if rtt != 100 && rtt < rttMin && rttAvgDelta < 1.0 {
+            rttMin = rtt
+        }
+    }
+
+    private func updateRttJitter(deltaRtt: Double) {
+        rttJitter *= 0.99
+        if deltaRtt > rttJitter {
+            rttJitter = deltaRtt
+        }
+    }
+
+    private func updateThroughput(mbpsSendRate: Double) {
+        throughput *= 0.97
+        throughput += (mbpsSendRate * 1000.0 * 1000.0 / 1024.0) * 0.03
+    }
+
     private func updateBitrate(stats: StreamStats) {
         if stats.rttMs == 0 {
             return
@@ -71,42 +118,17 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         if curBitrate == 0 {
             curBitrate = settings.minimumBitrate
         }
+        let sendBufferSize = stats.packetsInFlight
+        updateSendBufferSizeAverage(sendBufferSize: sendBufferSize)
+        updateSendBufferSizeJitter(sendBufferSize: sendBufferSize)
+        let rtt = stats.rttMs
+        updateRttAverage(rtt: rtt)
+        let deltaRtt = updateAverageRttDelta(rtt: rtt)
+        updateRttMin(rtt: rtt)
+        updateRttJitter(deltaRtt: deltaRtt)
+        updateThroughput(mbpsSendRate: stats.mbpsSendRate!)
         let srtLatency = Double(stats.latency ?? defaultSrtLatency)
         let currentTime = ContinuousClock.now
-        let sendBufferSize = stats.packetsInFlight
-        // Rolling average
-        sendBufferSizeAvg = sendBufferSizeAvg * 0.99 + sendBufferSize * 0.01
-        // Update the buffer size jitter
-        sendBufferSizeJitter = 0.99 * sendBufferSizeJitter
-        let deltaSendBufferSize = sendBufferSize - prevSendBufferSize
-        if deltaSendBufferSize > sendBufferSizeJitter {
-            sendBufferSizeJitter = deltaSendBufferSize
-        }
-        prevSendBufferSize = sendBufferSize
-        // Update the average RTT
-        let rtt = stats.rttMs
-        if rttAvg == 0.0 {
-            rttAvg = rtt
-        } else {
-            rttAvg = rttAvg * 0.99 + 0.01 * rtt
-        }
-        // Update the average RTT delta
-        let deltaRtt = rtt - prevRtt
-        rttAvgDelta = rttAvgDelta * 0.8 + deltaRtt * 0.2
-        prevRtt = rtt
-        // Update the minimum RTT
-        rttMin *= 1.001
-        if rtt != 100 && rtt < rttMin && rttAvgDelta < 1.0 {
-            rttMin = rtt
-        }
-        // Update the RTT jitter
-        rttJitter *= 0.99
-        if deltaRtt > rttJitter {
-            rttJitter = deltaRtt
-        }
-        // Rolling average of the network throughput
-        throughput *= 0.97
-        throughput += (stats.mbpsSendRate! * 1000.0 * 1000.0 / 1024.0) * 0.03
         var bitrate = curBitrate
         let sendBufferSizeTh3 = (sendBufferSizeAvg + sendBufferSizeJitter) * 4
         var sendBufferSizeTh2 = max(50, sendBufferSizeAvg + max(sendBufferSizeJitter * 3.0, sendBufferSizeAvg))
