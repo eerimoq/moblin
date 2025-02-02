@@ -46607,6 +46607,9 @@
         }
       }
     },
+    "Enable Override video stabilization to override Settings → Camera → Video stabilization in this scene." : {
+
+    },
     "Enable the RTMP server to see URLs." : {
       "localizations" : {
         "de" : {
@@ -87652,6 +87655,9 @@
           }
         }
       }
+    },
+    "Override video stabilization" : {
+
     },
     "Packets in flight decrease threshold" : {
       "localizations" : {

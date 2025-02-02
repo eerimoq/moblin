@@ -655,6 +655,8 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
     var videoSourceRotation: Double? = 0.0
+    var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
+    var overrideVideoStabilizationMode: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -4534,6 +4536,14 @@ final class Settings {
         }
         if realDatabase.debug.relaxedBitrate == nil {
             realDatabase.debug.relaxedBitrate = false
+            store()
+        }
+        for scene in realDatabase.scenes where scene.videoStabilizationMode == nil {
+            scene.videoStabilizationMode = realDatabase.videoStabilizationMode
+            store()
+        }
+        for scene in realDatabase.scenes where scene.overrideVideoStabilizationMode == nil {
+            scene.overrideVideoStabilizationMode = false
             store()
         }
     }

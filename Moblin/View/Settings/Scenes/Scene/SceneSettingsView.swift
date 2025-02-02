@@ -1,5 +1,27 @@
 import SwiftUI
 
+private struct VideoStabilizationView: View {
+    @EnvironmentObject var model: Model
+    var scene: SettingsScene
+    @State var mode: String
+
+    var body: some View {
+        HStack {
+            Text("Video stabilization")
+            Spacer()
+            Picker("", selection: $mode) {
+                ForEach(videoStabilizationModes, id: \.self) {
+                    Text($0)
+                }
+            }
+            .onChange(of: mode) {
+                scene.videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: $0)
+                model.sceneUpdated(attachCamera: true)
+            }
+        }
+    }
+}
+
 struct SceneSettingsView: View {
     @EnvironmentObject var model: Model
     @State private var showingAddWidget = false
@@ -121,8 +143,24 @@ struct SceneSettingsView: View {
                         scene.videoSourceRotation = rotation
                         model.sceneUpdated()
                     }
+                Toggle(isOn: Binding(get: {
+                    scene.overrideVideoStabilizationMode!
+                }, set: { value in
+                    scene.overrideVideoStabilizationMode = value
+                    model.sceneUpdated(attachCamera: true)
+                })) {
+                    Text("Override video stabilization")
+                }
+                if scene.overrideVideoStabilizationMode! {
+                    VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode!.toString())
+                }
             } header: {
                 Text("Video source")
+            } footer: {
+                Text("""
+                Enable Override video stabilization to override Settings → Camera → Video \
+                stabilization in this scene.
+                """)
             }
             Section {
                 List {

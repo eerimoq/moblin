@@ -5484,9 +5484,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         deactivateAllMediaPlayers()
         switch scene.cameraPosition! {
         case .back:
-            attachCamera(position: .back)
+            attachCamera(scene: scene, position: .back)
         case .front:
-            attachCamera(position: .front)
+            attachCamera(scene: scene, position: .front)
             isFrontCameraSelected = true
         case .rtmp:
             attachReplaceCamera(cameraId: scene.rtmpCameraId!)
@@ -5496,7 +5496,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
             attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
         case .external:
-            attachExternalCamera()
+            attachExternalCamera(scene: scene)
         case .screenCapture:
             attachReplaceCamera(cameraId: screenCaptureCameraId)
         }
@@ -6355,7 +6355,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return false
     }
 
-    private func attachCamera(position: AVCaptureDevice.Position) {
+    private func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
@@ -6384,7 +6384,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             device: cameraDevice,
             cameraPreviewLayer: cameraPreviewLayer,
             showCameraPreview: updateShowCameraPreview(),
-            videoStabilizationMode: getVideoStabilizationMode(),
+            videoStabilizationMode: getVideoStabilizationMode(scene: scene),
             videoMirrored: getVideoMirroredOnStream(),
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
             onSuccess: {
@@ -6425,8 +6425,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.usePendingAfterAttachEffects()
     }
 
-    private func attachExternalCamera() {
-        attachCamera(position: .unspecified)
+    private func attachExternalCamera(scene: SettingsScene) {
+        attachCamera(scene: scene, position: .unspecified)
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
@@ -6465,9 +6465,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } catch {}
     }
 
-    private func getVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
+    private func getVideoStabilizationMode(scene: SettingsScene) -> AVCaptureVideoStabilizationMode {
+        if scene.overrideVideoStabilizationMode! {
+            return getVideoStabilization(mode: scene.videoStabilizationMode!)
+        } else {
+            return getVideoStabilization(mode: database.videoStabilizationMode)
+        }
+    }
+
+    private func getVideoStabilization(mode: SettingsVideoStabilizationMode) -> AVCaptureVideoStabilizationMode {
         if #available(iOS 18.0, *) {
-            switch database.videoStabilizationMode {
+            switch mode {
             case .off:
                 return .off
             case .standard:
@@ -6478,7 +6486,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return .cinematicExtendedEnhanced
             }
         } else {
-            switch database.videoStabilizationMode {
+            switch mode {
             case .off:
                 return .off
             case .standard:
