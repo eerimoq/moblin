@@ -4539,7 +4539,7 @@ final class Settings {
             store()
         }
         for scene in realDatabase.scenes where scene.videoStabilizationMode == nil {
-            scene.videoStabilizationMode = realDatabase.videoStabilizationMode
+            scene.videoStabilizationMode = .off
             store()
         }
         for scene in realDatabase.scenes where scene.overrideVideoStabilizationMode == nil {
