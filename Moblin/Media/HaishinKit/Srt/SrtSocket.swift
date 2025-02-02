@@ -134,7 +134,6 @@ final class SrtSocket {
         guard socket != SRT_INVALID_SOCK else {
             return SRT_ERROR
         }
-
         var sndData: Int32 = 0
         var size = Int32(MemoryLayout<Int32>.size)
         let result = withUnsafeMutablePointer(to: &sndData) { sndDataPointer -> Int32 in

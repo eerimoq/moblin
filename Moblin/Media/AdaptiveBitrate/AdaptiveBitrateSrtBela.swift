@@ -25,9 +25,9 @@ let adaptiveBitrateBelaboxSettings = AdaptiveBitrateSettings(
 class AdaptiveBitrateSrtBela: AdaptiveBitrate {
     private var targetBitrate: Int64
     private var settings = adaptiveBitrateBelaboxSettings
-    private var bsAvg: Double = 0
-    private var bsJitter: Double = 0
-    private var prevBs: Double = 0
+    private var sendBufferSizeAvg: Double = 0
+    private var sendBufferSizeJitter: Double = 0
+    private var prevSendBufferSize: Double = 0
     private var rttAvg: Double = 0
     private var rttAvgDelta: Double = 0
     private var prevRtt: Double = 300.0
@@ -60,7 +60,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         return Int64(curBitrate) / 1000
     }
 
-    private func rttToBs(rtt: Double, throughput: Double) -> Double {
+    private func rttToSendBufferSize(rtt: Double, throughput: Double) -> Double {
         return (throughput / 8) * rtt / 1316
     }
 
@@ -73,16 +73,16 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         }
         let srtLatency = Double(stats.latency ?? defaultSrtLatency)
         let currentTime = ContinuousClock.now
-        let bs = stats.packetsInFlight
+        let sendBufferSize = stats.packetsInFlight
         // Rolling average
-        bsAvg = bsAvg * 0.99 + bs * 0.01
+        sendBufferSizeAvg = sendBufferSizeAvg * 0.99 + sendBufferSize * 0.01
         // Update the buffer size jitter
-        bsJitter = 0.99 * bsJitter
-        let deltaBs = bs - prevBs
-        if deltaBs > bsJitter {
-            bsJitter = deltaBs
+        sendBufferSizeJitter = 0.99 * sendBufferSizeJitter
+        let deltaSendBufferSize = sendBufferSize - prevSendBufferSize
+        if deltaSendBufferSize > sendBufferSizeJitter {
+            sendBufferSizeJitter = deltaSendBufferSize
         }
-        prevBs = bs
+        prevSendBufferSize = sendBufferSize
         // Update the average RTT
         let rtt = stats.rttMs
         if rttAvg == 0.0 {
@@ -108,39 +108,39 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         throughput *= 0.97
         throughput += (stats.mbpsSendRate! * 1000.0 * 1000.0 / 1024.0) * 0.03
         var bitrate = curBitrate
-        let bsTh3 = (bsAvg + bsJitter) * 4
-        var bsTh2 = max(50, bsAvg + max(bsJitter * 3.0, bsAvg))
-        bsTh2 = min(bsTh2, rttToBs(rtt: srtLatency / 2, throughput: throughput))
-        let bsTh1 = max(50, bsAvg + bsJitter * 2.5)
+        let sendBufferSizeTh3 = (sendBufferSizeAvg + sendBufferSizeJitter) * 4
+        var sendBufferSizeTh2 = max(50, sendBufferSizeAvg + max(sendBufferSizeJitter * 3.0, sendBufferSizeAvg))
+        sendBufferSizeTh2 = min(sendBufferSizeTh2, rttToSendBufferSize(rtt: srtLatency / 2, throughput: throughput))
+        let sendBufferSizeTh1 = max(50, sendBufferSizeAvg + sendBufferSizeJitter * 2.5)
         let rttThMax = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
         let rttThMin = rttMin + max(1, rttJitter * 2)
-        if bitrate > settings.minimumBitrate && (rtt >= (srtLatency / 3) || bs > bsTh3) {
+        if bitrate > settings.minimumBitrate && (rtt >= (srtLatency / 3) || sendBufferSize > sendBufferSizeTh3) {
             bitrate = settings.minimumBitrate
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrInterval)
             logAdaptiveAcion(
                 actionTaken: """
                 Set min: \(bitrate / 1000), rtt: \(rtt) >= latency / 3: \(srtLatency / 3) \
-                or bs: \(bs) > bs_th3: \(formatTwoDecimals(bsTh3))
+                or bs: \(sendBufferSize) > bs_th3: \(formatTwoDecimals(sendBufferSizeTh3))
                 """
             )
-        } else if currentTime > nextBitrateDecrTime && (rtt > (srtLatency / 5) || bs > bsTh2) {
+        } else if currentTime > nextBitrateDecrTime && (rtt > (srtLatency / 5) || sendBufferSize > sendBufferSizeTh2) {
             bitrate -= (bitrateDecrMin + bitrate / bitrateDecrScale)
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrFastInterval)
             logAdaptiveAcion(
                 actionTaken: """
                 Fast decr: \((bitrateDecrMin + bitrate / bitrateDecrScale) / 1000), \
-                rtt: \(rtt) > latency / 5: \(srtLatency / 5) or bs: \(bs) > bs_th2: \
-                \(formatTwoDecimals(bsTh2))
+                rtt: \(rtt) > latency / 5: \(srtLatency / 5) or bs: \(sendBufferSize) > bs_th2: \
+                \(formatTwoDecimals(sendBufferSizeTh2))
                 """
             )
-        } else if currentTime > nextBitrateDecrTime && (rtt > rttThMax || bs > bsTh1) {
+        } else if currentTime > nextBitrateDecrTime && (rtt > rttThMax || sendBufferSize > sendBufferSizeTh1) {
             bitrate -= bitrateDecrMin
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrInterval)
             logAdaptiveAcion(
                 actionTaken: """
                 Decr: \(bitrateDecrMin / 1000), rtt: \(rtt) > rtt_th_max: \
-                \(formatTwoDecimals(rttThMax)) or bs: \(bs) > bs_th1: \
-                \(formatTwoDecimals(bsTh1))
+                \(formatTwoDecimals(rttThMax)) or bs: \(sendBufferSize) > bs_th1: \
+                \(formatTwoDecimals(sendBufferSizeTh1))
                 """
             )
         } else if currentTime > nextBitrateIncrTime && rtt < rttThMin && rttAvgDelta < 0.01 {
