@@ -95369,6 +95369,9 @@
         }
       }
     },
+    "Relaxed bitrate decrement after scene switch" : {
+
+    },
     "Relay" : {
       "localizations" : {
         "de" : {

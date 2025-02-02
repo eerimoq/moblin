@@ -600,6 +600,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var teslaVehicleInfotainmentConnected = false
 
     private var lastAttachCompletedTime: ContinuousClock.Instant?
+    private var relaxedBitrateStartTime: ContinuousClock.Instant?
+    private var relaxedBitrate = false
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -2524,6 +2526,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.updateTorch()
                 self.lastAttachCompletedTime = nil
             }
+            if let relaxedBitrateStartTime = self.relaxedBitrateStartTime,
+               relaxedBitrateStartTime.duration(to: monotonicNow) > .seconds(3)
+            {
+                self.relaxedBitrate = false
+                self.relaxedBitrateStartTime = nil
+            }
             self.speechToText.tick(now: monotonicNow)
         })
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
@@ -2759,7 +2767,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateAdaptiveBitrate() {
-        if let (lines, actions) = media.updateAdaptiveBitrate(overlay: database.debug.srtOverlay) {
+        if let (lines, actions) = media.updateAdaptiveBitrate(
+            overlay: database.debug.srtOverlay,
+            relaxed: relaxedBitrate
+        ) {
             latestDebugLines = lines
             latestDebugActions = actions
         }
@@ -6387,6 +6398,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     self.updateImageButtonState()
                 }
                 self.lastAttachCompletedTime = .now
+                self.relaxedBitrateStartTime = self.lastAttachCompletedTime
+                self.relaxedBitrate = self.database.debug.relaxedBitrate!
                 self.updateCameraPreviewRotation()
             }
         )

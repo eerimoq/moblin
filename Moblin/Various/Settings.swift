@@ -1847,6 +1847,7 @@ class SettingsDebug: Codable {
     var cameraControlsEnabled: Bool? = false
     var dataRateLimitFactor: Float? = 2.0
     var bitrateDropFix: Bool? = false
+    var relaxedBitrate: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4529,6 +4530,10 @@ final class Settings {
         }
         if realDatabase.debug.bitrateDropFix == nil {
             realDatabase.debug.bitrateDropFix = false
+            store()
+        }
+        if realDatabase.debug.relaxedBitrate == nil {
+            realDatabase.debug.relaxedBitrate = false
             store()
         }
     }

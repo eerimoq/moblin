@@ -244,10 +244,10 @@ final class Media: NSObject {
         return updateTickCount % 10 == 0
     }
 
-    func updateAdaptiveBitrate(overlay: Bool) -> ([String], [String])? {
+    func updateAdaptiveBitrate(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
         updateTickCount += 1
         if srtStream != nil {
-            return updateAdaptiveBitrateSrt(overlay: overlay)
+            return updateAdaptiveBitrateSrt(overlay: overlay, relaxed: relaxed)
         } else if let rtmpStream {
             return updateAdaptiveBitrateRtmp(overlay: overlay, rtmpStream: rtmpStream)
         } else if let ristStream {
@@ -256,15 +256,15 @@ final class Media: NSObject {
         return nil
     }
 
-    private func updateAdaptiveBitrateSrt(overlay: Bool) -> ([String], [String])? {
+    private func updateAdaptiveBitrateSrt(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
         if adaptiveBitrate is AdaptiveBitrateSrtBela {
-            return updateAdaptiveBitrateSrtBela(overlay: overlay)
+            return updateAdaptiveBitrateSrtBela(overlay: overlay, relaxed: relaxed)
         } else {
             return updateAdaptiveBitrateSrtFight(overlay: overlay)
         }
     }
 
-    private func updateAdaptiveBitrateSrtBela(overlay: Bool) -> ([String], [String])? {
+    private func updateAdaptiveBitrateSrtBela(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
         let stats = srtConnection.performanceData
         srtDroppedPacketsTotal = stats.pktSndDropTotal
         guard let adaptiveBitrate else {
@@ -276,7 +276,8 @@ final class Media: NSObject {
             packetsInFlight: Double(sndData),
             transportBitrate: streamSpeed(),
             latency: latency,
-            mbpsSendRate: stats.mbpsSendRate
+            mbpsSendRate: stats.mbpsSendRate,
+            relaxed: relaxed
         ))
         if overlay {
             if is200MsTick() {
@@ -307,7 +308,8 @@ final class Media: NSObject {
             packetsInFlight: Double(stats.pktFlightSize),
             transportBitrate: streamSpeed(),
             latency: latency,
-            mbpsSendRate: stats.mbpsSendRate
+            mbpsSendRate: stats.mbpsSendRate,
+            relaxed: false
         ))
         guard overlay else {
             return nil
@@ -351,7 +353,8 @@ final class Media: NSObject {
             packetsInFlight: Double(stats.packetsInFlight),
             transportBitrate: streamSpeed(),
             latency: nil,
-            mbpsSendRate: nil
+            mbpsSendRate: nil,
+            relaxed: nil
         ))
         guard overlay else {
             return nil
@@ -391,7 +394,8 @@ final class Media: NSObject {
             packetsInFlight: 10,
             transportBitrate: nil,
             latency: nil,
-            mbpsSendRate: nil
+            mbpsSendRate: nil,
+            relaxed: false
         ))
         ristStream.updateConnectionsWeights()
         guard overlay else {

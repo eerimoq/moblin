@@ -93,6 +93,11 @@ struct DebugSettingsView: View {
                     Text(formatOneDecimal(dataRateLimitFactor))
                         .frame(width: 40)
                 }
+                Toggle("Relaxed bitrate decrement after scene switch", isOn: Binding(get: {
+                    model.database.debug.relaxedBitrate!
+                }, set: { value in
+                    model.database.debug.relaxedBitrate = value
+                }))
                 Toggle("Blur scene switch", isOn: Binding(get: {
                     model.database.debug.blurSceneSwitch!
                 }, set: { value in

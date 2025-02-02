@@ -133,6 +133,9 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         let sendBufferSizeTh3 = (sendBufferSizeAvg + sendBufferSizeJitter) * 4
         var sendBufferSizeTh2 = max(50, sendBufferSizeAvg + max(sendBufferSizeJitter * 3.0, sendBufferSizeAvg))
         sendBufferSizeTh2 = min(sendBufferSizeTh2, rttToSendBufferSize(rtt: srtLatency / 2, throughput: throughput))
+        if stats.relaxed ?? false {
+            sendBufferSizeTh2 *= 2
+        }
         let sendBufferSizeTh1 = max(50, sendBufferSizeAvg + sendBufferSizeJitter * 2.5)
         let rttThMax = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
         let rttThMin = rttMin + max(1, rttJitter * 2)

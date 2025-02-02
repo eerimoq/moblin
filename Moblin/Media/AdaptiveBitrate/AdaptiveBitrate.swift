@@ -11,6 +11,7 @@ struct StreamStats {
     let transportBitrate: Int64?
     let latency: Int32?
     let mbpsSendRate: Double?
+    let relaxed: Bool?
 }
 
 struct AdaptiveBitrateSettings {
