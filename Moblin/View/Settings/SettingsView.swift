@@ -105,19 +105,13 @@ struct SettingsView: View {
                 NavigationLink {
                     MoblinkSettingsView(streamerEnabled: model.database.moblink!.server.enabled)
                 } label: {
-                    IconAndTextView(
-                        image: "app.connected.to.app.below.fill",
-                        text: String(localized: "Moblink")
-                    )
+                    IconAndTextView(image: "app.connected.to.app.below.fill", text: String(localized: "Moblink"))
                 }
                 if model.database.showAllSettings! {
                     NavigationLink {
                         MediaPlayersSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "play.rectangle.on.rectangle",
-                            text: String(localized: "Media players")
-                        )
+                        IconAndTextView(image: "play.rectangle.on.rectangle", text: String(localized: "Media players"))
                     }
                 }
             }
@@ -138,36 +132,24 @@ struct SettingsView: View {
                     NavigationLink {
                         RemoteControlSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "appletvremote.gen1",
-                            text: String(localized: "Remote control")
-                        )
+                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "Remote control"))
                     }
                 }
                 Section {
                     NavigationLink {
                         DjiDevicesSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "appletvremote.gen1",
-                            text: String(localized: "DJI devices")
-                        )
+                        IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI devices"))
                     }
                     NavigationLink {
                         CatPrintersSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "pawprint",
-                            text: String(localized: "Cat printers")
-                        )
+                        IconAndTextView(image: "pawprint", text: String(localized: "Cat printers"))
                     }
                     NavigationLink {
                         TeslaSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "car.side",
-                            text: String(localized: "Tesla")
-                        )
+                        IconAndTextView(image: "car.side", text: String(localized: "Tesla"))
                     }
                 }
             }
@@ -193,10 +175,7 @@ struct SettingsView: View {
                     NavigationLink {
                         StreamingHistorySettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "text.book.closed",
-                            text: String(localized: "Streaming history")
-                        )
+                        IconAndTextView(image: "text.book.closed", text: String(localized: "Streaming history"))
                     }
                 }
             }
@@ -236,18 +215,12 @@ struct SettingsView: View {
                     NavigationLink {
                         ImportExportSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "gearshape",
-                            text: String(localized: "Import and export settings")
-                        )
+                        IconAndTextView(image: "gearshape", text: String(localized: "Import and export settings"))
                     }
                     NavigationLink {
                         DeepLinkCreatorSettingsView()
                     } label: {
-                        IconAndTextView(
-                            image: "link.badge.plus",
-                            text: String(localized: "Deep link creator")
-                        )
+                        IconAndTextView(image: "link.badge.plus", text: String(localized: "Deep link creator"))
                     }
                 }
             }
