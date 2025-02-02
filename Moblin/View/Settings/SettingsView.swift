@@ -89,8 +89,8 @@ struct SettingsView: View {
                     }
                 }
             }
-            if model.database.showAllSettings! {
-                Section {
+            Section {
+                if model.database.showAllSettings! {
                     NavigationLink {
                         RtmpServerSettingsView()
                     } label: {
@@ -101,14 +101,16 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(image: "server.rack", text: String(localized: "SRT(LA) server"))
                     }
-                    NavigationLink {
-                        MoblinkSettingsView(streamerEnabled: model.database.moblink!.server.enabled)
-                    } label: {
-                        IconAndTextView(
-                            image: "app.connected.to.app.below.fill",
-                            text: String(localized: "Moblink")
-                        )
-                    }
+                }
+                NavigationLink {
+                    MoblinkSettingsView(streamerEnabled: model.database.moblink!.server.enabled)
+                } label: {
+                    IconAndTextView(
+                        image: "app.connected.to.app.below.fill",
+                        text: String(localized: "Moblink")
+                    )
+                }
+                if model.database.showAllSettings! {
                     NavigationLink {
                         MediaPlayersSettingsView()
                     } label: {
@@ -118,6 +120,8 @@ struct SettingsView: View {
                         )
                     }
                 }
+            }
+            if model.database.showAllSettings! {
                 Section {
                     NavigationLink {
                         GameControllersSettingsView()
