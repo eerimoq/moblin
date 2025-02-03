@@ -61510,7 +61510,11 @@
         }
       }
     },
+    "H.265/HEVC generally requires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
+
+    },
     "H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
