@@ -3,10 +3,7 @@ import AVFoundation
 /// ISO/IEC 14496-15 8.3.3.1.2
 struct MpegTsVideoConfigHevc: MpegTsVideoConfig {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
-        if let atoms = CMFormatDescriptionGetExtension(
-            formatDescription,
-            extensionKey: "SampleDescriptionExtensionAtoms" as CFString
-        ) as? NSDictionary {
+        if let atoms = formatDescription.atoms() {
             return atoms["hvcC"] as? Data
         }
         return nil

@@ -116,10 +116,7 @@ class SampleBufferSender: NSObject {
 
 extension SampleBufferSender: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ formatDescription: CMFormatDescription) {
-        guard let atoms = CMFormatDescriptionGetExtension(
-            formatDescription,
-            extensionKey: "SampleDescriptionExtensionAtoms" as CFString
-        ) as? NSDictionary else {
+        guard let atoms = formatDescription.atoms() else {
             return
         }
         guard let hvcC = atoms["hvcC"] as? Data else {
