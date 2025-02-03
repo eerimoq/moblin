@@ -115,7 +115,7 @@ extension CMSampleBuffer {
         guard let formatDescription else {
             return nil
         }
-        switch CMFormatDescriptionGetMediaType(formatDescription) {
+        switch formatDescription.mediaType() {
         case kCMMediaType_Audio:
             return replaceAudioPresentationTimeStamp(presentationTimeStamp)
         case kCMMediaType_Video:
