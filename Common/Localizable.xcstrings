@@ -61533,17 +61533,6 @@
     },
     "H.265/HEVC generally requires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
       "localizations" : {
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "H.265/HEVC vaatii yleensä vähemmän kaistanleveyttä samaan kuvanlaatuun. RTMP tukee yleensä vain H.264/AVC:tä."
-          }
-        }
-      }
-    },
-    "H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP generally only supports H.264/AVC." : {
-      "extractionState" : "stale",
-      "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -61564,7 +61553,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "H.265/HEVC vaatii yleensä vähemmän kaistanleveyttä samaan kuvanlaatuun. RTMP tukee yleensä vain H.264/AVC:tä."
           }
         },
