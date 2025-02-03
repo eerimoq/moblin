@@ -69,6 +69,6 @@ struct KeyboardKeySettingsView: View {
                 }
             }
         }
-        .navigationTitle("Game controller button")
+        .navigationTitle("Keyboard key")
     }
 }
