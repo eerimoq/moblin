@@ -149,7 +149,7 @@ struct StreamVideoSettingsView: View {
                     .disabled(stream.enabled && model.isLive)
                 } footer: {
                     Text("""
-                    H.265/HEVC generally reuqires less bandwidth for same image quality. RTMP \
+                    H.265/HEVC generally requires less bandwidth for same image quality. RTMP \
                     generally only supports H.264/AVC.
                     """)
                 }
