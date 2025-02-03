@@ -33,7 +33,8 @@ struct KeyboardSettingsView: View {
                             KeyboardKeySettingsView(
                                 key: key,
                                 selection: key.function.toString(),
-                                sceneSelection: key.sceneId
+                                sceneSelection: key.sceneId,
+                                widgetSelection: key.widgetId!
                             )
                         } label: {
                             HStack {

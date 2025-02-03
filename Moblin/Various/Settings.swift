@@ -2330,6 +2330,7 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     case torch = "Torch"
     case blackScreen = "Black screen"
     case scene = "Scene"
+    case widget = "Widget"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2355,6 +2356,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
             return .blackScreen
         case String(localized: "Scene"):
             return .scene
+        case String(localized: "Widget"):
+            return .widget
         default:
             return .unused
         }
@@ -2376,6 +2379,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
             return String(localized: "Black screen")
         case .scene:
             return String(localized: "Scene")
+        case .widget:
+            return String(localized: "Widget")
         }
     }
 }
@@ -2387,6 +2392,7 @@ class SettingsKeyboardKey: Codable, Identifiable {
     var key: String = ""
     var function: SettingsKeyboardKeyFunction = .unused
     var sceneId: UUID = .init()
+    var widgetId: UUID? = .init()
 }
 
 class SettingsKeyboard: Codable {
@@ -4544,6 +4550,10 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.overrideVideoStabilizationMode == nil {
             scene.overrideVideoStabilizationMode = false
+            store()
+        }
+        for key in realDatabase.keyboard!.keys where key.widgetId == nil {
+            key.widgetId = .init()
             store()
         }
     }

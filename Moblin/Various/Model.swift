@@ -5992,6 +5992,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func toggleWidgetOnOff(id: UUID) {
+        guard let widget = findWidget(id: id) else {
+            return
+        }
+        widget.enabled!.toggle()
+        reloadSpeechToText()
+        sceneUpdated()
+    }
+
     func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false) {
         if imageEffectChanged {
             reloadImageEffects()
@@ -6107,6 +6116,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             toggleBlackScreen()
         case .scene:
             selectScene(id: key.sceneId)
+        case .widget:
+            toggleWidgetOnOff(id: key.widgetId!)
         }
         updateButtonStates()
         return .handled
