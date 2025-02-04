@@ -342,7 +342,6 @@
 		03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */; };
 		03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */; };
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
-		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
 		03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */; };
 		03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */; };
@@ -916,7 +915,6 @@
 		03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamOverlayView.swift; sourceTree = "<group>"; };
 		03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WidgetSettingsView.swift; sourceTree = "<group>"; };
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
 		03A9D1322C0E65A400F0B917 /* SrtlaServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServer.swift; sourceTree = "<group>"; };
 		03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserSettingsView.swift; sourceTree = "<group>"; };
@@ -1951,7 +1949,6 @@
 				031E9FBA2C5ABCC9009FF4D8 /* TwitchAuth.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */,
 				031E9FC42C5B3EFC009FF4D8 /* TwitchEventSub.swift */,
-				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 			);
 			path = Twitch;
 			sourceTree = "<group>";
@@ -3091,7 +3088,6 @@
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
-				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03941A1C2C0CDABD0061DA81 /* DeepLinkCreatorStreamSettingsView.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
 				0364B6232BD3683F002F828D /* ControlBarPortraitView.swift in Sources */,

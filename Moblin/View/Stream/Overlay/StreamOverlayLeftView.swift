@@ -33,13 +33,6 @@ private struct StatusesView: View {
     @EnvironmentObject var model: Model
     let textPlacement: StreamOverlayIconAndTextPlacement
 
-    func viewersColor() -> Color {
-        if model.isTwitchViewersConfigured() && !model.isTwitchPubSubConnected() {
-            return .red
-        }
-        return .white
-    }
-
     func eventsColor() -> Color {
         if !model.isEventsConfigured() {
             return .white
@@ -133,14 +126,14 @@ private struct StatusesView: View {
             color: chatColor()
         )
         if textPlacement == .hide {
-            CollapsedViewersView(show: model.isShowingStatusViewers(), color: viewersColor())
+            CollapsedViewersView(show: model.isShowingStatusViewers(), color: .white)
         } else {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusViewers(),
                 icon: "eye",
                 text: model.statusViewersText(),
                 textPlacement: textPlacement,
-                color: viewersColor()
+                color: .white
             )
         }
     }

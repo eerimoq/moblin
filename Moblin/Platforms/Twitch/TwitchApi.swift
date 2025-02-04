@@ -65,6 +65,14 @@ struct TwitchApiCreateStreamMarker: Decodable {
     let data: [TwitchApiCreateStreamMarkerData]
 }
 
+struct TwitchApiStreamData: Decodable {
+    let viewer_count: Int
+}
+
+struct TwitchApiStreams: Decodable {
+    let data: [TwitchApiStreamData]
+}
+
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
     // periphery:ignore
     let user_id: String
@@ -257,6 +265,19 @@ class TwitchApi {
         doPost(subPath: "streams/markers", body: body.utf8Data, onComplete: { data in
             let message = try? JSONDecoder().decode(
                 TwitchApiCreateStreamMarker.self,
+                from: data ?? Data()
+            )
+            onComplete(message?.data.first)
+        })
+    }
+
+    func getStream(
+        userId: String,
+        onComplete: @escaping (TwitchApiStreamData?) -> Void
+    ) {
+        doGet(subPath: "streams?user_id=\(userId)", onComplete: { data in
+            let message = try? JSONDecoder().decode(
+                TwitchApiStreams.self,
                 from: data ?? Data()
             )
             onComplete(message?.data.first)

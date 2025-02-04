@@ -374,7 +374,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var digitalClock = noValue
     private var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMoblin!
-    private var twitchPubSub: TwitchPubSub?
     private var twitchEventSub: TwitchEventSub?
     private var kickPusher: KickPusher?
     private var kickViewers: KickViewers?
@@ -462,6 +461,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private var serversSpeed: Int64 = 0
+    private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
 
     @Published var hypeTrainLevel: Int?
     @Published var hypeTrainProgress: Int?
@@ -535,6 +535,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showTwitchAuth = false
     let twitchAuth = TwitchAuth()
     private var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
+
+    private var numberOfTwitchViewers: Int?
 
     @Published var bondingPieChartPercentages: [BondingPercentage] = []
 
@@ -686,6 +688,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var moblinkScanner: MoblinkScanner?
 
     @Published var cameraControlEnabled = false
+    private var twitchStreamUpdateTime = ContinuousClock.now
 
     override init() {
         super.init()
@@ -862,6 +865,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
                 }
             }
+    }
+
+    private func getStream() {
+        TwitchApi(stream.twitchAccessToken!, urlSession)
+            .getStream(userId: stream.twitchChannelId) { data in
+                guard let data else {
+                    self.numberOfTwitchViewers = nil
+                    return
+                }
+                self.numberOfTwitchViewers = data.viewer_count
+            }
+    }
+
+    private func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
+        guard isLive, isTwitchViewersConfigured() else {
+            numberOfTwitchViewers = nil
+            return
+        }
+        guard twitchStreamUpdateTime.duration(to: monotonicNow) > .seconds(25) else {
+            return
+        }
+        twitchStreamUpdateTime = monotonicNow
+        getStream()
     }
 
     @MainActor
@@ -2575,6 +2601,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.teslaGetMediaState()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
+            let monotonicNow = ContinuousClock.now
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.updateObsStatus()
@@ -2588,6 +2615,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.teslaGetChargeState()
             self.moblinkServer?.updateStatus()
             self.updateDjiDevicesStatus()
+            self.updateTwitchStream(monotonicNow: monotonicNow)
         })
     }
 
@@ -2809,10 +2837,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateViewers() {
         var newNumberOfViewers = 0
         var hasInfo = false
-        if isTwitchViewersConfigured(), let twitchPubSub, twitchPubSub.isConnected(),
-           let numberOfViewers = twitchPubSub.numberOfViewers
-        {
-            newNumberOfViewers += numberOfViewers
+        if let numberOfTwitchViewers {
+            newNumberOfViewers += numberOfTwitchViewers
             hasInfo = true
         }
         if isKickViewersConfigured(), let numberOfViewers = kickViewers?.numberOfViewers {
@@ -4130,7 +4156,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadConnections() {
         useRemoteControlForChatAndEvents = false
         reloadChats()
-        reloadTwitchPubSub()
         reloadTwitchEventSub()
         reloadObsWebSocket()
         reloadRemoteControlStreamer()
@@ -4356,7 +4381,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchChannelId != ""
+        return stream.twitchChannelId != "" && isTwitchAccessTokenConfigured()
     }
 
     func isTwitchChatConfigured() -> Bool {
@@ -4373,10 +4398,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func hasTwitchChatEmotes() -> Bool {
         return twitchChat?.hasEmotes() ?? false
-    }
-
-    func isTwitchPubSubConnected() -> Bool {
-        return twitchPubSub?.isConnected() ?? false
     }
 
     func isKickPusherConfigured() -> Bool {
@@ -4502,14 +4523,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func httpProxy() -> HttpProxy? {
         return settings.database.debug.httpProxy!.toHttpProxy()
-    }
-
-    private func reloadTwitchPubSub() {
-        twitchPubSub?.stop()
-        if isTwitchViewersConfigured() {
-            twitchPubSub = TwitchPubSub(channelId: stream.twitchChannelId)
-            twitchPubSub!.start()
-        }
     }
 
     private func reloadTwitchEventSub() {
@@ -4683,7 +4696,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func twitchChannelIdUpdated() {
         reloadTwitchEventSub()
-        reloadTwitchPubSub()
         reloadTwitchChat()
         resetChat()
     }
@@ -6671,8 +6683,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleRecorderFinished() {}
-
-    private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
 
     private func handleRecorderError() {
         DispatchQueue.main.async { [self] in
