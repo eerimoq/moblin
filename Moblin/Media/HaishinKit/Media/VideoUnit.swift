@@ -5,8 +5,12 @@ import MetalPetal
 import UIKit
 import Vision
 
-var ioVideoBlurSceneSwitch = true
-var ioVideoBitrateDropFix = false
+enum SceneSwitchTransition {
+    case blur
+    case freeze
+    case blurAndZoom
+}
+
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
@@ -33,7 +37,7 @@ private struct FaceDetectionsCompletion {
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
-    let applyBlur: Bool
+    let isSceneSwitchTransition: Bool
     var faceDetections: [VNFaceObservation]?
 }
 
@@ -243,6 +247,7 @@ final class VideoUnit: NSObject {
     private var cameraControlsEnabled = false
     private var isRunning = false
     private var showCameraPreview = false
+    private var sceneSwitchTransition: SceneSwitchTransition = .blur
 
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -391,6 +396,12 @@ final class VideoUnit: NSObject {
         }
     }
 
+    func setSceneSwitchTransition(sceneSwitchTransition: SceneSwitchTransition) {
+        mixerLockQueue.async {
+            self.sceneSwitchTransition = sceneSwitchTransition
+        }
+    }
+
     func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
         mixerLockQueue.async {
             self.takeSnapshotAge = age
@@ -520,7 +531,7 @@ final class VideoUnit: NSObject {
         _ = appendSampleBuffer(
             sampleBuffer,
             isFirstAfterAttach: false,
-            applyBlur: ioVideoBlurSceneSwitch
+            isSceneSwitchTransition: true
         )
     }
 
@@ -598,7 +609,7 @@ final class VideoUnit: NSObject {
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
                               _ faceDetections: [VNFaceObservation]?,
-                              _ applyBlur: Bool,
+                              _ isSceneSwitchTransition: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let info = VideoEffectInfo(
@@ -611,21 +622,21 @@ final class VideoUnit: NSObject {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
-                applyBlur,
+                isSceneSwitchTransition,
                 info
             )
         } else if ioVideoUnitMetalPetal {
             return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
-                applyBlur,
+                isSceneSwitchTransition,
                 info
             )
         } else {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
-                applyBlur,
+                isSceneSwitchTransition,
                 info
             )
         }
@@ -689,7 +700,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
-                                       _ applyBlur: Bool,
+                                       _ isSceneSwitchTransition: Bool,
                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
@@ -702,8 +713,8 @@ final class VideoUnit: NSObject {
         }
         let extent = image.extent
         var failedEffect: String?
-        if applyBlur {
-            image = blurImage(image)
+        if isSceneSwitchTransition {
+            image = applySceneSwitchTransition(image)
         }
         for effect in effects {
             let effectOutputImage = effect.execute(image, info)
@@ -762,7 +773,7 @@ final class VideoUnit: NSObject {
     private func calcBlurRadius() -> Float {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
-            if ioVideoBitrateDropFix {
+            if sceneSwitchTransition == .blurAndZoom {
                 return 0 + min(Float(offset.seconds), 5) * 5
             } else {
                 return 15 + min(Float(offset.seconds), 2) * 15
@@ -775,13 +786,13 @@ final class VideoUnit: NSObject {
     private func calcBlurScale() -> Double {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
-            return 1.0 - min(offset.seconds, 5) * 0.15
+            return 1.0 - min(offset.seconds, 5) * 0.05
         } else {
-            return 0.25
+            return 0.75
         }
     }
 
-    private func blurImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
+    private func applySceneSwitchTransitionMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image else {
             return nil
         }
@@ -793,7 +804,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
-                                        _ applyBlur: Bool,
+                                        _ isSceneSwitchTransition: Bool,
                                         _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
@@ -805,8 +816,8 @@ final class VideoUnit: NSObject {
         if let imageToScale = image, imageToScale.size != outputSize {
             image = scaleImageMetalPetal(image)
         }
-        if applyBlur {
-            image = blurImageMetalPetal(image)
+        if isSceneSwitchTransition {
+            image = applySceneSwitchTransitionMetalPetal(image)
         }
         for effect in effects {
             let effectOutputImage = effect.executeMetalPetal(image, info)
@@ -844,8 +855,16 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
-    private func blurImage(_ image: CIImage) -> CIImage {
-        if ioVideoBitrateDropFix {
+    private func applySceneSwitchTransition(_ image: CIImage) -> CIImage {
+        switch sceneSwitchTransition {
+        case .blur:
+            let filter = CIFilter.gaussianBlur()
+            filter.inputImage = image
+            filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
+            return filter.outputImage?.cropped(to: image.extent) ?? image
+        case .freeze:
+            return image
+        case .blurAndZoom:
             let filter = CIFilter.gaussianBlur()
             filter.inputImage = image
             filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
@@ -862,11 +881,6 @@ final class VideoUnit: NSObject {
                 .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
                 .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
                 .cropped(to: image.extent) ?? image
-        } else {
-            let filter = CIFilter.gaussianBlur()
-            filter.inputImage = image
-            filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
-            return filter.outputImage?.cropped(to: image.extent) ?? image
         }
     }
 
@@ -973,7 +987,7 @@ final class VideoUnit: NSObject {
 
     private func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer,
                                     isFirstAfterAttach: Bool,
-                                    applyBlur: Bool) -> Bool
+                                    isSceneSwitchTransition: Bool) -> Bool
     {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return false
@@ -995,7 +1009,7 @@ final class VideoUnit: NSObject {
             sequenceNumber: nextFaceDetectionsSequenceNumber,
             sampleBuffer: sampleBuffer,
             isFirstAfterAttach: isFirstAfterAttach,
-            applyBlur: applyBlur
+            isSceneSwitchTransition: isSceneSwitchTransition
         )
         nextFaceDetectionsSequenceNumber += 1
         if anyEffectNeedsFaceDetections() {
@@ -1040,7 +1054,7 @@ final class VideoUnit: NSObject {
             appendSampleBufferWithFaceDetections(
                 completion.sampleBuffer,
                 completion.isFirstAfterAttach,
-                completion.applyBlur,
+                completion.isSceneSwitchTransition,
                 completion.faceDetections
             )
             nextCompletedFaceDetectionsSequenceNumber += 1
@@ -1050,7 +1064,7 @@ final class VideoUnit: NSObject {
     private func appendSampleBufferWithFaceDetections(
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
-        _ applyBlur: Bool,
+        _ isSceneSwitchTransition: Bool,
         _ faceDetections: [VNFaceObservation]?
     ) {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
@@ -1061,12 +1075,12 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInner()
         }
-        if !effects.isEmpty || applyBlur || imageBuffer.size != outputSize || rotation != 0.0 {
+        if !effects.isEmpty || isSceneSwitchTransition || imageBuffer.size != outputSize || rotation != 0.0 {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,
-                applyBlur,
+                isSceneSwitchTransition,
                 isFirstAfterAttach
             )
             removeEffects()
@@ -1419,7 +1433,7 @@ final class VideoUnit: NSObject {
         }
         latestSampleBuffer = sampleBuffer
         latestSampleBufferTime = now
-        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, applyBlur: false) {
+        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, isSceneSwitchTransition: false) {
             isFirstAfterAttach = false
         }
     }

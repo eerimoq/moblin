@@ -2442,6 +2442,54 @@ class SettingsMoblinkRelay: Codable {
     var password = "1234"
 }
 
+enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
+    case blur = "Blur"
+    case freeze = "Freeze"
+    case blurAndZoom = "Blur & zoom"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .blur
+    }
+
+    static func fromString(value: String) -> SettingsSceneSwitchTransition {
+        switch value {
+        case String(localized: "Blur"):
+            return .blur
+        case String(localized: "Freeze"):
+            return .freeze
+        case String(localized: "Blur & zoom"):
+            return .blurAndZoom
+        default:
+            return .blur
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .blur:
+            return String(localized: "Blur")
+        case .freeze:
+            return String(localized: "Freeze")
+        case .blurAndZoom:
+            return String(localized: "Blur & zoom")
+        }
+    }
+
+    func toVideoUnit() -> SceneSwitchTransition {
+        switch self {
+        case .blur:
+            return .blur
+        case .freeze:
+            return .freeze
+        case .blurAndZoom:
+            return .blurAndZoom
+        }
+    }
+}
+
+let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toString() }
+
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
     var latitude: Double = 0
@@ -2628,6 +2676,7 @@ class Database: Codable {
     var srtlaRelay: SettingsMoblinkRelay? = .init()
     var pixellateStrength: Float? = 0.3
     var moblink: SettingsMoblinkRelay? = .init()
+    var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4554,6 +4603,10 @@ final class Settings {
         }
         for key in realDatabase.keyboard!.keys where key.widgetId == nil {
             key.widgetId = .init()
+            store()
+        }
+        if realDatabase.sceneSwitchTransition == nil {
+            realDatabase.sceneSwitchTransition = realDatabase.debug.blurSceneSwitch! ? .blur : .freeze
             store()
         }
     }

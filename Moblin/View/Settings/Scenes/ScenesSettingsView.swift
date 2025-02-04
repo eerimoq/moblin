@@ -60,13 +60,51 @@ private struct ScenesListView: View {
     }
 }
 
+private struct ScenesSwitchTransition: View {
+    @EnvironmentObject var model: Model
+    @State var sceneSwitchTransition: String
+
+    var body: some View {
+        Picker("Scene switch transition", selection: $sceneSwitchTransition) {
+            ForEach(sceneSwitchTransitions, id: \.self) { transition in
+                Text(transition)
+            }
+        }
+        .onChange(of: sceneSwitchTransition) { _ in
+            model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
+                .fromString(value: sceneSwitchTransition)
+            model.setSceneSwitchTransition()
+        }
+    }
+}
+
+private struct ReloadBrowserSources: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Section {
+            Button {
+                model.reloadBrowserWidgets()
+            } label: {
+                HStack {
+                    Spacer()
+                    Text("Reload browser widgets")
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
 struct ScenesSettingsView: View {
-    // private func onBrbScene(mode _: String) {}
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             ScenesListView()
             WidgetsSettingsView()
+            ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition!.toString())
+            ReloadBrowserSources()
         }
         .navigationTitle("Scenes")
     }

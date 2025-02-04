@@ -26679,7 +26679,11 @@
         }
       }
     },
+    "Blur & zoom" : {
+
+    },
     "Blur scene switch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -58544,6 +58548,9 @@
           }
         }
       }
+    },
+    "Freeze" : {
+
     },
     "front" : {
       "localizations" : {
@@ -101746,6 +101753,9 @@
           }
         }
       }
+    },
+    "Scene switch transition" : {
+
     },
     "Scenes" : {
       "localizations" : {

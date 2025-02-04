@@ -627,6 +627,10 @@ final class Media: NSObject {
         netStream?.setLowFpsImage(fps: fps)
     }
 
+    func setSceneSwitchTransition(sceneSwitchTransition: SceneSwitchTransition) {
+        netStream?.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
+    }
+
     func setCameraControls(enabled: Bool) {
         netStream?.setCameraControls(enabled: enabled)
     }
