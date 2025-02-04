@@ -975,10 +975,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat!
     }
 
-    func setBlurSceneSwitch() {
-        ioVideoBlurSceneSwitch = database.debug.blurSceneSwitch!
-    }
-
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
@@ -1301,7 +1297,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         faxReceiver.delegate = self
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
-        setBlurSceneSwitch()
         setSrtlaBatchSend()
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
@@ -1451,7 +1446,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             videoCodecDataRateLimitFactor = 1.2
         }
-        ioVideoBitrateDropFix = database.debug.bitrateDropFix!
     }
 
     private func shouldShowCameraPreview() -> Bool {
@@ -4169,6 +4163,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())
         setLowFpsImage()
+        setSceneSwitchTransition()
         updateCameraControls()
     }
 
@@ -4877,6 +4872,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         media.setLowFpsImage(fps: fps)
         lowFpsImageFps = max(UInt64(fps), 1)
+    }
+
+    func setSceneSwitchTransition() {
+        media.setSceneSwitchTransition(sceneSwitchTransition: database.sceneSwitchTransition!.toVideoUnit())
     }
 
     func toggleLocalOverlays() {
@@ -5992,6 +5991,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func toggleWidgetOnOff(id: UUID) {
+        guard let widget = findWidget(id: id) else {
+            return
+        }
+        widget.enabled!.toggle()
+        reloadSpeechToText()
+        sceneUpdated()
+    }
+
     func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false) {
         if imageEffectChanged {
             reloadImageEffects()
@@ -6107,6 +6115,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             toggleBlackScreen()
         case .scene:
             selectScene(id: key.sceneId)
+        case .widget:
+            toggleWidgetOnOff(id: key.widgetId!)
         }
         updateButtonStates()
         return .handled

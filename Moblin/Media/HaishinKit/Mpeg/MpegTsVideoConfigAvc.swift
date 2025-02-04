@@ -5,10 +5,7 @@ import AVFoundation
  */
 struct MpegTsVideoConfigAvc: MpegTsVideoConfig {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
-        if let atoms = CMFormatDescriptionGetExtension(
-            formatDescription,
-            extensionKey: "SampleDescriptionExtensionAtoms" as CFString
-        ) as? NSDictionary {
+        if let atoms = formatDescription.atoms() {
             return atoms["avcC"] as? Data
         }
         return nil

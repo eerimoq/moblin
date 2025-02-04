@@ -5,6 +5,7 @@ struct KeyboardKeySettingsView: View {
     var key: SettingsKeyboardKey
     @State var selection: String
     @State var sceneSelection: UUID
+    @State var widgetSelection: UUID
 
     private func onFunctionChange(function: String) {
         selection = function
@@ -49,7 +50,25 @@ struct KeyboardKeySettingsView: View {
                     Text("Scene")
                 }
             }
+            if key.function == .widget {
+                Section {
+                    Picker("", selection: $widgetSelection) {
+                        ForEach(model.database.widgets) { widget in
+                            Text(widget.name)
+                                .tag(widget.id)
+                        }
+                    }
+                    .onChange(of: widgetSelection) { widgetId in
+                        key.widgetId = widgetId
+                        model.objectWillChange.send()
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                } header: {
+                    Text("Widget")
+                }
+            }
         }
-        .navigationTitle("Game controller button")
+        .navigationTitle("Keyboard key")
     }
 }

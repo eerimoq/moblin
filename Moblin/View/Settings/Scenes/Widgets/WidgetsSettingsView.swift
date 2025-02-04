@@ -57,16 +57,5 @@ struct WidgetsSettingsView: View {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a widget"))
             }
         }
-        Section {
-            Button {
-                model.reloadBrowserWidgets()
-            } label: {
-                HStack {
-                    Spacer()
-                    Text("Reload browser widgets")
-                    Spacer()
-                }
-            }
-        }
     }
 }

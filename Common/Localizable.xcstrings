@@ -26679,7 +26679,11 @@
         }
       }
     },
+    "Blur & zoom" : {
+
+    },
     "Blur scene switch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -58545,6 +58549,9 @@
         }
       }
     },
+    "Freeze" : {
+
+    },
     "front" : {
       "localizations" : {
         "de" : {
@@ -61564,7 +61571,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "H.265/HEVC vaatii yleensä vähemmän kaistanleveyttä samaan kuvanlaatuun. RTMP tukee yleensä vain H.264/AVC:tä."
           }
         },
@@ -66833,6 +66840,9 @@
           }
         }
       }
+    },
+    "Keyboard key" : {
+
     },
     "Kick" : {
       "localizations" : {
@@ -101754,6 +101764,9 @@
           }
         }
       }
+    },
+    "Scene switch transition" : {
+
     },
     "Scenes" : {
       "localizations" : {

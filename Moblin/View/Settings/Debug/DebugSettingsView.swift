@@ -98,12 +98,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.database.debug.relaxedBitrate = value
                 }))
-                Toggle("Blur scene switch", isOn: Binding(get: {
-                    model.database.debug.blurSceneSwitch!
-                }, set: { value in
-                    model.database.debug.blurSceneSwitch = value
-                    model.setBlurSceneSwitch()
-                }))
                 Toggle("Global tone mapping", isOn: Binding(get: {
                     model.getGlobalToneMappingOn()
                 }, set: { value in

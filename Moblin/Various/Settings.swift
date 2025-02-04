@@ -2330,6 +2330,7 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
     case torch = "Torch"
     case blackScreen = "Black screen"
     case scene = "Scene"
+    case widget = "Widget"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2355,6 +2356,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
             return .blackScreen
         case String(localized: "Scene"):
             return .scene
+        case String(localized: "Widget"):
+            return .widget
         default:
             return .unused
         }
@@ -2376,6 +2379,8 @@ enum SettingsKeyboardKeyFunction: String, Codable, CaseIterable {
             return String(localized: "Black screen")
         case .scene:
             return String(localized: "Scene")
+        case .widget:
+            return String(localized: "Widget")
         }
     }
 }
@@ -2387,6 +2392,7 @@ class SettingsKeyboardKey: Codable, Identifiable {
     var key: String = ""
     var function: SettingsKeyboardKeyFunction = .unused
     var sceneId: UUID = .init()
+    var widgetId: UUID? = .init()
 }
 
 class SettingsKeyboard: Codable {
@@ -2435,6 +2441,54 @@ class SettingsMoblinkRelay: Codable {
     var client: SettingsMoblinkClient = .init()
     var password = "1234"
 }
+
+enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
+    case blur = "Blur"
+    case freeze = "Freeze"
+    case blurAndZoom = "Blur & zoom"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .blur
+    }
+
+    static func fromString(value: String) -> SettingsSceneSwitchTransition {
+        switch value {
+        case String(localized: "Blur"):
+            return .blur
+        case String(localized: "Freeze"):
+            return .freeze
+        case String(localized: "Blur & zoom"):
+            return .blurAndZoom
+        default:
+            return .blur
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .blur:
+            return String(localized: "Blur")
+        case .freeze:
+            return String(localized: "Freeze")
+        case .blurAndZoom:
+            return String(localized: "Blur & zoom")
+        }
+    }
+
+    func toVideoUnit() -> SceneSwitchTransition {
+        switch self {
+        case .blur:
+            return .blur
+        case .freeze:
+            return .freeze
+        case .blurAndZoom:
+            return .blurAndZoom
+        }
+    }
+}
+
+let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toString() }
 
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
@@ -2622,6 +2676,7 @@ class Database: Codable {
     var srtlaRelay: SettingsMoblinkRelay? = .init()
     var pixellateStrength: Float? = 0.3
     var moblink: SettingsMoblinkRelay? = .init()
+    var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4544,6 +4599,14 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.overrideVideoStabilizationMode == nil {
             scene.overrideVideoStabilizationMode = false
+            store()
+        }
+        for key in realDatabase.keyboard!.keys where key.widgetId == nil {
+            key.widgetId = .init()
+            store()
+        }
+        if realDatabase.sceneSwitchTransition == nil {
+            realDatabase.sceneSwitchTransition = realDatabase.debug.blurSceneSwitch! ? .blur : .freeze
             store()
         }
     }
