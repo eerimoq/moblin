@@ -2,7 +2,7 @@ import AVFoundation
 import Network
 import SwiftUI
 
-let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
+private let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
 private func isMuted(level: Float) -> Bool {
     return level.isNaN
@@ -64,6 +64,7 @@ final class Media: NSObject {
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
+    private var srtConnected = false
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -184,6 +185,7 @@ final class Media: NSObject {
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
+        srtConnected = false
         self.latency = latency
         self.overheadBandwidth = overheadBandwidth
         self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
@@ -265,11 +267,15 @@ final class Media: NSObject {
     }
 
     private func updateAdaptiveBitrateSrtBela(overlay: Bool, relaxed: Bool) -> ([String], [String])? {
+        guard srtConnected else {
+            return nil
+        }
         let stats = srtConnection.performanceData
         srtDroppedPacketsTotal = stats.pktSndDropTotal
         guard let adaptiveBitrate else {
             return nil
         }
+        // This one blocks if srt_connect() has not returned.
         let sndData = srtConnection.socket?.sndData() ?? 0
         adaptiveBitrate.update(stats: StreamStats(
             rttMs: stats.msRTT,
@@ -461,8 +467,10 @@ final class Media: NSObject {
             }
             DispatchQueue.main.async {
                 if connected.newValue! {
+                    self.srtConnected = true
                     self.delegate?.mediaOnSrtConnected()
                 } else {
+                    self.srtConnected = false
                     self.delegate?.mediaOnSrtDisconnected(String(localized: "SRT disconnected"))
                 }
             }
