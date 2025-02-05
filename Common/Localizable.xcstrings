@@ -25855,10 +25855,130 @@
     },
     "Bitrate drop fix" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fehlerbehebung bei Bitrateabfall"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Διόρθωση πτώσης ρυθμού bit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Corrección de caída de tasa de bits"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bittinopeuden pudotuksen korjaus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Correction de la baisse du débit binaire"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "बिटरेट ड्रॉप फिक्स"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Perbaikan penurunan bitrate"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Correzione del calo del bitrate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ビットレート低下の修正"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "비트레이트 저하 수정"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bitrate-drop opgelost"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Naprawa spadku szybkości transmisji bitów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Correção de queda de taxa de bits"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Correção de queda de taxa de bits"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Исправление падения битрейта"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate drop fix"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bit hızı düşüşü düzeltmesi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Виправлення падіння бітрейту"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sửa lỗi giảm tốc độ bit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "修复比特率下降"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "修復比特率下降"
           }
         }
       }
@@ -26680,7 +26800,134 @@
       }
     },
     "Blur & zoom" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Weichzeichnen und Zoomen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Θάμπωμα και ζουμ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desenfocar y hacer zoom"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sumennus ja zoomaus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Flou et zoom"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "धुंधला और ज़ूम"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buram & perbesar"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sfocatura e zoom"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ぼかしとズーム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "흐림 및 확대"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vervagen en zoomen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozmycie i powiększenie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desfoque e zoom"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desfoque e zoom"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Размытие и масштабирование"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oskärpa och zooma"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bulanıklaştırma ve yakınlaştırma"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Розмиття та масштабування"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Làm mờ và thu phóng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "模糊和缩放"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "模糊和縮放"
+          }
+        }
+      }
     },
     "Blur scene switch" : {
       "extractionState" : "stale",
@@ -40101,10 +40348,130 @@
     },
     "Data rate limit" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Datenratenbegrenzung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Όριο ταχύτητας δεδομένων"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Límite de velocidad de datos"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Datanopeuden rajoitus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite de débit de données"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "डेटा दर सीमा"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Batas kecepatan data"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite di velocità dei dati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "データレート制限"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "데이터 전송 속도 제한"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gegevenssnelheidslimiet"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limit szybkości transmisji danych"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite de taxa de dados"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limite de taxa de dados"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ограничение скорости передачи данных"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datahastighetsgräns"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Veri hızı sınırı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Обмеження швидкості передачі даних"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Giới hạn tốc độ dữ liệu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "数据速率限制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "數據速率限制"
           }
         }
       }
@@ -46627,10 +46994,130 @@
     },
     "Enable Override video stabilization to override Settings → Camera → Video stabilization in this scene." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktivieren Sie „Videostabilisierung überschreiben“, um Einstellungen → Kamera → Videostabilisierung in dieser Szene zu überschreiben."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ενεργοποιήστε την παράκαμψη σταθεροποίησης βίντεο για να παρακάμψετε τις Ρυθμίσεις → Κάμερα → Σταθεροποίηση βίντεο σε αυτήν τη σκηνή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite Anular estabilización de video para anular Configuración → Cámara → Estabilización de video en esta escena."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ota käyttöön Ylikirjoita videon vakautus tässä näkymässä Asetukset → Kamera → Videon vakautus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Activez « Ignorer la stabilisation vidéo » pour remplacer Paramètres → Caméra → Stabilisation vidéo dans cette scène."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इस दृश्य में सेटिंग्स → कैमरा → वीडियो स्थिरीकरण को ओवरराइड करने के लिए ओवरराइड वीडियो स्थिरीकरण सक्षम करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktifkan Override video stabilization untuk mengesampingkan Settings → Camera → Video stabilization pada adegan ini."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abilita Ignora stabilizzazione video per ignorare Impostazioni → Fotocamera → Stabilizzazione video in questa scena."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "このシーンで設定 → カメラ → ビデオ安定化を上書きするには、「ビデオ安定化を上書き」を有効にします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "이 장면에서 설정 → 카메라 → 비디오 안정화를 재정의하려면 비디오 안정화 재정의를 활성화하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schakel Videostabilisatie overschrijven in om Instellingen → Camera → Videostabilisatie in deze scène te overschrijven."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Włącz opcję Nadpisz stabilizację wideo, aby zastąpić ustawienia → Aparat → Stabilizacja wideo w tej scenie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ative Substituir estabilização de vídeo para substituir Configurações → Câmera → Estabilização de vídeo nesta cena."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ative Substituir estabilização de vídeo para substituir Configurações → Câmera → Estabilização de vídeo nesta cena."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Включите функцию «Переопределить стабилизацию видео», чтобы переопределить «Настройки» → «Камера» → «Стабилизация видео» в этой сцене."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera Överrid videostabilisering för att överrida Inställningar → Kamera → Videostabilisering i den här scenen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu sahnede Ayarlar → Kamera → Video sabitlemeyi geçersiz kılmak için Video sabitlemeyi geçersiz kıl seçeneğini etkinleştirin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Увімкніть Перевизначати стабілізацію відео, щоб замінити Параметри → Камера → Стабілізація відео в цій сцені."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bật Ghi đè ổn định video để ghi đè Cài đặt → Máy ảnh → Ổn định video trong cảnh này."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "启用覆盖视频稳定功能来覆盖此场景中的设置 → 相机 → 视频稳定功能。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "啟用覆蓋視訊穩定功能來覆蓋此場景中的設定 → 相機 → 視訊穩定功能。"
           }
         }
       }
@@ -58278,7 +58765,134 @@
       }
     },
     "Force scene switch transition" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Szenenwechsel-Übergang erzwingen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Επιβολή μετάβασης διακόπτη σκηνής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Forzar transición de cambio de escena"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pakota kohtauskytkimen siirtyminen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Forcer la transition de changement de scène"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "दृश्य स्विच संक्रमण को बलपूर्वक लागू करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Paksa transisi peralihan adegan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Forza la transizione del cambio di scena"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "強制的にシーンを切り替える"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "강제 장면 전환 전환"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Forceer scènewisselovergang"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wymuś zmianę sceny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Forçar transição de troca de cena"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Forçar transição de troca de cena"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Принудительный переход переключения сцен"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tvinga scenväxlingsövergång"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sahne geçişini zorla"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Примусове перемикання сцен"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buộc chuyển đổi cảnh chuyển đổi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "强制场景切换过渡"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "強制場景切換過渡"
+          }
+        }
+      }
     },
     "Foreground" : {
       "localizations" : {
@@ -58553,7 +59167,134 @@
       }
     },
     "Freeze" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Einfrieren"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Πάγωμα"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Congelar"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jäädyttää"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geler"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "जमाना"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Membekukan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Congelare"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "フリーズ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "꼭 매달리게 하다"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bevriezen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zamrażać"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Congelar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Congelar"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Заморозить"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frys"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Dondur"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Заморозити"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đông cứng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "冻结"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "凍結"
+          }
+        }
+      }
     },
     "front" : {
       "localizations" : {
@@ -66834,7 +67575,134 @@
       }
     },
     "Keyboard key" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tastaturtaste"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Πλήκτρο πληκτρολογίου"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tecla del teclado"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Näppäimistön näppäin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Touche du clavier"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "कीबोर्ड कुंजी"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tombol keyboard"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tasto della tastiera"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "キーボードのキー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "키보드 키"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toetsenbordtoets"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Klawisz klawiatury"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tecla do teclado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tecla do teclado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Клавиша клавиатуры"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tangentbordstangent"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Klavye tuşu"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Клавіша клавіатури"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Phím bàn phím"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "键盘键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "鍵盤按鍵"
+          }
+        }
+      }
     },
     "Kick" : {
       "localizations" : {
@@ -87692,10 +88560,130 @@
     },
     "Override video stabilization" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videostabilisierung außer Kraft setzen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Παράκαμψη της σταθεροποίησης βίντεο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Anular la estabilización de vídeo"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ylikirjoita videon vakautus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Annuler la stabilisation vidéo"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वीडियो स्थिरीकरण ओवरराइड करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abaikan stabilisasi video"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sostituisci la stabilizzazione video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ビデオ安定化を無効にする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "비디오 안정화 무시"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videostabilisatie overschrijven"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zastąp stabilizację wideo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Substituir estabilização de vídeo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Substituir estabilização de vídeo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Переопределить стабилизацию видео"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Överrid videostabilisering"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Video sabitlemeyi geçersiz kıl"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Перевизначити стабілізацію відео"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ghi đè tính năng ổn định video"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "覆盖视频稳定功能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "覆蓋視訊穩定功能"
           }
         }
       }
@@ -95417,7 +96405,134 @@
       }
     },
     "Relaxed bitrate decrement after scene switch" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geringe Bitratenreduzierung nach Szenenwechsel"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χαλαρή μείωση του bitrate μετά την αλλαγή σκηνής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Disminución relajada de la tasa de bits después del cambio de escena"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rento bittinopeuden lasku kohtauksen vaihdon jälkeen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Diminution du débit binaire relâchée après le changement de scène"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "दृश्य स्विच के बाद शिथिल बिटरेट कमी"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Penurunan bitrate yang santai setelah pergantian adegan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Decremento del bitrate rilassato dopo il cambio di scena"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "シーン切り替え後のビットレート減少を緩和"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "장면 전환 후 비트레이트 감소가 완화됨"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ontspannen bitrate-afname na scènewisseling"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zrelaksowane zmniejszanie szybkości transmisji po przełączeniu sceny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Decréscimo de taxa de bits relaxado após troca de cena"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Decréscimo de taxa de bits relaxado após troca de cena"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Смягченное уменьшение битрейта после переключения сцены"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Avslappnad bithastighetsminskning efter scenbyte"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sahne geçişinden sonra rahat bit hızı azalması"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Спокійне зменшення бітрейту після перемикання сцени"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Giảm tốc độ bit thoải mái sau khi chuyển cảnh"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "场景切换后码率缓慢下降"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "場景切換後碼率緩慢下降"
+          }
+        }
+      }
     },
     "Relay" : {
       "localizations" : {
@@ -100422,7 +101537,134 @@
       }
     },
     "RTMP, SRT(LA), screen capture and media player video sources can instantly be switched to, but if you want consistency you can force scene switch transitions to these as well." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Auf die Videoquellen RTMP, SRT(LA), Bildschirmaufnahme und Media Player kann sofort umgeschaltet werden. Wenn Sie jedoch Konsistenz wünschen, können Sie auch zu diesen Szenenwechselübergänge erzwingen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Οι πηγές βίντεο RTMP, SRT(LA), λήψης οθόνης και αναπαραγωγής πολυμέσων μπορούν να εναλλάσσονται άμεσα, αλλά αν θέλετε συνέπεια, μπορείτε να επιβάλλετε τη μετάβαση του διακόπτη σκηνής και σε αυτές."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Se puede cambiar instantáneamente a fuentes de video RTMP, SRT(LA), captura de pantalla y reproductor multimedia, pero si desea consistencia, también puede forzar las transiciones de cambio de escena a estas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP-, SRT(LA), kuvakaappaus- ja mediasoittimen videolähteet voidaan vaihtaa välittömästi, mutta jos haluat johdonmukaisuuden, voit pakottaa kohtauksen vaihtamisen myös näihin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Les sources vidéo RTMP, SRT(LA), capture d'écran et lecteur multimédia peuvent être instantanément commutées, mais si vous souhaitez une cohérence, vous pouvez également forcer les transitions de changement de scène vers celles-ci."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आरटीएमपी, एसआरटी (एलए), स्क्रीन कैप्चर और मीडिया प्लेयर वीडियो स्रोतों पर तुरंत स्विच किया जा सकता है, लेकिन यदि आप स्थिरता चाहते हैं तो आप इन पर भी दृश्य स्विच संक्रमण को लागू कर सकते हैं।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sumber RTMP, SRT(LA), tangkapan layar, dan video pemutar media dapat langsung dialihkan, tetapi jika Anda menginginkan konsistensi, Anda dapat memaksakan transisi peralihan adegan ke sumber-sumber tersebut juga."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "È possibile passare immediatamente alle sorgenti video RTMP, SRT(LA), cattura dello schermo e lettore multimediale, ma se si desidera coerenza è possibile forzare anche le transizioni di cambio scena su queste."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP、SRT(LA)、スクリーン キャプチャ、メディア プレーヤーのビデオ ソースに瞬時に切り替えることができますが、一貫性が必要な場合は、これらへのシーン切り替え遷移も強制できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP, SRT(LA), 화면 캡처 및 미디어 플레이어 비디오 소스로 즉시 전환할 수 있지만 일관성이 필요한 경우 이러한 소스로 장면 전환을 강제로 적용할 수도 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "U kunt direct overschakelen naar RTMP, SRT(LA), schermopname en mediaspelervideobronnen. Als u echter consistentie wilt, kunt u de overgangen bij het wisselen van scènes ook hiernaartoe forceren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Można natychmiast przełączać się na źródła wideo RTMP, SRT(LA), przechwytywanie ekranu i odtwarzacz multimedialny, ale jeśli zależy Ci na spójności, możesz wymusić także przejścia między scenami."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "É possível alternar instantaneamente entre fontes de vídeo RTMP, SRT(LA), captura de tela e media player, mas se você quiser consistência, também pode forçar transições de troca de cena para elas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "É possível alternar instantaneamente entre fontes de vídeo RTMP, SRT(LA), captura de tela e media player, mas se você quiser consistência, também pode forçar transições de troca de cena para elas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Можно мгновенно переключаться на источники видео RTMP, SRT(LA), захват экрана и медиаплеер, но если вам нужна согласованность, вы можете принудительно переключать сцены и на эти источники."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP, SRT(LA), skärmdump och mediaspelare videokällor kan omedelbart växlas till, men om du vill ha konsistens kan du tvinga scenväxlingsövergångar till dessa också."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP, SRT(LA), ekran görüntüsü ve medya oynatıcı video kaynaklarına anında geçiş yapılabilir, ancak tutarlılık istiyorsanız sahne geçişlerini bunlara da zorlayabilirsiniz."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Джерела відео RTMP, SRT(LA), знімок екрана та медіаплеєр можна миттєво перемикати, але якщо вам потрібна послідовність, ви також можете примусово перемикати сцени на них."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Có thể chuyển đổi ngay lập tức sang các nguồn video RTMP, SRT(LA), chụp màn hình và trình phát phương tiện, nhưng nếu muốn có sự nhất quán, bạn cũng có thể buộc chuyển cảnh sang các nguồn này."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "可以立即切换到 RTMP、SRT(LA)、屏幕捕获和媒体播放器视频源，但如果您想要一致性，您也可以强制场景切换转换到这些。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP、SRT(LA)、螢幕擷取和媒體播放器視訊來源可以立即切換到，但如果您想要一致性，您也可以強制場景切換過渡到這些。"
+          }
+        }
+      }
     },
     "rtmp://a.rtmp.youtube.com/live2" : {
       "localizations" : {
@@ -101761,7 +103003,134 @@
       }
     },
     "Scene switch transition" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Übergang zum Szenenwechsel"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μετάβαση διακόπτη σκηνής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transición de cambio de escena"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kohtauksen kytkimen siirtyminen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transition de changement de scène"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "दृश्य स्विच संक्रमण"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transisi pergantian adegan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transizione del cambio di scena"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "シーン切り替えトランジション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "장면 전환 전환"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Scènewisselovergang"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przejście między scenami"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transição de troca de cena"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transição de troca de cena"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Переход переключения сцен"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scenväxlingsövergång"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sahne geçiş geçişi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Перехід між сценами"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chuyển đổi cảnh"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "场景切换转场"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "場景切換轉場"
+          }
+        }
+      }
     },
     "Scenes" : {
       "localizations" : {
