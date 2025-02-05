@@ -65,15 +65,27 @@ private struct ScenesSwitchTransition: View {
     @State var sceneSwitchTransition: String
 
     var body: some View {
-        Picker("Scene switch transition", selection: $sceneSwitchTransition) {
-            ForEach(sceneSwitchTransitions, id: \.self) { transition in
-                Text(transition)
+        Section {
+            Picker("Scene switch transition", selection: $sceneSwitchTransition) {
+                ForEach(sceneSwitchTransitions, id: \.self) { transition in
+                    Text(transition)
+                }
             }
-        }
-        .onChange(of: sceneSwitchTransition) { _ in
-            model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
-                .fromString(value: sceneSwitchTransition)
-            model.setSceneSwitchTransition()
+            .onChange(of: sceneSwitchTransition) { _ in
+                model.database.sceneSwitchTransition = SettingsSceneSwitchTransition
+                    .fromString(value: sceneSwitchTransition)
+                model.setSceneSwitchTransition()
+            }
+            Toggle("Force scene switch transition", isOn: Binding(get: {
+                model.database.forceSceneSwitchTransition!
+            }, set: { value in
+                model.database.forceSceneSwitchTransition = value
+            }))
+        } footer: {
+            Text("""
+            RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
+            to, but if you want consistency you can force scene switch transitions to these as well.
+            """)
         }
     }
 }

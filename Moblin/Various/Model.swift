@@ -6433,6 +6433,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return Double(database.debug.cameraSwitchRemoveBlackish!)
     }
 
+    private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
+        if database.forceSceneSwitchTransition! {
+            return Double(database.debug.cameraSwitchRemoveBlackish!)
+        } else {
+            return 0.0
+        }
+    }
+
     private func attachReplaceCamera(cameraId: UUID) {
         cameraDevice = nil
         cameraPosition = nil
@@ -6441,8 +6449,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.attachReplaceCamera(
             device: getVideoSourceBuiltinCameraDevice(),
             cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: updateShowCameraPreview(),
-            cameraId: cameraId
+            cameraId: cameraId,
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera()
         )
         media.usePendingAfterAttachEffects()
     }

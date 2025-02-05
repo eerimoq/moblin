@@ -2677,6 +2677,7 @@ class Database: Codable {
     var pixellateStrength: Float? = 0.3
     var moblink: SettingsMoblinkRelay? = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
+    var forceSceneSwitchTransition: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4607,6 +4608,10 @@ final class Settings {
         }
         if realDatabase.sceneSwitchTransition == nil {
             realDatabase.sceneSwitchTransition = realDatabase.debug.blurSceneSwitch! ? .blur : .freeze
+            store()
+        }
+        if realDatabase.forceSceneSwitchTransition == nil {
+            realDatabase.forceSceneSwitchTransition = false
             store()
         }
     }

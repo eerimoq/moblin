@@ -812,8 +812,8 @@ final class Media: NSObject {
     func attachReplaceCamera(
         device: AVCaptureDevice?,
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        showCameraPreview _: Bool,
-        cameraId: UUID
+        cameraId: UUID,
+        ignoreFramesAfterAttachSeconds: Double
     ) {
         netStream?.attachCamera(
             device,
@@ -821,7 +821,7 @@ final class Media: NSObject {
             false,
             .off,
             false,
-            0.0,
+            ignoreFramesAfterAttachSeconds,
             replaceVideoCameraId: cameraId
         )
     }
