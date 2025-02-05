@@ -275,7 +275,7 @@ extension Duration {
 
 private var speedFormatter: MeasurementFormatter {
     let formatter = MeasurementFormatter()
-    formatter.numberFormatter.maximumFractionDigits = 1
+    formatter.numberFormatter.maximumFractionDigits = 0
     return formatter
 }
 
@@ -288,7 +288,7 @@ func format(speed: Double) -> String {
 
 private var distanceFormatter: LengthFormatter {
     let formatter = LengthFormatter()
-    formatter.numberFormatter.maximumFractionDigits = 2
+    formatter.numberFormatter.maximumFractionDigits = 1
     return formatter
 }
 
