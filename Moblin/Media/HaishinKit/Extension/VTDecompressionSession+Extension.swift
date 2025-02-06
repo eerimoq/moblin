@@ -1,7 +1,7 @@
 import Foundation
 import VideoToolbox
 
-extension VTDecompressionSession: VTSessionConvertible {
+extension VTDecompressionSession {
     static let defaultDecodeFlags: VTDecodeFrameFlags = [
         ._EnableAsynchronousDecompression,
         ._EnableTemporalProcessing,

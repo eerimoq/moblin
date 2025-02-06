@@ -11,7 +11,7 @@ class VideoDecoder {
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
-    private var session: (any VTSessionConvertible)? {
+    private var session: VTDecompressionSession? {
         didSet {
             oldValue?.invalidate()
             invalidateSession = false
@@ -76,7 +76,7 @@ class VideoDecoder {
         }
     }
 
-    private func makeSession() -> (any VTSessionConvertible)? {
+    private func makeSession() -> VTDecompressionSession? {
         guard let formatDescription else {
             logger.info("video-decoder: Format description missing")
             return nil

@@ -1468,9 +1468,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setBitrateDropFix() {
         if database.debug.bitrateDropFix! {
-            videoCodecDataRateLimitFactor = Double(database.debug.dataRateLimitFactor!)
+            videoEncoderDataRateLimitFactor = Double(database.debug.dataRateLimitFactor!)
         } else {
-            videoCodecDataRateLimitFactor = 1.2
+            videoEncoderDataRateLimitFactor = 1.2
         }
     }
 
@@ -4004,11 +4004,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func createMultiTrackVideoCodecSettings(
         encoderConfigurations: [TwitchMultiTrackGetClientConfigurationEncoderContiguration]
     )
-        -> [VideoCodecSettings]?
+        -> [VideoEncoderSettings]?
     {
-        var videoEncoderSettings: [VideoCodecSettings] = []
+        var videoEncoderSettings: [VideoEncoderSettings] = []
         for encoderConfiguration in encoderConfigurations {
-            var settings = VideoCodecSettings()
+            var settings = VideoEncoderSettings()
             let bitrate = encoderConfiguration.settings.bitrate
             guard bitrate >= 100, bitrate <= 50000 else {
                 return nil

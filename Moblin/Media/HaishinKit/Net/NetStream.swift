@@ -82,7 +82,7 @@ open class NetStream: NSObject {
         }
     }
 
-    func setVideoEncoderSettings(settings: VideoCodecSettings) {
+    func setVideoEncoderSettings(settings: VideoEncoderSettings) {
         netStreamLockQueue.async {
             self.mixer.video.getEncoders().first!.settings.mutate { $0 = settings }
         }

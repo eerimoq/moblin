@@ -59,7 +59,7 @@ final class Media: NSObject {
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
     var srtDroppedPacketsTotal: Int32 = 0
-    private var videoEncoderSettings = VideoCodecSettings()
+    private var videoEncoderSettings = VideoEncoderSettings()
     private var audioEncoderSettings = AudioCodecOutputSettings()
     private var multiplier: UInt32 = 0
     private var updateTickCount: UInt64 = 0
@@ -550,7 +550,7 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
-    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoCodecSettings]) {
+    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoEncoderSettings]) {
         logger.info("stream: Multi track URL \(url)")
         for videoEncoderSetting in videoEncoderSettings {
             logger.info("stream: Multi track video encoder config \(videoEncoderSetting)")

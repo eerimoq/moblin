@@ -4,7 +4,7 @@ import VideoToolbox
 class MultiTrackVideoEncoder {
     private let encoders: [VideoEncoder]
 
-    init(settings: [VideoCodecSettings], lockQueue: DispatchQueue) {
+    init(settings: [VideoEncoderSettings], lockQueue: DispatchQueue) {
         encoders = settings.map { setting in
             let encoder = VideoEncoder(lockQueue: lockQueue)
             encoder.settings.mutate { $0 = setting }

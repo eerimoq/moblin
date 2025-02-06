@@ -17,7 +17,7 @@ private func defaultAttributes() -> [NSString: AnyObject] {
 }
 
 class VideoEncoder {
-    var settings: Atomic<VideoCodecSettings> = .init(.init()) {
+    var settings: Atomic<VideoEncoderSettings> = .init(.init()) {
         didSet {
             lockQueue.async {
                 if self.settings.value.shouldInvalidateSession(oldValue.value) {
@@ -44,7 +44,7 @@ class VideoEncoder {
     }
 
     weak var delegate: (any VideoEncoderDelegate)?
-    private var session: (any VTSessionConvertible)? {
+    private var session: VTCompressionSession? {
         didSet {
             oldValue?.invalidate()
             invalidateSession = false
@@ -132,7 +132,7 @@ class VideoEncoder {
         delegate?.videoEncoderOutputFormat(self, formatDescription)
     }
 
-    private func updateBitrate(settings: VideoCodecSettings) {
+    private func updateBitrate(settings: VideoEncoderSettings) {
         guard currentBitrate != settings.bitRate else {
             return
         }
@@ -148,7 +148,7 @@ class VideoEncoder {
         }
     }
 
-    private func getLandscapeVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
+    private func getLandscapeVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions {
         if settings.bitRate < 100_000 {
             return .init(width: 284, height: 160)
         } else if settings.bitRate < 250_000 {
@@ -162,7 +162,7 @@ class VideoEncoder {
         }
     }
 
-    private func getPortraitVideoSize(settings: VideoCodecSettings) -> CMVideoDimensions {
+    private func getPortraitVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions {
         if settings.bitRate < 100_000 {
             return .init(width: 160, height: 284)
         } else if settings.bitRate < 250_000 {
@@ -176,7 +176,7 @@ class VideoEncoder {
         }
     }
 
-    private func updateAdaptiveResolution(settings: VideoCodecSettings) -> CMVideoDimensions {
+    private func updateAdaptiveResolution(settings: VideoEncoderSettings) -> CMVideoDimensions {
         var videoSize: CMVideoDimensions
         if settings.adaptiveResolution {
             if settings.videoSize.width > settings.videoSize.height {
@@ -193,8 +193,8 @@ class VideoEncoder {
         return videoSize
     }
 
-    private func makeSession(settings: VideoCodecSettings,
-                             videoSize: CMVideoDimensions? = nil) -> (any VTSessionConvertible)?
+    private func makeSession(settings: VideoEncoderSettings,
+                             videoSize: CMVideoDimensions? = nil) -> VTCompressionSession?
     {
         var session: VTCompressionSession?
         for attribute in attributes ?? [:] {
