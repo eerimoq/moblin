@@ -213,7 +213,9 @@ struct StreamVideoSettingsView: View {
                         low. Generally gives better image quality at low (<750 Kbps) bitrates.
                         """)
                         Text("")
-                        Text("Warning: OBS typically requires hardware decoding not to crash.")
+                        Text("""
+                        Warning: OBS typically requires hardware decoding not to crash when enabled.
+                        """)
                     }
                 }
                 if model.database.debug.timecodesEnabled! {

@@ -137733,6 +137733,9 @@
         }
       }
     },
+    "Warning: OBS typically requires hardware decoding not to crash." : {
+
+    },
     "Watch" : {
       "localizations" : {
         "de" : {
