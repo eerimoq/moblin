@@ -47,12 +47,13 @@ class SrtServerClient {
             do {
                 while reader.bytesAvailable >= MpegTsPacket.size {
                     let packet = try MpegTsPacket(reader: reader)
+                    // logger.info("Packet: \(packet)")
                     if packet.id == MpegTsPacket.programAssociationTableId {
                         try handleProgramAssociationTable(packet: packet)
                     } else if let programNumber = programs[packet.id] {
                         try handleProgramMappingTable(programNumber: programNumber, packet: packet)
-                    } else if packet.id != MpegTsPacket.nullId {
-                        try handleProgramMedia(packet: packet)
+                    } else if let data = elementaryStreamSpecificData[packet.id] {
+                        try handleProgramMedia(packet: packet, data: data)
                     }
                 }
             } catch {
@@ -67,6 +68,7 @@ class SrtServerClient {
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
         programAssociationTable = try MpegTsProgramAssociation(data: packet.payload)
         for (programNumber, programId) in programAssociationTable.programs {
+            // logger.info("Program id \(programId) and number \(programNumber)")
             programs[programId] = programNumber
         }
     }
@@ -74,22 +76,25 @@ class SrtServerClient {
     private func handleProgramMappingTable(programNumber: UInt16, packet: MpegTsPacket) throws {
         programMappingTable[programNumber] = try MpegTsProgramMapping(data: packet.payload)
         for programMapping in programMappingTable.values {
+            // logger.info("Program mapping \(programMapping.programClockReferencePacketId)
+            // \(programMapping.programInfoLength)")
             for data in programMapping.elementaryStreamSpecificDatas {
+                // logger.info("Program mapping data \(data)")
                 elementaryStreamSpecificData[data.elementaryPacketId] = data
             }
         }
     }
 
-    private func handleProgramMedia(packet: MpegTsPacket) throws {
+    private func handleProgramMedia(packet: MpegTsPacket, data: ElementaryStreamSpecificData) throws {
         if packet.payloadUnitStartIndicator {
-            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true) {
+            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true, data: data) {
                 handleSampleBuffer(streamType, sampleBuffer)
             }
             packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet
                 .payload)
         } else {
             packetizedElementaryStreams[packet.id]?.append(data: packet.payload)
-            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false) {
+            if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false, data: data) {
                 handleSampleBuffer(streamType, sampleBuffer)
             }
         }
@@ -256,10 +261,9 @@ class SrtServerClient {
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
 
-    private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool) -> (CMSampleBuffer, ElementaryStreamType)? {
-        guard let data = elementaryStreamSpecificData[packetId] else {
-            return nil
-        }
+    private func tryMakeSampleBuffer(packetId: UInt16, forUpdate: Bool,
+                                     data: ElementaryStreamSpecificData) -> (CMSampleBuffer, ElementaryStreamType)?
+    {
         guard var packetizedElementaryStream = packetizedElementaryStreams[packetId] else {
             return nil
         }
