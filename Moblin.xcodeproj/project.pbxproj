@@ -80,6 +80,7 @@
 		031F41412C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F41402C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift */; };
 		031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
+		031F9C2A2D5478C800424EF0 /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F9C292D5478C400424EF0 /* VideoEncoder.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		0323F3732D1DCDA800A57AC2 /* MoblinkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */; };
 		0323F3782D1E1AE700A57AC2 /* MoblinkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */; };
@@ -158,7 +159,7 @@
 		0359F8AB2BD3DA61005BFDA8 /* AudioCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */; };
 		0359F8AC2BD3DA61005BFDA8 /* AudioCodecOutputSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */; };
 		0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */; };
-		0359F8AE2BD3DA61005BFDA8 /* VideoCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8102BD3DA5F005BFDA8 /* VideoCodec.swift */; };
+		0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */; };
 		0359F8AF2BD3DA61005BFDA8 /* VideoCodecSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8112BD3DA5F005BFDA8 /* VideoCodecSettings.swift */; };
 		0359F8B12BD3DA61005BFDA8 /* VTSessionConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8132BD3DA5F005BFDA8 /* VTSessionConvertible.swift */; };
 		0359F8B22BD3DA61005BFDA8 /* VTSessionOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8142BD3DA5F005BFDA8 /* VTSessionOption.swift */; };
@@ -612,6 +613,7 @@
 		031F41402C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAlertsTextSettingsView.swift; sourceTree = "<group>"; };
 		031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutAttributionsSettingsView.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
+		031F9C292D5478C400424EF0 /* VideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
 		0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkServer.swift; sourceTree = "<group>"; };
 		0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkClient.swift; sourceTree = "<group>"; };
 		0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkProtocol.swift; sourceTree = "<group>"; };
@@ -688,7 +690,7 @@
 		0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodec.swift; sourceTree = "<group>"; };
 		0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecOutputSettings.swift; sourceTree = "<group>"; };
 		0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecRingBuffer.swift; sourceTree = "<group>"; };
-		0359F8102BD3DA5F005BFDA8 /* VideoCodec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCodec.swift; sourceTree = "<group>"; };
+		0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
 		0359F8112BD3DA5F005BFDA8 /* VideoCodecSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCodecSettings.swift; sourceTree = "<group>"; };
 		0359F8132BD3DA5F005BFDA8 /* VTSessionConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSessionConvertible.swift; sourceTree = "<group>"; };
 		0359F8142BD3DA5F005BFDA8 /* VTSessionOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSessionOption.swift; sourceTree = "<group>"; };
@@ -2573,8 +2575,9 @@
 			isa = PBXGroup;
 			children = (
 				03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */,
-				0359F8102BD3DA5F005BFDA8 /* VideoCodec.swift */,
 				0359F8112BD3DA5F005BFDA8 /* VideoCodecSettings.swift */,
+				0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */,
+				031F9C292D5478C400424EF0 /* VideoEncoder.swift */,
 				0359F8132BD3DA5F005BFDA8 /* VTSessionConvertible.swift */,
 				0359F8142BD3DA5F005BFDA8 /* VTSessionOption.swift */,
 			);
@@ -3333,6 +3336,7 @@
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				032F3B3C2C935385002FF97E /* QuickButtonLutsView.swift in Sources */,
 				03987B3E2C8285D900226C03 /* QuickButtonStreamView.swift in Sources */,
+				031F9C2A2D5478C800424EF0 /* VideoEncoder.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,
@@ -3386,7 +3390,7 @@
 				03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
 				032B4EDE2C34927C00204547 /* SegmentedPicker.swift in Sources */,
-				0359F8AE2BD3DA61005BFDA8 /* VideoCodec.swift in Sources */,
+				0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
