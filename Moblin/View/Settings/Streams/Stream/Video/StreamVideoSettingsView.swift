@@ -207,10 +207,14 @@ struct StreamVideoSettingsView: View {
                     }))
                     .disabled(stream.enabled && model.isLive)
                 } footer: {
-                    Text("""
-                    Automatically lower resolution when the available bandwidth is \
-                    low. Generally gives better image quality at low (<750 Kbps) bitrates.
-                    """)
+                    VStack(alignment: .leading) {
+                        Text("""
+                        Automatically lower resolution when the available bandwidth is \
+                        low. Generally gives better image quality at low (<750 Kbps) bitrates.
+                        """)
+                        Text("")
+                        Text("Warning: OBS typically requires hardware decoding not to crash.")
+                    }
                 }
                 if model.database.debug.timecodesEnabled! {
                     Section {
