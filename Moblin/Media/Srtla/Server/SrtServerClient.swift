@@ -90,8 +90,7 @@ class SrtServerClient {
             if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: true, data: data) {
                 handleSampleBuffer(streamType, sampleBuffer)
             }
-            packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet
-                .payload)
+            packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet.payload)
         } else {
             packetizedElementaryStreams[packet.id]?.append(data: packet.payload)
             if let (sampleBuffer, streamType) = tryMakeSampleBuffer(packetId: packet.id, forUpdate: false, data: data) {
