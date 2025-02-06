@@ -6,7 +6,6 @@ extension VTCompressionSession {
         return VTCompressionSessionPrepareToEncodeFrames(self)
     }
 
-    @discardableResult
     @inline(__always)
     func encodeFrame(
         _ imageBuffer: CVImageBuffer,
@@ -29,13 +28,13 @@ extension VTCompressionSession {
         VTCompressionSessionInvalidate(self)
     }
 
-    func setOption(_ option: VTSessionOption) -> OSStatus {
-        return VTSessionSetProperty(self, key: option.key.value, value: option.value)
+    func setProperty(_ property: VTSessionProperty) -> OSStatus {
+        return VTSessionSetProperty(self, key: property.key.value, value: property.value)
     }
 
-    func setOptions(_ options: [VTSessionOption]) -> OSStatus {
-        for option in options {
-            let err = setOption(option)
+    func setProperties(_ properties: [VTSessionProperty]) -> OSStatus {
+        for property in properties {
+            let err = setProperty(property)
             if err != noErr {
                 return err
             }

@@ -161,7 +161,7 @@
 		0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */; };
 		0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */; };
 		0359F8AF2BD3DA61005BFDA8 /* VideoEncoderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8112BD3DA5F005BFDA8 /* VideoEncoderSettings.swift */; };
-		0359F8B22BD3DA61005BFDA8 /* VTSessionOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8142BD3DA5F005BFDA8 /* VTSessionOption.swift */; };
+		0359F8B22BD3DA61005BFDA8 /* VTSessionProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8142BD3DA5F005BFDA8 /* VTSessionProperty.swift */; };
 		0359F8B32BD3DA61005BFDA8 /* AudioStreamBasicDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8162BD3DA5F005BFDA8 /* AudioStreamBasicDescription+Extension.swift */; };
 		0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8192BD3DA5F005BFDA8 /* AVCaptureDevice.Format+Extension.swift */; };
 		0359F8B92BD3DA61005BFDA8 /* AVFrameRateRange+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */; };
@@ -691,7 +691,7 @@
 		0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecRingBuffer.swift; sourceTree = "<group>"; };
 		0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
 		0359F8112BD3DA5F005BFDA8 /* VideoEncoderSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEncoderSettings.swift; sourceTree = "<group>"; };
-		0359F8142BD3DA5F005BFDA8 /* VTSessionOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSessionOption.swift; sourceTree = "<group>"; };
+		0359F8142BD3DA5F005BFDA8 /* VTSessionProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSessionProperty.swift; sourceTree = "<group>"; };
 		0359F8162BD3DA5F005BFDA8 /* AudioStreamBasicDescription+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Extension.swift"; sourceTree = "<group>"; };
 		0359F8192BD3DA5F005BFDA8 /* AVCaptureDevice.Format+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice.Format+Extension.swift"; sourceTree = "<group>"; };
 		0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVFrameRateRange+Extension.swift"; sourceTree = "<group>"; };
@@ -2573,10 +2573,10 @@
 			isa = PBXGroup;
 			children = (
 				03C357292D03776000B8B29F /* MultiTrackVideoEncoder.swift */,
-				0359F8112BD3DA5F005BFDA8 /* VideoEncoderSettings.swift */,
 				0359F8102BD3DA5F005BFDA8 /* VideoDecoder.swift */,
 				031F9C292D5478C400424EF0 /* VideoEncoder.swift */,
-				0359F8142BD3DA5F005BFDA8 /* VTSessionOption.swift */,
+				0359F8112BD3DA5F005BFDA8 /* VideoEncoderSettings.swift */,
+				0359F8142BD3DA5F005BFDA8 /* VTSessionProperty.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -3080,7 +3080,7 @@
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				0359F8EA2BD3DA61005BFDA8 /* RtmpEventDispatcher.swift in Sources */,
 				03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
-				0359F8B22BD3DA61005BFDA8 /* VTSessionOption.swift in Sources */,
+				0359F8B22BD3DA61005BFDA8 /* VTSessionProperty.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0359F8B92BD3DA61005BFDA8 /* AVFrameRateRange+Extension.swift in Sources */,
 				0379BBA22AAD824600B718B6 /* StreamOverlayIconAndTextView.swift in Sources */,

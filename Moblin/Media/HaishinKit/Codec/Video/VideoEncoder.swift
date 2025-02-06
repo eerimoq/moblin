@@ -138,12 +138,12 @@ class VideoEncoder {
         }
         currentBitrate = settings.bitRate
         let bitRate = currentBitrate
-        let option = VTSessionOption(key: .averageBitRate, value: NSNumber(value: bitRate))
-        if let status = session?.setOption(option), status != noErr {
+        let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitRate))
+        if let status = session?.setProperty(option), status != noErr {
             logger.info("video-encoder: Failed to set option \(status) \(option)")
         }
-        let optionLimit = VTSessionOption(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
-        if let status = session?.setOption(optionLimit), status != noErr {
+        let optionLimit = VTSessionProperty(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
+        if let status = session?.setProperty(optionLimit), status != noErr {
             logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
         }
     }
@@ -216,7 +216,7 @@ class VideoEncoder {
             logger.info("video-encoder: Failed to create session with status \(status)")
             return nil
         }
-        status = session.setOptions(settings.options(self))
+        status = session.setProperties(settings.properties())
         guard status == noErr else {
             logger.info("video-encoder: Failed to set options with status \(status)")
             return nil

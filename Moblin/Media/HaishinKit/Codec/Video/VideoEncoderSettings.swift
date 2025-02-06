@@ -63,9 +63,9 @@ struct VideoEncoderSettings {
             profileLevel == other.profileLevel)
     }
 
-    func options(_: VideoEncoder) -> [VTSessionOption] {
+    func properties() -> [VTSessionProperty] {
         let isBaseline = profileLevel.contains("Baseline")
-        var options: [VTSessionOption] = [
+        var properties: [VTSessionProperty] = [
             .init(key: .realTime, value: kCFBooleanTrue),
             .init(key: .profileLevel, value: profileLevel as NSObject),
             .init(key: .averageBitRate, value: bitRate as CFNumber),
@@ -77,7 +77,7 @@ struct VideoEncoderSettings {
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
         ]
         if profileLevel.contains("Main10") {
-            options += [
+            properties += [
                 .init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto),
                 .init(key: .colorPrimaries, value: kCVImageBufferColorPrimaries_ITU_R_2020),
                 .init(key: .transferFunction, value: kCVImageBufferTransferFunction_ITU_R_2100_HLG),
@@ -85,8 +85,8 @@ struct VideoEncoderSettings {
             ]
         }
         if !isBaseline, profileLevel.contains("H264") {
-            options.append(.init(key: .h264EntropyMode, value: kVTH264EntropyMode_CABAC))
+            properties.append(.init(key: .h264EntropyMode, value: kVTH264EntropyMode_CABAC))
         }
-        return options
+        return properties
     }
 }
