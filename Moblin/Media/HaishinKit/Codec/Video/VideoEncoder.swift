@@ -8,14 +8,6 @@ protocol VideoEncoderDelegate: AnyObject {
     func videoEncoderOutputSampleBuffer(_ codec: VideoEncoder, _ sampleBuffer: CMSampleBuffer)
 }
 
-private func defaultAttributes() -> [NSString: AnyObject] {
-    [
-        kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
-        kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
-        kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-    ]
-}
-
 class VideoEncoder {
     var settings: Atomic<VideoEncoderSettings> = .init(.init()) {
         didSet {
@@ -31,17 +23,6 @@ class VideoEncoder {
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
-
-    private var attributes: [NSString: AnyObject]? {
-        var attributes: [NSString: AnyObject] = [:]
-        for (key, value) in defaultAttributes() {
-            attributes[key] = value
-        }
-        let settings = self.settings.value
-        attributes[kCVPixelBufferWidthKey] = NSNumber(value: settings.videoSize.width)
-        attributes[kCVPixelBufferHeightKey] = NSNumber(value: settings.videoSize.height)
-        return attributes
-    }
 
     weak var delegate: (any VideoEncoderDelegate)?
     private var session: VTCompressionSession? {
@@ -197,9 +178,13 @@ class VideoEncoder {
                              videoSize: CMVideoDimensions? = nil) -> VTCompressionSession?
     {
         var session: VTCompressionSession?
-        for attribute in attributes ?? [:] {
-            logger.debug("video-encoder: Codec attribute: \(attribute.key) \(attribute.value)")
-        }
+        let attributes: [NSString: AnyObject] = [
+            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
+            kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
+            kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
+            kCVPixelBufferWidthKey: NSNumber(value: settings.videoSize.width),
+            kCVPixelBufferHeightKey: NSNumber(value: settings.videoSize.height),
+        ]
         var status = VTCompressionSessionCreate(
             allocator: kCFAllocatorDefault,
             width: videoSize?.width ?? settings.videoSize.width,

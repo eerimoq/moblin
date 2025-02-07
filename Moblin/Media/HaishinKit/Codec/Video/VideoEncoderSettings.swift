@@ -70,7 +70,6 @@ struct VideoEncoderSettings {
             .init(key: .profileLevel, value: profileLevel as NSObject),
             .init(key: .averageBitRate, value: bitRate as CFNumber),
             .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate)),
-            // It seemes that VT supports the range 0 to 30?
             .init(key: .expectedFrameRate, value: VideoUnit.defaultFrameRate as CFNumber),
             .init(key: .maxKeyFrameIntervalDuration, value: maxKeyFrameIntervalDuration as CFNumber),
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),

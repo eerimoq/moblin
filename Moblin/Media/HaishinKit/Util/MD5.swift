@@ -100,7 +100,6 @@ enum MD5 {
         message[message.length - 3] = count[2]
         message[message.length - 2] = count[1]
         message[message.length - 1] = count[0]
-        // swiftlint:disable:this closure_body_length
         message.sequence(64) {
             let x: [UInt32] = $0.toUInt32()
             guard x.count == 16 else {

@@ -109,8 +109,7 @@ class SrtServerClient {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer
-            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         updateTargetLatencies()
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
             return
