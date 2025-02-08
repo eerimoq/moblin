@@ -674,7 +674,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
 
-    private var distance = 0.0
     private var latestKnownLocation: CLLocation?
 
     @Published var remoteControlStatus = noValue
@@ -3387,7 +3386,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
-                self.distance += distance
+                database.location!.distance! += distance
                 self.latestKnownLocation = location
             }
         } else {
@@ -3502,7 +3501,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getDistance() -> String {
-        return format(distance: distance)
+        return format(distance: database.location!.distance!)
     }
 
     func togglePoll() {
@@ -8876,7 +8875,7 @@ extension Model {
     }
 
     func resetDistance() {
-        distance = 0.0
+        database.location!.distance = 0.0
         latestKnownLocation = nil
     }
 

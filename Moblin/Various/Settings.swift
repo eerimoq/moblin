@@ -2501,6 +2501,7 @@ class SettingsPrivacyRegion: Codable, Identifiable {
 class SettingsLocation: Codable {
     var enabled: Bool = false
     var privacyRegions: [SettingsPrivacyRegion] = []
+    var distance: Double? = 0.0
 }
 
 class SettingsAudioOutputToInputChannelsMap: Codable {
@@ -4612,6 +4613,10 @@ final class Settings {
         }
         if realDatabase.forceSceneSwitchTransition == nil {
             realDatabase.forceSceneSwitchTransition = false
+            store()
+        }
+        if realDatabase.location!.distance == nil {
+            realDatabase.location!.distance = 0.0
             store()
         }
     }
