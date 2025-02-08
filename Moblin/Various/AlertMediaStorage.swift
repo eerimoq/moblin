@@ -25,16 +25,7 @@ class AlertMediaStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            var ids: [UUID] = []
-            for file in try fileManager.contentsOfDirectory(atPath: mediasUrl.path) {
-                if let id = UUID(uuidString: file) {
-                    ids.append(id)
-                }
-            }
-            return ids
-        } catch {}
-        return []
+        return fileManager.ids(directory: mediasUrl.path)
     }
 
     func add(id: UUID, url: URL) {

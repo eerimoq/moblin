@@ -543,3 +543,28 @@ func getCpuUsage() -> Float {
         return !isIdle ? (Float(threadInfo.cpu_usage) / Float(TH_USAGE_SCALE)) * 100 : nil
     }.reduce(0, +)
 }
+
+extension FileManager {
+    func ids(directory: String) -> [UUID] {
+        var ids: [UUID] = []
+        for file in (try? contentsOfDirectory(atPath: directory)) ?? [] {
+            guard let id = UUID(uuidString: file) else {
+                continue
+            }
+            ids.append(id)
+        }
+        return ids
+    }
+
+    func idsBeforeDot(directory: String) -> [UUID] {
+        var ids: [UUID] = []
+        for file in (try? contentsOfDirectory(atPath: directory)) ?? [] {
+            let parts = file.components(separatedBy: ".")
+            guard parts.count > 1, let id = UUID(uuidString: parts[0]) else {
+                continue
+            }
+            ids.append(id)
+        }
+        return ids
+    }
+}

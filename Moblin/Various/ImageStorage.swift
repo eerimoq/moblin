@@ -25,17 +25,7 @@ class ImageStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            var ids: [UUID] = []
-            for file in try fileManager.contentsOfDirectory(atPath: imagesUrl.path) {
-                guard let id = UUID(uuidString: file) else {
-                    continue
-                }
-                ids.append(id)
-            }
-            return ids
-        } catch {}
-        return []
+        return fileManager.ids(directory: imagesUrl.path)
     }
 
     func write(id: UUID, data: Data) {

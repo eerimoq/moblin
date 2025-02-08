@@ -25,18 +25,7 @@ class LogsStorage {
     }
 
     func ids() -> [UUID] {
-        do {
-            var ids: [UUID] = []
-            for file in try fileManager.contentsOfDirectory(atPath: logsUrl.path) {
-                let parts = file.components(separatedBy: ".")
-                guard parts.count > 1, let id = UUID(uuidString: parts[0]) else {
-                    continue
-                }
-                ids.append(id)
-            }
-            return ids
-        } catch {}
-        return []
+        return fileManager.idsBeforeDot(directory: logsUrl.path)
     }
 
     func write(id: UUID, data: Data) {
