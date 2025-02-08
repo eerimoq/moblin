@@ -26,8 +26,15 @@ class LogsStorage {
 
     func ids() -> [UUID] {
         do {
-            let files = try fileManager.contentsOfDirectory(atPath: logsUrl.path)
-            return files.map { UUID(uuidString: $0.components(separatedBy: ".")[0])! }
+            var ids: [UUID] = []
+            for file in try fileManager.contentsOfDirectory(atPath: logsUrl.path) {
+                let parts = file.components(separatedBy: ".")
+                guard parts.count > 1, let id = UUID(uuidString: parts[0]) else {
+                    continue
+                }
+                ids.append(id)
+            }
+            return ids
         } catch {}
         return []
     }
