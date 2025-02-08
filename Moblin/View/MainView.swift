@@ -43,33 +43,53 @@ private struct MenuView: View {
 
     var body: some View {
         ZStack {
-            NavigationStack {
-                switch model.showingPanel {
-                case .settings:
+            switch model.showingPanel {
+            case .settings:
+                NavigationStack {
                     SettingsView()
-                case .bitrate:
-                    QuickButtonBitrateView(selection: model.stream.bitrate)
-                case .mic:
-                    QuickButtonMicView(selectedMic: model.currentMic)
-                case .streamSwitcher:
-                    QuickButtonStreamView()
-                case .luts:
-                    QuickButtonLutsView()
-                case .obs:
-                    QuickButtonObsView()
-                case .widgets:
-                    QuickButtonWidgetsView()
-                case .recordings:
-                    RecordingsSettingsView()
-                case .cosmetics:
-                    CosmeticsSettingsView()
-                case .chat:
-                    QuickButtonChatView()
-                case .djiDevices:
-                    QuickButtonDjiDevicesView()
-                case .none:
-                    EmptyView()
                 }
+            case .bitrate:
+                NavigationStack {
+                    QuickButtonBitrateView(selection: model.stream.bitrate)
+                }
+            case .mic:
+                NavigationStack {
+                    QuickButtonMicView(selectedMic: model.currentMic)
+                }
+            case .streamSwitcher:
+                NavigationStack {
+                    QuickButtonStreamView()
+                }
+            case .luts:
+                NavigationStack {
+                    QuickButtonLutsView()
+                }
+            case .obs:
+                NavigationStack {
+                    QuickButtonObsView()
+                }
+            case .widgets:
+                NavigationStack {
+                    QuickButtonWidgetsView()
+                }
+            case .recordings:
+                NavigationStack {
+                    RecordingsSettingsView()
+                }
+            case .cosmetics:
+                NavigationStack {
+                    CosmeticsSettingsView()
+                }
+            case .chat:
+                NavigationStack {
+                    QuickButtonChatView()
+                }
+            case .djiDevices:
+                NavigationStack {
+                    QuickButtonDjiDevicesView()
+                }
+            case .none:
+                EmptyView()
             }
             CloseButtonPanelView()
         }
