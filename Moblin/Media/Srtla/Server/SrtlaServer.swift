@@ -32,21 +32,30 @@ class SrtlaServer {
     private var clients: [Data: SrtlaServerClient] = [:]
     let settings: SettingsSrtlaServer
     private let srtServer: SrtServer
+    private let srtServerNoSrtlaPatches: SrtServer
     weak var delegate: (any SrtlaServerDelegate)?
     private let periodicTimer = SimpleTimer(queue: srtlaServerQueue)
     private var prevTotalBytesReceived: UInt64 = 0
     var totalBytesReceived: Atomic<UInt64> = .init(0)
     private var numberOfClients: Atomic<Int> = .init(0)
+    var connectedStreamIds: Atomic<[String]> = .init(.init())
 
     init(settings: SettingsSrtlaServer, timecodesEnabled: Bool) {
         self.settings = settings.clone()
-        srtServer = SrtServer(timecodesEnabled: timecodesEnabled)
+        srtServer = SrtServer(timecodesEnabled: timecodesEnabled, port: settings.srtlaSrtPort(), srtlaPatches: true)
+        srtServerNoSrtlaPatches = SrtServer(
+            timecodesEnabled: timecodesEnabled,
+            port: settings.srtPort,
+            srtlaPatches: false
+        )
         srtServer.srtlaServer = self
+        srtServerNoSrtlaPatches.srtlaServer = self
     }
 
     func start() {
         srtlaServerQueue.async {
             self.srtServer.start()
+            self.srtServerNoSrtlaPatches.start()
             self.startListener()
             self.startPeriodicTimer()
         }
@@ -57,11 +66,12 @@ class SrtlaServer {
             self.stopPeriodicTimer()
             self.stopListener()
             self.srtServer.stop()
+            self.srtServerNoSrtlaPatches.stop()
         }
     }
 
     func isStreamConnected(streamId: String) -> Bool {
-        return srtServer.connectedStreamIds.value.contains(streamId)
+        return connectedStreamIds.value.contains(streamId)
     }
 
     func updateStats() -> SrtlaServerStats {
@@ -207,7 +217,7 @@ class SrtlaServer {
         guard clients[groupId] == nil else {
             return
         }
-        clients[groupId] = SrtlaServerClient(srtPort: settings.srtPort)
+        clients[groupId] = SrtlaServerClient(srtPort: settings.srtlaSrtPort())
         sendSrtlaReg2(connection: connection, groupId: groupId)
     }
 

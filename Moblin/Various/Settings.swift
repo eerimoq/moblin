@@ -1925,6 +1925,10 @@ class SettingsSrtlaServer: Codable {
         }
         return new
     }
+
+    func srtlaSrtPort() -> UInt16 {
+        return srtlaPort + 1
+    }
 }
 
 class SettingsMediaPlayerFile: Codable, Identifiable {
