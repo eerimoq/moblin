@@ -38,6 +38,44 @@ private struct CloseButtonPanelView: View {
     }
 }
 
+private struct MenuView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ZStack {
+            NavigationStack {
+                switch model.showingPanel {
+                case .settings:
+                    SettingsView()
+                case .bitrate:
+                    QuickButtonBitrateView(selection: model.stream.bitrate)
+                case .mic:
+                    QuickButtonMicView(selectedMic: model.currentMic)
+                case .streamSwitcher:
+                    QuickButtonStreamView()
+                case .luts:
+                    QuickButtonLutsView()
+                case .obs:
+                    QuickButtonObsView()
+                case .widgets:
+                    QuickButtonWidgetsView()
+                case .recordings:
+                    RecordingsSettingsView()
+                case .cosmetics:
+                    CosmeticsSettingsView()
+                case .chat:
+                    QuickButtonChatView()
+                case .djiDevices:
+                    QuickButtonDjiDevicesView()
+                case .none:
+                    EmptyView()
+                }
+            }
+            CloseButtonPanelView()
+        }
+    }
+}
+
 private struct CloseButtonRemoteView: View {
     @EnvironmentObject var model: Model
 
@@ -217,58 +255,8 @@ struct MainView: View {
                                 CloseButtonRemoteView()
                             }
                         }
-                        ZStack {
-                            switch model.showingPanel {
-                            case .settings:
-                                NavigationStack {
-                                    SettingsView()
-                                }
-                            case .bitrate:
-                                NavigationStack {
-                                    QuickButtonBitrateView(selection: model.stream.bitrate)
-                                }
-                            case .mic:
-                                NavigationStack {
-                                    QuickButtonMicView(selectedMic: model.currentMic)
-                                }
-                            case .streamSwitcher:
-                                NavigationStack {
-                                    QuickButtonStreamView()
-                                }
-                            case .luts:
-                                NavigationStack {
-                                    QuickButtonLutsView()
-                                }
-                            case .obs:
-                                NavigationStack {
-                                    QuickButtonObsView()
-                                }
-                            case .widgets:
-                                NavigationStack {
-                                    QuickButtonWidgetsView()
-                                }
-                            case .recordings:
-                                NavigationStack {
-                                    RecordingsSettingsView()
-                                }
-                            case .cosmetics:
-                                NavigationStack {
-                                    CosmeticsSettingsView()
-                                }
-                            case .chat:
-                                NavigationStack {
-                                    QuickButtonChatView()
-                                }
-                            case .djiDevices:
-                                NavigationStack {
-                                    QuickButtonDjiDevicesView()
-                                }
-                            case .none:
-                                EmptyView()
-                            }
-                            if model.showingPanel != .none {
-                                CloseButtonPanelView()
-                            }
+                        if model.showingPanel != .none {
+                            MenuView()
                         }
                     }
                     .gesture(
@@ -386,70 +374,9 @@ struct MainView: View {
                                 model.commitZoomX(amount: Float(amount))
                             }
                     )
-                    ZStack {
-                        switch model.showingPanel {
-                        case .settings:
-                            NavigationStack {
-                                SettingsView()
-                            }
+                    if model.showingPanel != .none {
+                        MenuView()
                             .frame(width: settingsHalfWidth)
-                        case .bitrate:
-                            NavigationStack {
-                                QuickButtonBitrateView(selection: model.stream.bitrate)
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .mic:
-                            NavigationStack {
-                                QuickButtonMicView(selectedMic: model.currentMic)
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .streamSwitcher:
-                            NavigationStack {
-                                QuickButtonStreamView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .luts:
-                            NavigationStack {
-                                QuickButtonLutsView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .obs:
-                            NavigationStack {
-                                QuickButtonObsView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .widgets:
-                            NavigationStack {
-                                QuickButtonWidgetsView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .recordings:
-                            NavigationStack {
-                                RecordingsSettingsView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .cosmetics:
-                            NavigationStack {
-                                CosmeticsSettingsView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .chat:
-                            NavigationStack {
-                                QuickButtonChatView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .djiDevices:
-                            NavigationStack {
-                                QuickButtonDjiDevicesView()
-                            }
-                            .frame(width: settingsHalfWidth)
-                        case .none:
-                            EmptyView()
-                        }
-                        if model.showingPanel != .none {
-                            CloseButtonPanelView()
-                                .frame(width: settingsHalfWidth)
-                        }
                     }
                     ControlBarLandscapeView()
                 }
