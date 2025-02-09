@@ -204,33 +204,6 @@ class SrtStream: NetStream {
         readyState = .publishing
     }
 
-    private func doOutput(data: Data) {
-        if data.withUnsafeBytes({ pointer in
-            guard let buffer = pointer.baseAddress?.assumingMemoryBound(to: CChar.self) else {
-                logger.info("srt: error buffer size \(data.count)")
-                return SRT_ERROR
-            }
-            return srt_sendmsg2(socket, buffer, Int32(data.count), nil)
-        }) != data.count {
-            netStreamLockQueue.async {
-                self.readyState = .initialized
-                self.srtStreamDelegate?.srtStreamError()
-            }
-        }
-    }
-
-    private func doOutputPointer(pointer: UnsafeRawBufferPointer, count: Int) {
-        guard let buffer = pointer.baseAddress?.assumingMemoryBound(to: CChar.self) else {
-            return
-        }
-        if srt_sendmsg2(socket, buffer, Int32(count), nil) != count {
-            netStreamLockQueue.async {
-                self.readyState = .initialized
-                self.srtStreamDelegate?.srtStreamError()
-            }
-        }
-    }
-
     private func configure(_ binding: SrtSocketOption.Binding) -> Bool {
         let failures = SrtSocketOption.configure(socket, binding: binding, options: options)
         guard failures.isEmpty else {
@@ -247,10 +220,29 @@ class SrtStream: NetStream {
 
 extension SrtStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutput data: Data) {
-        doOutput(data: data)
+        if data.withUnsafeBytes({ pointer in
+            guard let buffer = pointer.baseAddress?.assumingMemoryBound(to: CChar.self) else {
+                logger.info("srt: error buffer size \(data.count)")
+                return SRT_ERROR
+            }
+            return srt_sendmsg2(socket, buffer, Int32(data.count), nil)
+        }) != data.count {
+            netStreamLockQueue.async {
+                self.readyState = .initialized
+                self.srtStreamDelegate?.srtStreamError()
+            }
+        }
     }
 
     func writer(_: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int) {
-        doOutputPointer(pointer: pointer, count: count)
+        guard let buffer = pointer.baseAddress?.assumingMemoryBound(to: CChar.self) else {
+            return
+        }
+        if srt_sendmsg2(socket, buffer, Int32(count), nil) != count {
+            netStreamLockQueue.async {
+                self.readyState = .initialized
+                self.srtStreamDelegate?.srtStreamError()
+            }
+        }
     }
 }
