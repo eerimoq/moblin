@@ -11,9 +11,17 @@ private enum ReadyState: UInt8 {
     case publishing
 }
 
+private class SendHook {
+    var closure: ((Data) -> Bool)?
+
+    init(closure: ((Data) -> Bool)?) {
+        self.closure = closure
+    }
+}
+
 class SrtStream: NetStream {
     private let writer: MpegTsWriter
-    private var sendHook: ((Data) -> Bool)?
+    private var sendHook = SendHook(closure: nil)
     private var options: [SrtSocketOption: String] = [:]
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
@@ -95,7 +103,7 @@ class SrtStream: NetStream {
         guard let uri, uri.scheme == "srt", let host = uri.host, let port = uri.port else {
             return
         }
-        self.sendHook = sendHook
+        self.sendHook = SendHook(closure: sendHook)
         socket = SRT_INVALID_SOCK
         try connect(sockaddrIn(host, port: UInt16(port)), SrtSocketOption.from(uri: uri))
     }
@@ -162,13 +170,13 @@ class SrtStream: NetStream {
         if socket == SRT_INVALID_SOCK {
             throw makeSocketError()
         }
-        let context = Unmanaged.passRetained(self).toOpaque()
+        let context = Unmanaged.passRetained(sendHook).toOpaque()
         srt_send_callback(socket,
                           { context, _, buf1, size1, buf2, size2 in
                               guard let context, let buf1, let buf2 else {
                                   return -1
                               }
-                              let stream: SrtStream = Unmanaged.fromOpaque(context).takeUnretainedValue()
+                              let sendHook: SendHook = Unmanaged.fromOpaque(context).takeUnretainedValue()
                               var data = Data(capacity: Int(size1 + size2))
                               buf1.withMemoryRebound(to: UInt8.self, capacity: Int(size1)) { buf in
                                   data.append(buf, count: Int(size1))
@@ -176,7 +184,7 @@ class SrtStream: NetStream {
                               buf2.withMemoryRebound(to: UInt8.self, capacity: Int(size2)) { buf in
                                   data.append(buf, count: Int(size2))
                               }
-                              if stream.sendHook?(data) ?? false {
+                              if sendHook.closure?(data) ?? false {
                                   return size1 + size2
                               } else {
                                   return -1

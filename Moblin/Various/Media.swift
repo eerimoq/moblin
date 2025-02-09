@@ -990,7 +990,10 @@ extension Media: SrtlaDelegate {
                     latency: self.latency,
                     overheadBandwidth: self.overheadBandwidth,
                     maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
-                )) { data in
+                )) { [weak self] data in
+                    guard let self else {
+                        return false
+                    }
                     if let srtla = self.srtlaClient {
                         srtlaClientQueue.async {
                             srtla.handleLocalPacket(packet: data)
