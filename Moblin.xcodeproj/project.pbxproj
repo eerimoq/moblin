@@ -203,9 +203,7 @@
 		0359F8F22BD3DA61005BFDA8 /* RtmpSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */; };
 		0359F8F42BD3DA61005BFDA8 /* RtmpStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */; };
 		0359F8F52BD3DA61005BFDA8 /* RtmpStreamInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85D2BD3DA5F005BFDA8 /* RtmpStreamInfo.swift */; };
-		0359F8F72BD3DA61005BFDA8 /* SrtConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8602BD3DA5F005BFDA8 /* SrtConnection.swift */; };
 		0359F8FB2BD3DA61005BFDA8 /* SrtPerformanceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8642BD3DA5F005BFDA8 /* SrtPerformanceData.swift */; };
-		0359F8FC2BD3DA61005BFDA8 /* SrtSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8652BD3DA5F005BFDA8 /* SrtSocket.swift */; };
 		0359F8FD2BD3DA61005BFDA8 /* SrtSocketOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8662BD3DA5F005BFDA8 /* SrtSocketOption.swift */; };
 		0359F8FE2BD3DA61005BFDA8 /* SrtStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8672BD3DA5F005BFDA8 /* SrtStream.swift */; };
 		0359F9002BD3DA61005BFDA8 /* AnyUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */; };
@@ -733,9 +731,7 @@
 		0359F85A2BD3DA5F005BFDA8 /* RtmpSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpSocket.swift; sourceTree = "<group>"; };
 		0359F85C2BD3DA5F005BFDA8 /* RtmpStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpStream.swift; sourceTree = "<group>"; };
 		0359F85D2BD3DA5F005BFDA8 /* RtmpStreamInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpStreamInfo.swift; sourceTree = "<group>"; };
-		0359F8602BD3DA5F005BFDA8 /* SrtConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SrtConnection.swift; sourceTree = "<group>"; };
 		0359F8642BD3DA5F005BFDA8 /* SrtPerformanceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SrtPerformanceData.swift; sourceTree = "<group>"; };
-		0359F8652BD3DA5F005BFDA8 /* SrtSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SrtSocket.swift; sourceTree = "<group>"; };
 		0359F8662BD3DA5F005BFDA8 /* SrtSocketOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SrtSocketOption.swift; sourceTree = "<group>"; };
 		0359F8672BD3DA5F005BFDA8 /* SrtStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SrtStream.swift; sourceTree = "<group>"; };
 		0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyUtil.swift; sourceTree = "<group>"; };
@@ -1708,9 +1704,7 @@
 		0359F8682BD3DA5F005BFDA8 /* Srt */ = {
 			isa = PBXGroup;
 			children = (
-				0359F8602BD3DA5F005BFDA8 /* SrtConnection.swift */,
 				0359F8642BD3DA5F005BFDA8 /* SrtPerformanceData.swift */,
-				0359F8652BD3DA5F005BFDA8 /* SrtSocket.swift */,
 				0359F8662BD3DA5F005BFDA8 /* SrtSocketOption.swift */,
 				0359F8672BD3DA5F005BFDA8 /* SrtStream.swift */,
 			);
@@ -3208,7 +3202,6 @@
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
 				03FB422A2C68D9A70009FB26 /* MirlStream.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
-				0359F8F72BD3DA61005BFDA8 /* SrtConnection.swift in Sources */,
 				03A9300E2C1442E500BB9679 /* HevcNalUnit.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				0359F8AF2BD3DA61005BFDA8 /* VideoEncoderSettings.swift in Sources */,
@@ -3250,7 +3243,6 @@
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */,
 				03C357542D081D9000B8B29F /* RtmpAggregateMessage.swift in Sources */,
-				0359F8FC2BD3DA61005BFDA8 /* SrtSocket.swift in Sources */,
 				03C357562D081D9100B8B29F /* RtmpUserControlMessage.swift in Sources */,
 				03B507A72C88B8F6003CDEDF /* CatPrinter.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift in Sources */,
