@@ -623,6 +623,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case srtla = "SRT(LA)"
     case mediaPlayer = "Media player"
     case screenCapture = "Screen capture"
+    case backTripleLowEnergy = "Back triple"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -638,6 +639,7 @@ enum SettingsCameraId {
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
+    case backTripleLowEnergy
 }
 
 class SettingsScene: Codable, Identifiable, Equatable {
@@ -701,6 +703,8 @@ class SettingsScene: Codable, Identifiable, Equatable {
             return .mediaPlayer(id: mediaPlayerCameraId!)
         case .screenCapture:
             return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
         }
     }
 
@@ -727,6 +731,8 @@ class SettingsScene: Codable, Identifiable, Equatable {
             externalCameraName = name
         case .screenCapture:
             cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
         }
     }
 }
@@ -1183,6 +1189,8 @@ class SettingsWidgetVideoSource: Codable {
             return .mediaPlayer(id: mediaPlayerCameraId!)
         case .screenCapture:
             return .screenCapture
+        case .backTripleLowEnergy:
+            return .backTripleLowEnergy
         }
     }
 
@@ -1209,6 +1217,8 @@ class SettingsWidgetVideoSource: Codable {
             externalCameraName = name
         case .screenCapture:
             cameraPosition = .screenCapture
+        case .backTripleLowEnergy:
+            cameraPosition = .backTripleLowEnergy
         }
     }
 }

@@ -121,7 +121,8 @@ struct Icon: Identifiable {
 
 private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 let builtinCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
-let screenCaptureCamera = "Screen capture"
+private let screenCaptureCamera = "Screen capture"
+private let backTripleLowEnergyCamera = "Back Triple (low energy)"
 
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 private let noMic = Mic(name: "", inputUid: "")
@@ -5509,6 +5510,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             attachExternalCamera(scene: scene)
         case .screenCapture:
             attachReplaceCamera(cameraId: screenCaptureCameraId)
+        case .backTripleLowEnergy:
+            attachBackTripleLowEnergyCamera()
         }
     }
 
@@ -5534,6 +5537,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
         var cameras: [(String, String)] = []
         if !excludeBuiltin {
+            if hasTripleBackCamera() {
+                cameras.append((backTripleLowEnergyCamera, backTripleLowEnergyCamera))
+            }
             cameras += backCameras.map {
                 ($0.id, "Back \($0.name)")
             }
@@ -5569,6 +5575,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return cameraId == screenCaptureCamera
     }
 
+    func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
+        return cameraId == backTripleLowEnergyCamera
+    }
+
     func getCameraPositionId(scene: SettingsScene?) -> String {
         return getCameraPositionId(settingsCameraId: scene?.toCameraId())
     }
@@ -5590,6 +5600,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return .front(id: cameraId)
         } else if isScreenCaptureCamera(cameraId: cameraId) {
             return .screenCapture
+        } else if isBackTripleLowEnergyAutoCamera(cameraId: cameraId) {
+            return .backTripleLowEnergy
         } else {
             return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
         }
@@ -5614,6 +5626,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case .screenCapture:
             return screenCaptureCamera
+        case .backTripleLowEnergy:
+            return backTripleLowEnergyCamera
         }
     }
 
@@ -5656,6 +5670,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         case .screenCapture:
             return screenCaptureCamera
+        case .backTripleLowEnergy:
+            return backTripleLowEnergyCamera
         }
     }
 
@@ -6376,8 +6392,66 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return false
     }
 
-    private func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
-        cameraDevice = preferredCamera(position: position)
+    private func attachBackTripleLowEnergyCamera(force: Bool = true) {
+        var device: AVCaptureDevice?
+        if backZoomX < 1.0 {
+            device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+        } else if backZoomX < 5.0 {
+            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+        } else {
+            device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+        }
+        guard let device else {
+            return
+        }
+        if !force, device == cameraDevice {
+            return
+        }
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        guard let bestDevice = getBestBackCameraDevice() else {
+            return
+        }
+        cameraDevice = device
+        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
+        cameraPosition = .back
+        zoomX = backZoomX
+        lastAttachCompletedTime = nil
+        let isMirrored = getVideoMirroredOnScreen()
+        media.attachCamera(
+            device: cameraDevice,
+            cameraPreviewLayer: cameraPreviewLayer,
+            showCameraPreview: updateShowCameraPreview(),
+            videoStabilizationMode: getVideoStabilizationMode(scene: scene),
+            videoMirrored: getVideoMirroredOnStream(),
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+            onSuccess: {
+                self.streamPreviewView.isMirrored = isMirrored
+                if let x = self.setCameraZoomX(x: self.zoomX) {
+                    self.setZoomX(x: x)
+                }
+                if let device = self.cameraDevice {
+                    self.setIsoAfterCameraAttach(device: device)
+                    self.setWhiteBalanceAfterCameraAttach(device: device)
+                    self.updateImageButtonState()
+                }
+                self.lastAttachCompletedTime = .now
+                self.relaxedBitrateStartTime = self.lastAttachCompletedTime
+                self.relaxedBitrate = self.database.debug.relaxedBitrate!
+                self.updateCameraPreviewRotation()
+            }
+        )
+        zoomXPinch = zoomX
+        hasZoom = true
+    }
+
+    private func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position,
+                              device: AVCaptureDevice? = nil)
+    {
+        cameraDevice = device ?? preferredCamera(position: position)
         setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
@@ -6572,6 +6646,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let preset = findZoomPreset(id: id) {
             if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
                 setZoomX(x: preset.x!)
+                if getSelectedScene()?.cameraPosition == .backTripleLowEnergy {
+                    attachBackTripleLowEnergyCamera(force: false)
+                }
             }
             if isWatchLocal() {
                 sendZoomPresetToWatch()
@@ -6847,7 +6924,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         motionManager.stopDeviceMotionUpdates()
     }
 
-    func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+    private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: selectedSceneId) {
             if position == .back {
                 return AVCaptureDevice(uniqueID: scene.backCameraId!)
