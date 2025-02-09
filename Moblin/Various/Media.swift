@@ -277,7 +277,7 @@ final class Media: NSObject {
             return nil
         }
         adaptiveBitrate.update(stats: StreamStats(
-            rttMs: stats.msRTT,
+            rttMs: stats.msRtt,
             packetsInFlight: Double(sndData),
             transportBitrate: streamSpeed(),
             latency: latency,
@@ -288,10 +288,10 @@ final class Media: NSObject {
             if is200MsTick() {
                 belaLinesAndActions = ([
                     """
-                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNakTotal) \
                     D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
                     """,
-                    "msRTT: \(stats.msRTT)",
+                    "msRTT: \(stats.msRtt)",
                     "sndData: \(sndData)",
                     "B: \(adaptiveBitrate.getCurrentBitrateInKbps())",
                 ], adaptiveBitrate.getActionsTaken())
@@ -311,7 +311,7 @@ final class Media: NSObject {
         }
         srtDroppedPacketsTotal = stats.pktSndDropTotal
         adaptiveBitrate?.update(stats: StreamStats(
-            rttMs: stats.msRTT,
+            rttMs: stats.msRtt,
             packetsInFlight: Double(stats.pktFlightSize),
             transportBitrate: streamSpeed(),
             latency: latency,
@@ -324,10 +324,10 @@ final class Media: NSObject {
         if let adaptiveBitrate {
             return ([
                 """
-                R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                R: \(stats.pktRetransTotal) N: \(stats.pktRecvNakTotal) \
                 D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
                 """,
-                "msRTT: \(stats.msRTT)",
+                "msRTT: \(stats.msRtt)",
                 """
                 pktFlightSize: \(stats.pktFlightSize)   \
                 \(adaptiveBitrate.getFastPif())   \
@@ -341,9 +341,9 @@ final class Media: NSObject {
         } else {
             return ([
                 "pktRetransTotal: \(stats.pktRetransTotal)",
-                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                "pktRecvNAKTotal: \(stats.pktRecvNakTotal)",
                 "pktSndDropTotal: \(stats.pktSndDropTotal)",
-                "msRTT: \(stats.msRTT)",
+                "msRTT: \(stats.msRtt)",
                 "pktFlightSize: \(stats.pktFlightSize)",
                 "pktSndBuf: \(stats.pktSndBuf)",
             ], [])
