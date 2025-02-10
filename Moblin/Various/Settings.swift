@@ -624,6 +624,8 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case mediaPlayer = "Media player"
     case screenCapture = "Screen capture"
     case backTripleLowEnergy = "Back triple"
+    case backDualLowEnergy = "Back dual"
+    case backWideDualLowEnergy = "Back wide dual"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
@@ -640,6 +642,8 @@ enum SettingsCameraId {
     case external(id: String, name: String)
     case screenCapture
     case backTripleLowEnergy
+    case backDualLowEnergy
+    case backWideDualLowEnergy
 }
 
 class SettingsScene: Codable, Identifiable, Equatable {
@@ -705,6 +709,10 @@ class SettingsScene: Codable, Identifiable, Equatable {
             return .screenCapture
         case .backTripleLowEnergy:
             return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
         }
     }
 
@@ -733,6 +741,10 @@ class SettingsScene: Codable, Identifiable, Equatable {
             cameraPosition = .screenCapture
         case .backTripleLowEnergy:
             cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
         }
     }
 }
@@ -1191,6 +1203,10 @@ class SettingsWidgetVideoSource: Codable {
             return .screenCapture
         case .backTripleLowEnergy:
             return .backTripleLowEnergy
+        case .backDualLowEnergy:
+            return .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            return .backWideDualLowEnergy
         }
     }
 
@@ -1219,6 +1235,10 @@ class SettingsWidgetVideoSource: Codable {
             cameraPosition = .screenCapture
         case .backTripleLowEnergy:
             cameraPosition = .backTripleLowEnergy
+        case .backDualLowEnergy:
+            cameraPosition = .backDualLowEnergy
+        case .backWideDualLowEnergy:
+            cameraPosition = .backWideDualLowEnergy
         }
     }
 }
