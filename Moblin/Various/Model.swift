@@ -6393,24 +6393,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func attachBackTripleLowEnergyCamera(force: Bool = true) {
+        if database.zoom.switchToBack.enabled {
+            clearZoomId()
+            backZoomX = database.zoom.switchToBack.x!
+        }
+        zoomX = backZoomX
+        guard let bestDevice = getBestBackCameraDevice(),
+              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
+        else {
+            return
+        }
+        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
+        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
         var device: AVCaptureDevice?
         if backZoomX < 1.0 {
             device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
-        } else if backZoomX < 5.0 {
+        } else if backZoomX < x {
             device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         } else {
             device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
         }
-        guard let device else {
+        guard let device, let scene = getSelectedScene() else {
             return
         }
         if !force, device == cameraDevice {
-            return
-        }
-        guard let scene = getSelectedScene() else {
-            return
-        }
-        guard let bestDevice = getBestBackCameraDevice() else {
             return
         }
         cameraDevice = device
@@ -6418,40 +6424,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
         cameraPosition = .back
-        zoomX = backZoomX
-        lastAttachCompletedTime = nil
-        let isMirrored = getVideoMirroredOnScreen()
-        media.attachCamera(
-            device: cameraDevice,
-            cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: updateShowCameraPreview(),
-            videoStabilizationMode: getVideoStabilizationMode(scene: scene),
-            videoMirrored: getVideoMirroredOnStream(),
-            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
-            onSuccess: {
-                self.streamPreviewView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoomX) {
-                    self.setZoomX(x: x)
-                }
-                if let device = self.cameraDevice {
-                    self.setIsoAfterCameraAttach(device: device)
-                    self.setWhiteBalanceAfterCameraAttach(device: device)
-                    self.updateImageButtonState()
-                }
-                self.lastAttachCompletedTime = .now
-                self.relaxedBitrateStartTime = self.lastAttachCompletedTime
-                self.relaxedBitrate = self.database.debug.relaxedBitrate!
-                self.updateCameraPreviewRotation()
-            }
-        )
-        zoomXPinch = zoomX
-        hasZoom = true
+        attachCameraFinalize(scene: scene)
     }
 
-    private func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position,
-                              device: AVCaptureDevice? = nil)
-    {
-        cameraDevice = device ?? preferredCamera(position: position)
+    private func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
+        cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
@@ -6473,6 +6450,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         default:
             break
         }
+        attachCameraFinalize(scene: scene)
+    }
+
+    private func attachCameraFinalize(scene: SettingsScene) {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
@@ -6533,19 +6514,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        let level = media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate)
-        if let level {
-            return level * cameraZoomLevelToXScale
-        }
-        return level
+        return cameraZoomLevelToX(media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate))
     }
 
     private func stopCameraZoom() -> Float? {
-        let level = media.stopCameraZoomLevel()
+        return cameraZoomLevelToX(media.stopCameraZoomLevel())
+    }
+
+    private func cameraZoomLevelToX(_ level: Float?) -> Float? {
         if let level {
             return level * cameraZoomLevelToXScale
         }
-        return level
+        return nil
     }
 
     func setExposureBias(bias: Float) {
