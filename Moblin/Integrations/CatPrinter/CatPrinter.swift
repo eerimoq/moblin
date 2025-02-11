@@ -71,6 +71,7 @@ let catPrinterServices = [
 
 private let printId = CBUUID(string: "AE01")
 private let notifyId = CBUUID(string: "AE02")
+private let dataId = CBUUID(string: "AE03")
 
 private struct PrintJob {
     let image: CIImage
@@ -83,6 +84,7 @@ class CatPrinter: NSObject {
     private var peripheral: CBPeripheral?
     private var printCharacteristic: CBCharacteristic?
     private var notifyCharacteristic: CBCharacteristic?
+    private var dataCharacteristic: CBCharacteristic?
     private let context = CIContext()
     private var printJobs: Deque<PrintJob> = []
     private var currentJob: CurrentJob?
@@ -159,6 +161,36 @@ class CatPrinter: NSObject {
             logger.info("cat-printer: \(error)")
             return
         }
+        if isMxw01() {
+            tryPrintNextMxw01(printJob: printJob, image: image, peripheral: peripheral)
+        } else {
+            tryPrintNextDefault(printJob: printJob, image: image, peripheral: peripheral)
+        }
+        if meowSoundEnabled {
+            playMeowSound()
+        }
+    }
+
+    private func isMxw01() -> Bool {
+        return peripheral?.name == "MXW01"
+    }
+
+    private func tryPrintNextMxw01(printJob: PrintJob, image: [[Bool]], peripheral: CBPeripheral) {
+        let data = catPrinterPackPrintImageCommandsMxw01(image: image)
+        currentJob = CurrentJob(
+            data: data,
+            mtu: peripheral.maximumWriteValueLength(for: .withoutResponse),
+            feedPaperDelay: printJob.feedPaperDelay
+        )
+        guard let printCharacteristic, let currentJob else {
+            reconnect()
+            return
+        }
+        currentJob.setState(state: .waitingForReady)
+        send(command: .getVersionRequest, peripheral, printCharacteristic)
+    }
+
+    private func tryPrintNextDefault(printJob: PrintJob, image: [[Bool]], peripheral: CBPeripheral) {
         let data = catPrinterPackPrintImageCommands(image: image, feedPaper: printJob.feedPaperDelay == nil)
         currentJob = CurrentJob(
             data: data,
@@ -171,9 +203,6 @@ class CatPrinter: NSObject {
             return
         }
         send(command: CatPrinterCommand.getDeviceState(), peripheral, printCharacteristic)
-        if meowSoundEnabled {
-            playMeowSound()
-        }
         currentJob.setState(state: .waitingForReady)
     }
 
@@ -193,11 +222,39 @@ class CatPrinter: NSObject {
         send(data: command.pack(), peripheral, characteristic)
     }
 
+    private func send(
+        command: CatPrinterCommandMxw01,
+        _ peripheral: CBPeripheral,
+        _ characteristic: CBCharacteristic
+    ) {
+        send(data: command.pack(), peripheral, characteristic)
+    }
+
     private func send(data: Data, _ peripheral: CBPeripheral, _ characteristic: CBCharacteristic) {
+        // logger.info("cat-printer: \(characteristic.uuid): Send \(data.hexString())")
         peripheral.writeValue(data, for: characteristic, type: .withoutResponse)
     }
 
     private func tryWriteNextChunk() {
+        if isMxw01() {
+            tryWriteNextChunkMxw01()
+        } else {
+            tryWriteNextChunkDefault()
+        }
+    }
+
+    private func tryWriteNextChunkMxw01() {
+        guard let peripheral, let dataCharacteristic else {
+            reconnect()
+            return
+        }
+        if let chunk = currentJob?.nextChunk() {
+            send(data: chunk, peripheral, dataCharacteristic)
+            startTryWriteNextChunkTimer()
+        }
+    }
+
+    private func tryWriteNextChunkDefault() {
         guard let peripheral, let printCharacteristic else {
             reconnect()
             return
@@ -279,6 +336,7 @@ class CatPrinter: NSObject {
         peripheral = nil
         printCharacteristic = nil
         notifyCharacteristic = nil
+        dataCharacteristic = nil
         printJobs.removeAll()
         currentJob = nil
         stopTryWriteNextChunkTimer()
@@ -290,6 +348,7 @@ class CatPrinter: NSObject {
         peripheral = nil
         printCharacteristic = nil
         notifyCharacteristic = nil
+        dataCharacteristic = nil
         currentJob = nil
         setState(state: .discovering)
         stopTryWriteNextChunkTimer()
@@ -393,17 +452,62 @@ extension CatPrinter: CBPeripheralDelegate {
             case notifyId:
                 notifyCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
+            case dataId:
+                dataCharacteristic = characteristic
             default:
                 break
             }
         }
-        if printCharacteristic != nil && notifyCharacteristic != nil {
+        if printCharacteristic != nil && notifyCharacteristic != nil && dataCharacteristic != nil {
             setState(state: .connected)
-            tryPrintNext()
         }
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+        if isMxw01() {
+            handleMessageMxw01(characteristic: characteristic)
+        } else {
+            handleMessageDefault(characteristic: characteristic)
+        }
+    }
+
+    private func handleMessageMxw01(characteristic: CBCharacteristic) {
+        guard let value = characteristic.value else {
+            return
+        }
+        guard let command = CatPrinterCommandMxw01(data: value) else {
+            return
+        }
+        guard let peripheral, let printCharacteristic, let currentJob else {
+            return
+        }
+        switch command {
+        case .getVersionResponse:
+            send(
+                data: Data([0x22, 0x21, 0xA1, 0x00, 0x01, 0x00, 0x00, 0x00, 0xFF]),
+                peripheral,
+                printCharacteristic
+            )
+        case .fooResponse:
+            if currentJob.state == .waitingForReady {
+                send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / 384)),
+                     peripheral,
+                     printCharacteristic)
+            }
+        case .printResponse:
+            if currentJob.state == .waitingForReady {
+                currentJob.setState(state: .writingChunks)
+                tryWriteNextChunk()
+            }
+        case .printCompleteIndication:
+            self.currentJob = nil
+            tryPrintNext()
+        default:
+            break
+        }
+    }
+
+    private func handleMessageDefault(characteristic: CBCharacteristic) {
         guard let value = characteristic.value, let currentJob else {
             return
         }

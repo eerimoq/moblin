@@ -81,6 +81,7 @@
 		031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		031F9C2A2D5478C800424EF0 /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F9C292D5478C400424EF0 /* VideoEncoder.swift */; };
+		031F9C2C2D5A7BB400424EF0 /* CatPrinterCommandsMxw01.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F9C2B2D5A7BAE00424EF0 /* CatPrinterCommandsMxw01.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		0323F3732D1DCDA800A57AC2 /* MoblinkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */; };
 		0323F3782D1E1AE700A57AC2 /* MoblinkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */; };
@@ -611,6 +612,7 @@
 		031F41432C6FB3B900790EEC /* AboutAttributionsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutAttributionsSettingsView.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		031F9C292D5478C400424EF0 /* VideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
+		031F9C2B2D5A7BAE00424EF0 /* CatPrinterCommandsMxw01.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterCommandsMxw01.swift; sourceTree = "<group>"; };
 		0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkServer.swift; sourceTree = "<group>"; };
 		0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkClient.swift; sourceTree = "<group>"; };
 		0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkProtocol.swift; sourceTree = "<group>"; };
@@ -2402,6 +2404,7 @@
 			children = (
 				03B507A62C88B8F6003CDEDF /* CatPrinter.swift */,
 				0379E6692C88C9340021AB59 /* CatPrinterCommands.swift */,
+				031F9C2B2D5A7BAE00424EF0 /* CatPrinterCommandsMxw01.swift */,
 				0379E6722C8985710021AB59 /* CatPrinterScanner.swift */,
 				03BA3B402C90124400DEFA3E /* FloydSteinbergDithering.swift */,
 				03BA3B422C9019D500DEFA3E /* AtkinsonDithering.swift */,
@@ -3438,6 +3441,7 @@
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				031E9FC12C5B1D87009FF4D8 /* TwitchApi.swift in Sources */,
 				03AD38D22C5280B300824980 /* TextFormatStringLoader.swift in Sources */,
+				031F9C2C2D5A7BB400424EF0 /* CatPrinterCommandsMxw01.swift in Sources */,
 				0359F8D62BD3DA61005BFDA8 /* Adts.swift in Sources */,
 				03487F2B2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */,
 				0318B4132C845214002B4F58 /* QuickButtonChatView.swift in Sources */,
