@@ -499,8 +499,8 @@ extension CatPrinter: CBPeripheralDelegate {
         }
         switch command {
         case .getVersionResponse:
-            send(command: .fooRequest, peripheral, printCharacteristic)
-        case .fooResponse:
+            send(command: .statusRequest, peripheral, printCharacteristic)
+        case .statusResponse:
             send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / catPrinterWidthPixels)),
                  peripheral,
                  printCharacteristic)

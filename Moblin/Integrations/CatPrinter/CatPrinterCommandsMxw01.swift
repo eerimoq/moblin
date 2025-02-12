@@ -3,7 +3,7 @@ import Foundation
 
 private enum CatPrinterCommandId: UInt8 {
     case getVersion = 0xB1
-    case foo = 0xA1
+    case status = 0xA1
     case print = 0xA9
     case printComplete = 0xAA
 }
@@ -11,8 +11,8 @@ private enum CatPrinterCommandId: UInt8 {
 enum CatPrinterCommandMxw01 {
     case getVersionRequest
     case getVersionResponse(value: String)
-    case fooRequest
-    case fooResponse(value: Data)
+    case statusRequest
+    case statusResponse(value: Data)
     case printRequest(count: UInt16)
     case printResponse(status: UInt8)
     case printCompleteIndication(value: Data)
@@ -23,8 +23,8 @@ enum CatPrinterCommandMxw01 {
             switch command {
             case .getVersion:
                 self = .getVersionResponse(value: String(bytes: data, encoding: .utf8) ?? "unknown")
-            case .foo:
-                self = .fooResponse(value: data)
+            case .status:
+                self = .statusResponse(value: data)
             case .print:
                 guard data.count > 0 else {
                     return nil
@@ -46,8 +46,8 @@ enum CatPrinterCommandMxw01 {
         case .getVersionRequest:
             command = .getVersion
             data = Data([0x00])
-        case .fooRequest:
-            command = .foo
+        case .statusRequest:
+            command = .status
             data = Data([0x00])
         case let .printRequest(count: count):
             command = .print
