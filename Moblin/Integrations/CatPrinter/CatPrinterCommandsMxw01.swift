@@ -12,7 +12,7 @@ enum CatPrinterCommandMxw01 {
     case getVersionRequest
     case getVersionResponse(value: String)
     case statusRequest
-    case statusResponse(value: Data)
+    case statusResponse(ok: Bool, tooHot: Bool, hasPaper: Bool)
     case printRequest(count: UInt16)
     case printResponse(status: UInt8)
     case printCompleteIndication(value: Data)
@@ -24,7 +24,17 @@ enum CatPrinterCommandMxw01 {
             case .getVersion:
                 self = .getVersionResponse(value: String(bytes: data, encoding: .utf8) ?? "unknown")
             case .status:
-                self = .statusResponse(value: data)
+                let reader = ByteArray(data: data)
+                do {
+                    _ = try reader.readBytes(6)
+                    let ok = try reader.readUInt8()
+                    let reasons = try reader.readUInt8()
+                    self = .statusResponse(ok: ok == 0,
+                                           tooHot: reasons.isBitSet(index: 2),
+                                           hasPaper: !reasons.isBitSet(index: 0))
+                } catch {
+                    return nil
+                }
             case .print:
                 guard data.count > 0 else {
                     return nil

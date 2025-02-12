@@ -480,6 +480,7 @@ extension CatPrinter: CBPeripheralDelegate {
         guard let command = CatPrinterCommandMxw01(data: value) else {
             return
         }
+        // logger.info("cat-printer: Got \(command) \(value.hexString())")
         guard let currentJob else {
             return
         }
