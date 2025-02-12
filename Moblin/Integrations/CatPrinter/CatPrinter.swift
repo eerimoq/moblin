@@ -8,6 +8,7 @@ import CoreImage
 import Foundation
 
 private let catPrinterDispatchQueue = DispatchQueue(label: "com.eerimoq.cat-printer")
+let catPrinterWidthPixels = 384
 
 protocol CatPrinterDelegate: AnyObject {
     func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState)
@@ -294,7 +295,7 @@ class CatPrinter: NSObject {
     }
 
     private func scaleToPrinterWidth(image: CIImage) -> CIImage {
-        let scale = 384 / image.extent.width
+        let scale = CGFloat(catPrinterWidthPixels) / image.extent.width
         return image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
     }
 
@@ -478,29 +479,42 @@ extension CatPrinter: CBPeripheralDelegate {
         guard let command = CatPrinterCommandMxw01(data: value) else {
             return
         }
-        guard let peripheral, let printCharacteristic, let currentJob else {
+        guard let currentJob else {
+            return
+        }
+        switch currentJob.state {
+        case .waitingForReady:
+            handleMessageMxw01WaitingForReady(command: command, currentJob: currentJob)
+        case .writingChunks:
+            handleMessageMxw01WritingChunks(command: command)
+        default:
+            break
+        }
+    }
+
+    private func handleMessageMxw01WaitingForReady(command: CatPrinterCommandMxw01, currentJob: CurrentJob) {
+        guard let peripheral, let printCharacteristic else {
             return
         }
         switch command {
         case .getVersionResponse:
-            send(
-                data: Data([0x22, 0x21, 0xA1, 0x00, 0x01, 0x00, 0x00, 0x00, 0xFF]),
-                peripheral,
-                printCharacteristic
-            )
+            send(command: .fooRequest, peripheral, printCharacteristic)
         case .fooResponse:
-            if currentJob.state == .waitingForReady {
-                send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / 384)),
-                     peripheral,
-                     printCharacteristic)
-            }
+            send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / catPrinterWidthPixels)),
+                 peripheral,
+                 printCharacteristic)
         case .printResponse:
-            if currentJob.state == .waitingForReady {
-                currentJob.setState(state: .writingChunks)
-                tryWriteNextChunk()
-            }
+            currentJob.setState(state: .writingChunks)
+            tryWriteNextChunk()
+        default:
+            break
+        }
+    }
+
+    private func handleMessageMxw01WritingChunks(command: CatPrinterCommandMxw01) {
+        switch command {
         case .printCompleteIndication:
-            self.currentJob = nil
+            currentJob = nil
             tryPrintNext()
         default:
             break
@@ -534,4 +548,16 @@ extension CatPrinter: CBPeripheralDelegate {
             }
         }
     }
+}
+
+func catPrinterEncodeImageRow(_ imageRow: [Bool]) -> Data {
+    var data = Data(count: imageRow.count / 8)
+    for byteIndex in 0 ..< data.count {
+        var byte: UInt8 = 0
+        for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] {
+            byte |= (1 << bitIndex)
+        }
+        data[byteIndex] = byte
+    }
+    return data
 }

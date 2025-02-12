@@ -11,6 +11,7 @@ private enum CatPrinterCommandId: UInt8 {
 enum CatPrinterCommandMxw01 {
     case getVersionRequest
     case getVersionResponse(value: String)
+    case fooRequest
     case fooResponse(value: Data)
     case printRequest(count: UInt16)
     case printResponse(value: Data)
@@ -42,6 +43,9 @@ enum CatPrinterCommandMxw01 {
         case .getVersionRequest:
             command = .getVersion
             data = Data([0x00])
+        case .fooRequest:
+            command = .foo
+            data = Data([0x00])
         case let .printRequest(count: count):
             command = .print
             data = ByteArray()
@@ -67,7 +71,7 @@ enum CatPrinterCommandMxw01 {
             .writeUInt8(0x00)
             .writeUInt16Le(UInt16(data.count))
             .writeBytes(data)
-            .writeUInt8(CrcSwift.computeCrc8(data))
+            .writeUInt8(CrcSwift.computeCrc8(data)) // Not used? Always zero?
             .writeUInt8(0xFF)
             .data
     }
@@ -90,26 +94,14 @@ enum CatPrinterCommandMxw01 {
     }
 }
 
-func catPrinterEncodeImageRow(_ imageRow: [Bool]) -> Data {
-    var data = Data(count: imageRow.count / 8)
-    for byteIndex in 0 ..< data.count {
-        var byte: UInt8 = 0
-        for bitIndex in 0 ..< 8 where imageRow[8 * byteIndex + bitIndex] {
-            byte |= (1 << bitIndex)
-        }
-        data[byteIndex] = byte
-    }
-    return data
-}
-
 // One bit per pixel, often 384 pixels wide.
 func catPrinterPackPrintImageCommandsMxw01(image: [[Bool]]) -> Data {
     var data = Data()
     for imageRow in image {
         data.append(catPrinterEncodeImageRow(imageRow))
     }
-    // Doesn't print if smaller. There is probably a better way than this.
-    while data.count < 90 * 384 / 8 {
+    // Doesn't print if smaller. There is probably a better way to do this.
+    while data.count < 90 * catPrinterWidthPixels / 8 {
         data += Data([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         data += Data([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         data += Data([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
