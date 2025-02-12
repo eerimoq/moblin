@@ -2057,6 +2057,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopNtpClient()
             stopMoblinkClient()
             stopMoblinkServer()
+            stopCatPrinters()
         }
     }
 
@@ -2083,6 +2084,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadMoblinkClient()
             reloadMoblinkServer()
             updateOrientation()
+            autoStartCatPrinters()
         }
     }
 
@@ -10412,6 +10414,12 @@ extension Model {
     private func autoStartCatPrinters() {
         for device in database.catPrinters!.devices where device.enabled {
             enableCatPrinter(device: device)
+        }
+    }
+
+    private func stopCatPrinters() {
+        for catPrinter in catPrinters.values {
+            catPrinter.stop()
         }
     }
 
