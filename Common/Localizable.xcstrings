@@ -96361,7 +96361,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Avslappnad bithastighetsminskning efter scenbyte"
           }
         },
@@ -124690,7 +124690,134 @@
       }
     },
     "The UDP port %u will also be used." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Außerdem wird der UDP-Port %u verwendet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Θα χρησιμοποιηθεί επίσης η θύρα UDP %u."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "También se utilizará el puerto UDP %u."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "UDP-porttia %u käytetään myös."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le port UDP %u sera également utilisé."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "UDP पोर्ट %u का भी उपयोग किया जाएगा।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP %u juga akan digunakan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Verrà utilizzata anche la porta UDP %u."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "UDP ポート %u も使用されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "UDP 포트 %u도 사용됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De UDP-poort %u wordt ook gebruikt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port UDP %u również będzie używany."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta UDP %u também será usada."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta UDP %u também será usada."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Также будет использоваться UDP-порт %u."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UDP-porten %u kommer också att användas."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ayrıca %u UDP portu da kullanılacak."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Також використовуватиметься порт UDP %u."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cổng UDP %u cũng sẽ được sử dụng."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "UDP 端口 %u 也将被使用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "UDP 連接埠 %u 也將被使用。"
+          }
+        }
+      }
     },
     "The UDP port the SRT(LA) server listens for SRT publishers on." : {
       "localizations" : {
@@ -137737,7 +137864,134 @@
       }
     },
     "Warning: OBS typically requires hardware decoding not to crash when enabled." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Warnung: OBS erfordert normalerweise eine Hardware-Dekodierung, um bei Aktivierung nicht abzustürzen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προειδοποίηση: Το OBS απαιτεί συνήθως η αποκωδικοποίηση υλικού να μην κολλάει όταν είναι ενεργοποιημένο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Advertencia: OBS normalmente requiere decodificación de hardware para no bloquearse cuando está habilitado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Varoitus: OBS vaatii yleensä laitteiston dekoodauksen, jotta se ei kaadu, kun se on käytössä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Avertissement : OBS nécessite généralement un décodage matériel pour ne pas planter lorsqu'il est activé."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "चेतावनी: OBS को सक्षम होने पर क्रैश न होने देने के लिए आमतौर पर हार्डवेयर डिकोडिंग की आवश्यकता होती है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Peringatan: OBS biasanya memerlukan dekode perangkat keras agar tidak mogok saat diaktifkan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Attenzione: in genere OBS richiede la decodifica hardware per non bloccarsi quando è abilitato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "警告: OBS を有効にするとクラッシュしないように、通常、ハードウェア デコードが必要です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "경고: OBS는 일반적으로 활성화 시 충돌을 방지하기 위해 하드웨어 디코딩이 필요합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Waarschuwing: OBS vereist doorgaans hardwaredecodering om te voorkomen dat het vastloopt als het is ingeschakeld."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ostrzeżenie: OBS zazwyczaj wymaga dekodowania sprzętowego, aby uniknąć awarii po jego włączeniu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aviso: O OBS normalmente requer decodificação de hardware para não travar quando ativado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aviso: O OBS normalmente requer decodificação de hardware para não travar quando ativado."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Предупреждение: OBS обычно требует аппаратного декодирования, чтобы избежать сбоев при включении."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varning: OBS kräver vanligtvis maskinvaruavkodning för att inte krascha när den är aktiverad."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uyarı: OBS etkinleştirildiğinde çökmemesi için genellikle donanım kod çözme işlemi gerekir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Попередження: OBS зазвичай потребує апаратного декодування, щоб уникнути збою, коли ввімкнено."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cảnh báo: OBS thường yêu cầu giải mã phần cứng để không bị sập khi được bật."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "警告：OBS 通常需要硬件解码，以确保在启用时不会崩溃。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "警告：OBS 通常需要硬體解碼，以確保在啟用時不會崩潰。"
+          }
+        }
+      }
     },
     "Watch" : {
       "localizations" : {
