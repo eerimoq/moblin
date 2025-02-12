@@ -14,7 +14,7 @@ enum CatPrinterCommandMxw01 {
     case fooRequest
     case fooResponse(value: Data)
     case printRequest(count: UInt16)
-    case printResponse(value: Data)
+    case printResponse(status: UInt8)
     case printCompleteIndication(value: Data)
 
     init?(data: Data) {
@@ -26,7 +26,10 @@ enum CatPrinterCommandMxw01 {
             case .foo:
                 self = .fooResponse(value: data)
             case .print:
-                self = .printResponse(value: data)
+                guard data.count > 0 else {
+                    return nil
+                }
+                self = .printResponse(status: data[0])
             case .printComplete:
                 self = .printCompleteIndication(value: data)
             }

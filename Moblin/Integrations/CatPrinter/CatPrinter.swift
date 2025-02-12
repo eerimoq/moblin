@@ -70,9 +70,9 @@ let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
-private let printId = CBUUID(string: "AE01")
-private let notifyId = CBUUID(string: "AE02")
-private let dataId = CBUUID(string: "AE03")
+private let printCharacteristicId = CBUUID(string: "AE01")
+private let notifyCharacteristicId = CBUUID(string: "AE02")
+private let dataCharacteristicId = CBUUID(string: "AE03")
 
 private struct PrintJob {
     let image: CIImage
@@ -136,6 +136,10 @@ class CatPrinter: NSObject {
         reset()
     }
 
+    private func isMxw01() -> Bool {
+        return peripheral?.name == "MXW01"
+    }
+
     private func printInternal(image: CIImage, feedPaperDelay: Double?) {
         guard printJobs.count < 50 else {
             return
@@ -170,10 +174,6 @@ class CatPrinter: NSObject {
         if meowSoundEnabled {
             playMeowSound()
         }
-    }
-
-    private func isMxw01() -> Bool {
-        return peripheral?.name == "MXW01"
     }
 
     private func tryPrintNextMxw01(printJob: PrintJob, image: [[Bool]], peripheral: CBPeripheral) {
@@ -448,12 +448,12 @@ extension CatPrinter: CBPeripheralDelegate {
     ) {
         for characteristic in service.characteristics ?? [] {
             switch characteristic.uuid {
-            case printId:
+            case printCharacteristicId:
                 printCharacteristic = characteristic
-            case notifyId:
+            case notifyCharacteristicId:
                 notifyCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
-            case dataId:
+            case dataCharacteristicId:
                 dataCharacteristic = characteristic
             default:
                 break
@@ -461,6 +461,7 @@ extension CatPrinter: CBPeripheralDelegate {
         }
         if printCharacteristic != nil && notifyCharacteristic != nil && dataCharacteristic != nil {
             setState(state: .connected)
+            tryPrintNext()
         }
     }
 
@@ -503,9 +504,14 @@ extension CatPrinter: CBPeripheralDelegate {
             send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / catPrinterWidthPixels)),
                  peripheral,
                  printCharacteristic)
-        case .printResponse:
-            currentJob.setState(state: .writingChunks)
-            tryWriteNextChunk()
+        case let .printResponse(status: status):
+            if status == 0 {
+                currentJob.setState(state: .writingChunks)
+                tryWriteNextChunk()
+            } else {
+                self.currentJob = nil
+                tryPrintNext()
+            }
         default:
             break
         }

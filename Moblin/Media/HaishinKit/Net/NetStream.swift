@@ -197,7 +197,7 @@ open class NetStream: NSObject {
         mixer.video.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?, CIImage) -> Void) {
         mixer.video.takeSnapshot(age: age, onComplete: onComplete)
     }
 

@@ -239,7 +239,7 @@ final class VideoUnit: NSObject {
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: ((UIImage, UIImage?) -> Void)?
+    private var takeSnapshotComplete: ((UIImage, UIImage?, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
@@ -402,7 +402,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?, CIImage) -> Void) {
         mixerLockQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
@@ -1203,7 +1203,7 @@ final class VideoUnit: NSObject {
                               _ sampleBuffers: Deque<CMSampleBuffer>,
                               _ presentationTimeStamp: Double,
                               _ age: Float,
-                              _ onComplete: @escaping (UIImage, UIImage?) -> Void)
+                              _ onComplete: @escaping (UIImage, UIImage?, CIImage) -> Void)
     {
         findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer, prettyImageBuffer in
             guard let imageBuffer else {
@@ -1212,6 +1212,10 @@ final class VideoUnit: NSObject {
             let ciImage = CIImage(cvPixelBuffer: imageBuffer)
             let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
             let image = UIImage(cgImage: cgImage)
+            var portraitImage = ciImage
+            if !imageBuffer.isPortrait() {
+                portraitImage = portraitImage.oriented(.left)
+            }
             var prettyImage: UIImage?
             if let prettyImageBuffer {
                 var ciImage = CIImage(cvPixelBuffer: prettyImageBuffer)
@@ -1222,7 +1226,7 @@ final class VideoUnit: NSObject {
                 let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
                 prettyImage = UIImage(cgImage: cgImage)
             }
-            onComplete(image, prettyImage)
+            onComplete(image, prettyImage, portraitImage)
         }
     }
 

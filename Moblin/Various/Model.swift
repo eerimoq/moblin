@@ -1070,7 +1070,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
-        media.takeSnapshot(age: age) { image, prettyImage in
+        media.takeSnapshot(age: age) { image, prettyImage, portraitImage in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }
@@ -1081,6 +1081,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
+                self.printAllCatPrinters(image: portraitImage)
             }
         }
     }
@@ -1153,6 +1154,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
                 }
             }
+        }
+    }
+
+    private func printAllCatPrinters(image: CIImage, feedPaperDelay: Double? = nil) {
+        for catPrinter in catPrinters.values {
+            catPrinter.print(image: image, feedPaperDelay: feedPaperDelay)
         }
     }
 
@@ -10431,9 +10438,7 @@ extension Model: CatPrinterDelegate {
 extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         DispatchQueue.main.async {
-            for catPrinter in self.catPrinters.values {
-                catPrinter.print(image: image, feedPaperDelay: nil)
-            }
+            self.printAllCatPrinters(image: image)
         }
     }
 }
