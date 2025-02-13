@@ -29,7 +29,9 @@ private enum DitheringAlgorithm {
 private enum JobState {
     case idle
     case waitingForReady
+    case waitingForPrintResponse
     case writingChunks
+    case failed
 }
 
 private class CurrentJob {
@@ -93,6 +95,7 @@ class CatPrinter: NSObject {
     private let ditheringAlgorithm: DitheringAlgorithm = .atkinson
     weak var delegate: (any CatPrinterDelegate)?
     private var tryWriteNextChunkTimer = SimpleTimer(queue: catPrinterDispatchQueue)
+    private var jobCompleteTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var feedPaperTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var audioPlayer: AVAudioPlayer?
     private var meowSoundEnabled: Bool = false
@@ -188,7 +191,8 @@ class CatPrinter: NSObject {
             return
         }
         currentJob.setState(state: .waitingForReady)
-        send(command: .getVersionRequest, peripheral, printCharacteristic)
+        send(command: .statusRequest, peripheral, printCharacteristic)
+        startJobCompleteTimer()
     }
 
     private func tryPrintNextDefault(printJob: PrintJob, image: [[Bool]], peripheral: CBPeripheral) {
@@ -228,6 +232,7 @@ class CatPrinter: NSObject {
         _ peripheral: CBPeripheral,
         _ characteristic: CBCharacteristic
     ) {
+        // logger.info("cat-printer: Send \(command)")
         send(data: command.pack(), peripheral, characteristic)
     }
 
@@ -341,6 +346,7 @@ class CatPrinter: NSObject {
         printJobs.removeAll()
         currentJob = nil
         stopTryWriteNextChunkTimer()
+        stopJobCompleteTimer()
         stopFeedPaperTimer()
         setState(state: .disconnected)
     }
@@ -353,6 +359,7 @@ class CatPrinter: NSObject {
         currentJob = nil
         setState(state: .discovering)
         stopTryWriteNextChunkTimer()
+        stopJobCompleteTimer()
         stopFeedPaperTimer()
         centralManager = CBCentralManager(delegate: self, queue: catPrinterDispatchQueue)
     }
@@ -374,6 +381,17 @@ class CatPrinter: NSObject {
 
     private func stopTryWriteNextChunkTimer() {
         tryWriteNextChunkTimer.stop()
+    }
+
+    private func startJobCompleteTimer() {
+        jobCompleteTimer.startSingleShot(timeout: 60) { [weak self] in
+            self?.currentJob = nil
+            self?.tryPrintNext()
+        }
+    }
+
+    private func stopJobCompleteTimer() {
+        jobCompleteTimer.stop()
     }
 
     private func startFeedPaperTimer(delay: Double) {
@@ -487,6 +505,8 @@ extension CatPrinter: CBPeripheralDelegate {
         switch currentJob.state {
         case .waitingForReady:
             handleMessageMxw01WaitingForReady(command: command, currentJob: currentJob)
+        case .waitingForPrintResponse:
+            handleMessageMxw01WaitingForPrintResponse(command: command, currentJob: currentJob)
         case .writingChunks:
             handleMessageMxw01WritingChunks(command: command)
         default:
@@ -499,19 +519,24 @@ extension CatPrinter: CBPeripheralDelegate {
             return
         }
         switch command {
-        case .getVersionResponse:
-            send(command: .statusRequest, peripheral, printCharacteristic)
         case .statusResponse:
+            currentJob.setState(state: .waitingForPrintResponse)
             send(command: .printRequest(count: UInt16(currentJob.data.count * 8 / catPrinterWidthPixels)),
                  peripheral,
                  printCharacteristic)
+        default:
+            break
+        }
+    }
+
+    private func handleMessageMxw01WaitingForPrintResponse(command: CatPrinterCommandMxw01, currentJob: CurrentJob) {
+        switch command {
         case let .printResponse(status: status):
             if status == 0 {
                 currentJob.setState(state: .writingChunks)
                 tryWriteNextChunk()
             } else {
-                self.currentJob = nil
-                tryPrintNext()
+                currentJob.setState(state: .failed)
             }
         default:
             break
@@ -521,6 +546,7 @@ extension CatPrinter: CBPeripheralDelegate {
     private func handleMessageMxw01WritingChunks(command: CatPrinterCommandMxw01) {
         switch command {
         case .printCompleteIndication:
+            stopJobCompleteTimer()
             currentJob = nil
             tryPrintNext()
         default:
@@ -553,6 +579,8 @@ extension CatPrinter: CBPeripheralDelegate {
             default:
                 break
             }
+        default:
+            break
         }
     }
 }
