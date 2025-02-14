@@ -24,6 +24,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_moblink._tcp</string>
+	</array>
 	<key>NSCameraReactionEffectsEnabled</key>
 	<true/>
 	<key>NSUserActivityTypes</key>
@@ -31,18 +35,13 @@
 		<string>IntentIntent</string>
 		<string>MuteIntent</string>
 	</array>
-	<key>UISupportsDocumentBrowser</key>
-	<true/>
-	<key>UIFileSharingEnabled</key>
-	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>location</string>
+		<string>bluetooth-central</string>
 	</array>
-        <key>NSBonjourServices</key>
-	<array>
-		<string>_moblink._tcp</string>
-	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>
