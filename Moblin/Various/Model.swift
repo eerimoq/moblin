@@ -1581,15 +1581,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var ok = true
         for (name, batteryPercentage) in moblinkServer.getStatuses() {
             if let batteryPercentage {
-                statuses.append("\(name) \(batteryPercentage)%")
                 if batteryPercentage < 10 {
+                    statuses.append("\(name)🪫\(batteryPercentage)%")
                     ok = false
+                } else {
+                    statuses.append("\(name)🔋\(batteryPercentage)%")
                 }
             } else {
                 statuses.append("\(name) -")
             }
         }
-        return (statuses.joined(separator: " "), ok)
+        return (statuses.joined(separator: ", "), ok)
     }
 
     func reloadNtpClient() {
@@ -9972,12 +9974,19 @@ extension Model {
                 continue
             }
             if let batteryPercentage = djiDeviceWrapper.device.getBatteryPercentage() {
-                statuses.append("\(device.name) \(batteryPercentage) %")
+                if batteryPercentage < 10 {
+                    statuses.append("\(device.name)🪫\(batteryPercentage)%")
+                } else {
+                    statuses.append("\(device.name)🔋\(batteryPercentage)%")
+                }
             } else {
                 statuses.append("\(device.name) -")
             }
         }
-        djiDevicesStatus = statuses.joined(separator: " ")
+        let status = statuses.joined(separator: ", ")
+        if status != djiDevicesStatus {
+            djiDevicesStatus = status
+        }
     }
 }
 
