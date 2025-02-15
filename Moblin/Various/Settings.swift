@@ -2155,6 +2155,7 @@ class SettingsCatPrinter: Codable, Identifiable {
 
 class SettingsCatPrinters: Codable {
     var devices: [SettingsCatPrinter] = []
+    var backgroundPrinting: Bool? = false
 }
 
 class SettingsQuickButtons: Codable {
@@ -4651,6 +4652,10 @@ final class Settings {
         }
         if realDatabase.location!.distance == nil {
             realDatabase.location!.distance = 0.0
+            store()
+        }
+        if realDatabase.catPrinters!.backgroundPrinting == nil {
+            realDatabase.catPrinters!.backgroundPrinting = false
             store()
         }
     }

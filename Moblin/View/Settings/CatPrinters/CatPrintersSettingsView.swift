@@ -12,6 +12,17 @@ struct CatPrintersSettingsView: View {
                 Text("A small affordable black and white printer.")
             }
             Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.catPrinters!.backgroundPrinting!
+                }, set: { value in
+                    model.database.catPrinters!.backgroundPrinting = value
+                }), label: {
+                    Text("Background printing")
+                })
+            } footer: {
+                Text("Print when the app is in background mode.")
+            }
+            Section {
                 List {
                     ForEach(model.database.catPrinters!.devices) { device in
                         NavigationLink {

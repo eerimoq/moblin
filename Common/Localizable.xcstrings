@@ -23541,6 +23541,9 @@
         }
       }
     },
+    "Background printing" : {
+
+    },
     "Background streaming" : {
       "localizations" : {
         "de" : {
@@ -92878,6 +92881,9 @@
           }
         }
       }
+    },
+    "Print when the app is in background mode." : {
+
     },
     "Privacy" : {
       "localizations" : {
