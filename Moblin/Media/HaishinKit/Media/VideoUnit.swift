@@ -1087,6 +1087,9 @@ final class VideoUnit: NSObject {
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
+        // Recordings seems to randomly fail if moved after live stream encoding. Maybe because the
+        // sample buffer is copied in appendVideo()
+        mixer?.recorder.appendVideo(modSampleBuffer)
         modSampleBuffer.setAttachmentDisplayImmediately()
         if !showCameraPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
@@ -1098,7 +1101,6 @@ final class VideoUnit: NSObject {
                 duration: modSampleBuffer.duration
             )
         }
-        mixer?.recorder.appendVideo(modSampleBuffer)
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         handleLowFpsImage(modImageBuffer, presentationTimeStamp)
         handleTakeSnapshot(modSampleBuffer, presentationTimeStamp)

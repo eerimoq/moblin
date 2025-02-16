@@ -51,7 +51,7 @@ class Recorder: NSObject {
         guard let writer,
               let sampleBuffer = convert(sampleBuffer),
               let input = makeAudioWriterInput(sampleBuffer: sampleBuffer),
-              isReadyForStartWriting(writer: writer, sampleBuffer: sampleBuffer),
+              isReadyForStartWriting(writer: writer),
               input.isReadyForMoreMediaData,
               let sampleBuffer = sampleBuffer
               .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
@@ -98,7 +98,7 @@ class Recorder: NSObject {
     private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
               let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
-              isReadyForStartWriting(writer: writer, sampleBuffer: sampleBuffer),
+              isReadyForStartWriting(writer: writer),
               input.isReadyForMoreMediaData,
               let sampleBuffer = sampleBuffer
               .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
@@ -295,7 +295,7 @@ class Recorder: NSObject {
         fileHandle.mutate { $0 = nil }
     }
 
-    private func isReadyForStartWriting(writer: AVAssetWriter, sampleBuffer _: CMSampleBuffer) -> Bool {
+    private func isReadyForStartWriting(writer: AVAssetWriter) -> Bool {
         return writer.inputs.count == 2
     }
 }
