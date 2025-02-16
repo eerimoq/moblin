@@ -18,7 +18,7 @@ protocol MoblinkRelayDelegate: AnyObject {
     func moblinkRelayGetBatteryPercentage() -> Int
 }
 
-class MoblinkRelay: NSObject {
+private class Relay: NSObject {
     private var clientUrl: URL
     private var password: String
     private weak var delegate: (any MoblinkRelayDelegate)?
@@ -32,20 +32,16 @@ class MoblinkRelay: NSObject {
     private var state: MoblinkRelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
-    private let networkPathMonitor = NWPathMonitor()
     private var cellularInterface: NWInterface?
-    @AppStorage("srtlaRelayId") var id = ""
+    private var id: String
 
-    init(name: String, clientUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+    init(id: String, name: String, clientUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+        self.id = id
         self.name = name
         self.clientUrl = clientUrl
         self.password = password
         self.delegate = delegate
         webSocket = .init(url: clientUrl)
-        super.init()
-        if id.isEmpty {
-            id = UUID().uuidString
-        }
     }
 
     func start() {
@@ -60,6 +56,10 @@ class MoblinkRelay: NSObject {
         started = false
     }
 
+    func setInterface(interface: NWInterface?) {
+        cellularInterface = interface
+    }
+
     private func startInternal() {
         guard started else {
             return
@@ -69,8 +69,6 @@ class MoblinkRelay: NSObject {
         webSocket = .init(url: clientUrl, cellular: false)
         webSocket.delegate = self
         webSocket.start()
-        networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
-        networkPathMonitor.start(queue: .main)
     }
 
     private func stopInternal() {
@@ -79,7 +77,6 @@ class MoblinkRelay: NSObject {
         webSocket.delegate = nil
         webSocket.stop()
         stopTunnel()
-        networkPathMonitor.cancel()
     }
 
     private func reconnect(reason: String) {
@@ -88,10 +85,6 @@ class MoblinkRelay: NSObject {
         reconnectTimer.startSingleShot(timeout: 5.0) {
             self.startInternal()
         }
-    }
-
-    private func handleNetworkPathUpdate(path: NWPath) {
-        cellularInterface = path.availableInterfaces.first(where: { $0.type == .cellular })
     }
 
     private func setState(state: MoblinkRelayState) {
@@ -206,7 +199,7 @@ class MoblinkRelay: NSObject {
         send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
     }
 
-    func stopTunnel() {
+    private func stopTunnel() {
         streamerListener?.stateUpdateHandler = nil
         streamerListener?.cancel()
         streamerListener = nil
@@ -301,7 +294,7 @@ class MoblinkRelay: NSObject {
     }
 }
 
-extension MoblinkRelay: WebSocketClientDelegate {
+extension Relay: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {
@@ -311,5 +304,34 @@ extension MoblinkRelay: WebSocketClientDelegate {
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         try? handleMessage(message: string)
+    }
+}
+
+class MoblinkRelay: NSObject {
+    private var relay: Relay?
+    private let networkPathMonitor = NWPathMonitor()
+    @AppStorage("srtlaRelayId") var id = ""
+
+    init(name: String, clientUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+        super.init()
+        if id.isEmpty {
+            id = UUID().uuidString
+        }
+        relay = Relay(id: id, name: name, clientUrl: clientUrl, password: password, delegate: delegate)
+    }
+
+    func start() {
+        relay?.start()
+        networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
+        networkPathMonitor.start(queue: .main)
+    }
+
+    func stop() {
+        relay?.stop()
+        networkPathMonitor.cancel()
+    }
+
+    private func handleNetworkPathUpdate(path: NWPath) {
+        relay?.setInterface(interface: path.availableInterfaces.first(where: { $0.type == .cellular }))
     }
 }
