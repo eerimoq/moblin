@@ -659,8 +659,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    @Published var moblinkClientState: MoblinkClientState = .none
-    @Published var moblinkServerOk = true
+    @Published var moblinkRelayState: MoblinkRelayState = .none
+    @Published var moblinkStreamerOk = true
     @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerServer] = []
@@ -685,8 +685,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private let faxReceiver = FaxReceiver()
 
-    private var moblinkServer: MoblinkServer?
-    private var moblinkClient: MoblinkClient?
+    private var moblinkStreamer: MoblinkStreamer?
+    private var moblinkRelay: MoblinkRelay?
     private var moblinkScanner: MoblinkScanner?
 
     @Published var cameraControlEnabled = false
@@ -1470,8 +1470,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterButtonState()
         updateLutsButtonState()
         reloadNtpClient()
-        reloadMoblinkClient()
-        reloadMoblinkServer()
+        reloadMoblinkRelay()
+        reloadMoblinkStreamer()
         setCameraControlsEnabled()
     }
 
@@ -1490,51 +1490,51 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return cameraDevice != nil
     }
 
-    func reloadMoblinkServer() {
-        stopMoblinkServer()
-        if isMoblinkServerConfigured() {
-            moblinkServer = MoblinkServer(
+    func reloadMoblinkStreamer() {
+        stopMoblinkStreamer()
+        if isMoblinkStreamerConfigured() {
+            moblinkStreamer = MoblinkStreamer(
                 port: database.moblink!.server.port,
                 password: database.moblink!.password
             )
-            moblinkServer?.start(delegate: self)
+            moblinkStreamer?.start(delegate: self)
         }
     }
 
-    func stopMoblinkServer() {
-        moblinkServer?.stop()
-        moblinkServer = nil
+    func stopMoblinkStreamer() {
+        moblinkStreamer?.stop()
+        moblinkStreamer = nil
     }
 
-    func isMoblinkServerConfigured() -> Bool {
+    func isMoblinkStreamerConfigured() -> Bool {
         let server = database.moblink!.server
         return server.enabled && server.port > 0 && !database.moblink!.password.isEmpty
     }
 
-    func reloadMoblinkClient() {
-        stopMoblinkClient()
-        if isMoblinkClientConfigured() {
+    func reloadMoblinkRelay() {
+        stopMoblinkRelay()
+        if isMoblinkRelayConfigured() {
             guard let url = URL(string: database.moblink!.client.url) else {
                 return
             }
-            moblinkClient = MoblinkClient(
+            moblinkRelay = MoblinkRelay(
                 name: database.moblink!.client.name,
                 clientUrl: url,
                 password: database.moblink!.password,
                 delegate: self
             )
-            moblinkClient?.start()
+            moblinkRelay?.start()
         }
     }
 
-    func isMoblinkClientConfigured() -> Bool {
+    func isMoblinkRelayConfigured() -> Bool {
         let client = database.moblink!.client
         return client.enabled && !client.url.isEmpty && !database.moblink!.password.isEmpty
     }
 
-    func stopMoblinkClient() {
-        moblinkClient?.stop()
-        moblinkClient = nil
+    func stopMoblinkRelay() {
+        moblinkRelay?.stop()
+        moblinkRelay = nil
     }
 
     func reloadMoblinkScanner() {
@@ -1552,14 +1552,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateMoblinkStatus() {
         var status: String
         var serverOk = true
-        if isMoblinkClientConfigured(), isMoblinkServerConfigured() {
-            let (serverStatus, ok) = moblinkServerStatus()
-            status = "\(serverStatus), \(moblinkClientState.rawValue)"
+        if isMoblinkRelayConfigured(), isMoblinkStreamerConfigured() {
+            let (serverStatus, ok) = moblinkStreamerStatus()
+            status = "\(serverStatus), \(moblinkRelayState.rawValue)"
             serverOk = ok
-        } else if isMoblinkClientConfigured() {
-            status = moblinkClientState.rawValue
-        } else if isMoblinkServerConfigured() {
-            let (serverStatus, ok) = moblinkServerStatus()
+        } else if isMoblinkRelayConfigured() {
+            status = moblinkRelayState.rawValue
+        } else if isMoblinkStreamerConfigured() {
+            let (serverStatus, ok) = moblinkStreamerStatus()
             status = serverStatus
             serverOk = ok
         } else {
@@ -1568,18 +1568,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if status != moblinkStatus {
             moblinkStatus = status
         }
-        if serverOk != moblinkServerOk {
-            moblinkServerOk = serverOk
+        if serverOk != moblinkStreamerOk {
+            moblinkStreamerOk = serverOk
         }
     }
 
-    private func moblinkServerStatus() -> (String, Bool) {
-        guard let moblinkServer else {
+    private func moblinkStreamerStatus() -> (String, Bool) {
+        guard let moblinkStreamer else {
             return ("", true)
         }
         var statuses: [String] = []
         var ok = true
-        for (name, batteryPercentage) in moblinkServer.getStatuses() {
+        for (name, batteryPercentage) in moblinkStreamer.getStatuses() {
             if let batteryPercentage {
                 if batteryPercentage < 10 {
                     statuses.append("\(name)🪫\(batteryPercentage)%")
@@ -2057,8 +2057,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopWorkout(showToast: false)
             stopTeslaVehicle()
             stopNtpClient()
-            stopMoblinkClient()
-            stopMoblinkServer()
+            stopMoblinkRelay()
+            stopMoblinkStreamer()
             stopCatPrinters()
         }
     }
@@ -2083,8 +2083,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadSpeechToText()
             reloadTeslaVehicle()
-            reloadMoblinkClient()
-            reloadMoblinkServer()
+            reloadMoblinkRelay()
+            reloadMoblinkStreamer()
             updateOrientation()
             autoStartCatPrinters()
         }
@@ -2626,7 +2626,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateCurrentSsid()
             self.rtmpServerInfo()
             self.teslaGetChargeState()
-            self.moblinkServer?.updateStatus()
+            self.moblinkStreamer?.updateStatus()
             self.updateDjiDevicesStatus()
             self.updateTwitchStream(monotonicNow: monotonicNow)
         })
@@ -3974,7 +3974,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
-        moblinkServer?.stopTunnels()
+        moblinkStreamer?.stopTunnels()
         if stream.twitchMultiTrackEnabled! {
             startNetStreamMultiTrack()
         } else {
@@ -4093,7 +4093,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func stopNetStream(reconnect: Bool = false) {
-        moblinkServer?.stopTunnels()
+        moblinkStreamer?.stopTunnels()
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
@@ -7212,7 +7212,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isAnyMoblinkConfigured() -> Bool {
-        return isMoblinkClientConfigured() || isMoblinkServerConfigured()
+        return isMoblinkRelayConfigured() || isMoblinkStreamerConfigured()
     }
 
     func isShowingStatusRemoteControl() -> Bool {
@@ -10514,7 +10514,7 @@ extension Model: MediaDelegate {
     }
 
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
-        moblinkServer?.startTunnels(address: address, port: port)
+        moblinkStreamer?.startTunnels(address: address, port: port)
     }
 
     func mediaSetZoomX(x: Float) {
@@ -10599,8 +10599,8 @@ extension Model: KickOusherDelegate {
     }
 }
 
-extension Model: MoblinkServerDelegate {
-    func moblinkServerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
+extension Model: MoblinkStreamerDelegate {
+    func moblinkStreamerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
         let connectionPriorities = stream.srt.connectionPriorities!
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
             priority.name = relayName
@@ -10612,17 +10612,17 @@ extension Model: MoblinkServerDelegate {
         media.addMoblink(endpoint: endpoint, id: relayId, name: relayName)
     }
 
-    func moblinkServerTunnelRemoved(endpoint: Network.NWEndpoint) {
+    func moblinkStreamerTunnelRemoved(endpoint: Network.NWEndpoint) {
         media.removeMoblink(endpoint: endpoint)
     }
 }
 
-extension Model: MoblinkClientDelegate {
-    func moblinkClientNewState(state: MoblinkClientState) {
-        moblinkClientState = state
+extension Model: MoblinkRelayDelegate {
+    func moblinkRelayNewState(state: MoblinkRelayState) {
+        moblinkRelayState = state
     }
 
-    func moblinkClientGetBatteryPercentage() -> Int {
+    func moblinkRelayGetBatteryPercentage() -> Int {
         return Int(100 * batteryLevel)
     }
 }

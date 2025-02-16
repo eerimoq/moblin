@@ -6,9 +6,9 @@ import SwiftUI
 import Telegraph
 import UIKit
 
-protocol MoblinkServerDelegate: AnyObject {
-    func moblinkServerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
-    func moblinkServerTunnelRemoved(endpoint: NWEndpoint)
+protocol MoblinkStreamerDelegate: AnyObject {
+    func moblinkStreamerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
+    func moblinkStreamerTunnelRemoved(endpoint: NWEndpoint)
 }
 
 private struct RequestResponse {
@@ -16,7 +16,7 @@ private struct RequestResponse {
     let onError: (String) -> Void
 }
 
-private class Client {
+private class Relay {
     let webSocket: Telegraph.WebSocket
     private var nextId: Int = 0
     private var identified = false
@@ -26,16 +26,16 @@ private class Client {
     private let password: String
     private var address: String?
     private var port: UInt16?
-    weak var server: MoblinkServer?
+    weak var streamer: MoblinkStreamer?
     private var tunnelEndpoint: NWEndpoint?
     private var relayId = UUID()
     var name = ""
     var batteryPercentage: Int?
 
-    init(websocket: Telegraph.WebSocket, password: String, server: MoblinkServer) {
+    init(websocket: Telegraph.WebSocket, password: String, streamer: MoblinkStreamer) {
         self.password = password
         webSocket = websocket
-        self.server = server
+        self.streamer = streamer
     }
 
     func start() {
@@ -57,7 +57,7 @@ private class Client {
     func handleStringMessage(message: String) {
         // logger.info("moblink-server: Received \(message)")
         do {
-            let message = try MoblinkMessageToServer.fromJson(data: message)
+            let message = try MoblinkMessageToStreamer.fromJson(data: message)
             switch message {
             case let .identify(id: relayId, name: name, authentication: authentication):
                 try handleIdentify(relayId: relayId, name: name, authentication: authentication)
@@ -106,13 +106,13 @@ private class Client {
                 port: NWEndpoint.Port(integerLiteral: port)
             )
             self.tunnelEndpoint = endpoint
-            self.server?.delegate?.moblinkServerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
+            self.streamer?.delegate?.moblinkStreamerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
         }
     }
 
     private func reportTunnelRemoved() {
         if let tunnelEndpoint {
-            server?.delegate?.moblinkServerTunnelRemoved(endpoint: tunnelEndpoint)
+            streamer?.delegate?.moblinkStreamerTunnelRemoved(endpoint: tunnelEndpoint)
         }
         tunnelEndpoint = nil
     }
@@ -145,7 +145,7 @@ private class Client {
             updateStatus()
         } else {
             send(message: .identified(result: .wrongPassword))
-            throw "Client sent wrong password"
+            throw "Relay sent wrong password"
         }
     }
 
@@ -186,7 +186,7 @@ private class Client {
         return nextId
     }
 
-    private func send(message: MoblinkMessageToClient) {
+    private func send(message: MoblinkMessageToRelay) {
         guard let text = message.toJson() else {
             return
         }
@@ -195,14 +195,14 @@ private class Client {
     }
 }
 
-class MoblinkServer: NSObject {
+class MoblinkStreamer: NSObject {
     private let port: UInt16
     private let password: String
     private var server: Server
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
-    fileprivate weak var delegate: (any MoblinkServerDelegate)?
-    private var clients: [Client] = []
+    fileprivate weak var delegate: (any MoblinkStreamerDelegate)?
+    private var relays: [Relay] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?
     private var bonjourService: NetService?
@@ -221,7 +221,7 @@ class MoblinkServer: NSObject {
         }
     }
 
-    func start(delegate: MoblinkServerDelegate) {
+    func start(delegate: MoblinkStreamerDelegate) {
         stop()
         logger.info("moblink-server: start")
         self.delegate = delegate
@@ -232,10 +232,10 @@ class MoblinkServer: NSObject {
         logger.info("moblink-server: stop")
         server.stop(immediately: false)
         stopRetryStartTimer()
-        for client in clients {
-            client.stop()
+        for relay in relays {
+            relay.stop()
         }
-        clients.removeAll()
+        relays.removeAll()
         delegate = nil
         bonjourService?.stop()
         bonjourService = nil
@@ -244,26 +244,26 @@ class MoblinkServer: NSObject {
     func startTunnels(address: String, port: UInt16) {
         destinationAddress = address
         destinationPort = port
-        for client in clients {
-            client.startTunnel(address: address, port: port)
+        for relay in relays {
+            relay.startTunnel(address: address, port: port)
         }
     }
 
     func stopTunnels() {
         destinationAddress = nil
         destinationPort = nil
-        for client in clients {
-            client.stopTunnel()
+        for relay in relays {
+            relay.stopTunnel()
         }
     }
 
     func getStatuses() -> [(String, Int?)] {
-        return clients.map { ($0.name, $0.batteryPercentage) }
+        return relays.map { ($0.name, $0.batteryPercentage) }
     }
 
     func updateStatus() {
-        for client in clients {
-            client.updateStatus()
+        for relay in relays {
+            relay.updateStatus()
         }
     }
 
@@ -297,43 +297,43 @@ class MoblinkServer: NSObject {
     }
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
-        logger.info("moblink-server: Client connected")
-        let client = Client(websocket: webSocket, password: password, server: self)
-        client.start()
-        clients.append(client)
+        logger.info("moblink-server: Relay connected")
+        let relay = Relay(websocket: webSocket, password: password, streamer: self)
+        relay.start()
+        relays.append(relay)
         guard let destinationAddress, let destinationPort else {
             return
         }
-        client.startTunnel(address: destinationAddress, port: destinationPort)
+        relay.startTunnel(address: destinationAddress, port: destinationPort)
     }
 
     private func handleDisconnected(webSocket: Telegraph.WebSocket, error: Error?) {
         if let error {
-            logger.info("moblink-server: Client disconnected \(error)")
+            logger.info("moblink-server: Relay disconnected \(error)")
         } else {
-            logger.info("moblink-server: Client disconnected")
+            logger.info("moblink-server: Relay disconnected")
         }
-        if let client = clients.first(where: { $0.webSocket.isSame(other: webSocket) }) {
-            client.stop()
+        if let relay = relays.first(where: { $0.webSocket.isSame(other: webSocket) }) {
+            relay.stop()
         }
-        clients.removeAll(where: { $0.webSocket.isSame(other: webSocket) })
+        relays.removeAll(where: { $0.webSocket.isSame(other: webSocket) })
     }
 
     private func handleMessage(webSocket: Telegraph.WebSocket, message: Telegraph.WebSocketMessage) {
         switch message.payload {
         case let .text(data):
             // logger.info("moblink-server: Got \(data)")
-            guard let client = clients.first(where: { $0.webSocket.isSame(other: webSocket) }) else {
+            guard let relay = relays.first(where: { $0.webSocket.isSame(other: webSocket) }) else {
                 return
             }
-            client.handleStringMessage(message: data)
+            relay.handleStringMessage(message: data)
         default:
             break
         }
     }
 }
 
-extension MoblinkServer: ServerWebSocketDelegate {
+extension MoblinkStreamer: ServerWebSocketDelegate {
     func server(
         _: Telegraph.Server,
         webSocketDidConnect webSocket: Telegraph.WebSocket,

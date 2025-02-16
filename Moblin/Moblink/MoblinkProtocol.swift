@@ -26,7 +26,7 @@ enum MoblinkResult: Codable {
     case alreadyIdentified
 }
 
-enum MoblinkMessageToClient: Codable {
+enum MoblinkMessageToRelay: Codable {
     case hello(apiVersion: String, authentication: MoblinkAuthentication)
     case identified(result: MoblinkResult)
     case request(id: Int, data: MoblinkRequest)
@@ -39,15 +39,15 @@ enum MoblinkMessageToClient: Codable {
         }
     }
 
-    static func fromJson(data: String) throws -> MoblinkMessageToClient {
+    static func fromJson(data: String) throws -> MoblinkMessageToRelay {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(MoblinkMessageToClient.self, from: data)
+        return try JSONDecoder().decode(MoblinkMessageToRelay.self, from: data)
     }
 }
 
-enum MoblinkMessageToServer: Codable {
+enum MoblinkMessageToStreamer: Codable {
     case identify(id: UUID, name: String, authentication: String)
     case response(id: Int, result: MoblinkResult, data: MoblinkResponse?)
 
@@ -58,10 +58,10 @@ enum MoblinkMessageToServer: Codable {
         return encoded
     }
 
-    static func fromJson(data: String) throws -> MoblinkMessageToServer {
+    static func fromJson(data: String) throws -> MoblinkMessageToStreamer {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(MoblinkMessageToServer.self, from: data)
+        return try JSONDecoder().decode(MoblinkMessageToStreamer.self, from: data)
     }
 }

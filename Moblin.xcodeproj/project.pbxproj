@@ -83,8 +83,8 @@
 		031F9C2A2D5478C800424EF0 /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F9C292D5478C400424EF0 /* VideoEncoder.swift */; };
 		031F9C2C2D5A7BB400424EF0 /* CatPrinterCommandsMxw01.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F9C2B2D5A7BAE00424EF0 /* CatPrinterCommandsMxw01.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
-		0323F3732D1DCDA800A57AC2 /* MoblinkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */; };
-		0323F3782D1E1AE700A57AC2 /* MoblinkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */; };
+		0323F3732D1DCDA800A57AC2 /* MoblinkStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3722D1DCDA400A57AC2 /* MoblinkStreamer.swift */; };
+		0323F3782D1E1AE700A57AC2 /* MoblinkRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3772D1E1AE400A57AC2 /* MoblinkRelay.swift */; };
 		0323F37B2D1E7AD600A57AC2 /* MoblinkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */; };
 		0323F37E2D1E8EDE00A57AC2 /* MoblinkSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F37D2D1E8ED300A57AC2 /* MoblinkSettingsView.swift */; };
 		0323F3832D21347700A57AC2 /* DnsLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0323F3822D21346F00A57AC2 /* DnsLookup.swift */; };
@@ -613,8 +613,8 @@
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		031F9C292D5478C400424EF0 /* VideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
 		031F9C2B2D5A7BAE00424EF0 /* CatPrinterCommandsMxw01.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterCommandsMxw01.swift; sourceTree = "<group>"; };
-		0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkServer.swift; sourceTree = "<group>"; };
-		0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkClient.swift; sourceTree = "<group>"; };
+		0323F3722D1DCDA400A57AC2 /* MoblinkStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkStreamer.swift; sourceTree = "<group>"; };
+		0323F3772D1E1AE400A57AC2 /* MoblinkRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkRelay.swift; sourceTree = "<group>"; };
 		0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkProtocol.swift; sourceTree = "<group>"; };
 		0323F37D2D1E8ED300A57AC2 /* MoblinkSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinkSettingsView.swift; sourceTree = "<group>"; };
 		0323F3822D21346F00A57AC2 /* DnsLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DnsLookup.swift; sourceTree = "<group>"; };
@@ -1376,9 +1376,9 @@
 			isa = PBXGroup;
 			children = (
 				0323F37A2D1E7ACF00A57AC2 /* MoblinkProtocol.swift */,
-				0323F3772D1E1AE400A57AC2 /* MoblinkClient.swift */,
+				0323F3772D1E1AE400A57AC2 /* MoblinkRelay.swift */,
 				03E972CC2D3AB52200888FAB /* MoblinkScanner.swift */,
-				0323F3722D1DCDA400A57AC2 /* MoblinkServer.swift */,
+				0323F3722D1DCDA400A57AC2 /* MoblinkStreamer.swift */,
 			);
 			path = Moblink;
 			sourceTree = "<group>";
@@ -3184,7 +3184,7 @@
 				03941A222C0CDD940061DA81 /* DeepLinkCreatorStreamsSettingsView.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
 				03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */,
-				0323F3782D1E1AE700A57AC2 /* MoblinkClient.swift in Sources */,
+				0323F3782D1E1AE700A57AC2 /* MoblinkRelay.swift in Sources */,
 				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
 				03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */,
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
@@ -3193,7 +3193,7 @@
 				03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */,
 				032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
-				0323F3732D1DCDA800A57AC2 /* MoblinkServer.swift in Sources */,
+				0323F3732D1DCDA800A57AC2 /* MoblinkStreamer.swift in Sources */,
 				0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,

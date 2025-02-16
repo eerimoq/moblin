@@ -142,7 +142,7 @@ private struct RelayStreamerUrlView: View {
             return
         }
         model.database.moblink!.client.url = value
-        model.reloadMoblinkClient()
+        model.reloadMoblinkRelay()
         dismiss()
     }
 
@@ -189,7 +189,7 @@ private struct RelayView: View {
                 model.database.moblink!.client.enabled
             }, set: { value in
                 model.database.moblink!.client.enabled = value
-                model.reloadMoblinkClient()
+                model.reloadMoblinkRelay()
             })) {
                 Text("Enabled")
             }
@@ -200,7 +200,7 @@ private struct RelayView: View {
             }
             .onChange(of: name) { name in
                 model.database.moblink!.client.name = name
-                model.reloadMoblinkClient()
+                model.reloadMoblinkRelay()
             }
             NavigationLink {
                 RelayStreamerUrlView(streamerUrl: $streamerUrl)
@@ -227,7 +227,7 @@ private struct StreamerView: View {
             return
         }
         model.database.moblink!.server.port = port
-        model.reloadMoblinkServer()
+        model.reloadMoblinkStreamer()
     }
 
     var body: some View {
@@ -237,7 +237,7 @@ private struct StreamerView: View {
             }
             .onChange(of: enabled) { value in
                 model.database.moblink!.server.enabled = value
-                model.reloadMoblinkServer()
+                model.reloadMoblinkStreamer()
             }
             .disabled(model.isLive)
             TextEditNavigationView(
@@ -262,8 +262,8 @@ struct MoblinkSettingsView: View {
 
     private func submitPassword(value: String) {
         model.database.moblink!.password = value.trim()
-        model.reloadMoblinkClient()
-        model.reloadMoblinkServer()
+        model.reloadMoblinkRelay()
+        model.reloadMoblinkStreamer()
     }
 
     var body: some View {

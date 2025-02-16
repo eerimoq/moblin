@@ -2,9 +2,9 @@ import Foundation
 import Network
 import SwiftUI
 
-private let moblinkClientQueue = DispatchQueue(label: "com.eerimoq.moblink-client")
+private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
 
-enum MoblinkClientState: String {
+enum MoblinkRelayState: String {
     case none = "None"
     case connecting = "Connecting"
     case connected = "Connected"
@@ -13,30 +13,30 @@ enum MoblinkClientState: String {
     case unknownError = "Unknown error"
 }
 
-protocol MoblinkClientDelegate: AnyObject {
-    func moblinkClientNewState(state: MoblinkClientState)
-    func moblinkClientGetBatteryPercentage() -> Int
+protocol MoblinkRelayDelegate: AnyObject {
+    func moblinkRelayNewState(state: MoblinkRelayState)
+    func moblinkRelayGetBatteryPercentage() -> Int
 }
 
-class MoblinkClient: NSObject {
+class MoblinkRelay: NSObject {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: (any MoblinkClientDelegate)?
+    private weak var delegate: (any MoblinkRelayDelegate)?
     private var webSocket: WebSocketClient
     private let name: String
     private var startTunnelId: Int?
     private var destination: NWEndpoint?
-    private var serverListener: NWListener?
-    private var serverConnection: NWConnection?
+    private var streamerListener: NWListener?
+    private var streamerConnection: NWConnection?
     private var destinationConnection: NWConnection?
-    private var state: MoblinkClientState = .none
+    private var state: MoblinkRelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
     private let networkPathMonitor = NWPathMonitor()
     private var cellularInterface: NWInterface?
     @AppStorage("srtlaRelayId") var id = ""
 
-    init(name: String, clientUrl: URL, password: String, delegate: MoblinkClientDelegate) {
+    init(name: String, clientUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
         self.name = name
         self.clientUrl = clientUrl
         self.password = password
@@ -94,16 +94,16 @@ class MoblinkClient: NSObject {
         cellularInterface = path.availableInterfaces.first(where: { $0.type == .cellular })
     }
 
-    private func setState(state: MoblinkClientState) {
+    private func setState(state: MoblinkRelayState) {
         guard state != self.state else {
             return
         }
         logger.info("moblink-client: State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.moblinkClientNewState(state: state)
+        delegate?.moblinkRelayNewState(state: state)
     }
 
-    private func send(message: MoblinkMessageToServer) {
+    private func send(message: MoblinkMessageToStreamer) {
         do {
             let message = try message.toJson()
             webSocket.send(string: message)
@@ -114,7 +114,7 @@ class MoblinkClient: NSObject {
 
     private func handleMessage(message: String) throws {
         do {
-            switch try MoblinkMessageToClient.fromJson(data: message) {
+            switch try MoblinkMessageToRelay.fromJson(data: message) {
             case let .hello(apiVersion: apiVersion, authentication: authentication):
                 handleHello(apiVersion: apiVersion, authentication: authentication)
             case let .identified(result: result):
@@ -173,15 +173,15 @@ class MoblinkClient: NSObject {
         do {
             let options = NWProtocolUDP.Options()
             let parameters = NWParameters(dtls: .none, udp: options)
-            serverListener = try NWListener(using: parameters)
+            streamerListener = try NWListener(using: parameters)
         } catch {
-            logger.error("moblink-client: Failed to create server listener with error \(error)")
+            logger.error("moblink-client: Failed to create streamer listener with error \(error)")
             reconnect(reason: "Failed to create listener")
             return
         }
-        serverListener?.stateUpdateHandler = handleListenerStateChange(to:)
-        serverListener?.newConnectionHandler = handleNewListenerConnection(connection:)
-        serverListener?.start(queue: moblinkClientQueue)
+        streamerListener?.stateUpdateHandler = handleListenerStateChange(to:)
+        streamerListener?.newConnectionHandler = handleNewListenerConnection(connection:)
+        streamerListener?.start(queue: moblinkRelayQueue)
         guard let cellularInterface else {
             reconnect(reason: "No cellular interface")
             return
@@ -195,24 +195,24 @@ class MoblinkClient: NSObject {
         }
         destinationConnection = NWConnection(host: host, port: port, using: params)
         destinationConnection?.stateUpdateHandler = handleDestinationStateUpdate(to:)
-        destinationConnection?.start(queue: moblinkClientQueue)
+        destinationConnection?.start(queue: moblinkRelayQueue)
         receiveDestinationPacket()
         setState(state: .waitingForCellular)
         startTunnelId = id
     }
 
     private func handleStatus(id: Int) {
-        let batteryPercentage = delegate?.moblinkClientGetBatteryPercentage()
+        let batteryPercentage = delegate?.moblinkRelayGetBatteryPercentage()
         send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
     }
 
     func stopTunnel() {
-        serverListener?.stateUpdateHandler = nil
-        serverListener?.cancel()
-        serverListener = nil
-        serverConnection?.stateUpdateHandler = nil
-        serverConnection?.cancel()
-        serverConnection = nil
+        streamerListener?.stateUpdateHandler = nil
+        streamerListener?.cancel()
+        streamerListener = nil
+        streamerConnection?.stateUpdateHandler = nil
+        streamerConnection?.cancel()
+        streamerConnection = nil
         destinationConnection?.stateUpdateHandler = nil
         destinationConnection?.cancel()
         destinationConnection = nil
@@ -225,10 +225,10 @@ class MoblinkClient: NSObject {
             case .setup:
                 break
             case .ready:
-                guard let serverListener = self.serverListener, let startTunnelId = self.startTunnelId else {
+                guard let streamerListener = self.streamerListener, let startTunnelId = self.startTunnelId else {
                     return
                 }
-                let port = serverListener.port!.rawValue
+                let port = streamerListener.port!.rawValue
                 self.send(message: .response(id: startTunnelId, result: .ok, data: .startTunnel(port: port)))
             case .failed:
                 self.reconnect(reason: "Listener failed")
@@ -253,28 +253,28 @@ class MoblinkClient: NSObject {
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
-        serverConnection = connection
-        serverConnection?.start(queue: moblinkClientQueue)
-        receiveServerPacket()
+        streamerConnection = connection
+        streamerConnection?.start(queue: moblinkRelayQueue)
+        receiveStreamerPacket()
     }
 
-    private func receiveServerPacket() {
-        serverConnection?.receiveMessage { data, _, _, error in
+    private func receiveStreamerPacket() {
+        streamerConnection?.receiveMessage { data, _, _, error in
             if let data, !data.isEmpty {
-                self.handlePacketFromServer(packet: data)
+                self.handlePacketFromStreamer(packet: data)
             }
             if let error {
-                logger.info("moblink-client: Server receive error \(error)")
+                logger.info("moblink-client: Streamer receive error \(error)")
                 DispatchQueue.main.async {
-                    self.reconnect(reason: "Server receive error")
+                    self.reconnect(reason: "Streamer receive error")
                 }
                 return
             }
-            self.receiveServerPacket()
+            self.receiveStreamerPacket()
         }
     }
 
-    private func handlePacketFromServer(packet: Data) {
+    private func handlePacketFromStreamer(packet: Data) {
         destinationConnection?.send(content: packet, completion: .contentProcessed { _ in
         })
     }
@@ -296,12 +296,12 @@ class MoblinkClient: NSObject {
     }
 
     private func handlePacketFromDestination(packet: Data) {
-        serverConnection?.send(content: packet, completion: .contentProcessed { _ in
+        streamerConnection?.send(content: packet, completion: .contentProcessed { _ in
         })
     }
 }
 
-extension MoblinkClient: WebSocketClientDelegate {
+extension MoblinkRelay: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {

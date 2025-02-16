@@ -154,10 +154,10 @@ private struct StatusesView: View {
     }
 
     private func moblinkColor() -> Color {
-        if model.isMoblinkClientConfigured() && model.moblinkClientState != .connected {
+        if model.isMoblinkRelayConfigured() && model.moblinkRelayState != .connected {
             return .red
         }
-        if !model.moblinkServerOk {
+        if !model.moblinkStreamerOk {
             return .red
         }
         return .white

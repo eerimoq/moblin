@@ -2460,20 +2460,20 @@ class SettingsRemoteControl: Codable {
     var password: String? = randomGoodPassword()
 }
 
-class SettingsMoblinkServer: Codable {
+class SettingsMoblinkStreamer: Codable {
     var enabled: Bool = false
     var port: UInt16 = 7777
 }
 
-class SettingsMoblinkClient: Codable {
+class SettingsMoblinkRelay: Codable {
     var enabled: Bool = false
     var name: String = randomName()
     var url: String = ""
 }
 
-class SettingsMoblinkRelay: Codable {
-    var server: SettingsMoblinkServer = .init()
-    var client: SettingsMoblinkClient = .init()
+class SettingsMoblink: Codable {
+    var server: SettingsMoblinkStreamer = .init()
+    var client: SettingsMoblinkRelay = .init()
     var password = "1234"
 }
 
@@ -2709,9 +2709,9 @@ class Database: Codable {
     var scoreboardPlayers: [SettingsWidgetScoreboardPlayer]? = .init()
     var keyboard: SettingsKeyboard? = .init()
     var tesla: SettingsTesla? = .init()
-    var srtlaRelay: SettingsMoblinkRelay? = .init()
+    var srtlaRelay: SettingsMoblink? = .init()
     var pixellateStrength: Float? = 0.3
-    var moblink: SettingsMoblinkRelay? = .init()
+    var moblink: SettingsMoblink? = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
     var forceSceneSwitchTransition: Bool? = false
 

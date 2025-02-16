@@ -8,7 +8,7 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
-    func moblinkServerDestinationAddress(address: String, port: UInt16)
+    func moblinkStreamerDestinationAddress(address: String, port: UInt16)
 }
 
 private enum State {
@@ -116,7 +116,7 @@ class SrtlaClient {
                 self.onDisconnected(message: "connect timer expired")
             }
             self.state = .waitForRemoteSocketConnected
-            self.delegate?.moblinkServerDestinationAddress(address: host, port: UInt16(port))
+            self.delegate?.moblinkStreamerDestinationAddress(address: host, port: UInt16(port))
         }
     }
 

@@ -1022,7 +1022,7 @@ extension Media: SrtlaDelegate {
         }
     }
 
-    func moblinkServerDestinationAddress(address: String, port: UInt16) {
+    func moblinkStreamerDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
             self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
