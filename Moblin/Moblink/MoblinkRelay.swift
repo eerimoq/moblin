@@ -19,9 +19,9 @@ protocol MoblinkRelayDelegate: AnyObject {
 }
 
 private class Relay: NSObject {
-    private var clientUrl: URL
+    private var streamerUrl: URL
     private var password: String
-    private weak var delegate: (any MoblinkRelayDelegate)?
+    private weak var delegate: MoblinkRelayDelegate?
     private var webSocket: WebSocketClient
     private let name: String
     private var startTunnelId: Int?
@@ -32,32 +32,42 @@ private class Relay: NSObject {
     private var state: MoblinkRelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
-    private var cellularInterface: NWInterface?
+    var destinationInterface: NWInterface?
     private var id: String
 
-    init(id: String, name: String, clientUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+    init(
+        id: String,
+        name: String,
+        streamerUrl: URL,
+        password: String,
+        delegate: MoblinkRelayDelegate?,
+        destinationInterface: NWInterface
+    ) {
         self.id = id
         self.name = name
-        self.clientUrl = clientUrl
+        self.streamerUrl = streamerUrl
         self.password = password
         self.delegate = delegate
-        webSocket = .init(url: clientUrl)
+        self.destinationInterface = destinationInterface
+        webSocket = .init(url: streamerUrl)
     }
 
     func start() {
-        logger.info("moblink-client: Start")
+        guard !started else {
+            return
+        }
+        logger.info("moblink-client: \(name): Start")
         started = true
         startInternal()
     }
 
     func stop() {
-        logger.info("moblink-client: Stop")
+        guard started else {
+            return
+        }
+        logger.info("moblink-client: \(name): Stop")
         stopInternal()
         started = false
-    }
-
-    func setInterface(interface: NWInterface?) {
-        cellularInterface = interface
     }
 
     private func startInternal() {
@@ -66,7 +76,7 @@ private class Relay: NSObject {
         }
         stopInternal()
         setState(state: .connecting)
-        webSocket = .init(url: clientUrl, cellular: false)
+        webSocket = .init(url: streamerUrl, cellular: false)
         webSocket.delegate = self
         webSocket.start()
     }
@@ -80,10 +90,10 @@ private class Relay: NSObject {
     }
 
     private func reconnect(reason: String) {
-        logger.info("moblink-client: Reconnecting soon with reason \(reason)")
+        logger.info("moblink-client: \(name): Reconnecting soon with reason \(reason)")
         stopInternal()
-        reconnectTimer.startSingleShot(timeout: 5.0) {
-            self.startInternal()
+        reconnectTimer.startSingleShot(timeout: 5.0) { [weak self] in
+            self?.startInternal()
         }
     }
 
@@ -91,7 +101,7 @@ private class Relay: NSObject {
         guard state != self.state else {
             return
         }
-        logger.info("moblink-client: State change \(self.state) -> \(state)")
+        logger.info("moblink-client: \(name): State change \(self.state) -> \(state)")
         self.state = state
         delegate?.moblinkRelayNewState(state: state)
     }
@@ -101,7 +111,7 @@ private class Relay: NSObject {
             let message = try message.toJson()
             webSocket.send(string: message)
         } catch {
-            logger.info("moblink-client: Encode failed")
+            logger.info("moblink-client: \(name): Encode failed")
         }
     }
 
@@ -112,7 +122,7 @@ private class Relay: NSObject {
                 handleHello(apiVersion: apiVersion, authentication: authentication)
             case let .identified(result: result):
                 if !handleIdentified(result: result) {
-                    logger.info("moblink-client: Failed to identify")
+                    logger.info("moblink-client: \(name): Failed to identify")
                     return
                 }
                 setState(state: .connected)
@@ -120,7 +130,7 @@ private class Relay: NSObject {
                 handleRequest(id: id, data: data)
             }
         } catch {
-            logger.info("moblink-client: Decode failed")
+            logger.info("moblink-client: \(name): Decode failed")
         }
     }
 
@@ -161,26 +171,26 @@ private class Relay: NSObject {
 
     private func handleStartTunnel(id: Int, address: String, port: UInt16) {
         stopTunnel()
-        logger.info("moblink-client: Start tunnel to \(address):\(port)")
+        logger.info("moblink-client: \(name): Start tunnel to \(address):\(port)")
         destination = .hostPort(host: NWEndpoint.Host(address), port: NWEndpoint.Port(integerLiteral: port))
         do {
             let options = NWProtocolUDP.Options()
             let parameters = NWParameters(dtls: .none, udp: options)
             streamerListener = try NWListener(using: parameters)
         } catch {
-            logger.error("moblink-client: Failed to create streamer listener with error \(error)")
+            logger.error("moblink-client: \(name): Failed to create streamer listener with error \(error)")
             reconnect(reason: "Failed to create listener")
             return
         }
         streamerListener?.stateUpdateHandler = handleListenerStateChange(to:)
         streamerListener?.newConnectionHandler = handleNewListenerConnection(connection:)
         streamerListener?.start(queue: moblinkRelayQueue)
-        guard let cellularInterface else {
+        guard let destinationInterface else {
             reconnect(reason: "No cellular interface")
             return
         }
         let params = NWParameters(dtls: .none)
-        params.requiredInterface = cellularInterface
+        params.requiredInterface = destinationInterface
         params.prohibitExpensivePaths = false
         guard case let .hostPort(host, port) = destination else {
             reconnect(reason: "Failed to parse host and port")
@@ -232,7 +242,7 @@ private class Relay: NSObject {
     }
 
     private func handleDestinationStateUpdate(to state: NWConnection.State) {
-        logger.debug("moblink-client: Destination state change to \(state)")
+        logger.debug("moblink-client: \(name): Destination state change to \(state)")
         DispatchQueue.main.async {
             switch state {
             case .ready:
@@ -257,7 +267,7 @@ private class Relay: NSObject {
                 self.handlePacketFromStreamer(packet: data)
             }
             if let error {
-                logger.info("moblink-client: Streamer receive error \(error)")
+                logger.info("moblink-client: \(self.name): Streamer receive error \(error)")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Streamer receive error")
                 }
@@ -278,7 +288,7 @@ private class Relay: NSObject {
                 self.handlePacketFromDestination(packet: data)
             }
             if let error {
-                logger.info("moblink-client: Destination receive error \(error)")
+                logger.info("moblink-client: \(self.name): Destination receive error \(error)")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Destination receive error")
                 }
@@ -308,30 +318,85 @@ extension Relay: WebSocketClientDelegate {
 }
 
 class MoblinkRelay: NSObject {
-    private var relay: Relay?
+    private let name: String
+    private let streamerUrl: URL
+    private let password: String
+    private weak var delegate: MoblinkRelayDelegate?
+    private var relays: [Relay] = []
     private let networkPathMonitor = NWPathMonitor()
+    private var started = false
     @AppStorage("srtlaRelayId") var id = ""
 
-    init(name: String, clientUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+    init(name: String, streamerUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+        self.name = name
+        self.streamerUrl = streamerUrl
+        self.password = password
+        self.delegate = delegate
         super.init()
         if id.isEmpty {
             id = UUID().uuidString
         }
-        relay = Relay(id: id, name: name, clientUrl: clientUrl, password: password, delegate: delegate)
     }
 
     func start() {
-        relay?.start()
+        started = true
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
         networkPathMonitor.start(queue: .main)
     }
 
     func stop() {
-        relay?.stop()
+        started = false
         networkPathMonitor.cancel()
+        for relay in relays {
+            relay.stop()
+        }
+        relays.removeAll()
+    }
+
+    private func makeRelayId(_ interface: NWInterface) -> String {
+        if let value = Int(id.suffix(6), radix: 16) {
+            return id.prefix(30) + String(format: "%06X", (value + interface.index) & 0xFFFFFF)
+        }
+        return id
+    }
+
+    private func makeRelayName(_ interface: NWInterface) -> String {
+        if interface.type == .cellular {
+            return name
+        } else {
+            return "\(name)-\(interface.index)"
+        }
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
-        relay?.setInterface(interface: path.availableInterfaces.first(where: { $0.type == .cellular }))
+        guard started else {
+            return
+        }
+        var relays: [Relay] = []
+        for interface in path.availableInterfaces
+            where interface.type == .cellular || interface.type == .wiredEthernet
+        {
+            if let relay = self.relays.first(where: { $0.destinationInterface == interface }) {
+                relays.append(relay)
+            } else {
+                let relay = Relay(
+                    id: makeRelayId(interface),
+                    name: makeRelayName(interface),
+                    streamerUrl: streamerUrl,
+                    password: password,
+                    delegate: delegate,
+                    destinationInterface: interface
+                )
+                relay.start()
+                relays.append(relay)
+            }
+        }
+        for relay in self.relays
+            where !relays.contains(where: { $0.destinationInterface == relay.destinationInterface })
+        {
+            relay.stop()
+        }
+        self.relays = relays
+        // logger.info("moblink-client: Number of relays is \(relays.count)")
     }
 }

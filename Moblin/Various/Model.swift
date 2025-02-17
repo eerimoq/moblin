@@ -1519,7 +1519,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             moblinkRelay = MoblinkRelay(
                 name: database.moblink!.client.name,
-                clientUrl: url,
+                streamerUrl: url,
                 password: database.moblink!.password,
                 delegate: self
             )
