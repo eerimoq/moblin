@@ -274,6 +274,9 @@ struct StreamOverlayChatView: View {
                             .onPreferenceChange(
                                 ViewOffsetKey.self,
                                 perform: { scrollViewOffsetFromTop in
+                                    guard model.interactiveChat else {
+                                        return
+                                    }
                                     let offset = max(scrollViewOffsetFromTop, 0)
                                     if isCloseToStart(offset: offset) {
                                         if model.chatPaused, offset >= previousOffset {

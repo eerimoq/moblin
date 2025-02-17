@@ -2932,6 +2932,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         pausedChatPosts = [createRedLineChatPost()]
     }
 
+    func disableInteractiveChat() {
+        _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
+        chatPaused = false
+    }
+
     private func createRedLineChatPost() -> ChatPost {
         defer {
             chatPostId += 1
@@ -2981,8 +2986,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func endOfChatReachedWhenPaused() {
+        if appendPausedChatPosts(maximumNumberOfPostsToAppend: 5) == 0 {
+            chatPaused = false
+        }
+    }
+
+    private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
         var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedChatPosts.popFirst() {
+        while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = pausedChatPosts.popFirst() {
             if post.user == nil {
                 if let lastPost = chatPosts.first, lastPost.user == nil {
                     continue
@@ -2997,9 +3008,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             chatPosts.prepend(post)
             numberOfPostsAppended += 1
         }
-        if numberOfPostsAppended == 0 {
-            chatPaused = false
-        }
+        return numberOfPostsAppended
     }
 
     func pauseInteractiveChatAlerts() {
