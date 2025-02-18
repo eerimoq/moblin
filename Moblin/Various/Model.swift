@@ -659,7 +659,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    @Published var moblinkRelayState: MoblinkRelayState = .none
+    @Published var moblinkRelayState: MoblinkRelayState = .noInterface
     @Published var moblinkStreamerOk = true
     @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue

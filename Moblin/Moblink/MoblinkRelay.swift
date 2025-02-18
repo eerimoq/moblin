@@ -5,6 +5,14 @@ import SwiftUI
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
 
 enum MoblinkRelayState: String {
+    case noInterface = "No interface"
+    case connecting = "Connecting"
+    case connected = "Connected"
+    case wrongPassword = "Wrong password"
+    case unknownError = "Unknown error"
+}
+
+private enum RelayState: String {
     case none = "None"
     case connecting = "Connecting"
     case connected = "Connected"
@@ -29,11 +37,12 @@ private class Relay: NSObject {
     private var streamerListener: NWListener?
     private var streamerConnection: NWConnection?
     private var destinationConnection: NWConnection?
-    private var state: MoblinkRelayState = .none
+    var state: RelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
     var destinationInterface: NWInterface?
     private var id: String
+    private weak var relay: MoblinkRelay?
 
     init(
         id: String,
@@ -41,7 +50,8 @@ private class Relay: NSObject {
         streamerUrl: URL,
         password: String,
         delegate: MoblinkRelayDelegate?,
-        destinationInterface: NWInterface
+        destinationInterface: NWInterface,
+        relay: MoblinkRelay
     ) {
         self.id = id
         self.name = name
@@ -49,6 +59,7 @@ private class Relay: NSObject {
         self.password = password
         self.delegate = delegate
         self.destinationInterface = destinationInterface
+        self.relay = relay
         webSocket = .init(url: streamerUrl)
     }
 
@@ -97,13 +108,13 @@ private class Relay: NSObject {
         }
     }
 
-    private func setState(state: MoblinkRelayState) {
+    private func setState(state: RelayState) {
         guard state != self.state else {
             return
         }
         logger.info("moblink-client: \(name): State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.moblinkRelayNewState(state: state)
+        relay?.relayStateChanged()
     }
 
     private func send(message: MoblinkMessageToStreamer) {
@@ -342,6 +353,7 @@ class MoblinkRelay: NSObject {
         started = true
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
         networkPathMonitor.start(queue: .main)
+        relayStateChanged()
     }
 
     func stop() {
@@ -368,6 +380,31 @@ class MoblinkRelay: NSObject {
         }
     }
 
+    func relayStateChanged() {
+        var state: MoblinkRelayState = .noInterface
+        for relay in relays {
+            logger.info("moblink relay state \(relay.state)")
+            switch relay.state {
+            case .none:
+                break
+            case .connecting:
+                state = .connecting
+            case .connected:
+                if state == .noInterface {
+                    state = .connected
+                }
+            case .waitingForCellular:
+                break
+            case .wrongPassword:
+                state = .wrongPassword
+            case .unknownError:
+                state = .unknownError
+            }
+        }
+        logger.info("moblink \(state)")
+        delegate?.moblinkRelayNewState(state: state)
+    }
+
     private func handleNetworkPathUpdate(path: NWPath) {
         guard started else {
             return
@@ -385,7 +422,8 @@ class MoblinkRelay: NSObject {
                     streamerUrl: streamerUrl,
                     password: password,
                     delegate: delegate,
-                    destinationInterface: interface
+                    destinationInterface: interface,
+                    relay: self
                 )
                 relay.start()
                 relays.append(relay)
@@ -397,6 +435,7 @@ class MoblinkRelay: NSObject {
             relay.stop()
         }
         self.relays = relays
+        relayStateChanged()
         // logger.info("moblink-client: Number of relays is \(relays.count)")
     }
 }
