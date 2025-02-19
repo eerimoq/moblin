@@ -137,23 +137,23 @@ class SettingsStreamSrtConnectionPriorities: Codable {
 }
 
 enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
+    case belabox
     case fastIrl
     case slowIrl
     case customIrl
-    case belabox
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        if container.contains(CodingKeys.fastIrl) {
+        if container.contains(CodingKeys.belabox) {
+            self = .belabox
+        } else if container.contains(CodingKeys.fastIrl) {
             self = .fastIrl
         } else if container.contains(CodingKeys.slowIrl) {
             self = .slowIrl
         } else if container.contains(CodingKeys.customIrl) {
             self = .customIrl
-        } else if container.contains(CodingKeys.belabox) {
-            self = .belabox
         } else {
-            self = .fastIrl
+            self = .belabox
         }
     }
 
@@ -174,14 +174,14 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
 
     func toString() -> String {
         switch self {
+        case .belabox:
+            return String(localized: "BELABOX")
         case .fastIrl:
             return String(localized: "Fast IRL")
         case .slowIrl:
             return String(localized: "Slow IRL")
         case .customIrl:
             return String(localized: "Custom IRL")
-        case .belabox:
-            return String(localized: "BELABOX")
         }
     }
 }
@@ -231,7 +231,7 @@ class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
 }
 
 class SettingsStreamSrtAdaptiveBitrate: Codable {
-    var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .fastIrl
+    var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .belabox
     var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings? = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
     var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings? = .init()
