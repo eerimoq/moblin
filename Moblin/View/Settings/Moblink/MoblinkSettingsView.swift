@@ -168,12 +168,6 @@ private struct RelayStreamerUrlView: View {
                 }
             }
         }
-        .onAppear {
-            model.reloadMoblinkScanner()
-        }
-        .onDisappear {
-            model.stopMoblinkScanner()
-        }
         .navigationTitle("Streamer URL")
     }
 }
@@ -182,6 +176,7 @@ private struct RelayView: View {
     @EnvironmentObject var model: Model
     @State var name: String
     @State var streamerUrl: String
+    @State var manual: Bool
 
     var body: some View {
         Section {
@@ -202,10 +197,20 @@ private struct RelayView: View {
                 model.database.moblink!.client.name = name
                 model.reloadMoblinkRelay()
             }
-            NavigationLink {
-                RelayStreamerUrlView(streamerUrl: $streamerUrl)
-            } label: {
-                TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink!.client.url)
+            Toggle(isOn: $manual) {
+                Text("Manual")
+            }
+            .onChange(of: manual) { value in
+                model.database.moblink!.client.manual = value
+                model.reloadMoblinkRelay()
+            }
+            .disabled(model.isLive)
+            if manual {
+                NavigationLink {
+                    RelayStreamerUrlView(streamerUrl: $streamerUrl)
+                } label: {
+                    TextItemView(name: String(localized: "Streamer URL"), value: model.database.moblink!.client.url)
+                }
             }
         } header: {
             Text("Relay")
@@ -289,7 +294,11 @@ struct MoblinkSettingsView: View {
             } footer: {
                 Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
             }
-            RelayView(name: model.database.moblink!.client.name, streamerUrl: model.database.moblink!.client.url)
+            RelayView(
+                name: model.database.moblink!.client.name,
+                streamerUrl: model.database.moblink!.client.url,
+                manual: model.database.moblink!.client.manual!
+            )
             StreamerView(enabled: $streamerEnabled)
             if streamerEnabled {
                 Section {

@@ -687,7 +687,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let faxReceiver = FaxReceiver()
 
     private var moblinkStreamer: MoblinkStreamer?
-    private var moblinkRelay: MoblinkRelay?
+    private var moblinkRelays: [MoblinkRelay] = []
     private var moblinkScanner: MoblinkScanner?
 
     @Published var cameraControlEnabled = false
@@ -1514,28 +1514,65 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadMoblinkRelay() {
         stopMoblinkRelay()
+        stopMoblinkScanner()
         if isMoblinkRelayConfigured() {
-            guard let url = URL(string: database.moblink!.client.url) else {
+            reloadMoblinkScanner()
+            if database.moblink!.client.manual! {
+                startMoblinkRelayManual()
+            } else {
+                startMoblinkRelayAutomatic()
+            }
+        }
+    }
+
+    private func startMoblinkRelayManual() {
+        guard let streamerUrl = URL(string: database.moblink!.client.url) else {
+            return
+        }
+        addMoblinkRelay(streamerUrl: streamerUrl)
+    }
+
+    private func startMoblinkRelayAutomatic() {
+        for streamer in moblinkScannerDiscoveredStreamers {
+            guard let url = streamer.urls.first, let streamerUrl = URL(string: url) else {
                 return
             }
-            moblinkRelay = MoblinkRelay(
-                name: database.moblink!.client.name,
-                streamerUrl: url,
-                password: database.moblink!.password,
-                delegate: self
-            )
-            moblinkRelay?.start()
+            addMoblinkRelay(streamerUrl: streamerUrl)
         }
+    }
+
+    private func addMoblinkRelay(streamerUrl: URL) {
+        guard !moblinkRelays.contains(where: { $0.streamerUrl == streamerUrl }) else {
+            return
+        }
+        let relay = MoblinkRelay(
+            name: database.moblink!.client.name,
+            streamerUrl: streamerUrl,
+            password: database.moblink!.password,
+            delegate: self
+        )
+        relay.start()
+        moblinkRelays.append(relay)
     }
 
     func isMoblinkRelayConfigured() -> Bool {
         let client = database.moblink!.client
-        return client.enabled && !client.url.isEmpty && !database.moblink!.password.isEmpty
+        if !client.enabled {
+            return false
+        }
+        if client.manual! {
+            return !client.url.isEmpty && !database.moblink!.password.isEmpty
+        } else {
+            return true
+        }
     }
 
     func stopMoblinkRelay() {
-        moblinkRelay?.stop()
-        moblinkRelay = nil
+        for relay in moblinkRelays {
+            relay.stop()
+        }
+        moblinkRelays.removeAll()
+        stopMoblinkScanner()
     }
 
     func reloadMoblinkScanner() {
@@ -10654,5 +10691,8 @@ extension Model: MoblinkRelayDelegate {
 extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         moblinkScannerDiscoveredStreamers = streamers
+        if !database.moblink!.client.manual! {
+            startMoblinkRelayAutomatic()
+        }
     }
 }

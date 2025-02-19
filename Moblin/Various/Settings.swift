@@ -2470,6 +2470,7 @@ class SettingsMoblinkRelay: Codable {
     var enabled: Bool = false
     var name: String = randomName()
     var url: String = ""
+    var manual: Bool? = false
 }
 
 class SettingsMoblink: Codable {
@@ -4661,6 +4662,10 @@ final class Settings {
         }
         if realDatabase.show.catPrinter == nil {
             realDatabase.show.catPrinter = true
+            store()
+        }
+        if realDatabase.moblink!.client.manual == nil {
+            realDatabase.moblink!.client.manual = !realDatabase.moblink!.client.url.isEmpty
             store()
         }
     }

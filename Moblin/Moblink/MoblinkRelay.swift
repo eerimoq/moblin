@@ -330,7 +330,7 @@ extension Relay: WebSocketClientDelegate {
 
 class MoblinkRelay: NSObject {
     private let name: String
-    private let streamerUrl: URL
+    let streamerUrl: URL
     private let password: String
     private weak var delegate: MoblinkRelayDelegate?
     private var relays: [Relay] = []
@@ -383,7 +383,6 @@ class MoblinkRelay: NSObject {
     func relayStateChanged() {
         var state: MoblinkRelayState = .noInterface
         for relay in relays {
-            logger.info("moblink relay state \(relay.state)")
             switch relay.state {
             case .none:
                 break
@@ -401,7 +400,6 @@ class MoblinkRelay: NSObject {
                 state = .unknownError
             }
         }
-        logger.info("moblink \(state)")
         delegate?.moblinkRelayNewState(state: state)
     }
 

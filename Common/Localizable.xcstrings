@@ -73376,6 +73376,9 @@
         }
       }
     },
+    "Manual" : {
+
+    },
     "Manual exposure not supported for this camera" : {
       "localizations" : {
         "de" : {
