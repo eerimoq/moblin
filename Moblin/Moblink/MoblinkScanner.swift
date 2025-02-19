@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-struct MoblinkScannerServer: Identifiable {
+struct MoblinkScannerStreamer: Identifiable {
     var id = UUID()
     var name: String
     var urls: [String]
@@ -18,7 +18,7 @@ private class DiscoveredSerivce {
 }
 
 protocol MoblinkScannerDelegate: AnyObject {
-    func moblinkScannerDiscoveredServers(servers: [MoblinkScannerServer])
+    func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer])
 }
 
 class MoblinkScanner: NSObject {
@@ -42,8 +42,8 @@ class MoblinkScanner: NSObject {
         services.removeAll()
     }
 
-    private func discoveredServersUpdated() {
-        var servers: [MoblinkScannerServer] = []
+    private func discoveredStreamersUpdated() {
+        var streamers: [MoblinkScannerStreamer] = []
         for service in services {
             guard let data = service.service.txtRecordData() else {
                 continue
@@ -55,9 +55,9 @@ class MoblinkScanner: NSObject {
             guard let name = String(bytes: nameData, encoding: .utf8) else {
                 return
             }
-            servers.append(.init(name: name, urls: service.urls))
+            streamers.append(.init(name: name, urls: service.urls))
         }
-        delegate?.moblinkScannerDiscoveredServers(servers: servers)
+        delegate?.moblinkScannerDiscoveredStreamers(streamers: streamers)
     }
 }
 
@@ -76,7 +76,7 @@ extension MoblinkScanner: NetServiceBrowserDelegate {
             return
         }
         services.remove(at: index)
-        discoveredServersUpdated()
+        discoveredStreamersUpdated()
     }
 }
 
@@ -91,7 +91,7 @@ extension MoblinkScanner: NetServiceDelegate {
                 discoveredService.urls.append(url)
             }
         }
-        discoveredServersUpdated()
+        discoveredStreamersUpdated()
     }
 
     private func getAddressInfo(address: Data) -> (String, Bool) {

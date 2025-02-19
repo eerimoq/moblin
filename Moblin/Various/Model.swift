@@ -664,7 +664,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var moblinkStreamerOk = true
     @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue
-    @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerServer] = []
+    @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -10652,7 +10652,7 @@ extension Model: MoblinkRelayDelegate {
 }
 
 extension Model: MoblinkScannerDelegate {
-    func moblinkScannerDiscoveredServers(servers: [MoblinkScannerServer]) {
-        moblinkScannerDiscoveredStreamers = servers
+    func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
+        moblinkScannerDiscoveredStreamers = streamers
     }
 }

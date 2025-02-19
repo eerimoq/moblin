@@ -110,7 +110,7 @@ private struct PasswordView: View {
 }
 
 private struct RelayStreamerServerView: View {
-    var server: MoblinkScannerServer
+    var server: MoblinkScannerStreamer
     @Binding var streamerUrl: String
     var submitUrl: (String) -> Void
 
