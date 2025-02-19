@@ -5,6 +5,7 @@ import SwiftUI
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
 
 enum MoblinkRelayState: String {
+    case waitingForStreamers = "Waiting for streamers"
     case noInterface = "No interface"
     case connecting = "Connecting"
     case connected = "Connected"
