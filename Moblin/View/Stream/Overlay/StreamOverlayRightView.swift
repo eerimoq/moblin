@@ -167,6 +167,13 @@ private struct StatusesView: View {
         return .white
     }
 
+    private func catPrinterColor() -> Color {
+        if model.isAnyCatPrinterConfigured() && !model.areAllCatPrintersConnected() {
+            return .red
+        }
+        return .white
+    }
+
     var body: some View {
         if textPlacement == .hide {
             CollapsedHypeTrainView(show: model.isShowingStatusHypeTrain(), color: .white)
@@ -281,6 +288,13 @@ private struct StatusesView: View {
             text: model.browserWidgetsStatus,
             textPlacement: textPlacement,
             color: .white
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusCatPrinter(),
+            icon: "pawprint",
+            text: model.catPrinterStatus,
+            textPlacement: textPlacement,
+            color: catPrinterColor()
         )
     }
 }

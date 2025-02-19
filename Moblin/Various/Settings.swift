@@ -1610,6 +1610,7 @@ class SettingsShow: Codable {
     var djiDevices: Bool? = true
     var bondingRtts: Bool? = false
     var moblink: Bool? = true
+    var catPrinter: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -4656,6 +4657,10 @@ final class Settings {
         }
         if realDatabase.catPrinters!.backgroundPrinting == nil {
             realDatabase.catPrinters!.backgroundPrinting = false
+            store()
+        }
+        if realDatabase.show.catPrinter == nil {
+            realDatabase.show.catPrinter = true
             store()
         }
     }

@@ -365,6 +365,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var currentRecording: Recording?
     @Published var recordingLength = noValue
     @Published var browserWidgetsStatus = noValue
+    @Published var catPrinterStatus = noValue
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
@@ -7276,6 +7277,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.browserWidgets! && isStatusBrowserWidgetsActive()
     }
 
+    func isShowingStatusCatPrinter() -> Bool {
+        return database.show.catPrinter! && isAnyCatPrinterConfigured()
+    }
+
     private func isStatusBrowserWidgetsActive() -> Bool {
         return !browserWidgetsStatus.isEmpty && browserWidgetsStatusChanged
     }
@@ -10444,6 +10449,16 @@ extension Model {
     private func isAnyConnectedCatPrinterPrintingChat() -> Bool {
         return catPrinters.values.contains(where: {
             $0.getState() == .connected && getCatPrinterSettings(catPrinter: $0)?.printChat == true
+        })
+    }
+
+    func isAnyCatPrinterConfigured() -> Bool {
+        return database.catPrinters!.devices.contains(where: { $0.enabled })
+    }
+
+    func areAllCatPrintersConnected() -> Bool {
+        return !catPrinters.values.contains(where: {
+            getCatPrinterSettings(catPrinter: $0)?.enabled == true && $0.getState() != .connected
         })
     }
 }

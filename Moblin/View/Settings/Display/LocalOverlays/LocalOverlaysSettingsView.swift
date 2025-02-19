@@ -133,6 +133,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.bondingRtts = value
                 }
+                InfoView(icon: "pawprint", text: String(localized: "Cat printers")) {
+                    show.catPrinter!
+                } set: { value in
+                    show.catPrinter = value
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
