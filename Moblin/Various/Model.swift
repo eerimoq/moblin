@@ -660,7 +660,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
-    @Published var moblinkRelayState: MoblinkRelayState = .waitingForStreamers
+    private var moblinkRelayState: MoblinkRelayState = .waitingForStreamers
     @Published var moblinkStreamerOk = true
     @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue
@@ -1565,6 +1565,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             return true
         }
+    }
+
+    func areMoblinkRelaysOk() -> Bool {
+        return moblinkRelayState == .connected || moblinkRelayState == .waitingForStreamers
     }
 
     func stopMoblinkRelay() {
