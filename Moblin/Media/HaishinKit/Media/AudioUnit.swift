@@ -250,10 +250,7 @@ final class AudioUnit: NSObject {
             self.selectedReplaceAudioId = replaceAudio
         }
         if let device {
-            output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
-            try attachDevice(device, session)
-            output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
-            session.automaticallyConfiguresApplicationAudioSession = false
+            try attachDevice(device)
         }
     }
 
@@ -292,46 +289,43 @@ final class AudioUnit: NSObject {
         }
     }
 
-    private func attachDevice(_ device: AVCaptureDevice?, _ captureSession: AVCaptureSession) throws {
-        captureSession.beginConfiguration()
+    private func attachDevice(_ device: AVCaptureDevice) throws {
+        session.beginConfiguration()
         defer {
-            captureSession.commitConfiguration()
+            session.commitConfiguration()
         }
-        if let input, captureSession.inputs.contains(input) {
-            captureSession.removeInput(input)
+        if let input, session.inputs.contains(input) {
+            session.removeInput(input)
         }
-        if let output, captureSession.outputs.contains(output) {
-            captureSession.removeOutput(output)
+        if let output, session.outputs.contains(output) {
+            session.removeOutput(output)
         }
-        if let device {
-            input = try AVCaptureDeviceInput(device: device)
-            if audioUnitRemoveWindNoise {
-                if #available(iOS 18.0, *) {
-                    if input!.isWindNoiseRemovalSupported {
-                        input!.multichannelAudioMode = .stereo
-                        input!.isWindNoiseRemovalEnabled = true
-                        logger
-                            .info(
-                                "audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)"
-                            )
-                    } else {
-                        logger.info("audio-unit: Wind noise removal is not supported on this device")
-                    }
+        input = try AVCaptureDeviceInput(device: device)
+        if audioUnitRemoveWindNoise {
+            if #available(iOS 18.0, *) {
+                if input!.isWindNoiseRemovalSupported {
+                    input!.multichannelAudioMode = .stereo
+                    input!.isWindNoiseRemovalEnabled = true
+                    logger
+                        .info(
+                            "audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)"
+                        )
                 } else {
-                    logger.info("audio-unit: Wind noise removal needs iOS 18+")
+                    logger.info("audio-unit: Wind noise removal is not supported on this device")
                 }
+            } else {
+                logger.info("audio-unit: Wind noise removal needs iOS 18+")
             }
-            if captureSession.canAddInput(input!) {
-                captureSession.addInput(input!)
-            }
-            output = AVCaptureAudioDataOutput()
-            if captureSession.canAddOutput(output!) {
-                captureSession.addOutput(output!)
-            }
-        } else {
-            input = nil
-            output = nil
         }
+        if session.canAddInput(input!) {
+            session.addInput(input!)
+        }
+        output = AVCaptureAudioDataOutput()
+        output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
+        if session.canAddOutput(output!) {
+            session.addOutput(output!)
+        }
+        session.automaticallyConfiguresApplicationAudioSession = false
     }
 
     func addReplaceAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
