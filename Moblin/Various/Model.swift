@@ -2113,7 +2113,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadStream(continueRecording: isRecording)
             sceneUpdated(attachCamera: true)
             setupAudioSession()
-            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+            media.attachDefaultAudioDevice()
             reloadRtmpServer()
             reloadDjiDevices()
             reloadSrtlaServer()
@@ -8771,7 +8771,7 @@ extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        media.attachDefaultAudioDevice()
     }
 
     private func setupAudioSession() {
@@ -8956,7 +8956,7 @@ extension Model {
                 }
             }
         }
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        media.attachDefaultAudioDevice()
     }
 
     func setMicFromSettings() {
@@ -9057,7 +9057,7 @@ extension Model {
                 }
             }
         }
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        media.attachDefaultAudioDevice()
         currentMic = mic
         saveSelectedMic(mic: mic)
         remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))

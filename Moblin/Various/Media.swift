@@ -130,7 +130,7 @@ final class Media: NSObject {
         }
         netStream!.delegate = self
         netStream!.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
-        attachAudio(device: AVCaptureDevice.default(for: .audio))
+        attachDefaultAudioDevice()
     }
 
     func getAudioLevel() -> Float {
@@ -843,8 +843,14 @@ final class Media: NSObject {
         netStream?.setReplaceVideoTargetLatency(cameraId: cameraId, latency)
     }
 
-    func attachAudio(device: AVCaptureDevice?) {
+    private func attachAudio(device: AVCaptureDevice?) {
         netStream?.attachAudio(device) { error in
+            logger.error("stream: Attach audio error: \(error)")
+        }
+    }
+
+    func attachDefaultAudioDevice() {
+        netStream?.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("stream: Attach audio error: \(error)")
         }
     }
