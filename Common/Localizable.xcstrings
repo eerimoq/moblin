@@ -23944,6 +23944,7 @@
       }
     },
     "Bar" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -41014,6 +41015,7 @@
       }
     },
     "Decibel" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

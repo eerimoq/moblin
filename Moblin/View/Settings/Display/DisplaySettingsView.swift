@@ -1,17 +1,7 @@
 import SwiftUI
 
-private let audioLevels = [String(localized: "Bar"), String(localized: "Decibel")]
-
 struct DisplaySettingsView: View {
     @EnvironmentObject var model: Model
-
-    private func onAudioLevelChange(type: String) {
-        model.database.show.audioBar = type == String(localized: "Bar")
-    }
-
-    private func audioLevel() -> String {
-        return model.database.show.audioBar ? String(localized: "Bar") : String(localized: "Decibel")
-    }
 
     var body: some View {
         Form {
@@ -39,17 +29,6 @@ struct DisplaySettingsView: View {
                         LocalOverlaysSettingsView()
                     } label: {
                         Text("Local overlays")
-                    }
-                    HStack {
-                        Text("Audio level")
-                        Spacer()
-                        Picker("", selection: Binding(get: {
-                            audioLevel()
-                        }, set: onAudioLevelChange)) {
-                            ForEach(audioLevels, id: \.self) {
-                                Text($0)
-                            }
-                        }
                     }
                     NavigationLink {
                         LocalOverlaysNetworkInterfaceNamesSettingsView()

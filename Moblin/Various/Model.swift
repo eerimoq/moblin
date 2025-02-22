@@ -2587,9 +2587,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             let monotonicNow = ContinuousClock.now
-            if self.database.show.audioBar {
-                self.updateAudioLevel()
-            }
+            self.updateAudioLevel()
             self.updateChat()
             self.executeChatBotMessage()
             if self.isWatchLocal() {
@@ -2619,9 +2617,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
             self.updateServersSpeed()
-            if !self.database.show.audioBar {
-                self.updateAudioLevel()
-            }
             self.updateBondingStatistics()
             self.removeOldChatMessages(now: monotonicNow)
             self.updateLocation()

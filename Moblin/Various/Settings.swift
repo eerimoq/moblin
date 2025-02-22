@@ -1597,7 +1597,8 @@ class SettingsShow: Codable {
     var zoom: Bool = false
     var zoomPresets: Bool = true
     var microphone: Bool = false
-    var audioBar: Bool = true
+    // periphery:ignore
+    var audioBar: Bool? = true
     var cameras: Bool? = false
     var obsStatus: Bool? = true
     var rtmpSpeed: Bool? = true

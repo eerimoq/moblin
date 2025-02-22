@@ -843,12 +843,6 @@ final class Media: NSObject {
         netStream?.setReplaceVideoTargetLatency(cameraId: cameraId, latency)
     }
 
-    private func attachAudio(device: AVCaptureDevice?) {
-        netStream?.attachAudio(device) { error in
-            logger.error("stream: Attach audio error: \(error)")
-        }
-    }
-
     func attachDefaultAudioDevice() {
         netStream?.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("stream: Attach audio error: \(error)")

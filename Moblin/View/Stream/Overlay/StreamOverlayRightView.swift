@@ -302,22 +302,14 @@ private struct StatusesView: View {
 struct RightOverlayTopView: View {
     @EnvironmentObject var model: Model
 
-    private var database: Database {
-        model.settings.database
-    }
-
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             VStack(alignment: .trailing, spacing: 1) {
                 if model.isShowingStatusAudioLevel() {
-                    AudioLevelView(
-                        showBar: database.show.audioBar,
-                        level: model.audioLevel,
-                        channels: model.numberOfAudioChannels
-                    )
-                    .padding(20)
-                    .contentShape(Rectangle())
-                    .padding(-20)
+                    AudioLevelView(level: model.audioLevel, channels: model.numberOfAudioChannels)
+                        .padding(20)
+                        .contentShape(Rectangle())
+                        .padding(-20)
                 }
                 if model.verboseStatuses {
                     StatusesView(textPlacement: .beforeIcon)
