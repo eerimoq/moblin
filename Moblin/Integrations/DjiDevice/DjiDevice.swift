@@ -65,8 +65,7 @@ class DjiDevice: NSObject {
     private let startStreamingTimer = SimpleTimer(queue: .main)
     private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
-    // periphery:ignore
-    private var batteryPercentage: UInt8?
+    private var batteryPercentage: Int?
 
     func startLiveStream(
         wifiSsid: String,
@@ -106,7 +105,7 @@ class DjiDevice: NSObject {
         setState(state: .stoppingStream)
     }
 
-    func getBatteryPercentage() -> UInt8? {
+    func getBatteryPercentage() -> Int? {
         return batteryPercentage
     }
 
@@ -396,7 +395,7 @@ extension DjiDevice: CBPeripheralDelegate {
             guard message.payload.count >= 21 else {
                 return
             }
-            batteryPercentage = message.payload[20]
+            batteryPercentage = Int(message.payload[20])
         default:
             break
         }

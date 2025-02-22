@@ -1627,20 +1627,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var statuses: [String] = []
         var ok = true
         for (name, batteryPercentage) in moblinkStreamer.getStatuses() {
-            let status: String
-            if let batteryPercentage {
-                if batteryPercentage < 10 {
-                    status = "\(name)🪫\(batteryPercentage)%"
-                    ok = false
-                } else {
-                    status = "\(name)🔋\(batteryPercentage)%"
-                }
-            } else {
-                status = name
+            let (deviceOk, status) = formatDeviceStatus(name: name, batteryPercentage: batteryPercentage)
+            if !deviceOk {
+                ok = false
             }
             statuses.append(status)
         }
         return (statuses.joined(separator: ", "), ok)
+    }
+
+    private func formatDeviceStatus(name: String, batteryPercentage: Int?) -> (Bool, String) {
+        var ok = true
+        var status: String
+        if let batteryPercentage {
+            if batteryPercentage <= 10 {
+                status = "\(name)🪫\(batteryPercentage)%"
+                ok = false
+            } else {
+                status = "\(name)🔋\(batteryPercentage)%"
+            }
+        } else {
+            status = name
+        }
+        return (ok, status)
     }
 
     func reloadNtpClient() {
@@ -9985,15 +9994,11 @@ extension Model {
             guard getDjiDeviceState(device: device) == .streaming else {
                 continue
             }
-            if let batteryPercentage = djiDeviceWrapper.device.getBatteryPercentage() {
-                if batteryPercentage < 10 {
-                    statuses.append("\(device.name)🪫\(batteryPercentage)%")
-                } else {
-                    statuses.append("\(device.name)🔋\(batteryPercentage)%")
-                }
-            } else {
-                statuses.append("\(device.name) -")
-            }
+            let (_, status) = formatDeviceStatus(
+                name: device.name,
+                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage()
+            )
+            statuses.append(status)
         }
         let status = statuses.joined(separator: ", ")
         if status != djiDevicesStatus {
