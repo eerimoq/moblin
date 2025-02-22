@@ -41,9 +41,10 @@ private class Relay: NSObject {
     var state: RelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
-    var destinationInterface: NWInterface?
+    var destinationInterface: NWInterface
     private var id: String
     private weak var relay: MoblinkRelay?
+    var isMain = false
 
     init(
         id: String,
@@ -197,10 +198,6 @@ private class Relay: NSObject {
         streamerListener?.stateUpdateHandler = handleListenerStateChange(to:)
         streamerListener?.newConnectionHandler = handleNewListenerConnection(connection:)
         streamerListener?.start(queue: moblinkRelayQueue)
-        guard let destinationInterface else {
-            reconnect(reason: "No cellular interface")
-            return
-        }
         let params = NWParameters(dtls: .none)
         params.requiredInterface = destinationInterface
         params.prohibitExpensivePaths = false
@@ -217,7 +214,10 @@ private class Relay: NSObject {
     }
 
     private func handleStatus(id: Int) {
-        let batteryPercentage = delegate?.moblinkRelayGetBatteryPercentage()
+        var batteryPercentage: Int?
+        if isMain {
+            batteryPercentage = delegate?.moblinkRelayGetBatteryPercentage()
+        }
         send(message: .response(id: id, result: .ok, data: .status(batteryPercentage: batteryPercentage)))
     }
 
@@ -433,6 +433,15 @@ class MoblinkRelay: NSObject {
         {
             relay.stop()
         }
+        var mainRelay = relays.first
+        for relay in relays {
+            relay.isMain = false
+            if relay.destinationInterface.type == .cellular {
+                mainRelay = relay
+                break
+            }
+        }
+        mainRelay?.isMain = true
         self.relays = relays
         relayStateChanged()
         // logger.info("moblink-client: Number of relays is \(relays.count)")

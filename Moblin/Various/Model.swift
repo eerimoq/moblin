@@ -1627,16 +1627,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var statuses: [String] = []
         var ok = true
         for (name, batteryPercentage) in moblinkStreamer.getStatuses() {
+            let status: String
             if let batteryPercentage {
                 if batteryPercentage < 10 {
-                    statuses.append("\(name)🪫\(batteryPercentage)%")
+                    status = "\(name)🪫\(batteryPercentage)%"
                     ok = false
                 } else {
-                    statuses.append("\(name)🔋\(batteryPercentage)%")
+                    status = "\(name)🔋\(batteryPercentage)%"
                 }
             } else {
-                statuses.append("\(name) -")
+                status = name
             }
+            statuses.append(status)
         }
         return (statuses.joined(separator: ", "), ok)
     }
