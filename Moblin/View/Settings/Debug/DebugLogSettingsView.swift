@@ -4,14 +4,13 @@ import SwiftUI
 struct DebugLogSettingsView: View {
     @EnvironmentObject var model: Model
     var log: Deque<LogEntry>
-    var formatLog: () -> String
     var clearLog: () -> Void
 
     var body: some View {
         VStack {
             HStack(spacing: 15) {
                 Spacer()
-                ShareLink(item: formatLog())
+                ShareLink(item: model.formatLog(log: log))
                 Button(action: {
                     clearLog()
                     model.objectWillChange.send()

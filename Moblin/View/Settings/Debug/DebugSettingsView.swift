@@ -17,11 +17,7 @@ struct DebugSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    DebugLogSettingsView(
-                        log: model.log,
-                        formatLog: { model.formatLog(log: model.log) },
-                        clearLog: { model.clearLog() }
-                    )
+                    DebugLogSettingsView(log: model.log, clearLog: { model.clearLog() })
                 } label: {
                     Text("Log")
                 }
