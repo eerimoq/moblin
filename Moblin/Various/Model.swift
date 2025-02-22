@@ -1627,7 +1627,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var statuses: [String] = []
         var ok = true
         for (name, batteryPercentage) in moblinkStreamer.getStatuses() {
-            let (deviceOk, status) = formatDeviceStatus(name: name, batteryPercentage: batteryPercentage)
+            let (status, deviceOk) = formatDeviceStatus(name: name, batteryPercentage: batteryPercentage)
             if !deviceOk {
                 ok = false
             }
@@ -1636,7 +1636,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return (statuses.joined(separator: ", "), ok)
     }
 
-    private func formatDeviceStatus(name: String, batteryPercentage: Int?) -> (Bool, String) {
+    private func formatDeviceStatus(name: String, batteryPercentage: Int?) -> (String, Bool) {
         var ok = true
         var status: String
         if let batteryPercentage {
@@ -1649,7 +1649,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             status = name
         }
-        return (ok, status)
+        return (status, ok)
     }
 
     func reloadNtpClient() {
@@ -9994,7 +9994,7 @@ extension Model {
             guard getDjiDeviceState(device: device) == .streaming else {
                 continue
             }
-            let (_, status) = formatDeviceStatus(
+            let (status, _) = formatDeviceStatus(
                 name: device.name,
                 batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage()
             )
