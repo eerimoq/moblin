@@ -185,6 +185,7 @@ private struct RelayView: View {
             }, set: { value in
                 model.database.moblink!.client.enabled = value
                 model.reloadMoblinkRelay()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
@@ -243,6 +244,7 @@ private struct StreamerView: View {
             .onChange(of: enabled) { value in
                 model.database.moblink!.server.enabled = value
                 model.reloadMoblinkStreamer()
+                model.objectWillChange.send()
             }
             .disabled(model.isLive)
             TextEditNavigationView(
