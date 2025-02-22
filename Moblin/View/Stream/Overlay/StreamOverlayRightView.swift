@@ -299,18 +299,26 @@ private struct StatusesView: View {
     }
 }
 
+private struct AudioView: View {
+    @ObservedObject var audio: AudioProvider
+
+    var body: some View {
+        if audio.showing {
+            AudioLevelView(level: audio.level, channels: audio.numberOfChannels)
+                .padding(20)
+                .contentShape(Rectangle())
+                .padding(-20)
+        }
+    }
+}
+
 struct RightOverlayTopView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             VStack(alignment: .trailing, spacing: 1) {
-                if model.isShowingStatusAudioLevel() {
-                    AudioLevelView(level: model.audioLevel, channels: model.numberOfAudioChannels)
-                        .padding(20)
-                        .contentShape(Rectangle())
-                        .padding(-20)
-                }
+                AudioView(audio: model.audio)
                 if model.verboseStatuses {
                     StatusesView(textPlacement: .beforeIcon)
                 } else {

@@ -312,6 +312,12 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
+class AudioProvider: ObservableObject {
+    @Published var showing = false
+    @Published var level: Float = defaultAudioLevel
+    @Published var numberOfChannels: Int = 0
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -372,8 +378,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var bondingStatistics = noValue
     @Published var bondingRtts = noValue
     private var bondingStatisticsFormatter = BondingStatisticsFormatter()
-    @Published var audioLevel: Float = defaultAudioLevel
-    @Published var numberOfAudioChannels: Int = 0
+    let audio = AudioProvider()
     var settings = Settings()
     @Published var digitalClock = noValue
     private var selectedSceneId = UUID()
@@ -2911,20 +2916,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateAudioLevel() {
+        if database.show.audioLevel != audio.showing {
+            audio.showing = database.show.audioLevel
+        }
         let newAudioLevel = media.getAudioLevel()
         let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
-        if newNumberOfAudioChannels != numberOfAudioChannels {
-            numberOfAudioChannels = newNumberOfAudioChannels
+        if newNumberOfAudioChannels != audio.numberOfChannels {
+            audio.numberOfChannels = newNumberOfAudioChannels
         }
-        if newAudioLevel == audioLevel {
+        if newAudioLevel == audio.level {
             return
         }
-        if abs(audioLevel - newAudioLevel) > 5 || newAudioLevel
-            .isNaN || newAudioLevel == .infinity || audioLevel.isNaN || audioLevel == .infinity
+        if abs(audio.level - newAudioLevel) > 5 || newAudioLevel
+            .isNaN || newAudioLevel == .infinity || audio.level.isNaN || audio.level == .infinity
         {
-            audioLevel = newAudioLevel
+            audio.level = newAudioLevel
             if isWatchLocal() {
-                sendAudioLevelToWatch(audioLevel: audioLevel)
+                sendAudioLevelToWatch(audioLevel: audio.level)
             }
         }
     }
@@ -7233,10 +7241,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func isShowingStatusAudioLevel() -> Bool {
-        return database.show.audioLevel
-    }
-
     func isShowingStatusHypeTrain() -> Bool {
         return hypeTrainStatus != noValue
     }
@@ -7403,19 +7407,19 @@ extension Model: RemoteControlStreamerDelegate {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         var topRight = RemoteControlStatusTopRight()
-        let level = formatAudioLevel(level: audioLevel) +
-            formatAudioLevelChannels(channels: numberOfAudioChannels)
+        let level = formatAudioLevel(level: audio.level) +
+            formatAudioLevelChannels(channels: audio.numberOfChannels)
         topRight.audioLevel = RemoteControlStatusItem(message: level)
         topRight.audioInfo = .init(
             audioLevel: .unknown,
-            numberOfAudioChannels: numberOfAudioChannels
+            numberOfAudioChannels: audio.numberOfChannels
         )
-        if audioLevel.isNaN {
+        if audio.level.isNaN {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audioLevel.isInfinite {
+        } else if audio.level.isInfinite {
             topRight.audioInfo!.audioLevel = .unknown
         } else {
-            topRight.audioInfo!.audioLevel = .value(audioLevel)
+            topRight.audioInfo!.audioLevel = .value(audio.level)
         }
         if isServersConfigured() {
             topRight.rtmpServer = RemoteControlStatusItem(message: serversSpeedAndTotal)
@@ -8007,7 +8011,7 @@ extension Model {
             sendWorkoutToWatch()
             resetWorkoutStats()
             trySendNextChatPostToWatch()
-            sendAudioLevelToWatch(audioLevel: audioLevel)
+            sendAudioLevelToWatch(audioLevel: audio.level)
             sendThermalStateToWatch(thermalState: thermalState)
             sendIsLiveToWatch(isLive: isLive)
             sendIsRecordingToWatch(isRecording: isRecording)
