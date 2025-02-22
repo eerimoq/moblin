@@ -7175,6 +7175,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func statusChatText() -> String {
+        if !isChatConfigured() {
+            return String(localized: "Not configured")
+        } else if isChatRemoteControl() {
+            if isRemoteControlStreamerConnected() {
+                return String(localized: "Connected (remote control)")
+            } else {
+                return String(localized: "Disconnected (remote control)")
+            }
+        } else if isChatConnected() {
+            return String(localized: "Connected")
+        } else {
+            return String(localized: "Disconnected")
+        }
+    }
+
     func statusViewersText() -> String {
         if isViewersConfigured() {
             return numberOfViewers
@@ -7343,7 +7359,7 @@ extension Model: RemoteControlStreamerDelegate {
             topLeft.events = RemoteControlStatusItem(message: statusEventsText())
         }
         if isChatConfigured() {
-            topLeft.chat = RemoteControlStatusItem(message: "")
+            topLeft.chat = RemoteControlStatusItem(message: statusChatText())
         }
         if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
