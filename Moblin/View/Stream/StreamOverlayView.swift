@@ -34,12 +34,12 @@ struct ChatInfo: View {
 }
 
 private struct ChatPausedView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        if model.chatPaused {
+        if chat.chatPaused {
             ChatInfo(
-                message: String(localized: "Chat paused: \(model.pausedChatPostsCount) new messages")
+                message: String(localized: "Chat paused: \(chat.pausedChatPostsCount) new messages")
             )
             .padding(2)
         }
@@ -54,8 +54,8 @@ private struct ChatOverlayView: View {
         if model.stream.portrait! || model.database.portrait! {
             VStack {
                 ZStack {
-                    StreamOverlayChatView()
-                    ChatPausedView()
+                    StreamOverlayChatView(chat: model.chat)
+                    ChatPausedView(chat: model.chat)
                 }
                 Rectangle()
                     .foregroundColor(.clear)
@@ -65,10 +65,10 @@ private struct ChatOverlayView: View {
             VStack {
                 ZStack {
                     GeometryReader { metrics in
-                        StreamOverlayChatView()
+                        StreamOverlayChatView(chat: model.chat)
                             .frame(width: metrics.size.width * 0.95)
                     }
-                    ChatPausedView()
+                    ChatPausedView(chat: model.chat)
                 }
                 Rectangle()
                     .foregroundColor(.clear)
@@ -128,6 +128,7 @@ private struct FrontTorchView: View {
 
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chat: ChatProvider
     let width: CGFloat
     let height: CGFloat
 
@@ -150,7 +151,7 @@ struct StreamOverlayView: View {
                 if model.showingPanel != .chat {
                     ChatOverlayView(height: height)
                         .opacity(model.database.chat.enabled! ? 1 : 0)
-                        .allowsHitTesting(model.interactiveChat)
+                        .allowsHitTesting(chat.interactiveChat)
                 }
                 HStack {
                     Spacer()

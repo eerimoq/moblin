@@ -128,6 +128,7 @@ private var previousOffset = 0.0
 
 private struct MessagesView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chat: ChatProvider
     private let spaceName = "scroll"
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
@@ -173,7 +174,7 @@ private struct MessagesView: View {
                     ChildSizeReader(size: $scrollViewSize) {
                         VStack {
                             LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(model.interactiveChatPosts) { post in
+                                ForEach(chat.interactiveChatPosts) { post in
                                     if post.user != nil {
                                         if let highlight = post.highlight {
                                             HStack(spacing: 0) {
@@ -224,11 +225,11 @@ private struct MessagesView: View {
                             perform: { scrollViewOffsetFromTop in
                                 let offset = max(scrollViewOffsetFromTop, 0)
                                 if isCloseToStart(offset: offset) {
-                                    if model.interactiveChatPaused, offset >= previousOffset {
+                                    if chat.interactiveChatPaused, offset >= previousOffset {
                                         model.endOfInteractiveChatReachedWhenPaused()
                                     }
-                                } else if !model.interactiveChatPaused {
-                                    if !model.interactiveChatPosts.isEmpty {
+                                } else if !chat.interactiveChatPaused {
+                                    if !chat.interactiveChatPosts.isEmpty {
                                         model.pauseInteractiveChat()
                                     }
                                 }
@@ -308,14 +309,14 @@ private struct HypeTrainView: View {
 }
 
 private struct ChatView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var chat: ChatProvider
 
     var body: some View {
         ZStack {
-            MessagesView()
-            if model.interactiveChatPaused {
+            MessagesView(chat: chat)
+            if chat.interactiveChatPaused {
                 ChatInfo(
-                    message: String(localized: "Chat paused: \(model.pausedInteractiveChatPostsCount) new messages")
+                    message: String(localized: "Chat paused: \(chat.pausedInteractiveChatPostsCount) new messages")
                 )
                 .padding(2)
             }
@@ -545,7 +546,7 @@ struct QuickButtonChatView: View {
     var body: some View {
         VStack {
             if model.showAllInteractiveChatMessage {
-                ChatView()
+                ChatView(chat: model.chat)
             } else {
                 ChatAlertsView()
             }

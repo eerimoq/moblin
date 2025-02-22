@@ -73,7 +73,6 @@ class DjiDeviceWrapper {
 
 private let maximumNumberOfChatMessages = 50
 private let maximumNumberOfInteractiveChatMessages = 100
-private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
 let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
@@ -318,6 +317,16 @@ class AudioProvider: ObservableObject {
     @Published var numberOfChannels: Int = 0
 }
 
+class ChatProvider: ObservableObject {
+    @Published var interactiveChat = false
+    @Published var chatPosts: Deque<ChatPost> = []
+    @Published var pausedChatPostsCount: Int = 0
+    @Published var chatPaused = false
+    @Published var interactiveChatPosts: Deque<ChatPost> = []
+    @Published var pausedInteractiveChatPostsCount: Int = 0
+    @Published var interactiveChatPaused = false
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -391,24 +400,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
-    @Published var interactiveChat = false
-    @Published var chatPosts: Deque<ChatPost> = []
-    @Published var pausedChatPostsCount: Int = 0
-    @Published var chatPaused = false
+    var chat = ChatProvider()
     private var newChatPosts: Deque<ChatPost> = []
     private var pausedChatPosts: Deque<ChatPost> = []
     private var chatBotMessages: Deque<ChatBotMessage> = []
-    private var numberOfChatPostsPerTick = 0
-    private var chatPostsRatePerSecond = 0.0
-    private var chatPostsRatePerMinute = 0.0
-    private var numberOfChatPostsPerMinute = 0
-    @Published var chatPostsRate = String(localized: "0.0/min")
-    @Published var chatPostsTotal: Int = 0
-    @Published var interactiveChatPosts: Deque<ChatPost> = []
     private var newInteractiveChatPosts: Deque<ChatPost> = []
     private var pausedInteractiveChatPosts: Deque<ChatPost> = []
-    @Published var pausedInteractiveChatPostsCount: Int = 0
-    @Published var interactiveChatPaused = false
     @Published var showAllInteractiveChatMessage = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
@@ -419,7 +416,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var interactiveChatAlertsPaused = false
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var nextWatchChatPostId = 1
-    private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     private var batteryLevelLowCounter = -1
@@ -1344,7 +1340,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
         verboseStatuses = database.verboseStatuses!
         supportsAppleLog = hasAppleLog()
-        interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
+        chat.interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait!)
         setBitrateDropFix()
@@ -2620,7 +2616,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateUptime(now: monotonicNow)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
-            self.updateChatSpeed()
             self.media.updateSrtSpeed()
             self.updateSpeed(now: monotonicNow)
             self.updateServersSpeed()
@@ -2974,14 +2969,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func pauseChat() {
-        chatPaused = true
-        pausedChatPostsCount = 0
+        chat.chatPaused = true
+        chat.pausedChatPostsCount = 0
         pausedChatPosts = [createRedLineChatPost()]
     }
 
     func disableInteractiveChat() {
         _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
-        chatPaused = false
+        chat.chatPaused = false
     }
 
     private func createRedLineChatPost() -> ChatPost {
@@ -3005,8 +3000,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func pauseInteractiveChat() {
-        interactiveChatPaused = true
-        pausedInteractiveChatPostsCount = 0
+        chat.interactiveChatPaused = true
+        chat.pausedInteractiveChatPostsCount = 0
         pausedInteractiveChatPosts = [createRedLineChatPost()]
     }
 
@@ -3014,27 +3009,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var numberOfPostsAppended = 0
         while numberOfPostsAppended < 5, let post = pausedInteractiveChatPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = interactiveChatPosts.first, lastPost.user == nil {
+                if let lastPost = chat.interactiveChatPosts.first, lastPost.user == nil {
                     continue
                 }
                 if pausedInteractiveChatPosts.isEmpty {
                     continue
                 }
             }
-            if interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                interactiveChatPosts.removeLast()
+            if chat.interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                chat.interactiveChatPosts.removeLast()
             }
-            interactiveChatPosts.prepend(post)
+            chat.interactiveChatPosts.prepend(post)
             numberOfPostsAppended += 1
         }
         if numberOfPostsAppended == 0 {
-            interactiveChatPaused = false
+            chat.interactiveChatPaused = false
         }
     }
 
     func endOfChatReachedWhenPaused() {
         if appendPausedChatPosts(maximumNumberOfPostsToAppend: 5) == 0 {
-            chatPaused = false
+            chat.chatPaused = false
         }
     }
 
@@ -3042,17 +3037,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var numberOfPostsAppended = 0
         while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = pausedChatPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = chatPosts.first, lastPost.user == nil {
+                if let lastPost = chat.chatPosts.first, lastPost.user == nil {
                     continue
                 }
                 if pausedChatPosts.isEmpty {
                     continue
                 }
             }
-            if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeLast()
+            if chat.chatPosts.count > maximumNumberOfChatMessages - 1 {
+                chat.chatPosts.removeLast()
             }
-            chatPosts.prepend(post)
+            chat.chatPosts.prepend(post)
             numberOfPostsAppended += 1
         }
         return numberOfPostsAppended
@@ -3086,15 +3081,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func removeOldChatMessages(now: ContinuousClock.Instant) {
-        if interactiveChatPaused {
+        if chat.interactiveChatPaused {
             return
         }
         guard database.chat.maximumAgeEnabled! else {
             return
         }
-        while let post = chatPosts.last {
+        while let post = chat.chatPosts.last {
             if now > post.timestampTime + .seconds(database.chat.maximumAge!) {
-                chatPosts.removeLast()
+                chat.chatPosts.removeLast()
             } else {
                 break
             }
@@ -3103,10 +3098,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateChat() {
         while let post = newChatPosts.popFirst() {
-            if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeLast()
+            if chat.chatPosts.count > maximumNumberOfChatMessages - 1 {
+                chat.chatPosts.removeLast()
             }
-            chatPosts.prepend(post)
+            chat.chatPosts.prepend(post)
             if isWatchLocal() {
                 sendChatMessageToWatch(post: post)
             }
@@ -3119,28 +3114,27 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if isAnyConnectedCatPrinterPrintingChat() {
                 printChatMessage(post: post)
             }
-            numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
-        if chatPaused {
-            pausedChatPostsCount = max(pausedChatPosts.count - 1, 0)
+        if chat.chatPaused {
+            chat.pausedChatPostsCount = max(pausedChatPosts.count - 1, 0)
         } else {
             while let post = newChatPosts.popFirst() {
-                if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                    chatPosts.removeLast()
+                if chat.chatPosts.count > maximumNumberOfChatMessages - 1 {
+                    chat.chatPosts.removeLast()
                 }
-                chatPosts.prepend(post)
+                chat.chatPosts.prepend(post)
             }
         }
-        if interactiveChatPaused {
+        if chat.interactiveChatPaused {
             // The red line is one post.
-            pausedInteractiveChatPostsCount = max(pausedInteractiveChatPosts.count - 1, 0)
+            chat.pausedInteractiveChatPostsCount = max(pausedInteractiveChatPosts.count - 1, 0)
         } else {
             while let post = newInteractiveChatPosts.popFirst() {
-                if interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    interactiveChatPosts.removeLast()
+                if chat.interactiveChatPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
+                    chat.interactiveChatPosts.removeLast()
                 }
-                interactiveChatPosts.prepend(post)
+                chat.interactiveChatPosts.prepend(post)
             }
         }
         if interactiveChatAlertsPaused {
@@ -4555,17 +4549,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func resetChat() {
-        chatPostsRate = "0.0/min"
-        chatPostsTotal = 0
-        chatSpeedTicks = 0
-        chatPosts = []
+        chat.chatPosts = []
         newChatPosts = []
         chatBotMessages = []
-        numberOfChatPostsPerTick = 0
-        chatPostsRatePerSecond = 0
-        chatPostsRatePerMinute = 0
-        numberOfChatPostsPerMinute = 0
-        interactiveChatPosts = []
+        chat.interactiveChatPosts = []
         pausedInteractiveChatPosts = []
         newInteractiveChatPosts = []
         interactiveChatAlertsPosts = []
@@ -5454,14 +5441,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             live: live
         )
         chatPostId += 1
-        if chatPaused {
+        if chat.chatPaused {
             if pausedChatPosts.count < 2 * maximumNumberOfChatMessages {
                 pausedChatPosts.append(post)
             }
         } else {
             newChatPosts.append(post)
         }
-        if interactiveChatPaused {
+        if chat.interactiveChatPaused {
             if pausedInteractiveChatPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
                 pausedInteractiveChatPosts.append(post)
             }
@@ -5480,8 +5467,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func reloadChatMessages() {
-        chatPosts = newPostIds(posts: chatPosts)
-        interactiveChatPosts = newPostIds(posts: interactiveChatPosts)
+        chat.chatPosts = newPostIds(posts: chat.chatPosts)
+        chat.interactiveChatPosts = newPostIds(posts: chat.interactiveChatPosts)
         interactiveChatAlertsPosts = newPostIds(posts: interactiveChatAlertsPosts)
     }
 
@@ -6254,33 +6241,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isBatteryCharging() -> Bool {
         return batteryState == .charging || batteryState == .full
-    }
-
-    private func updateChatSpeed() {
-        if numberOfChatPostsPerTick != 0 {
-            chatPostsTotal += numberOfChatPostsPerTick
-        }
-        chatPostsRatePerSecond = chatPostsRatePerSecond * 0.8 +
-            Double(numberOfChatPostsPerTick) * 0.2
-        numberOfChatPostsPerMinute += numberOfChatPostsPerTick
-        if chatSpeedTicks % 60 == 0 {
-            chatPostsRatePerMinute = chatPostsRatePerMinute * 0.5 +
-                Double(numberOfChatPostsPerMinute) * 0.5
-            numberOfChatPostsPerMinute = 0
-        }
-        let newChatPostsRate: String
-        if chatPostsRatePerSecond > 0.5 ||
-            (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix(secondsSuffix))
-        {
-            newChatPostsRate = String(format: "%.1f", chatPostsRatePerSecond) + secondsSuffix
-        } else {
-            newChatPostsRate = String(format: String(localized: "%.1f/min"), chatPostsRatePerMinute)
-        }
-        if chatPostsRate != newChatPostsRate {
-            chatPostsRate = newChatPostsRate
-        }
-        numberOfChatPostsPerTick = 0
-        chatSpeedTicks += 1
     }
 
     private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {
@@ -7211,30 +7171,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func statusChatText() -> String {
-        if !isChatConfigured() {
-            return String(localized: "Not configured")
-        } else if isChatRemoteControl() {
-            if isRemoteControlStreamerConnected() {
-                return String(
-                    format: String(localized: "%@ (%@ total) (remote control)"),
-                    chatPostsRate,
-                    countFormatter.format(chatPostsTotal)
-                )
-            } else {
-                return String(localized: "Disconnected (remote control)")
-            }
-        } else if isChatConnected() {
-            return String(
-                format: String(localized: "%@ (%@ total)"),
-                chatPostsRate,
-                countFormatter.format(chatPostsTotal)
-            )
-        } else {
-            return String(localized: "Disconnected")
-        }
-    }
-
     func statusViewersText() -> String {
         if isViewersConfigured() {
             return numberOfViewers
@@ -7403,7 +7339,7 @@ extension Model: RemoteControlStreamerDelegate {
             topLeft.events = RemoteControlStatusItem(message: statusEventsText())
         }
         if isChatConfigured() {
-            topLeft.chat = RemoteControlStatusItem(message: statusChatText())
+            topLeft.chat = RemoteControlStatusItem(message: "")
         }
         if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())

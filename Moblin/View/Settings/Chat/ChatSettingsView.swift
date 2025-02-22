@@ -30,6 +30,7 @@ struct ChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.enabled = value
                     model.reloadChats()
+                    model.objectWillChange.send()
                 }))
             }
             Section {

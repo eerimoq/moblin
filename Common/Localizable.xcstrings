@@ -6006,6 +6006,7 @@
       }
     },
     "/sec" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6272,6 +6273,7 @@
       }
     },
     "%.1f/min" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6668,6 +6670,7 @@
       }
     },
     "%@ (%@ total)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6810,6 +6813,7 @@
       }
     },
     "%@ (%@ total) (remote control)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -11516,6 +11520,7 @@
       }
     },
     "0.0/min" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

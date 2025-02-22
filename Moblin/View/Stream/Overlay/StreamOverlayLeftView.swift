@@ -121,7 +121,7 @@ private struct StatusesView: View {
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusChat(),
             icon: "message",
-            text: model.statusChatText(),
+            text: "",
             textPlacement: textPlacement,
             color: chatColor()
         )
