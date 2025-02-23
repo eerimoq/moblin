@@ -12987,6 +12987,9 @@
         }
       }
     },
+    "250 or more milliseconds. 2000 ms by default." : {
+
+    },
     "7654" : {
       "localizations" : {
         "de" : {
@@ -122507,6 +122510,9 @@
         }
       }
     },
+    "The higher, the lower risk of stuttering." : {
+
+    },
     "The log is empty." : {
       "localizations" : {
         "de" : {
@@ -141382,6 +141388,7 @@
       }
     },
     "Zero or more milliseconds." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
