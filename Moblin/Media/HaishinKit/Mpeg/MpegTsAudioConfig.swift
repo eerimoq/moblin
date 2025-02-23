@@ -156,10 +156,10 @@ struct MpegTsAudioConfig: Equatable {
     }
 
     init(formatDescription: CMFormatDescription) {
-        let asbd = formatDescription.audioStreamBasicDescription!
-        type = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(asbd.mFormatFlags))!)
-        frequency = SamplingFrequency(sampleRate: asbd.mSampleRate)
-        channel = ChannelConfiguration(rawValue: UInt8(asbd.mChannelsPerFrame))!
+        let streamBasicDescription = formatDescription.audioStreamBasicDescription!
+        type = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(streamBasicDescription.mFormatFlags))!)
+        frequency = SamplingFrequency(sampleRate: streamBasicDescription.mSampleRate)
+        channel = ChannelConfiguration(rawValue: UInt8(streamBasicDescription.mChannelsPerFrame))!
     }
 
     func makeHeader(_ length: Int) -> [UInt8] {
