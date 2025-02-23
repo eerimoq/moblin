@@ -383,7 +383,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var catPrinterStatus = noValue
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
-    @Published var uptime = noValue
+    @Published var streamUptime = noValue
     @Published var bondingStatistics = noValue
     @Published var bondingRtts = noValue
     private var bondingStatisticsFormatter = BondingStatisticsFormatter()
@@ -2626,7 +2626,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
             let monotonicNow = ContinuousClock.now
-            self.updateUptime(now: monotonicNow)
+            self.updateStreamUptime(now: monotonicNow)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
             self.media.updateSrtSpeed()
@@ -4162,7 +4162,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.srtStopStream()
         media.ristStopStream()
         streamStartTime = nil
-        updateUptime(now: .now)
+        updateStreamUptime(now: .now)
         updateSpeed(now: .now)
         updateAudioLevel()
         bondingStatistics = noValue
@@ -4929,7 +4929,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func logStatus() {
         if logger.debugEnabled, isLive {
-            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(uptime)")
+            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(streamUptime)")
         }
     }
 
@@ -6139,12 +6139,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startGeographyManager()
     }
 
-    private func updateUptime(now: ContinuousClock.Instant) {
+    private func updateStreamUptime(now: ContinuousClock.Instant) {
         if let streamStartTime, isStreamConnected() {
             let elapsed = now - streamStartTime
-            uptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
-        } else if uptime != noValue {
-            uptime = noValue
+            streamUptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
+        } else if streamUptime != noValue {
+            streamUptime = noValue
         }
     }
 
@@ -6931,7 +6931,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         makeYouAreLiveToast()
         streamStartTime = .now
         streamState = .connected
-        updateUptime(now: .now)
+        updateStreamUptime(now: .now)
     }
 
     private func onDisconnected(reason: String) {
@@ -7252,7 +7252,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.speed && isLive
     }
 
-    func isShowingStatusUptime() -> Bool {
+    func isShowingStatusStreamUptime() -> Bool {
         return database.show.uptime && isLive
     }
 
@@ -7401,7 +7401,7 @@ extension Model: RemoteControlStreamerDelegate {
             topRight.bitrate = RemoteControlStatusItem(message: speedAndTotal)
         }
         if isLive {
-            topRight.uptime = RemoteControlStatusItem(message: uptime)
+            topRight.uptime = RemoteControlStatusItem(message: streamUptime)
         }
         if isLocationEnabled() {
             topRight.location = RemoteControlStatusItem(message: location)

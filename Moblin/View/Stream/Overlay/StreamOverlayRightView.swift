@@ -262,9 +262,9 @@ private struct StatusesView: View {
             color: netStreamColor()
         )
         StreamOverlayIconAndTextView(
-            show: model.isShowingStatusUptime(),
+            show: model.isShowingStatusStreamUptime(),
             icon: "deskclock",
-            text: model.uptime,
+            text: model.streamUptime,
             textPlacement: textPlacement,
             color: netStreamColor()
         )
