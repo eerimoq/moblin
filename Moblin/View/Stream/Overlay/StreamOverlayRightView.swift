@@ -74,7 +74,6 @@ private struct CollapsedHypeTrainView: View {
 private struct CollapsedAdsRemainingTimerView: View {
     @EnvironmentObject var model: Model
     var show: Bool
-    var color: Color
 
     var body: some View {
         if show {
@@ -82,7 +81,7 @@ private struct CollapsedAdsRemainingTimerView: View {
                 Image(systemName: "cup.and.saucer")
                     .frame(width: 17, height: 17)
                     .padding([.leading, .trailing], 2)
-                    .foregroundColor(color)
+                    .foregroundColor(.white)
                 Text(model.adsRemainingTimerStatus)
                     .foregroundColor(.white)
                     .padding([.leading, .trailing], 2)
@@ -125,24 +124,55 @@ private struct CollapsedBitrateView: View {
     }
 }
 
+private func netStreamColor(model: Model) -> Color {
+    if model.isStreaming() {
+        switch model.streamState {
+        case .connecting:
+            return .white
+        case .connected:
+            return .white
+        case .disconnected:
+            return .red
+        }
+    } else {
+        return .white
+    }
+}
+
+private struct StreamUptimeStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var streamUptime: StreamUptimeProvider
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusStreamUptime(),
+            icon: "deskclock",
+            text: streamUptime.uptime,
+            textPlacement: textPlacement,
+            color: netStreamColor(model: model)
+        )
+    }
+}
+
+private struct RecordingStatusView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var recording: RecordingProvider
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusRecording(),
+            icon: "record.circle",
+            text: recording.length,
+            textPlacement: textPlacement
+        )
+    }
+}
+
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func netStreamColor() -> Color {
-        if model.isStreaming() {
-            switch model.streamState {
-            case .connecting:
-                return .white
-            case .connected:
-                return .white
-            case .disconnected:
-                return .red
-            }
-        } else {
-            return .white
-        }
-    }
 
     private func remoteControlColor() -> Color {
         if model.isRemoteControlStreamerConfigured() && !model.isRemoteControlStreamerConnected() {
@@ -182,27 +212,24 @@ private struct StatusesView: View {
                 show: model.isShowingStatusHypeTrain(),
                 icon: "train.side.front.car",
                 text: model.hypeTrainStatus,
-                textPlacement: textPlacement,
-                color: .white
+                textPlacement: textPlacement
             )
         }
         if textPlacement == .hide {
-            CollapsedAdsRemainingTimerView(show: model.isShowingStatusAdsRemainingTimer(), color: .white)
+            CollapsedAdsRemainingTimerView(show: model.isShowingStatusAdsRemainingTimer())
         } else {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusAdsRemainingTimer(),
                 icon: "cup.and.saucer",
                 text: "\(model.adsRemainingTimerStatus) seconds",
-                textPlacement: textPlacement,
-                color: .white
+                textPlacement: textPlacement
             )
         }
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusServers(),
             icon: "server.rack",
             text: model.serversSpeedAndTotal,
-            textPlacement: textPlacement,
-            color: .white
+            textPlacement: textPlacement
         )
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusMoblink(),
@@ -229,8 +256,7 @@ private struct StatusesView: View {
             show: model.isShowingStatusGameController(),
             icon: "gamecontroller",
             text: model.gameControllersTotal,
-            textPlacement: textPlacement,
-            color: .white
+            textPlacement: textPlacement
         )
         if textPlacement == .hide {
             CollapsedBitrateView(show: model.isShowingStatusBitrate(), color: model.bitrateStatusColor)
@@ -244,14 +270,14 @@ private struct StatusesView: View {
             )
         }
         if textPlacement == .hide {
-            CollapsedBondingView(show: model.isShowingStatusBonding(), color: netStreamColor())
+            CollapsedBondingView(show: model.isShowingStatusBonding(), color: netStreamColor(model: model))
         } else {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusBonding(),
                 icon: "phone.connection",
                 text: model.bondingStatistics,
                 textPlacement: textPlacement,
-                color: netStreamColor()
+                color: netStreamColor(model: model)
             )
         }
         StreamOverlayIconAndTextView(
@@ -259,35 +285,21 @@ private struct StatusesView: View {
             icon: "phone.connection",
             text: model.bondingRtts,
             textPlacement: textPlacement,
-            color: netStreamColor()
+            color: netStreamColor(model: model)
         )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusStreamUptime(),
-            icon: "deskclock",
-            text: model.streamUptime,
-            textPlacement: textPlacement,
-            color: netStreamColor()
-        )
+        StreamUptimeStatusView(streamUptime: model.streamUptime, textPlacement: textPlacement)
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusLocation(),
             icon: "location",
             text: model.location,
-            textPlacement: textPlacement,
-            color: .white
+            textPlacement: textPlacement
         )
-        StreamOverlayIconAndTextView(
-            show: model.isShowingStatusRecording(),
-            icon: "record.circle",
-            text: model.recordingLength,
-            textPlacement: textPlacement,
-            color: .white
-        )
+        RecordingStatusView(recording: model.recording, textPlacement: textPlacement)
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusBrowserWidgets(),
             icon: "globe",
             text: model.browserWidgetsStatus,
-            textPlacement: textPlacement,
-            color: .white
+            textPlacement: textPlacement
         )
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusCatPrinter(),

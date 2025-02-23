@@ -327,6 +327,14 @@ class ChatProvider: ObservableObject {
     @Published var interactiveChatPaused = false
 }
 
+class StreamUptimeProvider: ObservableObject {
+    @Published var uptime = noValue
+}
+
+class RecordingProvider: ObservableObject {
+    @Published var length = noValue
+}
+
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -378,12 +386,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isRecording = false
     private var workoutType: WatchProtocolWorkoutType?
     private var currentRecording: Recording?
-    @Published var recordingLength = noValue
+    let recording = RecordingProvider()
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
-    @Published var streamUptime = noValue
+    var streamUptime = StreamUptimeProvider()
     @Published var bondingStatistics = noValue
     @Published var bondingRtts = noValue
     private var bondingStatisticsFormatter = BondingStatisticsFormatter()
@@ -6142,9 +6150,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateStreamUptime(now: ContinuousClock.Instant) {
         if let streamStartTime, isStreamConnected() {
             let elapsed = now - streamStartTime
-            streamUptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
-        } else if streamUptime != noValue {
-            streamUptime = noValue
+            streamUptime.uptime = uptimeFormatter.string(from: Double(elapsed.components.seconds))!
+        } else if streamUptime.uptime != noValue {
+            streamUptime.uptime = noValue
         }
     }
 
@@ -6152,14 +6160,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if let currentRecording {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
             let size = currentRecording.url().fileSize.formatBytes()
-            recordingLength = "\(elapsed) (\(size))"
+            recording.length = "\(elapsed) (\(size))"
             if isWatchLocal() {
-                sendRecordingLengthToWatch(recordingLength: recordingLength)
+                sendRecordingLengthToWatch(recordingLength: recording.length)
             }
-        } else if recordingLength != noValue {
-            recordingLength = noValue
+        } else if recording.length != noValue {
+            recording.length = noValue
             if isWatchLocal() {
-                sendRecordingLengthToWatch(recordingLength: recordingLength)
+                sendRecordingLengthToWatch(recordingLength: recording.length)
             }
         }
     }
@@ -7401,7 +7409,7 @@ extension Model: RemoteControlStreamerDelegate {
             topRight.bitrate = RemoteControlStatusItem(message: speedAndTotal)
         }
         if isLive {
-            topRight.uptime = RemoteControlStatusItem(message: streamUptime)
+            topRight.uptime = RemoteControlStatusItem(message: streamUptime.uptime)
         }
         if isLocationEnabled() {
             topRight.location = RemoteControlStatusItem(message: location)
@@ -7413,7 +7421,7 @@ extension Model: RemoteControlStreamerDelegate {
             topRight.srtlaRtts = RemoteControlStatusItem(message: bondingRtts)
         }
         if isRecording {
-            topRight.recording = RemoteControlStatusItem(message: recordingLength)
+            topRight.recording = RemoteControlStatusItem(message: recording.length)
         }
         if isStatusBrowserWidgetsActive() {
             topRight.browserWidgets = RemoteControlStatusItem(message: browserWidgetsStatus)

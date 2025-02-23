@@ -132,8 +132,7 @@ private struct StatusesView: View {
                 show: model.isShowingStatusViewers(),
                 icon: "eye",
                 text: model.statusViewersText(),
-                textPlacement: textPlacement,
-                color: .white
+                textPlacement: textPlacement
             )
         }
     }
