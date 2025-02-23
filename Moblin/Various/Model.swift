@@ -3481,7 +3481,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             bitrateAndTotal: speedAndTotal,
             date: now,
             debugOverlayLines: debugLines,
-            speed: format(speed: max(location?.speed ?? 0, 0)),
+            speed: format(speed: location?.speed ?? 0),
             altitude: format(altitude: location?.altitude ?? 0),
             distance: getDistance(),
             conditions: weather?.currentWeather.symbolName,
