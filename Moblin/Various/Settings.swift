@@ -1877,7 +1877,7 @@ class SettingsDebug: Codable {
     var timecodesEnabled: Bool? = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
     var srtlaBatchSend: Bool? = false
-    var cameraControlsEnabled: Bool? = false
+    var cameraControlsEnabled: Bool? = true
     var dataRateLimitFactor: Float? = 2.0
     var bitrateDropFix: Bool? = false
     var relaxedBitrate: Bool? = false
@@ -2716,7 +2716,7 @@ class Database: Codable {
     var moblink: SettingsMoblink? = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
     var forceSceneSwitchTransition: Bool? = false
-    var cameraControlsEnabled: Bool? = false
+    var cameraControlsEnabled: Bool? = true
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4586,7 +4586,7 @@ final class Settings {
             store()
         }
         if realDatabase.debug.cameraControlsEnabled == nil {
-            realDatabase.debug.cameraControlsEnabled = false
+            realDatabase.debug.cameraControlsEnabled = true
             store()
         }
         if realDatabase.show.djiDevices == nil {
