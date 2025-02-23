@@ -166,7 +166,6 @@
 		0359F8B32BD3DA61005BFDA8 /* AudioStreamBasicDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8162BD3DA5F005BFDA8 /* AudioStreamBasicDescription+Extension.swift */; };
 		0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8192BD3DA5F005BFDA8 /* AVCaptureDevice.Format+Extension.swift */; };
 		0359F8B92BD3DA61005BFDA8 /* AVFrameRateRange+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */; };
-		0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */; };
 		0359F8BD2BD3DA61005BFDA8 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */; };
 		0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */; };
 		0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8232BD3DA5F005BFDA8 /* Data+Extension.swift */; };
@@ -695,7 +694,6 @@
 		0359F8162BD3DA5F005BFDA8 /* AudioStreamBasicDescription+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AudioStreamBasicDescription+Extension.swift"; sourceTree = "<group>"; };
 		0359F8192BD3DA5F005BFDA8 /* AVCaptureDevice.Format+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice.Format+Extension.swift"; sourceTree = "<group>"; };
 		0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVFrameRateRange+Extension.swift"; sourceTree = "<group>"; };
-		0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CMAudioFormatDescription+Extension.swift"; sourceTree = "<group>"; };
 		0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CMSampleBuffer+Extension.swift"; sourceTree = "<group>"; };
 		0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Extension.swift"; sourceTree = "<group>"; };
 		0359F8232BD3DA5F005BFDA8 /* Data+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
@@ -1618,7 +1616,6 @@
 				03DAC9382BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift */,
 				0359F8192BD3DA5F005BFDA8 /* AVCaptureDevice.Format+Extension.swift */,
 				0359F81C2BD3DA5F005BFDA8 /* AVFrameRateRange+Extension.swift */,
-				0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */,
 				033A46EE2CD881A700119CE3 /* CMVideoDimensions+Extension.swift */,
 				03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */,
 				0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */,
@@ -3233,7 +3230,6 @@
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
 				03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */,
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
-				0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */,
 				031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */,
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,

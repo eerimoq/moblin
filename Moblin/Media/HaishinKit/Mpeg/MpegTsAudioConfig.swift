@@ -156,8 +156,7 @@ struct MpegTsAudioConfig: Equatable {
     }
 
     init(formatDescription: CMFormatDescription) {
-        let asbd: AudioStreamBasicDescription =
-            CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)!.pointee
+        let asbd = formatDescription.audioStreamBasicDescription!
         type = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(asbd.mFormatFlags))!)
         frequency = SamplingFrequency(sampleRate: asbd.mSampleRate)
         channel = ChannelConfiguration(rawValue: UInt8(asbd.mChannelsPerFrame))!

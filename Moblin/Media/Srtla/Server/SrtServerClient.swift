@@ -219,7 +219,7 @@ class SrtServerClient {
     }
 
     private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {
-        guard let streamBasicDescription = formatDescription.streamBasicDescription else {
+        guard let streamBasicDescription = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) else {
             return
         }
         guard let audioFormat = AVAudioFormat(streamDescription: streamBasicDescription) else {

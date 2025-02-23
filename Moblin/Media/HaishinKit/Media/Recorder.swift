@@ -117,7 +117,7 @@ class Recorder: NSObject {
     private func createAudioWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput {
         let sourceFormatHint = sampleBuffer.formatDescription
         var outputSettings: [String: Any] = [:]
-        if let sourceFormatHint, let inSourceFormat = sourceFormatHint.streamBasicDescription?.pointee {
+        if let sourceFormatHint, let inSourceFormat = sourceFormatHint.audioStreamBasicDescription {
             for (key, value) in audioOutputSettings {
                 switch key {
                 case AVSampleRateKey:
@@ -188,7 +188,7 @@ class Recorder: NSObject {
         guard audioConverter == nil else {
             return audioConverter
         }
-        guard var streamBasicDescription = formatDescription?.streamBasicDescription?.pointee else {
+        guard var streamBasicDescription = formatDescription?.audioStreamBasicDescription else {
             return nil
         }
         guard let inputFormat = makeAudioFormat(&streamBasicDescription) else {

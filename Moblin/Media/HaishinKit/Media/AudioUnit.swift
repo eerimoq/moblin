@@ -147,7 +147,7 @@ private class ReplaceAudio {
     private func initialize(sampleBuffer: CMSampleBuffer) {
         frameLength = Double(sampleBuffer.numSamples)
         if let formatDescription = sampleBuffer.formatDescription {
-            sampleRate = formatDescription.streamBasicDescription?.pointee.mSampleRate ?? 1
+            sampleRate = formatDescription.audioStreamBasicDescription?.mSampleRate ?? 1
         }
     }
 
@@ -200,10 +200,8 @@ private class ReplaceAudio {
                 presentationTimeStamp = calcPresentationTimeStamp()
             }
         }
-        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds) else {
-            return
-        }
-        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
+        guard let sampleBuffer = getSampleBuffer(presentationTimeStamp.seconds),
+              let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
         else {
             return
         }
@@ -261,7 +259,7 @@ final class AudioUnit: NSObject {
         if speechToTextEnabled {
             mixer?.delegate?.mixer(audioSampleBuffer: sampleBuffer)
         }
-        inputSourceFormat = sampleBuffer.formatDescription?.streamBasicDescription?.pointee
+        inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         for encoder in encoders {
             encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         }
@@ -386,11 +384,7 @@ final class AudioUnit: NSObject {
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
-        mixer.delegate?.mixer(
-            audioLevel: audioLevel,
-            numberOfAudioChannels: numberOfAudioChannels,
-            presentationTimestamp: presentationTimeStamp.seconds
-        )
+        mixer.delegate?.mixer(audioLevel: audioLevel, numberOfAudioChannels: numberOfAudioChannels)
         appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
 }
@@ -425,7 +419,7 @@ extension AudioUnit: ReplaceAudioSampleBufferDelegate {
         guard selectedReplaceAudioId == cameraId else {
             return
         }
-        let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
+        let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
         prepareSampleBuffer(
             sampleBuffer: sampleBuffer,
             audioLevel: .infinity,

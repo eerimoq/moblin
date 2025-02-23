@@ -2,12 +2,7 @@ import AVFoundation
 import UIKit
 
 protocol NetStreamDelegate: AnyObject {
-    func stream(
-        _ stream: NetStream,
-        audioLevel: Float,
-        numberOfAudioChannels: Int,
-        presentationTimestamp: Double
-    )
+    func stream(_ stream: NetStream, audioLevel: Float, numberOfAudioChannels: Int)
     func streamVideo(_ stream: NetStream, presentationTimestamp: Double)
     func streamVideo(_ stream: NetStream, failedEffect: String?)
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
@@ -225,13 +220,8 @@ open class NetStream: NSObject {
 }
 
 extension NetStream: MixerDelegate {
-    func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
-        delegate?.stream(
-            self,
-            audioLevel: audioLevel,
-            numberOfAudioChannels: numberOfAudioChannels,
-            presentationTimestamp: presentationTimestamp
-        )
+    func mixer(audioLevel: Float, numberOfAudioChannels: Int) {
+        delegate?.stream(self, audioLevel: audioLevel, numberOfAudioChannels: numberOfAudioChannels)
     }
 
     func mixerVideo(presentationTimestamp: Double) {

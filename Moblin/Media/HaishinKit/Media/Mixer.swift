@@ -15,7 +15,7 @@ func makeCaptureSession() -> AVCaptureSession {
 }
 
 protocol MixerDelegate: AnyObject {
-    func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
+    func mixer(audioLevel: Float, numberOfAudioChannels: Int)
     func mixerVideo(presentationTimestamp: Double)
     func mixerVideo(failedEffect: String?)
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
