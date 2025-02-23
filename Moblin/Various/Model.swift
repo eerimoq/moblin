@@ -1802,8 +1802,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setCameraControlsEnabled() {
-        cameraControlEnabled = database.debug.cameraControlsEnabled!
-        media.setCameraControls(enabled: database.debug.cameraControlsEnabled!)
+        cameraControlEnabled = database.cameraControlsEnabled!
+        media.setCameraControls(enabled: database.cameraControlsEnabled!)
     }
 
     private func setupSampleBufferReceiver() {
@@ -6754,7 +6754,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateCameraControls() {
-        media.setCameraControls(enabled: database.debug.cameraControlsEnabled!)
+        media.setCameraControls(enabled: database.cameraControlsEnabled!)
     }
 
     func setCameraZoomPreset(id: UUID) {

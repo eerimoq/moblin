@@ -2716,6 +2716,7 @@ class Database: Codable {
     var moblink: SettingsMoblink? = .init()
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
     var forceSceneSwitchTransition: Bool? = false
+    var cameraControlsEnabled: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4662,6 +4663,10 @@ final class Settings {
         }
         if realDatabase.moblink!.client.manual == nil {
             realDatabase.moblink!.client.manual = !realDatabase.moblink!.client.url.isEmpty
+            store()
+        }
+        if realDatabase.cameraControlsEnabled == nil {
+            realDatabase.cameraControlsEnabled = realDatabase.debug.cameraControlsEnabled!
             store()
         }
     }

@@ -205,6 +205,12 @@ struct CameraSettingsView: View {
                 VideoStabilizationSettingsView(mode: model.database.videoStabilizationMode.toString())
                 if model.database.showAllSettings! {
                     TapScreenToFocusSettingsView()
+                    Toggle("Camera controls", isOn: Binding(get: {
+                        model.database.cameraControlsEnabled!
+                    }, set: { value in
+                        model.database.cameraControlsEnabled = value
+                        model.setCameraControlsEnabled()
+                    }))
                 }
                 MirrorFrontCameraOnStreamView()
             } footer: {
