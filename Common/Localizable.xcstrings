@@ -91384,6 +91384,7 @@
       }
     },
     "Pretty snapshot" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

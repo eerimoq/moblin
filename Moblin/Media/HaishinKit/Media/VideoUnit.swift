@@ -239,7 +239,7 @@ final class VideoUnit: NSObject {
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: ((UIImage, UIImage?, CIImage) -> Void)?
+    private var takeSnapshotComplete: ((UIImage, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
@@ -402,7 +402,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
         mixerLockQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
@@ -1161,10 +1161,10 @@ final class VideoUnit: NSObject {
                                   _ sampleBuffers: Deque<CMSampleBuffer>,
                                   _ presentationTimeStamp: Double,
                                   _ age: Float,
-                                  _ onCompleted: @escaping (CVImageBuffer?, CVImageBuffer?) -> Void)
+                                  _ onCompleted: @escaping (CVImageBuffer?) -> Void)
     {
         if age == 0.0 {
-            onCompleted(sampleBuffer.imageBuffer, nil)
+            onCompleted(sampleBuffer.imageBuffer)
         } else {
             let requestedPresentationTimeStamp = presentationTimeStamp - Double(age)
             let sampleBufferAtAge = sampleBuffers.last(where: {
@@ -1175,7 +1175,7 @@ final class VideoUnit: NSObject {
                 sampleBuffers.append(sampleBuffer)
                 findBestSnapshotUsingAesthetics(sampleBufferAtAge, sampleBuffers, onCompleted)
             } else {
-                onCompleted(sampleBufferAtAge.imageBuffer, nil)
+                onCompleted(sampleBufferAtAge.imageBuffer)
             }
         }
     }
@@ -1183,7 +1183,7 @@ final class VideoUnit: NSObject {
     @available(iOS 18, *)
     private func findBestSnapshotUsingAesthetics(_ preferredSampleBuffer: CMSampleBuffer,
                                                  _ sampleBuffers: Deque<CMSampleBuffer>,
-                                                 _ onComplete: @escaping (CVImageBuffer?, CVImageBuffer?) -> Void)
+                                                 _ onComplete: @escaping (CVImageBuffer?) -> Void)
     {
         Task {
             var bestSampleBuffer = preferredSampleBuffer
@@ -1197,7 +1197,7 @@ final class VideoUnit: NSObject {
                     bestResult = result
                 }
             }
-            onComplete(preferredSampleBuffer.imageBuffer, bestSampleBuffer.imageBuffer)
+            onComplete(bestSampleBuffer.imageBuffer)
         }
     }
 
@@ -1205,9 +1205,9 @@ final class VideoUnit: NSObject {
                               _ sampleBuffers: Deque<CMSampleBuffer>,
                               _ presentationTimeStamp: Double,
                               _ age: Float,
-                              _ onComplete: @escaping (UIImage, UIImage?, CIImage) -> Void)
+                              _ onComplete: @escaping (UIImage, CIImage) -> Void)
     {
-        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer, prettyImageBuffer in
+        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer in
             guard let imageBuffer else {
                 return
             }
@@ -1218,17 +1218,7 @@ final class VideoUnit: NSObject {
             if !imageBuffer.isPortrait() {
                 portraitImage = portraitImage.oriented(.left)
             }
-            var prettyImage: UIImage?
-            if let prettyImageBuffer {
-                var ciImage = CIImage(cvPixelBuffer: prettyImageBuffer)
-                ciImage = CIImage.black.cropped(to: .init(
-                    origin: .zero,
-                    size: .init(width: 50, height: 50)
-                )).composited(over: ciImage)
-                let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
-                prettyImage = UIImage(cgImage: cgImage)
-            }
-            onComplete(image, prettyImage, portraitImage)
+            onComplete(image, portraitImage)
         }
     }
 

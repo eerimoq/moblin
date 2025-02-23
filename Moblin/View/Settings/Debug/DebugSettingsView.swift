@@ -115,11 +115,6 @@ struct DebugSettingsView: View {
                 } label: {
                     Text("HTTP proxy")
                 }
-                Toggle("Pretty snapshot", isOn: Binding(get: {
-                    model.database.debug.prettySnapshot!
-                }, set: { value in
-                    model.database.debug.prettySnapshot = value
-                }))
                 Toggle("Reliable chat", isOn: Binding(get: {
                     model.database.debug.reliableChat!
                 }, set: { value in

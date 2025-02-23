@@ -624,7 +624,7 @@ final class Media: NSObject {
         netStream?.setCameraControls(enabled: enabled)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, UIImage?, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage) -> Void) {
         netStream?.takeSnapshot(age: age, onComplete: onComplete)
     }
 

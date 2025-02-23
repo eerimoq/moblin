@@ -1873,7 +1873,6 @@ class SettingsDebug: Codable {
     var removeWindNoise: Bool? = false
     var httpProxy: SettingsHttpProxy? = .init()
     var tesla: SettingsTesla? = .init()
-    var prettySnapshot: Bool? = false
     var reliableChat: Bool? = false
     var timecodesEnabled: Bool? = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy? = .system
@@ -4517,10 +4516,6 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.audio == nil {
             realDatabase.chat.botCommandPermissions!.audio = .init()
-            store()
-        }
-        if realDatabase.debug.prettySnapshot == nil {
-            realDatabase.debug.prettySnapshot = false
             store()
         }
         if realDatabase.tesla == nil {

@@ -1080,15 +1080,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay! : 0.0
-        media.takeSnapshot(age: age) { image, prettyImage, portraitImage in
+        media.takeSnapshot(age: age) { image, portraitImage in
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }
             DispatchQueue.main.async {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                if self.database.debug.prettySnapshot!, let prettyImage {
-                    UIImageWriteToSavedPhotosAlbum(prettyImage, nil, nil, nil)
-                }
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
                 self.printAllCatPrinters(image: portraitImage)
