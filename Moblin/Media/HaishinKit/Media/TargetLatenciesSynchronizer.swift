@@ -32,9 +32,9 @@ class TargetLatenciesSynchronizer {
         var videoTargetLatency = targetLatency
         var audioTargetLatency = targetLatency
         if audioVideoDiff > 0.0 {
-            audioTargetLatency += audioVideoDiff
+            audioTargetLatency += currentAudioVideoDiff
         } else {
-            videoTargetLatency -= audioVideoDiff
+            videoTargetLatency -= currentAudioVideoDiff
         }
         return (audioTargetLatency, videoTargetLatency)
     }
