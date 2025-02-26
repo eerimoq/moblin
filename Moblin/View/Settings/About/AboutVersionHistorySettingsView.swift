@@ -8,6 +8,26 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.395.0", date: "2025-02-26", changes: [
+        "• Cat printer status icon.",
+        "• BELABOX adaptive bitrate algorithm by default. 💡 Lots of people",
+        "• Moblink relay automatically connects to streamers.",
+        "  • The status in top right of UI is a bit weird if having multiple streamer phones.",
+        "• Fix some audio related crashes, especially when recording on Mac.",
+        "• Removed audio level bar/db toggle.",
+        "  • Always bar now.",
+        "• Only show Moblink relay battery percentage once per device. 💡 JohannesLiv",
+        "• Remove chat status message in top left of UI.",
+        "• Make debug log buttons easier to hit. 💡 Naginreed",
+        "• Share debug log as file.",
+        "• Always show number of audio channels. 🐛 JohannesLiv",
+        "• Use best snapshot when taken by chat bot command.",
+        "• Move camera controls toggle from Settings -> Debug to Settings -> Camera.",
+        "• Camera controls enabled by default.",
+        "• Remove latitude and longitude from location status.",
+        "• 250 ms minimum RTMP server stream latency.",
+        "• Potential RTMP and SRTLA server fix.",
+    ]),
     Version(version: "0.394.0", date: "2025-02-19", changes: [
         "• Only use camera preview if current scene's main video source supports it (and the camera preview button is on). 💡 xcopy94 and others",
         "• Fix bug that made second \"Go Live\" sometimes fail, as in stream not working.",
