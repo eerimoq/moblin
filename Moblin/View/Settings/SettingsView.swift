@@ -184,7 +184,7 @@ struct SettingsView: View {
                     NavigationLink {
                         WatchSettingsView()
                     } label: {
-                        IconAndTextView(image: "applewatch", text: String(localized: "Watch"))
+                        IconAndTextView(image: "applewatch", text: String(localized: "Apple Watch"))
                     }
                 }
             }

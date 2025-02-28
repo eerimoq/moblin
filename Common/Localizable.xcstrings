@@ -18941,6 +18941,16 @@
         }
       }
     },
+    "Apple Watch" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch"
+          }
+        }
+      }
+    },
     "Are you sure?" : {
       "localizations" : {
         "de" : {
@@ -137568,6 +137578,7 @@
       }
     },
     "Watch" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
