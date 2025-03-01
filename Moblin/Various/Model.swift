@@ -474,7 +474,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private var serversSpeed: Int64 = 0
-    private var latestRecordingErrorRestart: ContinuousClock.Instant = .now
 
     @Published var hypeTrainLevel: Int?
     @Published var hypeTrainProgress: Int?
@@ -6898,29 +6897,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleRecorderFinished() {}
 
-    private func handleRecorderError() {
-        DispatchQueue.main.async { [self] in
-            guard isRecording else {
-                return
-            }
-            if self.latestRecordingErrorRestart.duration(to: .now) > .seconds(60) {
-                makeErrorToast(
-                    title: String(localized: "Recording error"),
-                    subTitle: String(localized: "Starting a new recording")
-                )
-                suspendRecording()
-                startRecording()
-            } else {
-                stopRecording(showToast: false)
-                makeErrorToast(
-                    title: String(localized: "Recording error"),
-                    subTitle: String(localized: "Recording stopped")
-                )
-            }
-            self.latestRecordingErrorRestart = .now
-        }
-    }
-
     private func handleNoTorch() {
         DispatchQueue.main.async { [self] in
             if !isFrontCameraSelected {
@@ -10535,10 +10511,6 @@ extension Model: MediaDelegate {
 
     func mediaOnRecorderFinished() {
         handleRecorderFinished()
-    }
-
-    func mediaOnRecorderError() {
-        handleRecorderError()
     }
 
     func mediaOnNoTorch() {

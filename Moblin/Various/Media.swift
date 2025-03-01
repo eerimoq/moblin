@@ -26,7 +26,6 @@ protocol MediaDelegate: AnyObject {
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
     func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
     func mediaOnRecorderFinished()
-    func mediaOnRecorderError()
     func mediaOnNoTorch()
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
     func mediaSetZoomX(x: Float)
@@ -957,10 +956,6 @@ extension Media: NetStreamDelegate {
 
     func streamRecorderFinished() {
         delegate?.mediaOnRecorderFinished()
-    }
-
-    func streamRecorderError() {
-        delegate?.mediaOnRecorderError()
     }
 
     func streamNoTorch() {

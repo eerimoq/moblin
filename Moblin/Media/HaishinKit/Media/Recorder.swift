@@ -2,7 +2,6 @@ import AVFoundation
 
 protocol IORecorderDelegate: AnyObject {
     func recorderFinished()
-    func recorderError()
 }
 
 class Recorder: NSObject {
@@ -273,7 +272,6 @@ class Recorder: NSObject {
         guard writer.status == .writing else {
             logger.info("recorder: Failed to finish writing \(writer.error?.localizedDescription ?? "")")
             reset()
-            delegate?.recorderError()
             return
         }
         let dispatchGroup = DispatchGroup()

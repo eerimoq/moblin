@@ -94776,6 +94776,7 @@
       }
     },
     "Recording error" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -113176,6 +113177,7 @@
       }
     },
     "Starting a new recording" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

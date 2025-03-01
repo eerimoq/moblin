@@ -8,7 +8,6 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
     func streamRecorderFinished()
-    func streamRecorderError()
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
     func streamSetZoomX(x: Float)
@@ -242,10 +241,6 @@ extension NetStream: MixerDelegate {
 
     func mixerRecorderFinished() {
         delegate?.streamRecorderFinished()
-    }
-
-    func mixerRecorderError() {
-        delegate?.streamRecorderError()
     }
 
     func mixer(audioSampleBuffer: CMSampleBuffer) {
