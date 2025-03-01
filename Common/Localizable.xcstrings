@@ -12991,7 +12991,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "250 oder mehr Millisekunden. Standardmäßig 2000 ms."
           }
         },
@@ -26269,7 +26269,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Weichzeichnen und Zoomen"
           }
         },
@@ -39679,7 +39679,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Datenratenbegrenzung"
           }
         },
@@ -46189,8 +46189,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie „Videostabilisierung überschreiben“, um Einstellungen → Kamera → Videostabilisierung in dieser Szene zu überschreiben."
+            "state" : "translated",
+            "value" : "Aktiviere „Videostabilisierung überschreiben“, um Einstellungen → Kamera → Videostabilisierung in dieser Szene zu überschreiben."
           }
         },
         "el" : {
@@ -51747,7 +51747,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT-Bild konnte nicht erstellt werden"
           }
         },
@@ -52693,7 +52693,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT-Daten konnten nicht abgerufen werden."
           }
         },
@@ -52823,7 +52823,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT-Pixel konnten nicht abgerufen werden."
           }
         },
@@ -52953,7 +52953,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die .cube-Datei konnte nicht geladen werden"
           }
         },
@@ -57961,7 +57961,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Szenenwechsel-Übergang erzwingen"
           }
         },
@@ -58363,7 +58363,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Einfrieren"
           }
         },
@@ -70289,7 +70289,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT-Dimension %lld zu groß (über 64)"
           }
         },
@@ -70419,7 +70419,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die LUT-Bildkonvertierung ist fehlgeschlagen"
           }
         },
@@ -70549,7 +70549,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das LUT-Bild besteht nicht aus 8 oder 16 Bit pro Pixel"
           }
         },
@@ -70679,7 +70679,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das LUT-Bild ist kein Würfel"
           }
         },
@@ -87885,7 +87885,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Videostabilisierung außer Kraft setzen"
           }
         },
@@ -92213,7 +92213,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Drucken, wenn sich die App im Hintergrundmodus befindet."
           }
         },
@@ -95732,7 +95732,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Geringe Bitratenreduzierung nach Szenenwechsel"
           }
         },
@@ -100864,8 +100864,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Auf die Videoquellen RTMP, SRT(LA), Bildschirmaufnahme und Media Player kann sofort umgeschaltet werden. Wenn Sie jedoch Konsistenz wünschen, können Sie auch zu diesen Szenenwechselübergänge erzwingen."
+            "state" : "translated",
+            "value" : "Auf die Videoquellen RTMP, SRT(LA), Bildschirmaufnahme und Media Player kann sofort umgeschaltet werden. Wenn jedoch Konsistenz gewünscht ist, können auch die Szenenwechselübergänge erzwingen werden."
           }
         },
         "el" : {
@@ -102330,8 +102330,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Übergang zum Szenenwechsel"
+            "state" : "translated",
+            "value" : "Szenenwechsel Übergang"
           }
         },
         "el" : {
@@ -122659,8 +122659,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Je höher, desto geringeres Stotternrisiko."
+            "state" : "translated",
+            "value" : "Je höher, desto geringeres Stotterrisiko."
           }
         },
         "el" : {
@@ -124285,7 +124285,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Außerdem wird der UDP-Port %u verwendet."
           }
         },
