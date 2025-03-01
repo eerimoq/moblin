@@ -12318,7 +12318,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "128 kbit/s oder höher werden empfohlen."
+            "value" : "128 Kbps oder höher werden empfohlen."
           }
         },
         "el" : {
@@ -12856,7 +12856,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standardmäßig 250 Kbit/s."
+            "value" : "Standardmäßig 250 Kbps."
           }
         },
         "el" : {
@@ -14062,7 +14062,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ein Schlüssel"
+            "value" : "einer Taste"
           }
         },
         "el" : {
@@ -18943,6 +18943,12 @@
     },
     "Apple Watch" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19624,7 +19630,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zuordnungen"
+            "value" : "Urheberschaften"
           }
         },
         "el" : {
@@ -23011,8 +23017,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hintergrunddruck"
+            "state" : "translated",
+            "value" : "Im Hintergrund drucken"
           }
         },
         "el" : {
@@ -25317,8 +25323,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fehlerbehebung bei Bitrateabfall"
+            "state" : "translated",
+            "value" : "Fehlerbehebung bei Bitratenabfall"
           }
         },
         "el" : {
@@ -26931,8 +26937,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTTs binden"
+            "state" : "translated",
+            "value" : "Bonding-RTTs"
           }
         },
         "el" : {
@@ -29226,7 +29232,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kameravorschau"
+            "value" : "Kamera Vorschau"
           }
         },
         "el" : {
@@ -31940,7 +31946,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ bits gecheert! %2$@"
+            "value" : "%1$@ Bits gecheert! %2$@"
           }
         },
         "el" : {
@@ -45912,7 +45918,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Leere Zwischenablage "
+            "value" : "Zwischenablage leeren"
           }
         },
         "el" : {
@@ -60664,7 +60670,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Globale Tonzuordnung"
+            "value" : "Globales Tone Mapping"
           }
         },
         "el" : {
@@ -64454,7 +64460,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Import- und Exporteinstellungen"
+            "value" : "Import- und Export"
           }
         },
         "el" : {
@@ -66765,8 +66771,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tastaturtaste"
+            "state" : "translated",
+            "value" : "Taste"
           }
         },
         "el" : {
@@ -72701,8 +72707,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Handbuch"
+            "state" : "translated",
+            "value" : "Manuell"
           }
         },
         "el" : {
@@ -116544,7 +116550,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Streaming Verlauf"
+            "value" : "Streamingverlauf"
           }
         },
         "el" : {
@@ -132562,7 +132568,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bis zu 50 Mbit/s. Für automatisch auf 0 stellen."
+            "value" : "Bis zu 50 Mbps. Für automatisch auf 0 stellen."
           }
         },
         "el" : {
@@ -133106,7 +133112,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Import fehlgeschlagen"
+            "value" : "URL-Import fehlgeschlagen"
           }
         },
         "el" : {
@@ -134194,7 +134200,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verwende den Fast IRL-Algorithmus, es sei denn, du wisst, was du tust!"
+            "value" : "Verwende den „Schnelles IRL”-Algorithmus, es sei denn, du wisst, was du tust!"
           }
         },
         "el" : {
@@ -137451,8 +137457,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Warnung: OBS erfordert normalerweise eine Hardware-Dekodierung, um bei Aktivierung nicht abzustürzen."
+            "state" : "translated",
+            "value" : "Warnung: OBS erfordert normalerweise Hardware-Dekodierung, um bei Aktivierung nicht abzustürzen."
           }
         },
         "el" : {
@@ -137583,7 +137589,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Betrachten"
+            "value" : "Watch"
           }
         },
         "el" : {
@@ -141521,7 +141527,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Youtube"
+            "value" : "YouTube"
           }
         },
         "el" : {
