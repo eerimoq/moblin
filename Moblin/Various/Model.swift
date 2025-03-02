@@ -701,6 +701,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var cameraControlEnabled = false
     private var twitchStreamUpdateTime = ContinuousClock.now
 
+    var externalDisplayPreview = false
+
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
@@ -6397,6 +6399,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             device: nil,
             cameraPreviewLayer: nil,
             showCameraPreview: false,
+            externalDisplayPreview: false,
             videoStabilizationMode: .off,
             videoMirrored: false,
             ignoreFramesAfterAttachSeconds: 0.0
@@ -6602,6 +6605,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             device: cameraDevice,
             cameraPreviewLayer: cameraPreviewLayer,
             showCameraPreview: updateShowCameraPreview(),
+            externalDisplayPreview: externalDisplayPreview,
             videoStabilizationMode: getVideoStabilizationMode(scene: scene),
             videoMirrored: getVideoMirroredOnStream(),
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),

@@ -247,6 +247,7 @@ final class VideoUnit: NSObject {
     private var cameraControlsEnabled = false
     private var isRunning = false
     private var showCameraPreview = false
+    private var externalDisplayPreview = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
 
     override init() {
@@ -327,6 +328,7 @@ final class VideoUnit: NSObject {
         _ device: AVCaptureDevice?,
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
+        _ externalDisplayPreview: Bool,
         _ replaceVideo: UUID?,
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool,
@@ -338,6 +340,7 @@ final class VideoUnit: NSObject {
             self.selectedReplaceVideoCameraId = replaceVideo
             self.prepareFirstFrame()
             self.showCameraPreview = showCameraPreview
+            self.externalDisplayPreview = externalDisplayPreview
         }
         session.beginConfiguration()
         defer {
@@ -1091,7 +1094,7 @@ final class VideoUnit: NSObject {
         // sample buffer is copied in appendVideo()
         mixer?.recorder.appendVideo(modSampleBuffer)
         modSampleBuffer.setAttachmentDisplayImmediately()
-        if !showCameraPreview {
+        if !showCameraPreview || externalDisplayPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         for encoder in encoders {

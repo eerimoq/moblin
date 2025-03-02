@@ -43,5 +43,24 @@
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+            <key>UIApplicationSupportsMultipleScenes</key>
+            <true/>
+            <key>UISceneConfigurations</key>
+            <dict>
+                    <key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
+                    <array>
+                            <dict>
+                                    <key>UISceneDelegateClassName</key>
+                                    <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+                                    <key>UISceneConfigurationName</key>
+                                    <string>External Display</string>
+                            </dict>
+                    </array>
+            </dict>
+    </dict>
+    <key>CFBundleIdentifier</key>
+    <string></string>
 </dict>
 </plist>

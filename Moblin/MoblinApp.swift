@@ -25,13 +25,50 @@ struct MoblinApp: App {
     }
 }
 
+private struct ExternalScreenContentView: View {
+    @StateObject var model: Model
+
+    init() {
+        _model = StateObject(wrappedValue: MoblinApp.globalModel!)
+    }
+
+    var body: some View {
+        StreamPreviewView()
+            .ignoresSafeArea()
+            .environmentObject(model)
+    }
+}
+
 class SceneDelegate: NSObject, UIWindowSceneDelegate {
+    // periphery:ignore
+    var externalDisplayWindow: UIWindow?
+
     func scene(
-        _: UIScene,
-        willConnectTo _: UISceneSession,
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        MoblinApp.globalModel?.handleSettingsUrls(urls: connectionOptions.urlContexts)
+        guard let model = MoblinApp.globalModel else {
+            return
+        }
+        model.handleSettingsUrls(urls: connectionOptions.urlContexts)
+        if session.role == .windowExternalDisplayNonInteractive, let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = UIHostingController(rootView: ExternalScreenContentView())
+            externalDisplayWindow = window
+            window.makeKeyAndVisible()
+            model.externalDisplayPreview = true
+            model.reattachCamera()
+        }
+    }
+
+    func sceneDidDisconnect(_: UIScene) {
+        externalDisplayWindow = nil
+        guard let model = MoblinApp.globalModel else {
+            return
+        }
+        model.externalDisplayPreview = false
+        model.reattachCamera()
     }
 
     func scene(_: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
