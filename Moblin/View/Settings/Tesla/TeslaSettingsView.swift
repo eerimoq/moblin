@@ -75,6 +75,13 @@ struct TeslaSettingsView: View {
     var body: some View {
         Form {
             Section {
+                HCenter {
+                    Image("Tesla")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+            }
+            Section {
                 NavigationLink {
                     TeslaSettingsConfigurationView()
                 } label: {

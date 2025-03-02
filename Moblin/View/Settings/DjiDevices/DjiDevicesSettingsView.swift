@@ -6,6 +6,14 @@ struct DjiDevicesSettingsView: View {
     var body: some View {
         Form {
             Section {
+                HCenter {
+                    Image("DjiOa4")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 130)
+                }
+            }
+            Section {
                 List {
                     ForEach(model.database.djiDevices!.devices) { device in
                         NavigationLink {

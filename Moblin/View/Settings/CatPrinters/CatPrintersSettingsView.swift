@@ -6,9 +6,12 @@ struct CatPrintersSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Image("CatPrinter")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                HCenter {
+                    Image("CatPrinter")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 130)
+                }
                 Text("A small affordable black and white printer.")
             }
             Section {
