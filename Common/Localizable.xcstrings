@@ -17445,6 +17445,9 @@
         }
       }
     },
+    "Alignment" : {
+
+    },
     "Allow video range pixel format" : {
       "localizations" : {
         "de" : {
@@ -67168,6 +67171,9 @@
           }
         }
       }
+    },
+    "Leading" : {
+
     },
     "Left" : {
       "localizations" : {
@@ -128076,6 +128082,9 @@
           }
         }
       }
+    },
+    "Trailing" : {
+
     },
     "Travel" : {
       "localizations" : {

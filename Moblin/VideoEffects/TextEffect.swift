@@ -68,6 +68,7 @@ final class TextEffect: VideoEffect {
     private var fontSize: CGFloat
     private var fontDesign: Font.Design
     private var fontWeight: Font.Weight
+    private var alignment: HorizontalAlignment
     private var x: Double
     private var y: Double
     private let settingName: String
@@ -99,6 +100,7 @@ final class TextEffect: VideoEffect {
         fontSize: CGFloat,
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
+        alignment: HorizontalAlignment,
         settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
@@ -111,6 +113,7 @@ final class TextEffect: VideoEffect {
         self.fontSize = fontSize
         self.fontDesign = fontDesign
         self.fontWeight = fontWeight
+        self.alignment = alignment
         self.settingName = settingName
         self.delay = delay
         x = 0
@@ -158,6 +161,11 @@ final class TextEffect: VideoEffect {
 
     func setFontWeight(weight: Font.Weight) {
         fontWeight = weight
+        forceImageUpdate()
+    }
+
+    func setAlignment(alignment: HorizontalAlignment) {
+        self.alignment = alignment
         forceImageUpdate()
     }
 
@@ -481,7 +489,7 @@ final class TextEffect: VideoEffect {
                 return
             }
             self.previousLines = lines
-            let text = VStack(alignment: .leading, spacing: 2) {
+            let text = VStack(alignment: self.alignment, spacing: 2) {
                 ForEach(lines) { line in
                     HStack(spacing: 0) {
                         ForEach(line.parts) { part in

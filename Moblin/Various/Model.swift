@@ -3646,6 +3646,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 fontSize: CGFloat(widget.text.fontSize!),
                 fontDesign: widget.text.fontDesign!.toSystem(),
                 fontWeight: widget.text.fontWeight!.toSystem(),
+                alignment: widget.text.alignment!.toSystem(),
                 settingName: widget.name,
                 delay: widget.text.delay!,
                 timersEndTime: widget.text.timers!.map {

@@ -852,6 +852,47 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
 
 let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
 
+enum SettingsAlignment: String, Codable, CaseIterable {
+    case leading = "Leading"
+    case trailing = "Trailing"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsAlignment(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .leading
+    }
+
+    static func fromString(value: String) -> SettingsAlignment {
+        switch value {
+        case String(localized: "Leading"):
+            return .leading
+        case String(localized: "Trailing"):
+            return .trailing
+        default:
+            return .leading
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .leading:
+            return String(localized: "Leading")
+        case .trailing:
+            return String(localized: "Trailing")
+        }
+    }
+
+    func toSystem() -> HorizontalAlignment {
+        switch self {
+        case .leading:
+            return .leading
+        case .trailing:
+            return .trailing
+        }
+    }
+}
+
+let textWidgetAlignments = SettingsAlignment.allCases.map { $0.toString() }
+
 class SettingsWidgetTextTimer: Codable, Identifiable {
     var id: UUID = .init()
     var delta: Int = 5
@@ -877,6 +918,7 @@ class SettingsWidgetText: Codable {
     var fontSize: Int? = 30
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
+    var alignment: SettingsAlignment? = .leading
     var delay: Double? = 0.0
     var timers: [SettingsWidgetTextTimer]? = []
     var needsWeather: Bool? = false
@@ -4667,6 +4709,10 @@ final class Settings {
         }
         if realDatabase.cameraControlsEnabled == nil {
             realDatabase.cameraControlsEnabled = realDatabase.debug.cameraControlsEnabled!
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.alignment == nil {
+            widget.text.alignment = .leading
             store()
         }
     }
