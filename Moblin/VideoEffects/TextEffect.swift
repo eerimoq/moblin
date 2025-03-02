@@ -165,7 +165,9 @@ final class TextEffect: VideoEffect {
     }
 
     func setAlignment(alignment: HorizontalAlignment) {
-        self.alignment = alignment
+        textQueue.sync {
+            self.alignment = alignment
+        }
         forceImageUpdate()
     }
 
@@ -452,7 +454,7 @@ final class TextEffect: VideoEffect {
     private func updateOverlay(size: CGSize) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y, forceUpdate, newImagePresent) = textQueue.sync {
+        let (x, y, alignment, forceUpdate, newImagePresent) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
@@ -461,12 +463,15 @@ final class TextEffect: VideoEffect {
                 self.forceUpdate = false
                 self.newImagePresent = false
             }
-            return (self.x, self.y, self.forceUpdate, self.newImagePresent)
+            return (self.x, self.y, self.alignment, self.forceUpdate, self.newImagePresent)
         }
         if newImagePresent {
             if let newImage {
-                let x = toPixels(x, size.width)
+                var x = toPixels(x, size.width)
                 let y = toPixels(y, size.height)
+                if alignment == .trailing {
+                    x -= newImage.size.width
+                }
                 overlay = CIImage(image: newImage)?
                     .transformed(by: CGAffineTransform(
                         translationX: x,
@@ -489,7 +494,7 @@ final class TextEffect: VideoEffect {
                 return
             }
             self.previousLines = lines
-            let text = VStack(alignment: self.alignment, spacing: 2) {
+            let text = VStack(alignment: alignment, spacing: 2) {
                 ForEach(lines) { line in
                     HStack(spacing: 0) {
                         ForEach(line.parts) { part in
