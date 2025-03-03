@@ -307,6 +307,11 @@ final class TextEffect: VideoEffect {
                     id: partId,
                     data: .text(stats.date.formatted(.dateTime.hour().minute().second()))
                 ))
+            case .shortClock:
+                parts.append(.init(
+                    id: partId,
+                    data: .text(stats.date.formatted(.dateTime.hour().minute()))
+                ))
             case .date:
                 parts.append(.init(
                     id: partId,

@@ -4929,6 +4929,9 @@
         }
       }
     },
+    "{shortTime} - Show time as HH:MM" : {
+
+    },
     "{speed} - Show speed" : {
       "localizations" : {
         "de" : {

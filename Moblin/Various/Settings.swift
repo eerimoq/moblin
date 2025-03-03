@@ -910,7 +910,7 @@ class SettingsWidgetTextRating: Codable, Identifiable {
 }
 
 class SettingsWidgetText: Codable {
-    var formatString: String = "{time}"
+    var formatString: String = "{shortTime}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
     var clearBackgroundColor: Bool? = false
     var foregroundColor: RgbColor? = .init(red: 255, green: 255, blue: 255)

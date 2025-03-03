@@ -13,7 +13,7 @@ private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude
 private let suggestionHeartRate = "♥️ {heartRate}"
 private let suggestionSubtitles = "{subtitles}"
 private let suggestionMuted = "{muted}"
-private let suggestionTime = "🕑 {time}"
+private let suggestionTime = "🕑 {shortTime}"
 private let suggestionDate = "📅 {date}"
 private let suggestionFullDate = "📅 {fullDate}"
 private let suggestionTimer = "⏳ {timer}"
@@ -217,6 +217,7 @@ private struct TextSelectionView: View {
                     Text("")
                     Text("General").bold()
                     Text("{time} - Show time as HH:MM:SS")
+                    Text("{shortTime} - Show time as HH:MM")
                     Text("{date} - Show date")
                     Text("{fullDate} - Show full date")
                     Text("{timer} - Show a timer")

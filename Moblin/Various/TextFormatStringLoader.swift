@@ -4,6 +4,7 @@ enum TextFormatPart {
     case text(String)
     case newLine
     case clock
+    case shortClock
     case date
     case fullDate
     case bitrateAndTotal
@@ -48,6 +49,8 @@ class TextFormatLoader {
                 let formatFromIndex = format[index ..< format.endIndex].lowercased()
                 if formatFromIndex.hasPrefix("{time}") {
                     loadItem(part: .clock, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{shorttime}") {
+                    loadItem(part: .shortClock, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{date}") {
                     loadItem(part: .date, offsetBy: 6)
                 } else if formatFromIndex.hasPrefix("{fulldate}") {
