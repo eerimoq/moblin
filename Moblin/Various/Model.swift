@@ -398,6 +398,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let audio = AudioProvider()
     var settings = Settings()
     @Published var digitalClock = noValue
+    @Published var statusEventsText = noValue
+    @Published var statusChatText = noValue
     private var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMoblin!
     private var twitchEventSub: TwitchEventSub?
@@ -2660,6 +2662,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.cpuUsage = getCpuUsage()
             }
             self.updateMoblinkStatus()
+            self.updateStatusEventsText()
+            self.updateStatusChatText()
         })
         Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.teslaGetDriveState()
@@ -7152,37 +7156,45 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func statusEventsText() -> String {
+    private func updateStatusEventsText() {
+        let status: String
         if !isEventsConfigured() {
-            return String(localized: "Not configured")
+            status = String(localized: "Not configured")
         } else if isEventsRemoteControl() {
             if isRemoteControlStreamerConnected() {
-                return String(localized: "Connected (remote control)")
+                status = String(localized: "Connected (remote control)")
             } else {
-                return String(localized: "Disconnected (remote control)")
+                status = String(localized: "Disconnected (remote control)")
             }
         } else {
             if isEventsConnected() {
-                return String(localized: "Connected")
+                status = String(localized: "Connected")
             } else {
-                return String(localized: "Disconnected")
+                status = String(localized: "Disconnected")
             }
+        }
+        if status != statusEventsText {
+            statusEventsText = status
         }
     }
 
-    func statusChatText() -> String {
+    private func updateStatusChatText() {
+        let status: String
         if !isChatConfigured() {
-            return String(localized: "Not configured")
+            status = String(localized: "Not configured")
         } else if isChatRemoteControl() {
             if isRemoteControlStreamerConnected() {
-                return String(localized: "Connected (remote control)")
+                status = String(localized: "Connected (remote control)")
             } else {
-                return String(localized: "Disconnected (remote control)")
+                status = String(localized: "Disconnected (remote control)")
             }
         } else if isChatConnected() {
-            return String(localized: "Connected")
+            status = String(localized: "Connected")
         } else {
-            return String(localized: "Disconnected")
+            status = String(localized: "Disconnected")
+        }
+        if status != statusChatText {
+            statusChatText = status
         }
     }
 
@@ -7351,10 +7363,10 @@ extension Model: RemoteControlStreamerDelegate {
             topLeft.obs = RemoteControlStatusItem(message: statusObsText())
         }
         if isEventsConfigured() {
-            topLeft.events = RemoteControlStatusItem(message: statusEventsText())
+            topLeft.events = RemoteControlStatusItem(message: statusEventsText)
         }
         if isChatConfigured() {
-            topLeft.chat = RemoteControlStatusItem(message: statusChatText())
+            topLeft.chat = RemoteControlStatusItem(message: statusChatText)
         }
         if isViewersConfigured() && isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())

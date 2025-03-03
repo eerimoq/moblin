@@ -114,14 +114,14 @@ private struct StatusesView: View {
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusEvents(),
             icon: "megaphone",
-            text: model.statusEventsText(),
+            text: model.statusEventsText,
             textPlacement: textPlacement,
             color: eventsColor()
         )
         StreamOverlayIconAndTextView(
             show: model.isShowingStatusChat(),
             icon: "message",
-            text: model.statusChatText(),
+            text: model.statusChatText,
             textPlacement: textPlacement,
             color: chatColor()
         )
