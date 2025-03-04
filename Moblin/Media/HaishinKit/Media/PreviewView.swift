@@ -37,12 +37,6 @@ class PreviewView: UIView {
         layer.setAffineTransform(CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0))
     }
 
-    private weak var currentStream: NetStream? {
-        didSet {
-            oldValue?.mixer.video.drawable = nil
-        }
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         awakeFromNib()
@@ -57,18 +51,6 @@ class PreviewView: UIView {
         backgroundColor = Self.defaultBackgroundColor
         layer.backgroundColor = Self.defaultBackgroundColor.cgColor
         layer.videoGravity = videoGravity
-    }
-
-    func attachStream(_ stream: NetStream?) {
-        guard let stream else {
-            currentStream = nil
-            return
-        }
-        netStreamLockQueue.async {
-            stream.mixer.video.drawable = self
-            self.currentStream = stream
-            stream.mixer.startRunning()
-        }
     }
 
     func enqueue(_ sampleBuffer: CMSampleBuffer?, isFirstAfterAttach: Bool) {

@@ -4273,10 +4273,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
         updateTorch()
         updateMute()
-        streamPreviewView.attachStream(media.getNetStream())
+        attachStream()
         setLowFpsImage()
         setSceneSwitchTransition()
         updateCameraControls()
+    }
+
+    private weak var currentStream: NetStream? {
+        didSet {
+            oldValue?.mixer.video.drawable = nil
+        }
+    }
+
+    private func attachStream() {
+        guard let stream = media.getNetStream() else {
+            currentStream = nil
+            return
+        }
+        netStreamLockQueue.async {
+            stream.mixer.video.drawable = self.streamPreviewView
+            self.currentStream = stream
+            stream.mixer.startRunning()
+        }
     }
 
     private func isTimecodesEnabled() -> Bool {
