@@ -436,7 +436,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
     private var previousBitrateStatusNumberOfFailedEncodings = 0
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    let streamPreviewView = PreviewView(frame: .zero)
+    let streamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     @Published var remoteControlPreview: UIImage?

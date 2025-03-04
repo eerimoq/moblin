@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 
 class PreviewView: UIView {
-    static var defaultBackgroundColor: UIColor = .black
+    private static let defaultBackgroundColor: UIColor = .black
 
     override class var layerClass: AnyClass {
         AVSampleBufferDisplayLayer.self
@@ -37,8 +37,8 @@ class PreviewView: UIView {
         layer.setAffineTransform(CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0))
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init() {
+        super.init(frame: .zero)
         awakeFromNib()
     }
 
