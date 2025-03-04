@@ -239,9 +239,9 @@ struct SceneSettingsView: View {
                                 Section("Widget name") {
                                     ForEach(widgets) { widget in
                                         Button(action: {
-                                            scene.widgets
-                                                .append(createSceneWidget(widget: widget))
+                                            scene.widgets.append(createSceneWidget(widget: widget))
                                             model.sceneUpdated(imageEffectChanged: true)
+                                            model.objectWillChange.send()
                                             showingAddWidget = false
                                         }, label: {
                                             IconAndTextView(
