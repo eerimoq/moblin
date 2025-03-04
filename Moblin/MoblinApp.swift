@@ -33,7 +33,7 @@ private struct ExternalScreenContentView: View {
     }
 
     var body: some View {
-        StreamPreviewView()
+        ExternalDisplayStreamPreviewView()
             .ignoresSafeArea()
             .environmentObject(model)
     }

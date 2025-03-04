@@ -11,6 +11,16 @@ struct StreamPreviewView: UIViewRepresentable {
     func updateUIView(_: PreviewView, context _: Context) {}
 }
 
+struct ExternalDisplayStreamPreviewView: UIViewRepresentable {
+    @EnvironmentObject var model: Model
+
+    func makeUIView(context _: Context) -> PreviewView {
+        return model.externalDisplayStreamPreviewView
+    }
+
+    func updateUIView(_: PreviewView, context _: Context) {}
+}
+
 class CameraPreviewUiView: UIView {
     override class var layerClass: AnyClass {
         AVCaptureVideoPreviewLayer.self

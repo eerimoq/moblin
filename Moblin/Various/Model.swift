@@ -437,6 +437,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var previousBitrateStatusNumberOfFailedEncodings = 0
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     let streamPreviewView = PreviewView()
+    let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     @Published var remoteControlPreview: UIImage?
@@ -1380,6 +1381,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         frontZoomPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
+        externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(delegate: self)
         reloadStream()
@@ -3779,12 +3781,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if stream.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = true
+            externalDisplayStreamPreviewView.isPortrait = true
         } else if database.portrait! {
             AppDelegate.orientationLock = .portrait
             streamPreviewView.isPortrait = false
+            externalDisplayStreamPreviewView.isPortrait = false
         } else {
             AppDelegate.orientationLock = .landscape
             streamPreviewView.isPortrait = false
+            externalDisplayStreamPreviewView.isPortrait = false
         }
         updateCameraPreviewRotation()
     }
@@ -4292,6 +4297,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         netStreamLockQueue.async {
             stream.mixer.video.drawable = self.streamPreviewView
+            stream.mixer.video.externalDisplayDrawable = self.externalDisplayStreamPreviewView
             self.currentStream = stream
             stream.mixer.startRunning()
         }
@@ -6634,6 +6640,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
+                self.externalDisplayStreamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
                 }
@@ -6668,6 +6675,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
+        externalDisplayStreamPreviewView.isMirrored = false
         hasZoom = false
         media.attachReplaceCamera(
             device: getVideoSourceBuiltinCameraDevice(),

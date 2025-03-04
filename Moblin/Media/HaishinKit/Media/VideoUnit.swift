@@ -166,6 +166,7 @@ final class VideoUnit: NSObject {
     private let context = CIContext()
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
+    weak var externalDisplayDrawable: PreviewView?
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
@@ -1094,8 +1095,11 @@ final class VideoUnit: NSObject {
         // sample buffer is copied in appendVideo()
         mixer?.recorder.appendVideo(modSampleBuffer)
         modSampleBuffer.setAttachmentDisplayImmediately()
-        if !showCameraPreview || externalDisplayPreview {
+        if !showCameraPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+        }
+        if externalDisplayPreview {
+            externalDisplayDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         for encoder in encoders {
             encoder.encodeImageBuffer(
