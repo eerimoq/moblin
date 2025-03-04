@@ -2431,13 +2431,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateOrientation() {
         if stream.portrait! {
-            streamPreviewView.videoOrientation = .portrait
+            media.setVideoOrientation(value: .portrait)
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
-                streamPreviewView.videoOrientation = .landscapeRight
+                media.setVideoOrientation(value: .landscapeRight)
             case .landscapeRight:
-                streamPreviewView.videoOrientation = .landscapeLeft
+                media.setVideoOrientation(value: .landscapeLeft)
             default:
                 break
             }

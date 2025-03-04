@@ -727,6 +727,10 @@ final class Media: NSObject {
         netStream?.setSpeechToText(enabled: enabled)
     }
 
+    func setVideoOrientation(value: AVCaptureVideoOrientation) {
+        netStream?.setVideoOrientation(value: value)
+    }
+
     func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
         guard let device = netStream?.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")

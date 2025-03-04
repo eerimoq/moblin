@@ -25,12 +25,6 @@ class PreviewView: UIView {
         }
     }
 
-    var videoOrientation: AVCaptureVideoOrientation = .portrait {
-        didSet {
-            currentStream?.setVideoOrientation(value: videoOrientation)
-        }
-    }
-
     var isPortrait = false {
         didSet {
             applyIsMirrored()
@@ -64,9 +58,7 @@ class PreviewView: UIView {
         layer.backgroundColor = Self.defaultBackgroundColor.cgColor
         layer.videoGravity = videoGravity
     }
-}
 
-extension PreviewView {
     func attachStream(_ stream: NetStream?) {
         guard let stream else {
             currentStream = nil
