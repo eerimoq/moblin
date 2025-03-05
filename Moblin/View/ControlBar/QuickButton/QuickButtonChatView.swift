@@ -174,7 +174,7 @@ private struct MessagesView: View {
                     ChildSizeReader(size: $scrollViewSize) {
                         VStack {
                             LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(chat.quickButtonChatPosts) { post in
+                                ForEach(chat.posts) { post in
                                     if post.user != nil {
                                         if let highlight = post.highlight {
                                             HStack(spacing: 0) {
@@ -225,11 +225,11 @@ private struct MessagesView: View {
                             perform: { scrollViewOffsetFromTop in
                                 let offset = max(scrollViewOffsetFromTop, 0)
                                 if isCloseToStart(offset: offset) {
-                                    if chat.quickButtonChatPaused, offset >= previousOffset {
+                                    if chat.paused, offset >= previousOffset {
                                         model.endOfQuickButtonChatReachedWhenPaused()
                                     }
-                                } else if !chat.quickButtonChatPaused {
-                                    if !chat.quickButtonChatPosts.isEmpty {
+                                } else if !chat.paused {
+                                    if !chat.posts.isEmpty {
                                         model.pauseQuickButtonChat()
                                     }
                                 }
@@ -314,9 +314,9 @@ private struct ChatView: View {
     var body: some View {
         ZStack {
             MessagesView(chat: chat)
-            if chat.quickButtonChatPaused {
+            if chat.paused {
                 ChatInfo(
-                    message: String(localized: "Chat paused: \(chat.pausedQuickButtonChatPostsCount) new messages")
+                    message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
                 )
                 .padding(2)
             }
@@ -546,7 +546,7 @@ struct QuickButtonChatView: View {
     var body: some View {
         VStack {
             if model.showAllQuickButtonChatMessage {
-                ChatView(chat: model.chat)
+                ChatView(chat: model.quickButtonChat)
             } else {
                 ChatAlertsView()
             }
