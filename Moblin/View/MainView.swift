@@ -427,7 +427,7 @@ struct MainView: View {
                 }
             }
             WebBrowserAlertsView()
-                .opacity(model.webBrowserController.showAlert ? 1 : 0)
+                .opacity(webBrowserController.showAlert ? 1 : 0)
             if model.blackScreen {
                 Text("")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
