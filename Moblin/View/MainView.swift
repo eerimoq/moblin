@@ -174,6 +174,7 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
 
 struct MainView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var webBrowserController: WebBrowserController
     var streamView: StreamView
     var webBrowserView: WebBrowserView
     @State var showAreYouReallySure = false
@@ -426,7 +427,6 @@ struct MainView: View {
                 }
             }
             WebBrowserAlertsView()
-                .frame(width: 300, height: 300)
                 .opacity(model.webBrowserController.showAlert ? 1 : 0)
             if model.blackScreen {
                 Text("")
