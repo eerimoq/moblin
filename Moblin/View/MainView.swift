@@ -1,4 +1,3 @@
-import SpriteKit
 import SwiftUI
 import WebKit
 
@@ -161,6 +160,16 @@ private struct SnapshotCountdownView: View {
         .background(.black.opacity(0.75))
         .cornerRadius(10)
     }
+}
+
+private struct WebBrowserAlertsView: UIViewControllerRepresentable {
+    @EnvironmentObject var model: Model
+
+    func makeUIViewController(context _: Context) -> WebBrowserController {
+        return model.webBrowserController
+    }
+
+    func updateUIViewController(_: WebBrowserController, context _: Context) {}
 }
 
 struct MainView: View {
@@ -416,6 +425,9 @@ struct MainView: View {
                     }
                 }
             }
+            WebBrowserAlertsView()
+                .frame(width: 300, height: 300)
+                .opacity(model.webBrowserController.showAlert ? 1 : 0)
             if model.blackScreen {
                 Text("")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
