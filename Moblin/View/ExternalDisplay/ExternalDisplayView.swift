@@ -215,5 +215,6 @@ struct ExternalDisplayView: View {
                 ExternalDisplayStreamPreviewView()
             }
         }
+        .background(.black)
     }
 }

@@ -445,7 +445,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var interactiveChat = false
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
-    var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 25)
+    var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     @Published var externalDisplayChatEnabled = false
     private var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
@@ -5527,6 +5527,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadChatMessages() {
         chat.posts = newPostIds(posts: chat.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
+        externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
         quickButtonChatAlertsPosts = newPostIds(posts: quickButtonChatAlertsPosts)
     }
 
