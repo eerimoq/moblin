@@ -1923,6 +1923,7 @@ class SettingsDebug: Codable {
     var dataRateLimitFactor: Float? = 2.0
     var bitrateDropFix: Bool? = false
     var relaxedBitrate: Bool? = false
+    var externalDisplayChat: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4713,6 +4714,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.text.alignment == nil {
             widget.text.alignment = .leading
+            store()
+        }
+        if realDatabase.debug.externalDisplayChat == nil {
+            realDatabase.debug.externalDisplayChat = false
             store()
         }
     }

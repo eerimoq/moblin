@@ -31641,6 +31641,9 @@
         }
       }
     },
+    "Chat on external display" : {
+
+    },
     "Chat paused: %lld new alerts" : {
       "localizations" : {
         "de" : {

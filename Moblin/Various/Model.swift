@@ -329,6 +329,12 @@ class ChatProvider: ObservableObject {
         self.maximumNumberOfMessages = maximumNumberOfMessages
     }
 
+    func reset() {
+        posts = []
+        pausedPosts = []
+        newPosts = []
+    }
+
     func appendMessage(post: ChatPost) {
         if paused {
             if pausedPosts.count < 2 * maximumNumberOfMessages {
@@ -439,6 +445,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var interactiveChat = false
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
+    var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 25)
+    @Published var externalDisplayChatEnabled = false
     private var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
@@ -1372,6 +1380,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
         setSrtlaBatchSend()
+        setExternalDisplayChat()
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
@@ -1828,6 +1837,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setSrtlaBatchSend() {
         srtlaBatchSend = database.debug.srtlaBatchSend!
+    }
+
+    func setExternalDisplayChat() {
+        externalDisplayChatEnabled = database.debug.externalDisplayChat!
     }
 
     func setCameraControlsEnabled() {
@@ -3167,6 +3180,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         chat.update()
         quickButtonChat.update()
+        if externalDisplayChatEnabled {
+            externalDisplayChat.update()
+        }
         if quickButtonChatAlertsPaused {
             // The red line is one post.
             pausedQuickButtonChatAlertsPostsCount = max(pausedQuickButtonChatAlertsPosts.count - 1, 0)
@@ -4602,15 +4618,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func resetChat() {
-        chat.posts = []
-        chat.newPosts = []
-        chatBotMessages = []
-        quickButtonChat.posts = []
-        quickButtonChat.pausedPosts = []
-        quickButtonChat.newPosts = []
+        chat.reset()
+        quickButtonChat.reset()
+        externalDisplayChat.reset()
         quickButtonChatAlertsPosts = []
         pausedQuickButtonChatAlertsPosts = []
         newQuickButtonChatAlertsPosts = []
+        chatBotMessages = []
         chatTextToSpeech.reset(running: true)
         remoteControlStreamerLatestReceivedChatMessageId = -1
     }
@@ -5496,6 +5510,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatPostId += 1
         chat.appendMessage(post: post)
         quickButtonChat.appendMessage(post: post)
+        if externalDisplayChatEnabled {
+            externalDisplayChat.appendMessage(post: post)
+        }
         if highlight != nil {
             if quickButtonChatAlertsPaused {
                 if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {

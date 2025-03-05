@@ -133,6 +133,12 @@ struct DebugSettingsView: View {
                     model.database.debug.srtlaBatchSend = value
                     model.setSrtlaBatchSend()
                 }))
+                Toggle("Chat on external display", isOn: Binding(get: {
+                    model.database.debug.externalDisplayChat!
+                }, set: { value in
+                    model.database.debug.externalDisplayChat = value
+                    model.setExternalDisplayChat()
+                }))
             } header: {
                 Text("Experimental")
             }
