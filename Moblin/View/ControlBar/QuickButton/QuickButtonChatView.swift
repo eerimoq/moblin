@@ -174,7 +174,7 @@ private struct MessagesView: View {
                     ChildSizeReader(size: $scrollViewSize) {
                         VStack {
                             LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(chat.interactiveChatPosts) { post in
+                                ForEach(chat.quickButtonChatPosts) { post in
                                     if post.user != nil {
                                         if let highlight = post.highlight {
                                             HStack(spacing: 0) {
@@ -225,12 +225,12 @@ private struct MessagesView: View {
                             perform: { scrollViewOffsetFromTop in
                                 let offset = max(scrollViewOffsetFromTop, 0)
                                 if isCloseToStart(offset: offset) {
-                                    if chat.interactiveChatPaused, offset >= previousOffset {
-                                        model.endOfInteractiveChatReachedWhenPaused()
+                                    if chat.quickButtonChatPaused, offset >= previousOffset {
+                                        model.endOfQuickButtonChatReachedWhenPaused()
                                     }
-                                } else if !chat.interactiveChatPaused {
-                                    if !chat.interactiveChatPosts.isEmpty {
-                                        model.pauseInteractiveChat()
+                                } else if !chat.quickButtonChatPaused {
+                                    if !chat.quickButtonChatPosts.isEmpty {
+                                        model.pauseQuickButtonChat()
                                     }
                                 }
                                 previousOffset = offset
@@ -314,9 +314,9 @@ private struct ChatView: View {
     var body: some View {
         ZStack {
             MessagesView(chat: chat)
-            if chat.interactiveChatPaused {
+            if chat.quickButtonChatPaused {
                 ChatInfo(
-                    message: String(localized: "Chat paused: \(chat.pausedInteractiveChatPostsCount) new messages")
+                    message: String(localized: "Chat paused: \(chat.pausedQuickButtonChatPostsCount) new messages")
                 )
                 .padding(2)
             }
@@ -382,7 +382,7 @@ private struct AlertsMessagesView: View {
                     ChildSizeReader(size: $scrollViewSize) {
                         VStack {
                             LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(model.interactiveChatAlertsPosts) { post in
+                                ForEach(model.quickButtonChatAlertsPosts) { post in
                                     if post.user != nil {
                                         if let highlight = post.highlight {
                                             if shouldShowMessage(highlight: highlight) {
@@ -435,12 +435,12 @@ private struct AlertsMessagesView: View {
                             perform: { scrollViewOffsetFromTop in
                                 let offset = max(scrollViewOffsetFromTop, 0)
                                 if isCloseToStart(offset: offset) {
-                                    if model.interactiveChatAlertsPaused, offset >= previousOffset {
-                                        model.endOfInteractiveChatAlertsReachedWhenPaused()
+                                    if model.quickButtonChatAlertsPaused, offset >= previousOffset {
+                                        model.endOfQuickButtonChatAlertsReachedWhenPaused()
                                     }
-                                } else if !model.interactiveChatAlertsPaused {
-                                    if !model.interactiveChatAlertsPosts.isEmpty {
-                                        model.pauseInteractiveChatAlerts()
+                                } else if !model.quickButtonChatAlertsPaused {
+                                    if !model.quickButtonChatAlertsPosts.isEmpty {
+                                        model.pauseQuickButtonChatAlerts()
                                     }
                                 }
                                 previousOffset = offset
@@ -464,9 +464,9 @@ private struct ChatAlertsView: View {
     var body: some View {
         ZStack {
             AlertsMessagesView()
-            if model.interactiveChatAlertsPaused {
+            if model.quickButtonChatAlertsPaused {
                 ChatInfo(
-                    message: String(localized: "Chat paused: \(model.pausedInteractiveChatAlertsPostsCount) new alerts")
+                    message: String(localized: "Chat paused: \(model.pausedQuickButtonChatAlertsPostsCount) new alerts")
                 )
                 .padding(2)
             }
@@ -480,10 +480,10 @@ private struct ControlAlertsButtonView: View {
 
     var body: some View {
         Button(action: {
-            model.showAllInteractiveChatMessage.toggle()
+            model.showAllQuickButtonChatMessage.toggle()
         }, label: {
             Image(systemName: model
-                .showAllInteractiveChatMessage ? "megaphone" : "megaphone.fill")
+                .showAllQuickButtonChatMessage ? "megaphone" : "megaphone.fill")
                 .font(.title)
                 .padding(5)
         })
@@ -545,13 +545,13 @@ struct QuickButtonChatView: View {
 
     var body: some View {
         VStack {
-            if model.showAllInteractiveChatMessage {
+            if model.showAllQuickButtonChatMessage {
                 ChatView(chat: model.chat)
             } else {
                 ChatAlertsView()
             }
             HStack {
-                if model.showAllInteractiveChatMessage {
+                if model.showAllQuickButtonChatMessage {
                     ControlView(message: $message)
                 } else {
                     AlertsControlView()

@@ -37,9 +37,9 @@ private struct ChatPausedView: View {
     @ObservedObject var chat: ChatProvider
 
     var body: some View {
-        if chat.chatPaused {
+        if chat.paused {
             ChatInfo(
-                message: String(localized: "Chat paused: \(chat.pausedChatPostsCount) new messages")
+                message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
             )
             .padding(2)
         }
@@ -128,7 +128,6 @@ private struct FrontTorchView: View {
 
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var chat: ChatProvider
     let width: CGFloat
     let height: CGFloat
 
@@ -151,7 +150,7 @@ struct StreamOverlayView: View {
                 if model.showingPanel != .chat {
                     ChatOverlayView(height: height)
                         .opacity(model.database.chat.enabled! ? 1 : 0)
-                        .allowsHitTesting(chat.interactiveChat)
+                        .allowsHitTesting(model.interactiveChat)
                 }
                 HStack {
                     Spacer()
