@@ -408,9 +408,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
+    @Published var interactiveChat = false
     var chat = ChatProvider()
     var quickButtonChat = ChatProvider()
-    @Published var interactiveChat = false
     private var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
