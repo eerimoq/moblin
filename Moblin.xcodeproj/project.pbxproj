@@ -235,6 +235,7 @@
 		036C39AB2D1940BB00F74D37 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 036C39AA2D1940BB00F74D37 /* InfoPlist.xcstrings */; };
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */; };
+		03762FE12D780DE5003BD2E2 /* ExternalDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */; };
@@ -812,6 +813,7 @@
 		036C39AA2D1940BB00F74D37 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
+		03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayView.swift; sourceTree = "<group>"; };
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -1921,6 +1923,14 @@
 			path = Text;
 			sourceTree = "<group>";
 		};
+		03762FDF2D780DBC003BD2E2 /* ExternalDisplay */ = {
+			isa = PBXGroup;
+			children = (
+				03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */,
+			);
+			path = ExternalDisplay;
+			sourceTree = "<group>";
+		};
 		0376F6FC2B9511030056B3D2 /* Moblin Widget */ = {
 			isa = PBXGroup;
 			children = (
@@ -2218,11 +2228,12 @@
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
-				030A8B652BC2D36D00F149AF /* WebBrowser */,
 				03B373F72A9EFB1F0028DDD5 /* ControlBar */,
+				03762FDF2D780DBC003BD2E2 /* ExternalDisplay */,
 				03B373F42A9EF8BD0028DDD5 /* Settings */,
 				03B374002A9FDEC80028DDD5 /* Stream */,
 				0315A34F2AA322ED00295443 /* Utils */,
+				030A8B652BC2D36D00F149AF /* WebBrowser */,
 				03A983562A9A05D7008FF0DB /* MainView.swift */,
 			);
 			path = View;
@@ -3291,6 +3302,7 @@
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
 				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
 				0339F9172CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */,
+				03762FE12D780DE5003BD2E2 /* ExternalDisplayView.swift in Sources */,
 				0359F8E22BD3DA61005BFDA8 /* MpegTsProgram.swift in Sources */,
 				034CE2EC2B4D2E7200E2C1BD /* StreamRealtimeIrlSettingsView.swift in Sources */,
 				03859D7E2C50183C000EFE43 /* SampleBufferCommon.swift in Sources */,
