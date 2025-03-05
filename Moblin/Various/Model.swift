@@ -319,6 +319,7 @@ class AudioProvider: ObservableObject {
 
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []
+    var pausedPosts: Deque<ChatPost> = []
     @Published var posts: Deque<ChatPost> = []
     @Published var pausedPostsCount: Int = 0
     @Published var paused = false
@@ -410,9 +411,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var chat = ChatProvider()
     var quickButtonChat = ChatProvider()
     @Published var interactiveChat = false
-    private var pausedChatPosts: Deque<ChatPost> = []
     private var chatBotMessages: Deque<ChatBotMessage> = []
-    private var pausedQuickButtonChatPosts: Deque<ChatPost> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
@@ -2993,7 +2992,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func pauseChat() {
         chat.paused = true
         chat.pausedPostsCount = 0
-        pausedChatPosts = [createRedLineChatPost()]
+        chat.pausedPosts = [createRedLineChatPost()]
     }
 
     func disableInteractiveChat() {
@@ -3024,17 +3023,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func pauseQuickButtonChat() {
         quickButtonChat.paused = true
         quickButtonChat.pausedPostsCount = 0
-        pausedQuickButtonChatPosts = [createRedLineChatPost()]
+        quickButtonChat.pausedPosts = [createRedLineChatPost()]
     }
 
     func endOfQuickButtonChatReachedWhenPaused() {
         var numberOfPostsAppended = 0
-        while numberOfPostsAppended < 5, let post = pausedQuickButtonChatPosts.popFirst() {
+        while numberOfPostsAppended < 5, let post = quickButtonChat.pausedPosts.popFirst() {
             if post.user == nil {
                 if let lastPost = quickButtonChat.posts.first, lastPost.user == nil {
                     continue
                 }
-                if pausedQuickButtonChatPosts.isEmpty {
+                if quickButtonChat.pausedPosts.isEmpty {
                     continue
                 }
             }
@@ -3057,12 +3056,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
         var numberOfPostsAppended = 0
-        while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = pausedChatPosts.popFirst() {
+        while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = chat.pausedPosts.popFirst() {
             if post.user == nil {
                 if let lastPost = chat.posts.first, lastPost.user == nil {
                     continue
                 }
-                if pausedChatPosts.isEmpty {
+                if chat.pausedPosts.isEmpty {
                     continue
                 }
             }
@@ -3139,7 +3138,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             streamTotalChatMessages += 1
         }
         if chat.paused {
-            chat.pausedPostsCount = max(pausedChatPosts.count - 1, 0)
+            chat.pausedPostsCount = max(chat.pausedPosts.count - 1, 0)
         } else {
             while let post = chat.newPosts.popFirst() {
                 if chat.posts.count > maximumNumberOfChatMessages - 1 {
@@ -3150,7 +3149,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if quickButtonChat.paused {
             // The red line is one post.
-            quickButtonChat.pausedPostsCount = max(pausedQuickButtonChatPosts.count - 1, 0)
+            quickButtonChat.pausedPostsCount = max(quickButtonChat.pausedPosts.count - 1, 0)
         } else {
             while let post = quickButtonChat.newPosts.popFirst() {
                 if quickButtonChat.posts.count > maximumNumberOfInteractiveChatMessages - 1 {
@@ -4598,7 +4597,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chat.newPosts = []
         chatBotMessages = []
         quickButtonChat.posts = []
-        pausedQuickButtonChatPosts = []
+        quickButtonChat.pausedPosts = []
         quickButtonChat.newPosts = []
         quickButtonChatAlertsPosts = []
         pausedQuickButtonChatAlertsPosts = []
@@ -5487,15 +5486,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
         chatPostId += 1
         if chat.paused {
-            if pausedChatPosts.count < 2 * maximumNumberOfChatMessages {
-                pausedChatPosts.append(post)
+            if chat.pausedPosts.count < 2 * maximumNumberOfChatMessages {
+                chat.pausedPosts.append(post)
             }
         } else {
             chat.newPosts.append(post)
         }
         if quickButtonChat.paused {
-            if pausedQuickButtonChatPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
-                pausedQuickButtonChatPosts.append(post)
+            if quickButtonChat.pausedPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
+                quickButtonChat.pausedPosts.append(post)
             }
         } else {
             quickButtonChat.newPosts.append(post)
