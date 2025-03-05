@@ -323,6 +323,34 @@ class ChatProvider: ObservableObject {
     @Published var posts: Deque<ChatPost> = []
     @Published var pausedPostsCount: Int = 0
     @Published var paused = false
+    private let maximumNumberOfMessages: Int
+
+    init(maximumNumberOfMessages: Int) {
+        self.maximumNumberOfMessages = maximumNumberOfMessages
+    }
+
+    func appendMessage(post: ChatPost) {
+        if paused {
+            if pausedPosts.count < 2 * maximumNumberOfMessages {
+                pausedPosts.append(post)
+            }
+        } else {
+            newPosts.append(post)
+        }
+    }
+
+    func update() {
+        if paused {
+            pausedPostsCount = max(pausedPosts.count - 1, 0)
+        } else {
+            while let post = newPosts.popFirst() {
+                if posts.count > maximumNumberOfMessages - 1 {
+                    posts.removeLast()
+                }
+                posts.prepend(post)
+            }
+        }
+    }
 }
 
 class StreamUptimeProvider: ObservableObject {
@@ -409,8 +437,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var interactiveChat = false
-    var chat = ChatProvider()
-    var quickButtonChat = ChatProvider()
+    var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
+    var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
     private var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
@@ -3137,27 +3165,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             streamTotalChatMessages += 1
         }
-        if chat.paused {
-            chat.pausedPostsCount = max(chat.pausedPosts.count - 1, 0)
-        } else {
-            while let post = chat.newPosts.popFirst() {
-                if chat.posts.count > maximumNumberOfChatMessages - 1 {
-                    chat.posts.removeLast()
-                }
-                chat.posts.prepend(post)
-            }
-        }
-        if quickButtonChat.paused {
-            // The red line is one post.
-            quickButtonChat.pausedPostsCount = max(quickButtonChat.pausedPosts.count - 1, 0)
-        } else {
-            while let post = quickButtonChat.newPosts.popFirst() {
-                if quickButtonChat.posts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    quickButtonChat.posts.removeLast()
-                }
-                quickButtonChat.posts.prepend(post)
-            }
-        }
+        chat.update()
+        quickButtonChat.update()
         if quickButtonChatAlertsPaused {
             // The red line is one post.
             pausedQuickButtonChatAlertsPostsCount = max(pausedQuickButtonChatAlertsPosts.count - 1, 0)
@@ -5485,20 +5494,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             live: live
         )
         chatPostId += 1
-        if chat.paused {
-            if chat.pausedPosts.count < 2 * maximumNumberOfChatMessages {
-                chat.pausedPosts.append(post)
-            }
-        } else {
-            chat.newPosts.append(post)
-        }
-        if quickButtonChat.paused {
-            if quickButtonChat.pausedPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
-                quickButtonChat.pausedPosts.append(post)
-            }
-        } else {
-            quickButtonChat.newPosts.append(post)
-        }
+        chat.appendMessage(post: post)
+        quickButtonChat.appendMessage(post: post)
         if highlight != nil {
             if quickButtonChatAlertsPaused {
                 if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
