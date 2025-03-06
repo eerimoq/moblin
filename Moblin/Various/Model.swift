@@ -5334,10 +5334,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.fax!,
             command: command
         ) {
-            guard let url = command.popFirst() else {
-                return
+            let prompt = command.rest()
+            if let url = command.popFirst(), let url = URL(string: url) {
+                self.faxReceiver.add(url: url)
+            } else {
+                self.faxReceiver.add(prompt: prompt)
             }
-            self.faxReceiver.add(url: url)
         }
     }
 
