@@ -4,6 +4,8 @@ import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
+private let fontSizeScaleFactor = 3.0
+
 private struct HighlightMessageView: View {
     var chat: SettingsChat
     let image: String
@@ -21,7 +23,7 @@ private struct HighlightMessageView: View {
             Text(name)
         }
         .padding([.leading], 5)
-        .font(.system(size: CGFloat(chat.fontSize)))
+        .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
 }
 
@@ -59,7 +61,7 @@ private struct LineView: View {
                         EmptyView()
                     }
                     .padding(2)
-                    .frame(height: CGFloat(chat.fontSize * 1.4))
+                    .frame(height: fontSizeScaleFactor * CGFloat(chat.fontSize * 1.4))
                 }
             }
             Text(post.user!)
@@ -98,7 +100,7 @@ private struct LineView: View {
             }
         }
         .padding([.leading], 5)
-        .font(.system(size: CGFloat(chat.fontSize)))
+        .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
 }
 
