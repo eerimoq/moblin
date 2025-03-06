@@ -31641,9 +31641,6 @@
         }
       }
     },
-    "Chat on external display" : {
-
-    },
     "Chat paused: %lld new alerts" : {
       "localizations" : {
         "de" : {
@@ -51847,6 +51844,9 @@
           }
         }
       }
+    },
+    "External monitor content" : {
+
     },
     "Face" : {
       "localizations" : {
@@ -76455,6 +76455,9 @@
           }
         }
       }
+    },
+    "Mirror" : {
+
     },
     "Mirror front camera on stream" : {
       "localizations" : {

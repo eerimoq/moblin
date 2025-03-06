@@ -1381,7 +1381,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
         setSrtlaBatchSend()
-        setExternalDisplayChat()
+        setExternalDisplayContent()
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
@@ -1840,8 +1840,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         srtlaBatchSend = database.debug.srtlaBatchSend!
     }
 
-    func setExternalDisplayChat() {
-        externalDisplayChatEnabled = database.debug.externalDisplayChat!
+    func setExternalDisplayContent() {
+        switch database.externalDisplayContent! {
+        case .stream:
+            externalDisplayChatEnabled = false
+        case .chat:
+            externalDisplayChatEnabled = true
+        case .mirror:
+            externalDisplayChatEnabled = false
+        }
+        updateExternalMonitorWindow()
     }
 
     func setCameraControlsEnabled() {
@@ -2202,6 +2210,39 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if !showLoadSettingsFailed {
             store()
+        }
+    }
+
+    // periphery:ignore
+    private var externalDisplayWindow: UIWindow?
+
+    func externalMonitorConnected(windowScene: UIWindowScene) {
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UIHostingController(rootView: ExternalScreenContentView())
+        externalDisplayWindow = window
+        updateExternalMonitorWindow()
+        externalDisplayPreview = true
+        reattachCamera()
+    }
+
+    func externalMonitorDisconnected() {
+        externalDisplayWindow = nil
+        externalDisplayPreview = false
+        reattachCamera()
+    }
+
+    private func updateExternalMonitorWindow() {
+        guard let externalDisplayWindow else {
+            return
+        }
+        switch database.externalDisplayContent! {
+        case .stream:
+            externalDisplayWindow.makeKeyAndVisible()
+        case .chat:
+            externalDisplayWindow.makeKeyAndVisible()
+        case .mirror:
+            externalDisplayWindow.resignKey()
+            externalDisplayWindow.isHidden = true
         }
     }
 

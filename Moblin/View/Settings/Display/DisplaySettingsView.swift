@@ -1,5 +1,26 @@
 import SwiftUI
 
+private struct ExternalDisplayContentView: View {
+    @EnvironmentObject var model: Model
+    @State var selection: String
+
+    var body: some View {
+        HStack {
+            Text("External monitor content")
+            Spacer()
+            Picker("", selection: $selection) {
+                ForEach(externalDisplayContents, id: \.self) {
+                    Text($0)
+                }
+            }
+            .onChange(of: selection) {
+                model.database.externalDisplayContent = SettingsExternalDisplayContent.fromString(value: $0)
+                model.setExternalDisplayContent()
+            }
+        }
+    }
+}
+
 struct DisplaySettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -30,6 +51,7 @@ struct DisplaySettingsView: View {
                     } label: {
                         Text("Local overlays")
                     }
+                    ExternalDisplayContentView(selection: model.database.externalDisplayContent!.toString())
                     NavigationLink {
                         LocalOverlaysNetworkInterfaceNamesSettingsView()
                     } label: {

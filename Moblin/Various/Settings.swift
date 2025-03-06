@@ -2570,6 +2570,43 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
 
 let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toString() }
 
+enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
+    case stream = "Stream"
+    case chat = "Chat"
+    case mirror = "Mirror"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .stream
+    }
+
+    static func fromString(value: String) -> SettingsExternalDisplayContent {
+        switch value {
+        case String(localized: "Stream"):
+            return .stream
+        case String(localized: "Chat"):
+            return .chat
+        case String(localized: "Mirror"):
+            return .mirror
+        default:
+            return .stream
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .stream:
+            return String(localized: "Stream")
+        case .chat:
+            return String(localized: "Chat")
+        case .mirror:
+            return String(localized: "Mirror")
+        }
+    }
+}
+
+let externalDisplayContents = SettingsExternalDisplayContent.allCases.map { $0.toString() }
+
 class SettingsPrivacyRegion: Codable, Identifiable {
     var id: UUID = .init()
     var latitude: Double = 0
@@ -2760,6 +2797,7 @@ class Database: Codable {
     var sceneSwitchTransition: SettingsSceneSwitchTransition? = .blur
     var forceSceneSwitchTransition: Bool? = false
     var cameraControlsEnabled: Bool? = true
+    var externalDisplayContent: SettingsExternalDisplayContent? = .stream
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4718,6 +4756,14 @@ final class Settings {
         }
         if realDatabase.debug.externalDisplayChat == nil {
             realDatabase.debug.externalDisplayChat = false
+            store()
+        }
+        if realDatabase.externalDisplayContent == nil {
+            if realDatabase.debug.externalDisplayChat! {
+                realDatabase.externalDisplayContent = .chat
+            } else {
+                realDatabase.externalDisplayContent = .stream
+            }
             store()
         }
     }
