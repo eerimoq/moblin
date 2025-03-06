@@ -447,6 +447,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
     var externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     @Published var externalDisplayChatEnabled = false
+    private var externalDisplayWindow: UIWindow?
     private var chatBotMessages: Deque<ChatBotMessage> = []
     @Published var showAllQuickButtonChatMessage = true
     @Published var showFirstTimeChatterMessage = true
@@ -2212,9 +2213,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             store()
         }
     }
-
-    // periphery:ignore
-    private var externalDisplayWindow: UIWindow?
 
     func externalMonitorConnected(windowScene: UIWindowScene) {
         let window = UIWindow(windowScene: windowScene)
