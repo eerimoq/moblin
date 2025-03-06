@@ -84,7 +84,7 @@ private struct LineView: View {
                         WebImage(url: url)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: 25)
+                            .frame(height: fontSizeScaleFactor * 25)
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
@@ -93,7 +93,7 @@ private struct LineView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .frame(height: 25)
+                        .frame(height: fontSizeScaleFactor * 25)
                     }
                     Text(" ")
                 }
