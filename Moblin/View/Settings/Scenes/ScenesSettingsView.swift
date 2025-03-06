@@ -45,7 +45,7 @@ private struct ScenesListView: View {
                 }
                 .onMove(perform: { froms, to in
                     database.scenes.move(fromOffsets: froms, toOffset: to)
-                    model.resetSelectedScene(changeScene: false)
+                    model.resetSelectedScene()
                 })
             }
             CreateButtonView {
