@@ -236,6 +236,7 @@
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		037132CE2C29FEFD00393605 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */; };
 		03762FE12D780DE5003BD2E2 /* ExternalDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */; };
+		03762FE32D797A95003BD2E2 /* WebBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03762FE22D797A94003BD2E2 /* WebBrowserController.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */; };
@@ -814,6 +815,7 @@
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		037132CD2C29FEFD00393605 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
 		03762FE02D780DE0003BD2E2 /* ExternalDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayView.swift; sourceTree = "<group>"; };
+		03762FE22D797A94003BD2E2 /* WebBrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserController.swift; sourceTree = "<group>"; };
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -2542,6 +2544,7 @@
 				03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
 				03C5AE412C536FE10056B6C7 /* WeatherManager.swift */,
+				03762FE22D797A94003BD2E2 /* WebBrowserController.swift */,
 				0384C0372C10E14900B82216 /* WebSocketClient.swift */,
 			);
 			path = Various;
@@ -3294,6 +3297,7 @@
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
 				031F41412C6F17BF00790EEC /* WidgetAlertsTextSettingsView.swift in Sources */,
 				03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */,
+				03762FE32D797A95003BD2E2 /* WebBrowserController.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A22DA72C0ECBA800A59208 /* Srtla.swift in Sources */,
 				0318D35E2CF04C3A00E12F3B /* TargetLatenciesSynchronizer.swift in Sources */,
