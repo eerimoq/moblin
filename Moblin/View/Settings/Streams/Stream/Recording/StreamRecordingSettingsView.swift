@@ -96,6 +96,26 @@ struct StreamRecordingSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
+            } footer: {
+                Text("Resolution and FPS are same as for live stream.")
+            }
+            Section {
+                Toggle("Clean recordings", isOn: Binding(get: {
+                    recording.cleanRecordings!
+                }, set: { value in
+                    recording.cleanRecordings = value
+                    model.setCleanRecordings()
+                }))
+                Toggle("Clean snapshots", isOn: Binding(get: {
+                    recording.cleanSnapshots!
+                }, set: { value in
+                    recording.cleanSnapshots = value
+                    model.setCleanSnapshots()
+                }))
+            } footer: {
+                Text("Do not show widgets in recordings and/or snapshots.")
+            }
+            Section {
                 Toggle("Auto start recording when going live", isOn: Binding(get: {
                     recording.autoStartRecording!
                 }, set: { value in
@@ -106,9 +126,6 @@ struct StreamRecordingSettingsView: View {
                 }, set: { value in
                     recording.autoStopRecording = value
                 }))
-            }
-            footer: {
-                Text("Resolution and FPS are same as for live stream.")
             }
         }
         .navigationTitle("Recording")

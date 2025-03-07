@@ -242,6 +242,8 @@ final class VideoUnit: NSObject {
     private var takeSnapshotAge: Float = 0.0
     private var takeSnapshotComplete: ((UIImage, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
+    private var cleanRecordings = false
+    private var cleanSnapshots = false
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
@@ -410,6 +412,18 @@ final class VideoUnit: NSObject {
         mixerLockQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
+        }
+    }
+
+    func setCleanRecordings(enabled: Bool) {
+        mixerLockQueue.async {
+            self.cleanRecordings = enabled
+        }
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        mixerLockQueue.async {
+            self.cleanSnapshots = enabled
         }
     }
 
@@ -1093,7 +1107,11 @@ final class VideoUnit: NSObject {
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
         // Recordings seems to randomly fail if moved after live stream encoding. Maybe because the
         // sample buffer is copied in appendVideo()
-        mixer?.recorder.appendVideo(modSampleBuffer)
+        if cleanRecordings {
+            mixer?.recorder.appendVideo(sampleBuffer)
+        } else {
+            mixer?.recorder.appendVideo(modSampleBuffer)
+        }
         modSampleBuffer.setAttachmentDisplayImmediately()
         if !showCameraPreview {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
@@ -1110,7 +1128,11 @@ final class VideoUnit: NSObject {
         }
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         handleLowFpsImage(modImageBuffer, presentationTimeStamp)
-        handleTakeSnapshot(modSampleBuffer, presentationTimeStamp)
+        if cleanSnapshots {
+            handleTakeSnapshot(sampleBuffer, presentationTimeStamp)
+        } else {
+            handleTakeSnapshot(modSampleBuffer, presentationTimeStamp)
+        }
     }
 
     private func handleLowFpsImage(_ imageBuffer: CVImageBuffer, _ presentationTimeStamp: Double) {

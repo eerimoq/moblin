@@ -4342,6 +4342,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         attachStream()
         setLowFpsImage()
         setSceneSwitchTransition()
+        setCleanSnapshots()
+        setCleanRecordings()
         updateCameraControls()
     }
 
@@ -5051,6 +5053,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setSceneSwitchTransition() {
         media.setSceneSwitchTransition(sceneSwitchTransition: database.sceneSwitchTransition!.toVideoUnit())
+    }
+
+    func setCleanRecordings() {
+        media.setCleanRecordings(enabled: stream.recording!.cleanRecordings!)
+    }
+
+    func setCleanSnapshots() {
+        media.setCleanSnapshots(enabled: stream.recording!.cleanSnapshots!)
     }
 
     func toggleLocalOverlays() {

@@ -331,6 +331,8 @@ class SettingsStreamRecording: Codable {
     var audioBitrate: UInt32? = 128_000
     var autoStartRecording: Bool? = false
     var autoStopRecording: Bool? = false
+    var cleanRecordings: Bool? = false
+    var cleanSnapshots: Bool? = false
 
     func clone() -> SettingsStreamRecording {
         let new = SettingsStreamRecording()
@@ -340,6 +342,8 @@ class SettingsStreamRecording: Codable {
         new.audioBitrate = audioBitrate
         new.autoStartRecording = autoStartRecording
         new.autoStopRecording = autoStopRecording
+        new.cleanRecordings = cleanRecordings
+        new.cleanSnapshots = cleanSnapshots
         return new
     }
 
@@ -4764,6 +4768,14 @@ final class Settings {
             } else {
                 realDatabase.externalDisplayContent = .stream
             }
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording!.cleanRecordings == nil {
+            stream.recording!.cleanRecordings = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording!.cleanSnapshots == nil {
+            stream.recording!.cleanSnapshots = false
             store()
         }
     }

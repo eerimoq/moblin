@@ -33119,6 +33119,12 @@
         }
       }
     },
+    "Clean recordings" : {
+
+    },
+    "Clean snapshots" : {
+
+    },
     "Close" : {
       "localizations" : {
         "de" : {
@@ -44796,6 +44802,9 @@
           }
         }
       }
+    },
+    "Do not show widgets in recordings and/or snapshots." : {
+
     },
     "Double tap to return to main view" : {
       "localizations" : {

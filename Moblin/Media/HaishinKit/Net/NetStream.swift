@@ -197,6 +197,14 @@ open class NetStream: NSObject {
         mixer.video.takeSnapshot(age: age, onComplete: onComplete)
     }
 
+    func setCleanRecordings(enabled: Bool) {
+        mixer.video.setCleanRecordings(enabled: enabled)
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        mixer.video.setCleanSnapshots(enabled: enabled)
+    }
+
     func setAudioChannelsMap(map: [Int: Int]) {
         mixer.recorder.setAudioChannelsMap(map: map)
     }

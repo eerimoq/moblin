@@ -627,6 +627,14 @@ final class Media: NSObject {
         netStream?.takeSnapshot(age: age, onComplete: onComplete)
     }
 
+    func setCleanRecordings(enabled: Bool) {
+        netStream?.setCleanRecordings(enabled: enabled)
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        netStream?.setCleanSnapshots(enabled: enabled)
+    }
+
     func setVideoSize(capture: CGSize, output: CGSize) {
         netStream?.setVideoSize(capture: capture, output: output)
         videoEncoderSettings.videoSize = .init(
