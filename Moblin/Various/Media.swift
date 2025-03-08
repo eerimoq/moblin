@@ -635,6 +635,10 @@ final class Media: NSObject {
         netStream?.setCleanSnapshots(enabled: enabled)
     }
 
+    func setCleanExternalDisplay(enabled: Bool) {
+        netStream?.setCleanExternalDisplay(enabled: enabled)
+    }
+
     func setVideoSize(capture: CGSize, output: CGSize) {
         netStream?.setVideoSize(capture: capture, output: output)
         videoEncoderSettings.videoSize = .init(

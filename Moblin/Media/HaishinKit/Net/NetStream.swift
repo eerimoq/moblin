@@ -205,6 +205,10 @@ open class NetStream: NSObject {
         mixer.video.setCleanSnapshots(enabled: enabled)
     }
 
+    func setCleanExternalDisplay(enabled: Bool) {
+        mixer.video.setCleanExternalDisplay(enabled: enabled)
+    }
+
     func setAudioChannelsMap(map: [Int: Int]) {
         mixer.recorder.setAudioChannelsMap(map: map)
     }

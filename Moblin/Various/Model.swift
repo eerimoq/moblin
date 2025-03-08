@@ -1845,11 +1845,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch database.externalDisplayContent! {
         case .stream:
             externalDisplayChatEnabled = false
+        case .cleanStream:
+            externalDisplayChatEnabled = false
         case .chat:
             externalDisplayChatEnabled = true
         case .mirror:
             externalDisplayChatEnabled = false
         }
+        setCleanExternalDisplay()
         updateExternalMonitorWindow()
     }
 
@@ -2235,6 +2238,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         switch database.externalDisplayContent! {
         case .stream:
+            externalDisplayWindow.makeKeyAndVisible()
+        case .cleanStream:
             externalDisplayWindow.makeKeyAndVisible()
         case .chat:
             externalDisplayWindow.makeKeyAndVisible()
@@ -4344,6 +4349,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setSceneSwitchTransition()
         setCleanSnapshots()
         setCleanRecordings()
+        setCleanExternalDisplay()
         updateCameraControls()
     }
 
@@ -5061,6 +5067,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording!.cleanSnapshots!)
+    }
+
+    func setCleanExternalDisplay() {
+        media.setCleanExternalDisplay(enabled: database.externalDisplayContent == .cleanStream)
     }
 
     func toggleLocalOverlays() {

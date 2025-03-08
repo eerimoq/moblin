@@ -244,6 +244,7 @@ final class VideoUnit: NSObject {
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var cleanRecordings = false
     private var cleanSnapshots = false
+    private var cleanExternalDisplay = false
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
@@ -424,6 +425,12 @@ final class VideoUnit: NSObject {
     func setCleanSnapshots(enabled: Bool) {
         mixerLockQueue.async {
             self.cleanSnapshots = enabled
+        }
+    }
+
+    func setCleanExternalDisplay(enabled: Bool) {
+        mixerLockQueue.async {
+            self.cleanExternalDisplay = enabled
         }
     }
 
@@ -1117,7 +1124,11 @@ final class VideoUnit: NSObject {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         if externalDisplayPreview {
-            externalDisplayDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+            if cleanExternalDisplay {
+                externalDisplayDrawable?.enqueue(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+            } else {
+                externalDisplayDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+            }
         }
         for encoder in encoders {
             encoder.encodeImageBuffer(

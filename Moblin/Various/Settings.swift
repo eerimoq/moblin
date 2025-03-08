@@ -2576,6 +2576,7 @@ let sceneSwitchTransitions = SettingsSceneSwitchTransition.allCases.map { $0.toS
 
 enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     case stream = "Stream"
+    case cleanStream = "Clean stream"
     case chat = "Chat"
     case mirror = "Mirror"
 
@@ -2588,6 +2589,8 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
         switch value {
         case String(localized: "Stream"):
             return .stream
+        case String(localized: "Clean stream"):
+            return .cleanStream
         case String(localized: "Chat"):
             return .chat
         case String(localized: "Mirror"):
@@ -2601,6 +2604,8 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
         switch self {
         case .stream:
             return String(localized: "Stream")
+        case .cleanStream:
+            return String(localized: "Clean stream")
         case .chat:
             return String(localized: "Chat")
         case .mirror:
