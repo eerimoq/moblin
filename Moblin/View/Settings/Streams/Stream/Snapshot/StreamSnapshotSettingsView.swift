@@ -1,7 +1,6 @@
 import SwiftUI
 
-struct StreamDiscordSettingsView: View {
-    // periphery:ignore
+struct StreamSnapshotSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 
@@ -18,14 +17,24 @@ struct StreamDiscordSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Toggle("Clean snapshots", isOn: Binding(get: {
+                    stream.recording!.cleanSnapshots!
+                }, set: { value in
+                    stream.recording!.cleanSnapshots = value
+                    model.setCleanSnapshots()
+                }))
+            } footer: {
+                Text("Do not show widgets in snapshots.")
+            }
+            Section {
                 TextEditNavigationView(
-                    title: String(localized: "Snapshot webhook URL"),
+                    title: String(localized: "Webhook URL"),
                     value: stream.discordSnapshotWebhook!,
                     onSubmit: submitSnapshotWebhookUrl,
                     keyboardType: .URL
                 )
                 TextEditNavigationView(
-                    title: String(localized: "Chat bot snapshot webhook URL"),
+                    title: String(localized: "Chat bot webhook URL"),
                     value: stream.discordChatBotSnapshotWebhook!,
                     onSubmit: submitSnapshotChatBotWebhookUrl,
                     keyboardType: .URL
@@ -37,6 +46,8 @@ struct StreamDiscordSettingsView: View {
                 })) {
                     Text("Only when live")
                 }
+            } header: {
+                Text("Discord")
             } footer: {
                 VStack(alignment: .leading) {
                     Text("""
@@ -48,6 +59,6 @@ struct StreamDiscordSettingsView: View {
                 }
             }
         }
-        .navigationTitle("Discord")
+        .navigationTitle("Snapshot")
     }
 }

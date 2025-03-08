@@ -106,14 +106,8 @@ struct StreamRecordingSettingsView: View {
                     recording.cleanRecordings = value
                     model.setCleanRecordings()
                 }))
-                Toggle("Clean snapshots", isOn: Binding(get: {
-                    recording.cleanSnapshots!
-                }, set: { value in
-                    recording.cleanSnapshots = value
-                    model.setCleanSnapshots()
-                }))
             } footer: {
-                Text("Do not show widgets in recordings and/or snapshots.")
+                Text("Do not show widgets in recordings.")
             }
             Section {
                 Toggle("Auto start recording when going live", isOn: Binding(get: {

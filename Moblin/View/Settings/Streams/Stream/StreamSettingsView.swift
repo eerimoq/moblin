@@ -55,6 +55,11 @@ struct StreamSettingsView: View {
                     } label: {
                         Text("Recording")
                     }
+                    NavigationLink {
+                        StreamSnapshotSettingsView(stream: stream)
+                    } label: {
+                        Text("Snapshot")
+                    }
                 }
                 if isPhone() || isPad() {
                     Toggle(isOn: Binding(get: {
@@ -164,11 +169,6 @@ struct StreamSettingsView: View {
                             }
                         }))
                     }
-                }
-                NavigationLink {
-                    StreamDiscordSettingsView(stream: stream)
-                } label: {
-                    Text("Discord")
                 }
             }
             if model.database.showAllSettings! {

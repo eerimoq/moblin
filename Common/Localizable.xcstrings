@@ -31234,6 +31234,7 @@
       }
     },
     "Chat bot snapshot webhook URL" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31368,6 +31369,9 @@
           }
         }
       }
+    },
+    "Chat bot webhook URL" : {
+
     },
     "Chat is empty." : {
       "localizations" : {
@@ -44806,7 +44810,10 @@
         }
       }
     },
-    "Do not show widgets in recordings and/or snapshots." : {
+    "Do not show widgets in recordings." : {
+
+    },
+    "Do not show widgets in snapshots." : {
 
     },
     "Double tap to return to main view" : {
@@ -108956,6 +108963,7 @@
       }
     },
     "Snapshot webhook URL" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -138506,6 +138514,9 @@
           }
         }
       }
+    },
+    "Webhook URL" : {
+
     },
     "WebSocket" : {
       "localizations" : {
