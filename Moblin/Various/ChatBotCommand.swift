@@ -29,6 +29,10 @@ class ChatBotCommand {
         return parts.popFirst()
     }
 
+    func peekFirst() -> String? {
+        return parts.first
+    }
+
     func rest() -> String {
         return parts.joined(separator: " ")
     }

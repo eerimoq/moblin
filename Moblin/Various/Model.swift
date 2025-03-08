@@ -5352,11 +5352,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.fax!,
             command: command
         ) {
+            let url = URL(string: command.peekFirst() ?? "")
+            if url != nil {
+                _ = command.popFirst()
+            }
             let prompt = command.rest()
-            if let url = command.popFirst(), let url = URL(string: url) {
+            if let url, prompt.isEmpty {
                 self.faxReceiver.add(url: url)
             } else {
-                self.faxReceiver.add(prompt: prompt)
+                self.faxReceiver.add(prompt: prompt, url: url)
             }
         }
     }

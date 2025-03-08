@@ -22,15 +22,22 @@ class FaxReceiver {
         .resume()
     }
 
-    func add(prompt _: String) {
+    func add(prompt _: String, url _: URL?) {
         guard #available(iOS 18.4, *) else {
             return
         }
         // Task {
-        //     for image in await ImageCreator().images(for: [ImagePlaygroundConcept.text(prompt)],
-        //                                              style: .all,
-        //                                              limit: 1) {
-        //         logger.info("xxx image \(image.cgImage)")
+        //     do {
+        //         let creator = try await ImageCreator()
+        //         var concepts = [.extracted(from: prompt)]
+        //         if let url {
+        //             concepts.append(.image(url))
+        //         }
+        //         for try await image in creator.images(for: concepts, style: .all, limit: 1) {
+        //             self.delegate?.faxReceiverPrint(image: image)
+        //         }
+        //     } catch is ImageCreator.Error {
+        //     } catch {
         //     }
         // }
     }
