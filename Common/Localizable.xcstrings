@@ -4933,8 +4933,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{shortTime} - Zeit als HH:MM"
+            "state" : "translated",
+            "value" : "{shortTime} - Zeit als HH:MM anzeigen"
           }
         },
         "el" : {
@@ -17579,7 +17579,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ausrichtung"
           }
         },
@@ -31237,7 +31237,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat Bot Webhook URL"
           }
         },
@@ -33117,8 +33117,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aufnahmen reinigen"
+            "state" : "translated",
+            "value" : "Saubere Aufnahmen"
           }
         },
         "el" : {
@@ -33247,8 +33247,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Säueren Snapshots"
+            "state" : "translated",
+            "value" : "Saubere Schnappschüsse"
           }
         },
         "el" : {
@@ -33377,8 +33377,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sauberer Strom"
+            "state" : "translated",
+            "value" : "Sauberer Stream"
           }
         },
         "el" : {
@@ -45185,8 +45185,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie keine Widgets in Aufnahmen."
+            "state" : "translated",
+            "value" : "Zeige keine Widgets in Aufnahmen."
           }
         },
         "el" : {
@@ -45315,8 +45315,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie keine Widgets in Schnappschüssen."
+            "state" : "translated",
+            "value" : "Zeige keine Widgets in Schnappschüssen."
           }
         },
         "el" : {
@@ -52493,8 +52493,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Externer Überwachungsinhalt"
+            "state" : "translated",
+            "value" : "Externer Monitor Inhalt"
           }
         },
         "el" : {
@@ -68321,7 +68321,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Führend"
           }
         },
@@ -77231,8 +77231,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spiegel"
+            "state" : "translated",
+            "value" : "Spiegeln"
           }
         },
         "el" : {
@@ -88342,7 +88342,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Offener Kofferraum"
+            "value" : "Kofferraum öffnen"
           }
         },
         "el" : {
@@ -129079,8 +129079,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nachfolger"
+            "state" : "translated",
+            "value" : "Nachfolgend"
           }
         },
         "el" : {
@@ -139261,7 +139261,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Webhook URL"
           }
         },
