@@ -856,16 +856,16 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
 
 let textWidgetFontWeights = SettingsFontWeight.allCases.map { $0.toString() }
 
-enum SettingsAlignment: String, Codable, CaseIterable {
+enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case leading = "Leading"
     case trailing = "Trailing"
 
     public init(from decoder: Decoder) throws {
-        self = try SettingsAlignment(rawValue: decoder.singleValueContainer()
+        self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .leading
     }
 
-    static func fromString(value: String) -> SettingsAlignment {
+    static func fromString(value: String) -> SettingsHorizontalAlignment {
         switch value {
         case String(localized: "Leading"):
             return .leading
@@ -895,7 +895,48 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     }
 }
 
-let textWidgetAlignments = SettingsAlignment.allCases.map { $0.toString() }
+let textWidgetHorizontalAlignments = SettingsHorizontalAlignment.allCases.map { $0.toString() }
+
+enum SettingsVerticalAlignment: String, Codable, CaseIterable {
+    case top = "Top"
+    case bottom = "Bottom"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .top
+    }
+
+    static func fromString(value: String) -> SettingsVerticalAlignment {
+        switch value {
+        case String(localized: "Top"):
+            return .top
+        case String(localized: "Bottom"):
+            return .bottom
+        default:
+            return .top
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .top:
+            return String(localized: "Top")
+        case .bottom:
+            return String(localized: "Bottom")
+        }
+    }
+
+    func toSystem() -> VerticalAlignment {
+        switch self {
+        case .top:
+            return .top
+        case .bottom:
+            return .bottom
+        }
+    }
+}
+
+let textWidgetVerticalAlignments = SettingsVerticalAlignment.allCases.map { $0.toString() }
 
 class SettingsWidgetTextTimer: Codable, Identifiable {
     var id: UUID = .init()
@@ -922,7 +963,9 @@ class SettingsWidgetText: Codable {
     var fontSize: Int? = 30
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
-    var alignment: SettingsAlignment? = .leading
+    var alignment: SettingsHorizontalAlignment? = .leading
+    var horizontalAlignment: SettingsHorizontalAlignment? = .leading
+    var verticalAlignment: SettingsVerticalAlignment? = .top
     var delay: Double? = 0.0
     var timers: [SettingsWidgetTextTimer]? = []
     var needsWeather: Bool? = false
@@ -4781,6 +4824,14 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.recording!.cleanSnapshots == nil {
             stream.recording!.cleanSnapshots = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.horizontalAlignment == nil {
+            widget.text.horizontalAlignment = widget.text.alignment!
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.verticalAlignment == nil {
+            widget.text.verticalAlignment = .top
             store()
         }
     }

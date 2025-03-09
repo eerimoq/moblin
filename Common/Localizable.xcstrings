@@ -64250,6 +64250,9 @@
         }
       }
     },
+    "Horizontal" : {
+
+    },
     "Host" : {
       "localizations" : {
         "de" : {
@@ -127861,6 +127864,9 @@
         }
       }
     },
+    "Top" : {
+
+    },
     "Top left" : {
       "localizations" : {
         "de" : {
@@ -136694,6 +136700,9 @@
           }
         }
       }
+    },
+    "Vertical" : {
+
     },
     "Very experimental and very secret!" : {
       "localizations" : {

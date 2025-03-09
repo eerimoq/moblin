@@ -49,7 +49,8 @@ struct WidgetSettingsView: View {
                                        fontSize: Float(widget.text.fontSize!),
                                        fontDesign: widget.text.fontDesign!.toString(),
                                        fontWeight: widget.text.fontWeight!.toString(),
-                                       alignment: widget.text.alignment!.toString(),
+                                       horizontalAlignment: widget.text.horizontalAlignment!.toString(),
+                                       verticalAlignment: widget.text.verticalAlignment!.toString(),
                                        delay: widget.text.delay!)
             case .crop:
                 WidgetCropSettingsView(widget: widget)

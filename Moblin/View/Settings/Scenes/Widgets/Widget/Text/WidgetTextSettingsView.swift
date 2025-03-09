@@ -266,7 +266,8 @@ struct WidgetTextSettingsView: View {
     @State var fontSize: Float
     @State var fontDesign: String
     @State var fontWeight: String
-    @State var alignment: String
+    @State var horizontalAlignment: String
+    @State var verticalAlignment: String
     @State var delay: Double
 
     var body: some View {
@@ -403,19 +404,35 @@ struct WidgetTextSettingsView: View {
         }
         Section {
             HStack {
-                Text("Alignment")
+                Text("Horizontal")
                 Spacer()
-                Picker("", selection: $alignment) {
-                    ForEach(textWidgetAlignments, id: \.self) {
+                Picker("", selection: $horizontalAlignment) {
+                    ForEach(textWidgetHorizontalAlignments, id: \.self) {
                         Text($0)
                     }
                 }
-                .onChange(of: alignment) {
-                    widget.text.alignment = SettingsAlignment.fromString(value: $0)
+                .onChange(of: horizontalAlignment) {
+                    widget.text.horizontalAlignment = SettingsHorizontalAlignment.fromString(value: $0)
                     model.getTextEffect(id: widget.id)?
-                        .setAlignment(alignment: widget.text.alignment!.toSystem())
+                        .setHorizontalAlignment(alignment: widget.text.horizontalAlignment!.toSystem())
                 }
             }
+            HStack {
+                Text("Vertical")
+                Spacer()
+                Picker("", selection: $verticalAlignment) {
+                    ForEach(textWidgetVerticalAlignments, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .onChange(of: verticalAlignment) {
+                    widget.text.verticalAlignment = SettingsVerticalAlignment.fromString(value: $0)
+                    model.getTextEffect(id: widget.id)?
+                        .setVerticalAlignment(alignment: widget.text.verticalAlignment!.toSystem())
+                }
+            }
+        } header: {
+            Text("Alignment")
         }
         Section {
             HStack {

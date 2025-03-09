@@ -70,7 +70,8 @@ final class TextEffect: VideoEffect {
     private var fontSize: CGFloat
     private var fontDesign: Font.Design
     private var fontWeight: Font.Weight
-    private var alignment: HorizontalAlignment
+    private var horizontalAlignment: HorizontalAlignment
+    private var verticalAlignment: VerticalAlignment
     private var x: Double
     private var y: Double
     private let settingName: String
@@ -102,7 +103,8 @@ final class TextEffect: VideoEffect {
         fontSize: CGFloat,
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
-        alignment: HorizontalAlignment,
+        horizontalAlignment: HorizontalAlignment,
+        verticalAlignment: VerticalAlignment,
         settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
@@ -115,7 +117,8 @@ final class TextEffect: VideoEffect {
         self.fontSize = fontSize
         self.fontDesign = fontDesign
         self.fontWeight = fontWeight
-        self.alignment = alignment
+        self.horizontalAlignment = horizontalAlignment
+        self.verticalAlignment = verticalAlignment
         self.settingName = settingName
         self.delay = delay
         x = 0
@@ -166,9 +169,16 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
-    func setAlignment(alignment: HorizontalAlignment) {
+    func setHorizontalAlignment(alignment: HorizontalAlignment) {
         textQueue.sync {
-            self.alignment = alignment
+            self.horizontalAlignment = alignment
+        }
+        forceImageUpdate()
+    }
+
+    func setVerticalAlignment(alignment: VerticalAlignment) {
+        textQueue.sync {
+            self.verticalAlignment = alignment
         }
         forceImageUpdate()
     }
@@ -465,7 +475,7 @@ final class TextEffect: VideoEffect {
     private func updateOverlay(size: CGSize) {
         let now = ContinuousClock.now
         var newImage: UIImage?
-        let (x, y, alignment, forceUpdate, newImagePresent) = textQueue.sync {
+        let (x, y, horizontalAlignment, verticalAlignment, forceUpdate, newImagePresent) = textQueue.sync {
             if self.image != nil {
                 newImage = self.image
                 self.image = nil
@@ -474,19 +484,30 @@ final class TextEffect: VideoEffect {
                 self.forceUpdate = false
                 self.newImagePresent = false
             }
-            return (self.x, self.y, self.alignment, self.forceUpdate, self.newImagePresent)
+            return (
+                self.x,
+                self.y,
+                self.horizontalAlignment,
+                self.verticalAlignment,
+                self.forceUpdate,
+                self.newImagePresent
+            )
         }
         if newImagePresent {
             if let newImage {
                 var x = toPixels(x, size.width)
-                let y = toPixels(y, size.height)
-                if alignment == .trailing {
+                var y = toPixels(y, size.height)
+                if horizontalAlignment == .trailing {
                     x -= newImage.size.width
+                }
+                y = size.height - y
+                if verticalAlignment == .top {
+                    y -= newImage.size.height
                 }
                 overlay = CIImage(image: newImage)?
                     .transformed(by: CGAffineTransform(
                         translationX: x,
-                        y: size.height - newImage.size.height - y
+                        y: y
                     ))
                     .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
             } else {
@@ -505,7 +526,7 @@ final class TextEffect: VideoEffect {
                 return
             }
             self.previousLines = lines
-            let text = VStack(alignment: alignment, spacing: 2) {
+            let text = VStack(alignment: horizontalAlignment, spacing: 2) {
                 ForEach(lines) { line in
                     HStack(spacing: 0) {
                         ForEach(line.parts) { part in
