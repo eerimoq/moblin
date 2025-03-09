@@ -302,11 +302,10 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         var vector = CyclingPowerVector()
         let reader = ByteArray(data: value)
         let flags = try reader.readUInt8()
-        vector
-            .instantaneousMeasurementDirection =
-            CyclingPowerInstantaneousMeasurementDirection(rawValue: (flags &
-                    vectorInstantaneousMeasurementDirectionMask) >> vectorInstantaneousMeasurementDirectionIndex) ??
-            .unknown
+        let value = (flags & vectorInstantaneousMeasurementDirectionMask) >>
+            vectorInstantaneousMeasurementDirectionIndex
+        vector.instantaneousMeasurementDirection =
+            CyclingPowerInstantaneousMeasurementDirection(rawValue: value) ?? .unknown
         if flags.isBitSet(index: vectorCrankRevolutionsFlagIndex) {
             vector.cumulativeCrankRevs = try reader.readUInt16Le()
             vector.lastCrankEventTime = try reader.readUInt16Le()
