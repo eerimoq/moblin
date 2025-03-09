@@ -7,7 +7,7 @@ struct PositionEditView: View {
 
     func submit(value: String) -> String {
         if var value = Double(value) {
-            value = value.clamped(to: 0 ... 99)
+            value = value.clamped(to: 0 ... 100)
             onSubmit(value)
             return String(value)
         }
@@ -19,7 +19,7 @@ struct PositionEditView: View {
             title: title,
             value: String(value),
             minimum: 0,
-            maximum: 99,
+            maximum: 100,
             onSubmit: submit
         )
     }
