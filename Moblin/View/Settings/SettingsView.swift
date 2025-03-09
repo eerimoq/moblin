@@ -151,6 +151,11 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(image: "car.side", text: String(localized: "Tesla"))
                     }
+                    NavigationLink {
+                        CyclingPowerDevicesSettingsView()
+                    } label: {
+                        IconAndTextView(image: "bicycle", text: String(localized: "Cycling power devices"))
+                    }
                 }
             }
             Section {

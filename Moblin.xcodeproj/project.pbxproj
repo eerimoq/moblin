@@ -275,6 +275,11 @@
 		0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384C0372C10E14900B82216 /* WebSocketClient.swift */; };
 		03859D7B2C4FF569000EFE43 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */; };
 		03859D7E2C50183C000EFE43 /* SampleBufferCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */; };
+		0386052E2D7DF69300B9C3CE /* CyclingPowerDeviceScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386052D2D7DF68C00B9C3CE /* CyclingPowerDeviceScanner.swift */; };
+		038605302D7DF6A300B9C3CE /* CyclingPowerDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386052F2D7DF69B00B9C3CE /* CyclingPowerDevice.swift */; };
+		038605332D7DF94900B9C3CE /* CyclingPowerDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */; };
+		038605352D7DF94F00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */; };
+		038605372D7DF97300B9C3CE /* CyclingPowerDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */; };
 		038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F622C2D7C6400A258C6 /* LogsStorage.swift */; };
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
 		038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C76962CAC99D900564200 /* VideoSourceEffect.swift */; };
@@ -854,6 +859,11 @@
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
 		0384C0372C10E14900B82216 /* WebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketClient.swift; sourceTree = "<group>"; };
+		0386052D2D7DF68C00B9C3CE /* CyclingPowerDeviceScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceScanner.swift; sourceTree = "<group>"; };
+		0386052F2D7DF69B00B9C3CE /* CyclingPowerDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDevice.swift; sourceTree = "<group>"; };
+		038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDevicesSettingsView.swift; sourceTree = "<group>"; };
+		038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
+		038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceSettingsView.swift; sourceTree = "<group>"; };
 		038C0F622C2D7C6400A258C6 /* LogsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsStorage.swift; sourceTree = "<group>"; };
 		038C0F682C312C3900A258C6 /* PollEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollEffect.swift; sourceTree = "<group>"; };
 		038C76962CAC99D900564200 /* VideoSourceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceEffect.swift; sourceTree = "<group>"; };
@@ -2098,6 +2108,25 @@
 			path = Cosmetics;
 			sourceTree = "<group>";
 		};
+		0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */ = {
+			isa = PBXGroup;
+			children = (
+				0386052F2D7DF69B00B9C3CE /* CyclingPowerDevice.swift */,
+				0386052D2D7DF68C00B9C3CE /* CyclingPowerDeviceScanner.swift */,
+			);
+			path = CyclingPowerDevice;
+			sourceTree = "<group>";
+		};
+		038605312D7DF92C00B9C3CE /* CyclingPowerDevices */ = {
+			isa = PBXGroup;
+			children = (
+				038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */,
+				038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */,
+				038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */,
+			);
+			path = CyclingPowerDevices;
+			sourceTree = "<group>";
+		};
 		038C912A2C44691F003CAD5F /* DjiDevice */ = {
 			isa = PBXGroup;
 			children = (
@@ -2313,6 +2342,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				038605312D7DF92C00B9C3CE /* CyclingPowerDevices */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				037CE22B2BC17EA3004E9B18 /* Audio */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
@@ -2640,6 +2670,7 @@
 		03CDEAA02C0AB8BB006121D0 /* Integrations */ = {
 			isa = PBXGroup;
 			children = (
+				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				038C912A2C44691F003CAD5F /* DjiDevice */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
@@ -3106,6 +3137,7 @@
 				0359F8BD2BD3DA61005BFDA8 /* CMSampleBuffer+Extension.swift in Sources */,
 				030C76302CBBF5470062D8FD /* WidgetVideoSourceSettingsView.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
+				038605332D7DF94900B9C3CE /* CyclingPowerDevicesSettingsView.swift in Sources */,
 				031C15B52B93326500BA967D /* WatchChatSettingsView.swift in Sources */,
 				03DBD0FF2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
 				03A707C02B8F0FAE003BB7BE /* Utils.swift in Sources */,
@@ -3167,6 +3199,7 @@
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
+				0386052E2D7DF69300B9C3CE /* CyclingPowerDeviceScanner.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				03F655F22D16DFD60054D73E /* BitArray.swift in Sources */,
@@ -3242,6 +3275,7 @@
 				0359F8D82BD3DA61005BFDA8 /* MpegTsVideoConfigAvc.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
 				03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */,
+				038605302D7DF6A300B9C3CE /* CyclingPowerDevice.swift in Sources */,
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */,
 				031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */,
@@ -3255,6 +3289,7 @@
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */,
 				03C357542D081D9000B8B29F /* RtmpAggregateMessage.swift in Sources */,
+				038605372D7DF97300B9C3CE /* CyclingPowerDeviceSettingsView.swift in Sources */,
 				03C357562D081D9100B8B29F /* RtmpUserControlMessage.swift in Sources */,
 				03B507A72C88B8F6003CDEDF /* CatPrinter.swift in Sources */,
 				035192E02B53EF2C00B09E3B /* QuickButtonsButtonSettingsView.swift in Sources */,
@@ -3451,6 +3486,7 @@
 				032B4ED72C34918E00204547 /* SceneSelectorView.swift in Sources */,
 				03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */,
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
+				038605352D7DF94F00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift in Sources */,
 				031E9FC12C5B1D87009FF4D8 /* TwitchApi.swift in Sources */,
 				03AD38D22C5280B300824980 /* TextFormatStringLoader.swift in Sources */,
 				031F9C2C2D5A7BB400424EF0 /* CatPrinterCommandsMxw01.swift in Sources */,

@@ -2249,6 +2249,18 @@ class SettingsCatPrinters: Codable {
     var backgroundPrinting: Bool? = false
 }
 
+class SettingsCyclingPowerDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+}
+
+class SettingsCyclingPowerDevices: Codable {
+    var devices: [SettingsCyclingPowerDevice] = []
+}
+
 class SettingsQuickButtons: Codable {
     var twoColumns: Bool = true
     var showName: Bool = true
@@ -2850,6 +2862,7 @@ class Database: Codable {
     var forceSceneSwitchTransition: Bool? = false
     var cameraControlsEnabled: Bool? = true
     var externalDisplayContent: SettingsExternalDisplayContent? = .stream
+    var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4832,6 +4845,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.text.verticalAlignment == nil {
             widget.text.verticalAlignment = .top
+            store()
+        }
+        if realDatabase.cyclingPowerDevices == nil {
+            realDatabase.cyclingPowerDevices = .init()
             store()
         }
     }
