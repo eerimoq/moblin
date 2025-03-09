@@ -724,6 +724,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showLoadSettingsFailed = false
 
     private var latestKnownLocation: CLLocation?
+    private var slopePercent = 0.0
+    private var previousSlopeAltitude: Double? = 0.0
+    private var previousSlopeDistance = 0.0
+    private var averageSpeed = 0.0
+    private var averageSpeedStartTime: ContinuousClock.Instant = .now
+    private var averageSpeedStartDistance = 0.0
 
     @Published var remoteControlStatus = noValue
 
@@ -1524,6 +1530,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadMoblinkRelay()
         reloadMoblinkStreamer()
         setCameraControlsEnabled()
+        resetAverageSpeed()
+        resetSlope()
     }
 
     func setBitrateDropFix() {
@@ -2733,6 +2741,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.logStatus()
             self.updateFailedVideoEffects()
             self.updateAdaptiveBitrateDebug()
+            self.updateDistance()
+            self.updateSlope()
+            self.updateAverageSpeed(now: monotonicNow)
             self.updateTextEffects(now: now, timestamp: monotonicNow)
             self.updateMapEffects()
             self.updatePoll()
@@ -3533,10 +3544,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return nil
     }
 
-    private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
-        guard !textEffects.isEmpty else {
-            return
-        }
+    private func updateDistance() {
         let location = locationManager.getLatestKnownLocation()
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
@@ -3547,6 +3555,49 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             latestKnownLocation = location
         }
+    }
+
+    func resetSlope() {
+        slopePercent = 0.0
+        previousSlopeAltitude = nil
+        previousSlopeDistance = database.location!.distance!
+    }
+
+    private func updateSlope() {
+        guard let location = locationManager.getLatestKnownLocation() else {
+            return
+        }
+        let deltaDistance = database.location!.distance! - previousSlopeDistance
+        guard deltaDistance != 0 else {
+            return
+        }
+        previousSlopeDistance = database.location!.distance!
+        let deltaAltitude = location.altitude - (previousSlopeAltitude ?? location.altitude)
+        previousSlopeAltitude = location.altitude
+        slopePercent = 0.7 * slopePercent + 0.3 * (100 * deltaAltitude / deltaDistance)
+    }
+
+    func resetAverageSpeed() {
+        averageSpeed = 0.0
+        averageSpeedStartTime = .now
+        averageSpeedStartDistance = database.location!.distance!
+    }
+
+    private func updateAverageSpeed(now: ContinuousClock.Instant) {
+        let distance = database.location!.distance! - averageSpeedStartDistance
+        let elapsed = averageSpeedStartTime.duration(to: now)
+        averageSpeed = distance / elapsed.seconds
+    }
+
+    func getDistance() -> String {
+        return format(distance: database.location!.distance!)
+    }
+
+    private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
+        guard !textEffects.isEmpty else {
+            return
+        }
+        let location = locationManager.getLatestKnownLocation()
         let weather = weatherManager.getLatestWeather()
         let placemark = geographyManager.getLatestPlacemark()
         let stats = TextEffectStats(
@@ -3555,8 +3606,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             date: now,
             debugOverlayLines: debugLines,
             speed: format(speed: location?.speed ?? 0),
+            averageSpeed: format(speed: averageSpeed),
             altitude: format(altitude: location?.altitude ?? 0),
             distance: getDistance(),
+            slope: "\(Int(slopePercent)) %",
             conditions: weather?.currentWeather.symbolName,
             temperature: weather?.currentWeather.temperature,
             country: placemark?.country ?? "",
@@ -3653,10 +3706,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for mapEffect in mapEffects.values {
             mapEffect.updateLocation(location: location)
         }
-    }
-
-    func getDistance() -> String {
-        return format(distance: database.location!.distance!)
     }
 
     func togglePoll() {

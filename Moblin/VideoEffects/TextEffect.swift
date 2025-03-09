@@ -26,8 +26,10 @@ struct TextEffectStats {
     let date: Date
     let debugOverlayLines: [String]
     let speed: String
+    let averageSpeed: String
     let altitude: String
     let distance: String
+    let slope: String
     let conditions: String?
     let temperature: Measurement<UnitTemperature>?
     let country: String?
@@ -331,10 +333,14 @@ final class TextEffect: VideoEffect {
                 ))
             case .speed:
                 parts.append(.init(id: partId, data: .text(stats.speed)))
+            case .averageSpeed:
+                parts.append(.init(id: partId, data: .text(stats.averageSpeed)))
             case .altitude:
                 parts.append(.init(id: partId, data: .text(stats.altitude)))
             case .distance:
                 parts.append(.init(id: partId, data: .text(stats.distance)))
+            case .slope:
+                parts.append(.init(id: partId, data: .text(stats.slope)))
             case .timer:
                 if timerIndex < timersEndTime.count {
                     let timeLeft = max(now.duration(to: timersEndTime[timerIndex]).seconds, 0)

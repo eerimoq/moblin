@@ -3569,6 +3569,9 @@
         }
       }
     },
+    "{averageSpeed} - Show average speed" : {
+
+    },
     "{bitrateAndTotal} - Show bitrate and total number of bytes sent" : {
       "localizations" : {
         "de" : {
@@ -5058,6 +5061,9 @@
           }
         }
       }
+    },
+    "{slope} - Show slope" : {
+
     },
     "{speed} - Show speed" : {
       "localizations" : {
@@ -43964,6 +43970,7 @@
       }
     },
     "Distance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -99292,6 +99299,9 @@
           }
         }
       }
+    },
+    "Reset location data" : {
+
     },
     "Reset score" : {
       "localizations" : {

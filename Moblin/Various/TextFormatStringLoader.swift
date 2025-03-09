@@ -10,8 +10,10 @@ enum TextFormatPart {
     case bitrateAndTotal
     case debugOverlay
     case speed
+    case averageSpeed
     case altitude
     case distance
+    case slope
     case timer
     case conditions
     case temperature
@@ -61,10 +63,14 @@ class TextFormatLoader {
                     loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{speed}") {
                     loadItem(part: .speed, offsetBy: 7)
+                } else if formatFromIndex.hasPrefix("{averagespeed}") {
+                    loadItem(part: .averageSpeed, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{altitude}") {
                     loadItem(part: .altitude, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{distance}") {
                     loadItem(part: .distance, offsetBy: 10)
+                } else if formatFromIndex.hasPrefix("{slope}") {
+                    loadItem(part: .slope, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{timer}") {
                     loadItem(part: .timer, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{conditions}") {

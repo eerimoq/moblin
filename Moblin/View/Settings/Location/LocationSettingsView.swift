@@ -35,16 +35,15 @@ struct LocationSettingsView: View {
                 }))
             }
             Section {
-                Text(model.getDistance())
                 Button(action: {
                     model.resetDistance()
+                    model.resetAverageSpeed()
+                    model.resetSlope()
                 }, label: {
                     HCenter {
-                        Text("Reset")
+                        Text("Reset location data")
                     }
                 })
-            } header: {
-                Text("Distance")
             }
             Section {
                 List {
