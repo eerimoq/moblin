@@ -20,8 +20,8 @@ private let cyclingPowerFeatureCharacteristicId = CBUUID(string: "2A65")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
 private let measurementAccumulatedTorqueFlagIndex = 2
-private let measurementWheelRevFlagIndex = 4
-private let measurementCrankRevFlagIndex = 5
+private let measurementWheelRevolutionDataFlagIndex = 4
+private let measurementCrankRevolutionDataFlagIndex = 5
 private let measurementExtremeForceFlagIndex = 6
 private let measurementExtremeTorqueFlagIndex = 7
 private let measurementExtremeAnglesFlagIndex = 8
@@ -267,11 +267,11 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         if flags.isBitSet(index: measurementAccumulatedTorqueFlagIndex) {
             measurement.accumulatedTorque = try reader.readUInt16Le()
         }
-        if flags.isBitSet(index: measurementWheelRevFlagIndex) {
+        if flags.isBitSet(index: measurementWheelRevolutionDataFlagIndex) {
             measurement.cumulativeWheelRevs = try reader.readUInt32Le()
             measurement.lastWheelEventTime = try reader.readUInt16Le()
         }
-        if flags.isBitSet(index: measurementCrankRevFlagIndex) {
+        if flags.isBitSet(index: measurementCrankRevolutionDataFlagIndex) {
             measurement.cumulativeCrankRevs = try reader.readUInt16Le()
             measurement.lastCrankEventTime = try reader.readUInt16Le()
         }
@@ -295,7 +295,7 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         if flags.isBitSet(index: measurementAccumulatedEnergyFlagIndex) {
             measurement.accumulatedEnergy = try reader.readUInt16Le()
         }
-        logger.info("cycling-power-device: Measurement \(measurement)")
+        logger.info("cycling-power-device: \(measurement)")
     }
 
     private func handlePowerVector(value: Data) throws {
@@ -322,6 +322,6 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
                 vector.instantaneousTorques.append(value)
             }
         }
-        logger.info("cycling-power-device: Vector \(vector)")
+        logger.info("cycling-power-device: \(vector)")
     }
 }
