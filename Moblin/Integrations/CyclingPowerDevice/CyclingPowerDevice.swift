@@ -5,6 +5,7 @@ private let cyclingPowerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.
 
 protocol CyclingPowerDeviceDelegate: AnyObject {
     func cyclingPowerDeviceState(_ device: CyclingPowerDevice, state: CyclingPowerDeviceState)
+    func cyclingPowerStatus(_ device: CyclingPowerDevice, power: Int, cadence: Double)
 }
 
 enum CyclingPowerDeviceState {
@@ -19,7 +20,11 @@ private let cyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")
 private let cyclingPowerFeatureCharacteristicId = CBUUID(string: "2A65")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
+// periphery:ignore
+private let measurementPedalPowerBalanceReferenceIndex = 1
 private let measurementAccumulatedTorqueFlagIndex = 2
+// periphery:ignore
+private let measurementAccumulatedTorqueSourceIndex = 3
 private let measurementWheelRevolutionDataFlagIndex = 4
 private let measurementCrankRevolutionDataFlagIndex = 5
 private let measurementExtremeForceFlagIndex = 6
@@ -28,41 +33,57 @@ private let measurementExtremeAnglesFlagIndex = 8
 private let measurementTopDeadSpotAngleFlagIndex = 9
 private let measurementBottomDeadSpotAngleFlagIndex = 10
 private let measurementAccumulatedEnergyFlagIndex = 11
+// periphery:ignore
+private let measurementOffsetCompensationIndicatorFlagIndex = 12
+
+enum CyclingPowerPedalPowerBalanceReference: UInt8 {
+    case unknown = 0
+    case left = 1
+}
+
+enum CyclingPowerAccumulatedTorqueSource: UInt8 {
+    case wheelBased = 0
+    case crackBased = 1
+}
 
 struct CyclingPowerMeasurement {
     // periphery:ignore
     var instantaneousPower: UInt16 = 0
     // periphery:ignore
-    var pedalPowerBalance: UInt8 = 0
+    var pedalPowerBalance: UInt8?
     // periphery:ignore
-    var accumulatedTorque: UInt16 = 0
+    var pedalPowerBalanceReference: CyclingPowerPedalPowerBalanceReference?
     // periphery:ignore
-    var cumulativeWheelRevs: UInt32 = 0
+    var accumulatedTorque: UInt16?
     // periphery:ignore
-    var lastWheelEventTime: UInt16 = 0
+    var accumulatedTorqueSource: CyclingPowerAccumulatedTorqueSource?
     // periphery:ignore
-    var cumulativeCrankRevs: UInt16 = 0
+    var cumulativeWheelRevolutions: UInt32?
     // periphery:ignore
-    var lastCrankEventTime: UInt16 = 0
+    var lastWheelEventTime: UInt16?
     // periphery:ignore
-    var maximumForceMagnitude: UInt16 = 0
+    var cumulativeCrankRevolutions: UInt16?
     // periphery:ignore
-    var minimumForceMagnitude: UInt16 = 0
+    var lastCrankEventTime: UInt16?
     // periphery:ignore
-    var maximumTorqueMagnitude: UInt16 = 0
+    var maximumForceMagnitude: UInt16?
     // periphery:ignore
-    var minimumTorqueMagnitude: UInt16 = 0
+    var minimumForceMagnitude: UInt16?
     // periphery:ignore
-    var extremeAngles: UInt16 = 0
+    var maximumTorqueMagnitude: UInt16?
     // periphery:ignore
-    var topDeadSpotAngle: UInt16 = 0
+    var minimumTorqueMagnitude: UInt16?
     // periphery:ignore
-    var bottomDeadSpotAngle: UInt16 = 0
+    var extremeAngles: UInt16?
     // periphery:ignore
-    var accumulatedEnergy: UInt16 = 0
+    var topDeadSpotAngle: UInt16?
+    // periphery:ignore
+    var bottomDeadSpotAngle: UInt16?
+    // periphery:ignore
+    var accumulatedEnergy: UInt16?
 }
 
-private let vectorCrankRevolutionsFlagIndex = 0
+private let vectorCrankRevolutionDataFlagIndex = 0
 private let vectorFirstCrankMeasurementAngleFlagIndex = 1
 private let vectorInstantaneousForceArrayFlagIndex = 2
 private let vectorInstantaneousTorqueArrayFlagIndex = 3
@@ -78,17 +99,17 @@ enum CyclingPowerInstantaneousMeasurementDirection: UInt8 {
 
 struct CyclingPowerVector {
     // periphery:ignore
-    var cumulativeCrankRevs: UInt16 = 0
+    var cumulativeCrankRevolutions: UInt16?
     // periphery:ignore
-    var lastCrankEventTime: UInt16 = 0
+    var lastCrankEventTime: UInt16?
     // periphery:ignore
-    var firstCrankMeasurementAngle: UInt16 = 0
+    var firstCrankMeasurementAngle: UInt16?
     // periphery:ignore
-    var instantaneousMeasurementDirection: CyclingPowerInstantaneousMeasurementDirection = .unknown
+    var instantaneousForceMagnitudes: [UInt16]?
     // periphery:ignore
-    var instantaneousForces: [UInt16] = []
+    var instantaneousTorqueMagnitudes: [UInt16]?
     // periphery:ignore
-    var instantaneousTorques: [UInt16] = []
+    var instantaneousMeasurementDirection: CyclingPowerInstantaneousMeasurementDirection?
 }
 
 class CyclingPowerDevice: NSObject {
@@ -103,9 +124,10 @@ class CyclingPowerDevice: NSObject {
     private var featureCharacteristic: CBCharacteristic?
     private var deviceId: UUID?
     weak var delegate: (any CyclingPowerDeviceDelegate)?
+    private var previousRevolutions: UInt16?
+    private var previousRevolutionsTime: ContinuousClock.Instant?
 
     func start(deviceId: UUID?) {
-        logger.info("cycling-power-device: Start \(deviceId)")
         cyclingPowerDeviceDispatchQueue.async {
             self.startInternal(deviceId: deviceId)
         }
@@ -138,6 +160,8 @@ class CyclingPowerDevice: NSObject {
         measurementCharacteristic = nil
         vectorCharacteristic = nil
         featureCharacteristic = nil
+        previousRevolutions = nil
+        previousRevolutionsTime = nil
         setState(state: .disconnected)
     }
 
@@ -202,7 +226,7 @@ extension CyclingPowerDevice: CBCentralManagerDelegate {
 
 extension CyclingPowerDevice: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
-        logger.info("cycling-power-device: Got services \(peripheral.services)")
+        logger.info("cycling-power-device: Got services \(peripheral.services ?? [])")
         if let service = peripheral.services?.first {
             logger.info("cycling-power-device: Got service \(service)")
             peripheral.discoverCharacteristics(nil, for: service)
@@ -218,15 +242,12 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             logger.info("cycling-power-device: Characteristic UUID \(characteristic.uuid)")
             switch characteristic.uuid {
             case cyclingPowerMeasurementCharacteristicId:
-                logger.info("cycling-power-device: measurementCharacteristic")
                 measurementCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
             case cyclingPowerVectorCharacteristicId:
-                logger.info("cycling-power-device: vectorCharacteristic")
                 vectorCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
             case cyclingPowerFeatureCharacteristicId:
-                logger.info("cycling-power-device: featureCharacteristic")
                 featureCharacteristic = characteristic
             default:
                 break
@@ -245,13 +266,12 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             case cyclingPowerVectorCharacteristicId:
                 try handlePowerVector(value: value)
             default:
-                logger.info("""
-                cycling-power-device: Characteristic \(characteristic.uuid), value \(value.hexString())
-                """)
+                break
             }
         } catch {
             logger.info("""
-            cycling-power-device: Characteristic \(characteristic.uuid), value \(value.hexString()): Error \(error)
+            cycling-power-device: Characteristic \(characteristic.uuid), value \(value.hexString()): \
+            Error \(error)
             """)
         }
     }
@@ -268,11 +288,11 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             measurement.accumulatedTorque = try reader.readUInt16Le()
         }
         if flags.isBitSet(index: measurementWheelRevolutionDataFlagIndex) {
-            measurement.cumulativeWheelRevs = try reader.readUInt32Le()
+            measurement.cumulativeWheelRevolutions = try reader.readUInt32Le()
             measurement.lastWheelEventTime = try reader.readUInt16Le()
         }
         if flags.isBitSet(index: measurementCrankRevolutionDataFlagIndex) {
-            measurement.cumulativeCrankRevs = try reader.readUInt16Le()
+            measurement.cumulativeCrankRevolutions = try reader.readUInt16Le()
             measurement.lastCrankEventTime = try reader.readUInt16Le()
         }
         if flags.isBitSet(index: measurementExtremeForceFlagIndex) {
@@ -295,19 +315,31 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         if flags.isBitSet(index: measurementAccumulatedEnergyFlagIndex) {
             measurement.accumulatedEnergy = try reader.readUInt16Le()
         }
-        logger.info("cycling-power-device: \(measurement)")
+        // logger.info("cycling-power-device: \(measurement)")
+        var cadence = 0.0
+        if let revolutions = measurement.cumulativeCrankRevolutions {
+            let now = ContinuousClock.now
+            if let previousRevolutions, let previousRevolutionsTime {
+                var deltaRevolutions: UInt16 = 0
+                if revolutions >= previousRevolutions {
+                    deltaRevolutions = revolutions - previousRevolutions
+                } else {
+                    deltaRevolutions = revolutions + (UInt16.max - previousRevolutions + 1)
+                }
+                cadence = Double(deltaRevolutions) / previousRevolutionsTime.duration(to: now).seconds
+            }
+            previousRevolutions = revolutions
+            previousRevolutionsTime = now
+        }
+        delegate?.cyclingPowerStatus(self, power: Int(measurement.instantaneousPower), cadence: cadence)
     }
 
     private func handlePowerVector(value: Data) throws {
         var vector = CyclingPowerVector()
         let reader = ByteArray(data: value)
         let flags = try reader.readUInt8()
-        let value = (flags & vectorInstantaneousMeasurementDirectionMask) >>
-            vectorInstantaneousMeasurementDirectionIndex
-        vector.instantaneousMeasurementDirection =
-            CyclingPowerInstantaneousMeasurementDirection(rawValue: value) ?? .unknown
-        if flags.isBitSet(index: vectorCrankRevolutionsFlagIndex) {
-            vector.cumulativeCrankRevs = try reader.readUInt16Le()
+        if flags.isBitSet(index: vectorCrankRevolutionDataFlagIndex) {
+            vector.cumulativeCrankRevolutions = try reader.readUInt16Le()
             vector.lastCrankEventTime = try reader.readUInt16Le()
         }
         if flags.isBitSet(index: vectorFirstCrankMeasurementAngleFlagIndex) {
@@ -316,11 +348,20 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         while reader.bytesAvailable >= 2 {
             let value = try reader.readUInt16Le()
             if flags.isBitSet(index: vectorInstantaneousForceArrayFlagIndex) {
-                vector.instantaneousForces.append(value)
+                if vector.instantaneousForceMagnitudes == nil {
+                    vector.instantaneousForceMagnitudes = []
+                }
+                vector.instantaneousForceMagnitudes!.append(value)
             } else if flags.isBitSet(index: vectorInstantaneousTorqueArrayFlagIndex) {
-                vector.instantaneousTorques.append(value)
+                if vector.instantaneousTorqueMagnitudes == nil {
+                    vector.instantaneousTorqueMagnitudes = []
+                }
+                vector.instantaneousTorqueMagnitudes!.append(value)
             }
         }
-        logger.info("cycling-power-device: \(vector)")
+        let value = (flags & vectorInstantaneousMeasurementDirectionMask) >>
+            vectorInstantaneousMeasurementDirectionIndex
+        vector.instantaneousMeasurementDirection = CyclingPowerInstantaneousMeasurementDirection(rawValue: value)
+        // logger.info("cycling-power-device: \(vector)")
     }
 }

@@ -44,6 +44,8 @@ struct TextEffectStats {
     let teslaBatteryLevel: String
     let teslaDrive: String
     let teslaMedia: String
+    let cyclingPower: String
+    let cyclingCadence: String
 }
 
 private enum PartData: Equatable {
@@ -459,6 +461,10 @@ final class TextEffect: VideoEffect {
                 parts.append(.init(id: partId, data: .text(stats.teslaDrive)))
             case .teslaMedia:
                 parts.append(.init(id: partId, data: .text(stats.teslaMedia)))
+            case .cyclingPower:
+                parts.append(.init(id: partId, data: .text(stats.cyclingPower)))
+            case .cyclingCadence:
+                parts.append(.init(id: partId, data: .text(stats.cyclingCadence)))
             }
             partId += 1
         }

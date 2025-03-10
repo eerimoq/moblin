@@ -687,6 +687,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     private var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
     private var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
+    private var cyclingPower = 0
+    private var cyclingCadence = 0.0
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -3630,7 +3632,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stepCount: workoutStepCount,
             teslaBatteryLevel: textEffectTeslaBatteryLevel(),
             teslaDrive: textEffectTeslaDrive(),
-            teslaMedia: textEffectTeslaMedia()
+            teslaMedia: textEffectTeslaMedia(),
+            cyclingPower: "\(cyclingPower) W",
+            cyclingCadence: "\(Int(cyclingCadence))"
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -10702,6 +10706,14 @@ extension Model: CyclingPowerDeviceDelegate {
             if device === self.currentCyclingPowerDeviceSettings {
                 self.cyclingPowerDeviceState = state
             }
+        }
+    }
+
+    func cyclingPowerStatus(_: CyclingPowerDevice, power: Int, cadence: Double) {
+        DispatchQueue.main.async {
+            logger.info("Cycling power \(power) and cadence \(cadence)")
+            self.cyclingPower = power
+            self.cyclingCadence = cadence
         }
     }
 }

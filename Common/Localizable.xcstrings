@@ -3980,6 +3980,12 @@
         }
       }
     },
+    "{cyclingCadence} - Cycling cadence" : {
+
+    },
+    "{cyclingPower} - Cycling power" : {
+
+    },
     "{date} - Show date" : {
       "localizations" : {
         "de" : {
@@ -40438,6 +40444,9 @@
           }
         }
       }
+    },
+    "Cycling (requires a compatible bike)" : {
+
     },
     "Cycling power device" : {
 
