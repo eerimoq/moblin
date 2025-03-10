@@ -81,6 +81,46 @@ struct CyclingPowerMeasurement {
     var bottomDeadSpotAngle: UInt16?
     // periphery:ignore
     var accumulatedEnergy: UInt16?
+
+    init(value: Data) throws {
+        let reader = ByteArray(data: value)
+        let flags = try reader.readUInt16Le()
+        instantaneousPower = try reader.readUInt16Le()
+        if flags.isBitSet(index: measurementPedalPowerBalanceFlagIndex) {
+            pedalPowerBalance = try reader.readUInt8()
+        }
+        if flags.isBitSet(index: measurementAccumulatedTorqueFlagIndex) {
+            accumulatedTorque = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementWheelRevolutionDataFlagIndex) {
+            cumulativeWheelRevolutions = try reader.readUInt32Le()
+            lastWheelEventTime = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementCrankRevolutionDataFlagIndex) {
+            cumulativeCrankRevolutions = try reader.readUInt16Le()
+            lastCrankEventTime = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementExtremeForceFlagIndex) {
+            maximumForceMagnitude = try reader.readUInt16Le()
+            minimumForceMagnitude = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementExtremeTorqueFlagIndex) {
+            maximumTorqueMagnitude = try reader.readUInt16Le()
+            minimumTorqueMagnitude = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementExtremeAnglesFlagIndex) {
+            _ = try reader.readBytes(3)
+        }
+        if flags.isBitSet(index: measurementTopDeadSpotAngleFlagIndex) {
+            topDeadSpotAngle = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementBottomDeadSpotAngleFlagIndex) {
+            bottomDeadSpotAngle = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: measurementAccumulatedEnergyFlagIndex) {
+            accumulatedEnergy = try reader.readUInt16Le()
+        }
+    }
 }
 
 private let vectorCrankRevolutionDataFlagIndex = 0
@@ -110,6 +150,35 @@ struct CyclingPowerVector {
     var instantaneousTorqueMagnitudes: [UInt16]?
     // periphery:ignore
     var instantaneousMeasurementDirection: CyclingPowerInstantaneousMeasurementDirection?
+
+    init(value: Data) throws {
+        let reader = ByteArray(data: value)
+        let flags = try reader.readUInt8()
+        if flags.isBitSet(index: vectorCrankRevolutionDataFlagIndex) {
+            cumulativeCrankRevolutions = try reader.readUInt16Le()
+            lastCrankEventTime = try reader.readUInt16Le()
+        }
+        if flags.isBitSet(index: vectorFirstCrankMeasurementAngleFlagIndex) {
+            firstCrankMeasurementAngle = try reader.readUInt16Le()
+        }
+        while reader.bytesAvailable >= 2 {
+            let value = try reader.readUInt16Le()
+            if flags.isBitSet(index: vectorInstantaneousForceArrayFlagIndex) {
+                if instantaneousForceMagnitudes == nil {
+                    instantaneousForceMagnitudes = []
+                }
+                instantaneousForceMagnitudes!.append(value)
+            } else if flags.isBitSet(index: vectorInstantaneousTorqueArrayFlagIndex) {
+                if instantaneousTorqueMagnitudes == nil {
+                    instantaneousTorqueMagnitudes = []
+                }
+                instantaneousTorqueMagnitudes!.append(value)
+            }
+        }
+        let value = (flags & vectorInstantaneousMeasurementDirectionMask) >>
+            vectorInstantaneousMeasurementDirectionIndex
+        instantaneousMeasurementDirection = CyclingPowerInstantaneousMeasurementDirection(rawValue: value)
+    }
 }
 
 class CyclingPowerDevice: NSObject {
@@ -277,44 +346,7 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
     }
 
     private func handlePowerMeasurement(value: Data) throws {
-        var measurement = CyclingPowerMeasurement()
-        let reader = ByteArray(data: value)
-        let flags = try reader.readUInt16Le()
-        measurement.instantaneousPower = try reader.readUInt16Le()
-        if flags.isBitSet(index: measurementPedalPowerBalanceFlagIndex) {
-            measurement.pedalPowerBalance = try reader.readUInt8()
-        }
-        if flags.isBitSet(index: measurementAccumulatedTorqueFlagIndex) {
-            measurement.accumulatedTorque = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementWheelRevolutionDataFlagIndex) {
-            measurement.cumulativeWheelRevolutions = try reader.readUInt32Le()
-            measurement.lastWheelEventTime = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementCrankRevolutionDataFlagIndex) {
-            measurement.cumulativeCrankRevolutions = try reader.readUInt16Le()
-            measurement.lastCrankEventTime = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementExtremeForceFlagIndex) {
-            measurement.maximumForceMagnitude = try reader.readUInt16Le()
-            measurement.minimumForceMagnitude = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementExtremeTorqueFlagIndex) {
-            measurement.maximumTorqueMagnitude = try reader.readUInt16Le()
-            measurement.minimumTorqueMagnitude = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementExtremeAnglesFlagIndex) {
-            _ = try reader.readBytes(3)
-        }
-        if flags.isBitSet(index: measurementTopDeadSpotAngleFlagIndex) {
-            measurement.topDeadSpotAngle = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementBottomDeadSpotAngleFlagIndex) {
-            measurement.bottomDeadSpotAngle = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: measurementAccumulatedEnergyFlagIndex) {
-            measurement.accumulatedEnergy = try reader.readUInt16Le()
-        }
+        let measurement = try CyclingPowerMeasurement(value: value)
         // logger.info("cycling-power-device: \(measurement)")
         var cadence = 0.0
         if let revolutions = measurement.cumulativeCrankRevolutions {
@@ -335,33 +367,7 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
     }
 
     private func handlePowerVector(value: Data) throws {
-        var vector = CyclingPowerVector()
-        let reader = ByteArray(data: value)
-        let flags = try reader.readUInt8()
-        if flags.isBitSet(index: vectorCrankRevolutionDataFlagIndex) {
-            vector.cumulativeCrankRevolutions = try reader.readUInt16Le()
-            vector.lastCrankEventTime = try reader.readUInt16Le()
-        }
-        if flags.isBitSet(index: vectorFirstCrankMeasurementAngleFlagIndex) {
-            vector.firstCrankMeasurementAngle = try reader.readUInt16Le()
-        }
-        while reader.bytesAvailable >= 2 {
-            let value = try reader.readUInt16Le()
-            if flags.isBitSet(index: vectorInstantaneousForceArrayFlagIndex) {
-                if vector.instantaneousForceMagnitudes == nil {
-                    vector.instantaneousForceMagnitudes = []
-                }
-                vector.instantaneousForceMagnitudes!.append(value)
-            } else if flags.isBitSet(index: vectorInstantaneousTorqueArrayFlagIndex) {
-                if vector.instantaneousTorqueMagnitudes == nil {
-                    vector.instantaneousTorqueMagnitudes = []
-                }
-                vector.instantaneousTorqueMagnitudes!.append(value)
-            }
-        }
-        let value = (flags & vectorInstantaneousMeasurementDirectionMask) >>
-            vectorInstantaneousMeasurementDirectionIndex
-        vector.instantaneousMeasurementDirection = CyclingPowerInstantaneousMeasurementDirection(rawValue: value)
+        let vector = try CyclingPowerVector(value: value)
         // logger.info("cycling-power-device: \(vector)")
     }
 }
