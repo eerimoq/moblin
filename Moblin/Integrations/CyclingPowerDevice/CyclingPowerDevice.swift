@@ -326,7 +326,7 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
                 } else {
                     deltaRevolutions = revolutions + (UInt16.max - previousRevolutions + 1)
                 }
-                cadence = Double(deltaRevolutions) / previousRevolutionsTime.duration(to: now).seconds
+                cadence = 60 * Double(deltaRevolutions) / previousRevolutionsTime.duration(to: now).seconds
             }
             previousRevolutions = revolutions
             previousRevolutionsTime = now
