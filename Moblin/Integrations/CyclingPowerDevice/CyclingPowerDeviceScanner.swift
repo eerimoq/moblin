@@ -23,7 +23,7 @@ class CyclingPowerDeviceScanner: NSObject {
 extension CyclingPowerDeviceScanner: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            central.scanForPeripherals(withServices: nil)
+            central.scanForPeripherals(withServices: [cyclingPowerServiceId])
         }
     }
 

@@ -6,6 +6,14 @@ struct CyclingPowerDevicesSettingsView: View {
     var body: some View {
         Form {
             Section {
+                HCenter {
+                    Image("CyclingPowerDevice")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 130)
+                }
+            }
+            Section {
                 List {
                     ForEach(model.database.cyclingPowerDevices!.devices) { device in
                         NavigationLink {
