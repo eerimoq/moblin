@@ -205,7 +205,6 @@ class CyclingPowerDevice: NSObject {
     }
 
     func stop() {
-        logger.info("cycling-power-device: Stop")
         cyclingPowerDeviceDispatchQueue.async {
             self.stopInternal()
         }
@@ -267,11 +266,9 @@ extension CyclingPowerDevice: CBCentralManagerDelegate {
                         advertisementData _: [String: Any],
                         rssi _: NSNumber)
     {
-        logger.info("cycling-power-device: Found device \(peripheral.identifier)")
         guard peripheral.identifier == deviceId else {
             return
         }
-        logger.info("cycling-power-device: Stop scan")
         central.stopScan()
         self.peripheral = peripheral
         peripheral.delegate = self
@@ -282,7 +279,6 @@ extension CyclingPowerDevice: CBCentralManagerDelegate {
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        logger.info("cycling-power-device: Discover servies")
         peripheral.discoverServices(nil)
     }
 
@@ -297,9 +293,7 @@ extension CyclingPowerDevice: CBCentralManagerDelegate {
 
 extension CyclingPowerDevice: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
-        logger.info("cycling-power-device: Got services \(peripheral.services ?? [])")
-        if let service = peripheral.services?.first {
-            logger.info("cycling-power-device: Got service \(service)")
+        if let service = peripheral.services?.first(where: { $0.uuid == cyclingPowerServiceId }) {
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
@@ -310,7 +304,6 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         error _: Error?
     ) {
         for characteristic in service.characteristics ?? [] {
-            logger.info("cycling-power-device: Characteristic UUID \(characteristic.uuid)")
             switch characteristic.uuid {
             case cyclingPowerMeasurementCharacteristicId:
                 measurementCharacteristic = characteristic
@@ -323,6 +316,9 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             default:
                 break
             }
+        }
+        if measurementCharacteristic != nil && vectorCharacteristic != nil && featureCharacteristic != nil {
+            setState(state: .connected)
         }
     }
 
