@@ -689,7 +689,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
     private var cyclingPower = 0
     private var cyclingCadence = 0.0
-    
+
     @Published var heartRateDeviceState: HeartRateDeviceState?
     private var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     private var heartRateDevices: [UUID: HeartRateDevice] = [:]

@@ -30,7 +30,7 @@ struct HeartRateMeasurement {
         if flags.isBitSet(index: measurementHeartRateValueFormatIndex) {
             heartRate = try reader.readUInt16Le()
         } else {
-            heartRate = UInt16(try reader.readUInt8())
+            heartRate = try UInt16(reader.readUInt8())
         }
     }
 }
