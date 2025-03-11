@@ -280,6 +280,11 @@
 		038605332D7DF94900B9C3CE /* CyclingPowerDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */; };
 		038605352D7DF94F00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */; };
 		038605372D7DF97300B9C3CE /* CyclingPowerDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */; };
+		0386053C2D8006CC00B9C3CE /* HeartRateDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386053B2D8006CA00B9C3CE /* HeartRateDevice.swift */; };
+		0386053E2D8006D300B9C3CE /* HeartRateDeviceScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386053D2D8006D000B9C3CE /* HeartRateDeviceScanner.swift */; };
+		038605412D80098800B9C3CE /* HeartRateDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605402D80097F00B9C3CE /* HeartRateDeviceSettingsView.swift */; };
+		038605432D80099300B9C3CE /* HeartRateDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605422D80098F00B9C3CE /* HeartRateDevicesSettingsView.swift */; };
+		038605452D8009A000B9C3CE /* HeartRateDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605442D80099900B9C3CE /* HeartRateDeviceScannerSettingsView.swift */; };
 		038C0F632C2D7C6400A258C6 /* LogsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F622C2D7C6400A258C6 /* LogsStorage.swift */; };
 		038C0F692C312C3900A258C6 /* PollEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C0F682C312C3900A258C6 /* PollEffect.swift */; };
 		038C76972CAC99E100564200 /* VideoSourceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C76962CAC99D900564200 /* VideoSourceEffect.swift */; };
@@ -864,6 +869,11 @@
 		038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDevicesSettingsView.swift; sourceTree = "<group>"; };
 		038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
 		038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceSettingsView.swift; sourceTree = "<group>"; };
+		0386053B2D8006CA00B9C3CE /* HeartRateDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDevice.swift; sourceTree = "<group>"; };
+		0386053D2D8006D000B9C3CE /* HeartRateDeviceScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDeviceScanner.swift; sourceTree = "<group>"; };
+		038605402D80097F00B9C3CE /* HeartRateDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDeviceSettingsView.swift; sourceTree = "<group>"; };
+		038605422D80098F00B9C3CE /* HeartRateDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDevicesSettingsView.swift; sourceTree = "<group>"; };
+		038605442D80099900B9C3CE /* HeartRateDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
 		038C0F622C2D7C6400A258C6 /* LogsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsStorage.swift; sourceTree = "<group>"; };
 		038C0F682C312C3900A258C6 /* PollEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollEffect.swift; sourceTree = "<group>"; };
 		038C76962CAC99D900564200 /* VideoSourceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSourceEffect.swift; sourceTree = "<group>"; };
@@ -2127,6 +2137,25 @@
 			path = CyclingPowerDevices;
 			sourceTree = "<group>";
 		};
+		0386053A2D8006BE00B9C3CE /* HeartRateDevice */ = {
+			isa = PBXGroup;
+			children = (
+				0386053B2D8006CA00B9C3CE /* HeartRateDevice.swift */,
+				0386053D2D8006D000B9C3CE /* HeartRateDeviceScanner.swift */,
+			);
+			path = HeartRateDevice;
+			sourceTree = "<group>";
+		};
+		0386053F2D80096F00B9C3CE /* HeartRateDevices */ = {
+			isa = PBXGroup;
+			children = (
+				038605402D80097F00B9C3CE /* HeartRateDeviceSettingsView.swift */,
+				038605422D80098F00B9C3CE /* HeartRateDevicesSettingsView.swift */,
+				038605442D80099900B9C3CE /* HeartRateDeviceScannerSettingsView.swift */,
+			);
+			path = HeartRateDevices;
+			sourceTree = "<group>";
+		};
 		038C912A2C44691F003CAD5F /* DjiDevice */ = {
 			isa = PBXGroup;
 			children = (
@@ -2355,6 +2384,7 @@
 				03B16A2B2B35D71500E5AB07 /* Display */,
 				03E3E38F2C431DD800932B00 /* DjiDevices */,
 				0304A5092B45ADA900310842 /* GameControllers */,
+				0386053F2D80096F00B9C3CE /* HeartRateDevices */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
 				03C3560A2CFC90B400B8B29F /* Keyboard */,
@@ -2670,6 +2700,7 @@
 		03CDEAA02C0AB8BB006121D0 /* Integrations */ = {
 			isa = PBXGroup;
 			children = (
+				0386053A2D8006BE00B9C3CE /* HeartRateDevice */,
 				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				038C912A2C44691F003CAD5F /* DjiDevice */,
@@ -3325,6 +3356,7 @@
 				0318D37D2CF51DEB00E12F3B /* errors.pb.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03A3504D2C12E15A0015FAC8 /* SrtServer.swift in Sources */,
+				038605412D80098800B9C3CE /* HeartRateDeviceSettingsView.swift in Sources */,
 				0323F37E2D1E8EDE00A57AC2 /* MoblinkSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
@@ -3339,6 +3371,7 @@
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
 				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
+				038605432D80099300B9C3CE /* HeartRateDevicesSettingsView.swift in Sources */,
 				0339F9172CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */,
 				03762FE12D780DE5003BD2E2 /* ExternalDisplayView.swift in Sources */,
 				0359F8E22BD3DA61005BFDA8 /* MpegTsProgram.swift in Sources */,
@@ -3408,6 +3441,7 @@
 				0397C36A2C5E16FA00F93E58 /* AlertMediaStorage.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
+				038605452D8009A000B9C3CE /* HeartRateDeviceScannerSettingsView.swift in Sources */,
 				0359F8B32BD3DA61005BFDA8 /* AudioStreamBasicDescription+Extension.swift in Sources */,
 				0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */,
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
@@ -3417,6 +3451,7 @@
 				03DAC9392BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift in Sources */,
 				03E6F7F92CE5B4B100D9198A /* BondingStatisticsFormatter.swift in Sources */,
 				0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */,
+				0386053E2D8006D300B9C3CE /* HeartRateDeviceScanner.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
@@ -3510,6 +3545,7 @@
 				0323F3832D21347700A57AC2 /* DnsLookup.swift in Sources */,
 				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,
 				45E3E780842910145791546F /* DjiDeviceScanner.swift in Sources */,
+				0386053C2D8006CC00B9C3CE /* HeartRateDevice.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

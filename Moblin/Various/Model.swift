@@ -689,6 +689,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
     private var cyclingPower = 0
     private var cyclingCadence = 0.0
+    
+    @Published var heartRateDeviceState: HeartRateDeviceState?
+    private var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
+    private var heartRateDevices: [UUID: HeartRateDevice] = [:]
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -1525,6 +1529,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoStartDjiDevices()
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
+        autoStartHeartRateDevices()
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
@@ -2194,6 +2199,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopMoblinkStreamer()
             stopCatPrinters()
             stopCyclingPowerDevices()
+            stopHeartRateDevices()
         }
     }
 
@@ -2222,6 +2228,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             updateOrientation()
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
+            autoStartHeartRateDevices()
         }
     }
 
@@ -10714,6 +10721,79 @@ extension Model: CyclingPowerDeviceDelegate {
             logger.info("Cycling power \(power) and cadence \(cadence)")
             self.cyclingPower = power
             self.cyclingCadence = cadence
+        }
+    }
+}
+
+extension Model {
+    func isHeartRateDeviceEnabled(device: SettingsHeartRateDevice) -> Bool {
+        return device.enabled
+    }
+
+    func enableHeartRateDevice(device: SettingsHeartRateDevice) {
+        if !heartRateDevices.keys.contains(device.id) {
+            let heartRateDevice = HeartRateDevice()
+            heartRateDevice.delegate = self
+            heartRateDevices[device.id] = heartRateDevice
+        }
+        heartRateDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+    }
+
+    func disableHeartRateDevice(device: SettingsHeartRateDevice) {
+        heartRateDevices[device.id]?.stop()
+    }
+
+    private func getHeartRateDeviceSettings(device: HeartRateDevice) -> SettingsHeartRateDevice? {
+        return database.heartRateDevices!.devices.first(where: { heartRateDevices[$0.id] === device })
+    }
+
+    func setCurrentHeartRateDevice(device: SettingsHeartRateDevice) {
+        currentHeartRateDeviceSettings = device
+        heartRateDeviceState = getHeartRateDeviceState(device: device)
+    }
+
+    func getHeartRateDeviceState(device: SettingsHeartRateDevice) -> HeartRateDeviceState {
+        return heartRateDevices[device.id]?.getState() ?? .disconnected
+    }
+
+    private func autoStartHeartRateDevices() {
+        for device in database.heartRateDevices!.devices where device.enabled {
+            enableHeartRateDevice(device: device)
+        }
+    }
+
+    private func stopHeartRateDevices() {
+        for device in heartRateDevices.values {
+            device.stop()
+        }
+    }
+
+    func isAnyHeartRateDeviceConfigured() -> Bool {
+        return database.heartRateDevices!.devices.contains(where: { $0.enabled })
+    }
+
+    func areAllHeartRateDevicesConnected() -> Bool {
+        return !heartRateDevices.values.contains(where: {
+            getHeartRateDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
+        })
+    }
+}
+
+extension Model: HeartRateDeviceDelegate {
+    func heartRateDeviceState(_ device: HeartRateDevice, state: HeartRateDeviceState) {
+        DispatchQueue.main.async {
+            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+                return
+            }
+            if device === self.currentHeartRateDeviceSettings {
+                self.heartRateDeviceState = state
+            }
+        }
+    }
+
+    func heartRateStatus(_: HeartRateDevice, heartRate: Int) {
+        DispatchQueue.main.async {
+            self.workoutHeartRate = heartRate
         }
     }
 }

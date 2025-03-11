@@ -156,6 +156,11 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(image: "bicycle", text: String(localized: "Cycling power devices"))
                     }
+                    NavigationLink {
+                        HeartRateDevicesSettingsView()
+                    } label: {
+                        IconAndTextView(image: "heart", text: String(localized: "Heart rate devices"))
+                    }
                 }
             }
             Section {

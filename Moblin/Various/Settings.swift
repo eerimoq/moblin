@@ -2261,6 +2261,18 @@ class SettingsCyclingPowerDevices: Codable {
     var devices: [SettingsCyclingPowerDevice] = []
 }
 
+class SettingsHeartRateDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+}
+
+class SettingsHeartRateDevices: Codable {
+    var devices: [SettingsHeartRateDevice] = []
+}
+
 class SettingsQuickButtons: Codable {
     var twoColumns: Bool = true
     var showName: Bool = true
@@ -2863,6 +2875,7 @@ class Database: Codable {
     var cameraControlsEnabled: Bool? = true
     var externalDisplayContent: SettingsExternalDisplayContent? = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
+    var heartRateDevices: SettingsHeartRateDevices? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4849,6 +4862,10 @@ final class Settings {
         }
         if realDatabase.cyclingPowerDevices == nil {
             realDatabase.cyclingPowerDevices = .init()
+            store()
+        }
+        if realDatabase.heartRateDevices == nil {
+            realDatabase.heartRateDevices = .init()
             store()
         }
     }
