@@ -91,6 +91,6 @@ struct HeartRateDeviceSettingsView: View {
         .onAppear {
             model.setCurrentHeartRateDevice(device: device)
         }
-        .navigationTitle("Cycling power device")
+        .navigationTitle("Heart rate device")
     }
 }
