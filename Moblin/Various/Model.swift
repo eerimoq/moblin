@@ -421,6 +421,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let recording = RecordingProvider()
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
+    @Published var cyclingPowerDeviceStatus = noValue
+    @Published var heartRateDeviceStatus = noValue
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     var streamUptime = StreamUptimeProvider()
@@ -7455,6 +7457,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusCatPrinter() -> Bool {
         return database.show.catPrinter! && isAnyCatPrinterConfigured()
+    }
+
+    func isShowingStatusCyclingPowerDevice() -> Bool {
+        return database.show.cyclingPowerDevice! && isAnyCyclingPowerDeviceConfigured()
+    }
+
+    func isShowingStatusHeartRateDevice() -> Bool {
+        return database.show.heartRateDevice! && isAnyHeartRateDeviceConfigured()
     }
 
     private func isStatusBrowserWidgetsActive() -> Bool {

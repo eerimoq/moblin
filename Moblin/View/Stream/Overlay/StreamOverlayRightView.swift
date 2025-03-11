@@ -204,6 +204,20 @@ private struct StatusesView: View {
         return .white
     }
 
+    private func cyclingPowerDeviceColor() -> Color {
+        if model.isAnyCyclingPowerDeviceConfigured() && !model.areAllCyclingPowerDevicesConnected() {
+            return .red
+        }
+        return .white
+    }
+
+    private func heartRateDeviceColor() -> Color {
+        if model.isAnyHeartRateDeviceConfigured() && !model.areAllHeartRateDevicesConnected() {
+            return .red
+        }
+        return .white
+    }
+
     var body: some View {
         if textPlacement == .hide {
             CollapsedHypeTrainView(show: model.isShowingStatusHypeTrain(), color: .white)
@@ -307,6 +321,20 @@ private struct StatusesView: View {
             text: model.catPrinterStatus,
             textPlacement: textPlacement,
             color: catPrinterColor()
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusCyclingPowerDevice(),
+            icon: "bicycle",
+            text: model.cyclingPowerDeviceStatus,
+            textPlacement: textPlacement,
+            color: cyclingPowerDeviceColor()
+        )
+        StreamOverlayIconAndTextView(
+            show: model.isShowingStatusHeartRateDevice(),
+            icon: "heart",
+            text: model.heartRateDeviceStatus,
+            textPlacement: textPlacement,
+            color: heartRateDeviceColor()
         )
     }
 }

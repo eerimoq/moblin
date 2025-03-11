@@ -138,6 +138,16 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.catPrinter = value
                 }
+                InfoView(icon: "bicycle", text: String(localized: "Cycling power devices")) {
+                    show.cyclingPowerDevice!
+                } set: { value in
+                    show.cyclingPowerDevice = value
+                }
+                InfoView(icon: "heart", text: String(localized: "Heart rate devices")) {
+                    show.heartRateDevice!
+                } set: { value in
+                    show.heartRateDevice = value
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {

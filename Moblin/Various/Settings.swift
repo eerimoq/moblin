@@ -1701,6 +1701,8 @@ class SettingsShow: Codable {
     var bondingRtts: Bool? = false
     var moblink: Bool? = true
     var catPrinter: Bool? = true
+    var cyclingPowerDevice: Bool? = true
+    var heartRateDevice: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -4866,6 +4868,14 @@ final class Settings {
         }
         if realDatabase.heartRateDevices == nil {
             realDatabase.heartRateDevices = .init()
+            store()
+        }
+        if realDatabase.show.cyclingPowerDevice == nil {
+            realDatabase.show.cyclingPowerDevice = true
+            store()
+        }
+        if realDatabase.show.heartRateDevice == nil {
+            realDatabase.show.heartRateDevice = true
             store()
         }
     }
