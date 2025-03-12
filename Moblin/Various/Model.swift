@@ -522,7 +522,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var hypeTrainTimer = SimpleTimer(queue: .main)
     var urlSession = URLSession.shared
 
-    private var workoutHeartRate: Int?
+    private var heartRates: [String: Int?] = [:]
     private var workoutActiveEnergyBurned: Int?
     private var workoutDistance: Int?
     private var workoutPower: Int?
@@ -3634,7 +3634,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
             city: placemark?.locality,
             muted: isMuteOn,
-            heartRate: workoutHeartRate,
+            heartRates: heartRates,
             activeEnergyBurned: workoutActiveEnergyBurned,
             workoutDistance: workoutDistance,
             power: workoutPower,
@@ -8291,7 +8291,7 @@ extension Model {
     }
 
     private func resetWorkoutStats() {
-        workoutHeartRate = nil
+        heartRates.removeAll()
         workoutActiveEnergyBurned = nil
         workoutDistance = nil
         workoutPower = nil
@@ -8634,7 +8634,7 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             if self.isWatchLocal() {
                 if let heartRate = stats.heartRate {
-                    self.workoutHeartRate = heartRate
+                    self.heartRates[""] = heartRate
                 }
                 if let activeEnergyBurned = stats.activeEnergyBurned {
                     self.workoutActiveEnergyBurned = activeEnergyBurned
@@ -10800,9 +10800,12 @@ extension Model: HeartRateDeviceDelegate {
         }
     }
 
-    func heartRateStatus(_: HeartRateDevice, heartRate: Int) {
+    func heartRateStatus(_ device: HeartRateDevice, heartRate: Int) {
         DispatchQueue.main.async {
-            self.workoutHeartRate = heartRate
+            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+                return
+            }
+            self.heartRates[device.name.lowercased()] = heartRate
         }
     }
 }

@@ -236,11 +236,12 @@ private struct TextSelectionView: View {
                     Text("Weather (if Settings -> Location is enabled)").bold()
                     Text("{conditions} - Show conditions")
                     Text("{temperature} - Show temperature")
+                    Text("")
+                    Text("Workout").bold()
                     if isPhone() {
-                        Text("")
-                        Text("Workout (requires Apple Watch)").bold()
-                        Text("{heartRate} - Show heart rate")
+                        Text("{heartRate} - Show Apple Watch heart rate")
                     }
+                    Text("{heartRate:My device} - Show heart rate for heart rate device called \"My device\"")
                     Text("")
                     Text("Tesla (requires a Tesla)").bold()
                     Text("{teslaBatteryLevel} - Tesla battery level")

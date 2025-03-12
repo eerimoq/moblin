@@ -4530,7 +4530,14 @@
         }
       }
     },
+    "{heartRate:My device} - Show heart rate for heart rate device called \"My device\"" : {
+
+    },
+    "{heartRate} - Show Apple Watch heart rate" : {
+
+    },
     "{heartRate} - Show heart rate" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -141196,6 +141203,7 @@
       }
     },
     "Workout (requires Apple Watch)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

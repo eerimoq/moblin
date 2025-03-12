@@ -36,7 +36,7 @@ struct TextEffectStats {
     let countryFlag: String?
     let city: String?
     let muted: Bool
-    let heartRate: Int?
+    let heartRates: [String: Int?]
     let activeEnergyBurned: Int?
     let workoutDistance: Int?
     let power: Int?
@@ -415,9 +415,9 @@ final class TextEffect: VideoEffect {
                 if stats.muted {
                     parts.append(.init(id: partId, data: .imageSystemName("mic.slash")))
                 }
-            case .heartRate:
+            case let .heartRate(deviceName):
                 let text: String
-                if let heartRate = stats.heartRate {
+                if let heartRate = stats.heartRates[deviceName], let heartRate {
                     text = String(heartRate)
                 } else {
                     text = "-"

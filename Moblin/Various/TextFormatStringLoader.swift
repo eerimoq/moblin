@@ -24,7 +24,7 @@ enum TextFormatPart {
     case rating
     case subtitles
     case muted
-    case heartRate
+    case heartRate(String)
     case activeEnergyBurned
     case power
     case stepCount
@@ -93,8 +93,7 @@ class TextFormatLoader {
                     loadItem(part: .subtitles, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{muted}") {
                     loadItem(part: .muted, offsetBy: 7)
-                } else if isPhone(), formatFromIndex.hasPrefix("{heartrate}") {
-                    loadItem(part: .heartRate, offsetBy: 11)
+                } else if appendHeartRateIfPresent(formatFromIndex: formatFromIndex) {
                 } else if isPhone(), formatFromIndex.hasPrefix("{activeenergyburned}") {
                     loadItem(part: .activeEnergyBurned, offsetBy: 20)
                 } else if isPhone(), formatFromIndex.hasPrefix("{power}") {
@@ -124,6 +123,19 @@ class TextFormatLoader {
         }
         appendTextIfPresent()
         return parts
+    }
+
+    private func appendHeartRateIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{heartrate}") {
+            loadItem(part: .heartRate(""), offsetBy: 11)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{heartrate:([^}]+)}/) {
+            let deviceName = String(match.output.1)
+            loadItem(part: .heartRate(deviceName), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
     }
 
     private func appendTextIfPresent() {
