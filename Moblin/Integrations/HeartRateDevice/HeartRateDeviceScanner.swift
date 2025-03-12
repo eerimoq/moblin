@@ -4,7 +4,7 @@ struct HeartRateDeviceDiscoved {
     let peripheral: CBPeripheral
 }
 
-class HeartRateDeviceScanner: NSObject {
+class HeartRateDeviceScanner: NSObject, ObservableObject {
     static let shared = HeartRateDeviceScanner()
     @Published var discoveredDevices: [HeartRateDeviceDiscoved] = []
     private var centralManager: CBCentralManager?
@@ -33,6 +33,9 @@ extension HeartRateDeviceScanner: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
+        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+            return
+        }
         discoveredDevices.append(.init(peripheral: peripheral))
     }
 }

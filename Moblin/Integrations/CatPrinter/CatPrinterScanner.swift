@@ -4,7 +4,7 @@ struct CatPrinterDiscovedDevice {
     let peripheral: CBPeripheral
 }
 
-class CatPrinterScanner: NSObject {
+class CatPrinterScanner: NSObject, ObservableObject {
     static let shared = CatPrinterScanner()
     @Published var discoveredDevices: [CatPrinterDiscovedDevice] = []
     private var centralManager: CBCentralManager?
@@ -33,6 +33,9 @@ extension CatPrinterScanner: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
+        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+            return
+        }
         discoveredDevices.append(.init(peripheral: peripheral))
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CatPrinterScannerSettingsView: View {
-    private let scanner: CatPrinterScanner = .shared
+    @ObservedObject private var scanner: CatPrinterScanner = .shared
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
     @State var selectedId: String

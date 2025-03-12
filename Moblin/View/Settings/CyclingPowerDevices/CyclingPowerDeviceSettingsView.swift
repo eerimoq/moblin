@@ -16,7 +16,7 @@ private func formatCyclingPowerDeviceState(state: CyclingPowerDeviceState?) -> S
 
 struct CyclingPowerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    private let scanner: CyclingPowerDeviceScanner = .shared
+    @ObservedObject private var scanner: CyclingPowerDeviceScanner = .shared
     var device: SettingsCyclingPowerDevice
 
     func state() -> String {

@@ -34,7 +34,7 @@ func formatDjiDeviceState(state: DjiDeviceState?) -> String {
 
 private struct DjiDeviceSelectDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    private let djiScanner: DjiDeviceScanner = .shared
+    @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
     var device: SettingsDjiDevice
 
     private func onDeviceChange(value: String) {

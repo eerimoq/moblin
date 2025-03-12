@@ -16,7 +16,7 @@ private func formatHeartRateDeviceState(state: HeartRateDeviceState?) -> String 
 
 struct HeartRateDeviceSettingsView: View {
     @EnvironmentObject var model: Model
-    private let scanner: HeartRateDeviceScanner = .shared
+    @ObservedObject private var scanner: HeartRateDeviceScanner = .shared
     var device: SettingsHeartRateDevice
 
     func state() -> String {

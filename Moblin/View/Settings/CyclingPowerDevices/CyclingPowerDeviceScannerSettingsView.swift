@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CyclingPowerDeviceScannerSettingsView: View {
-    private let scanner: CyclingPowerDeviceScanner = .shared
+    @ObservedObject private var scanner: CyclingPowerDeviceScanner = .shared
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
     @State var selectedId: String

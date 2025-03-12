@@ -4,7 +4,7 @@ struct CyclingPowerDeviceDiscoved {
     let peripheral: CBPeripheral
 }
 
-class CyclingPowerDeviceScanner: NSObject {
+class CyclingPowerDeviceScanner: NSObject, ObservableObject {
     static let shared = CyclingPowerDeviceScanner()
     @Published var discoveredDevices: [CyclingPowerDeviceDiscoved] = []
     private var centralManager: CBCentralManager?
@@ -33,6 +33,9 @@ extension CyclingPowerDeviceScanner: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
+        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+            return
+        }
         discoveredDevices.append(.init(peripheral: peripheral))
     }
 }

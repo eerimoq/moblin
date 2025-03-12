@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DjiDeviceScannerSettingsView: View {
-    private let djiScanner: DjiDeviceScanner = .shared
+    @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
     @State var selectedId: String
