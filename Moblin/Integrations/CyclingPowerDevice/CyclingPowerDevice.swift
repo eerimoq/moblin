@@ -5,7 +5,7 @@ private let cyclingPowerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.
 
 protocol CyclingPowerDeviceDelegate: AnyObject {
     func cyclingPowerDeviceState(_ device: CyclingPowerDevice, state: CyclingPowerDeviceState)
-    func cyclingPowerStatus(_ device: CyclingPowerDevice, power: Int, cadence: Double)
+    func cyclingPowerStatus(_ device: CyclingPowerDevice, power: Int, cadence: Int)
 }
 
 enum CyclingPowerDeviceState {
@@ -196,7 +196,7 @@ class CyclingPowerDevice: NSObject {
     private var deviceId: UUID?
     weak var delegate: (any CyclingPowerDeviceDelegate)?
     private var previousRevolutions: UInt16?
-    private var previousRevolutionsTime: ContinuousClock.Instant?
+    private var previousRevolutionsTime: UInt16?
 
     func start(deviceId: UUID?) {
         cyclingPowerDeviceDispatchQueue.async {
@@ -345,27 +345,32 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
 
     private func handlePowerMeasurement(value: Data) throws {
         let measurement = try CyclingPowerMeasurement(value: value)
-        // logger.info("cycling-power-device: \(measurement)")
         var cadence = 0.0
-        if let revolutions = measurement.cumulativeCrankRevolutions {
-            let now = ContinuousClock.now
+        if let revolutions = measurement.cumulativeCrankRevolutions,
+           let time = measurement.lastCrankEventTime
+        {
             if let previousRevolutions, let previousRevolutionsTime {
-                var deltaRevolutions: UInt16 = 0
-                if revolutions >= previousRevolutions {
-                    deltaRevolutions = revolutions - previousRevolutions
-                } else {
-                    deltaRevolutions = revolutions + (UInt16.max - previousRevolutions + 1)
+                var deltaRevolutions = Int(revolutions) - Int(previousRevolutions)
+                if deltaRevolutions < 0 {
+                    deltaRevolutions += 65536
                 }
-                cadence = 60 * Double(deltaRevolutions) / previousRevolutionsTime.duration(to: now).seconds
+                var deltaTime = Int(time) - Int(previousRevolutionsTime)
+                if deltaTime < 0 {
+                    deltaTime += 65536
+                }
+                let deltaTimeSeconds = Double(deltaTime) / 1024
+                if deltaTimeSeconds > 0 {
+                    cadence = 60 * Double(deltaRevolutions) / deltaTimeSeconds
+                    cadence = min(cadence, 10000)
+                }
             }
             previousRevolutions = revolutions
-            previousRevolutionsTime = now
+            previousRevolutionsTime = time
         }
-        delegate?.cyclingPowerStatus(self, power: Int(measurement.instantaneousPower), cadence: cadence)
+        delegate?.cyclingPowerStatus(self, power: Int(measurement.instantaneousPower), cadence: Int(cadence))
     }
 
     private func handlePowerVector(value: Data) throws {
-        let vector = try CyclingPowerVector(value: value)
-        // logger.info("cycling-power-device: \(vector)")
+        _ = try CyclingPowerVector(value: value)
     }
 }

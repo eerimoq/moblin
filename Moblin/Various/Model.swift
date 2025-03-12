@@ -690,7 +690,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
     private var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
     private var cyclingPower = 0
-    private var cyclingCadence = 0.0
+    private var cyclingCadence = 0
 
     @Published var heartRateDeviceState: HeartRateDeviceState?
     private var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
@@ -3643,7 +3643,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             teslaDrive: textEffectTeslaDrive(),
             teslaMedia: textEffectTeslaMedia(),
             cyclingPower: "\(cyclingPower) W",
-            cyclingCadence: "\(Int(cyclingCadence))"
+            cyclingCadence: "\(cyclingCadence)"
         )
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
@@ -10726,9 +10726,8 @@ extension Model: CyclingPowerDeviceDelegate {
         }
     }
 
-    func cyclingPowerStatus(_: CyclingPowerDevice, power: Int, cadence: Double) {
+    func cyclingPowerStatus(_: CyclingPowerDevice, power: Int, cadence: Int) {
         DispatchQueue.main.async {
-            logger.info("Cycling power \(power) and cadence \(cadence)")
             self.cyclingPower = power
             self.cyclingCadence = cadence
         }
