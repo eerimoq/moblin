@@ -4112,91 +4112,91 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Cyclingcadence} - Radsportkadenz"
+            "value" : "{cyclingCadence} - Radsportkadenz"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Πεδίο ποδηλασίας"
+            "value" : "{cyclingCadence} - Πεδίο ποδηλασίας"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cadencia de ciclismo"
+            "value" : "{cyclingCadence} - Cadencia de ciclismo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Pyöräilykadanssi"
+            "value" : "{cyclingCadence} - Pyöräilykadanssi"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cadence cycliste"
+            "value" : "{cyclingCadence} - Cadence cycliste"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - साइक्लिंग ताल"
+            "value" : "{cyclingCadence} - साइक्लिंग ताल"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - irama bersepeda"
+            "value" : "{cyclingCadence} - irama bersepeda"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cadence ciclistica"
+            "value" : "{cyclingCadence} - Cadence ciclistica"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{cyclingcadence}  - サイクリングケイデンス"
+            "value" : "{cyclingCadence}  - サイクリングケイデンス"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - 사이클링 케이던스"
+            "value" : "{cyclingCadence} - 사이클링 케이던스"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cycling cadans"
+            "value" : "{cyclingCadence} - Cycling cadans"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cycling Cadence"
+            "value" : "{cyclingCadence} - Cycling Cadence"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cadência de ciclismo"
+            "value" : "{cyclingCadence} - Cadência de ciclismo"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cadência de ciclismo"
+            "value" : "{cyclingCadence} - Cadência de ciclismo"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cycling Cadence"
+            "value" : "{cyclingCadence} - Cycling Cadence"
           }
         },
         "sv" : {
@@ -4208,31 +4208,31 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Bisiklete binen kadans"
+            "value" : "{cyclingCadence} - Bisiklete binen kadans"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Cyclingcadence} - циклічна каденція"
+            "value" : "{cyclingcadence} - циклічна каденція"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence} - Cycling Cadence"
+            "value" : "{cyclingCadence} - Cycling Cadence"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence}  - 循环节奏"
+            "value" : "{cyclingCadence}  - 循环节奏"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingCadence}  - 循環節奏"
+            "value" : "{cyclingCadence}  - 循環節奏"
           }
         }
       }
@@ -4242,91 +4242,91 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Cyclingpower} - Radsportleistung"
+            "value" : "{cyclingPower} - Radsportleistung"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - ισχύς ποδηλασίας"
+            "value" : "{cyclingPower} - ισχύς ποδηλασίας"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - potencia de ciclismo"
+            "value" : "{cyclingPower} - potencia de ciclismo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Pyöräilyvoima} - Pyöräilyvoima"
+            "value" : "{cyclingPower} - Pyöräilyvoima"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Cyclingpower} - Pouvoir de cyclisme"
+            "value" : "{cyclingPower} - Pouvoir de cyclisme"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{साइक्लिंगपावर} - साइक्लिंग पावर"
+            "value" : "{cyclingPower}वर} - साइक्लिंग पावर"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Daya Bersepeda"
+            "value" : "{cyclingPower} - Daya Bersepeda"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Potenza ciclistica"
+            "value" : "{cyclingPower} - Potenza ciclistica"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower}  - サイクリングパワー"
+            "value" : "{cyclingPower}  - サイクリングパワー"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - 사이클링 파워"
+            "value" : "{cyclingPower} - 사이클링 파워"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Cycling Power"
+            "value" : "{cyclingPower} - Cycling Power"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} moc rowerowa"
+            "value" : "{cyclingPower} moc rowerowa"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Poder de ciclismo"
+            "value" : "{cyclingPower} - Poder de ciclismo"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Poder de ciclismo"
+            "value" : "{cyclingPower} - Poder de ciclismo"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - велосипедная мощность"
+            "value" : "{cyclingPower} - велосипедная мощность"
           }
         },
         "sv" : {
@@ -4338,13 +4338,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Bisiklet Gücü"
+            "value" : "{cyclingPower} - Bisiklet Gücü"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower} - Велосипедна потужність"
+            "value" : "{cyclingPower} - Велосипедна потужність"
           }
         },
         "vi" : {
@@ -4356,13 +4356,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower}  - 骑自行车能力"
+            "value" : "{cyclingPower}  - 骑自行车能力"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{CyclingPower}  - 騎自行車能力"
+            "value" : "{cyclingPower}  - 騎自行車能力"
           }
         }
       }
@@ -4916,127 +4916,127 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hearttrate: Mein Gerät} - Zeigen Sie die Herzfrequenz für Herzfrequenz -Geräte mit dem Namen \"My Device\""
+            "value" : "{heartRate:My device} - Zeigen Sie die Herzfrequenz für Herzfrequenz -Geräte mit dem Namen \"My Device\""
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Healtrate: Η συσκευή μου} - Εμφάνιση καρδιακού ρυθμού για συσκευή καρδιακού ρυθμού που ονομάζεται \"Η συσκευή μου\""
+            "value" : "{heartRate:My device} - Εμφάνιση καρδιακού ρυθμού για συσκευή καρδιακού ρυθμού που ονομάζεται \"Η συσκευή μου\""
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: mi dispositivo} - Muestre la frecuencia cardíaca para el dispositivo de frecuencia cardíaca llamada \"mi dispositivo\""
+            "value" : "{heartRate:My device} - Muestre la frecuencia cardíaca para el dispositivo de frecuencia cardíaca llamada \"mi dispositivo\""
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{SoleStrate: Laitteeni} - Näytä syke sykelle \"My Device\""
+            "value" : "{heartRate:My device} - Näytä syke sykelle \"My Device\""
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: My Device} - Affiche la fréquence cardiaque pour un appareil de fréquence cardiaque appelée \"Mon appareil\""
+            "value" : "{heartRate:My device} - Affiche la fréquence cardiaque pour un appareil de fréquence cardiaque appelée \"Mon appareil\""
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{हार्ट्रेट: मेरा डिवाइस} - \"माई डिवाइस\" नामक हार्ट रेट डिवाइस के लिए हार्ट रेट दिखाएं"
+            "value" : "{heartRate:My deviceicee} - \"माई डिवाइस\" नामक हार्ट रेट डिवाइस के लिए हार्ट रेट दिखाएं"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: My Device} - Tampilkan detak jantung untuk perangkat detak jantung yang disebut \"Perangkat Saya\""
+            "value" : "{heartRate:My device} - Tampilkan detak jantung untuk perangkat detak jantung yang disebut \"Perangkat Saya\""
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: My Device} - Mostra frequenza cardiaca per il dispositivo di frequenza cardiaca chiamata \"My Device\""
+            "value" : "{heartRate:My device} - Mostra frequenza cardiaca per il dispositivo di frequenza cardiaca chiamata \"My Device\""
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{heartrate：私のデバイス}  - 「私のデバイス」と呼ばれる心拍数デバイスの心拍数を表示"
+            "value" : "{heartRate:My device}  - 「私のデバイス」と呼ばれる心拍数デバイスの心拍数を表示"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate : My Device} - \"내 장치\"라는 심박수 장치의 심박수 표시"
+            "value" : "{heartRate:My device} - \"내 장치\"라는 심박수 장치의 심박수 표시"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hardrate: My Device} - Toon hartslag voor hartslagapparaat genaamd \"My Device\""
+            "value" : "{heartRate:My device} - Toon hartslag voor hartslagapparaat genaamd \"My Device\""
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hearstrate: moje urządzenie} - Pokaż tętno dla urządzenia tętna o nazwie „moje urządzenie”"
+            "value" : "{heartRate:My device} - Pokaż tętno dla urządzenia tętna o nazwie „moje urządzenie”"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: meu dispositivo} - mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"meu dispositivo\""
+            "value" : "{heartRate:My device} - mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"meu dispositivo\""
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: meu dispositivo} - mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"meu dispositivo\""
+            "value" : "{heartRate:My device} - mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"meu dispositivo\""
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{earttrate: мое устройство} - показать частоту сердечных сокращений для устройства пульса, называемого «Мое устройство»"
+            "value" : "{heartRate:My device} - показать частоту сердечных сокращений для устройства пульса, называемого «Мое устройство»"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "{heartRate:My Device} - Visa puls för pulsenhet som kallas \"My Device\""
+            "value" : "{heartRate:My device} - Visa puls för pulsenhet som kallas \"My Device\""
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: Cihazım} - \"Cihazım\" adlı kalp atış hızı cihazı için kalp atış hızını göster"
+            "value" : "{heartRate:My device} - \"Cihazım\" adlı kalp atış hızı cihazı için kalp atış hızını göster"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hemrtrate: мій пристрій} - показати серцевий ритм для серцевих скорочень під назвою \"мій пристрій\""
+            "value" : "{heartRate:My device} - показати серцевий ритм для серцевих скорочень під назвою \"мій пристрій\""
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate: Thiết bị của tôi} - Hiển thị nhịp tim cho thiết bị nhịp tim được gọi là \"thiết bị của tôi\""
+            "value" : "{heartRate:My device} - Hiển thị nhịp tim cho thiết bị nhịp tim được gọi là \"thiết bị của tôi\""
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate：我的设备}  - 显示为“我的设备”的心率设备的心率"
+            "value" : "{heartRate:My device}  - 显示为“我的设备”的心率设备的心率"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate：我的設備}  - 顯示為“我的設備”的心率設備的心率"
+            "value" : "{heartRate:My device}  - 顯示為“我的設備”的心率設備的心率"
           }
         }
       }
@@ -5046,91 +5046,91 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{heattrate} - Apple Watch Heart Frequenz zeigen"
+            "value" : "{heartRate} - Apple Watch Heart Frequenz zeigen"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Healtrate} - Εμφάνιση καρδιακού ρυθμού Apple Watch"
+            "value" : "{heartRate} - Εμφάνιση καρδιακού ρυθμού Apple Watch"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{hearttrate} - Mostrar la frecuencia cardíaca de Apple Watch"
+            "value" : "{heartRate} - Mostrar la frecuencia cardíaca de Apple Watch"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{SoleStrate} - Näytä Apple Watch -syke"
+            "value" : "{heartRate} - Näytä Apple Watch -syke"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "?"
+            "value" : "{heartRate} - "
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{हार्ट्रेट} - सेब वॉच हार्ट रेट दिखाएं"
+            "value" : "{heartRatee} - सेब वॉच हार्ट रेट दिखाएं"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate} - Tunjukkan detak jantung Apple Watch"
+            "value" : "{heartRate} - Tunjukkan detak jantung Apple Watch"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{heartrate} - mostra la frequenza cardiaca di Apple Watch"
+            "value" : "{heartRate} - mostra la frequenza cardiaca di Apple Watch"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{heartrate}  - アップルウォッチの心拍数を表示します"
+            "value" : "{heartRate}  - アップルウォッチの心拍数を表示します"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate} - Apple Watch 심박수를 보여줍니다"
+            "value" : "{heartRate} - Apple Watch 심박수를 보여줍니다"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hartrate} - Toon de hartslag van Apple Watch"
+            "value" : "{heartRate} - Toon de hartslag van Apple Watch"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hearstrate} - Pokaż tętno Apple Watch"
+            "value" : "{heartRate} - Pokaż tętno Apple Watch"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate} - mostre a frequência cardíaca do Apple Watch"
+            "value" : "{heartRate} - mostre a frequência cardíaca do Apple Watch"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate} - mostre a frequência cardíaca do Apple Watch"
+            "value" : "{heartRate} - mostre a frequência cardíaca do Apple Watch"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{earttrate} - показывать частоту сердечных сокращений Apple."
+            "value" : "{heartRate} - показывать частоту сердечных сокращений Apple."
           }
         },
         "sv" : {
@@ -5142,31 +5142,31 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate} - Apple Watch kalp atış hızını gösterin"
+            "value" : "{heartRate} - Apple Watch kalp atış hızını gösterin"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Hemrtrte} - Покажіть частоту серцевих скорочень Apple"
+            "value" : "{heartRate} - Покажіть частоту серцевих скорочень Apple"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate} - Hiển thị nhịp tim Apple Watch"
+            "value" : "{heartRate} - Hiển thị nhịp tim Apple Watch"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate}  - 显示Apple Watch心率"
+            "value" : "{heartRate}  - 显示Apple Watch心率"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{Heartrate}  - 顯示Apple Watch心率"
+            "value" : "{heartRate}  - 顯示Apple Watch心率"
           }
         }
       }
@@ -17556,127 +17556,127 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Fügen Sie {Hearttrate:%@} zu einem Text -Widget hinzu, um die Herzfrequenz im Stream anzuzeigen."
+            "value" : "Fügen Sie {heartRate:%@} zu einem Text -Widget hinzu, um die Herzfrequenz im Stream anzuzeigen."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Προσθέστε {Healtrate:%@} σε ένα widget κειμένου για να δείξετε καρδιακό ρυθμό σε ροή."
+            "value" : "Προσθέστε {heartRate:%@} σε ένα widget κειμένου για να δείξετε καρδιακό ρυθμό σε ροή."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Agregue {hearttrate:%@} a un widget de texto para mostrar la frecuencia cardíaca en la transmisión."
+            "value" : "Agregue {heartRate:%@} a un widget de texto para mostrar la frecuencia cardíaca en la transmisión."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Lisää {Heartrate:%@} tekstin widget -sovellukseen, jotta syke näyttää stream."
+            "value" : "Lisää {heartRate:%@} tekstin widget -sovellukseen, jotta syke näyttää stream."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ajouter {Heartrate:% @} à un widget de texte pour afficher la fréquence cardiaque sur le flux."
+            "value" : "Ajouter {heartRate:%@} à un widget de texte pour afficher la fréquence cardiaque sur le flux."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "धारा पर हृदय गति दिखाने के लिए एक टेक्स्ट विजेट में {हार्ट्रेट:%@} जोड़ें।"
+            "value" : "धारा पर हृदय गति दिखाने के लिए एक टेक्स्ट {heartRate:%@} हार्ट्रेट:%@} जोड़ें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Tambahkan {Heartrate:%@} ke widget teks untuk menampilkan detak jantung pada aliran."
+            "value" : "Tambahkan {heartRate:%@} ke widget teks untuk menampilkan detak jantung pada aliran."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Aggiungi {heartrate:%@} a un widget di testo per mostrare la frequenza cardiaca sul flusso."
+            "value" : "Aggiungi {heartRate:%@} a un widget di testo per mostrare la frequenza cardiaca sul flusso."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "{cealtrate：％@}をテキストウィジェットに追加して、ストリームに心拍数を表示します。"
+            "value" : "{heartRate:%@}をテキストウィジェットに追加して、ストリームに心拍数を表示します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "스트림에 심박수를 표시하기 위해 텍스트 위젯에 {heartrate :%@}를 추가하십시오."
+            "value" : "스트림에 심박수를 표시하기 위해 텍스트 위젯에 {heartRate:%@}를 추가하십시오."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voeg {Hardrate:%@} toe aan een tekstwidget om de hartslag op stroom te tonen."
+            "value" : "Voeg {heartRate:%@} toe aan een tekstwidget om de hartslag op stroom te tonen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Dodaj {Hearstrate:%@} do widżetu tekstowego, aby pokazać tętno na strumieniu."
+            "value" : "Dodaj {heartRate:%@} do widżetu tekstowego, aby pokazać tętno na strumieniu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Adicione {Heartrate:%@} a um widget de texto para mostrar a freqüência cardíaca no fluxo."
+            "value" : "Adicione {heartRate:%@} a um widget de texto para mostrar a freqüência cardíaca no fluxo."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Adicione {Heartrate:%@} a um widget de texto para mostrar a freqüência cardíaca no fluxo."
+            "value" : "Adicione {heartRate:%@} a um widget de texto para mostrar a freqüência cardíaca no fluxo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Добавить {earttrate:%@} в текстовый виджет, чтобы показать частоту сердечных сокращений в потоке."
+            "value" : "Добавить {heartRate:%@} в текстовый виджет, чтобы показать частоту сердечных сокращений в потоке."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lägg till {heartrate:%@} till en textwidget för att visa puls i strömmen."
+            "value" : "Lägg till {heartRate:%@} till en textwidget för att visa puls i strömmen."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Akışta kalp atış hızını göstermek için bir metin widget'ına {HeartRate:%@} ekleyin."
+            "value" : "Akışta kalp atış hızını göstermek için bir metin widget'ına {heartRate:%@} ekleyin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Додати {HemtrTER:%@} до текстового віджета, щоб показати серцебиття на потоці."
+            "value" : "Додати {heartRate:%@} до текстового віджета, щоб показати серцебиття на потоці."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Thêm {Heartrate:%@} vào tiện ích văn bản để hiển thị nhịp tim trên luồng."
+            "value" : "Thêm {heartRate:%@} vào tiện ích văn bản để hiển thị nhịp tim trên luồng."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "将{Heartrate：％@}添加到文本小部件中，以在流上显示心率。"
+            "value" : "将{heartRate:%@}添加到文本小部件中，以在流上显示心率。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "將{Heartrate：％@}添加到文本小部件中，以在流上顯示心率。"
+            "value" : "將{heartRate:%@}添加到文本小部件中，以在流上顯示心率。"
           }
         }
       }
@@ -41432,7 +41432,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cykeleffekt"
+            "value" : "Cyklingseffekt"
           }
         },
         "tr" : {
