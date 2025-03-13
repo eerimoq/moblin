@@ -11,6 +11,11 @@ struct HeartRateDevicesSettingsView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 130)
+                    Image("HeartRateDeviceCoros")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .background(.white)
+                        .frame(height: 102)
                 }
             }
             Section {
