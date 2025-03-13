@@ -16926,6 +16926,9 @@
         }
       }
     },
+    "Add {heartRate:%@} to a text widget to show heart rate on stream." : {
+
+    },
     "Add key to vehicle" : {
       "localizations" : {
         "de" : {

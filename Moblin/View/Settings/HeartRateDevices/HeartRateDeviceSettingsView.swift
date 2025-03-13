@@ -49,6 +49,8 @@ struct HeartRateDeviceSettingsView: View {
                 TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
                     device.name = value
                 })
+            } footer: {
+                Text("Add {heartRate:\(device.name)} to a text widget to show heart rate on stream.")
             }
             Section {
                 NavigationLink { HeartRateDeviceScannerSettingsView(
