@@ -10794,6 +10794,7 @@ extension Model: HeartRateDeviceDelegate {
             guard let device = self.getHeartRateDeviceSettings(device: device) else {
                 return
             }
+            self.heartRates.removeValue(forKey: device.name.lowercased())
             if device === self.currentHeartRateDeviceSettings {
                 self.heartRateDeviceState = state
             }
