@@ -34,12 +34,10 @@ struct CatPrinterSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let catPrinterDevice = scanner.discoveredDevices
-            .first(where: { $0.peripheral.identifier == deviceId })
-        else {
+        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId }) else {
             return
         }
-        device.bluetoothPeripheralName = catPrinterDevice.peripheral.name
+        device.bluetoothPeripheralName = peripheral.name
         device.bluetoothPeripheralId = deviceId
     }
 

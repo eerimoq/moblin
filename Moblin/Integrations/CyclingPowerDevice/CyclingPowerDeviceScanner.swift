@@ -1,16 +1,12 @@
 import CoreBluetooth
 
-struct CyclingPowerDeviceDiscoved {
-    let peripheral: CBPeripheral
-}
-
 class CyclingPowerDeviceScanner: NSObject, ObservableObject {
     static let shared = CyclingPowerDeviceScanner()
-    @Published var discoveredDevices: [CyclingPowerDeviceDiscoved] = []
+    @Published var discoveredPeripherals: [CBPeripheral] = []
     private var centralManager: CBCentralManager?
 
     func startScanningForDevices() {
-        discoveredDevices = []
+        discoveredPeripherals = []
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 
@@ -33,9 +29,9 @@ extension CyclingPowerDeviceScanner: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
-        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+        guard !discoveredPeripherals.contains(where: { $0 == peripheral }) else {
             return
         }
-        discoveredDevices.append(.init(peripheral: peripheral))
+        discoveredPeripherals.append(peripheral)
     }
 }

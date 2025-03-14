@@ -1,16 +1,12 @@
 import CoreBluetooth
 
-struct HeartRateDeviceDiscoved {
-    let peripheral: CBPeripheral
-}
-
 class HeartRateDeviceScanner: NSObject, ObservableObject {
     static let shared = HeartRateDeviceScanner()
-    @Published var discoveredDevices: [HeartRateDeviceDiscoved] = []
+    @Published var discoveredPeripherals: [CBPeripheral] = []
     private var centralManager: CBCentralManager?
 
     func startScanningForDevices() {
-        discoveredDevices = []
+        discoveredPeripherals = []
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
 
@@ -33,9 +29,9 @@ extension HeartRateDeviceScanner: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
-        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+        guard !discoveredPeripherals.contains(where: { $0 == peripheral }) else {
             return
         }
-        discoveredDevices.append(.init(peripheral: peripheral))
+        discoveredPeripherals.append(peripheral)
     }
 }
