@@ -1,13 +1,17 @@
 import CoreBluetooth
 
-class CyclingPowerDeviceScanner: NSObject, ObservableObject {
-    static let shared = CyclingPowerDeviceScanner()
+class BluetoothScanner: NSObject, ObservableObject {
     @Published var discoveredPeripherals: [CBPeripheral] = []
     private var centralManager: CBCentralManager?
+    private let serviceIds: [CBUUID]
+
+    init(serviceIds: [CBUUID]) {
+        self.serviceIds = serviceIds
+    }
 
     func startScanningForDevices() {
         discoveredPeripherals = []
-        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        centralManager = CBCentralManager(delegate: self, queue: .main)
     }
 
     func stopScanningForDevices() {
@@ -16,10 +20,10 @@ class CyclingPowerDeviceScanner: NSObject, ObservableObject {
     }
 }
 
-extension CyclingPowerDeviceScanner: CBCentralManagerDelegate {
+extension BluetoothScanner: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            central.scanForPeripherals(withServices: [cyclingPowerServiceId])
+            central.scanForPeripherals(withServices: serviceIds)
         }
     }
 

@@ -15,7 +15,9 @@ enum HeartRateDeviceState {
     case connected
 }
 
-let heartRateServiceId = CBUUID(string: "180D")
+private let heartRateServiceId = CBUUID(string: "180D")
+
+let heartRateScanner = BluetoothScanner(serviceIds: [heartRateServiceId])
 
 private let heartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
 

@@ -261,7 +261,6 @@
 		0379E66D2C8980160021AB59 /* CatPrintersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379E66C2C8980160021AB59 /* CatPrintersSettingsView.swift */; };
 		0379E66F2C89802B0021AB59 /* CatPrinterSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379E66E2C89802B0021AB59 /* CatPrinterSettingsView.swift */; };
 		0379E6712C8980460021AB59 /* CatPrinterScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379E6702C8980460021AB59 /* CatPrinterScannerSettingsView.swift */; };
-		0379E6732C8985710021AB59 /* CatPrinterScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379E6722C8985710021AB59 /* CatPrinterScanner.swift */; };
 		037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */; };
 		037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037EBE762B666F66004D5774 /* DrawOnStreamView.swift */; };
 		037FE0302C594CE40067B5AC /* AlertsEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037FE02F2C594CE40067B5AC /* AlertsEffect.swift */; };
@@ -275,13 +274,12 @@
 		0384C0382C10E14900B82216 /* WebSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0384C0372C10E14900B82216 /* WebSocketClient.swift */; };
 		03859D7B2C4FF569000EFE43 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */; };
 		03859D7E2C50183C000EFE43 /* SampleBufferCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferCommon.swift */; };
-		0386052E2D7DF69300B9C3CE /* CyclingPowerDeviceScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386052D2D7DF68C00B9C3CE /* CyclingPowerDeviceScanner.swift */; };
 		038605302D7DF6A300B9C3CE /* CyclingPowerDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386052F2D7DF69B00B9C3CE /* CyclingPowerDevice.swift */; };
 		038605332D7DF94900B9C3CE /* CyclingPowerDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */; };
 		038605352D7DF94F00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */; };
 		038605372D7DF97300B9C3CE /* CyclingPowerDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */; };
 		0386053C2D8006CC00B9C3CE /* HeartRateDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386053B2D8006CA00B9C3CE /* HeartRateDevice.swift */; };
-		0386053E2D8006D300B9C3CE /* HeartRateDeviceScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386053D2D8006D000B9C3CE /* HeartRateDeviceScanner.swift */; };
+		0386053E2D8006D300B9C3CE /* BluetoothScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0386053D2D8006D000B9C3CE /* BluetoothScanner.swift */; };
 		038605412D80098800B9C3CE /* HeartRateDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605402D80097F00B9C3CE /* HeartRateDeviceSettingsView.swift */; };
 		038605432D80099300B9C3CE /* HeartRateDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605422D80098F00B9C3CE /* HeartRateDevicesSettingsView.swift */; };
 		038605452D8009A000B9C3CE /* HeartRateDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038605442D80099900B9C3CE /* HeartRateDeviceScannerSettingsView.swift */; };
@@ -851,7 +849,6 @@
 		0379E66C2C8980160021AB59 /* CatPrintersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrintersSettingsView.swift; sourceTree = "<group>"; };
 		0379E66E2C89802B0021AB59 /* CatPrinterSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterSettingsView.swift; sourceTree = "<group>"; };
 		0379E6702C8980460021AB59 /* CatPrinterScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterScannerSettingsView.swift; sourceTree = "<group>"; };
-		0379E6722C8985710021AB59 /* CatPrinterScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatPrinterScanner.swift; sourceTree = "<group>"; };
 		037CDEB62C9523A6007911A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
@@ -864,13 +861,12 @@
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
 		0384C0372C10E14900B82216 /* WebSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketClient.swift; sourceTree = "<group>"; };
-		0386052D2D7DF68C00B9C3CE /* CyclingPowerDeviceScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceScanner.swift; sourceTree = "<group>"; };
 		0386052F2D7DF69B00B9C3CE /* CyclingPowerDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDevice.swift; sourceTree = "<group>"; };
 		038605322D7DF93F00B9C3CE /* CyclingPowerDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDevicesSettingsView.swift; sourceTree = "<group>"; };
 		038605342D7DF94E00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
 		038605362D7DF96100B9C3CE /* CyclingPowerDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerDeviceSettingsView.swift; sourceTree = "<group>"; };
 		0386053B2D8006CA00B9C3CE /* HeartRateDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDevice.swift; sourceTree = "<group>"; };
-		0386053D2D8006D000B9C3CE /* HeartRateDeviceScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDeviceScanner.swift; sourceTree = "<group>"; };
+		0386053D2D8006D000B9C3CE /* BluetoothScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothScanner.swift; sourceTree = "<group>"; };
 		038605402D80097F00B9C3CE /* HeartRateDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDeviceSettingsView.swift; sourceTree = "<group>"; };
 		038605422D80098F00B9C3CE /* HeartRateDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDevicesSettingsView.swift; sourceTree = "<group>"; };
 		038605442D80099900B9C3CE /* HeartRateDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
@@ -2122,7 +2118,6 @@
 			isa = PBXGroup;
 			children = (
 				0386052F2D7DF69B00B9C3CE /* CyclingPowerDevice.swift */,
-				0386052D2D7DF68C00B9C3CE /* CyclingPowerDeviceScanner.swift */,
 			);
 			path = CyclingPowerDevice;
 			sourceTree = "<group>";
@@ -2141,7 +2136,6 @@
 			isa = PBXGroup;
 			children = (
 				0386053B2D8006CA00B9C3CE /* HeartRateDevice.swift */,
-				0386053D2D8006D000B9C3CE /* HeartRateDeviceScanner.swift */,
 			);
 			path = HeartRateDevice;
 			sourceTree = "<group>";
@@ -2467,7 +2461,6 @@
 				03B507A62C88B8F6003CDEDF /* CatPrinter.swift */,
 				0379E6692C88C9340021AB59 /* CatPrinterCommands.swift */,
 				031F9C2B2D5A7BAE00424EF0 /* CatPrinterCommandsMxw01.swift */,
-				0379E6722C8985710021AB59 /* CatPrinterScanner.swift */,
 				03BA3B402C90124400DEFA3E /* FloydSteinbergDithering.swift */,
 				03BA3B422C9019D500DEFA3E /* AtkinsonDithering.swift */,
 			);
@@ -2574,6 +2567,7 @@
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				0386053D2D8006D000B9C3CE /* BluetoothScanner.swift */,
 				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
 				03C357362D0803B100B8B29F /* ChatBotCommand.swift */,
 				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
@@ -3230,7 +3224,6 @@
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				0342F1A52C627A8F004DD3EA /* MirlCommon.swift in Sources */,
 				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
-				0386052E2D7DF69300B9C3CE /* CyclingPowerDeviceScanner.swift in Sources */,
 				03980C552C5E74A9000ED476 /* VoicesView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				03F655F22D16DFD60054D73E /* BitArray.swift in Sources */,
@@ -3316,7 +3309,6 @@
 				03C3574A2D081CF300B8B29F /* RtmpSetPeerBandwidthMessage.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				037FE0302C594CE40067B5AC /* AlertsEffect.swift in Sources */,
-				0379E6732C8985710021AB59 /* CatPrinterScanner.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */,
 				03C357542D081D9000B8B29F /* RtmpAggregateMessage.swift in Sources */,
@@ -3451,7 +3443,7 @@
 				03DAC9392BFE6A1F005EB92C /* AVCaptureColorSpace+Extension.swift in Sources */,
 				03E6F7F92CE5B4B100D9198A /* BondingStatisticsFormatter.swift in Sources */,
 				0324ECA82C1EADAB007CB0B3 /* FourThreeEffect.swift in Sources */,
-				0386053E2D8006D300B9C3CE /* HeartRateDeviceScanner.swift in Sources */,
+				0386053E2D8006D300B9C3CE /* BluetoothScanner.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,

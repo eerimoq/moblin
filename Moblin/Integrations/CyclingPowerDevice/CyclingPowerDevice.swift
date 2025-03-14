@@ -15,7 +15,9 @@ enum CyclingPowerDeviceState {
     case connected
 }
 
-let cyclingPowerServiceId = CBUUID(string: "1818")
+private let cyclingPowerServiceId = CBUUID(string: "1818")
+
+let cyclingPowerScanner = BluetoothScanner(serviceIds: [cyclingPowerServiceId])
 
 private let cyclingPowerMeasurementCharacteristicId = CBUUID(string: "2A63")
 private let cyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")

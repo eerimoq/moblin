@@ -68,9 +68,11 @@ private class CurrentJob {
     }
 }
 
-let catPrinterServices = [
+private let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
+
+let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
 
 private let printCharacteristicId = CBUUID(string: "AE01")
 private let notifyCharacteristicId = CBUUID(string: "AE02")

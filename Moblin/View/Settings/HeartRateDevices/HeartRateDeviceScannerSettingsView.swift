@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HeartRateDeviceScannerSettingsView: View {
-    @ObservedObject private var scanner: HeartRateDeviceScanner = .shared
+    @ObservedObject private var scanner = heartRateScanner
     @Environment(\.dismiss) var dismiss
     var onChange: (String) -> Void
     @State var selectedId: String

@@ -16,7 +16,7 @@ private func formatCatPrinterState(state: CatPrinterState?) -> String {
 
 struct CatPrinterSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject private var scanner: CatPrinterScanner = .shared
+    @ObservedObject private var scanner = catPrinterScanner
     var device: SettingsCatPrinter
 
     func state() -> String {
