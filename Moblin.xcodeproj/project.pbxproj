@@ -2431,8 +2431,8 @@
 		03B374052AA0EA370028DDD5 /* VideoEffects */ = {
 			isa = PBXGroup;
 			children = (
-				033FD7192CC622A60073C6EC /* Scoreboards */,
 				033235442BFBB71C00B897A5 /* MetalPetal */,
+				033FD7192CC622A60073C6EC /* Scoreboards */,
 				037FE02F2C594CE40067B5AC /* AlertsEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
@@ -2567,14 +2567,13 @@
 		03BE504E2B3EC107004720AF /* Various */ = {
 			isa = PBXGroup;
 			children = (
-				0386053D2D8006D000B9C3CE /* BluetoothScanner.swift */,
-				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
-				03C357362D0803B100B8B29F /* ChatBotCommand.swift */,
-				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
-				03D37EDF2CE08921006D14C2 /* UrlSession.swift */,
 				0397C3692C5E16FA00F93E58 /* AlertMediaStorage.swift */,
+				0386053D2D8006D000B9C3CE /* BluetoothScanner.swift */,
+				03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */,
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
+				03C357362D0803B100B8B29F /* ChatBotCommand.swift */,
 				03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */,
+				0323F3822D21346F00A57AC2 /* DnsLookup.swift */,
 				031863C62C8C4BEA00CECA33 /* FaxReceiver.swift */,
 				03C5AE472C5515B20056B6C7 /* GeographyManager.swift */,
 				03EF41AD2BE8A58200C72415 /* Histogram.swift */,
@@ -2596,6 +2595,7 @@
 				03510DDB2C7661A400FD3A27 /* SpeechToText.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03AD38D12C5280B300824980 /* TextFormatStringLoader.swift */,
+				03D37EDF2CE08921006D14C2 /* UrlSession.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
 				03C5AE412C536FE10056B6C7 /* WeatherManager.swift */,
 				03762FE22D797A94003BD2E2 /* WebBrowserController.swift */,
@@ -2694,11 +2694,11 @@
 		03CDEAA02C0AB8BB006121D0 /* Integrations */ = {
 			isa = PBXGroup;
 			children = (
-				0386053A2D8006BE00B9C3CE /* HeartRateDevice */,
-				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
+				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
 				038C912A2C44691F003CAD5F /* DjiDevice */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
+				0386053A2D8006BE00B9C3CE /* HeartRateDevice */,
 				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
 				0318D3622CF4FB2300E12F3B /* Tesla */,
 			);
