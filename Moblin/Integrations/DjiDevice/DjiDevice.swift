@@ -78,7 +78,7 @@ class DjiDevice: NSObject {
         deviceId: UUID,
         model: SettingsDjiDeviceModel
     ) {
-        logger.info("dji-device: Start live stream for \(model)")
+        logger.debug("dji-device: Start live stream for \(model)")
         self.wifiSsid = wifiSsid
         self.wifiPassword = wifiPassword
         self.rtmpUrl = rtmpUrl
@@ -98,7 +98,7 @@ class DjiDevice: NSObject {
         guard state != .idle else {
             return
         }
-        logger.info("dji-device: Stop live stream")
+        logger.debug("dji-device: Stop live stream")
         stopStartStreamingTimer()
         startStopStreamingTimer()
         sendStopStream()
@@ -151,7 +151,7 @@ class DjiDevice: NSObject {
         guard state != self.state else {
             return
         }
-        logger.info("dji-device: State change \(self.state) -> \(state)")
+        logger.debug("dji-device: State change \(self.state) -> \(state)")
         self.state = state
         delegate?.djiDeviceStreamingState(self, state: state)
     }
@@ -190,12 +190,12 @@ extension DjiDevice: CBCentralManagerDelegate {
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        logger.info("dji-device: Connected")
+        logger.debug("dji-device: Connected")
         peripheral.discoverServices(nil)
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
-        logger.info("dji-device: Disconnected")
+        logger.debug("dji-device: Disconnected")
         reset()
     }
 }

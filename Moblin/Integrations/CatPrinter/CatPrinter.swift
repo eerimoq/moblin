@@ -368,7 +368,7 @@ class CatPrinter: NSObject {
         guard state != self.state else {
             return
         }
-        logger.info("cat-printer: State change \(self.state) -> \(state)")
+        logger.debug("cat-printer: State change \(self.state) -> \(state)")
         self.state = state
         delegate?.catPrinterState(self, state: state)
     }

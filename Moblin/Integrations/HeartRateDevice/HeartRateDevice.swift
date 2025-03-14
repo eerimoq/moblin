@@ -87,7 +87,7 @@ class HeartRateDevice: NSObject {
         guard state != self.state else {
             return
         }
-        logger.info("heart-rate-device: State change \(self.state) -> \(state)")
+        logger.debug("heart-rate-device: State change \(self.state) -> \(state)")
         self.state = state
         delegate?.heartRateDeviceState(self, state: state)
     }

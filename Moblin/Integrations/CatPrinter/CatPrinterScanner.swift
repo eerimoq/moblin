@@ -19,7 +19,7 @@ class CatPrinterScanner: NSObject, ObservableObject {
 extension CatPrinterScanner: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            central.scanForPeripherals(withServices: catPrinterServices, options: nil)
+            central.scanForPeripherals(withServices: catPrinterServices)
         }
     }
 

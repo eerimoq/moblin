@@ -245,7 +245,7 @@ class CyclingPowerDevice: NSObject {
         guard state != self.state else {
             return
         }
-        logger.info("cycling-power-device: State change \(self.state) -> \(state)")
+        logger.debug("cycling-power-device: State change \(self.state) -> \(state)")
         self.state = state
         delegate?.cyclingPowerDeviceState(self, state: state)
     }
