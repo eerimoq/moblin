@@ -2202,6 +2202,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopCatPrinters()
             stopCyclingPowerDevices()
             stopHeartRateDevices()
+            stopRemoteControlAssistant()
         }
     }
 
@@ -7863,9 +7864,13 @@ extension Model {
         return remoteControlStreamer?.isConnected() ?? false
     }
 
-    func reloadRemoteControlAssistant() {
+    func stopRemoteControlAssistant() {
         remoteControlAssistant?.stop()
         remoteControlAssistant = nil
+    }
+
+    func reloadRemoteControlAssistant() {
+        stopRemoteControlAssistant()
         guard isRemoteControlAssistantConfigured() else {
             return
         }
