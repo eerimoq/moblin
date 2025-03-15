@@ -186,6 +186,7 @@ private struct RemoteControlSettingsAssistantView: View {
             }, set: { value in
                 model.database.remoteControl!.client.enabled = value
                 model.reloadRemoteControlAssistant()
+                model.objectWillChange.send()
             })) {
                 Text("Enabled")
             }
