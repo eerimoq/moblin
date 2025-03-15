@@ -16,7 +16,6 @@
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
 		0305D6B72D3449F9006EA5DE /* QuickButtonDjiDevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0305D6B62D3449F1006EA5DE /* QuickButtonDjiDevicesView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
-		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
 		03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
 		03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C0E2B487D950009DAB6 /* PixellateEffect.swift */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
@@ -1085,7 +1084,6 @@
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
 				0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */,
-				0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */,
 				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
 				03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
@@ -2917,7 +2915,6 @@
 				03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */,
 				03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */,
 				0320D8752AED36860030418F /* WrappingHStack */,
-				0307EBC92B59B239006F7B2A /* Telegraph */,
 				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
 				03AE56132BEA74D500FE8427 /* Rist */,
 				03D151AE2BFA73C100D29D8E /* MetalPetal */,
@@ -3035,7 +3032,6 @@
 				03BC11652AE5654700C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
 				0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */,
-				0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */,
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
 				03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */,
 				03D151AD2BFA73C100D29D8E /* XCRemoteSwiftPackageReference "MetalPetal" */,
@@ -4140,14 +4136,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Building42/Telegraph";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.30.0;
-			};
-		};
 		0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-protobuf.git";
@@ -4279,11 +4267,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0307EBC92B59B239006F7B2A /* Telegraph */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */;
-			productName = Telegraph;
-		};
 		0318D3692CF51D6900E12F3B /* SwiftProtobuf */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */;

@@ -647,6 +647,10 @@ extension String {
         }
         return text
     }
+
+    var utf8Data: Data {
+        return Data(utf8)
+    }
 }
 
 class RgbColor: Codable, Equatable {

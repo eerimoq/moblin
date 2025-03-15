@@ -1,6 +1,7 @@
 import AVKit
 import MapKit
 import MetalPetal
+import Network
 import SwiftUI
 import WeatherKit
 
@@ -578,5 +579,23 @@ extension FileManager {
             ids.append(id)
         }
         return ids
+    }
+}
+
+final class NWConnectionWithId: Hashable, Equatable {
+    let id: String
+    let connection: NWConnection
+
+    init(connection: NWConnection) {
+        self.connection = connection
+        id = UUID().uuidString
+    }
+
+    static func == (lhs: NWConnectionWithId, rhs: NWConnectionWithId) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
