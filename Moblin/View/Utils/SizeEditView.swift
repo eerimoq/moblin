@@ -17,10 +17,12 @@ struct SizeEditView: View {
     var body: some View {
         ValueEditView(
             title: title,
+            number: Float(value),
             value: String(value),
             minimum: 1,
             maximum: 100,
-            onSubmit: submit
+            onSubmit: submit,
+            increment: 0.125
         )
     }
 }
