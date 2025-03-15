@@ -1,11 +1,7 @@
 import Foundation
 
-open class ByteArray {
-    static let fillZero: [UInt8] = [0x00]
+class ByteArray {
     static let sizeOfInt8 = 1
-    static let sizeOfInt16 = 2
-    static let sizeOfInt24 = 3
-    static let sizeOfInt32 = 4
     static let sizeOfDouble = 8
 
     enum Error: Swift.Error {
@@ -50,7 +46,7 @@ open class ByteArray {
     }
 
     func readUInt8() throws -> UInt8 {
-        guard ByteArray.sizeOfInt8 <= bytesAvailable else {
+        guard bytesAvailable >= ByteArray.sizeOfInt8 else {
             throw ByteArray.Error.eof
         }
         defer {
@@ -65,11 +61,7 @@ open class ByteArray {
     }
 
     func readUInt16() throws -> UInt16 {
-        guard ByteArray.sizeOfInt16 <= bytesAvailable else {
-            throw ByteArray.Error.eof
-        }
-        position += ByteArray.sizeOfInt16
-        return UInt16(data: data[position - ByteArray.sizeOfInt16 ..< position]).bigEndian
+        return try (UInt16(readUInt8()) << 8) | UInt16(readUInt8())
     }
 
     @discardableResult
@@ -88,12 +80,7 @@ open class ByteArray {
     }
 
     func readUInt24() throws -> UInt32 {
-        guard ByteArray.sizeOfInt24 <= bytesAvailable else {
-            throw ByteArray.Error.eof
-        }
-        position += ByteArray.sizeOfInt24
-        return UInt32(data: ByteArray.fillZero + data[position - ByteArray.sizeOfInt24 ..< position])
-            .bigEndian
+        return try (UInt32(readUInt8()) << 16) | (UInt32(readUInt8()) << 8) | UInt32(readUInt8())
     }
 
     func readUInt24Le() throws -> UInt32 {
@@ -115,11 +102,8 @@ open class ByteArray {
     }
 
     func readUInt32() throws -> UInt32 {
-        guard ByteArray.sizeOfInt32 <= bytesAvailable else {
-            throw ByteArray.Error.eof
-        }
-        position += ByteArray.sizeOfInt32
-        return UInt32(data: data[position - ByteArray.sizeOfInt32 ..< position]).bigEndian
+        return try (UInt32(readUInt8()) << 24) | (UInt32(readUInt8()) << 16) | (UInt32(readUInt8()) << 8) |
+            UInt32(readUInt8())
     }
 
     func readUInt32Le() throws -> UInt32 {
@@ -146,7 +130,7 @@ open class ByteArray {
     }
 
     func readDouble() throws -> Double {
-        guard ByteArray.sizeOfDouble <= bytesAvailable else {
+        guard bytesAvailable >= ByteArray.sizeOfDouble else {
             throw ByteArray.Error.eof
         }
         position += ByteArray.sizeOfDouble
@@ -166,7 +150,7 @@ open class ByteArray {
     }
 
     func readUTF8Bytes(_ length: Int) throws -> String {
-        guard length <= bytesAvailable else {
+        guard bytesAvailable >= length else {
             throw ByteArray.Error.eof
         }
         position += length
@@ -183,7 +167,7 @@ open class ByteArray {
     }
 
     func readBytes(_ length: Int) throws -> Data {
-        guard length <= bytesAvailable else {
+        guard bytesAvailable >= length else {
             throw ByteArray.Error.eof
         }
         position += length
@@ -197,7 +181,7 @@ open class ByteArray {
             position = data.count
             return self
         }
-        let length: Int = min(data.count, value.count)
+        let length = min(data.count, value.count)
         data[position ..< position + length] = value[0 ..< length]
         if length == data.count {
             data.append(value[length ..< value.count])
@@ -207,7 +191,7 @@ open class ByteArray {
     }
 
     func sequence(_ length: Int, lambda: (ByteArray) -> Void) {
-        let r: Int = (data.count - position) % length
+        let r = (data.count - position) % length
         for index in stride(
             from: data.startIndex.advanced(by: position),
             to: data.endIndex.advanced(by: -r),
@@ -221,7 +205,7 @@ open class ByteArray {
     }
 
     func toUInt32() -> [UInt32] {
-        let size: Int = MemoryLayout<UInt32>.size
+        let size = MemoryLayout<UInt32>.size
         if (data.endIndex - position) % size != 0 {
             return []
         }
