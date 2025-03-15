@@ -19,9 +19,9 @@ private let cyclingPowerServiceId = CBUUID(string: "1818")
 
 let cyclingPowerScanner = BluetoothScanner(serviceIds: [cyclingPowerServiceId])
 
-private let cyclingPowerMeasurementCharacteristicId = CBUUID(string: "2A63")
-private let cyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")
-private let cyclingPowerFeatureCharacteristicId = CBUUID(string: "2A65")
+private let measurementCharacteristicId = CBUUID(string: "2A63")
+private let vectorCharacteristicId = CBUUID(string: "2A64")
+private let featureCharacteristicId = CBUUID(string: "2A65")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
 // periphery:ignore
@@ -51,7 +51,6 @@ enum CyclingPowerAccumulatedTorqueSource: UInt8 {
 }
 
 struct CyclingPowerMeasurement {
-    // periphery:ignore
     var instantaneousPower: UInt16 = 0
     // periphery:ignore
     var pedalPowerBalance: UInt8?
@@ -65,9 +64,7 @@ struct CyclingPowerMeasurement {
     var cumulativeWheelRevolutions: UInt32?
     // periphery:ignore
     var lastWheelEventTime: UInt16?
-    // periphery:ignore
     var cumulativeCrankRevolutions: UInt16?
-    // periphery:ignore
     var lastCrankEventTime: UInt16?
     // periphery:ignore
     var maximumForceMagnitude: UInt16?
@@ -189,11 +186,8 @@ class CyclingPowerDevice: NSObject {
     private var state: CyclingPowerDeviceState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
-    // periphery:ignore
     private var measurementCharacteristic: CBCharacteristic?
-    // periphery:ignore
     private var vectorCharacteristic: CBCharacteristic?
-    // periphery:ignore
     private var featureCharacteristic: CBCharacteristic?
     private var deviceId: UUID?
     weak var delegate: (any CyclingPowerDeviceDelegate)?
@@ -307,13 +301,13 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
     ) {
         for characteristic in service.characteristics ?? [] {
             switch characteristic.uuid {
-            case cyclingPowerMeasurementCharacteristicId:
+            case measurementCharacteristicId:
                 measurementCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
-            case cyclingPowerVectorCharacteristicId:
+            case vectorCharacteristicId:
                 vectorCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
-            case cyclingPowerFeatureCharacteristicId:
+            case featureCharacteristicId:
                 featureCharacteristic = characteristic
             default:
                 break
@@ -330,9 +324,9 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         }
         do {
             switch characteristic.uuid {
-            case cyclingPowerMeasurementCharacteristicId:
+            case measurementCharacteristicId:
                 try handlePowerMeasurement(value: value)
-            case cyclingPowerVectorCharacteristicId:
+            case vectorCharacteristicId:
                 try handlePowerVector(value: value)
             default:
                 break

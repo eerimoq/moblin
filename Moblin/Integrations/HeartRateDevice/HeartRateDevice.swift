@@ -19,7 +19,7 @@ private let heartRateServiceId = CBUUID(string: "180D")
 
 let heartRateScanner = BluetoothScanner(serviceIds: [heartRateServiceId])
 
-private let heartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
+private let measurementCharacteristicId = CBUUID(string: "2A37")
 
 private let measurementHeartRateValueFormatIndex = 0
 
@@ -41,7 +41,6 @@ class HeartRateDevice: NSObject {
     private var state: HeartRateDeviceState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
-    // periphery:ignore
     private var measurementCharacteristic: CBCharacteristic?
     private var deviceId: UUID?
     weak var delegate: (any HeartRateDeviceDelegate)?
@@ -149,7 +148,7 @@ extension HeartRateDevice: CBPeripheralDelegate {
     ) {
         for characteristic in service.characteristics ?? [] {
             switch characteristic.uuid {
-            case heartRateMeasurementCharacteristicId:
+            case measurementCharacteristicId:
                 measurementCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
             default:
@@ -167,7 +166,7 @@ extension HeartRateDevice: CBPeripheralDelegate {
         }
         do {
             switch characteristic.uuid {
-            case heartRateMeasurementCharacteristicId:
+            case measurementCharacteristicId:
                 try handlePowerMeasurement(value: value)
             default:
                 break
