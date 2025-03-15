@@ -38,6 +38,7 @@ struct WidgetImageSettingsView: View {
                         model.imageStorage.write(id: widget.id, data: data)
                         DispatchQueue.main.async {
                             model.sceneUpdated(imageEffectChanged: true)
+                            model.objectWillChange.send()
                         }
                     case .success(nil):
                         logger.error("widget: image is nil")
