@@ -1,6 +1,7 @@
 import Collections
 import CoreBluetooth
 import CryptoKit
+import Telegraph
 
 private let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf8b91e")
 private let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
@@ -21,7 +22,7 @@ private func createSymmetricKey(clientPrivateKey: P256.KeyAgreement.PrivateKey,
     let sharedData = shared.withUnsafeBytes { buffer in
         Data(bytes: buffer.baseAddress!, count: buffer.count)
     }
-    let sharedSecret = Data(Insecure.SHA1.hash(data: sharedData).prefix(16))
+    let sharedSecret = SHA1(data: sharedData).digest[0 ..< 16]
     return SymmetricKey(data: sharedSecret)
 }
 
@@ -342,7 +343,7 @@ class TeslaVehicle: NSObject {
     }
 
     private func localName() -> String {
-        let hash = Data(Insecure.SHA1.hash(data: vin.utf8Data).prefix(8)).hexString()
+        let hash = SHA1.hash(vin.utf8Data).prefix(8).hexString()
         return "S\(hash)C"
     }
 
@@ -521,7 +522,7 @@ class TeslaVehicle: NSObject {
         let metadata = Metadata()
         try metadata.addUInt8(tag: .signatureType, UInt8(Signatures_SignatureType.aesGcmResponse.rawValue))
         try metadata.addUInt8(tag: .domain, UInt8(response.fromDestination.domain.rawValue))
-        try metadata.add(tag: .personalization, vin.utf8Data)
+        try metadata.add(tag: .personalization, vin.utf8Data) // ?
         try metadata.addUInt32(tag: .counter, response.signatureData.aesGcmResponseData.counter)
         try metadata.addUInt32(tag: .flags, response.flags)
         var requestId = Data([UInt8(Signatures_SignatureType.aesGcmPersonalized.rawValue)])

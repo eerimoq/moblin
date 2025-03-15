@@ -1562,11 +1562,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         return cameraDevice != nil
     }
-    
-    func stopMoblinkStreamer() {
-        moblinkStreamer?.stop()
-        moblinkStreamer = nil
-    }
 
     func reloadMoblinkStreamer() {
         stopMoblinkStreamer()
@@ -1577,6 +1572,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             moblinkStreamer?.start(delegate: self)
         }
+    }
+
+    func stopMoblinkStreamer() {
+        moblinkStreamer?.stop()
+        moblinkStreamer = nil
     }
 
     func isMoblinkStreamerConfigured() -> Bool {
@@ -2202,7 +2202,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopCatPrinters()
             stopCyclingPowerDevices()
             stopHeartRateDevices()
-            stopRemoteControlAssistant()
         }
     }
 
@@ -7863,14 +7862,10 @@ extension Model {
     func isRemoteControlStreamerConnected() -> Bool {
         return remoteControlStreamer?.isConnected() ?? false
     }
-    
-    func stopRemoteControlAssistant() {
+
+    func reloadRemoteControlAssistant() {
         remoteControlAssistant?.stop()
         remoteControlAssistant = nil
-    }
-    
-    func reloadRemoteControlAssistant() {
-        stopRemoteControlAssistant()
         guard isRemoteControlAssistantConfigured() else {
             return
         }
