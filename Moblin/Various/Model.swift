@@ -1562,7 +1562,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         return cameraDevice != nil
     }
-
+    
     func stopMoblinkStreamer() {
         moblinkStreamer?.stop()
         moblinkStreamer = nil
@@ -7863,12 +7863,12 @@ extension Model {
     func isRemoteControlStreamerConnected() -> Bool {
         return remoteControlStreamer?.isConnected() ?? false
     }
-
+    
     func stopRemoteControlAssistant() {
         remoteControlAssistant?.stop()
         remoteControlAssistant = nil
     }
-
+    
     func reloadRemoteControlAssistant() {
         stopRemoteControlAssistant()
         guard isRemoteControlAssistantConfigured() else {
