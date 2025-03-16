@@ -101530,6 +101530,9 @@
         }
       }
     },
+    "Restart the gimbal to discover it." : {
+
+    },
     "Restarts the %@ source to hopefully fix audio and video issues." : {
       "localizations" : {
         "de" : {

@@ -98,6 +98,8 @@ struct DjiGimbalDeviceSettingsView: View {
                     HCenter {
                         Text(state())
                     }
+                } footer: {
+                    Text("Restart the gimbal to discover it.")
                 }
             }
         }

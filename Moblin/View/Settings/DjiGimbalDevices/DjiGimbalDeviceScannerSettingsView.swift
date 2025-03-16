@@ -30,6 +30,8 @@ struct DjiGimbalDeviceScannerSettingsView: View {
                         }
                     }
                 }
+            } footer: {
+                Text("Restart the gimbal to discover it.")
             }
         }
         .onAppear {

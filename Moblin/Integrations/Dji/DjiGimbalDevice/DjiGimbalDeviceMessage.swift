@@ -36,7 +36,7 @@ class DjiGimbalButtonsMessagePayload {
         let reader = ByteArray(data: data)
         do {
             _ = try reader.readBytes(4)
-            trigger = DjiGimbalTriggerButtonPress(rawValue: try reader.readUInt8() >> 4 & 0x7)
+            trigger = try DjiGimbalTriggerButtonPress(rawValue: reader.readUInt8() >> 4 & 0x7)
             switchScene = try reader.readUInt8().isBitSet(index: 5)
             record = try reader.readUInt8().isBitSet(index: 3)
             _ = try reader.readBytes(1)
