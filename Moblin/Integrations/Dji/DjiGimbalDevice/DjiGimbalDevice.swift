@@ -18,7 +18,7 @@ enum DjiGimbalDeviceState {
 
 protocol DjiGimbalDeviceDelegate: AnyObject {
     func djiGimbalDeviceStateChange(_ device: DjiGimbalDevice, state: DjiGimbalDeviceState)
-    func djiGimbalDeviceTriggerButtonPressed(_ device: DjiGimbalDevice)
+    func djiGimbalDeviceTriggerButtonPressed(_ device: DjiGimbalDevice, press: DjiGimbalTriggerButtonPress)
     func djiGimbalDeviceSwitchSceneButtonPressed(_ device: DjiGimbalDevice)
     func djiGimbalDeviceRecordButtonPressed(_ device: DjiGimbalDevice)
 }
@@ -162,8 +162,8 @@ extension DjiGimbalDevice: CBPeripheralDelegate {
             }
         } else if message.type == buttonsType {
             if let buttonsMessage = DjiGimbalButtonsMessagePayload(data: message.payload) {
-                if buttonsMessage.trigger {
-                    delegate?.djiGimbalDeviceTriggerButtonPressed(self)
+                if let trigger = buttonsMessage.trigger {
+                    delegate?.djiGimbalDeviceTriggerButtonPressed(self, press: trigger)
                 }
                 if buttonsMessage.switchScene {
                     delegate?.djiGimbalDeviceSwitchSceneButtonPressed(self)

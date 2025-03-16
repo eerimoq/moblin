@@ -10264,9 +10264,18 @@ extension Model: DjiGimbalDeviceDelegate {
         }
     }
 
-    func djiGimbalDeviceTriggerButtonPressed(_: DjiGimbalDevice) {
+    func djiGimbalDeviceTriggerButtonPressed(_: DjiGimbalDevice, press: DjiGimbalTriggerButtonPress) {
         DispatchQueue.main.async {
-            self.makeToast(title: "Gimbal trigger button pressed")
+            switch press {
+            case .single:
+                self.makeToast(title: "Gimbal trigger button single press")
+            case .double:
+                self.makeToast(title: "Gimbal trigger button double press")
+            case .triple:
+                self.makeToast(title: "Gimbal trigger button triple press")
+            case .long:
+                self.makeToast(title: "Gimbal trigger button long press")
+            }
         }
     }
 

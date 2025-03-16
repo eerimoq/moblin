@@ -20,8 +20,15 @@ class DjiGimbalZoomMessagePayload {
     }
 }
 
+enum DjiGimbalTriggerButtonPress: UInt8 {
+    case single = 1
+    case double = 2
+    case triple = 3
+    case long = 7
+}
+
 class DjiGimbalButtonsMessagePayload {
-    let trigger: Bool
+    let trigger: DjiGimbalTriggerButtonPress?
     let switchScene: Bool
     let record: Bool
 
@@ -29,7 +36,7 @@ class DjiGimbalButtonsMessagePayload {
         let reader = ByteArray(data: data)
         do {
             _ = try reader.readBytes(4)
-            trigger = try reader.readUInt8().isBitSet(index: 4)
+            trigger = DjiGimbalTriggerButtonPress(rawValue: try reader.readUInt8() >> 4 & 0x7)
             switchScene = try reader.readUInt8().isBitSet(index: 5)
             record = try reader.readUInt8().isBitSet(index: 3)
             _ = try reader.readBytes(1)
