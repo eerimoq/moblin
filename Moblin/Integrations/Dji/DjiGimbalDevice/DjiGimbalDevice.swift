@@ -115,7 +115,7 @@ extension DjiGimbalDevice: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
-        reset()
+        reconnect()
     }
 }
 
