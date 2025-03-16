@@ -14831,6 +14831,9 @@
         }
       }
     },
+    "a gimbal" : {
+
+    },
     "a key" : {
       "localizations" : {
         "de" : {
@@ -45534,6 +45537,12 @@
           }
         }
       }
+    },
+    "DJI gimbal" : {
+
+    },
+    "DJI gimbals" : {
+
     },
     "DNS lookup strategy" : {
       "localizations" : {

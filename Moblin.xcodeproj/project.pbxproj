@@ -15,6 +15,14 @@
 		030499682C404813003488F4 /* EffectUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030499672C404812003488F4 /* EffectUtils.swift */; };
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
 		0305D6B72D3449F9006EA5DE /* QuickButtonDjiDevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0305D6B62D3449F1006EA5DE /* QuickButtonDjiDevicesView.swift */; };
+		030621DC2D8605E3001EE50B /* DjiGimbalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621DB2D8605DF001EE50B /* DjiGimbalDevice.swift */; };
+		030621DE2D8605F2001EE50B /* DjiGimbalDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621DD2D8605ED001EE50B /* DjiGimbalDeviceModel.swift */; };
+		030621E02D8605FD001EE50B /* DjiGimbalDeviceScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621DF2D8605F9001EE50B /* DjiGimbalDeviceScanner.swift */; };
+		030621E22D86060E001EE50B /* DjiGimbalDeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621E12D860607001EE50B /* DjiGimbalDeviceMessage.swift */; };
+		030621E52D8608CC001EE50B /* DjiGimbalDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621E42D8608C3001EE50B /* DjiGimbalDeviceSettingsView.swift */; };
+		030621E72D8608DA001EE50B /* DjiGimbalDevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621E62D8608D0001EE50B /* DjiGimbalDevicesSettingsView.swift */; };
+		030621E92D8608E1001EE50B /* DjiGimbalDeviceScannerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621E82D8608DF001EE50B /* DjiGimbalDeviceScannerSettingsView.swift */; };
+		030621EC2D862989001EE50B /* DjiDeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030621EB2D862983001EE50B /* DjiDeviceMessage.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
 		03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
@@ -560,6 +568,14 @@
 		030499672C404812003488F4 /* EffectUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectUtils.swift; sourceTree = "<group>"; };
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
 		0305D6B62D3449F1006EA5DE /* QuickButtonDjiDevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonDjiDevicesView.swift; sourceTree = "<group>"; };
+		030621DB2D8605DF001EE50B /* DjiGimbalDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDevice.swift; sourceTree = "<group>"; };
+		030621DD2D8605ED001EE50B /* DjiGimbalDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDeviceModel.swift; sourceTree = "<group>"; };
+		030621DF2D8605F9001EE50B /* DjiGimbalDeviceScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDeviceScanner.swift; sourceTree = "<group>"; };
+		030621E12D860607001EE50B /* DjiGimbalDeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDeviceMessage.swift; sourceTree = "<group>"; };
+		030621E42D8608C3001EE50B /* DjiGimbalDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDeviceSettingsView.swift; sourceTree = "<group>"; };
+		030621E62D8608D0001EE50B /* DjiGimbalDevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDevicesSettingsView.swift; sourceTree = "<group>"; };
+		030621E82D8608DF001EE50B /* DjiGimbalDeviceScannerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiGimbalDeviceScannerSettingsView.swift; sourceTree = "<group>"; };
+		030621EB2D862983001EE50B /* DjiDeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceMessage.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
 		03085C0E2B487D950009DAB6 /* PixellateEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixellateEffect.swift; sourceTree = "<group>"; };
@@ -1142,6 +1158,37 @@
 				03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */,
 			);
 			path = GameControllers;
+			sourceTree = "<group>";
+		};
+		030621DA2D8605CD001EE50B /* DjiGimbalDevice */ = {
+			isa = PBXGroup;
+			children = (
+				030621DB2D8605DF001EE50B /* DjiGimbalDevice.swift */,
+				030621E12D860607001EE50B /* DjiGimbalDeviceMessage.swift */,
+				030621DD2D8605ED001EE50B /* DjiGimbalDeviceModel.swift */,
+				030621DF2D8605F9001EE50B /* DjiGimbalDeviceScanner.swift */,
+			);
+			path = DjiGimbalDevice;
+			sourceTree = "<group>";
+		};
+		030621E32D8608B3001EE50B /* DjiGimbalDevices */ = {
+			isa = PBXGroup;
+			children = (
+				030621E42D8608C3001EE50B /* DjiGimbalDeviceSettingsView.swift */,
+				030621E62D8608D0001EE50B /* DjiGimbalDevicesSettingsView.swift */,
+				030621E82D8608DF001EE50B /* DjiGimbalDeviceScannerSettingsView.swift */,
+			);
+			path = DjiGimbalDevices;
+			sourceTree = "<group>";
+		};
+		030621EA2D862956001EE50B /* Dji */ = {
+			isa = PBXGroup;
+			children = (
+				038C912C2C44693B003CAD5F /* DjiMessage.swift */,
+				038C912A2C44691F003CAD5F /* DjiDevice */,
+				030621DA2D8605CD001EE50B /* DjiGimbalDevice */,
+			);
+			path = Dji;
 			sourceTree = "<group>";
 		};
 		030A8B652BC2D36D00F149AF /* WebBrowser */ = {
@@ -2154,9 +2201,9 @@
 			isa = PBXGroup;
 			children = (
 				03F465E62C43DFF500630708 /* DjiDevice.swift */,
+				030621EB2D862983001EE50B /* DjiDeviceMessage.swift */,
 				03DC9DA82C4C3BB5005E2104 /* DjiDeviceModel.swift */,
 				45E3EAA92F1B2253BB2ED4FC /* DjiDeviceScanner.swift */,
-				038C912C2C44693B003CAD5F /* DjiMessage.swift */,
 			);
 			path = DjiDevice;
 			sourceTree = "<group>";
@@ -2377,6 +2424,7 @@
 				032BAEEF2C0C78F4005D5DA7 /* DeepLinkCreator */,
 				03B16A2B2B35D71500E5AB07 /* Display */,
 				03E3E38F2C431DD800932B00 /* DjiDevices */,
+				030621E32D8608B3001EE50B /* DjiGimbalDevices */,
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0386053F2D80096F00B9C3CE /* HeartRateDevices */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
@@ -2696,7 +2744,7 @@
 			children = (
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
-				038C912A2C44691F003CAD5F /* DjiDevice */,
+				030621EA2D862956001EE50B /* Dji */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				0386053A2D8006BE00B9C3CE /* HeartRateDevice */,
 				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
@@ -3229,6 +3277,7 @@
 				03F655F22D16DFD60054D73E /* BitArray.swift in Sources */,
 				03828C2C2C3AEF6D00F5A8AC /* MapEffect.swift in Sources */,
 				033BB53D2D50A45D0071662A /* CMFormatDescription+Extension.swift in Sources */,
+				030621DE2D8605F2001EE50B /* DjiGimbalDeviceModel.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				033A46EF2CD881AE00119CE3 /* CMVideoDimensions+Extension.swift in Sources */,
 				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
@@ -3292,6 +3341,7 @@
 				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
+				030621EC2D862989001EE50B /* DjiDeviceMessage.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,
 				03BC90AC2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift in Sources */,
 				038E7BE02C32F381008994BA /* MediaPlayersSettingsView.swift in Sources */,
@@ -3301,6 +3351,7 @@
 				03C3560F2CFC90EC00B8B29F /* KeyboardKeySettingsView.swift in Sources */,
 				038605302D7DF6A300B9C3CE /* CyclingPowerDevice.swift in Sources */,
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
+				030621E92D8608E1001EE50B /* DjiGimbalDeviceScannerSettingsView.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* Amf0Serializer.swift in Sources */,
 				031F41442C6FB3B900790EEC /* AboutAttributionsSettingsView.swift in Sources */,
 				03DC9DAF2C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */,
@@ -3311,6 +3362,7 @@
 				037FE0302C594CE40067B5AC /* AlertsEffect.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03C3572F2D041A2A00B8B29F /* TwitchMultiTrack.swift in Sources */,
+				030621E52D8608CC001EE50B /* DjiGimbalDeviceSettingsView.swift in Sources */,
 				03C357542D081D9000B8B29F /* RtmpAggregateMessage.swift in Sources */,
 				038605372D7DF97300B9C3CE /* CyclingPowerDeviceSettingsView.swift in Sources */,
 				03C357562D081D9100B8B29F /* RtmpUserControlMessage.swift in Sources */,
@@ -3364,6 +3416,7 @@
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
 				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
 				038605432D80099300B9C3CE /* HeartRateDevicesSettingsView.swift in Sources */,
+				030621E72D8608DA001EE50B /* DjiGimbalDevicesSettingsView.swift in Sources */,
 				0339F9172CE1C78A00F8D6FC /* AVAudioPCMBuffer+Extension.swift in Sources */,
 				03762FE12D780DE5003BD2E2 /* ExternalDisplayView.swift in Sources */,
 				0359F8E22BD3DA61005BFDA8 /* MpegTsProgram.swift in Sources */,
@@ -3458,6 +3511,7 @@
 				0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
+				030621E02D8605FD001EE50B /* DjiGimbalDeviceScanner.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
@@ -3496,6 +3550,8 @@
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
 				0359F8EC2BD3DA61005BFDA8 /* RtmpConnection.swift in Sources */,
 				03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */,
+				030621DC2D8605E3001EE50B /* DjiGimbalDevice.swift in Sources */,
+				030621E22D86060E001EE50B /* DjiGimbalDeviceMessage.swift in Sources */,
 				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				031E9FC52C5B3EFC009FF4D8 /* TwitchEventSub.swift in Sources */,

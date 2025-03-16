@@ -190,12 +190,10 @@ extension DjiDevice: CBCentralManagerDelegate {
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        logger.debug("dji-device: Connected")
         peripheral.discoverServices(nil)
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
-        logger.debug("dji-device: Disconnected")
         reset()
     }
 }

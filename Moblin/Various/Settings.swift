@@ -2236,6 +2236,29 @@ class SettingsDjiDevices: Codable {
     var devices: [SettingsDjiDevice] = []
 }
 
+enum SettingsDjiGimbalDeviceModel: String, Codable {
+    case osmoMobile7P
+    case unknown
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsDjiGimbalDeviceModel(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .unknown
+    }
+}
+
+class SettingsDjiGimbalDevice: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var enabled: Bool = false
+    var bluetoothPeripheralName: String?
+    var bluetoothPeripheralId: UUID?
+    var model: SettingsDjiGimbalDeviceModel = .unknown
+}
+
+class SettingsDjiGimbalDevices: Codable {
+    var devices: [SettingsDjiGimbalDevice] = []
+}
+
 class SettingsCatPrinter: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
@@ -2878,6 +2901,7 @@ class Database: Codable {
     var externalDisplayContent: SettingsExternalDisplayContent? = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
     var heartRateDevices: SettingsHeartRateDevices? = .init()
+    var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -4876,6 +4900,10 @@ final class Settings {
         }
         if realDatabase.show.heartRateDevice == nil {
             realDatabase.show.heartRateDevice = true
+            store()
+        }
+        if realDatabase.djiGimbalDevices == nil {
+            realDatabase.djiGimbalDevices = .init()
             store()
         }
     }

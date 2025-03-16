@@ -133,6 +133,11 @@ struct DebugSettingsView: View {
                     model.database.debug.srtlaBatchSend = value
                     model.setSrtlaBatchSend()
                 }))
+                NavigationLink {
+                    DjiGimbalDevicesSettingsView()
+                } label: {
+                    IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI gimbals"))
+                }
             } header: {
                 Text("Experimental")
             }
