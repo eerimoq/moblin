@@ -243,6 +243,7 @@ private struct TextSelectionView: View {
                     Text("{checkbox} - Show a checkbox")
                     Text("{rating} - Show a 0-5 rating")
                     Text("{subtitles} - Show subtitles")
+                    Text("{lapTimes} - Show lap times")
                     Text("{muted} - Show muted")
                     Text("")
                     Text("Location (if Settings -> Location is enabled)").bold()

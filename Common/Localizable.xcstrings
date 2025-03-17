@@ -5171,6 +5171,9 @@
         }
       }
     },
+    "{lapTimes} - Show lap times" : {
+
+    },
     "{muted} - Show muted" : {
       "localizations" : {
         "de" : {
