@@ -177,6 +177,82 @@ struct RatingWidgetView: View {
     }
 }
 
+struct LapTimesWidgetView: View {
+    private let name: String
+    private let lapTimes: SettingsWidgetTextLapTimes
+    private let index: Int
+    private let textEffect: TextEffect
+    private var indented: Bool
+
+    init(
+        name: String,
+        lapTimes: SettingsWidgetTextLapTimes,
+        index: Int,
+        textEffect: TextEffect,
+        indented: Bool
+    ) {
+        self.name = name
+        self.lapTimes = lapTimes
+        self.index = index
+        self.textEffect = textEffect
+        self.indented = indented
+    }
+
+    private func updateTextEffect() {
+        textEffect.setLapTimes(index: index, lapTimes: lapTimes.lapTimes)
+    }
+
+    var body: some View {
+        HStack {
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
+            Text(name)
+            Spacer()
+            Button(action: {
+                lapTimes.currentLapStartTime = nil
+                lapTimes.lapTimes = []
+                updateTextEffect()
+            }, label: {
+                Image(systemName: "trash")
+                    .font(.title)
+            })
+            .padding([.trailing], 10)
+            Button(action: {
+                let now = Date().timeIntervalSince1970
+                let lastIndex = lapTimes.lapTimes.endIndex - 1
+                if lastIndex >= 0, let currentLapStartTime = lapTimes.currentLapStartTime {
+                    lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
+                }
+                lapTimes.currentLapStartTime = now
+                lapTimes.lapTimes.append(0)
+                updateTextEffect()
+            }, label: {
+                Image(systemName: "stopwatch")
+                    .font(.title)
+            })
+            .padding([.trailing], 10)
+            Button(action: {
+                if let currentLapStartTime = lapTimes.currentLapStartTime {
+                    let lastIndex = lapTimes.lapTimes.endIndex - 1
+                    if lastIndex >= 0 {
+                        let now = Date().timeIntervalSince1970
+                        lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
+                    }
+                    lapTimes.currentLapStartTime = nil
+                    lapTimes.lapTimes.append(.infinity)
+                }
+                updateTextEffect()
+            }, label: {
+                Image(systemName: "flag.checkered")
+                    .font(.title)
+            })
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+}
+
 struct QuickButtonWidgetsView: View {
     @EnvironmentObject var model: Model
 
@@ -228,6 +304,17 @@ struct QuickButtonWidgetsView: View {
                                     RatingWidgetView(
                                         name: "Rating \(index + 1)",
                                         rating: rating,
+                                        index: index,
+                                        textEffect: textEffect,
+                                        indented: true
+                                    )
+                                }
+                                ForEach(widget.text.lapTimes!) { lapTimes in
+                                    let index = widget.text.lapTimes!
+                                        .firstIndex(where: { $0 === lapTimes }) ?? 0
+                                    LapTimesWidgetView(
+                                        name: "Lap times \(index + 1)",
+                                        lapTimes: lapTimes,
                                         index: index,
                                         textEffect: textEffect,
                                         indented: true

@@ -954,6 +954,12 @@ class SettingsWidgetTextRating: Codable, Identifiable {
     var rating: Int = 0
 }
 
+class SettingsWidgetTextLapTimes: Codable, Identifiable {
+    var id: UUID = .init()
+    var currentLapStartTime: Double?
+    var lapTimes: [Double] = []
+}
+
 class SettingsWidgetText: Codable {
     var formatString: String = "{shortTime}"
     var backgroundColor: RgbColor? = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
@@ -973,6 +979,7 @@ class SettingsWidgetText: Codable {
     var needsSubtitles: Bool? = false
     var checkboxes: [SettingsWidgetTextCheckbox]? = []
     var ratings: [SettingsWidgetTextRating]? = []
+    var lapTimes: [SettingsWidgetTextLapTimes]? = []
 }
 
 class SettingsWidgetCrop: Codable {
@@ -4904,6 +4911,10 @@ final class Settings {
         }
         if realDatabase.djiGimbalDevices == nil {
             realDatabase.djiGimbalDevices = .init()
+            store()
+        }
+        for widget in database.widgets where widget.text.lapTimes == nil {
+            widget.text.lapTimes = []
             store()
         }
     }

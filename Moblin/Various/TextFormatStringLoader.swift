@@ -34,6 +34,7 @@ enum TextFormatPart {
     case teslaMedia
     case cyclingPower
     case cyclingCadence
+    case lapTimes
 }
 
 class TextFormatLoader {
@@ -112,6 +113,8 @@ class TextFormatLoader {
                     loadItem(part: .cyclingPower, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{cyclingcadence}") {
                     loadItem(part: .cyclingCadence, offsetBy: 16)
+                } else if formatFromIndex.hasPrefix("{laptimes}") {
+                    loadItem(part: .lapTimes, offsetBy: 10)
                 } else {
                     index = format.index(after: index)
                 }

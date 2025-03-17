@@ -142,6 +142,24 @@ private struct TextSelectionView: View {
         textEffect?.setRatings(ratings: widget.text.ratings!.map { $0.rating })
     }
 
+    private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
+        let numberOfLapTimes = parts.filter { value in
+            switch value {
+            case .lapTimes:
+                return true
+            default:
+                return false
+            }
+        }.count
+        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes!.count {
+            widget.text.lapTimes!.append(.init())
+        }
+        while widget.text.lapTimes!.count > numberOfLapTimes {
+            widget.text.lapTimes!.removeLast()
+        }
+        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+    }
+
     private func updateNeedsWeather(_ parts: [TextFormatPart]) {
         widget.text.needsWeather = !parts.filter { value in
             switch value {
@@ -192,6 +210,7 @@ private struct TextSelectionView: View {
         updateTimers(textEffect, parts)
         updateCheckboxes(textEffect, parts)
         updateRatings(textEffect, parts)
+        updateLapTimes(textEffect, parts)
         updateNeedsWeather(parts)
         updateNeedsGeography(parts)
         updateNeedsSubtitles(parts)
@@ -335,6 +354,24 @@ struct WidgetTextSettingsView: View {
                     }
                 } header: {
                     Text("Ratings")
+                }
+            }
+        }
+        if !widget.text.lapTimes!.isEmpty {
+            if let textEffect = model.getTextEffect(id: widget.id) {
+                Section {
+                    ForEach(widget.text.lapTimes!) { lapTimes in
+                        let index = widget.text.lapTimes!.firstIndex(where: { $0 === lapTimes }) ?? 0
+                        LapTimesWidgetView(
+                            name: "Lap times \(index + 1)",
+                            lapTimes: lapTimes,
+                            index: index,
+                            textEffect: textEffect,
+                            indented: false
+                        )
+                    }
+                } header: {
+                    Text("Lap times")
                 }
             }
         }

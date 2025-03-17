@@ -97,6 +97,7 @@ final class TextEffect: VideoEffect {
     private var ratings: [Int]
     private let temperatureFormatter = MeasurementFormatter()
     private var subtitlesLines: [String] = []
+    private var lapTimes: [[Double]] = []
 
     init(
         format: String,
@@ -111,7 +112,8 @@ final class TextEffect: VideoEffect {
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
         checkboxes: [Bool],
-        ratings: [Int]
+        ratings: [Int],
+        lapTimes: [[Double]]
     ) {
         formatParts = loadTextFormat(format: format)
         self.backgroundColor = backgroundColor
@@ -128,6 +130,7 @@ final class TextEffect: VideoEffect {
         self.timersEndTime = timersEndTime
         self.checkboxes = checkboxes
         self.ratings = ratings
+        self.lapTimes = lapTimes
         temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
     }
@@ -224,6 +227,19 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
+    func setLapTimes(lapTimes: [[Double]]) {
+        self.lapTimes = lapTimes
+        forceImageUpdate()
+    }
+
+    func setLapTimes(index: Int, lapTimes: [Double]) {
+        guard index < self.lapTimes.count else {
+            return
+        }
+        self.lapTimes[index] = lapTimes
+        forceImageUpdate()
+    }
+
     func setPosition(x: Double, y: Double) {
         textQueue.sync {
             self.x = x
@@ -304,6 +320,7 @@ final class TextEffect: VideoEffect {
         var timerIndex = 0
         var checkboxIndex = 0
         var ratingIndex = 0
+        var lapTimesIndex = 0
         var lines: [Line] = []
         var parts: [Part] = []
         var lineId = 0
@@ -465,6 +482,34 @@ final class TextEffect: VideoEffect {
                 parts.append(.init(id: partId, data: .text(stats.cyclingPower)))
             case .cyclingCadence:
                 parts.append(.init(id: partId, data: .text(stats.cyclingCadence)))
+            case .lapTimes:
+                if lapTimesIndex < lapTimes.count {
+                    var lap = 1
+                    for time in lapTimes[lapTimesIndex] {
+                        if !parts.isEmpty {
+                            lines.append(.init(id: lineId, parts: parts))
+                            lineId += 1
+                            parts = []
+                        }
+                        let text: String
+                        if time.isInfinite {
+                            text = "🏁 Finished 🏁"
+                            lap = 1
+                        } else {
+                            let time = ContinuousClock.Duration(secondsComponent: Int64(time), attosecondsComponent: 0)
+                            text = "Lap \(lap) \(time.formatWithSeconds())"
+                            lap += 1
+                        }
+                        parts.append(.init(id: partId, data: .text(text)))
+                        partId += 1
+                    }
+                    if !parts.isEmpty {
+                        lines.append(.init(id: lineId, parts: parts))
+                        lineId += 1
+                        parts = []
+                    }
+                }
+                lapTimesIndex += 1
             }
             partId += 1
         }

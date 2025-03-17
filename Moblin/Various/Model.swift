@@ -3619,10 +3619,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return format(distance: database.location!.distance!)
     }
 
+    private func updateTextWidgetsLapTimes(now: Date) {
+        for widget in database.widgets where widget.type == .text {
+            guard !widget.text.lapTimes!.isEmpty else {
+                continue
+            }
+            let now = now.timeIntervalSince1970
+            for lapTimes in widget.text.lapTimes! {
+                let lastIndex = lapTimes.lapTimes.endIndex - 1
+                guard lastIndex >= 0, let currentLapStartTime = lapTimes.currentLapStartTime else {
+                    continue
+                }
+                lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
+            }
+            getTextEffect(id: widget.id)?.setLapTimes(lapTimes: widget.text.lapTimes!.map { $0.lapTimes })
+        }
+    }
+
     private func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
         guard !textEffects.isEmpty else {
             return
         }
+        updateTextWidgetsLapTimes(now: now)
         let location = locationManager.getLatestKnownLocation()
         let weather = weatherManager.getLatestWeather()
         let placemark = geographyManager.getLatestPlacemark()
@@ -3803,7 +3821,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
                 },
                 checkboxes: widget.text.checkboxes!.map { $0.checked },
-                ratings: widget.text.ratings!.map { $0.rating }
+                ratings: widget.text.ratings!.map { $0.rating },
+                lapTimes: widget.text.lapTimes!.map { $0.lapTimes }
             )
         }
         for browserEffect in browserEffects.values {
