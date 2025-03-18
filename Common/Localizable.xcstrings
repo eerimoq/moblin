@@ -3573,8 +3573,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{Durchschnittspeed} - Durchschnittliche Geschwindigkeit zeigen"
+            "state" : "translated",
+            "value" : "{averageSpeed} - Durchschnittliche Geschwindigkeit zeigen"
           }
         },
         "el" : {
@@ -4111,8 +4111,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{cyclingCadence} - Radsportkadenz"
+            "state" : "translated",
+            "value" : "{cyclingCadence} - Trittfrequenz"
           }
         },
         "el" : {
@@ -4241,8 +4241,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{cyclingPower} - Radsportleistung"
+            "state" : "translated",
+            "value" : "{cyclingPower} - Fahrleistung"
           }
         },
         "el" : {
@@ -4915,8 +4915,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{heartRate:My device} - Zeigen Sie die Herzfrequenz für Herzfrequenz -Geräte mit dem Namen \"My Device\""
+            "state" : "translated",
+            "value" : "{heartRate:My device} - Zeige die Herzfrequenz für das Herzfrequenzmessgerät mit dem Namen \"My Device\""
           }
         },
         "el" : {
@@ -5045,7 +5045,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "{heartRate} - Apple Watch Heart Frequenz zeigen"
           }
         },
@@ -5175,8 +5175,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{lapTimes} - Zeigen Sie Rundenzeiten"
+            "state" : "translated",
+            "value" : "{lapTimes} - Zeige Rundenzeiten"
           }
         },
         "el" : {
@@ -5707,8 +5707,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "{Slope} - Slope anzeigen"
+            "state" : "translated",
+            "value" : "{slope} - Slope anzeigen"
           }
         },
         "el" : {
@@ -14965,7 +14965,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ein Gimbal"
           }
         },
@@ -17815,8 +17815,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fügen Sie {heartRate:%@} zu einem Text -Widget hinzu, um die Herzfrequenz im Stream anzuzeigen."
+            "state" : "translated",
+            "value" : "Füge {heartRate:%@} zu einem Textwidget hinzu, um die Herzfrequenz im Stream anzuzeigen."
           }
         },
         "el" : {
@@ -41471,7 +41471,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Radfahren (erfordert ein kompatibles Fahrrad)"
           }
         },
@@ -41601,8 +41601,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Radsportgerät"
+            "state" : "translated",
+            "value" : "Radsport-Leistungsmessgerät"
           }
         },
         "el" : {
@@ -41731,8 +41731,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Radsportgeräte"
+            "state" : "translated",
+            "value" : "Radsport-Leistungsmessgeräte"
           }
         },
         "el" : {
@@ -45799,7 +45799,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "DJI Gimbal"
           }
         },
@@ -45929,7 +45929,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "DJI Gimbals"
           }
         },
@@ -64447,8 +64447,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Herzfrequenzvorrichtung"
+            "state" : "translated",
+            "value" : "Herzfrequenzmessgerät"
           }
         },
         "el" : {
@@ -64577,8 +64577,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Herzfrequenzgeräte"
+            "state" : "translated",
+            "value" : "Herzfrequenzmessgeräte"
           }
         },
         "el" : {
@@ -66055,7 +66055,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Horizontal"
           }
         },
@@ -70123,7 +70123,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rundenzeiten"
           }
         },
@@ -101365,7 +101365,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Standortdaten zurücksetzen"
           }
         },
@@ -102175,8 +102175,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Starten Sie das Gimbal neu, um es zu entdecken."
+            "state" : "translated",
+            "value" : "Starte das Gimbal neu, um es zu finden."
           }
         },
         "el" : {
@@ -130183,8 +130183,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spitze"
+            "state" : "translated",
+            "value" : "Oben"
           }
         },
         "el" : {
@@ -139147,7 +139147,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vertikal"
           }
         },
