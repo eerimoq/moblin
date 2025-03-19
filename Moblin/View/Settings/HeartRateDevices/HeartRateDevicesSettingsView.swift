@@ -1,7 +1,6 @@
 import SwiftUI
 
 private struct HeartRateDeviceSettingsWrapperView: View {
-    @EnvironmentObject var model: Model
     var device: SettingsHeartRateDevice
     @State var name: String
 

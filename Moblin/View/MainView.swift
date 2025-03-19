@@ -206,7 +206,6 @@ struct MainView: View {
     }
 
     var body: some View {
-        // let _ = Self._printChanges()
         let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
                 VStack(spacing: 0) {

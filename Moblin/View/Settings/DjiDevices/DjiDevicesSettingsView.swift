@@ -24,7 +24,6 @@ struct DjiDevicesSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        let _ = Self._printChanges()
         Form {
             Section {
                 HCenter {
