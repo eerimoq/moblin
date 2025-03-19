@@ -87,7 +87,14 @@ extension DjiGimbalDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: nil)
+            if let peripheral = centralManager?
+                .retrieveConnectedPeripherals(withServices: [serviceId])
+                .first(where: { $0.identifier == deviceId })
+            {
+                connectToDevice(peripheral: peripheral)
+            } else {
+                centralManager?.scanForPeripherals(withServices: nil)
+            }
         default:
             break
         }
@@ -102,9 +109,13 @@ extension DjiGimbalDevice: CBCentralManagerDelegate {
             return
         }
         central.stopScan()
+        connectToDevice(peripheral: peripheral)
+    }
+
+    private func connectToDevice(peripheral: CBPeripheral) {
         self.peripheral = peripheral
         peripheral.delegate = self
-        central.connect(peripheral, options: nil)
+        centralManager?.connect(peripheral, options: nil)
         setState(state: .connecting)
     }
 
