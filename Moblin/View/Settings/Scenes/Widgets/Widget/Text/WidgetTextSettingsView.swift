@@ -294,11 +294,15 @@ private struct TextSelectionView: View {
                         text: $value
                     )
                 }
-                FormatView(
-                    title: "{heartRate:My device}",
-                    description: String(localized: "Show heart rate for heart rate device called \"My device\""),
-                    text: $value
-                )
+                ForEach(model.database.heartRateDevices!.devices) { device in
+                    FormatView(
+                        title: "{heartRate:\(device.name)}",
+                        description: String(
+                            localized: "Show heart rate for heart rate device called \"\(device.name)\""
+                        ),
+                        text: $value
+                    )
+                }
             } header: {
                 Text("Workout")
             }

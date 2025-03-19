@@ -109207,132 +109207,132 @@
         }
       }
     },
-    "Show heart rate for heart rate device called \"My device\"" : {
+    "Show heart rate for heart rate device called \"%@\"" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeige die Herzfrequenz für das Herzfrequenzmessgerät mit dem Namen \"My Device\""
+            "value" : "Zeige die Herzfrequenz für das Herzfrequenzmessgerät mit dem Namen \"%@\""
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Εμφάνιση καρδιακού ρυθμού για συσκευή καρδιακού ρυθμού που ονομάζεται \"Η συσκευή μου\""
+            "value" : "Εμφάνιση καρδιακού ρυθμού για συσκευή καρδιακού ρυθμού που ονομάζεται \"%@\""
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Muestre la frecuencia cardíaca para el dispositivo de frecuencia cardíaca llamada \"mi dispositivo\""
+            "value" : "Muestre la frecuencia cardíaca para el dispositivo de frecuencia cardíaca llamada \"%@\""
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Näytä syke sykelle \"My Device\""
+            "value" : "Näytä syke sykelle \"%@\""
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Affiche la fréquence cardiaque pour un appareil de fréquence cardiaque appelée \"Mon appareil\""
+            "value" : "Affiche la fréquence cardiaque pour un appareil de fréquence cardiaque appelée \"%@\""
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "\"माई डिवाइस\" नामक हार्ट रेट डिवाइस के लिए हार्ट रेट दिखाएं"
+            "value" : "\"%@\" नामक हार्ट रेट डिवाइस के लिए हार्ट रेट दिखाएं"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Tampilkan detak jantung untuk perangkat detak jantung yang disebut \"Perangkat Saya\""
+            "value" : "Tampilkan detak jantung untuk perangkat detak jantung yang disebut \"%@\""
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Mostra frequenza cardiaca per il dispositivo di frequenza cardiaca chiamata \"My Device\""
+            "value" : "Mostra frequenza cardiaca per il dispositivo di frequenza cardiaca chiamata \"%@\""
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "「私のデバイス」と呼ばれる心拍数デバイスの心拍数を表示"
+            "value" : "「私のデバイス」と呼ばれる心拍数デバイスの心拍数を表示%@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "\"내 장치\"라는 심박수 장치의 심박수 표시"
+            "value" : "\"%@\"라는 심박수 장치의 심박수 표시"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Toon hartslag voor hartslagapparaat genaamd \"My Device\""
+            "value" : "Toon hartslag voor hartslagapparaat genaamd \"%@\""
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Pokaż tętno dla urządzenia tętna o nazwie „moje urządzenie”"
+            "value" : "Pokaż tętno dla urządzenia tętna o nazwie „%@”"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"meu dispositivo\""
+            "value" : "mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"%@\""
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"meu dispositivo\""
+            "value" : "mostre freqüência cardíaca para o dispositivo de freqüência cardíaca chamado \"%@\""
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "показать частоту сердечных сокращений для устройства пульса, называемого «Мое устройство»"
+            "value" : "показать частоту сердечных сокращений для устройства пульса, называемого «%@»"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visa puls för pulsenhet som kallas \"My Device\""
+            "value" : "Visa puls för pulsenhet som kallas \"%@\""
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "\"Cihazım\" adlı kalp atış hızı cihazı için kalp atış hızını göster"
+            "value" : "\"%@\" adlı kalp atış hızı cihazı için kalp atış hızını göster"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "показати серцевий ритм для серцевих скорочень під назвою \"мій пристрій\""
+            "value" : "показати серцевий ритм для серцевих скорочень під назвою \"%@\""
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Hiển thị nhịp tim cho thiết bị nhịp tim được gọi là \"thiết bị của tôi\""
+            "value" : "Hiển thị nhịp tim cho thiết bị nhịp tim được gọi là \"%@\""
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "显示为“我的设备”的心率设备的心率"
+            "value" : "显示为“我的设备”的心率设备的心率%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "顯示為“我的設備”的心率設備的心率"
+            "value" : "顯示為“我的設備”的心率設備的心率%@"
           }
         }
       }
