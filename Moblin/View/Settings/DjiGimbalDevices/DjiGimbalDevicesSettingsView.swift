@@ -1,5 +1,25 @@
 import SwiftUI
 
+private struct DjiGimbalDeviceSettingsWrapperView: View {
+    @EnvironmentObject var model: Model
+    var device: SettingsDjiGimbalDevice
+    @State var name: String
+
+    var body: some View {
+        NavigationLink {
+            DjiGimbalDeviceSettingsView(device: device, name: $name)
+        } label: {
+            HStack {
+                DraggableItemPrefixView()
+                Text(name)
+                Spacer()
+                Text(formatDjiGimbalDeviceState(state: model.getDjiGimbalDeviceState(device: device)))
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+}
+
 struct DjiGimbalDevicesSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -16,17 +36,7 @@ struct DjiGimbalDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.djiGimbalDevices!.devices) { device in
-                        NavigationLink {
-                            DjiGimbalDeviceSettingsView(device: device)
-                        } label: {
-                            HStack {
-                                DraggableItemPrefixView()
-                                Text(device.name)
-                                Spacer()
-                                Text(formatDjiGimbalDeviceState(state: model.getDjiGimbalDeviceState(device: device)))
-                                    .foregroundColor(.gray)
-                            }
-                        }
+                        DjiGimbalDeviceSettingsWrapperView(device: device, name: device.name)
                     }
                     .onMove(perform: { froms, to in
                         model.database.djiGimbalDevices!.devices.move(fromOffsets: froms, toOffset: to)

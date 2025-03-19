@@ -1,5 +1,18 @@
 import SwiftUI
 
+private struct CyclingPowerDeviceSettingsWrapperView: View {
+    var device: SettingsCyclingPowerDevice
+    @State var name: String
+
+    var body: some View {
+        NavigationLink {
+            CyclingPowerDeviceSettingsView(device: device, name: $name)
+        } label: {
+            Text(name)
+        }
+    }
+}
+
 struct CyclingPowerDevicesSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -16,11 +29,7 @@ struct CyclingPowerDevicesSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.cyclingPowerDevices!.devices) { device in
-                        NavigationLink {
-                            CyclingPowerDeviceSettingsView(device: device)
-                        } label: {
-                            Text(device.name)
-                        }
+                        CyclingPowerDeviceSettingsWrapperView(device: device, name: device.name)
                     }
                     .onDelete(perform: { offsets in
                         model.database.cyclingPowerDevices!.devices.remove(atOffsets: offsets)

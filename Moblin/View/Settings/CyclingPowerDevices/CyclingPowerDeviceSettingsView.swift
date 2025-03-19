@@ -18,6 +18,7 @@ struct CyclingPowerDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = cyclingPowerScanner
     var device: SettingsCyclingPowerDevice
+    @Binding var name: String
 
     func state() -> String {
         return formatCyclingPowerDeviceState(state: model.cyclingPowerDeviceState)
@@ -45,6 +46,7 @@ struct CyclingPowerDeviceSettingsView: View {
         Form {
             Section {
                 TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
+                    self.name = value
                     device.name = value
                 })
             }

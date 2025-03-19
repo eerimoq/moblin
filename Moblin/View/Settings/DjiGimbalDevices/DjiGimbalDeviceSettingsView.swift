@@ -58,6 +58,7 @@ private struct DjiGimbalDeviceSelectDeviceSettingsView: View {
 struct DjiGimbalDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     var device: SettingsDjiGimbalDevice
+    @Binding var name: String
 
     func state() -> String {
         return formatDjiGimbalDeviceState(state: model.djiGimbalDeviceStreamingState)
@@ -74,6 +75,7 @@ struct DjiGimbalDeviceSettingsView: View {
         Form {
             Section {
                 TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
+                    name = value
                     device.name = value
                 })
             }

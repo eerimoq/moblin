@@ -23,6 +23,7 @@ private let suggestionTravel =
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
+private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
 
 private let suggestions = createSuggestions()
 
@@ -49,6 +50,7 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 12, name: String(localized: "Debug"), text: suggestionDebug),
         Suggestion(id: 13, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
         Suggestion(id: 14, name: String(localized: "Tesla"), text: suggestionTesla),
+        Suggestion(id: 15, name: String(localized: "Racing"), text: suggestionRacing),
     ]
     return suggestions
 }

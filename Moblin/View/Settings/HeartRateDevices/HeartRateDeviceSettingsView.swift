@@ -18,6 +18,7 @@ struct HeartRateDeviceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject private var scanner = heartRateScanner
     var device: SettingsHeartRateDevice
+    @Binding var name: String
 
     func state() -> String {
         return formatHeartRateDeviceState(state: model.heartRateDeviceState)
@@ -45,6 +46,7 @@ struct HeartRateDeviceSettingsView: View {
         Form {
             Section {
                 TextEditNavigationView(title: "Name", value: device.name, onSubmit: { value in
+                    name = value
                     device.name = value
                 })
             } footer: {
