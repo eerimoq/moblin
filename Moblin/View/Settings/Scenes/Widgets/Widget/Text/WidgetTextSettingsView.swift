@@ -81,6 +81,26 @@ private struct SuggestionsView: View {
     }
 }
 
+private struct FormatView: View {
+    @EnvironmentObject var model: Model
+    let title: String
+    let description: String
+    @Binding var text: String
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                text += title
+                model.makeToast(title: "Appended \(title) to widget text")
+            } label: {
+                Text(title)
+                    .font(.title3)
+            }
+            Text(description)
+        }
+    }
+}
+
 private struct TextSelectionView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
@@ -233,49 +253,97 @@ private struct TextSelectionView: View {
                 } label: {
                     Text("Suggestions")
                 }
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("")
-                    Text("General").bold()
-                    Text("{time} - Show time as HH:MM:SS")
-                    Text("{shortTime} - Show time as HH:MM")
-                    Text("{date} - Show date")
-                    Text("{fullDate} - Show full date")
-                    Text("{timer} - Show a timer")
-                    Text("{checkbox} - Show a checkbox")
-                    Text("{rating} - Show a 0-5 rating")
-                    Text("{subtitles} - Show subtitles")
-                    Text("{lapTimes} - Show lap times")
-                    Text("{muted} - Show muted")
-                    Text("")
-                    Text("Location (if Settings -> Location is enabled)").bold()
-                    Text("{speed} - Show speed")
-                    Text("{averageSpeed} - Show average speed")
-                    Text("{altitude} - Show altitude")
-                    Text("{distance} - Show distance")
-                    Text("{slope} - Show slope")
-                    Text("")
-                    Text("Weather (if Settings -> Location is enabled)").bold()
-                    Text("{conditions} - Show conditions")
-                    Text("{temperature} - Show temperature")
-                    Text("")
-                    Text("Workout").bold()
-                    if isPhone() {
-                        Text("{heartRate} - Show Apple Watch heart rate")
-                    }
-                    Text("{heartRate:My device} - Show heart rate for heart rate device called \"My device\"")
-                    Text("")
-                    Text("Tesla (requires a Tesla)").bold()
-                    Text("{teslaBatteryLevel} - Tesla battery level")
-                    Text("")
-                    Text("Cycling (requires a compatible bike)").bold()
-                    Text("{cyclingPower} - Cycling power")
-                    Text("{cyclingCadence} - Cycling cadence")
-                    Text("")
-                    Text("Debug").bold()
-                    Text("{bitrateAndTotal} - Show bitrate and total number of bytes sent")
-                    Text("{debugOverlay} - Show debug overlay (if enabled)")
+            }
+            Section {
+                Text("Tap on items below to append them to the widget text.")
+            }
+            Section {
+                FormatView(title: "{time}", description: String(localized: "Show time as HH:MM:SS"), text: $value)
+                FormatView(title: "{shortTime}", description: String(localized: "Show time as HH:MM"), text: $value)
+                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
+                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
+                FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
+                FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
+                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
+                FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
+            } header: {
+                Text("General")
+            }
+            Section {
+                FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                FormatView(title: "{averageSpeed}", description: String(localized: "Show average speed"), text: $value)
+                FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
+                FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
+                FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+            } header: {
+                Text("Location (if Settings -> Location is enabled)")
+            }
+            Section {
+                FormatView(title: "{conditions}", description: String(localized: "Show conditions"), text: $value)
+                FormatView(title: "{temperature}", description: String(localized: "Show temperature"), text: $value)
+            } header: {
+                Text("Weather (if Settings -> Location is enabled)")
+            }
+            Section {
+                if isPhone() {
+                    FormatView(
+                        title: "{heartRate}",
+                        description: String(localized: "Show Apple Watch heart rate"),
+                        text: $value
+                    )
                 }
+                FormatView(
+                    title: "{heartRate:My device}",
+                    description: String(localized: "Show heart rate for heart rate device called \"My device\""),
+                    text: $value
+                )
+            } header: {
+                Text("Workout")
+            }
+            Section {
+                FormatView(
+                    title: "{teslaBatteryLevel}",
+                    description: String(localized: "Show Tesla battery level"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{teslaDrive}",
+                    description: String(localized: "Show Tesla drive information"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{teslaMedia}",
+                    description: String(localized: "Show Tesla media information"),
+                    text: $value
+                )
+            } header: {
+                Text("Tesla (requires a Tesla)")
+            }
+            Section {
+                FormatView(title: "{cyclingPower}", description: String(localized: "Show cycling power"), text: $value)
+                FormatView(
+                    title: "{cyclingCadence}",
+                    description: String(localized: "Show cycling cadence"),
+                    text: $value
+                )
+            } header: {
+                Text("Cycling (requires a compatible bike)")
+            }
+            Section {
+                FormatView(
+                    title: "{bitrateAndTotal}",
+                    description: String(localized: "Show bitrate and total number of bytes sent"),
+                    text: $value
+                )
+                FormatView(
+                    title: "{debugOverlay}",
+                    description: String(localized: "Show debug overlay (if enabled)"),
+                    text: $value
+                )
+            } header: {
+                Text("Debug")
             }
         }
         .onChange(of: value) { _ in
