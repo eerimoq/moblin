@@ -82,14 +82,29 @@ final class LutEffect: VideoEffect {
         return "LUT"
     }
 
-    func setLut(lut: SettingsColorLut, imageStorage: ImageStorage, onError: @escaping (String) -> Void) {
+    func setLut(lut: SettingsColorLut, imageStorage: ImageStorage, onError: @escaping (String, String?) -> Void) {
         DispatchQueue.global().async {
             do {
                 try self.loadLut(lut: lut, imageStorage: imageStorage)
-            } catch is SwiftCubeError {
-                onError(String(localized: "Failed to load .cube file"))
             } catch {
-                onError("\(error)")
+                let subTitle: String
+                switch error {
+                case SwiftCubeError.couldNotDecodeData:
+                    subTitle = "Could not decode data"
+                case SwiftCubeError.invalidSize:
+                    subTitle = "Invalid size"
+                case SwiftCubeError.oneDimensionalLutNotSupported:
+                    subTitle = "One dimensional LUT not supported"
+                case SwiftCubeError.unsupportedKey:
+                    subTitle = "Unsupported key"
+                case SwiftCubeError.invalidType:
+                    subTitle = "Invalid type"
+                case SwiftCubeError.invalidDataPoint:
+                    subTitle = "Invalid data point"
+                default:
+                    subTitle = "\(error)"
+                }
+                onError(String(localized: "Failed to load .cube file"), subTitle)
             }
         }
     }

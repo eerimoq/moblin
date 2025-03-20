@@ -2935,9 +2935,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             media.unregisterEffect(lutEffect)
             return
         }
-        lutEffect
-            .setLut(lut: lut.clone(), imageStorage: imageStorage) { message in self.makeErrorToastMain(title: message)
-            }
+        lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
+            self.makeErrorToastMain(title: title, subTitle: subTitle)
+        }
     }
 
     func addLutCube(url: URL) {
@@ -3899,10 +3899,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lutEffects.removeAll()
         for lut in allLuts() {
             let lutEffect = LutEffect()
-            lutEffect
-                .setLut(lut: lut.clone(), imageStorage: imageStorage) { message in
-                    self.makeErrorToastMain(title: message)
-                }
+            lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
+                self.makeErrorToastMain(title: title, subTitle: subTitle)
+            }
             lutEffects[lut.id] = lutEffect
         }
         sceneUpdated(imageEffectChanged: true, attachCamera: true)
