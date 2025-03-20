@@ -7818,6 +7818,14 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         setLowFpsImage()
     }
+
+    func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings) {
+        logger.info("remote-control-streamer: Got setRemoteSceneSettings \(data)")
+    }
+
+    func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData) {
+        logger.info("remote-control-streamer: Got setRemoteSceneData \(data)")
+    }
 }
 
 extension Model {

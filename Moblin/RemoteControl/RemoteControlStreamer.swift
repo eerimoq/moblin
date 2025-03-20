@@ -34,6 +34,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerChatMessages(history: Bool, messages: [RemoteControlChatMessage])
     func remoteControlStreamerStartPreview(onComplete: @escaping () -> Void)
     func remoteControlStreamerStopPreview(onComplete: @escaping () -> Void)
+    func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings)
+    func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData)
 }
 
 class RemoteControlStreamer {
@@ -267,6 +269,12 @@ class RemoteControlStreamer {
             delegate.remoteControlStreamerSetDebugLogging(on: on) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
+        case let .setRemoteSceneSettings(data: data):
+            delegate.remoteControlStreamerSetRemoteSceneSettings(data: data)
+            send(message: .response(id: id, result: .ok, data: nil))
+        case let .setRemoteSceneData(data: data):
+            delegate.remoteControlStreamerSetRemoteSceneData(data: data)
+            send(message: .response(id: id, result: .ok, data: nil))
         }
     }
 }

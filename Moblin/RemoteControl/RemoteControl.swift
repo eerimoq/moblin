@@ -22,6 +22,8 @@ enum RemoteControlRequest: Codable {
     case startPreview
     case stopPreview
     case chatMessages(history: Bool, messages: [RemoteControlChatMessage])
+    case setRemoteSceneSettings(data: RemoteControlRemoteSceneSettings)
+    case setRemoteSceneData(data: RemoteControlRemoteSceneData)
 }
 
 enum RemoteControlResponse: Codable {
@@ -52,6 +54,64 @@ struct RemoteControlChatMessage: Codable {
     var isModerator: Bool
     var isSubscriber: Bool
     var bits: String?
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneSettings: Codable {
+    var scenes: [RemoteControlRemoteSceneSettingsScene]
+    var widgets: [RemoteControlRemoteSceneSettingsWidget]
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneSettingsScene: Codable {
+    var id: UUID
+    var widgets: [RemoteControlRemoteSceneSettingsSceneWidget]
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
+    var id: UUID
+    var x: Double
+    var y: Double
+    var width: Double
+    var height: Double
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneSettingsWidget: Codable {
+    var id: UUID
+    var type: RemoteControlRemoteSceneSettingsWidgetType
+}
+
+// periphery:ignore
+enum RemoteControlRemoteSceneSettingsWidgetType: Codable {
+    case text(data: RemoteControlRemoteSceneSettingsWidgetTypeText)
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
+    var format: String
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneData: Codable {
+    var widgets: [RemoteControlRemoteSceneDataWidget]
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneDataWidget: Codable {
+    var id: UUID
+    var type: RemoteControlRemoteSceneDataWidgetType
+}
+
+// periphery:ignore
+enum RemoteControlRemoteSceneDataWidgetType: Codable {
+    case text(data: RemoteControlRemoteSceneDataWidgetTypeText)
+}
+
+// periphery:ignore
+struct RemoteControlRemoteSceneDataWidgetTypeText: Codable {
+    var speed: String?
 }
 
 struct RemoteControlStatusItem: Codable {
