@@ -20,15 +20,6 @@
       }
     },
     {
-      "identity" : "binarycodable",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/christophhagen/BinaryCodable",
-      "state" : {
-        "revision" : "f4bdd82c5da4a825634bd32c3b2ef70faa773143",
-        "version" : "3.0.3"
-      }
-    },
-    {
       "identity" : "cocoaasyncsocket",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/robbiehanson/CocoaAsyncSocket.git",
@@ -169,7 +160,7 @@
       "location" : "https://github.com/eerimoq/SwiftCube",
       "state" : {
         "branch" : "main",
-        "revision" : "4a6d003b008f6ebe3fd2dd961646896d17bb70b0"
+        "revision" : "b6c6c7ac8463b8f356e5b8dce7a04528231bb263"
       }
     },
     {
