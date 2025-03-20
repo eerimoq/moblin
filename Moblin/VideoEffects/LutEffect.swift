@@ -6,6 +6,51 @@ import Vision
 
 private let lutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")
 
+private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
+    let dimensionFloat = Float(dimension)
+    let x = min(max(point.x * dimensionFloat - 1, 0), dimensionFloat - 1)
+    let y = min(max(point.y * dimensionFloat - 1, 0), dimensionFloat - 1)
+    let z = min(max(point.z * dimensionFloat - 1, 0), dimensionFloat - 1)
+    let x0 = Int(floor(x))
+    let x1 = min(x0 + 1, dimension - 1)
+    let y0 = Int(floor(y))
+    let y1 = min(y0 + 1, dimension - 1)
+    let z0 = Int(floor(z))
+    let z1 = min(z0 + 1, dimension - 1)
+    let xd = x - Float(x0)
+    let yd = y - Float(y0)
+    let zd = z - Float(z0)
+    let c00 = lut[x0 * dimension * dimension + y0 * dimension + z0] * (1 - xd) +
+        lut[x1 * dimension * dimension + y0 * dimension + z0] * xd
+    let c01 = lut[x0 * dimension * dimension + y0 * dimension + z1] * (1 - xd) +
+        lut[x1 * dimension * dimension + y0 * dimension + z1] * xd
+    let c10 = lut[x0 * dimension * dimension + y1 * dimension + z0] * (1 - xd) +
+        lut[x1 * dimension * dimension + y1 * dimension + z0] * xd
+    let c11 = lut[x0 * dimension * dimension + y1 * dimension + z1] * (1 - xd) +
+        lut[x1 * dimension * dimension + y1 * dimension + z1] * xd
+    let c0 = c00 * (1 - yd) + c10 * yd
+    let c1 = c01 * (1 - yd) + c11 * yd
+    return c0 * (1 - zd) + c1 * zd
+}
+
+private func convertLutTo64(bigLut: [SIMD3<Float>], bigDimension: Int) -> [SIMD3<Float>] {
+    let newPoints = stride(from: 0.0, through: 1.0, by: 1.0 / Float(64 - 1)).map { Float($0) }
+    var lut64 = Array(repeating: SIMD3<Float>(0, 0, 0), count: 64 * 64 * 64)
+    for i in 0 ..< 64 {
+        for j in 0 ..< 64 {
+            for k in 0 ..< 64 {
+                let point = SIMD3(newPoints[i], newPoints[j], newPoints[k])
+                lut64[i * 64 * 64 + j * 64 + k] = interpolate3d(
+                    at: point,
+                    in: bigLut,
+                    dimension: bigDimension
+                )
+            }
+        }
+    }
+    return lut64
+}
+
 private func convertLut(image: UIImage) throws -> (Float, Data) {
     let width = image.size.width * image.scale
     let height = image.size.height * image.scale
@@ -139,9 +184,13 @@ final class LutEffect: VideoEffect {
     }
 
     private func loadDiskCubeLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
-        let sc3dLut = try SC3DLut(contentsOf: imageStorage.makePath(id: lut.id))
-        guard sc3dLut.size <= 64 else {
-            throw String(localized: "LUT dimension \(sc3dLut.size ?? 0) too big (over 64)")
+        var sc3dLut = try SC3DLut(contentsOf: imageStorage.makePath(id: lut.id))
+        if sc3dLut.size > 64 {
+            let bigLut = sc3dLut.entries.map { entry in SIMD3<Float>(entry.red, entry.green, entry.blue) }
+            sc3dLut.entries = convertLutTo64(bigLut: bigLut, bigDimension: sc3dLut.size).map { entry in
+                LutEntry(red: entry.x, green: entry.y, blue: entry.z)
+            }
+            sc3dLut.size = 64
         }
         let filter = try sc3dLut.ciFilter()
         lutQueue.sync {

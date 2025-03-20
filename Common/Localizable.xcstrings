@@ -70416,6 +70416,7 @@
       }
     },
     "LUT dimension %lld too big (over 64)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
