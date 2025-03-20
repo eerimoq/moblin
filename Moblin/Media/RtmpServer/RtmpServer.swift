@@ -18,7 +18,7 @@ struct RtmpServerClientInfo {
 
 protocol RtmpServerDelegate: AnyObject {
     func rtmpServerOnPublishStart(streamKey: String)
-    func rtmpServerOnPublishStop(streamKey: String)
+    func rtmpServerOnPublishStop(streamKey: String, reason: String)
     func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func rtmpServerSetTargetLatencies(
@@ -156,8 +156,9 @@ class RtmpServer {
         var newClients: [RtmpServerClient] = []
         for aClient in clients {
             if aClient !== client, aClient.streamKey == client.streamKey {
-                delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey)
-                aClient.stop(reason: "Same stream key")
+                let reason = "Same stream key"
+                delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
+                aClient.stop(reason: reason)
             } else {
                 newClients.append(aClient)
             }
@@ -169,7 +170,7 @@ class RtmpServer {
 
     func handleClientDisconnected(client: RtmpServerClient, reason: String) {
         if !client.streamKey.isEmpty {
-            delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey)
+            delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
         }
         client.stop(reason: reason)
         clients.removeAll { c in

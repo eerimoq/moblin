@@ -2386,7 +2386,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if isRtmpStreamConnected(streamKey: stream.streamKey) {
                 let micId = "\(stream.id.uuidString) 0"
                 let isLastMic = (currentMic.id == micId)
-                handleRtmpServerPublishStop(streamKey: stream.streamKey)
+                handleRtmpServerPublishStop(streamKey: stream.streamKey, reason: nil)
                 handleRtmpServerPublishStart(streamKey: stream.streamKey)
                 if currentMic.id != micId, isLastMic {
                     selectMicById(id: micId)
@@ -2415,18 +2415,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func handleRtmpServerPublishStop(streamKey: String) {
+    func handleRtmpServerPublishStop(streamKey: String, reason: String? = nil) {
         DispatchQueue.main.async {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.stopRtmpServerStream(stream: stream, showToast: true)
+            self.stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
         }
     }
 
-    private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool) {
+    private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool, reason: String? = nil) {
         if showToast {
-            makeToast(title: String(localized: "\(stream.camera()) disconnected"))
+            makeToast(title: String(localized: "\(stream.camera()) disconnected"), subTitle: reason)
         }
         media.removeReplaceVideo(cameraId: stream.id)
         media.removeReplaceAudio(cameraId: stream.id)
@@ -9775,8 +9775,8 @@ extension Model: RtmpServerDelegate {
         handleRtmpServerPublishStart(streamKey: streamKey)
     }
 
-    func rtmpServerOnPublishStop(streamKey: String) {
-        handleRtmpServerPublishStop(streamKey: streamKey)
+    func rtmpServerOnPublishStop(streamKey: String, reason: String) {
+        handleRtmpServerPublishStop(streamKey: streamKey, reason: reason)
     }
 
     func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {

@@ -451,11 +451,11 @@ class RtmpServerChunkStream {
             return
         }
         guard let format = FlvVideoCodec(rawValue: control & 0xF) else {
-            client.stopInternal(reason: "Unsupported video format \(control & 0xF)")
+            client.stopInternal(reason: "Unsupported video codec \(control & 0xF)")
             return
         }
         guard format == .avc else {
-            client.stopInternal(reason: "Unsupported video format \(format). Only AVC is supported.")
+            client.stopInternal(reason: "Unsupported video codec \(format.toString()). Only H.264/AVC is supported.")
             return
         }
         switch FlvAvcPacketType(rawValue: messageBody[1]) {
@@ -464,7 +464,7 @@ class RtmpServerChunkStream {
         case .nal:
             processMessageVideoTypeNal(client: client)
         default:
-            client.stopInternal(reason: "Unsupported video AVC packet type \(messageBody[1])")
+            client.stopInternal(reason: "Unsupported video H.264/AVC packet type \(messageBody[1])")
         }
     }
 

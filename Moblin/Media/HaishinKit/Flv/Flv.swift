@@ -60,6 +60,16 @@ enum FlvTagType: UInt8 {
 
 enum FlvVideoCodec: UInt8 {
     case avc = 7
+    case hevc = 12
+
+    func toString() -> String {
+        switch self {
+        case .avc:
+            return "H.264/AVC"
+        case .hevc:
+            return "H.265/HEVC"
+        }
+    }
 }
 
 enum FlvVideoFourCC: UInt32 {
