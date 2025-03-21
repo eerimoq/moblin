@@ -135,17 +135,25 @@ final class LutEffect: VideoEffect {
                 let subTitle: String
                 switch error {
                 case SwiftCubeError.couldNotDecodeData:
-                    subTitle = "Could not decode data"
-                case SwiftCubeError.invalidSize:
-                    subTitle = "Invalid size"
+                    subTitle = "Not a text file"
+                case SwiftCubeError.sizeMissing:
+                    subTitle = "Size missing"
+                case let SwiftCubeError.sizeTooBig(size):
+                    subTitle = "Size \(size) too big"
                 case SwiftCubeError.oneDimensionalLutNotSupported:
                     subTitle = "One dimensional LUT not supported"
-                case SwiftCubeError.unsupportedKey:
-                    subTitle = "Unsupported key"
+                case let SwiftCubeError.unsupportedKey(key):
+                    subTitle = "Unsupported key \(key)"
                 case SwiftCubeError.invalidType:
                     subTitle = "Invalid type"
-                case SwiftCubeError.invalidDataPoint:
-                    subTitle = "Invalid data point"
+                case SwiftCubeError.typeMissing:
+                    subTitle = "Type missing"
+                case let SwiftCubeError.invalidDataPoint(point):
+                    subTitle = "Invalid data point \(point)"
+                case let SwiftCubeError.wrongNumberOfDataPoints(count):
+                    subTitle = "Wrong number of data points \(count)"
+                case let SwiftCubeError.invalidSyntax(text):
+                    subTitle = "Invalid syntax \(text)"
                 default:
                     subTitle = "\(error)"
                 }
