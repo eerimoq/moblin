@@ -19094,7 +19094,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "실시간 스트리밍 시 자동 녹화 시작"
+            "value" : "라이브 시작 시 녹화 자동 시작"
           }
         },
         "nl" : {
@@ -19230,7 +19230,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "실시간 스트리밍 시 자동 스트리밍 시작"
+            "value" : "라이브 시작 시 스트리밍 자동 시작"
           }
         },
         "nl" : {
@@ -19366,7 +19366,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스트림 종료 시 녹화 자동 중지"
+            "value" : "라이브 종료 시 녹화 자동 중지"
           }
         },
         "nl" : {
@@ -19502,7 +19502,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스트림 종료 시 스트리밍 자동 중지"
+            "value" : "라이브 종료 시 스트리밍 자동 중지"
           }
         },
         "nl" : {
@@ -43572,7 +43572,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "녹화 중에는 위젯을 표시하지 않기"
+            "value" : "녹화 중에는 위젯을 표시하지 않습니다."
           }
         },
         "nl" : {
@@ -43702,7 +43702,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스냅샷에 위젯을 표시하지 않기"
+            "value" : "스냅샷에 위젯을 표시하지 않습니다."
           }
         },
         "nl" : {
@@ -57496,7 +57496,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "장면 강제 전환"
+            "value" : "장면 전환 효과 강제 적용"
           }
         },
         "nl" : {
@@ -102899,7 +102899,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "장면 전환 트랜지션"
+            "value" : "장면 전환 효과"
           }
         },
         "nl" : {
@@ -106571,7 +106571,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스트리밍 중에는 스트리밍을 중지하는 설정이 비활성화됩니다."
+            "value" : "라이브 방송 중에는 스트림을 중단하는 설정이 비활성화됩니다."
           }
         },
         "nl" : {
@@ -123303,7 +123303,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스냅샷 찍기"
+            "value" : "스냅샷 캡쳐 중"
           }
         },
         "nl" : {
