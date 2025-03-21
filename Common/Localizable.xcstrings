@@ -567,6 +567,9 @@
         }
       }
     },
+    "-- None --" : {
+
+    },
     ": " : {
       "localizations" : {
         "de" : {
@@ -97738,6 +97741,9 @@
         }
       }
     },
+    "Remote scene" : {
+
+    },
     "Remove keys in Controls → Locks on your Tesla's center screen." : {
       "localizations" : {
         "de" : {
@@ -143577,6 +143583,9 @@
           }
         }
       }
+    },
+    "Widgets in selected scene will be shown on the Moblin device the remote control assistant is connected to." : {
+
     },
     "Width" : {
       "localizations" : {

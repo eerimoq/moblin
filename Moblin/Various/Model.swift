@@ -762,6 +762,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var externalDisplayPreview = false
 
+    private var remoteSceneScenes: [SettingsScene] = []
+    private var remoteSceneWidgets: [SettingsWidget] = []
+
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
@@ -3795,17 +3798,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func resetSelectedScene(changeScene: Bool = true) {
-        if !enabledScenes.isEmpty, changeScene {
-            setSceneId(id: enabledScenes[0].id)
-            sceneIndex = 0
-        }
+    private func resetVideoEffects(widgets: [SettingsWidget]) {
         unregisterGlobalVideoEffects()
         for textEffect in textEffects.values {
             media.unregisterEffect(textEffect)
         }
         textEffects.removeAll()
-        for widget in database.widgets where widget.type == .text {
+        for widget in widgets where widget.type == .text {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
                 backgroundColor: widget.text.backgroundColor!,
@@ -3830,7 +3829,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             browserEffect.stop()
         }
         browserEffects.removeAll()
-        for widget in database.widgets where widget.type == .browser {
+        for widget in widgets where widget.type == .browser {
             let videoSize = media.getVideoSize()
             guard let url = URL(string: widget.browser.url) else {
                 continue
@@ -3847,35 +3846,35 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             media.unregisterEffect(mapEffect)
         }
         mapEffects.removeAll()
-        for widget in database.widgets where widget.type == .map {
+        for widget in widgets where widget.type == .map {
             mapEffects[widget.id] = MapEffect(widget: widget.map!)
         }
         for qrCodeEffect in qrCodeEffects.values {
             media.unregisterEffect(qrCodeEffect)
         }
         qrCodeEffects.removeAll()
-        for widget in database.widgets where widget.type == .qrCode {
+        for widget in widgets where widget.type == .qrCode {
             qrCodeEffects[widget.id] = QrCodeEffect(widget: widget.qrCode!)
         }
         for videoSourceEffect in videoSourceEffects.values {
             media.unregisterEffect(videoSourceEffect)
         }
         videoSourceEffects.removeAll()
-        for widget in database.widgets where widget.type == .videoSource {
+        for widget in widgets where widget.type == .videoSource {
             videoSourceEffects[widget.id] = VideoSourceEffect()
         }
         for padelScoreboardEffect in padelScoreboardEffects.values {
             media.unregisterEffect(padelScoreboardEffect)
         }
         padelScoreboardEffects.removeAll()
-        for widget in database.widgets where widget.type == .scoreboard {
+        for widget in widgets where widget.type == .scoreboard {
             padelScoreboardEffects[widget.id] = PadelScoreboardEffect()
         }
         for alertsEffect in alertsEffects.values {
             media.unregisterEffect(alertsEffect)
         }
         alertsEffects.removeAll()
-        for widget in database.widgets where widget.type == .alerts {
+        for widget in widgets where widget.type == .alerts {
             alertsEffects[widget.id] = AlertsEffect(
                 settings: widget.alerts!.clone(),
                 delegate: self,
@@ -3887,6 +3886,26 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
+    }
+
+    func remoteSceneSettingsUpdated() {
+        remoteControlAssistantSetRemoteSceneSettings()
+    }
+
+    private func getLocalAndRemoteScenes() -> [SettingsScene] {
+        return database.scenes + remoteSceneScenes
+    }
+
+    private func getLocalAndRemoteWidgets() -> [SettingsWidget] {
+        return database.widgets + remoteSceneWidgets
+    }
+
+    func resetSelectedScene(changeScene: Bool = true) {
+        if !enabledScenes.isEmpty, changeScene {
+            setSceneId(id: enabledScenes[0].id)
+            sceneIndex = 0
+        }
+        resetVideoEffects(widgets: getLocalAndRemoteWidgets())
         drawOnStreamEffect.updateOverlay(
             videoSize: media.getVideoSize(),
             size: drawOnStreamSize,
@@ -5723,7 +5742,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
-        for widget in database.widgets where widget.id == id {
+        for widget in getLocalAndRemoteWidgets() where widget.id == id {
             return widget
         }
         return nil
@@ -6051,6 +6070,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
         enabledAlertsEffects = []
+        var scene = scene
+        if let remoteSceneWidget = remoteSceneWidgets.first {
+            scene = scene.clone()
+            scene.widgets.append(SettingsSceneWidget(widgetId: remoteSceneWidget.id))
+        }
         addSceneEffects(
             scene,
             &effects,
@@ -6153,9 +6177,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             case .videoEffect:
                 break
             case .browser:
-                if let browserEffect = browserEffects[widget.id],
-                   !usedBrowserEffects.contains(browserEffect)
-                {
+                if let browserEffect = browserEffects[widget.id], !usedBrowserEffects.contains(browserEffect) {
                     browserEffect.setSceneWidget(
                         sceneWidget: sceneWidget,
                         crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
@@ -6185,7 +6207,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     usedMapEffects.append(mapEffect)
                 }
             case .scene:
-                if let sceneWidgetScene = database.scenes.first(where: { $0.id == widget.scene!.sceneId }) {
+                if let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene!.sceneId }) {
                     addSceneEffects(
                         sceneWidgetScene,
                         &effects,
@@ -7819,8 +7841,19 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings) {
-        let (scenes, widgets) = data.toSettings()
-        logger.info("remote-control-streamer: Got setRemoteSceneSettings \(data) \(scenes) \(widgets)")
+        let (scenes, widgets, selectedSceneId) = data.toSettings()
+        if let selectedSceneId {
+            let widget = SettingsWidget(name: "")
+            widget.type = .scene
+            widget.scene!.sceneId = selectedSceneId
+            remoteSceneScenes = scenes
+            remoteSceneWidgets = [widget] + widgets
+            resetSelectedScene()
+        } else if !remoteSceneScenes.isEmpty {
+            remoteSceneScenes = []
+            remoteSceneWidgets = []
+            resetSelectedScene()
+        }
     }
 
     func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData) {
@@ -7980,7 +8013,11 @@ extension Model {
     }
 
     func remoteControlAssistantSetRemoteSceneSettings() {
-        let data = RemoteControlRemoteSceneSettings(scenes: database.scenes, widgets: database.widgets)
+        let data = RemoteControlRemoteSceneSettings(
+            scenes: database.scenes,
+            widgets: database.widgets,
+            selectedSceneId: database.remoteSceneId
+        )
         remoteControlAssistant?.setRemoteSceneSettings(data: data) {}
     }
 
@@ -8106,9 +8143,7 @@ extension Model: RemoteControlAssistantDelegate {
         makeToast(title: String(localized: "Remote control streamer connected"))
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
-        if false {
-            remoteControlAssistantSetRemoteSceneSettings()
-        }
+        remoteControlAssistantSetRemoteSceneSettings()
     }
 
     func remoteControlAssistantDisconnected() {

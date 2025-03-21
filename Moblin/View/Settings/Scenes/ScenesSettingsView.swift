@@ -90,6 +90,35 @@ private struct ScenesSwitchTransition: View {
     }
 }
 
+private struct RemoteSceneView: View {
+    @EnvironmentObject var model: Model
+    @State var selectedSceneId: UUID?
+
+    var body: some View {
+        Section {
+            Picker(selection: $selectedSceneId) {
+                Text("-- None --")
+                    .tag(nil as UUID?)
+                ForEach(model.database.scenes) { scene in
+                    Text(scene.name)
+                        .tag(scene.id as UUID?)
+                }
+            } label: {
+                Text("Remote scene")
+            }
+            .onChange(of: selectedSceneId) { _ in
+                model.database.remoteSceneId = selectedSceneId
+                model.remoteSceneSettingsUpdated()
+            }
+        } footer: {
+            Text("""
+            Widgets in selected scene will be shown on the Moblin device the remote control \
+            assistant is connected to.
+            """)
+        }
+    }
+}
+
 private struct ReloadBrowserSources: View {
     @EnvironmentObject var model: Model
 
@@ -116,6 +145,7 @@ struct ScenesSettingsView: View {
             ScenesListView()
             WidgetsSettingsView()
             ScenesSwitchTransition(sceneSwitchTransition: model.database.sceneSwitchTransition!.toString())
+            RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
             ReloadBrowserSources()
         }
         .navigationTitle("Scenes")

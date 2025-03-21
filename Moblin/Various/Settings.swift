@@ -2909,6 +2909,7 @@ class Database: Codable {
     var cyclingPowerDevices: SettingsCyclingPowerDevices? = .init()
     var heartRateDevices: SettingsHeartRateDevices? = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
+    var remoteSceneId: UUID?
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(

@@ -59,8 +59,9 @@ struct RemoteControlChatMessage: Codable {
 struct RemoteControlRemoteSceneSettings: Codable {
     var scenes: [RemoteControlRemoteSceneSettingsScene]
     var widgets: [RemoteControlRemoteSceneSettingsWidget]
+    var selectedSceneId: UUID?
 
-    init(scenes: [SettingsScene], widgets: [SettingsWidget]) {
+    init(scenes: [SettingsScene], widgets: [SettingsWidget], selectedSceneId: UUID?) {
         self.scenes = scenes.map { RemoteControlRemoteSceneSettingsScene(scene: $0) }
         self.widgets = []
         for widget in widgets {
@@ -69,10 +70,11 @@ struct RemoteControlRemoteSceneSettings: Codable {
             }
             self.widgets.append(widget)
         }
+        self.selectedSceneId = selectedSceneId
     }
 
-    func toSettings() -> ([SettingsScene], [SettingsWidget]) {
-        return (scenes.map { $0.toSettings() }, widgets.map { $0.toSettings() })
+    func toSettings() -> ([SettingsScene], [SettingsWidget], UUID?) {
+        return (scenes.map { $0.toSettings() }, widgets.map { $0.toSettings() }, selectedSceneId)
     }
 }
 
@@ -116,17 +118,19 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
 
 struct RemoteControlRemoteSceneSettingsWidget: Codable {
     var id: UUID
+    var enabled: Bool
     var type: RemoteControlRemoteSceneSettingsWidgetType
 
     init?(widget: SettingsWidget) {
         id = widget.id
+        enabled = widget.enabled!
         switch widget.type {
         case .browser:
-            return nil
+            type = .browser(data: RemoteControlRemoteSceneSettingsWidgetTypeBrowser(browser: widget.browser))
         case .image:
             return nil
         case .text:
-            type = .text(data: RemoteControlRemoteSceneSettingsWidgetTypeText(format: widget.text.formatString))
+            type = .text(data: RemoteControlRemoteSceneSettingsWidgetTypeText(text: widget.text))
         case .videoEffect:
             return nil
         case .crop:
@@ -134,7 +138,7 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
         case .map:
             return nil
         case .scene:
-            return nil
+            type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(sceneId: widget.scene!.sceneId))
         case .qrCode:
             return nil
         case .alerts:
@@ -149,21 +153,128 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
     func toSettings() -> SettingsWidget {
         let widget = SettingsWidget(name: "")
         widget.id = id
+        widget.enabled = enabled
         switch type {
+        case let .browser(data):
+            widget.type = .browser
+            widget.browser = data.toSettings()
         case let .text(data):
             widget.type = .text
-            widget.text.formatString = data.format
+            widget.text = data.toSettings()
+        case let .scene(data):
+            widget.type = .scene
+            widget.scene!.sceneId = data.sceneId
         }
         return widget
     }
 }
 
 enum RemoteControlRemoteSceneSettingsWidgetType: Codable {
+    case browser(data: RemoteControlRemoteSceneSettingsWidgetTypeBrowser)
     case text(data: RemoteControlRemoteSceneSettingsWidgetTypeText)
+    case scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene)
+}
+
+struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
+    var url: String
+    var width: Int
+    var height: Int
+    var audioOnly: Bool
+    var scaleToFitVideo: Bool
+    var fps: Float
+    var styleSheet: String
+
+    init(browser: SettingsWidgetBrowser) {
+        url = browser.url
+        width = browser.width
+        height = browser.height
+        audioOnly = browser.audioOnly!
+        scaleToFitVideo = browser.scaleToFitVideo!
+        fps = browser.fps!
+        styleSheet = browser.styleSheet!
+    }
+
+    func toSettings() -> SettingsWidgetBrowser {
+        let browser = SettingsWidgetBrowser()
+        browser.url = url
+        browser.width = width
+        browser.height = height
+        browser.audioOnly = audioOnly
+        browser.scaleToFitVideo = scaleToFitVideo
+        browser.fps = fps
+        browser.styleSheet = styleSheet
+        return browser
+    }
 }
 
 struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     var format: String
+    var horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
+    var verticalAlignment: RemoteControlRemoteSceneSettingsVerticalAlignment
+
+    init(text: SettingsWidgetText) {
+        format = text.formatString
+        horizontalAlignment = .init(alignment: text.horizontalAlignment!)
+        verticalAlignment = .init(alignment: text.verticalAlignment!)
+    }
+
+    func toSettings() -> SettingsWidgetText {
+        let text = SettingsWidgetText()
+        text.formatString = format
+        text.horizontalAlignment = horizontalAlignment.toSettings()
+        text.verticalAlignment = verticalAlignment.toSettings()
+        return text
+    }
+}
+
+enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
+    case leading
+    case trailing
+
+    init(alignment: SettingsHorizontalAlignment) {
+        switch alignment {
+        case .leading:
+            self = .leading
+        case .trailing:
+            self = .trailing
+        }
+    }
+
+    func toSettings() -> SettingsHorizontalAlignment {
+        switch self {
+        case .leading:
+            return .leading
+        case .trailing:
+            return .trailing
+        }
+    }
+}
+
+enum RemoteControlRemoteSceneSettingsVerticalAlignment: Codable {
+    case top
+    case bottom
+
+    init(alignment: SettingsVerticalAlignment) {
+        switch alignment {
+        case .top:
+            self = .top
+        case .bottom:
+            self = .bottom
+        }
+    }
+
+    func toSettings() -> SettingsVerticalAlignment {
+        switch self {
+        case .top:
+            return .top
+        case .bottom:
+            return .bottom
+        }
+    }
+}
+
+struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
+    var sceneId: UUID
 }
 
 // periphery:ignore
