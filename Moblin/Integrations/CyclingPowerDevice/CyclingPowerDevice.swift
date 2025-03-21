@@ -21,7 +21,7 @@ let cyclingPowerScanner = BluetoothScanner(serviceIds: [cyclingPowerServiceId])
 
 private let measurementCharacteristicId = CBUUID(string: "2A63")
 private let vectorCharacteristicId = CBUUID(string: "2A64")
-private let featureCharacteristicId = CBUUID(string: "2A65")
+// private let featureCharacteristicId = CBUUID(string: "2A65")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
 // periphery:ignore
@@ -187,8 +187,8 @@ class CyclingPowerDevice: NSObject {
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
     private var measurementCharacteristic: CBCharacteristic?
-    private var vectorCharacteristic: CBCharacteristic?
-    private var featureCharacteristic: CBCharacteristic?
+    // private var vectorCharacteristic: CBCharacteristic?
+    // private var featureCharacteristic: CBCharacteristic?
     private var deviceId: UUID?
     weak var delegate: (any CyclingPowerDeviceDelegate)?
     private var previousRevolutions: UInt16?
@@ -224,8 +224,8 @@ class CyclingPowerDevice: NSObject {
         centralManager = nil
         peripheral = nil
         measurementCharacteristic = nil
-        vectorCharacteristic = nil
-        featureCharacteristic = nil
+        // vectorCharacteristic = nil
+        // featureCharacteristic = nil
         previousRevolutions = nil
         previousRevolutionsTime = nil
         setState(state: .disconnected)
@@ -304,16 +304,11 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             case measurementCharacteristicId:
                 measurementCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
-            case vectorCharacteristicId:
-                vectorCharacteristic = characteristic
-                peripheral?.setNotifyValue(true, for: characteristic)
-            case featureCharacteristicId:
-                featureCharacteristic = characteristic
             default:
                 break
             }
         }
-        if measurementCharacteristic != nil && vectorCharacteristic != nil && featureCharacteristic != nil {
+        if measurementCharacteristic != nil {
             setState(state: .connected)
         }
     }
