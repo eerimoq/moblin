@@ -56,19 +56,56 @@ struct RemoteControlChatMessage: Codable {
     var bits: String?
 }
 
-// periphery:ignore
 struct RemoteControlRemoteSceneSettings: Codable {
     var scenes: [RemoteControlRemoteSceneSettingsScene]
     var widgets: [RemoteControlRemoteSceneSettingsWidget]
+
+    init(scenes: [SettingsScene], widgets: [SettingsWidget]) {
+        self.scenes = scenes.map { RemoteControlRemoteSceneSettingsScene(scene: $0) }
+        self.widgets = []
+        for widget in widgets {
+            guard let widget = RemoteControlRemoteSceneSettingsWidget(widget: widget) else {
+                continue
+            }
+            self.widgets.append(widget)
+        }
+    }
+
+    func toSettings() -> ([SettingsScene], [SettingsWidget]) {
+        return (scenes.map { $0.toSettings() }, widgets.map { $0.toSettings() })
+    }
 }
 
-// periphery:ignore
 struct RemoteControlRemoteSceneSettingsScene: Codable {
     var id: UUID
     var widgets: [RemoteControlRemoteSceneSettingsSceneWidget]
+
+    init(scene: SettingsScene) {
+        id = scene.id
+        widgets = scene.widgets.map { RemoteControlRemoteSceneSettingsSceneWidget(
+            id: $0.widgetId,
+            x: $0.x,
+            y: $0.y,
+            width: $0.width,
+            height: $0.height
+        ) }
+    }
+
+    func toSettings() -> SettingsScene {
+        let scene = SettingsScene(name: "")
+        scene.id = id
+        for widget in widgets {
+            let settingsSceneWidget = SettingsSceneWidget(widgetId: widget.id)
+            settingsSceneWidget.x = widget.x
+            settingsSceneWidget.y = widget.y
+            settingsSceneWidget.width = widget.width
+            settingsSceneWidget.height = widget.height
+            scene.widgets.append(settingsSceneWidget)
+        }
+        return scene
+    }
 }
 
-// periphery:ignore
 struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
     var id: UUID
     var x: Double
@@ -77,18 +114,54 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
     var height: Double
 }
 
-// periphery:ignore
 struct RemoteControlRemoteSceneSettingsWidget: Codable {
     var id: UUID
     var type: RemoteControlRemoteSceneSettingsWidgetType
+
+    init?(widget: SettingsWidget) {
+        id = widget.id
+        switch widget.type {
+        case .browser:
+            return nil
+        case .image:
+            return nil
+        case .text:
+            type = .text(data: RemoteControlRemoteSceneSettingsWidgetTypeText(format: widget.text.formatString))
+        case .videoEffect:
+            return nil
+        case .crop:
+            return nil
+        case .map:
+            return nil
+        case .scene:
+            return nil
+        case .qrCode:
+            return nil
+        case .alerts:
+            return nil
+        case .videoSource:
+            return nil
+        case .scoreboard:
+            return nil
+        }
+    }
+
+    func toSettings() -> SettingsWidget {
+        let widget = SettingsWidget(name: "")
+        widget.id = id
+        switch type {
+        case let .text(data):
+            widget.type = .text
+            widget.text.formatString = data.format
+        }
+        return widget
+    }
 }
 
-// periphery:ignore
 enum RemoteControlRemoteSceneSettingsWidgetType: Codable {
     case text(data: RemoteControlRemoteSceneSettingsWidgetTypeText)
 }
 
-// periphery:ignore
 struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     var format: String
 }

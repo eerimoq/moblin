@@ -7819,7 +7819,8 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings) {
-        logger.info("remote-control-streamer: Got setRemoteSceneSettings \(data)")
+        let (scenes, widgets) = data.toSettings()
+        logger.info("remote-control-streamer: Got setRemoteSceneSettings \(data) \(scenes) \(widgets)")
     }
 
     func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData) {
@@ -7978,6 +7979,11 @@ extension Model {
         return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
     }
 
+    func remoteControlAssistantSetRemoteSceneSettings() {
+        let data = RemoteControlRemoteSceneSettings(scenes: database.scenes, widgets: database.widgets)
+        remoteControlAssistant?.setRemoteSceneSettings(data: data) {}
+    }
+
     func remoteControlAssistantSetStream(on: Bool) {
         remoteControlAssistant?.setStream(on: on) {
             DispatchQueue.main.async {
@@ -8100,6 +8106,9 @@ extension Model: RemoteControlAssistantDelegate {
         makeToast(title: String(localized: "Remote control streamer connected"))
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
+        if false {
+            remoteControlAssistantSetRemoteSceneSettings()
+        }
     }
 
     func remoteControlAssistantDisconnected() {

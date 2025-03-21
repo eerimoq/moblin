@@ -158,6 +158,16 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setDebugLogging(on: on), onSuccess: onSuccess)
     }
 
+    // periphery:ignore
+    func setRemoteSceneSettings(data: RemoteControlRemoteSceneSettings, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setRemoteSceneSettings(data: data), onSuccess: onSuccess)
+    }
+
+    // periphery:ignore
+    func setRemoteSceneData(data: RemoteControlRemoteSceneData, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setRemoteSceneData(data: data), onSuccess: onSuccess)
+    }
+
     func reloadBrowserWidgets(onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }
