@@ -108274,6 +108274,9 @@
         }
       }
     },
+    "Show city" : {
+
+    },
     "Show conditions" : {
       "localizations" : {
         "de" : {
@@ -108409,6 +108412,12 @@
           }
         }
       }
+    },
+    "Show country" : {
+
+    },
+    "Show country flag" : {
+
     },
     "Show cycling cadence" : {
       "localizations" : {

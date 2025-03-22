@@ -272,6 +272,9 @@ private struct TextSelectionView: View {
                 Text("General")
             }
             Section {
+                FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
+                FormatView(title: "{countryFlag}", description: String(localized: "Show country flag"), text: $value)
+                FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
                 FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
                 FormatView(title: "{averageSpeed}", description: String(localized: "Show average speed"), text: $value)
                 FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
