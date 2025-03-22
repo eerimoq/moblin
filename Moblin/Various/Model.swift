@@ -3679,11 +3679,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 cyclingPower: "\(cyclingPower) W",
                 cyclingCadence: "\(cyclingCadence)"
             )
+            remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats!)
         }
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats!)
         }
-        remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats!)
     }
 
     private func textEffectTeslaBatteryLevel() -> String {
