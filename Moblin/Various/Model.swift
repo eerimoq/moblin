@@ -8040,20 +8040,24 @@ extension Model {
         remoteControlAssistant?.setRemoteSceneSettings(data: data) {}
     }
 
+    private func shouldSendRemoteScene() -> Bool {
+        return database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
+    }
+
     func remoteControlAssistantSetRemoteSceneDataTextStats(stats: TextEffectStats) {
-        guard let remoteControlAssistant, remoteControlAssistant.isConnected() else {
+        guard shouldSendRemoteScene() else {
             return
         }
         let data = RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
-        remoteControlAssistant.setRemoteSceneData(data: data) {}
+        remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 
     func remoteControlAssistantSetRemoteSceneDataLocation(location: CLLocation) {
-        guard let remoteControlAssistant, remoteControlAssistant.isConnected() else {
+        guard shouldSendRemoteScene() else {
             return
         }
         let data = RemoteControlRemoteSceneData(location: RemoteControlRemoteSceneDataLocation(location: location))
-        remoteControlAssistant.setRemoteSceneData(data: data) {}
+        remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 
     func remoteControlAssistantSetStream(on: Bool) {
