@@ -47,10 +47,12 @@ struct ZoomSettingsView: View {
                     .onMove(perform: { froms, to in
                         model.database.zoom.back.move(fromOffsets: froms, toOffset: to)
                         model.backZoomUpdated()
+                        model.objectWillChange.send()
                     })
                     .onDelete(perform: { offsets in
                         model.database.zoom.back.remove(atOffsets: offsets)
                         model.backZoomUpdated()
+                        model.objectWillChange.send()
                     })
                 }
                 CreateButtonView {
@@ -61,6 +63,7 @@ struct ZoomSettingsView: View {
                         x: 1.0
                     ))
                     model.backZoomUpdated()
+                    model.objectWillChange.send()
                 }
             } header: {
                 Text("Back camera presets")
@@ -90,10 +93,12 @@ struct ZoomSettingsView: View {
                     .onMove(perform: { froms, to in
                         model.database.zoom.front.move(fromOffsets: froms, toOffset: to)
                         model.frontZoomUpdated()
+                        model.objectWillChange.send()
                     })
                     .onDelete(perform: { offsets in
                         model.database.zoom.front.remove(atOffsets: offsets)
                         model.frontZoomUpdated()
+                        model.objectWillChange.send()
                     })
                 }
                 CreateButtonView {
@@ -104,6 +109,7 @@ struct ZoomSettingsView: View {
                         x: 1.0
                     ))
                     model.frontZoomUpdated()
+                    model.objectWillChange.send()
                 }
             } header: {
                 Text("Front camera presets")
