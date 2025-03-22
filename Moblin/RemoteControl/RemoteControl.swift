@@ -314,7 +314,6 @@ struct RemoteControlRemoteSceneData: Codable {
 }
 
 struct RemoteControlRemoteSceneDataTextStats: Codable {
-    var timestamp: ContinuousClock.Instant?
     var bitrateAndTotal: String?
     var date: Date?
     var debugOverlayLines: [String]?
@@ -341,7 +340,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var cyclingCadence: String?
 
     init(stats: TextEffectStats) {
-        timestamp = stats.timestamp
         bitrateAndTotal = stats.bitrateAndTotal
         date = stats.date
         debugOverlayLines = stats.debugOverlayLines
@@ -369,7 +367,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     }
 
     func toStats() -> TextEffectStats {
-        return TextEffectStats(timestamp: timestamp ?? .now,
+        return TextEffectStats(timestamp: .now,
                                bitrateAndTotal: bitrateAndTotal ?? "",
                                date: date ?? Date(),
                                debugOverlayLines: debugOverlayLines ?? [],
