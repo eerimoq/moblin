@@ -189,11 +189,24 @@ private class AverageMeasurementCalculator {
     private var values = Array(repeating: 0, count: averageSampleCount)
     private var nextIndex = 0
 
-    func update(value: Int) -> Int {
+    func updateAverage(value: Int) -> Int {
+        return update(value: value) / averageSampleCount
+    }
+
+    func updateIngoreZerosInAverage(value: Int) -> Int {
+        let accumulated = update(value: value)
+        let numberOfNonZeroValues = values.filter { $0 != 0 }.count
+        guard numberOfNonZeroValues > 0 else {
+            return 0
+        }
+        return accumulated / numberOfNonZeroValues
+    }
+
+    private func update(value: Int) -> Int {
         values[nextIndex] = value
         nextIndex += 1
         nextIndex %= averageSampleCount
-        return values.reduce(0, +) / averageSampleCount
+        return values.reduce(0, +)
     }
 }
 
@@ -354,6 +367,7 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
     private func handlePowerMeasurement(value: Data) throws {
         let measurement = try CyclingPowerMeasurement(value: value)
         var cadence = 0.0
+        logger.info("cycling-power-device: Measurement \(measurement)")
         if let revolutions = measurement.cumulativeCrankRevolutions,
            let time = measurement.lastCrankEventTime
         {
@@ -375,8 +389,8 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             previousRevolutions = revolutions
             previousRevolutionsTime = time
         }
-        let averagePower = averagePower.update(value: Int(measurement.instantaneousPower))
-        let averageCadence = averageCadence.update(value: Int(cadence))
+        let averagePower = averagePower.updateAverage(value: Int(measurement.instantaneousPower))
+        let averageCadence = averageCadence.updateIngoreZerosInAverage(value: Int(cadence))
         delegate?.cyclingPowerStatus(self, power: averagePower, cadence: averageCadence)
     }
 
