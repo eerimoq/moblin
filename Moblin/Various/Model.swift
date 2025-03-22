@@ -2223,6 +2223,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         if !shouldStreamInBackground() {
+            clearRemoteSceneSettingsAndData()
             reloadStream(continueRecording: isRecording)
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             setupAudioSession()
@@ -7899,6 +7900,13 @@ extension Model: RemoteControlStreamerDelegate {
             remoteSceneData.location = location
         }
     }
+
+    private func clearRemoteSceneSettingsAndData() {
+        remoteSceneScenes = []
+        remoteSceneWidgets = []
+        remoteSceneData.textStats = nil
+        remoteSceneData.location = nil
+    }
 }
 
 extension Model {
@@ -8052,7 +8060,7 @@ extension Model {
         return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
     }
 
-    func remoteControlAssistantSetRemoteSceneSettings() {
+    private func remoteControlAssistantSetRemoteSceneSettings() {
         let data = RemoteControlRemoteSceneSettings(
             scenes: database.scenes,
             widgets: database.widgets,
