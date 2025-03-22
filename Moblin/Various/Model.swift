@@ -7862,11 +7862,11 @@ extension Model: RemoteControlStreamerDelegate {
             widget.scene!.sceneId = selectedSceneId
             remoteSceneScenes = scenes
             remoteSceneWidgets = [widget] + widgets
-            resetSelectedScene()
+            resetSelectedScene(changeScene: false)
         } else if !remoteSceneScenes.isEmpty {
             remoteSceneScenes = []
             remoteSceneWidgets = []
-            resetSelectedScene()
+            resetSelectedScene(changeScene: false)
         }
     }
 
