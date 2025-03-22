@@ -74,7 +74,9 @@ struct RemoteControlRemoteSceneSettings: Codable {
     }
 
     func toSettings() -> ([SettingsScene], [SettingsWidget], UUID?) {
-        return (scenes.map { $0.toSettings() }, widgets.map { $0.toSettings() }, selectedSceneId)
+        let scenes = scenes.map { $0.toSettings() }
+        let widgets = widgets.map { $0.toSettings() }
+        return (scenes, widgets, selectedSceneId)
     }
 }
 
@@ -84,26 +86,13 @@ struct RemoteControlRemoteSceneSettingsScene: Codable {
 
     init(scene: SettingsScene) {
         id = scene.id
-        widgets = scene.widgets.map { RemoteControlRemoteSceneSettingsSceneWidget(
-            id: $0.widgetId,
-            x: $0.x,
-            y: $0.y,
-            width: $0.width,
-            height: $0.height
-        ) }
+        widgets = scene.widgets.map { RemoteControlRemoteSceneSettingsSceneWidget(widget: $0) }
     }
 
     func toSettings() -> SettingsScene {
         let scene = SettingsScene(name: "")
         scene.id = id
-        for widget in widgets {
-            let settingsSceneWidget = SettingsSceneWidget(widgetId: widget.id)
-            settingsSceneWidget.x = widget.x
-            settingsSceneWidget.y = widget.y
-            settingsSceneWidget.width = widget.width
-            settingsSceneWidget.height = widget.height
-            scene.widgets.append(settingsSceneWidget)
-        }
+        scene.widgets = widgets.map { $0.toSettings() }
         return scene
     }
 }
@@ -114,6 +103,23 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
     var y: Double
     var width: Double
     var height: Double
+
+    init(widget: SettingsSceneWidget) {
+        id = widget.widgetId
+        x = widget.x
+        y = widget.y
+        width = widget.width
+        height = widget.height
+    }
+
+    func toSettings() -> SettingsSceneWidget {
+        let widget = SettingsSceneWidget(widgetId: id)
+        widget.x = x
+        widget.y = y
+        widget.width = width
+        widget.height = height
+        return widget
+    }
 }
 
 struct RemoteControlRemoteSceneSettingsWidget: Codable {
@@ -208,21 +214,45 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
-    var format: String
+    var formatString: String
+    var backgroundColor: RgbColor
+    var clearBackgroundColor: Bool
+    var foregroundColor: RgbColor
+    var clearForegroundColor: Bool
+    var fontSize: Int
+    var fontDesign: SettingsFontDesign
+    var fontWeight: SettingsFontWeight
     var horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
     var verticalAlignment: RemoteControlRemoteSceneSettingsVerticalAlignment
+    var delay: Double
 
     init(text: SettingsWidgetText) {
-        format = text.formatString
+        formatString = text.formatString
+        backgroundColor = text.backgroundColor!
+        clearBackgroundColor = text.clearBackgroundColor!
+        foregroundColor = text.foregroundColor!
+        clearForegroundColor = text.clearForegroundColor!
+        fontSize = text.fontSize!
+        fontDesign = text.fontDesign!
+        fontWeight = text.fontWeight!
         horizontalAlignment = .init(alignment: text.horizontalAlignment!)
         verticalAlignment = .init(alignment: text.verticalAlignment!)
+        delay = text.delay!
     }
 
     func toSettings() -> SettingsWidgetText {
         let text = SettingsWidgetText()
-        text.formatString = format
+        text.formatString = formatString
+        text.backgroundColor = backgroundColor
+        text.clearBackgroundColor = clearBackgroundColor
+        text.foregroundColor = foregroundColor
+        text.clearForegroundColor = clearForegroundColor
+        text.fontSize = fontSize
+        text.fontDesign = fontDesign
+        text.fontWeight = fontWeight
         text.horizontalAlignment = horizontalAlignment.toSettings()
         text.verticalAlignment = verticalAlignment.toSettings()
+        text.delay = delay
         return text
     }
 }
@@ -279,7 +309,92 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
 
 // periphery:ignore
 struct RemoteControlRemoteSceneData: Codable {
-    var widgets: [RemoteControlRemoteSceneDataWidget]
+    var textStats: RemoteControlRemoteSceneDataTextStats?
+    var widgets: [RemoteControlRemoteSceneDataWidget]?
+}
+
+struct RemoteControlRemoteSceneDataTextStats: Codable {
+    var timestamp: ContinuousClock.Instant?
+    var bitrateAndTotal: String?
+    var date: Date?
+    var debugOverlayLines: [String]?
+    var speed: String?
+    var averageSpeed: String?
+    var altitude: String?
+    var distance: String?
+    var slope: String?
+    var conditions: String?
+    var temperature: Measurement<UnitTemperature>?
+    var country: String?
+    var countryFlag: String?
+    var city: String?
+    var muted: Bool?
+    var heartRates: [String: Int?]?
+    var activeEnergyBurned: Int?
+    var workoutDistance: Int?
+    var power: Int?
+    var stepCount: Int?
+    var teslaBatteryLevel: String?
+    var teslaDrive: String?
+    var teslaMedia: String?
+    var cyclingPower: String?
+    var cyclingCadence: String?
+
+    init(stats: TextEffectStats) {
+        timestamp = stats.timestamp
+        bitrateAndTotal = stats.bitrateAndTotal
+        date = stats.date
+        debugOverlayLines = stats.debugOverlayLines
+        speed = stats.speed
+        averageSpeed = stats.averageSpeed
+        altitude = stats.altitude
+        distance = stats.distance
+        slope = stats.slope
+        conditions = stats.conditions
+        temperature = stats.temperature
+        country = stats.country
+        countryFlag = stats.countryFlag
+        city = stats.city
+        muted = stats.muted
+        heartRates = stats.heartRates
+        activeEnergyBurned = stats.activeEnergyBurned
+        workoutDistance = stats.workoutDistance
+        power = stats.power
+        stepCount = stats.stepCount
+        teslaBatteryLevel = stats.teslaBatteryLevel
+        teslaDrive = stats.teslaDrive
+        teslaMedia = stats.teslaMedia
+        cyclingPower = stats.cyclingPower
+        cyclingCadence = stats.cyclingCadence
+    }
+
+    func toStats() -> TextEffectStats {
+        return TextEffectStats(timestamp: timestamp ?? .now,
+                               bitrateAndTotal: bitrateAndTotal ?? "",
+                               date: date ?? Date(),
+                               debugOverlayLines: debugOverlayLines ?? [],
+                               speed: speed ?? "",
+                               averageSpeed: averageSpeed ?? "",
+                               altitude: altitude ?? "",
+                               distance: distance ?? "",
+                               slope: slope ?? "",
+                               conditions: conditions,
+                               temperature: temperature,
+                               country: country,
+                               countryFlag: countryFlag,
+                               city: city,
+                               muted: muted ?? false,
+                               heartRates: heartRates ?? [:],
+                               activeEnergyBurned: activeEnergyBurned,
+                               workoutDistance: workoutDistance,
+                               power: power,
+                               stepCount: stepCount,
+                               teslaBatteryLevel: teslaBatteryLevel ?? "",
+                               teslaDrive: teslaDrive ?? "",
+                               teslaMedia: teslaMedia ?? "",
+                               cyclingPower: cyclingPower ?? "",
+                               cyclingCadence: cyclingCadence ?? "")
+    }
 }
 
 // periphery:ignore
@@ -294,9 +409,7 @@ enum RemoteControlRemoteSceneDataWidgetType: Codable {
 }
 
 // periphery:ignore
-struct RemoteControlRemoteSceneDataWidgetTypeText: Codable {
-    var speed: String?
-}
+struct RemoteControlRemoteSceneDataWidgetTypeText: Codable {}
 
 struct RemoteControlStatusItem: Codable {
     var message: String

@@ -764,6 +764,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var remoteSceneScenes: [SettingsScene] = []
     private var remoteSceneWidgets: [SettingsWidget] = []
+    private var remoteSceneData: RemoteControlRemoteSceneData?
 
     override init() {
         super.init()
@@ -3643,40 +3644,46 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !textEffects.isEmpty else {
             return
         }
-        updateTextWidgetsLapTimes(now: now)
-        let location = locationManager.getLatestKnownLocation()
-        let weather = weatherManager.getLatestWeather()
-        let placemark = geographyManager.getLatestPlacemark()
-        let stats = TextEffectStats(
-            timestamp: timestamp,
-            bitrateAndTotal: speedAndTotal,
-            date: now,
-            debugOverlayLines: debugLines,
-            speed: format(speed: location?.speed ?? 0),
-            averageSpeed: format(speed: averageSpeed),
-            altitude: format(altitude: location?.altitude ?? 0),
-            distance: getDistance(),
-            slope: "\(Int(slopePercent)) %",
-            conditions: weather?.currentWeather.symbolName,
-            temperature: weather?.currentWeather.temperature,
-            country: placemark?.country ?? "",
-            countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
-            city: placemark?.locality,
-            muted: isMuteOn,
-            heartRates: heartRates,
-            activeEnergyBurned: workoutActiveEnergyBurned,
-            workoutDistance: workoutDistance,
-            power: workoutPower,
-            stepCount: workoutStepCount,
-            teslaBatteryLevel: textEffectTeslaBatteryLevel(),
-            teslaDrive: textEffectTeslaDrive(),
-            teslaMedia: textEffectTeslaMedia(),
-            cyclingPower: "\(cyclingPower) W",
-            cyclingCadence: "\(cyclingCadence)"
-        )
-        for textEffect in textEffects.values {
-            textEffect.updateStats(stats: stats)
+        var stats: TextEffectStats?
+        if let remoteSceneData {
+            stats = remoteSceneData.textStats?.toStats()
+        } else {
+            updateTextWidgetsLapTimes(now: now)
+            let location = locationManager.getLatestKnownLocation()
+            let weather = weatherManager.getLatestWeather()
+            let placemark = geographyManager.getLatestPlacemark()
+            stats = TextEffectStats(
+                timestamp: timestamp,
+                bitrateAndTotal: speedAndTotal,
+                date: now,
+                debugOverlayLines: debugLines,
+                speed: format(speed: location?.speed ?? 0),
+                averageSpeed: format(speed: averageSpeed),
+                altitude: format(altitude: location?.altitude ?? 0),
+                distance: getDistance(),
+                slope: "\(Int(slopePercent)) %",
+                conditions: weather?.currentWeather.symbolName,
+                temperature: weather?.currentWeather.temperature,
+                country: placemark?.country ?? "",
+                countryFlag: emojiFlag(country: placemark?.isoCountryCode ?? ""),
+                city: placemark?.locality,
+                muted: isMuteOn,
+                heartRates: heartRates,
+                activeEnergyBurned: workoutActiveEnergyBurned,
+                workoutDistance: workoutDistance,
+                power: workoutPower,
+                stepCount: workoutStepCount,
+                teslaBatteryLevel: textEffectTeslaBatteryLevel(),
+                teslaDrive: textEffectTeslaDrive(),
+                teslaMedia: textEffectTeslaMedia(),
+                cyclingPower: "\(cyclingPower) W",
+                cyclingCadence: "\(cyclingCadence)"
+            )
         }
+        for textEffect in textEffects.values {
+            textEffect.updateStats(stats: stats!)
+        }
+        remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats!)
     }
 
     private func textEffectTeslaBatteryLevel() -> String {
@@ -7857,7 +7864,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData) {
-        logger.info("remote-control-streamer: Got setRemoteSceneData \(data)")
+        remoteSceneData = data
     }
 }
 
@@ -8019,6 +8026,14 @@ extension Model {
             selectedSceneId: database.remoteSceneId
         )
         remoteControlAssistant?.setRemoteSceneSettings(data: data) {}
+    }
+
+    func remoteControlAssistantSetRemoteSceneDataTextStats(stats: TextEffectStats) {
+        guard let remoteControlAssistant, remoteControlAssistant.isConnected() else {
+            return
+        }
+        let data = RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
+        remoteControlAssistant.setRemoteSceneData(data: data) {}
     }
 
     func remoteControlAssistantSetStream(on: Bool) {
