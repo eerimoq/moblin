@@ -1,3 +1,4 @@
+import Collections
 import CoreBluetooth
 import Foundation
 
@@ -182,6 +183,20 @@ struct CyclingPowerVector {
     }
 }
 
+private let averageSampleCount = 3
+
+private class AverageMeasurementCalculator {
+    private var values = Array(repeating: 0, count: averageSampleCount)
+    private var nextIndex = 0
+
+    func update(value: Int) -> Int {
+        values[nextIndex] = value
+        nextIndex += 1
+        nextIndex %= averageSampleCount
+        return values.reduce(0, +) / averageSampleCount
+    }
+}
+
 class CyclingPowerDevice: NSObject {
     private var state: CyclingPowerDeviceState = .disconnected
     private var centralManager: CBCentralManager?
@@ -193,6 +208,8 @@ class CyclingPowerDevice: NSObject {
     weak var delegate: (any CyclingPowerDeviceDelegate)?
     private var previousRevolutions: UInt16?
     private var previousRevolutionsTime: UInt16?
+    private var averagePower = AverageMeasurementCalculator()
+    private var averageCadence = AverageMeasurementCalculator()
 
     func start(deviceId: UUID?) {
         cyclingPowerDeviceDispatchQueue.async {
@@ -358,7 +375,9 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             previousRevolutions = revolutions
             previousRevolutionsTime = time
         }
-        delegate?.cyclingPowerStatus(self, power: Int(measurement.instantaneousPower), cadence: Int(cadence))
+        let averagePower = averagePower.update(value: Int(measurement.instantaneousPower))
+        let averageCadence = averageCadence.update(value: Int(cadence))
+        delegate?.cyclingPowerStatus(self, power: averagePower, cadence: averageCadence)
     }
 
     private func handlePowerVector(value: Data) throws {
