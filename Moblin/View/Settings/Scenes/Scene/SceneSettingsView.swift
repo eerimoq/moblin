@@ -16,7 +16,7 @@ private struct VideoStabilizationView: View {
             }
             .onChange(of: mode) {
                 scene.videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: $0)
-                model.sceneUpdated(attachCamera: true)
+                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
             }
         }
     }
@@ -87,7 +87,7 @@ struct SceneSettingsView: View {
 
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true)
+        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
@@ -141,13 +141,13 @@ struct SceneSettingsView: View {
                 VideoSourceRotationView(selectedRotation: $selectedRotation)
                     .onChange(of: selectedRotation) { rotation in
                         scene.videoSourceRotation = rotation
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                     }
                 Toggle(isOn: Binding(get: {
                     scene.overrideVideoStabilizationMode!
                 }, set: { value in
                     scene.overrideVideoStabilizationMode = value
-                    model.sceneUpdated(attachCamera: true)
+                    model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                 })) {
                     Text("Override video stabilization")
                 }

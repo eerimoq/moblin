@@ -111,7 +111,7 @@ struct QuickButtonsInnerView: View {
     private func videoEffectAction(state: ButtonState, type: SettingsButtonType) {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: type, isOn: state.button.isOn)
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
         model.updateButtonStates()
     }
 
@@ -147,7 +147,7 @@ struct QuickButtonsInnerView: View {
     private func gridAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.showingGrid.toggle()
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
         model.updateButtonStates()
     }
 

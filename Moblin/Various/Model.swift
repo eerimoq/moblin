@@ -765,6 +765,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var remoteSceneScenes: [SettingsScene] = []
     private var remoteSceneWidgets: [SettingsWidget] = []
     private var remoteSceneData = RemoteControlRemoteSceneData(textStats: nil, location: nil)
+    private var remoteSceneSettingsUpdateRequested = false
+    private var remoteSceneSettingsUpdating = false
 
     override init() {
         super.init()
@@ -2222,7 +2224,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if !shouldStreamInBackground() {
             reloadStream(continueRecording: isRecording)
-            sceneUpdated(attachCamera: true)
+            sceneUpdated(attachCamera: true, updateRemoteScene: false)
             setupAudioSession()
             media.attachDefaultAudioDevice()
             reloadRtmpServer()
@@ -3903,7 +3905,23 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func remoteSceneSettingsUpdated() {
+        remoteSceneSettingsUpdateRequested = true
+        updateRemoteSceneSettings()
+    }
+
+    private func updateRemoteSceneSettings() {
+        guard !remoteSceneSettingsUpdating else {
+            return
+        }
+        remoteSceneSettingsUpdating = true
         remoteControlAssistantSetRemoteSceneSettings()
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.remoteSceneSettingsUpdating = false
+            if self.remoteSceneSettingsUpdateRequested {
+                self.remoteSceneSettingsUpdateRequested = false
+                self.updateRemoteSceneSettings()
+            }
+        }
     }
 
     private func getLocalAndRemoteScenes() -> [SettingsScene] {
@@ -4460,7 +4478,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         store()
         if stream.enabled {
             reloadStream()
-            sceneUpdated(attachCamera: true)
+            sceneUpdated(attachCamera: true, updateRemoteScene: false)
         }
     }
 
@@ -5520,7 +5538,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 return
             }
             self.setGlobalButtonState(type: type, isOn: state == "on")
-            self.sceneUpdated()
+            self.sceneUpdated(updateRemoteScene: false)
             self.updateButtonStates()
         }
     }
@@ -6370,7 +6388,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sceneUpdated()
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false) {
+    func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false, updateRemoteScene: Bool = true) {
         if imageEffectChanged {
             reloadImageEffects()
         }
@@ -6381,6 +6399,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sceneUpdatedOn(scene: scene, attachCamera: attachCamera)
         startWeatherManager()
         startGeographyManager()
+        if updateRemoteScene {
+            remoteSceneSettingsUpdated()
+        }
     }
 
     private func updateStreamUptime(now: ContinuousClock.Instant) {
@@ -7195,7 +7216,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }) {
             backZoomPresetId = database.zoom.back[0].id
         }
-        sceneUpdated()
+        sceneUpdated(updateRemoteScene: false)
     }
 
     func frontZoomUpdated() {
@@ -7204,7 +7225,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }) {
             frontZoomPresetId = database.zoom.front[0].id
         }
-        sceneUpdated()
+        sceneUpdated(updateRemoteScene: false)
     }
 
     private func makeConnectFailureToast(subTitle: String) {
@@ -8987,7 +9008,7 @@ extension Model {
         database.streams.append(stream)
         setCurrentStream(stream: stream)
         reloadStream()
-        sceneUpdated(attachCamera: true)
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     func resetWizard() {

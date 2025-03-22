@@ -154,7 +154,7 @@ private struct FaceViewBeautyButtons: View {
             }
             Button {
                 model.database.debug.beautyFilterSettings!.showBeauty!.toggle()
-                model.sceneUpdated()
+                model.sceneUpdated(updateRemoteScene: false)
                 model.updateFaceFilterSettings()
                 beauty = model.database.debug.beautyFilterSettings!.showBeauty!
                 model.updateFaceFilterButtonState()
@@ -196,7 +196,7 @@ struct FaceView: View {
                 HStack {
                     Button {
                         model.database.debug.beautyFilter!.toggle()
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
                         crop = model.database.debug.beautyFilter!
                         model.updateFaceFilterButtonState()
@@ -208,7 +208,7 @@ struct FaceView: View {
                     }
                     Button {
                         settings.showMoblin.toggle()
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
                         mouth = settings.showMoblin
                         model.updateFaceFilterButtonState()
@@ -220,7 +220,7 @@ struct FaceView: View {
                     }
                     Button {
                         settings.showBlur.toggle()
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
                         blur = settings.showBlur
                     } label: {
@@ -231,7 +231,7 @@ struct FaceView: View {
                     }
                     Button {
                         settings.showBlurBackground!.toggle()
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                         model.updateFaceFilterSettings()
                         blurBackground = settings.showBlurBackground!
                         model.updateFaceFilterButtonState()

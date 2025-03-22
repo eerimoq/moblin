@@ -97,7 +97,7 @@ struct QuickButtonsSettingsView: View {
                     .onMove(perform: { froms, to in
                         model.database.globalButtons!.move(fromOffsets: froms, toOffset: to)
                         model.updateButtonStates()
-                        model.sceneUpdated()
+                        model.sceneUpdated(updateRemoteScene: false)
                     })
                 }
             } header: {

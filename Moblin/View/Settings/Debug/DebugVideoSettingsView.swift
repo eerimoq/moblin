@@ -7,7 +7,7 @@ struct DebugVideoSettingsView: View {
         model.database.debug.pixelFormat = format
         model.setPixelFormat()
         model.reloadStream()
-        model.sceneUpdated(attachCamera: true)
+        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 
     var body: some View {

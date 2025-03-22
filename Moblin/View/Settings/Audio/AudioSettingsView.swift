@@ -9,7 +9,7 @@ struct AudioSettingsView: View {
         }
         model.database.audio!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
         model.reloadStream()
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
     }
 
     private func submitOutputChannel2(value: String) {
@@ -18,7 +18,7 @@ struct AudioSettingsView: View {
         }
         model.database.audio!.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)
         model.reloadStream()
-        model.sceneUpdated()
+        model.sceneUpdated(updateRemoteScene: false)
     }
 
     var body: some View {
