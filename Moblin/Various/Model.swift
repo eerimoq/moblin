@@ -764,7 +764,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var remoteSceneScenes: [SettingsScene] = []
     private var remoteSceneWidgets: [SettingsWidget] = []
-    private var remoteSceneData: RemoteControlRemoteSceneData?
+    private var remoteSceneData = RemoteControlRemoteSceneData(textStats: nil, location: nil)
 
     override init() {
         super.init()
@@ -3644,9 +3644,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !textEffects.isEmpty else {
             return
         }
-        var stats: TextEffectStats?
-        if let remoteSceneData {
-            stats = remoteSceneData.textStats?.toStats()
+        var stats: TextEffectStats
+        if let textStats = remoteSceneData.textStats {
+            stats = textStats.toStats()
         } else {
             updateTextWidgetsLapTimes(now: now)
             let location = locationManager.getLatestKnownLocation()
@@ -3679,10 +3679,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 cyclingPower: "\(cyclingPower) W",
                 cyclingCadence: "\(cyclingCadence)"
             )
-            remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats!)
+            remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
         for textEffect in textEffects.values {
-            textEffect.updateStats(stats: stats!)
+            textEffect.updateStats(stats: stats)
         }
     }
 
@@ -3753,11 +3753,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !mapEffects.isEmpty else {
             return
         }
-        guard var location = locationManager.getLatestKnownLocation() else {
-            return
-        }
-        if isLocationInPrivacyRegion(location: location) {
-            location = .init()
+        let location: CLLocation
+        if let remoteSceneLocation = remoteSceneData.location {
+            location = remoteSceneLocation.toLocation()
+        } else {
+            guard var latestKnownLocation = locationManager.getLatestKnownLocation() else {
+                return
+            }
+            if isLocationInPrivacyRegion(location: latestKnownLocation) {
+                latestKnownLocation = .init()
+            }
+            remoteControlAssistantSetRemoteSceneDataLocation(location: latestKnownLocation)
+            location = latestKnownLocation
         }
         for mapEffect in mapEffects.values {
             mapEffect.updateLocation(location: location)
@@ -7864,7 +7871,12 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetRemoteSceneData(data: RemoteControlRemoteSceneData) {
-        remoteSceneData = data
+        if let textStats = data.textStats {
+            remoteSceneData.textStats = textStats
+        }
+        if let location = data.location {
+            remoteSceneData.location = location
+        }
     }
 }
 
@@ -8033,6 +8045,14 @@ extension Model {
             return
         }
         let data = RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
+        remoteControlAssistant.setRemoteSceneData(data: data) {}
+    }
+
+    func remoteControlAssistantSetRemoteSceneDataLocation(location: CLLocation) {
+        guard let remoteControlAssistant, remoteControlAssistant.isConnected() else {
+            return
+        }
+        let data = RemoteControlRemoteSceneData(location: RemoteControlRemoteSceneDataLocation(location: location))
         remoteControlAssistant.setRemoteSceneData(data: data) {}
     }
 

@@ -1,3 +1,4 @@
+import CoreLocation
 import CryptoKit
 import Foundation
 
@@ -142,9 +143,9 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
         case .crop:
             return nil
         case .map:
-            return nil
+            type = .map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap(map: widget.map!))
         case .scene:
-            type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(sceneId: widget.scene!.sceneId))
+            type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(scene: widget.scene!))
         case .qrCode:
             return nil
         case .alerts:
@@ -167,9 +168,12 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
         case let .text(data):
             widget.type = .text
             widget.text = data.toSettings()
+        case let .map(data):
+            widget.type = .map
+            widget.map = data.toSettings()
         case let .scene(data):
             widget.type = .scene
-            widget.scene!.sceneId = data.sceneId
+            widget.scene = data.toSettings()
         }
         return widget
     }
@@ -178,6 +182,7 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
 enum RemoteControlRemoteSceneSettingsWidgetType: Codable {
     case browser(data: RemoteControlRemoteSceneSettingsWidgetTypeBrowser)
     case text(data: RemoteControlRemoteSceneSettingsWidgetTypeText)
+    case map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap)
     case scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene)
 }
 
@@ -303,41 +308,64 @@ enum RemoteControlRemoteSceneSettingsVerticalAlignment: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
-    var sceneId: UUID
+struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
+    var northUp: Bool
+
+    init(map: SettingsWidgetMap) {
+        northUp = map.northUp!
+    }
+
+    func toSettings() -> SettingsWidgetMap {
+        let map = SettingsWidgetMap()
+        map.northUp = northUp
+        return map
+    }
 }
 
-// periphery:ignore
+struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
+    var sceneId: UUID
+
+    init(scene: SettingsWidgetScene) {
+        sceneId = scene.sceneId
+    }
+
+    func toSettings() -> SettingsWidgetScene {
+        let scene = SettingsWidgetScene()
+        scene.sceneId = sceneId
+        return scene
+    }
+}
+
 struct RemoteControlRemoteSceneData: Codable {
     var textStats: RemoteControlRemoteSceneDataTextStats?
-    var widgets: [RemoteControlRemoteSceneDataWidget]?
+    var location: RemoteControlRemoteSceneDataLocation?
 }
 
 struct RemoteControlRemoteSceneDataTextStats: Codable {
-    var bitrateAndTotal: String?
-    var date: Date?
-    var debugOverlayLines: [String]?
-    var speed: String?
-    var averageSpeed: String?
-    var altitude: String?
-    var distance: String?
-    var slope: String?
+    var bitrateAndTotal: String
+    var date: Date
+    var debugOverlayLines: [String]
+    var speed: String
+    var averageSpeed: String
+    var altitude: String
+    var distance: String
+    var slope: String
     var conditions: String?
     var temperature: Measurement<UnitTemperature>?
     var country: String?
     var countryFlag: String?
     var city: String?
-    var muted: Bool?
-    var heartRates: [String: Int?]?
+    var muted: Bool
+    var heartRates: [String: Int?]
     var activeEnergyBurned: Int?
     var workoutDistance: Int?
     var power: Int?
     var stepCount: Int?
-    var teslaBatteryLevel: String?
-    var teslaDrive: String?
-    var teslaMedia: String?
-    var cyclingPower: String?
-    var cyclingCadence: String?
+    var teslaBatteryLevel: String
+    var teslaDrive: String
+    var teslaMedia: String
+    var cyclingPower: String
+    var cyclingCadence: String
 
     init(stats: TextEffectStats) {
         bitrateAndTotal = stats.bitrateAndTotal
@@ -368,46 +396,46 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
 
     func toStats() -> TextEffectStats {
         return TextEffectStats(timestamp: .now,
-                               bitrateAndTotal: bitrateAndTotal ?? "",
-                               date: date ?? Date(),
-                               debugOverlayLines: debugOverlayLines ?? [],
-                               speed: speed ?? "",
-                               averageSpeed: averageSpeed ?? "",
-                               altitude: altitude ?? "",
-                               distance: distance ?? "",
-                               slope: slope ?? "",
+                               bitrateAndTotal: bitrateAndTotal,
+                               date: date,
+                               debugOverlayLines: debugOverlayLines,
+                               speed: speed,
+                               averageSpeed: averageSpeed,
+                               altitude: altitude,
+                               distance: distance,
+                               slope: slope,
                                conditions: conditions,
                                temperature: temperature,
                                country: country,
                                countryFlag: countryFlag,
                                city: city,
-                               muted: muted ?? false,
-                               heartRates: heartRates ?? [:],
+                               muted: muted,
+                               heartRates: heartRates,
                                activeEnergyBurned: activeEnergyBurned,
                                workoutDistance: workoutDistance,
                                power: power,
                                stepCount: stepCount,
-                               teslaBatteryLevel: teslaBatteryLevel ?? "",
-                               teslaDrive: teslaDrive ?? "",
-                               teslaMedia: teslaMedia ?? "",
-                               cyclingPower: cyclingPower ?? "",
-                               cyclingCadence: cyclingCadence ?? "")
+                               teslaBatteryLevel: teslaBatteryLevel,
+                               teslaDrive: teslaDrive,
+                               teslaMedia: teslaMedia,
+                               cyclingPower: cyclingPower,
+                               cyclingCadence: cyclingCadence)
     }
 }
 
-// periphery:ignore
-struct RemoteControlRemoteSceneDataWidget: Codable {
-    var id: UUID
-    var type: RemoteControlRemoteSceneDataWidgetType
-}
+struct RemoteControlRemoteSceneDataLocation: Codable {
+    var latitude: Double
+    var longitude: Double
 
-// periphery:ignore
-enum RemoteControlRemoteSceneDataWidgetType: Codable {
-    case text(data: RemoteControlRemoteSceneDataWidgetTypeText)
-}
+    init(location: CLLocation) {
+        latitude = location.coordinate.latitude
+        longitude = location.coordinate.longitude
+    }
 
-// periphery:ignore
-struct RemoteControlRemoteSceneDataWidgetTypeText: Codable {}
+    func toLocation() -> CLLocation {
+        return CLLocation(latitude: latitude, longitude: longitude)
+    }
+}
 
 struct RemoteControlStatusItem: Codable {
     var message: String
