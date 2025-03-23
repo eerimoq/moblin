@@ -833,6 +833,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
     private var tripleEffect = TripleEffect()
+    private var twinEffect = TwinEffect()
     private var pixellateEffect = PixellateEffect(strength: 0.0)
     private var pollEffect = PollEffect()
     private var locationManager = Location()
@@ -3449,6 +3450,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.unregisterEffect(grayScaleEffect)
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(tripleEffect)
+        media.unregisterEffect(twinEffect)
         media.unregisterEffect(pixellateEffect)
         media.unregisterEffect(pollEffect)
         faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
@@ -3457,6 +3459,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()
         tripleEffect = TripleEffect()
+        twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
         pollEffect = PollEffect()
     }
@@ -3493,6 +3496,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isGlobalButtonOn(type: .triple) {
             effects.append(tripleEffect)
+        }
+        if isGlobalButtonOn(type: .twin) {
+            effects.append(twinEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
             pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)

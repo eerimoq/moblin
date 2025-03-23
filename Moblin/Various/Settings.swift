@@ -1560,6 +1560,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case grayScale = "Gray scale"
     case sepia = "Sepia"
     case triple = "Triple"
+    case twin = "Twin"
     case pixellate = "Pixellate"
     case stream = "Stream"
     case grid = "Grid"
@@ -3235,6 +3236,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "person.3.fill"
     button.systemImageNameOff = "person.3"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Twin"))
+    button.id = UUID()
+    button.type = .twin
+    button.imageType = "System name"
+    button.systemImageNameOn = "person.2.fill"
+    button.systemImageNameOff = "person.2"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Pixellate"))

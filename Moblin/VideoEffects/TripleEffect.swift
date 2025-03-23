@@ -1,6 +1,5 @@
 import AVFoundation
 import MetalPetal
-import UIKit
 import Vision
 
 final class TripleEffect: VideoEffect {

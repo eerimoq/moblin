@@ -135,6 +135,10 @@ struct QuickButtonsInnerView: View {
         videoEffectAction(state: state, type: .triple)
     }
 
+    private func twinAction(state: ButtonState) {
+        videoEffectAction(state: state, type: .twin)
+    }
+
     private func pixellateAction(state: ButtonState) {
         videoEffectAction(state: state, type: .pixellate)
         model.showingPixellate.toggle()
@@ -387,6 +391,12 @@ struct QuickButtonsInnerView: View {
             case .triple:
                 Button(action: {
                     tripleAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .twin:
+                Button(action: {
+                    twinAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

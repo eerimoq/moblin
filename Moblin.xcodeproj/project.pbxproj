@@ -441,6 +441,7 @@
 		03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
+		03D278742D9050C900BB0502 /* TwinEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D278732D9050C600BB0502 /* TwinEffect.swift */; };
 		03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */; };
 		03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */; };
 		03D37EE02CE0892B006D14C2 /* UrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D37EDF2CE08921006D14C2 /* UrlSession.swift */; };
@@ -1021,6 +1022,7 @@
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModifier.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
+		03D278732D9050C600BB0502 /* TwinEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwinEffect.swift; sourceTree = "<group>"; };
 		03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerSettingsView.swift; sourceTree = "<group>"; };
 		03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03D37EDF2CE08921006D14C2 /* UrlSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlSession.swift; sourceTree = "<group>"; };
@@ -2484,6 +2486,7 @@
 				037FE02F2C594CE40067B5AC /* AlertsEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
+				03D278732D9050C600BB0502 /* TwinEffect.swift */,
 				030499672C404812003488F4 /* EffectUtils.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
 				0324ECA72C1EADAB007CB0B3 /* FourThreeEffect.swift */,
@@ -3469,6 +3472,7 @@
 				035F24422CB76835008288C7 /* TwitchCommon.swift in Sources */,
 				03C357482D081CF200B8B29F /* RtmpWindowAcknowledgementSizeMessage.swift in Sources */,
 				03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */,
+				03D278742D9050C900BB0502 /* TwinEffect.swift in Sources */,
 				03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */,
 				0359F8DB2BD3DA61005BFDA8 /* Crc32.swift in Sources */,
 				03987B3C2C82859C00226C03 /* QuickButtonMicView.swift in Sources */,
