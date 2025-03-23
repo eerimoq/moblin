@@ -969,6 +969,7 @@ class SettingsWidgetText: Codable {
     var fontSize: Int? = 30
     var fontDesign: SettingsFontDesign? = .default
     var fontWeight: SettingsFontWeight? = .regular
+    var fontMonospacedDigits: Bool? = false
     var alignment: SettingsHorizontalAlignment? = .leading
     var horizontalAlignment: SettingsHorizontalAlignment? = .leading
     var verticalAlignment: SettingsVerticalAlignment? = .top
@@ -4916,6 +4917,10 @@ final class Settings {
         }
         for widget in database.widgets where widget.text.lapTimes == nil {
             widget.text.lapTimes = []
+            store()
+        }
+        for widget in realDatabase.widgets where widget.text.fontMonospacedDigits == nil {
+            widget.text.fontMonospacedDigits = false
             store()
         }
     }

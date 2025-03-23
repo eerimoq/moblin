@@ -227,6 +227,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     var fontSize: Int
     var fontDesign: SettingsFontDesign
     var fontWeight: SettingsFontWeight
+    var fontMonospacedDigits: Bool
     var horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
     var verticalAlignment: RemoteControlRemoteSceneSettingsVerticalAlignment
     var delay: Double
@@ -240,6 +241,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         fontSize = text.fontSize!
         fontDesign = text.fontDesign!
         fontWeight = text.fontWeight!
+        fontMonospacedDigits = text.fontMonospacedDigits!
         horizontalAlignment = .init(alignment: text.horizontalAlignment!)
         verticalAlignment = .init(alignment: text.verticalAlignment!)
         delay = text.delay!
@@ -255,6 +257,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         text.fontSize = fontSize
         text.fontDesign = fontDesign
         text.fontWeight = fontWeight
+        text.fontMonospacedDigits = fontMonospacedDigits
         text.horizontalAlignment = horizontalAlignment.toSettings()
         text.verticalAlignment = verticalAlignment.toSettings()
         text.delay = delay

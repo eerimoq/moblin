@@ -519,6 +519,14 @@ struct WidgetTextSettingsView: View {
                         .setFontWeight(weight: widget.text.fontWeight!.toSystem())
                 }
             }
+            Toggle(isOn: Binding(get: {
+                widget.text.fontMonospacedDigits!
+            }, set: { value in
+                widget.text.fontMonospacedDigits = value
+                model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits!)
+            })) {
+                Text("Monospaced digits")
+            }
         } header: {
             Text("Font")
         }

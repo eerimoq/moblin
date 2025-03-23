@@ -3829,6 +3829,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 fontSize: CGFloat(widget.text.fontSize!),
                 fontDesign: widget.text.fontDesign!.toSystem(),
                 fontWeight: widget.text.fontWeight!.toSystem(),
+                fontMonospacedDigits: widget.text.fontMonospacedDigits!,
                 horizontalAlignment: widget.text.horizontalAlignment!.toSystem(),
                 verticalAlignment: widget.text.verticalAlignment!.toSystem(),
                 settingName: widget.name,
