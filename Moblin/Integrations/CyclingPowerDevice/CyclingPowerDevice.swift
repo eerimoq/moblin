@@ -221,6 +221,7 @@ class CyclingPowerDevice: NSObject {
     private var previousRevolutionsTime: UInt16?
     private var averagePower = AverageMeasurementCalculator()
     private var averageCadence = AverageMeasurementCalculator()
+    private var latestAverageCadenceUpdateTime = ContinuousClock.now
 
     func start(deviceId: UUID?) {
         cyclingPowerDeviceDispatchQueue.async {
@@ -387,8 +388,12 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
             previousRevolutionsTime = time
         }
         averagePower.update(value: Int(measurement.instantaneousPower))
+        let now = ContinuousClock.now
         if cadence != -1.0 {
             averageCadence.update(value: Int(cadence))
+            latestAverageCadenceUpdateTime = now
+        } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
+            averageCadence.update(value: 0)
         }
         delegate?.cyclingPowerStatus(self, power: averagePower.average(), cadence: averageCadence.averageIngoreZeros())
     }
