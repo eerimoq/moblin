@@ -571,8 +571,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "-keine-"
+            "state" : "translated",
+            "value" : "-- Keine --"
           }
         },
         "el" : {
@@ -11744,7 +11744,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein Gerät"
+            "value" : "ein Gerät"
           }
         },
         "el" : {
@@ -77703,8 +77703,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Monospaced -Ziffern"
+            "state" : "translated",
+            "value" : "Einzeilige Ziffern"
           }
         },
         "el" : {
@@ -93809,7 +93809,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rennen"
           }
         },
@@ -97871,8 +97871,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Remote -Szene"
+            "state" : "translated",
+            "value" : "Remote Szene"
           }
         },
         "el" : {
@@ -108531,8 +108531,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Show City"
+            "state" : "translated",
+            "value" : "Stadt anzeigen"
           }
         },
         "el" : {
@@ -108797,8 +108797,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Show Country"
+            "state" : "translated",
+            "value" : "Land anzeigen"
           }
         },
         "el" : {
@@ -108927,8 +108927,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Show Country Flag"
+            "state" : "translated",
+            "value" : "Länder Flagge anzeigen"
           }
         },
         "el" : {
@@ -109057,8 +109057,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie die Fahrradkadenz"
+            "state" : "translated",
+            "value" : "Trittfrequenz anzeigen"
           }
         },
         "el" : {
@@ -109187,8 +109187,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie die Radsportkraft"
+            "state" : "translated",
+            "value" : "Leistung beim Radfahren anzeigen"
           }
         },
         "el" : {
@@ -111067,8 +111067,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie den Tesla -Batteriestand"
+            "state" : "translated",
+            "value" : "Tesla Batteriestand anzeigen"
           }
         },
         "el" : {
@@ -111197,8 +111197,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tesla Drive -Informationen anzeigen"
+            "state" : "translated",
+            "value" : "Tesla Fahrinformationen anzeigen"
           }
         },
         "el" : {
@@ -111327,8 +111327,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie Tesla Media -Informationen"
+            "state" : "translated",
+            "value" : "Tesla Medieninformationen anzeigen"
           }
         },
         "el" : {
@@ -124163,8 +124163,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tippen Sie unten auf Elemente, um sie an den Widget -Text anzuhängen."
+            "state" : "translated",
+            "value" : "Tippe auf die Elemente unten, um sie an den Text des Widgets anzuhängen."
           }
         },
         "el" : {
@@ -134871,8 +134871,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zwilling"
+            "state" : "translated",
+            "value" : "Twin"
           }
         },
         "el" : {
@@ -144361,8 +144361,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Widgets in ausgewählter Szene werden auf dem Moblin -Gerät angezeigt, mit dem der Fernbedienungsassistent verbunden ist."
+            "state" : "translated",
+            "value" : "Widgets in der ausgewählten Szene werden auf dem Moblin Gerät angezeigt, mit dem der Fernbedienungsassistent verbunden ist."
           }
         },
         "el" : {
