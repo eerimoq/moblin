@@ -35,6 +35,7 @@ enum TextFormatPart {
     case cyclingPower
     case cyclingCadence
     case lapTimes
+    case browserTitle
 }
 
 class TextFormatLoader {
@@ -115,6 +116,8 @@ class TextFormatLoader {
                     loadItem(part: .cyclingCadence, offsetBy: 16)
                 } else if formatFromIndex.hasPrefix("{laptimes}") {
                     loadItem(part: .lapTimes, offsetBy: 10)
+                } else if formatFromIndex.hasPrefix("{browsertitle}") {
+                    loadItem(part: .browserTitle, offsetBy: 14)
                 } else {
                     index = format.index(after: index)
                 }

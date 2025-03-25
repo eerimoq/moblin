@@ -108530,6 +108530,9 @@
         }
       }
     },
+    "Show browser title" : {
+
+    },
     "Show city" : {
       "localizations" : {
         "de" : {

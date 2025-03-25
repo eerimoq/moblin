@@ -3686,12 +3686,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 teslaDrive: textEffectTeslaDrive(),
                 teslaMedia: textEffectTeslaMedia(),
                 cyclingPower: "\(cyclingPower) W",
-                cyclingCadence: "\(cyclingCadence)"
+                cyclingCadence: "\(cyclingCadence)",
+                browserTitle: getBrowserTitle()
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
         for textEffect in textEffects.values {
             textEffect.updateStats(stats: stats)
+        }
+    }
+
+    private func getBrowserTitle() -> String {
+        if showBrowser {
+            return getWebBrowser().title ?? ""
+        } else {
+            return ""
         }
     }
 

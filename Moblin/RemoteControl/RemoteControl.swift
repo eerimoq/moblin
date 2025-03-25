@@ -369,6 +369,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var teslaMedia: String
     var cyclingPower: String
     var cyclingCadence: String
+    var browserTitle: String
 
     init(stats: TextEffectStats) {
         bitrateAndTotal = stats.bitrateAndTotal
@@ -395,6 +396,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         teslaMedia = stats.teslaMedia
         cyclingPower = stats.cyclingPower
         cyclingCadence = stats.cyclingCadence
+        browserTitle = stats.browserTitle
     }
 
     func toStats() -> TextEffectStats {
@@ -422,7 +424,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                teslaDrive: teslaDrive,
                                teslaMedia: teslaMedia,
                                cyclingPower: cyclingPower,
-                               cyclingCadence: cyclingCadence)
+                               cyclingCadence: cyclingCadence,
+                               browserTitle: browserTitle)
     }
 }
 

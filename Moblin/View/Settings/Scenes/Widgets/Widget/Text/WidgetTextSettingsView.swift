@@ -268,6 +268,7 @@ private struct TextSelectionView: View {
                 FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
                 FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
                 FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
+                FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
             } header: {
                 Text("General")
             }

@@ -46,6 +46,7 @@ struct TextEffectStats {
     let teslaMedia: String
     let cyclingPower: String
     let cyclingCadence: String
+    let browserTitle: String
 }
 
 private enum PartData: Equatable {
@@ -161,6 +162,8 @@ private class Formatter {
                 formatCyclingCadence(stats: stats)
             case .lapTimes:
                 formatLapTimes()
+            case .browserTitle:
+                formatBrowserTitle(stats: stats)
             }
             partId += 1
         }
@@ -419,6 +422,10 @@ private class Formatter {
             }
         }
         lapTimesIndex += 1
+    }
+
+    private func formatBrowserTitle(stats: TextEffectStats) {
+        parts.append(.init(id: partId, data: .text(stats.browserTitle)))
     }
 }
 
