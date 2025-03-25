@@ -667,6 +667,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var videoSourceRotation: Double? = 0.0
     var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
     var overrideVideoStabilizationMode: Bool? = false
+    var fillFrame: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -4930,6 +4931,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.text.fontMonospacedDigits == nil {
             widget.text.fontMonospacedDigits = false
+            store()
+        }
+        for scene in realDatabase.scenes where scene.fillFrame == nil {
+            scene.fillFrame = false
             store()
         }
     }

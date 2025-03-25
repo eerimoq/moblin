@@ -172,6 +172,7 @@ final class VideoUnit: NSObject {
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
     private var outputSize = CGSize(width: 1920, height: 1080)
+    private var fillFrame = true
     let session = makeCaptureSession()
     private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
     weak var mixer: Mixer?
@@ -336,7 +337,8 @@ final class VideoUnit: NSObject {
         _ replaceVideo: UUID?,
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double
+        _ ignoreFramesAfterAttachSeconds: Double,
+        _ fillFrame: Bool
     ) throws {
         output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         mixerLockQueue.async {
@@ -345,6 +347,7 @@ final class VideoUnit: NSObject {
             self.prepareFirstFrame()
             self.showCameraPreview = showCameraPreview
             self.externalDisplayPreview = externalDisplayPreview
+            self.fillFrame = fillFrame
         }
         session.beginConfiguration()
         defer {
@@ -692,7 +695,7 @@ final class VideoUnit: NSObject {
         var scaleFactor: Double
         var x: Double
         var y: Double
-        if outputRatio > imageRatio {
+        if (fillFrame && (outputRatio < imageRatio)) || (!fillFrame && (outputRatio > imageRatio)) {
             scaleFactor = Double(outputSize.width) / image.extent.width
             x = 0
             y = (Double(outputSize.height) - image.extent.height * scaleFactor) / 2
@@ -704,6 +707,7 @@ final class VideoUnit: NSObject {
         return image
             .transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
             .transformed(by: CGAffineTransform(translationX: x, y: y))
+            .cropped(to: CGRect(x: 0, y: 0, width: outputSize.width, height: outputSize.height))
             .composited(over: getBlackImage(
                 width: Double(outputSize.width),
                 height: Double(outputSize.height)

@@ -154,6 +154,14 @@ struct SceneSettingsView: View {
                 if scene.overrideVideoStabilizationMode! {
                     VideoStabilizationView(scene: scene, mode: scene.videoStabilizationMode!.toString())
                 }
+                Toggle(isOn: Binding(get: {
+                    scene.fillFrame!
+                }, set: { value in
+                    scene.fillFrame = value
+                    model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                })) {
+                    Text("Fill frame")
+                }
             } header: {
                 Text("Video source")
             } footer: {

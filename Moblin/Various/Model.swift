@@ -5836,16 +5836,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             attachCamera(scene: scene, position: .front)
             isFrontCameraSelected = true
         case .rtmp:
-            attachReplaceCamera(cameraId: scene.rtmpCameraId!)
+            attachReplaceCamera(cameraId: scene.rtmpCameraId!, scene: scene)
         case .srtla:
-            attachReplaceCamera(cameraId: scene.srtlaCameraId!)
+            attachReplaceCamera(cameraId: scene.srtlaCameraId!, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.mediaPlayerCameraId!]?.activate()
-            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!)
+            attachReplaceCamera(cameraId: scene.mediaPlayerCameraId!, scene: scene)
         case .external:
             attachExternalCamera(scene: scene)
         case .screenCapture:
-            attachReplaceCamera(cameraId: screenCaptureCameraId)
+            attachReplaceCamera(cameraId: screenCaptureCameraId, scene: scene)
         case .backTripleLowEnergy:
             attachBackTripleLowEnergyCamera()
         case .backDualLowEnergy:
@@ -6669,7 +6669,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             externalDisplayPreview: false,
             videoStabilizationMode: .off,
             videoMirrored: false,
-            ignoreFramesAfterAttachSeconds: 0.0
+            ignoreFramesAfterAttachSeconds: 0.0,
+            fillFrame: false
         )
     }
 
@@ -6876,6 +6877,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             videoStabilizationMode: getVideoStabilizationMode(scene: scene),
             videoMirrored: getVideoMirroredOnStream(),
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+            fillFrame: getFillFrame(scene: scene),
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
@@ -6901,6 +6903,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return Double(database.debug.cameraSwitchRemoveBlackish!)
     }
 
+    private func getFillFrame(scene: SettingsScene) -> Bool {
+        return scene.fillFrame!
+    }
+
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
         if database.forceSceneSwitchTransition! {
             return Double(database.debug.cameraSwitchRemoveBlackish!)
@@ -6909,7 +6915,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func attachReplaceCamera(cameraId: UUID) {
+    private func attachReplaceCamera(cameraId: UUID, scene: SettingsScene) {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
@@ -6919,7 +6925,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             device: getVideoSourceBuiltinCameraDevice(),
             cameraPreviewLayer: cameraPreviewLayer,
             cameraId: cameraId,
-            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera()
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
+            fillFrame: getFillFrame(scene: scene)
         )
         media.usePendingAfterAttachEffects()
     }

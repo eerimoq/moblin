@@ -73,6 +73,7 @@ class SrtStream: NetStream {
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool,
         _ ignoreFramesAfterAttachSeconds: Double,
+        _ fillFrame: Bool,
         onError: ((Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
         replaceVideoCameraId: UUID? = nil
@@ -86,6 +87,7 @@ class SrtStream: NetStream {
             preferredVideoStabilizationMode,
             isVideoMirrored,
             ignoreFramesAfterAttachSeconds,
+            fillFrame,
             onError: onError,
             onSuccess: onSuccess,
             replaceVideoCameraId: replaceVideoCameraId

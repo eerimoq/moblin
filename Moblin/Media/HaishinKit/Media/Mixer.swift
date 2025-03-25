@@ -49,7 +49,8 @@ class Mixer {
         _ replaceVideo: UUID?,
         _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
         _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double
+        _ ignoreFramesAfterAttachSeconds: Double,
+        _ fillFrame: Bool
     ) throws {
         try video.attach(
             device,
@@ -59,7 +60,8 @@ class Mixer {
             replaceVideo,
             preferredVideoStabilizationMode,
             isVideoMirrored,
-            ignoreFramesAfterAttachSeconds
+            ignoreFramesAfterAttachSeconds,
+            fillFrame
         )
     }
 
