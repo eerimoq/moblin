@@ -326,8 +326,7 @@ class RemoteConnection {
     }
 
     func handleSrtAckSn(sn ackSn: UInt32) {
-        packetsInFlight = packetsInFlight
-            .filter { sn in !isSrtSnAcked(sn: sn, ackSn: ackSn) }
+        packetsInFlight = packetsInFlight.filter { sn in !isSrtSnAcked(sn: sn, ackSn: ackSn) }
     }
 
     private func handleSrtNak(packet: Data) {
@@ -378,13 +377,12 @@ class RemoteConnection {
         guard groupId.count == 256 else {
             return
         }
-        guard packet[srtControlTypeSize ..< groupId.count / 2 + srtControlTypeSize] ==
-            groupId[0 ..< groupId.count / 2]
-        else {
+        let groupIdRange = 0 ..< groupId.count / 2
+        guard packet.advanced(by: srtControlTypeSize)[groupIdRange] == groupId[groupIdRange] else {
             logger.warning("srtla: \(typeString): Wrong group id in reg 2")
             return
         }
-        onReg2?(packet[srtControlTypeSize...])
+        onReg2?(packet.advanced(by: srtControlTypeSize))
     }
 
     private func handleSrtlaReg3() {
