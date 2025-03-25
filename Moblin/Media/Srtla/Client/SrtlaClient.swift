@@ -26,7 +26,7 @@ class SrtlaNetworkInterfaces {
 
 let srtlaClientQueue = DispatchQueue(label: "com.eerimoq.srtla-client")
 
-class SrtlaClient {
+class SrtlaClient: NSObject {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?
@@ -60,6 +60,7 @@ class SrtlaClient {
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         networkInterfaces = .init()
         self.connectionPriorities = .init()
+        super.init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
         updateConnectionPriorities(connectionPriorities: connectionPriorities)
         logger.debug("srtla: SRT instead of SRTLA: \(passThrough)")
@@ -327,29 +328,13 @@ class SrtlaClient {
     }
 
     private func startRemote(connection: RemoteConnection, host: NWEndpoint.Host, port: NWEndpoint.Port) {
-        connection.onSocketConnected = {
-            self.handleRemoteConnected(connection: connection)
-        }
-        connection.onReg2 = handleGroupId(groupId:)
-        connection.onRegistered = {
-            self.handleRemoteRegistered(connection: connection)
-        }
-        connection.packetHandler = handleRemotePacket(packet:)
-        connection.onSrtAck = handleSrtAck(sn:)
-        connection.onSrtNak = handleSrtNak(sn:)
-        connection.onSrtlaAck = handleSrtlaAck(sn:)
+        connection.delegate = self
         connection.start(host: host, port: port)
     }
 
     private func stopRemote(connection: RemoteConnection) {
         connection.stop(reason: "Stopping stream")
-        connection.onSocketConnected = nil
-        connection.onReg2 = nil
-        connection.onRegistered = nil
-        connection.packetHandler = nil
-        connection.onSrtAck = nil
-        connection.onSrtNak = nil
-        connection.onSrtlaAck = nil
+        connection.delegate = nil
     }
 
     private func startListener() {
@@ -404,59 +389,6 @@ class SrtlaClient {
         totalByteCount += Int64(packet.count)
     }
 
-    private func handleRemoteConnected(connection: RemoteConnection) {
-        guard state == .waitForRemoteSocketConnected else {
-            return
-        }
-        if passThrough {
-            startListener()
-        } else {
-            connection.sendSrtlaReg1()
-            state = .waitForGroupId
-        }
-    }
-
-    private func handleRemoteRegistered(connection _: RemoteConnection) {
-        guard state == .waitForRegistered else {
-            return
-        }
-        startListener()
-    }
-
-    private func handleRemotePacket(packet: Data) {
-        localListener?.sendPacket(packet: packet)
-        totalByteCount += Int64(packet.count)
-    }
-
-    private func handleSrtAck(sn: UInt32) {
-        for connection in remoteConnections {
-            connection.handleSrtAckSn(sn: sn)
-        }
-    }
-
-    private func handleSrtNak(sn: UInt32) {
-        for connection in remoteConnections {
-            connection.handleSrtNakSn(sn: sn)
-        }
-    }
-
-    private func handleSrtlaAck(sn: UInt32) {
-        for connection in remoteConnections {
-            connection.handleSrtlaAckSn(sn: sn)
-        }
-    }
-
-    private func handleGroupId(groupId: Data) {
-        guard state == .waitForGroupId else {
-            return
-        }
-        self.groupId = groupId
-        for connection in remoteConnections {
-            connection.register(groupId: groupId)
-        }
-        state = .waitForRegistered
-    }
-
     private func selectRemoteConnection() -> RemoteConnection? {
         var selectedConnection: RemoteConnection?
         var selectedScore = -1
@@ -468,6 +400,61 @@ class SrtlaClient {
             }
         }
         return selectedConnection
+    }
+}
+
+extension SrtlaClient: RemoteConnectionDelegate {
+    func remoteConnectionOnSocketConnected(connection: RemoteConnection) {
+        guard state == .waitForRemoteSocketConnected else {
+            return
+        }
+        if passThrough {
+            startListener()
+        } else {
+            connection.sendSrtlaReg1()
+            state = .waitForGroupId
+        }
+    }
+
+    func remoteConnectionOnReg2(groupId: Data) {
+        guard state == .waitForGroupId else {
+            return
+        }
+        self.groupId = groupId
+        for connection in remoteConnections {
+            connection.register(groupId: groupId)
+        }
+        state = .waitForRegistered
+    }
+
+    func remoteConnectionOnRegistered() {
+        guard state == .waitForRegistered else {
+            return
+        }
+        startListener()
+    }
+
+    func remoteConnectionPacketHandler(packet: Data) {
+        localListener?.sendPacket(packet: packet)
+        totalByteCount += Int64(packet.count)
+    }
+
+    func remoteConnectionOnSrtAck(sn: UInt32) {
+        for connection in remoteConnections {
+            connection.handleSrtAckSn(sn: sn)
+        }
+    }
+
+    func remoteConnectionOnSrtNak(sn: UInt32) {
+        for connection in remoteConnections {
+            connection.handleSrtNakSn(sn: sn)
+        }
+    }
+
+    func remoteConnectionOnSrtlaAck(sn: UInt32) {
+        for connection in remoteConnections {
+            connection.handleSrtlaAckSn(sn: sn)
+        }
     }
 }
 
