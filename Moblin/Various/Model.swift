@@ -1575,6 +1575,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return cameraDevice != nil
     }
 
+    func stopMoblinkStreamer() {
+        moblinkStreamer?.stop()
+        moblinkStreamer = nil
+    }
+
     func reloadMoblinkStreamer() {
         stopMoblinkStreamer()
         if isMoblinkStreamerConfigured() {
@@ -1584,11 +1589,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
             moblinkStreamer?.start(delegate: self)
         }
-    }
-
-    func stopMoblinkStreamer() {
-        moblinkStreamer?.stop()
-        moblinkStreamer = nil
     }
 
     func isMoblinkStreamerConfigured() -> Bool {

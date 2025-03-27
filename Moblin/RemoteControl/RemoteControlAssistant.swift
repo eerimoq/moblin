@@ -1,7 +1,7 @@
 import Collections
 import CryptoKit
 import Foundation
-import Telegraph
+import Network
 
 protocol RemoteControlAssistantDelegate: AnyObject {
     func remoteControlAssistantConnected()
@@ -24,9 +24,9 @@ class RemoteControlAssistant: NSObject {
     private var connected: Bool = false
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
-    private var server: Server
+    private var server: NWListener?
     var connectionErrorMessage = ""
-    private var streamerWebSocket: Telegraph.WebSocket?
+    private var streamerWebSocket: NWConnection?
     private var retryStartTimer = SimpleTimer(queue: .main)
     private weak var delegate: (any RemoteControlAssistantDelegate)?
     private var streamerIdentified = false
@@ -58,11 +58,7 @@ class RemoteControlAssistant: NSObject {
         self.httpProxy = httpProxy
         self.urlSession = urlSession
         encryption = RemoteControlEncryption(password: password)
-        server = Server()
         super.init()
-        server.webSocketConfig.pingInterval = 30
-        server.webSocketConfig.readTimeout = 60
-        server.webSocketDelegate = self
     }
 
     func start() {
@@ -73,7 +69,11 @@ class RemoteControlAssistant: NSObject {
 
     func stop() {
         logger.debug("remote-control-assistant: stop")
-        server.stop(immediately: true)
+        server?.cancel()
+        server = nil
+        streamerWebSocket?.cancel()
+        streamerWebSocket = nil
+        server = nil
         stopRetryStartTimer()
         twitchEventSub?.stop()
         twitchChat?.stop()
@@ -231,7 +231,13 @@ class RemoteControlAssistant: NSObject {
 
     private func startInternal() {
         do {
-            try server.start(port: Endpoint.Port(port))
+            let parameters = NWParameters.tcp
+            let options = NWProtocolWebSocket.Options()
+            options.autoReplyPing = true
+            parameters.defaultProtocolStack.applicationProtocols.append(options)
+            server = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
+            server?.newConnectionHandler = handleNewConnection
+            server?.start(queue: .main)
             stopRetryStartTimer()
         } catch {
             logger.debug("remote-control-assistant: Failed to start server with error \(error)")
@@ -269,13 +275,16 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func closeStreamer() {
-        streamerWebSocket?.close(immediately: false)
+        streamerWebSocket?.cancel()
         streamerWebSocket = nil
     }
 
-    private func handleConnected(webSocket: Telegraph.WebSocket) {
+    private func handleNewConnection(webSocket: NWConnection) {
         logger.debug("remote-control-assistant: Streamer connected")
+        streamerWebSocket?.cancel()
         streamerWebSocket = webSocket
+        webSocket.start(queue: .main)
+        receivePacket(webSocket: webSocket)
         challenge = randomString()
         salt = randomString()
         send(message: .hello(
@@ -286,19 +295,35 @@ class RemoteControlAssistant: NSObject {
         startKeepAlive()
     }
 
-    private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
-        if let error {
-            logger.debug("remote-control-assistant: Streamer disconnected \(error)")
-        } else {
-            logger.debug("remote-control-assistant: Streamer disconnected")
-        }
+    private func handleDisconnected(webSocket _: NWConnection) {
+        logger.debug("remote-control-assistant: Streamer disconnected")
         stopKeepAlive()
+        streamerWebSocket?.cancel()
         streamerWebSocket = nil
         connected = false
         delegate?.remoteControlAssistantDisconnected()
     }
 
-    private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
+    private func receivePacket(webSocket: NWConnection) {
+        webSocket.receiveMessage { data, context, _, _ in
+            if let data, !data.isEmpty {
+                if context?.webSocketOperation() == .text {
+                    self.handleMessage(webSocket: webSocket, packet: data)
+                }
+                self.receivePacket(webSocket: webSocket)
+            } else {
+                self.handleDisconnected(webSocket: webSocket)
+            }
+        }
+    }
+
+    private func handleMessage(webSocket: NWConnection, packet: Data) {
+        if let text = String(bytes: packet, encoding: .utf8) {
+            handleStringMessage(webSocket: webSocket, message: text)
+        }
+    }
+
+    private func handleStringMessage(webSocket _: NWConnection, message: String) {
         // logger.debug("remote-control-assistant: Received \(message.prefix(250))")
         do {
             let message = try RemoteControlMessageToAssistant.fromJson(data: message)
@@ -486,49 +511,12 @@ class RemoteControlAssistant: NSObject {
             return
         }
         // logger.debug("remote-control-assistant: Sending \(text)")
-        streamerWebSocket?.send(text: text)
-    }
-}
-
-extension RemoteControlAssistant: ServerWebSocketDelegate {
-    func server(
-        _: Telegraph.Server,
-        webSocketDidConnect webSocket: Telegraph.WebSocket,
-        handshake _: Telegraph.HTTPRequest
-    ) {
-        DispatchQueue.main.async {
-            self.handleConnected(webSocket: webSocket)
-        }
-    }
-
-    func server(_: Telegraph.Server, webSocketDidDisconnect webSocket: Telegraph.WebSocket, error: Error?) {
-        DispatchQueue.main.async {
-            self.handleDisconnected(webSocket: webSocket, error: error)
-        }
-    }
-
-    func server(
-        _: Telegraph.Server,
-        webSocket: Telegraph.WebSocket,
-        didReceiveMessage message: Telegraph.WebSocketMessage
-    ) {
-        guard webSocket.isSame(other: streamerWebSocket) else {
-            return
-        }
-        switch message.payload {
-        case let .text(data):
-            DispatchQueue.main.async {
-                self.handleStringMessage(webSocket: webSocket, message: data)
-            }
-        default:
-            return
-        }
-    }
-}
-
-extension Telegraph.WebSocket {
-    func isSame(other: Telegraph.WebSocket?) -> Bool {
-        return localEndpoint == other?.localEndpoint && remoteEndpoint == other?.remoteEndpoint
+        let metadata = NWProtocolWebSocket.Metadata(opcode: .text)
+        let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
+        streamerWebSocket?.send(content: text.data(using: .utf8),
+                                contentContext: context,
+                                isComplete: true,
+                                completion: .idempotent)
     }
 }
 

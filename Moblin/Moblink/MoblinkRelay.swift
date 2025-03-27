@@ -277,15 +277,13 @@ private class Relay: NSObject {
         streamerConnection?.receiveMessage { data, _, _, error in
             if let data, !data.isEmpty {
                 self.handlePacketFromStreamer(packet: data)
-            }
-            if let error {
-                logger.info("moblink-client: \(self.name): Streamer receive error \(error)")
+                self.receiveStreamerPacket()
+            } else {
+                logger.info("moblink-client: \(self.name): Streamer receive error")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Streamer receive error")
                 }
-                return
             }
-            self.receiveStreamerPacket()
         }
     }
 
