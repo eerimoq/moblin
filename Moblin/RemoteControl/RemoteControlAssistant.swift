@@ -324,7 +324,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func handleStringMessage(webSocket _: NWConnection, message: String) {
-        // logger.debug("remote-control-assistant: Received \(message.prefix(250))")
+        // logger.info("remote-control-assistant: Received \(message.prefix(250))")
         do {
             let message = try RemoteControlMessageToAssistant.fromJson(data: message)
             switch message {

@@ -54,7 +54,7 @@ private class Relay {
     }
 
     func handleStringMessage(message: String) {
-        // logger.info("moblink-server: Received \(message)")
+        // logger.info("moblink-streamer: Received \(message)")
         do {
             let message = try MoblinkMessageToStreamer.fromJson(data: message)
             switch message {
@@ -64,7 +64,7 @@ private class Relay {
                 try handleResponse(id: id, result: result, data: data)
             }
         } catch {
-            logger.info("moblink-server: Failed to process message with error \(error)")
+            logger.info("moblink-streamer: Failed to process message with error \(error)")
             webSocket.connection.cancel()
         }
     }
@@ -86,7 +86,7 @@ private class Relay {
             }
             self.batteryPercentage = batteryPercentage
         } onError: { error in
-            logger.info("moblink-server: Status failed with \(error)")
+            logger.info("moblink-streamer: Status failed with \(error)")
         }
     }
 
@@ -105,7 +105,7 @@ private class Relay {
                 self.tunnelEndpoint = endpoint
                 self.streamer?.delegate?.moblinkStreamerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
             default:
-                logger.info("moblink-server: Missing relay host")
+                logger.info("moblink-streamer: Missing relay host")
             }
         }
     }
@@ -120,14 +120,14 @@ private class Relay {
     private func executeStartTunnel(address: String, port: UInt16,
                                     onSuccess: @escaping (UUID, String, UInt16) -> Void)
     {
-        logger.info("moblink-server: Starting tunnel to destination \(address):\(port)")
+        logger.info("moblink-streamer: Starting tunnel to destination \(address):\(port)")
         performRequest(data: .startTunnel(address: address, port: port)) { response in
             guard case let .startTunnel(port: port) = response else {
                 return
             }
             onSuccess(self.relayId, self.name, port)
         } onError: { error in
-            logger.info("moblink-server: Start tunnel failed with \(error)")
+            logger.info("moblink-streamer: Start tunnel failed with \(error)")
         }
     }
 
@@ -154,7 +154,7 @@ private class Relay {
             throw "Streamer not identified"
         }
         guard let request = requests[id] else {
-            logger.info("moblink-server: Unexpected id in response")
+            logger.info("moblink-streamer: Unexpected id in response")
             return
         }
         switch result {
@@ -163,11 +163,11 @@ private class Relay {
         case .wrongPassword:
             request.onError("Wrong password")
         case .notIdentified:
-            logger.info("moblink-server: Not identified")
+            logger.info("moblink-streamer: Not identified")
         case .alreadyIdentified:
-            logger.info("moblink-server: Already identified")
+            logger.info("moblink-streamer: Already identified")
         case .unknownRequest:
-            logger.info("moblink-server: Unknown request")
+            logger.info("moblink-streamer: Unknown request")
         }
     }
 
@@ -190,7 +190,7 @@ private class Relay {
         guard let text = message.toJson() else {
             return
         }
-        // logger.info("moblink-server: Sending \(text)")
+        // logger.info("moblink-streamer: Sending \(text)")
         let metadata = NWProtocolWebSocket.Metadata(opcode: .text)
         let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
         webSocket.connection.send(content: text.data(using: .utf8),
@@ -224,13 +224,13 @@ class MoblinkStreamer: NSObject {
 
     func start(delegate: MoblinkStreamerDelegate) {
         stop()
-        logger.debug("moblink-server: start")
+        logger.debug("moblink-streamer: start")
         self.delegate = delegate
         startInternal()
     }
 
     func stop() {
-        logger.debug("moblink-server: stop")
+        logger.debug("moblink-streamer: stop")
         server?.cancel()
         server = nil
         stopRetryStartTimer()
@@ -280,7 +280,7 @@ class MoblinkStreamer: NSObject {
             server?.start(queue: .main)
             stopRetryStartTimer()
         } catch {
-            logger.debug("moblink-server: Failed to start server with error \(error)")
+            logger.debug("moblink-streamer: Failed to start server with error \(error)")
             connectionErrorMessage = error.localizedDescription
             startRetryStartTimer()
         }
@@ -305,7 +305,7 @@ class MoblinkStreamer: NSObject {
     }
 
     private func handleNewConnection(connection: NWConnection) {
-        logger.info("moblink-server: Relay connected")
+        logger.debug("moblink-streamer: Relay connected")
         let webSocket = NWConnectionWithId(connection: connection)
         connection.start(queue: .main)
         receivePacket(webSocket: webSocket)
@@ -318,8 +318,8 @@ class MoblinkStreamer: NSObject {
         relay.startTunnel(address: destinationAddress, port: destinationPort)
     }
 
-    private func handleDisconnected(webSocket: NWConnectionWithId, error: Error) {
-        logger.info("moblink-server: Relay disconnected \(error)")
+    private func handleDisconnected(webSocket: NWConnectionWithId) {
+        logger.debug("moblink-streamer: Relay disconnected")
         if let relay = relays.first(where: { $0.webSocket == webSocket }) {
             relay.stop()
         }
@@ -341,7 +341,6 @@ class MoblinkStreamer: NSObject {
 
     private func handleMessage(webSocket: NWConnectionWithId, packet: Data) {
         if let text = String(bytes: packet, encoding: .utf8) {
-            // logger.info("moblink-server: Got \(data)")
             guard let relay = relays.first(where: { $0.webSocket == webSocket }) else {
                 return
             }

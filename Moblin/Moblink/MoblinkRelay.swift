@@ -69,7 +69,7 @@ private class Relay: NSObject {
         guard !started else {
             return
         }
-        logger.info("moblink-client: \(name): Start")
+        logger.info("moblink-relay: \(name): Start")
         started = true
         startInternal()
     }
@@ -78,7 +78,7 @@ private class Relay: NSObject {
         guard started else {
             return
         }
-        logger.info("moblink-client: \(name): Stop")
+        logger.info("moblink-relay: \(name): Stop")
         stopInternal()
         started = false
     }
@@ -103,7 +103,7 @@ private class Relay: NSObject {
     }
 
     private func reconnect(reason: String) {
-        logger.info("moblink-client: \(name): Reconnecting soon with reason \(reason)")
+        logger.info("moblink-relay: \(name): Reconnecting soon with reason \(reason)")
         stopInternal()
         reconnectTimer.startSingleShot(timeout: 5.0) { [weak self] in
             self?.startInternal()
@@ -114,7 +114,7 @@ private class Relay: NSObject {
         guard state != self.state else {
             return
         }
-        logger.info("moblink-client: \(name): State change \(self.state) -> \(state)")
+        logger.info("moblink-relay: \(name): State change \(self.state) -> \(state)")
         self.state = state
         relay?.relayStateChanged()
     }
@@ -124,7 +124,7 @@ private class Relay: NSObject {
             let message = try message.toJson()
             webSocket.send(string: message)
         } catch {
-            logger.info("moblink-client: \(name): Encode failed")
+            logger.info("moblink-relay: \(name): Encode failed")
         }
     }
 
@@ -135,7 +135,7 @@ private class Relay: NSObject {
                 handleHello(apiVersion: apiVersion, authentication: authentication)
             case let .identified(result: result):
                 if !handleIdentified(result: result) {
-                    logger.info("moblink-client: \(name): Failed to identify")
+                    logger.info("moblink-relay: \(name): Failed to identify")
                     return
                 }
                 setState(state: .connected)
@@ -143,7 +143,7 @@ private class Relay: NSObject {
                 handleRequest(id: id, data: data)
             }
         } catch {
-            logger.info("moblink-client: \(name): Decode failed")
+            logger.info("moblink-relay: \(name): Decode failed")
         }
     }
 
@@ -184,14 +184,14 @@ private class Relay: NSObject {
 
     private func handleStartTunnel(id: Int, address: String, port: UInt16) {
         stopTunnel()
-        logger.info("moblink-client: \(name): Start tunnel to \(address):\(port)")
+        logger.info("moblink-relay: \(name): Start tunnel to \(address):\(port)")
         destination = .hostPort(host: NWEndpoint.Host(address), port: NWEndpoint.Port(integerLiteral: port))
         do {
             let options = NWProtocolUDP.Options()
             let parameters = NWParameters(dtls: .none, udp: options)
             streamerListener = try NWListener(using: parameters)
         } catch {
-            logger.error("moblink-client: \(name): Failed to create streamer listener with error \(error)")
+            logger.error("moblink-relay: \(name): Failed to create streamer listener with error \(error)")
             reconnect(reason: "Failed to create listener")
             return
         }
@@ -254,7 +254,7 @@ private class Relay: NSObject {
     }
 
     private func handleDestinationStateUpdate(to state: NWConnection.State) {
-        logger.debug("moblink-client: \(name): Destination state change to \(state)")
+        logger.debug("moblink-relay: \(name): Destination state change to \(state)")
         DispatchQueue.main.async {
             switch state {
             case .ready:
@@ -274,12 +274,12 @@ private class Relay: NSObject {
     }
 
     private func receiveStreamerPacket() {
-        streamerConnection?.receiveMessage { data, _, _, error in
+        streamerConnection?.receiveMessage { data, _, _, _ in
             if let data, !data.isEmpty {
                 self.handlePacketFromStreamer(packet: data)
                 self.receiveStreamerPacket()
             } else {
-                logger.info("moblink-client: \(self.name): Streamer receive error")
+                logger.info("moblink-relay: \(self.name): Streamer receive error")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Streamer receive error")
                 }
@@ -298,7 +298,7 @@ private class Relay: NSObject {
                 self.handlePacketFromDestination(packet: data)
             }
             if let error {
-                logger.info("moblink-client: \(self.name): Destination receive error \(error)")
+                logger.info("moblink-relay: \(self.name): Destination receive error \(error)")
                 DispatchQueue.main.async {
                     self.reconnect(reason: "Destination receive error")
                 }
@@ -442,6 +442,6 @@ class MoblinkRelay: NSObject {
         mainRelay?.isMain = true
         self.relays = relays
         relayStateChanged()
-        // logger.info("moblink-client: Number of relays is \(relays.count)")
+        // logger.info("moblink-relay: Number of relays is \(relays.count)")
     }
 }
