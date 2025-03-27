@@ -46,7 +46,6 @@ class RemoteConnection {
     private var connectTimer = SimpleTimer(queue: srtlaClientQueue)
     private var keepaliveTimer = SimpleTimer(queue: srtlaClientQueue)
     private var latestReceivedTime = ContinuousClock.now
-    private var latestSentTime = ContinuousClock.now
     private var packetsInFlight: Set<UInt32> = []
     private var windowSize: Int = 0
     private var numberOfNullPacketsSent: UInt64 = 0
@@ -64,8 +63,6 @@ class RemoteConnection {
     var rtt: Int = 0
     let interface: NWInterface?
     private var dataPacketsToSend: [Data] = []
-    private var latestDataSentTime = ContinuousClock.now
-
     private var totalDataSentByteCount: UInt64 = 0
 
     private var nullPacket: Data = {
@@ -195,7 +192,6 @@ class RemoteConnection {
                 self.reconnect(reason: "Connection timeout")
             }
             latestReceivedTime = .now
-            latestSentTime = .now
             packetsInFlight.removeAll()
             totalDataSentByteCount = 0
             windowSize = windowDefault * windowMultiply
@@ -235,6 +231,7 @@ class RemoteConnection {
 
     private func sendPacket(packet: Data) {
         if isSrtDataPacket(packet: packet) {
+            packetsInFlight.insert(getSrtSequenceNumber(packet: packet))
             var numberOfMpegTsPackets = (packet.count - 16) / MpegTsPacket.size
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
             if numberOfMpegTsPackets < mpegtsPacketsPerPacket {
@@ -251,40 +248,36 @@ class RemoteConnection {
                 totalDataSentByteCount += UInt64(packet.count)
             }
         } else {
-            sendPacketInternal(packet: packet)
+            sendControlPacketInternal(packet: packet)
         }
+    }
+
+    private func sendControlPacketInternal(packet: Data) {
+        connection?.send(content: packet, completion: .idempotent)
     }
 
     private func sendDataPacketInternal(packet: Data) {
         if srtlaBatchSend {
-            let now = ContinuousClock.now
             dataPacketsToSend.append(packet)
-            // For slightly better performance.
-            if latestDataSentTime.duration(to: now) > .milliseconds(10) {
-                latestSentTime = now
-                latestDataSentTime = now
-                connection?.batch {
-                    for packet in dataPacketsToSend {
-                        connection?.send(content: packet, completion: .idempotent)
-                    }
-                }
-                dataPacketsToSend.removeAll()
-            }
         } else {
-            sendPacketInternal(packet: packet)
+            connection?.send(content: packet, completion: .idempotent)
         }
-    }
-
-    private func sendPacketInternal(packet: Data) {
-        latestSentTime = .now
-        connection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 
     func sendSrtPacket(packet: Data) {
-        if isSrtDataPacket(packet: packet) {
-            packetsInFlight.insert(getSrtSequenceNumber(packet: packet))
-        }
         sendPacket(packet: packet)
+    }
+
+    func flushDataPackets() {
+        guard !dataPacketsToSend.isEmpty else {
+            return
+        }
+        connection?.batch {
+            for packet in dataPacketsToSend {
+                connection?.send(content: packet, completion: .idempotent)
+            }
+        }
+        dataPacketsToSend.removeAll()
     }
 
     func register(groupId: Data) {

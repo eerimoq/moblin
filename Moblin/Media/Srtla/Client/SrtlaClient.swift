@@ -47,6 +47,7 @@ class SrtlaClient: NSObject {
     private var totalByteCount: Int64 = 0
     private var networkInterfaces: SrtlaNetworkInterfaces
     private var connectionPriorities: [SettingsStreamSrtConnectionPriority]
+    private var latestFlushDataPacketsTime = ContinuousClock.now
 
     init(
         delegate: SrtlaDelegate,
@@ -386,6 +387,17 @@ class SrtlaClient: NSObject {
             return
         }
         connection.sendSrtPacket(packet: packet)
+        if srtlaBatchSend {
+            if isSrtDataPacket(packet: packet) {
+                let now = ContinuousClock.now
+                if latestFlushDataPacketsTime.duration(to: now) > .milliseconds(25) {
+                    latestFlushDataPacketsTime = now
+                    for remoteConnection in remoteConnections {
+                        remoteConnection.flushDataPackets()
+                    }
+                }
+            }
+        }
         totalByteCount += Int64(packet.count)
     }
 
