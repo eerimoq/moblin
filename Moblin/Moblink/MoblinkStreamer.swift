@@ -210,7 +210,6 @@ class MoblinkStreamer: NSObject {
     private var relays: [Relay] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?
-    private var bonjourService: NetService?
     @AppStorage("moblinkServerId") var id = ""
 
     init(port: UInt16, password: String) {
@@ -239,8 +238,6 @@ class MoblinkStreamer: NSObject {
         }
         relays.removeAll()
         delegate = nil
-        bonjourService?.stop()
-        bonjourService = nil
     }
 
     func startTunnels(address: String, port: UInt16) {
@@ -276,6 +273,12 @@ class MoblinkStreamer: NSObject {
             options.autoReplyPing = true
             parameters.defaultProtocolStack.applicationProtocols.append(options)
             server = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
+            server?.service = NWListener.Service(
+                name: id,
+                type: moblinkBonjourType,
+                domain: moblinkBonjourDomain,
+                txtRecord: NWTXTRecord(["name": UIDevice.current.name])
+            )
             server?.newConnectionHandler = handleNewConnection
             server?.start(queue: .main)
             stopRetryStartTimer()
@@ -284,14 +287,6 @@ class MoblinkStreamer: NSObject {
             connectionErrorMessage = error.localizedDescription
             startRetryStartTimer()
         }
-        bonjourService?.stop()
-        bonjourService = NetService(domain: moblinkBonjourDomain,
-                                    type: moblinkBonjourType,
-                                    name: id,
-                                    port: Int32(port))
-        let data = NetService.data(fromTXTRecord: ["name": UIDevice.current.name.utf8Data])
-        bonjourService?.setTXTRecord(data)
-        bonjourService?.publish(options: .noAutoRename)
     }
 
     private func startRetryStartTimer() {
