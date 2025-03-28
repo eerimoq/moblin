@@ -5342,6 +5342,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 handleChatBotMessageTesla(command: command)
             case "snapshot":
                 handleChatBotMessageSnapshotWithMessage(command: command)
+            case "reaction":
+                handleChatBotMessageReaction(command: command)
+            case "scene":
+                handleChatBotMessageScene(command: command)
             default:
                 break
             }
@@ -5497,6 +5501,50 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    private func handleChatBotMessageReaction(command: ChatBotCommand) {
+        guard #available(iOS 17, *) else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.reaction!,
+            command: command
+        ) {
+            let reaction: AVCaptureReactionType
+            switch command.popFirst() {
+            case "fireworks":
+                reaction = .fireworks
+            case "balloons":
+                reaction = .balloons
+            case "hearts":
+                reaction = .heart
+            case "confetti":
+                reaction = .confetti
+            case "lasers":
+                reaction = .lasers
+            case "rain":
+                reaction = .rain
+            default:
+                return
+            }
+            guard self.cameraDevice?.availableReactionTypes.contains(reaction) == true else {
+                return
+            }
+            self.cameraDevice?.performEffect(for: reaction)
+        }
+    }
+
+    private func handleChatBotMessageScene(command: ChatBotCommand) {
+        guard let sceneName = command.popFirst() else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions!.scene!,
+            command: command
+        ) {
+            self.selectSceneByName(name: sceneName)
+        }
+    }
+
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions!.alert!,
@@ -5547,6 +5595,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 type = .sepia
             case "triple":
                 type = .triple
+            case "twin":
+                type = .twin
             case "pixellate":
                 type = .pixellate
             case "4:3":
@@ -6385,6 +6435,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func getSelectedScene() -> SettingsScene? {
         return findEnabledScene(id: selectedSceneId)
+    }
+
+    private func selectSceneByName(name: String) {
+        if let scene = enabledScenes.first(where: { $0.name.lowercased() == name.lowercased() }) {
+            selectScene(id: scene.id)
+        }
     }
 
     private func selectScene(id: UUID) {

@@ -96,6 +96,19 @@ struct ChatBotCommandsSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.reaction!)
+                } label: {
+                    Text("!moblin reaction <reaction>")
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Perform Apple reaction.")
+                    Text("")
+                    Text("<reaction> is hearts, fireworks, balloons, confetti or lasers.")
+                }
+            }
+            Section {
+                NavigationLink {
                     PermissionsSettingsView(permissions: permissions.filter!)
                 } label: {
                     Text("!moblin filter <filter> <on/off>")
@@ -108,6 +121,15 @@ struct ChatBotCommandsSettingsView: View {
                     Text("")
                     Text("<on/off> is on or off.")
                 }
+            }
+            Section {
+                NavigationLink {
+                    PermissionsSettingsView(permissions: permissions.scene!)
+                } label: {
+                    Text("!moblin scene <name>")
+                }
+            } footer: {
+                Text("Switch to given scene.")
             }
             Section {
                 NavigationLink {

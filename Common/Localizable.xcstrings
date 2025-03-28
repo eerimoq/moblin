@@ -1737,6 +1737,9 @@
         }
       }
     },
+    "!moblin reaction <reaction>" : {
+
+    },
     "!moblin say <message>" : {
       "localizations" : {
         "de" : {
@@ -1866,6 +1869,9 @@
           }
         }
       }
+    },
+    "!moblin scene <name>" : {
+
     },
     "!moblin snapshot <optional message>" : {
       "localizations" : {
@@ -6902,6 +6908,9 @@
           }
         }
       }
+    },
+    "<reaction> is hearts, fireworks, balloons, confetti or lasers." : {
+
     },
     "★" : {
       "localizations" : {
@@ -88942,6 +88951,9 @@
         }
       }
     },
+    "Perform Apple reaction." : {
+
+    },
     "Permissions" : {
       "localizations" : {
         "de" : {
@@ -123088,6 +123100,9 @@
           }
         }
       }
+    },
+    "Switch to given scene." : {
+
     },
     "Switching between mono and stereo mics may not work." : {
       "localizations" : {

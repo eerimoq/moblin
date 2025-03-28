@@ -1829,6 +1829,8 @@ class SettingsChatBotPermissions: Codable {
     var filter: SettingsChatBotPermissionsCommand? = .init()
     var tesla: SettingsChatBotPermissionsCommand? = .init()
     var audio: SettingsChatBotPermissionsCommand? = .init()
+    var reaction: SettingsChatBotPermissionsCommand? = .init()
+    var scene: SettingsChatBotPermissionsCommand? = .init()
 }
 
 class SettingsChat: Codable {
@@ -4935,6 +4937,14 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.fillFrame == nil {
             scene.fillFrame = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.reaction == nil {
+            realDatabase.chat.botCommandPermissions!.reaction = .init()
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.scene == nil {
+            realDatabase.chat.botCommandPermissions!.scene = .init()
             store()
         }
     }
