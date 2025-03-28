@@ -50,8 +50,8 @@ class RemoteConnection {
     private var windowSize: Int = 0
     private var numberOfNullPacketsSent: UInt64 = 0
     private var numberOfNonNullPacketsSent: UInt64 = 0
-    private var hasGroupId: Bool = false
-    private var groupId: Data!
+    private var hasFullGroupId: Bool = false
+    private var groupId = Data()
     private var priority: Float
     private var state = State.idle {
         didSet {
@@ -198,7 +198,7 @@ class RemoteConnection {
             if type == nil {
                 self.state = .registered
                 connectTimer.stop()
-            } else if self.state == .shouldSendRegisterRequest || hasGroupId {
+            } else if self.state == .shouldSendRegisterRequest || hasFullGroupId {
                 sendSrtlaReg2()
             } else {
                 self.state = .shouldSendRegisterRequest
@@ -282,7 +282,7 @@ class RemoteConnection {
 
     func register(groupId: Data) {
         self.groupId = groupId
-        hasGroupId = true
+        hasFullGroupId = true
         if state == .shouldSendRegisterRequest {
             sendSrtlaReg2()
         }
