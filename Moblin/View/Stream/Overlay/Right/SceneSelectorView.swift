@@ -26,8 +26,7 @@ struct StreamOverlayRightSceneSelectorView: View {
                 )
         }
         .onChange(of: model.sceneIndex) { tag in
-            model.setSceneId(id: model.enabledScenes[tag].id)
-            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+            model.selectScene(id: model.enabledScenes[tag].id)
         }
         .background(pickerBackgroundColor)
         .foregroundColor(.white)

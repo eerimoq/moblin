@@ -6422,7 +6422,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return crops
     }
 
-    func setSceneId(id: UUID) {
+    private func setSceneId(id: UUID) {
         selectedSceneId = id
         remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
         if isWatchLocal() {
@@ -6443,12 +6443,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func selectScene(id: UUID) {
+    func selectScene(id: UUID) {
+        guard id != selectedSceneId else {
+            return
+        }
         if let index = enabledScenes.firstIndex(where: { scene in
             scene.id == id
         }) {
             sceneIndex = index
             setSceneId(id: id)
+            sceneUpdated(attachCamera: true, updateRemoteScene: false)
         }
     }
 
