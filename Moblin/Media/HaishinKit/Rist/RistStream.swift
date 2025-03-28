@@ -167,9 +167,7 @@ class RistStream: NetStream {
             logger.info("rist: Failed to create context")
             return
         }
-        context.onStats = handleStats(stats:)
-        context.onPeerConnected = handlePeerConnected(peerId:)
-        context.onPeerDisconnected = handlePeerDisonnected(peerId:)
+        context.delegate = self
         self.context = context
         if bonding {
             networkPathMonitor = .init()
@@ -281,36 +279,6 @@ class RistStream: NetStream {
         return urlComponents.url?.absoluteString
     }
 
-    private func handleStats(stats: RistStats) {
-        ristQueue.async {
-            self.handleStatsInner(stats: stats)
-        }
-    }
-
-    private func handlePeerConnected(peerId: UInt32) {
-        ristQueue.async {
-            self.handlePeerConnectedInner(peerId: peerId)
-        }
-    }
-
-    private func handlePeerConnectedInner(peerId: UInt32) {
-        logger.info("rist: Peer \(peerId) connected")
-        getPeerById(peerId: peerId)?.setConnected()
-        checkConnected()
-    }
-
-    private func handlePeerDisonnected(peerId: UInt32) {
-        ristQueue.async {
-            self.handlePeerDisconnectedInner(peerId: peerId)
-        }
-    }
-
-    private func handlePeerDisconnectedInner(peerId: UInt32) {
-        logger.info("rist: Peer \(peerId) disconnected")
-        getPeerById(peerId: peerId)?.setDisconnected()
-        checkDisconnected()
-    }
-
     private func handleStatsInner(stats: RistStats) {
         logger.debug("""
         rist: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), \
@@ -376,5 +344,37 @@ extension RistStream: MpegTsWriterDelegate {
 
     func writer(_: MpegTsWriter, doOutputPointer dataPointer: UnsafeRawBufferPointer, count: Int) {
         send(dataPointer: dataPointer, count: count)
+    }
+}
+
+extension RistStream: RistContextDelegate {
+    func ristContextStats(_: RistContext, stats: RistStats) {
+        ristQueue.async {
+            self.handleStatsInner(stats: stats)
+        }
+    }
+
+    func ristContextPeerConnected(_: RistContext, peerId: UInt32) {
+        ristQueue.async {
+            self.handlePeerConnectedInner(peerId: peerId)
+        }
+    }
+
+    private func handlePeerConnectedInner(peerId: UInt32) {
+        logger.info("rist: Peer \(peerId) connected")
+        getPeerById(peerId: peerId)?.setConnected()
+        checkConnected()
+    }
+
+    func ristContextPeerDisconnected(_: RistContext, peerId: UInt32) {
+        ristQueue.async {
+            self.handlePeerDisconnectedInner(peerId: peerId)
+        }
+    }
+
+    private func handlePeerDisconnectedInner(peerId: UInt32) {
+        logger.info("rist: Peer \(peerId) disconnected")
+        getPeerById(peerId: peerId)?.setDisconnected()
+        checkDisconnected()
     }
 }
