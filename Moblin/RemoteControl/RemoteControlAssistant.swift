@@ -306,12 +306,23 @@ class RemoteControlAssistant: NSObject {
 
     private func receivePacket(webSocket: NWConnection) {
         webSocket.receiveMessage { data, context, _, _ in
-            if let data, !data.isEmpty {
-                if context?.webSocketOperation() == .text {
+            switch context?.webSocketOperation() {
+            case .text:
+                if let data, !data.isEmpty {
                     self.handleMessage(webSocket: webSocket, packet: data)
+                    self.receivePacket(webSocket: webSocket)
+                } else {
+                    self.handleDisconnected(webSocket: webSocket)
                 }
+            case .ping:
+                let metadata = NWProtocolWebSocket.Metadata(opcode: .pong)
+                let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
+                webSocket.send(content: data,
+                               contentContext: context,
+                               isComplete: true,
+                               completion: .idempotent)
                 self.receivePacket(webSocket: webSocket)
-            } else {
+            default:
                 self.handleDisconnected(webSocket: webSocket)
             }
         }
