@@ -69197,6 +69197,9 @@
         }
       }
     },
+    "Location data" : {
+
+    },
     "Lock screen" : {
       "localizations" : {
         "de" : {
@@ -98551,6 +98554,7 @@
       }
     },
     "Reset location data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -99087,6 +99091,12 @@
           }
         }
       }
+    },
+    "Reset when going live" : {
+
+    },
+    "Resets distance, average speed and slope." : {
+
     },
     "Resolution" : {
       "localizations" : {

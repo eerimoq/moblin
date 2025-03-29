@@ -3596,7 +3596,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func resetSlope() {
+    private func resetSlope() {
         slopePercent = 0.0
         previousSlopeAltitude = nil
         previousSlopeDistance = database.location!.distance!
@@ -3616,7 +3616,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         slopePercent = 0.7 * slopePercent + 0.3 * (100 * deltaAltitude / deltaDistance)
     }
 
-    func resetAverageSpeed() {
+    private func resetAverageSpeed() {
         averageSpeed = 0.0
         averageSpeedStartTime = .now
         averageSpeedStartDistance = database.location!.distance!
@@ -4221,6 +4221,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 )
             )
             return
+        }
+        if database.location!.resetWhenGoingLive! {
+            resetLocationData()
         }
         streamLog.removeAll()
         setIsLive(value: true)
@@ -9480,9 +9483,15 @@ extension Model {
         reloadRealtimeIrl()
     }
 
-    func resetDistance() {
+    private func resetDistance() {
         database.location!.distance = 0.0
         latestKnownLocation = nil
+    }
+
+    func resetLocationData() {
+        resetDistance()
+        resetAverageSpeed()
+        resetSlope()
     }
 
     func isLocationEnabled() -> Bool {

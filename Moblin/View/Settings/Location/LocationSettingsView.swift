@@ -35,15 +35,24 @@ struct LocationSettingsView: View {
                 }))
             }
             Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.location!.resetWhenGoingLive!
+                }, set: { value in
+                    model.database.location!.resetWhenGoingLive = value
+                })) {
+                    Text("Reset when going live")
+                }
                 Button(action: {
-                    model.resetDistance()
-                    model.resetAverageSpeed()
-                    model.resetSlope()
+                    model.resetLocationData()
                 }, label: {
                     HCenter {
-                        Text("Reset location data")
+                        Text("Reset")
                     }
                 })
+            } header: {
+                Text("Location data")
+            } footer: {
+                Text("Resets distance, average speed and slope.")
             }
             Section {
                 List {

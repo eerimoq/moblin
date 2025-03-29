@@ -2732,6 +2732,7 @@ class SettingsLocation: Codable {
     var enabled: Bool = false
     var privacyRegions: [SettingsPrivacyRegion] = []
     var distance: Double? = 0.0
+    var resetWhenGoingLive: Bool? = false
 }
 
 class SettingsAudioOutputToInputChannelsMap: Codable {
@@ -4945,6 +4946,10 @@ final class Settings {
         }
         if realDatabase.chat.botCommandPermissions!.scene == nil {
             realDatabase.chat.botCommandPermissions!.scene = .init()
+            store()
+        }
+        if realDatabase.location!.resetWhenGoingLive == nil {
+            realDatabase.location!.resetWhenGoingLive = false
             store()
         }
     }
