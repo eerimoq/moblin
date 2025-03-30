@@ -315,12 +315,7 @@ class RemoteControlAssistant: NSObject {
                     self.handleDisconnected(webSocket: webSocket)
                 }
             case .ping:
-                let metadata = NWProtocolWebSocket.Metadata(opcode: .pong)
-                let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
-                webSocket.send(content: data,
-                               contentContext: context,
-                               isComplete: true,
-                               completion: .idempotent)
+                webSocket.sendWebSocket(data: data, opcode: .pong)
                 self.receivePacket(webSocket: webSocket)
             default:
                 self.handleDisconnected(webSocket: webSocket)
@@ -522,12 +517,7 @@ class RemoteControlAssistant: NSObject {
             return
         }
         // logger.debug("remote-control-assistant: Sending \(text)")
-        let metadata = NWProtocolWebSocket.Metadata(opcode: .text)
-        let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
-        streamerWebSocket?.send(content: text.data(using: .utf8),
-                                contentContext: context,
-                                isComplete: true,
-                                completion: .idempotent)
+        streamerWebSocket?.sendWebSocket(data: text.data(using: .utf8), opcode: .text)
     }
 }
 

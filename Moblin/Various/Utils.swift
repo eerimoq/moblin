@@ -607,3 +607,11 @@ extension NWConnection.ContentContext {
         return definitions?.opcode
     }
 }
+
+extension NWConnection {
+    func sendWebSocket(data: Data?, opcode: NWProtocolWebSocket.Opcode) {
+        let metadata = NWProtocolWebSocket.Metadata(opcode: opcode)
+        let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
+        send(content: data, contentContext: context, isComplete: true, completion: .idempotent)
+    }
+}
