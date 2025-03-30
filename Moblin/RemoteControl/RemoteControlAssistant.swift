@@ -44,6 +44,8 @@ class RemoteControlAssistant: NSObject {
     private var nextChatMessageId = 0
     private let keepAliveTimer = SimpleTimer(queue: .main)
     private var gotPing = false
+    private var pingTimer = SimpleTimer(queue: .main)
+    private var pongReceived = true
 
     init(
         port: UInt16,
@@ -78,6 +80,7 @@ class RemoteControlAssistant: NSObject {
         twitchEventSub?.stop()
         twitchChat?.stop()
         stopKeepAlive()
+        stopPingTimer()
     }
 
     func isConnected() -> Bool {
@@ -256,6 +259,26 @@ class RemoteControlAssistant: NSObject {
         retryStartTimer.stop()
     }
 
+    private func startPingTimer() {
+        pongReceived = true
+        pingTimer.startPeriodic(interval: 30, initial: 0) { [weak self] in
+            guard let self else {
+                return
+            }
+            if self.pongReceived {
+                self.pongReceived = false
+                self.streamerWebSocket?.sendWebSocket(data: nil, opcode: .ping)
+            } else {
+                logger.info("remote-control-assistant: Ping timeout")
+                self.closeStreamer()
+            }
+        }
+    }
+
+    private func stopPingTimer() {
+        pingTimer.stop()
+    }
+
     private func startKeepAlive() {
         gotPing = false
         keepAliveTimer.startPeriodic(interval: 60) { [weak self] in
@@ -293,10 +316,12 @@ class RemoteControlAssistant: NSObject {
         ))
         streamerIdentified = false
         startKeepAlive()
+        startPingTimer()
     }
 
     private func handleDisconnected(webSocket _: NWConnection) {
         logger.debug("remote-control-assistant: Streamer disconnected")
+        stopPingTimer()
         stopKeepAlive()
         streamerWebSocket?.cancel()
         streamerWebSocket = nil
@@ -316,6 +341,9 @@ class RemoteControlAssistant: NSObject {
                 }
             case .ping:
                 webSocket.sendWebSocket(data: data, opcode: .pong)
+                self.receivePacket(webSocket: webSocket)
+            case .pong:
+                self.pongReceived = true
                 self.receivePacket(webSocket: webSocket)
             default:
                 self.handleDisconnected(webSocket: webSocket)

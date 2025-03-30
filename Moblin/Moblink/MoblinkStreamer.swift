@@ -30,6 +30,8 @@ private class Relay {
     private var relayId = UUID()
     var name = ""
     var batteryPercentage: Int?
+    private var pingTimer = SimpleTimer(queue: .main)
+    var pongReceived = true
 
     init(webSocket: NWConnectionWithId, password: String, streamer: MoblinkStreamer) {
         self.password = password
@@ -45,9 +47,11 @@ private class Relay {
             authentication: .init(challenge: challenge, salt: salt)
         ))
         identified = false
+        startPingTimer()
     }
 
     func stop() {
+        stopPingTimer()
         webSocket.connection.cancel()
         reportTunnelRemoved()
         requests.removeAll()
@@ -88,6 +92,26 @@ private class Relay {
         } onError: { error in
             logger.info("moblink-streamer: Status failed with \(error)")
         }
+    }
+
+    private func startPingTimer() {
+        pongReceived = true
+        pingTimer.startPeriodic(interval: 10, initial: 0) { [weak self] in
+            guard let self else {
+                return
+            }
+            if self.pongReceived {
+                self.pongReceived = false
+                self.webSocket.connection.sendWebSocket(data: nil, opcode: .ping)
+            } else {
+                logger.info("moblink-streamer: Ping timeout")
+                self.webSocket.connection.cancel()
+            }
+        }
+    }
+
+    private func stopPingTimer() {
+        pingTimer.stop()
     }
 
     private func startTunnelInternal() {
@@ -308,6 +332,12 @@ class MoblinkStreamer: NSObject {
         relay.startTunnel(address: destinationAddress, port: destinationPort)
     }
 
+    private func handlePong(webSocket: NWConnectionWithId) {
+        if let relay = relays.first(where: { $0.webSocket == webSocket }) {
+            relay.pongReceived = true
+        }
+    }
+
     private func handleDisconnected(webSocket: NWConnectionWithId) {
         logger.debug("moblink-streamer: Relay disconnected")
         if let relay = relays.first(where: { $0.webSocket == webSocket }) {
@@ -328,6 +358,9 @@ class MoblinkStreamer: NSObject {
                 }
             case .ping:
                 webSocket.connection.sendWebSocket(data: data, opcode: .pong)
+                self.receivePacket(webSocket: webSocket)
+            case .pong:
+                self.handlePong(webSocket: webSocket)
                 self.receivePacket(webSocket: webSocket)
             default:
                 self.handleDisconnected(webSocket: webSocket)
