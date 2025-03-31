@@ -27,7 +27,7 @@ private class Relay {
     private var port: UInt16?
     weak var streamer: MoblinkStreamer?
     private var tunnelEndpoint: NWEndpoint?
-    private var relayId = UUID()
+    var relayId = UUID()
     var name = ""
     var batteryPercentage: Int?
     private var pingTimer = SimpleTimer(queue: .main)
@@ -161,6 +161,7 @@ private class Relay {
             salt: salt,
             password: password
         ) {
+            streamer?.removeRelay(relayId: relayId)
             self.relayId = relayId
             self.name = name
             identified = true
@@ -330,6 +331,14 @@ class MoblinkStreamer: NSObject {
             return
         }
         relay.startTunnel(address: destinationAddress, port: destinationPort)
+    }
+
+    func removeRelay(relayId: UUID) {
+        if let relay = relays.first(where: { $0.relayId == relayId }) {
+            logger.debug("moblink-streamer: Replacing relay \(relay.name)")
+            relay.stop()
+        }
+        relays.removeAll(where: { $0.relayId == relayId })
     }
 
     private func handlePong(webSocket: NWConnectionWithId) {
