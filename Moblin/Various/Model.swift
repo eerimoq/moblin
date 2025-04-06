@@ -119,7 +119,8 @@ struct Icon: Identifiable {
 }
 
 private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
-let builtinCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
+let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
+let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
 private let screenCaptureCamera = "Screen capture"
 private let backTripleLowEnergyCamera = "Back Triple (low energy)"
 private let backDualLowEnergyCamera = "Back Dual (low energy)"
@@ -5917,7 +5918,26 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func getVideoSourceBuiltinCameraDevice() -> AVCaptureDevice? {
+    private func getVideoSourceWidgetBuiltinCameraDevice() -> AVCaptureDevice? {
+        for widgetId in videoSourceEffects.keys {
+            guard let widget = getVideoSourceSettings(id: widgetId) else {
+                continue
+            }
+            switch widget.videoSource!.cameraPosition! {
+            case .back:
+                return AVCaptureDevice(uniqueID: widget.videoSource!.backCameraId!)
+            case .front:
+                return AVCaptureDevice(uniqueID: widget.videoSource!.frontCameraId!)
+            case .external:
+                return AVCaptureDevice(uniqueID: widget.videoSource!.externalCameraId!)
+            default:
+                break
+            }
+        }
+        return nil
+    }
+
+    private func getVideoSourceWidgetBuiltinSecondaryCameraDevice() -> AVCaptureDevice? {
         for widgetId in videoSourceEffects.keys {
             guard let widget = getVideoSourceSettings(id: widgetId) else {
                 continue
@@ -6395,8 +6415,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case .screenCapture:
             return screenCaptureCameraId
+        case .back:
+            return builtinBackCameraId
+        case .front:
+            return builtinFrontCameraId
         default:
-            return builtinCameraId
+            return builtinBackCameraId
         }
     }
 
@@ -6736,6 +6760,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func detachCamera() {
         media.attachCamera(
             device: nil,
+            secondaryDevice: nil,
             cameraPreviewLayer: nil,
             showCameraPreview: false,
             externalDisplayPreview: false,
@@ -6943,6 +6968,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
+            secondaryDevice: getVideoSourceWidgetBuiltinSecondaryCameraDevice(),
             cameraPreviewLayer: cameraPreviewLayer,
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
@@ -6994,7 +7020,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         externalDisplayStreamPreviewView.isMirrored = false
         hasZoom = false
         media.attachReplaceCamera(
-            device: getVideoSourceBuiltinCameraDevice(),
+            device: getVideoSourceWidgetBuiltinCameraDevice(),
+            secondaryDevice: getVideoSourceWidgetBuiltinSecondaryCameraDevice(),
             cameraPreviewLayer: cameraPreviewLayer,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),

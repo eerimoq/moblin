@@ -217,7 +217,7 @@ final class AudioUnit: NSObject {
     weak var mixer: Mixer?
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
-    let session = makeCaptureSession()
+    let session = makeAudioCaptureSession()
     private var speechToTextEnabled = false
 
     private var inputSourceFormat: AudioStreamBasicDescription? {

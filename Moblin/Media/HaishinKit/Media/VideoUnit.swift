@@ -163,6 +163,9 @@ final class VideoUnit: NSObject {
     private var input: AVCaptureInput?
     private var output: AVCaptureVideoDataOutput?
     private var connection: AVCaptureConnection?
+    private var secondaryInput: AVCaptureInput?
+    private var secondaryOutput: AVCaptureVideoDataOutput?
+    private var secondaryConnection: AVCaptureConnection?
     private let context = CIContext()
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
@@ -173,12 +176,13 @@ final class VideoUnit: NSObject {
     private var captureSize = CGSize(width: 1920, height: 1080)
     private var outputSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
-    let session = makeCaptureSession()
+    let session = makeVideoCaptureSession()
     private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
+    private var secondaryDevice: VideoUnitSecondaryDevice!
 
     var frameRate = VideoUnit.defaultFrameRate {
         didSet {
@@ -223,7 +227,9 @@ final class VideoUnit: NSObject {
     }
 
     private var selectedReplaceVideoCameraId: UUID?
-    private var replaceVideos: [UUID: ReplaceVideo] = [:]
+    fileprivate var replaceVideos: [UUID: ReplaceVideo] = [:]
+    fileprivate var replaceVideoBuiltin: ReplaceVideo?
+    fileprivate var replaceVideoBuiltinSecondary: ReplaceVideo?
     private var blackImageBuffer: CVPixelBuffer?
     private var blackFormatDescription: CMVideoFormatDescription?
     private var blackPixelBufferPool: CVPixelBufferPool?
@@ -261,14 +267,23 @@ final class VideoUnit: NSObject {
         } else {
             metalPetalContext = nil
         }
+        secondaryDevice = nil
         super.init()
+        secondaryDevice = VideoUnitSecondaryDevice(videoUnit: self)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
-        replaceVideos[builtinCameraId] = ReplaceVideo(
-            cameraId: builtinCameraId,
-            name: "Builtin",
+        replaceVideos[builtinBackCameraId] = ReplaceVideo(
+            cameraId: builtinBackCameraId,
+            name: "Builtin back",
+            update: false,
+            latency: 0.0,
+            mixer: mixer
+        )
+        replaceVideos[builtinFrontCameraId] = ReplaceVideo(
+            cameraId: builtinFrontCameraId,
+            name: "Builtin front",
             update: false,
             latency: 0.0,
             mixer: mixer
@@ -331,6 +346,7 @@ final class VideoUnit: NSObject {
 
     func attach(
         _ device: AVCaptureDevice?,
+        _ secondaryDevice: AVCaptureDevice?,
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
@@ -348,6 +364,23 @@ final class VideoUnit: NSObject {
             self.showCameraPreview = showCameraPreview
             self.externalDisplayPreview = externalDisplayPreview
             self.fillFrame = fillFrame
+            self.replaceVideoBuiltin = nil
+            switch device?.position {
+            case .back:
+                self.replaceVideoBuiltin = self.replaceVideos[builtinBackCameraId]
+            case .front:
+                self.replaceVideoBuiltin = self.replaceVideos[builtinFrontCameraId]
+            default:
+                self.replaceVideoBuiltin = nil
+            }
+            switch secondaryDevice?.position {
+            case .back:
+                self.replaceVideoBuiltinSecondary = self.replaceVideos[builtinBackCameraId]
+            case .front:
+                self.replaceVideoBuiltinSecondary = self.replaceVideos[builtinFrontCameraId]
+            default:
+                self.replaceVideoBuiltinSecondary = nil
+            }
         }
         session.beginConfiguration()
         defer {
@@ -369,6 +402,8 @@ final class VideoUnit: NSObject {
         setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
         updateCameraControls()
+        try attachSecondaryDevice(secondaryDevice, session)
+        secondaryOutput?.setSampleBufferDelegate(self.secondaryDevice, queue: mixerLockQueue)
         session.commitConfiguration()
         cameraPreviewLayer?.session = nil
         if showCameraPreview {
@@ -1447,6 +1482,44 @@ final class VideoUnit: NSObject {
         }
     }
 
+    private func attachSecondaryDevice(_ device: AVCaptureDevice?, _ session: AVCaptureSession) throws {
+        if let secondaryConnection, session.connections.contains(secondaryConnection) {
+            session.removeConnection(secondaryConnection)
+        }
+        if let secondaryInput, session.inputs.contains(secondaryInput) {
+            session.removeInput(secondaryInput)
+        }
+        if let secondaryOutput, session.outputs.contains(secondaryOutput) {
+            session.removeOutput(secondaryOutput)
+        }
+        if let device {
+            secondaryInput = try AVCaptureDeviceInput(device: device)
+            secondaryOutput = AVCaptureVideoDataOutput()
+            secondaryOutput!.videoSettings = [
+                kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,
+            ]
+            if let port = secondaryInput?.ports.first(where: { $0.mediaType == .video }) {
+                secondaryConnection = AVCaptureConnection(inputPorts: [port], output: secondaryOutput!)
+            } else {
+                secondaryConnection = nil
+            }
+            if session.canAddInput(secondaryInput!) {
+                session.addInputWithNoConnections(secondaryInput!)
+            }
+            if session.canAddOutput(secondaryOutput!) {
+                session.addOutputWithNoConnections(secondaryOutput!)
+            }
+            if let secondaryConnection, session.canAddConnection(secondaryConnection) {
+                session.addConnection(secondaryConnection)
+            }
+            session.automaticallyConfiguresCaptureDeviceForWideColor = false
+        } else {
+            secondaryInput = nil
+            secondaryOutput = nil
+            secondaryConnection = nil
+        }
+    }
+
     private func setTorchMode(_ device: AVCaptureDevice, _ torchMode: AVCaptureDevice.TorchMode) {
         guard device.isTorchModeSupported(torchMode) else {
             if torchMode == .on {
@@ -1524,11 +1597,29 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
-        replaceVideos[builtinCameraId]?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
+        replaceVideoBuiltin?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
         guard selectedReplaceVideoCameraId == nil else {
             return
         }
         appendNewSampleBuffer(sampleBuffer: sampleBuffer)
+    }
+}
+
+class VideoUnitSecondaryDevice: NSObject {
+    weak var videoUnit: VideoUnit?
+
+    init(videoUnit: VideoUnit) {
+        self.videoUnit = videoUnit
+    }
+}
+
+extension VideoUnitSecondaryDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(
+        _: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from _: AVCaptureConnection
+    ) {
+        videoUnit?.replaceVideoBuiltinSecondary?.setLatestSampleBuffer(sampleBuffer: sampleBuffer)
     }
 }
 

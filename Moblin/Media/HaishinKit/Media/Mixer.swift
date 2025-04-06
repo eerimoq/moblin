@@ -6,8 +6,16 @@ let mixerLockQueue = DispatchQueue(
     qos: .userInteractive
 )
 
-func makeCaptureSession() -> AVCaptureSession {
+func makeAudioCaptureSession() -> AVCaptureSession {
     let session = AVCaptureSession()
+    if session.isMultitaskingCameraAccessSupported {
+        session.isMultitaskingCameraAccessEnabled = true
+    }
+    return session
+}
+
+func makeVideoCaptureSession() -> AVCaptureSession {
+    let session = AVCaptureMultiCamSession()
     if session.isMultitaskingCameraAccessSupported {
         session.isMultitaskingCameraAccessEnabled = true
     }
@@ -43,6 +51,7 @@ class Mixer {
 
     func attachCamera(
         _ device: AVCaptureDevice?,
+        _ secondaryDevice: AVCaptureDevice?,
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
@@ -54,6 +63,7 @@ class Mixer {
     ) throws {
         try video.attach(
             device,
+            secondaryDevice,
             cameraPreviewLayer,
             showCameraPreview,
             externalDisplayPreview,
