@@ -357,6 +357,7 @@ final class VideoUnit: NSObject {
         _ fillFrame: Bool
     ) throws {
         output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+        secondaryOutput?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         mixerLockQueue.async {
             self.configuredIgnoreFramesAfterAttachSeconds = ignoreFramesAfterAttachSeconds
             self.selectedReplaceVideoCameraId = replaceVideo

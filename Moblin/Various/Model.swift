@@ -121,6 +121,7 @@ struct Icon: Identifiable {
 private let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
 let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
+let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
 private let screenCaptureCamera = "Screen capture"
 private let backTripleLowEnergyCamera = "Back Triple (low energy)"
 private let backDualLowEnergyCamera = "Back Dual (low energy)"
@@ -6415,12 +6416,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case .screenCapture:
             return screenCaptureCameraId
-        case .back:
+        case .back, .backDualLowEnergy, .backWideDualLowEnergy, .backTripleLowEnergy:
             return builtinBackCameraId
         case .front:
             return builtinFrontCameraId
-        default:
-            return builtinBackCameraId
+        case .external:
+            return externalCameraId
         }
     }
 
