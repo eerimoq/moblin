@@ -96,12 +96,17 @@ final class VideoSourceEffect: VideoEffect {
                 .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
                 .composited(over: backgroundImage)
         } else {
-            let clearBackgroundImage = CIImage.clear.cropped(to: backgroundImage.extent)
             videoSourceImage = videoSourceImage
                 .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
             let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
             roundedRectangleGenerator.color = .green
-            roundedRectangleGenerator.extent = videoSourceImage.extent
+            // Slightly smaller to remove ~1px black line around image.
+            var extent = videoSourceImage.extent
+            extent.origin.x += 1
+            extent.origin.y += 1
+            extent.size.width -= 2
+            extent.size.height -= 2
+            roundedRectangleGenerator.extent = extent
             var radiusPixels = Float(min(videoSourceImage.extent.height, videoSourceImage.extent.width))
             radiusPixels /= 2
             radiusPixels *= settings.cornerRadius
@@ -109,6 +114,7 @@ final class VideoSourceEffect: VideoEffect {
             guard var roundedRectangleMask = roundedRectangleGenerator.outputImage else {
                 return backgroundImage
             }
+            let clearBackgroundImage = CIImage.clear.cropped(to: backgroundImage.extent)
             videoSourceImage = videoSourceImage
                 .transformed(by: CGAffineTransform(translationX: x, y: y))
                 .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
