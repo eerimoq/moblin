@@ -5951,7 +5951,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 if !devices.contains(where: { $0.position == device.position }) {
                     devices.append(device)
                 }
-                break
             }
         }
         return devices

@@ -414,6 +414,18 @@ final class VideoUnit: NSObject {
             preferAutoFrameRate: preferAutoFrameRate,
             colorSpace: colorSpace
         )
+        setDeviceFormat(
+            device: secondDevice,
+            frameRate: frameRate,
+            preferAutoFrameRate: preferAutoFrameRate,
+            colorSpace: colorSpace
+        )
+        setDeviceFormat(
+            device: thirdDevice,
+            frameRate: frameRate,
+            preferAutoFrameRate: preferAutoFrameRate,
+            colorSpace: colorSpace
+        )
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
