@@ -190,20 +190,35 @@ final class VideoUnit: NSObject {
 
     var frameRate = VideoUnit.defaultFrameRate {
         didSet {
-            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
+            setDeviceFormat(
+                device: device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
             startFrameTimer()
         }
     }
 
     var preferAutoFrameRate = false {
         didSet {
-            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
+            setDeviceFormat(
+                device: device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
         }
     }
 
     var colorSpace: AVCaptureColorSpace = .sRGB {
         didSet {
-            setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
+            setDeviceFormat(
+                device: device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
         }
     }
 
@@ -393,7 +408,16 @@ final class VideoUnit: NSObject {
             self.replaceVideoBuiltinSecond = self.getReplaceVideoForDevice(device: secondDevice)
             self.replaceVideoBuiltinThird = self.getReplaceVideoForDevice(device: thirdDevice)
         }
+        setDeviceFormat(
+            device: firstDevice,
+            frameRate: frameRate,
+            preferAutoFrameRate: preferAutoFrameRate,
+            colorSpace: colorSpace
+        )
         session.beginConfiguration()
+        defer {
+            session.commitConfiguration()
+        }
         try removeDevices(session)
         try attachFirstDevice(firstDevice, session)
         try attachSecondDevice(secondDevice, session)
@@ -410,12 +434,10 @@ final class VideoUnit: NSObject {
                 connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
             }
         }
-        setDeviceFormat(frameRate: frameRate, preferAutoFrameRate: preferAutoFrameRate, colorSpace: colorSpace)
         firstOutput?.setSampleBufferDelegate(self, queue: mixerLockQueue)
         secondOutput?.setSampleBufferDelegate(self.secondDevice, queue: mixerLockQueue)
         thirdOutput?.setSampleBufferDelegate(self.thirdDevice, queue: mixerLockQueue)
         updateCameraControls()
-        session.commitConfiguration()
         cameraPreviewLayer?.session = nil
         if showCameraPreview {
             cameraPreviewLayer?.session = session
@@ -1429,7 +1451,12 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func setDeviceFormat(frameRate: Float64, preferAutoFrameRate: Bool, colorSpace: AVCaptureColorSpace) {
+    private func setDeviceFormat(
+        device: AVCaptureDevice?,
+        frameRate: Float64,
+        preferAutoFrameRate: Bool,
+        colorSpace: AVCaptureColorSpace
+    ) {
         guard let device else {
             return
         }
