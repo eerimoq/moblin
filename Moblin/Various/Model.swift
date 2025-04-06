@@ -5919,42 +5919,42 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func getVideoSourceWidgetBuiltinCameraDevice() -> AVCaptureDevice? {
-        for widgetId in videoSourceEffects.keys {
-            guard let widget = getVideoSourceSettings(id: widgetId) else {
+    private func getVideoSourceWidgetBuiltinCameraDevices(scene: SettingsScene,
+                                                          sceneDevice: AVCaptureDevice?) -> [AVCaptureDevice]
+    {
+        var devices: [AVCaptureDevice] = []
+        if let sceneDevice {
+            devices.append(sceneDevice)
+        }
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 continue
             }
+            guard widget.enabled! else {
+                continue
+            }
+            guard widget.type == .videoSource else {
+                continue
+            }
+            let cameraId: String?
             switch widget.videoSource!.cameraPosition! {
             case .back:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.backCameraId!)
+                cameraId = widget.videoSource!.backCameraId!
             case .front:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.frontCameraId!)
+                cameraId = widget.videoSource!.frontCameraId!
             case .external:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.externalCameraId!)
+                cameraId = widget.videoSource!.externalCameraId!
             default:
+                cameraId = nil
+            }
+            if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+                if !devices.contains(where: { $0.position == device.position }) {
+                    devices.append(device)
+                }
                 break
             }
         }
-        return nil
-    }
-
-    private func getVideoSourceWidgetBuiltinSecondaryCameraDevice() -> AVCaptureDevice? {
-        for widgetId in videoSourceEffects.keys {
-            guard let widget = getVideoSourceSettings(id: widgetId) else {
-                continue
-            }
-            switch widget.videoSource!.cameraPosition! {
-            case .back:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.backCameraId!)
-            case .front:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.frontCameraId!)
-            case .external:
-                return AVCaptureDevice(uniqueID: widget.videoSource!.externalCameraId!)
-            default:
-                break
-            }
-        }
-        return nil
+        return devices
     }
 
     func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
@@ -6760,8 +6760,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func detachCamera() {
         media.attachCamera(
-            device: nil,
-            secondaryDevice: nil,
+            devices: [],
             cameraPreviewLayer: nil,
             showCameraPreview: false,
             externalDisplayPreview: false,
@@ -6968,8 +6967,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
-            device: cameraDevice,
-            secondaryDevice: getVideoSourceWidgetBuiltinSecondaryCameraDevice(),
+            devices: getVideoSourceWidgetBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
             cameraPreviewLayer: cameraPreviewLayer,
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
@@ -7021,8 +7019,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         externalDisplayStreamPreviewView.isMirrored = false
         hasZoom = false
         media.attachReplaceCamera(
-            device: getVideoSourceWidgetBuiltinCameraDevice(),
-            secondaryDevice: getVideoSourceWidgetBuiltinSecondaryCameraDevice(),
+            devices: getVideoSourceWidgetBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             cameraPreviewLayer: cameraPreviewLayer,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),

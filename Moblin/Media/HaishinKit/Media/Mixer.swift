@@ -50,8 +50,7 @@ class Mixer {
     }
 
     func attachCamera(
-        _ device: AVCaptureDevice?,
-        _ secondaryDevice: AVCaptureDevice?,
+        _ devices: [AVCaptureDevice],
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
@@ -62,8 +61,7 @@ class Mixer {
         _ fillFrame: Bool
     ) throws {
         try video.attach(
-            device,
-            secondaryDevice,
+            devices,
             cameraPreviewLayer,
             showCameraPreview,
             externalDisplayPreview,

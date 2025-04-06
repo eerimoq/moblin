@@ -779,8 +779,7 @@ final class Media: NSObject {
     }
 
     func attachCamera(
-        device: AVCaptureDevice?,
-        secondaryDevice: AVCaptureDevice?,
+        devices: [AVCaptureDevice],
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         showCameraPreview: Bool,
         externalDisplayPreview: Bool,
@@ -791,8 +790,7 @@ final class Media: NSObject {
         onSuccess: (() -> Void)? = nil
     ) {
         netStream?.attachCamera(
-            device,
-            secondaryDevice,
+            devices,
             cameraPreviewLayer,
             showCameraPreview,
             externalDisplayPreview,
@@ -812,16 +810,14 @@ final class Media: NSObject {
     }
 
     func attachReplaceCamera(
-        device: AVCaptureDevice?,
-        secondaryDevice: AVCaptureDevice?,
+        devices: [AVCaptureDevice],
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,
         fillFrame: Bool
     ) {
         netStream?.attachCamera(
-            device,
-            secondaryDevice,
+            devices,
             cameraPreviewLayer,
             false,
             true,

@@ -83,8 +83,7 @@ open class NetStream: NSObject {
     }
 
     func attachCamera(
-        _ device: AVCaptureDevice?,
-        _ secondaryDevice: AVCaptureDevice?,
+        _ devices: [AVCaptureDevice],
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
@@ -99,8 +98,7 @@ open class NetStream: NSObject {
         netStreamLockQueue.async {
             do {
                 try self.mixer.attachCamera(
-                    device,
-                    secondaryDevice,
+                    devices,
                     cameraPreviewLayer,
                     showCameraPreview,
                     externalDisplayPreview,
