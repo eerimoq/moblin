@@ -7,6 +7,7 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, failedEffect: String?)
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
+    func streamVideoAttachCameraError(_ stream: NetStream)
     func streamRecorderFinished()
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
@@ -83,7 +84,7 @@ open class NetStream: NSObject {
     }
 
     func attachCamera(
-        _ devices: [AVCaptureDevice],
+        _ devices: [CaptureDevice],
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
@@ -253,6 +254,10 @@ extension NetStream: MixerDelegate {
 
     func mixer(findVideoFormatError: String, activeFormat: String) {
         delegate?.streamVideo(self, findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
+    }
+
+    func mixerAttachCameraError() {
+        delegate?.streamVideoAttachCameraError(self)
     }
 
     func mixerRecorderFinished() {

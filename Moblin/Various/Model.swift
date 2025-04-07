@@ -5919,12 +5919,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func getVideoSourceWidgetBuiltinCameraDevices(scene: SettingsScene,
-                                                          sceneDevice: AVCaptureDevice?) -> [AVCaptureDevice]
-    {
-        var devices: [AVCaptureDevice] = []
+    private var builtinCameraIds: [String: UUID] = [:]
+
+    private func getBuiltinCameraId(_ uniqueId: String) -> UUID {
+        if let id = builtinCameraIds[uniqueId] {
+            return id
+        }
+        let id = UUID()
+        builtinCameraIds[uniqueId] = id
+        return id
+    }
+
+    private func makeCaptureDevice(device: AVCaptureDevice) -> CaptureDevice {
+        return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
+    }
+
+    private func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> [CaptureDevice] {
+        var devices: [CaptureDevice] = []
         if let sceneDevice {
-            devices.append(sceneDevice)
+            devices.append(makeCaptureDevice(device: sceneDevice))
         }
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
@@ -5948,8 +5961,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 cameraId = nil
             }
             if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-                if !devices.contains(where: { $0.position == device.position }) {
-                    devices.append(device)
+                if !devices.contains(where: { $0.device == device }) {
+                    devices.append(makeCaptureDevice(device: device))
                 }
             }
         }
@@ -6415,12 +6428,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return id
         case .screenCapture:
             return screenCaptureCameraId
-        case .back, .backDualLowEnergy, .backWideDualLowEnergy, .backTripleLowEnergy:
-            return builtinBackCameraId
-        case .front:
-            return builtinFrontCameraId
-        case .external:
-            return externalCameraId
+        case let .back(id: id):
+            return getBuiltinCameraId(id)
+        case let .front(id: id):
+            return getBuiltinCameraId(id)
+        case let .external(id: id, name: _):
+            return getBuiltinCameraId(id)
+        case .backDualLowEnergy:
+            return nil
+        case .backTripleLowEnergy:
+            return nil
+        case .backWideDualLowEnergy:
+            return nil
         }
     }
 
@@ -6966,7 +6985,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
-            devices: getVideoSourceWidgetBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
+            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
             cameraPreviewLayer: cameraPreviewLayer,
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
@@ -7018,7 +7037,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         externalDisplayStreamPreviewView.isMirrored = false
         hasZoom = false
         media.attachReplaceCamera(
-            devices: getVideoSourceWidgetBuiltinCameraDevices(scene: scene, sceneDevice: nil),
+            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             cameraPreviewLayer: cameraPreviewLayer,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
@@ -7266,9 +7285,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleFindVideoFormatError(findVideoFormatError: String, activeFormat: String) {
-        DispatchQueue.main.async {
-            self.makeErrorToast(title: findVideoFormatError, subTitle: activeFormat)
-        }
+        makeErrorToastMain(title: findVideoFormatError, subTitle: activeFormat)
+    }
+
+    private func handleAttachCameraError() {
+        makeErrorToastMain(
+            title: String(localized: "Camera capture setup error"),
+            subTitle: String(localized: "Too many video sources in current scene?")
+        )
     }
 
     private func handleRecorderFinished() {}
@@ -11216,6 +11240,10 @@ extension Model: MediaDelegate {
 
     func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String) {
         handleFindVideoFormatError(findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
+    }
+
+    func mediaOnAttachCameraError() {
+        handleAttachCameraError()
     }
 
     func mediaOnRecorderFinished() {

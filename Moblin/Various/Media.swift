@@ -25,6 +25,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
     func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
+    func mediaOnAttachCameraError()
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
@@ -779,7 +780,7 @@ final class Media: NSObject {
     }
 
     func attachCamera(
-        devices: [AVCaptureDevice],
+        devices: [CaptureDevice],
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         showCameraPreview: Bool,
         externalDisplayPreview: Bool,
@@ -810,7 +811,7 @@ final class Media: NSObject {
     }
 
     func attachReplaceCamera(
-        devices: [AVCaptureDevice],
+        devices: [CaptureDevice],
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,
@@ -971,6 +972,10 @@ extension Media: NetStreamDelegate {
 
     func streamVideo(_: NetStream, findVideoFormatError: String, activeFormat: String) {
         delegate?.mediaOnFindVideoFormatError(findVideoFormatError, activeFormat)
+    }
+
+    func streamVideoAttachCameraError(_: NetStream) {
+        delegate?.mediaOnAttachCameraError()
     }
 
     func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {

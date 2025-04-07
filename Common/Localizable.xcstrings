@@ -27422,6 +27422,9 @@
         }
       }
     },
+    "Camera capture setup error" : {
+
+    },
     "Camera controls" : {
       "localizations" : {
         "de" : {
@@ -131373,6 +131376,9 @@
           }
         }
       }
+    },
+    "Too many video sources in current scene?" : {
+
     },
     "Top" : {
       "localizations" : {

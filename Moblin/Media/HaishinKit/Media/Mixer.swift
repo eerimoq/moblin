@@ -29,6 +29,7 @@ protocol MixerDelegate: AnyObject {
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
     func mixerRecorderFinished()
     func mixer(findVideoFormatError: String, activeFormat: String)
+    func mixerAttachCameraError()
     func mixer(audioSampleBuffer: CMSampleBuffer)
     func mixerNoTorch()
     func mixerSetZoomX(x: Float)
@@ -50,7 +51,7 @@ class Mixer {
     }
 
     func attachCamera(
-        _ devices: [AVCaptureDevice],
+        _ devices: [CaptureDevice],
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
