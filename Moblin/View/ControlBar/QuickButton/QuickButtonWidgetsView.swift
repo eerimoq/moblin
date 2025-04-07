@@ -266,7 +266,7 @@ struct QuickButtonWidgetsView: View {
                         }, set: { value in
                             widget.enabled = value
                             model.reloadSpeechToText()
-                            model.sceneUpdated()
+                            model.sceneUpdated(attachCamera: model.isCaptureDeviceVideoSoureWidget(widget: widget))
                         })) {
                             IconAndTextView(
                                 image: widgetImage(widget: widget),

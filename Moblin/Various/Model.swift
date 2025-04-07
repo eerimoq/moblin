@@ -5864,6 +5864,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return nil
     }
 
+    func isCaptureDeviceVideoSoureWidget(widget: SettingsWidget) -> Bool {
+        guard widget.type == .videoSource else {
+            return false
+        }
+        switch widget.videoSource!.cameraPosition {
+        case .back:
+            return true
+        case .backWideDualLowEnergy:
+            return true
+        case .backDualLowEnergy:
+            return true
+        case .backTripleLowEnergy:
+            return true
+        case .front:
+            return true
+        case .external:
+            return true
+        default:
+            return false
+        }
+    }
+
     func getSceneName(id: UUID) -> String {
         return database.scenes.first { scene in
             scene.id == id
