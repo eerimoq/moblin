@@ -24,6 +24,11 @@ import WatchConnectivity
 import WebKit
 import WrappingHStack
 
+private let videoCaptureError = String(localized: """
+Try to use single lens or low-energy cameras, and try to lower \
+stream FPS and/or resolution.
+""")
+
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
@@ -7291,12 +7296,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleAttachCameraError() {
         makeErrorToastMain(
             title: String(localized: "Camera capture setup error"),
-            subTitle: String(localized: "Too many video sources in current scene?")
+            subTitle: videoCaptureError
         )
     }
 
     private func handleCaptureSessionError(message: String) {
-        makeErrorToastMain(title: String(localized: "Video capture error"), subTitle: message)
+        makeErrorToastMain(title: message, subTitle: videoCaptureError)
     }
 
     private func handleRecorderFinished() {}

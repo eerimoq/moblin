@@ -131377,9 +131377,6 @@
         }
       }
     },
-    "Too many video sources in current scene?" : {
-
-    },
     "Top" : {
       "localizations" : {
         "de" : {
@@ -134087,6 +134084,9 @@
           }
         }
       }
+    },
+    "Try to use single lens or low-energy cameras, and try to lower stream FPS and/or resolution." : {
+
     },
     "Trying to switch OBS scene to %@" : {
       "localizations" : {
@@ -141277,9 +141277,6 @@
           }
         }
       }
-    },
-    "Video capture error" : {
-
     },
     "Video codec" : {
       "localizations" : {
