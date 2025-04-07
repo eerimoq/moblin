@@ -163,9 +163,10 @@ private class ReplaceVideo {
 }
 
 struct CaptureSessionDevice {
-    var input: AVCaptureInput?
-    var output: AVCaptureVideoDataOutput?
-    var connection: AVCaptureConnection?
+    var device: AVCaptureDevice
+    var input: AVCaptureInput
+    var output: AVCaptureVideoDataOutput
+    var connection: AVCaptureConnection
 }
 
 final class VideoUnit: NSObject {
@@ -192,40 +193,48 @@ final class VideoUnit: NSObject {
 
     var frameRate = VideoUnit.defaultFrameRate {
         didSet {
-            setDeviceFormat(
-                device: device,
-                frameRate: frameRate,
-                preferAutoFrameRate: preferAutoFrameRate,
-                colorSpace: colorSpace
-            )
+            session.beginConfiguration()
+            for device in captureSessionDevices {
+                setDeviceFormat(
+                    device: device.device,
+                    frameRate: frameRate,
+                    preferAutoFrameRate: preferAutoFrameRate,
+                    colorSpace: colorSpace
+                )
+            }
+            session.commitConfiguration()
             startFrameTimer()
         }
     }
 
     var preferAutoFrameRate = false {
         didSet {
-            setDeviceFormat(
-                device: device,
-                frameRate: frameRate,
-                preferAutoFrameRate: preferAutoFrameRate,
-                colorSpace: colorSpace
-            )
+            session.beginConfiguration()
+            for device in captureSessionDevices {
+                setDeviceFormat(
+                    device: device.device,
+                    frameRate: frameRate,
+                    preferAutoFrameRate: preferAutoFrameRate,
+                    colorSpace: colorSpace
+                )
+            }
+            session.commitConfiguration()
         }
     }
 
     var colorSpace: AVCaptureColorSpace = .sRGB {
         didSet {
-            setDeviceFormat(
-                device: device,
-                frameRate: frameRate,
-                preferAutoFrameRate: preferAutoFrameRate,
-                colorSpace: colorSpace
-            )
+            session.beginConfiguration()
+            for device in captureSessionDevices {
+                setDeviceFormat(
+                    device: device.device,
+                    frameRate: frameRate,
+                    preferAutoFrameRate: preferAutoFrameRate,
+                    colorSpace: colorSpace
+                )
+            }
+            session.commitConfiguration()
         }
-    }
-
-    private func firstOutput() -> AVCaptureOutput? {
-        return captureSessionDevices.first?.output
     }
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
@@ -233,9 +242,13 @@ final class VideoUnit: NSObject {
             guard videoOrientation != oldValue else {
                 return
             }
-            for connection in firstOutput()?.connections.filter({ $0.isVideoOrientationSupported }) ?? [] {
-                setOrientation(device: device, connection: connection, orientation: videoOrientation)
+            session.beginConfiguration()
+            for device in captureSessionDevices {
+                for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
+                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                }
             }
+            session.commitConfiguration()
         }
     }
 
@@ -364,7 +377,7 @@ final class VideoUnit: NSObject {
         _ fillFrame: Bool
     ) throws {
         for device in captureSessionDevices {
-            device.output?.setSampleBufferDelegate(nil, queue: mixerLockQueue)
+            device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         }
         logger.info("Number of video devices: \(devices.count)")
         mixerLockQueue.async {
@@ -405,22 +418,24 @@ final class VideoUnit: NSObject {
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
         device = devices.first?.device
-        for connection in firstOutput()?.connections ?? [] {
-            if connection.isVideoMirroringSupported {
-                connection.isVideoMirrored = isVideoMirrored
-            }
-            if connection.isVideoOrientationSupported {
-                setOrientation(device: device, connection: connection, orientation: videoOrientation)
-            }
-            if connection.isVideoStabilizationSupported {
-                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+        for device in captureSessionDevices {
+            for connection in device.output.connections {
+                if connection.isVideoMirroringSupported {
+                    connection.isVideoMirrored = isVideoMirrored
+                }
+                if connection.isVideoOrientationSupported {
+                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                }
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+                }
             }
         }
         for (i, device) in captureSessionDevices.enumerated() {
             if i == 0 {
-                device.output?.setSampleBufferDelegate(self, queue: mixerLockQueue)
+                device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
             } else {
-                device.output?.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
+                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
             }
         }
         updateCameraControls()
@@ -1513,7 +1528,12 @@ final class VideoUnit: NSObject {
         if failed {
             mixer?.delegate?.mixerAttachCameraError()
         } else {
-            captureSessionDevices.append(CaptureSessionDevice(input: input, output: output, connection: connection))
+            captureSessionDevices.append(CaptureSessionDevice(
+                device: device,
+                input: input,
+                output: output,
+                connection: connection!
+            ))
         }
     }
 
