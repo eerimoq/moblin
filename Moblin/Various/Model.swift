@@ -7295,6 +7295,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
     }
 
+    private func handleCaptureSessionError(message: String) {
+        makeErrorToastMain(title: String(localized: "Video capture error"), subTitle: message)
+    }
+
     private func handleRecorderFinished() {}
 
     private func handleNoTorch() {
@@ -11244,6 +11248,10 @@ extension Model: MediaDelegate {
 
     func mediaOnAttachCameraError() {
         handleAttachCameraError()
+    }
+
+    func mediaOnCaptureSessionError(_ message: String) {
+        handleCaptureSessionError(message: message)
     }
 
     func mediaOnRecorderFinished() {

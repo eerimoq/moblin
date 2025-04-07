@@ -141278,6 +141278,9 @@
         }
       }
     },
+    "Video capture error" : {
+
+    },
     "Video codec" : {
       "localizations" : {
         "de" : {

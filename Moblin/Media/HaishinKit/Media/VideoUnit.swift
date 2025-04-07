@@ -310,11 +310,9 @@ final class VideoUnit: NSObject {
         guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
             return
         }
-        logger.error("Video session error: \(error.code)")
-        guard error.code == .mediaServicesWereReset else {
-            return
-        }
-        netStreamLockQueue.async {
+        let message = error._nsError.localizedFailureReason ?? "\(error.code)"
+        mixer?.delegate?.mixerCaptureSessionError(message: message)
+        netStreamLockQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
             if self.isRunning {
                 self.session.startRunning()
             }

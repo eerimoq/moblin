@@ -30,6 +30,7 @@ protocol MixerDelegate: AnyObject {
     func mixerRecorderFinished()
     func mixer(findVideoFormatError: String, activeFormat: String)
     func mixerAttachCameraError()
+    func mixerCaptureSessionError(message: String)
     func mixer(audioSampleBuffer: CMSampleBuffer)
     func mixerNoTorch()
     func mixerSetZoomX(x: Float)
