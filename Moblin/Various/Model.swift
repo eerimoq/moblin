@@ -5205,7 +5205,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func logStatus() {
         if logger.debugEnabled, isLive {
-            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(streamUptime)")
+            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(streamUptime.uptime)")
         }
     }
 
