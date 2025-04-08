@@ -399,6 +399,9 @@ final class VideoUnit: NSObject {
                 self.replaceVideos[device.id] = replaceVideo
                 self.replaceVideoBuiltins[device.device] = replaceVideo
             }
+            // for effect in self.effects where effect is VideoSourceEffect {
+            //    self.unregisterEffectInner(effect)
+            // }
         }
         for device in devices {
             setDeviceFormat(
@@ -459,26 +462,30 @@ final class VideoUnit: NSObject {
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        mixerLockQueue.sync {
+        mixerLockQueue.async {
             self.registerEffectInner(effect)
         }
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
-        mixerLockQueue.sync {
+        mixerLockQueue.async {
             self.unregisterEffectInner(effect)
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        mixerLockQueue.sync {
-            self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
+        netStreamLockQueue.async {
+            mixerLockQueue.async {
+                self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
+            }
         }
     }
 
     func usePendingAfterAttachEffects() {
-        mixerLockQueue.sync {
-            self.usePendingAfterAttachEffectsInner()
+        netStreamLockQueue.async {
+            mixerLockQueue.async {
+                self.usePendingAfterAttachEffectsInner()
+            }
         }
     }
 
@@ -1009,15 +1016,15 @@ final class VideoUnit: NSObject {
     }
 
     private func setPendingAfterAttachEffectsInner(effects: [VideoEffect], rotation: Double) {
+        for effect in self.effects where !effects.contains(effect) || effect is VideoSourceEffect {
+            unregisterEffectInner(effect)
+        }
         pendingAfterAttachEffects = effects
         pendingAfterAttachRotation = rotation
     }
 
     private func usePendingAfterAttachEffectsInner() {
         if let pendingAfterAttachEffects {
-            for effect in effects where !pendingAfterAttachEffects.contains(effect) {
-                effect.removed()
-            }
             effects = pendingAfterAttachEffects
             self.pendingAfterAttachEffects = nil
         }
