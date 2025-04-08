@@ -3508,7 +3508,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             effects.append(twinEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
-            pixellateEffect = PixellateEffect(strength: database.pixellateStrength!)
+            pixellateEffect.strength.mutate({$0 = database.pixellateStrength!})
             effects.append(pixellateEffect)
         }
         return effects
