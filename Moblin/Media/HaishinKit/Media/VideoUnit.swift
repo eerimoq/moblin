@@ -399,9 +399,12 @@ final class VideoUnit: NSObject {
                 self.replaceVideos[device.id] = replaceVideo
                 self.replaceVideoBuiltins[device.device] = replaceVideo
             }
-            // for effect in self.effects where effect is VideoSourceEffect {
-            //    self.unregisterEffectInner(effect)
-            // }
+            if self.pendingAfterAttachEffects == nil {
+                self.pendingAfterAttachEffects = self.effects
+            }
+            for effect in self.effects where effect is VideoSourceEffect {
+                self.unregisterEffectInner(effect)
+            }
         }
         for device in devices {
             setDeviceFormat(
@@ -1016,9 +1019,6 @@ final class VideoUnit: NSObject {
     }
 
     private func setPendingAfterAttachEffectsInner(effects: [VideoEffect], rotation: Double) {
-        for effect in self.effects where !effects.contains(effect) || effect is VideoSourceEffect {
-            unregisterEffectInner(effect)
-        }
         pendingAfterAttachEffects = effects
         pendingAfterAttachRotation = rotation
     }

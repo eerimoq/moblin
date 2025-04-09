@@ -214,8 +214,16 @@ struct SceneSettingsView: View {
                                 model.sceneUpdated()
                             })
                             .onDelete(perform: { offsets in
+                                var attachCamera = false
+                                if scene.id == model.getSelectedScene()?.id {
+                                    for offset in offsets {
+                                        if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
+                                            attachCamera = model.isCaptureDeviceVideoSoureWidget(widget: widget)
+                                        }
+                                    }
+                                }
                                 scene.widgets.remove(atOffsets: offsets)
-                                model.sceneUpdated()
+                                model.sceneUpdated(attachCamera: attachCamera)
                             })
                     } else {
                         forEach
@@ -248,7 +256,14 @@ struct SceneSettingsView: View {
                                     ForEach(widgets) { widget in
                                         Button(action: {
                                             scene.widgets.append(createSceneWidget(widget: widget))
-                                            model.sceneUpdated(imageEffectChanged: true)
+                                            var attachCamera = false
+                                            if scene.id == model.getSelectedScene()?.id {
+                                                attachCamera = model.isCaptureDeviceVideoSoureWidget(widget: widget)
+                                            }
+                                            model.sceneUpdated(
+                                                imageEffectChanged: true,
+                                                attachCamera: attachCamera
+                                            )
                                             model.objectWillChange.send()
                                             showingAddWidget = false
                                         }, label: {
