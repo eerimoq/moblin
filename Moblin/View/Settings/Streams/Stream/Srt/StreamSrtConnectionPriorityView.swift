@@ -76,6 +76,7 @@ struct StreamSrtConnectionPriorityView: View {
                 .onDelete(perform: { offsets in
                     stream.srt.connectionPriorities!.priorities.remove(atOffsets: offsets)
                     model.updateSrtlaPriorities()
+                    model.objectWillChange.send()
                 })
             } footer: {
                 VStack(alignment: .leading) {
