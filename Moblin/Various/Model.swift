@@ -24,11 +24,6 @@ import WatchConnectivity
 import WebKit
 import WrappingHStack
 
-private let videoCaptureError = String(localized: """
-Try to use single lens or low-energy cameras, and try to lower \
-stream FPS and/or resolution.
-""")
-
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
@@ -7318,12 +7313,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handleAttachCameraError() {
         makeErrorToastMain(
             title: String(localized: "Camera capture setup error"),
-            subTitle: videoCaptureError
+            subTitle: videoCaptureError()
         )
     }
 
     private func handleCaptureSessionError(message: String) {
-        makeErrorToastMain(title: message, subTitle: videoCaptureError)
+        makeErrorToastMain(title: message, subTitle: videoCaptureError())
     }
 
     private func handleRecorderFinished() {}
@@ -11410,4 +11405,11 @@ extension Model: MoblinkScannerDelegate {
             startMoblinkRelayAutomatic()
         }
     }
+}
+
+private func videoCaptureError() -> String {
+    return [
+        String(localized: "Try to use single or low-energy cameras."),
+        String(localized: "Try to lower stream FPS and resolution."),
+    ].joined(separator: "\n")
 }

@@ -134085,7 +134085,10 @@
         }
       }
     },
-    "Try to use single lens or low-energy cameras, and try to lower stream FPS and/or resolution." : {
+    "Try to lower stream FPS and resolution." : {
+
+    },
+    "Try to use single or low-energy cameras." : {
 
     },
     "Trying to switch OBS scene to %@" : {
