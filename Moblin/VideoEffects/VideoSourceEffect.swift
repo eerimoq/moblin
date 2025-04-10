@@ -16,9 +16,18 @@ final class VideoSourceEffect: VideoEffect {
     private var videoSourceId: Atomic<UUID> = .init(.init())
     private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
     private var settings: Atomic<VideoSourceEffectSettings> = .init(.init())
+    private let trackFace = false
+    private var trackFaceLeft: Double?
+    private var trackFaceRight: Double?
+    private var trackFaceTop: Double?
+    private var trackFaceBottom: Double?
 
     override func getName() -> String {
         return "video source"
+    }
+
+    override func needsFaceDetections() -> Bool {
+        return trackFace
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
@@ -31,6 +40,60 @@ final class VideoSourceEffect: VideoEffect {
 
     func setSettings(settings: VideoSourceEffectSettings) {
         self.settings.mutate { $0 = settings }
+    }
+
+    private func cropFace(_ videoSourceImage: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
+        guard let faceDetections else {
+            return videoSourceImage
+        }
+        let videoSourceImageSize = videoSourceImage.extent.size
+        var left = videoSourceImageSize.width
+        var right = 0.0
+        var top = 0.0
+        var bottom = videoSourceImageSize.height
+        if faceDetections.isEmpty {
+            left = trackFaceLeft ?? left
+            right = trackFaceRight ?? right
+            top = trackFaceTop ?? top
+            bottom = trackFaceBottom ?? bottom
+        } else {
+            for faceDetection in faceDetections {
+                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize) else {
+                    continue
+                }
+                left = min(left, boundingBox.minX)
+                right = max(right, boundingBox.maxX)
+                top = max(top, boundingBox.maxY)
+                bottom = min(bottom, boundingBox.minY)
+            }
+            trackFaceLeft = left
+            trackFaceRight = right
+            trackFaceTop = top
+            trackFaceBottom = bottom
+        }
+        let margin = 3.0
+        let centerX = (right + left) / 2
+        let centerY = (top + bottom) / 2
+        let width = (right - left) * margin
+        let height = (top - bottom) * margin
+        let cropWidth = min(width, videoSourceImageSize.width)
+        let cropHeight = min(height, videoSourceImageSize.height)
+        let cropSquareSize = min(cropWidth, cropHeight)
+        var cropX = max(centerX - cropSquareSize / 2, 0)
+        var cropY = max(videoSourceImageSize.height - centerY - cropSquareSize / 2, 0)
+        cropX = min(cropX, videoSourceImage.extent.width - cropSquareSize)
+        cropY = min(cropY, videoSourceImage.extent.height - cropSquareSize)
+        return videoSourceImage
+            .cropped(to: .init(
+                x: cropX,
+                y: videoSourceImage.extent.height - cropY - cropSquareSize,
+                width: cropSquareSize,
+                height: cropSquareSize
+            ))
+            .transformed(by: CGAffineTransform(
+                translationX: -cropX,
+                y: -(videoSourceImage.extent.height - cropY - cropSquareSize)
+            ))
     }
 
     private func crop(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
@@ -64,6 +127,87 @@ final class VideoSourceEffect: VideoEffect {
         }
     }
 
+    private func makeRoundedRectangleMask(
+        _ videoSourceImage: CIImage,
+        _ cornerRadius: Float,
+        _ translation: CGAffineTransform,
+        _ crop: CGRect,
+        _ clearBackgroundImage: CIImage
+    ) -> CIImage? {
+        let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
+        roundedRectangleGenerator.color = .green
+        // Slightly smaller to remove ~1px black line around image.
+        var extent = videoSourceImage.extent
+        extent.origin.x += 1
+        extent.origin.y += 1
+        extent.size.width -= 2
+        extent.size.height -= 2
+        roundedRectangleGenerator.extent = extent
+        var radiusPixels = Float(min(videoSourceImage.extent.height, videoSourceImage.extent.width))
+        radiusPixels /= 2
+        radiusPixels *= cornerRadius
+        roundedRectangleGenerator.radius = radiusPixels
+        return roundedRectangleGenerator.outputImage?
+            .transformed(by: translation)
+            .cropped(to: crop)
+            .composited(over: clearBackgroundImage)
+    }
+
+    private func makeScale(_ videoSourceImage: CIImage, _ sceneWidget: SettingsSceneWidget, _ size: CGSize) -> Double {
+        let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
+        let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
+        return min(scaleX, scaleY)
+    }
+
+    private func makeTranslation(
+        _ videoSourceImage: CIImage,
+        _ sceneWidget: SettingsSceneWidget,
+        _ size: CGSize,
+        _ scale: Double
+    ) -> CGAffineTransform {
+        let x = toPixels(sceneWidget.x, size.width)
+        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scale
+        return CGAffineTransform(translationX: x, y: y)
+    }
+
+    private func makeSharpCornersImage(
+        _ videoSourceImage: CIImage,
+        _ backgroundImage: CIImage,
+        _ translation: CGAffineTransform,
+        _ crop: CGRect
+    ) -> CIImage {
+        return videoSourceImage
+            .transformed(by: translation)
+            .cropped(to: crop)
+            .composited(over: backgroundImage)
+    }
+
+    private func makeRoundedCornersImage(
+        _ videoSourceImage: CIImage,
+        _ backgroundImage: CIImage,
+        _ translation: CGAffineTransform,
+        _ crop: CGRect,
+        _ settings: VideoSourceEffectSettings
+    ) -> CIImage {
+        let clearBackgroundImage = CIImage.clear.cropped(to: backgroundImage.extent)
+        let roundedRectangleMask = makeRoundedRectangleMask(
+            videoSourceImage,
+            settings.cornerRadius,
+            translation,
+            crop,
+            clearBackgroundImage
+        )
+        let videoSourceImage = videoSourceImage
+            .transformed(by: translation)
+            .cropped(to: crop)
+            .composited(over: clearBackgroundImage)
+        let roundedCornersBlender = CIFilter.blendWithMask()
+        roundedCornersBlender.inputImage = videoSourceImage
+        roundedCornersBlender.backgroundImage = backgroundImage
+        roundedCornersBlender.maskImage = roundedRectangleMask
+        return roundedCornersBlender.outputImage ?? backgroundImage
+    }
+
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget = sceneWidget.value else {
             return backgroundImage
@@ -79,55 +223,22 @@ final class VideoSourceEffect: VideoEffect {
         if videoSourceImage.extent.height > videoSourceImage.extent.width {
             videoSourceImage = videoSourceImage.oriented(.left)
         }
-        if settings.cropEnabled {
+        if trackFace {
+            videoSourceImage = cropFace(videoSourceImage, info.faceDetections)
+        } else if settings.cropEnabled {
             videoSourceImage = crop(videoSourceImage, settings)
         }
         videoSourceImage = rotate(videoSourceImage, settings)
         let size = backgroundImage.extent.size
-        let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
-        let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
-        let scale = min(scaleX, scaleY)
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scale
+        let scale = makeScale(videoSourceImage, sceneWidget, size)
+        let translation = makeTranslation(videoSourceImage, sceneWidget, size, scale)
+        let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        videoSourceImage = videoSourceImage
+            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         if settings.cornerRadius == 0 {
-            return videoSourceImage
-                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-                .transformed(by: CGAffineTransform(translationX: x, y: y))
-                .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
-                .composited(over: backgroundImage)
+            return makeSharpCornersImage(videoSourceImage, backgroundImage, translation, crop)
         } else {
-            videoSourceImage = videoSourceImage
-                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-            let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
-            roundedRectangleGenerator.color = .green
-            // Slightly smaller to remove ~1px black line around image.
-            var extent = videoSourceImage.extent
-            extent.origin.x += 1
-            extent.origin.y += 1
-            extent.size.width -= 2
-            extent.size.height -= 2
-            roundedRectangleGenerator.extent = extent
-            var radiusPixels = Float(min(videoSourceImage.extent.height, videoSourceImage.extent.width))
-            radiusPixels /= 2
-            radiusPixels *= settings.cornerRadius
-            roundedRectangleGenerator.radius = radiusPixels
-            guard var roundedRectangleMask = roundedRectangleGenerator.outputImage else {
-                return backgroundImage
-            }
-            let clearBackgroundImage = CIImage.clear.cropped(to: backgroundImage.extent)
-            videoSourceImage = videoSourceImage
-                .transformed(by: CGAffineTransform(translationX: x, y: y))
-                .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
-                .composited(over: clearBackgroundImage)
-            roundedRectangleMask = roundedRectangleMask
-                .transformed(by: CGAffineTransform(translationX: x, y: y))
-                .cropped(to: .init(x: 0, y: 0, width: size.width, height: size.height))
-                .composited(over: clearBackgroundImage)
-            let roundedCornersBlender = CIFilter.blendWithMask()
-            roundedCornersBlender.inputImage = videoSourceImage
-            roundedCornersBlender.backgroundImage = backgroundImage
-            roundedCornersBlender.maskImage = roundedRectangleMask
-            return roundedCornersBlender.outputImage ?? backgroundImage
+            return makeRoundedCornersImage(videoSourceImage, backgroundImage, translation, crop, settings)
         }
     }
 

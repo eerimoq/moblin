@@ -3,6 +3,7 @@ import MapKit
 import MetalPetal
 import Network
 import SwiftUI
+import Vision
 import WeatherKit
 
 extension UIImage {
@@ -613,5 +614,48 @@ extension NWConnection {
         let metadata = NWProtocolWebSocket.Metadata(opcode: opcode)
         let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
         send(content: data, contentContext: context, isComplete: true, completion: .idempotent)
+    }
+}
+
+extension VNFaceObservation {
+    func stableBoundingBox(imageSize: CGSize, rotationAngle: Double = 0.0) -> CGRect? {
+        var allPoints = getFacePoints(imageSize: imageSize)
+        if rotationAngle != 0 {
+            allPoints = rotateFace(allPoints: allPoints, rotationAngle: -rotationAngle)
+        }
+        guard let firstPoint = allPoints.first else {
+            return nil
+        }
+        var faceMinX = firstPoint.x
+        var faceMaxX = firstPoint.x
+        var faceMinY = firstPoint.y
+        var faceMaxY = firstPoint.y
+        for point in allPoints {
+            faceMinX = min(point.x, faceMinX)
+            faceMaxX = max(point.x, faceMaxX)
+            faceMinY = min(point.y, faceMinY)
+            faceMaxY = max(point.y, faceMaxY)
+        }
+        let faceWidth = faceMaxX - faceMinX
+        let faceHeight = faceMaxY - faceMinY
+        return CGRect(x: faceMinX, y: faceMinY, width: faceWidth, height: faceHeight)
+    }
+
+    private func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
+        return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
+    }
+
+    private func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
+        let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
+        let beta = atan(point.y / point.x)
+        return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
+    }
+
+    private func getFacePoints(imageSize: CGSize) -> [CGPoint] {
+        var points: [CGPoint] = []
+        points += landmarks?.medianLine?.pointsInImage(imageSize: imageSize) ?? []
+        points += landmarks?.leftEyebrow?.pointsInImage(imageSize: imageSize) ?? []
+        points += landmarks?.rightEyebrow?.pointsInImage(imageSize: imageSize) ?? []
+        return points
     }
 }
