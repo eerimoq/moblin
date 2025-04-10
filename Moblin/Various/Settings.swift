@@ -1985,6 +1985,7 @@ class SettingsDebug: Codable {
     var bitrateDropFix: Bool? = false
     var relaxedBitrate: Bool? = false
     var externalDisplayChat: Bool? = false
+    var videoSourceWidgetTrackFace: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -4950,6 +4951,10 @@ final class Settings {
         }
         if realDatabase.location!.resetWhenGoingLive == nil {
             realDatabase.location!.resetWhenGoingLive = false
+            store()
+        }
+        if realDatabase.debug.videoSourceWidgetTrackFace == nil {
+            realDatabase.debug.videoSourceWidgetTrackFace = false
             store()
         }
     }
