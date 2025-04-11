@@ -5,11 +5,16 @@ import Vision
 
 public struct VideoEffectInfo {
     let isFirstAfterAttach: Bool
-    let faceDetections: [VNFaceObservation]?
+    let sceneVideoSourceId: UUID
+    let faceDetections: [UUID: [VNFaceObservation]]
     // periphery:ignore
     let presentationTimeStamp: CMTime
     // periphery:ignore
     let videoUnit: VideoUnit
+
+    func sceneFaceDetections() -> [VNFaceObservation]? {
+        return faceDetections[sceneVideoSourceId]
+    }
 }
 
 open class VideoEffect: NSObject {
@@ -17,8 +22,8 @@ open class VideoEffect: NSObject {
         return ""
     }
 
-    open func needsFaceDetections() -> Bool {
-        return false
+    open func needsFaceDetections() -> (Bool, UUID?) {
+        return (false, nil)
     }
 
     open func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

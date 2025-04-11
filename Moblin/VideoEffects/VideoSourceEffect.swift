@@ -51,8 +51,8 @@ final class VideoSourceEffect: VideoEffect {
         return "video source"
     }
 
-    override func needsFaceDetections() -> Bool {
-        return videoSourceTrackFace
+    override func needsFaceDetections() -> (Bool, UUID?) {
+        return (videoSourceTrackFace, videoSourceId.value)
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
@@ -263,8 +263,9 @@ final class VideoSourceEffect: VideoEffect {
             return backgroundImage
         }
         let settings = self.settings.value
+        let videoSourceId = videoSourceId.value
         guard var videoSourceImage = info.videoUnit.getCIImage(
-            videoSourceId.value,
+            videoSourceId,
             info.presentationTimeStamp
         )
         else {
@@ -274,7 +275,11 @@ final class VideoSourceEffect: VideoEffect {
             videoSourceImage = videoSourceImage.oriented(.left)
         }
         if videoSourceTrackFace {
-            videoSourceImage = cropFace(videoSourceImage, info.faceDetections, info.presentationTimeStamp.seconds)
+            videoSourceImage = cropFace(
+                videoSourceImage,
+                info.faceDetections[videoSourceId],
+                info.presentationTimeStamp.seconds
+            )
         } else if settings.cropEnabled {
             videoSourceImage = crop(videoSourceImage, settings)
         }

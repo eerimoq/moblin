@@ -50,8 +50,8 @@ final class FaceEffect: VideoEffect {
         return "face filter"
     }
 
-    override func needsFaceDetections() -> Bool {
-        return true
+    override func needsFaceDetections() -> (Bool, UUID?) {
+        return (true, nil)
     }
 
     private func findFaceNeeded() -> Bool {
@@ -226,7 +226,7 @@ final class FaceEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let faceDetections = info.faceDetections
+        let faceDetections = info.sceneFaceDetections()
         let isFirstAfterAttach = info.isFirstAfterAttach
         loadSettings()
         updateFindFace(faceDetections)
@@ -455,7 +455,7 @@ final class FaceEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _ info: VideoEffectInfo) -> MTIImage? {
-        let faceDetections = info.faceDetections
+        let faceDetections = info.sceneFaceDetections()
         let isFirstAfterAttach = info.isFirstAfterAttach
         loadSettings()
         updateFindFace(faceDetections)

@@ -575,8 +575,8 @@ final class AlertsEffect: VideoEffect {
         return "Alert widget"
     }
 
-    override func needsFaceDetections() -> Bool {
-        return landmarkSettings != nil
+    override func needsFaceDetections() -> (Bool, UUID?) {
+        return (landmarkSettings != nil, nil)
     }
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
@@ -739,7 +739,7 @@ final class AlertsEffect: VideoEffect {
             return image
         }
         if let landmarkSettings {
-            return executePositionFace(image, info.faceDetections, alertImage, landmarkSettings)
+            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
         } else {
             return executePositionScene(image, alertImage, messageImage, x, y)
         }
