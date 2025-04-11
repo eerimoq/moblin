@@ -301,6 +301,9 @@
         }
       }
     },
+    " %@, you are not allowed to take snapshots, sorry. 😢" : {
+
+    },
     " %lld ch" : {
       "localizations" : {
         "de" : {
@@ -5449,6 +5452,9 @@
         }
       }
     },
+    "%@ Sorry, you are not allowed to use this chat bot command 😢" : {
+
+    },
     "%@ source audio levels" : {
       "localizations" : {
         "de" : {
@@ -5720,6 +5726,9 @@
           }
         }
       }
+    },
+    "%@, thanks for bringing my photo album to life. 🎉" : {
+
     },
     "%lld %%" : {
       "localizations" : {
@@ -105439,6 +105448,9 @@
         }
       }
     },
+    "Send chat responses" : {
+
+    },
     "Send low battery message" : {
       "localizations" : {
         "de" : {
@@ -135583,6 +135595,9 @@
           }
         }
       }
+    },
+    "Typically sends a chat message if the user is not allowed to execute the command. Some commands responds on success as well." : {
+
     },
     "Ultra wide" : {
       "localizations" : {

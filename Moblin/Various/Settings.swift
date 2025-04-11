@@ -1819,6 +1819,7 @@ class SettingsChatBotPermissionsCommand: Codable {
     var subscribersEnabled: Bool? = false
     var minimumSubscriberTier: Int? = 1
     var othersEnabled: Bool = false
+    var sendChatMessages: Bool? = false
 }
 
 class SettingsChatBotPermissions: Codable {
@@ -4961,6 +4962,50 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.trackFaceEnabled == nil {
             widget.videoSource!.trackFaceEnabled = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tts.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.tts.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fix.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.fix.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.map.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.map.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.alert!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.alert!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.fax!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.fax!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.snapshot!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.snapshot!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.filter!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.filter!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.tesla!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.tesla!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.audio!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.audio!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.reaction!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.reaction!.sendChatMessages = false
+            store()
+        }
+        if realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages == nil {
+            realDatabase.chat.botCommandPermissions!.scene!.sendChatMessages = false
             store()
         }
     }

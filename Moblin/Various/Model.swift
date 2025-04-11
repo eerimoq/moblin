@@ -5444,29 +5444,53 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return String(localized: "Snapshot taken by \(user).")
     }
 
+    private func formatSnapshotTakenSuccessfully(user: String) -> String {
+        return String(localized: "\(user), thanks for bringing our photo album to life. 🎉")
+    }
+
+    private func formatSnapshotTakenNotAllowed(user: String) -> String {
+        return String(localized: " \(user), you are not allowed to take snapshots, sorry. 😢")
+    }
+
     private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions!.snapshot!
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.snapshot!,
+            permissions: permissions,
             command: command
         ) {
             if let user = command.user() {
+                if permissions.sendChatMessages! {
+                    self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
+                }
                 self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
             } else {
                 self.takeSnapshot(isChatBot: true)
+            }
+        } onNotAllowed: {
+            if permissions.sendChatMessages!, let user = command.user() {
+                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
             }
         }
     }
 
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions!.snapshot!
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions!.snapshot!,
+            permissions: permissions,
             command: command
         ) {
+            if permissions.sendChatMessages!, let user = command.user() {
+                self.sendChatMessage(message: self.formatSnapshotTakenSuccessfully(user: user))
+            }
             self.takeSnapshotWithCountdown(
                 isChatBot: true,
                 message: command.rest(),
                 user: command.user()
             )
+        } onNotAllowed: {
+            if permissions.sendChatMessages!, let user = command.user() {
+                self.sendChatMessage(message: self.formatSnapshotTakenNotAllowed(user: user))
+            }
         }
     }
 
@@ -5658,8 +5682,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func executeIfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
         command: ChatBotCommand,
-        onCompleted: @escaping () -> Void
+        onCompleted: @escaping () -> Void,
+        onNotAllowed: (() -> Void)? = nil
     ) {
+        var onNotAllowed = onNotAllowed
+        if permissions.sendChatMessages!, onNotAllowed == nil {
+            onNotAllowed = {
+                if permissions.sendChatMessages!, let user = command.user() {
+                    self
+                        .sendChatMessage(
+                            message: String(
+                                localized: "\(user) Sorry, you are not allowed to use this chat bot command 😢"
+                            )
+                        )
+                }
+            }
+        }
         if command.message.isModerator, permissions.moderatorsEnabled {
             onCompleted()
             return
@@ -5682,7 +5720,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                 self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
                                     permissions: permissions,
                                     command: command,
-                                    onCompleted: onCompleted
+                                    onCompleted: onCompleted,
+                                    onNotAllowed: onNotAllowed
                                 )
                             }
                         }
@@ -5700,14 +5739,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
             permissions: permissions,
             command: command,
-            onCompleted: onCompleted
+            onCompleted: onCompleted,
+            onNotAllowed: onNotAllowed
         )
     }
 
     private func executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
         permissions: SettingsChatBotPermissionsCommand,
         command: ChatBotCommand,
-        onCompleted: @escaping () -> Void
+        onCompleted: @escaping () -> Void,
+        onNotAllowed: (() -> Void)?
     ) {
         guard let user = command.user() else {
             return
@@ -5716,14 +5757,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .twitch:
             if isTwitchUserAllowedToUseChatBot(permissions: permissions, user: user) {
                 onCompleted()
+                return
             }
         case .kick:
             if isKickUserAllowedToUseChatBot(permissions: permissions, user: user) {
                 onCompleted()
+                return
             }
         default:
             break
         }
+        onNotAllowed?()
     }
 
     private func isTwitchUserAllowedToUseChatBot(permissions: SettingsChatBotPermissionsCommand,
