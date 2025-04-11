@@ -92629,6 +92629,9 @@
         }
       }
     },
+    "Print snapshots" : {
+
+    },
     "Print when the app is in background mode." : {
       "localizations" : {
         "de" : {

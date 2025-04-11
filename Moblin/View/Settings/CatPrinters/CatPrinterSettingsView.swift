@@ -91,6 +91,15 @@ struct CatPrinterSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
+                    device.printSnapshots!
+                }, set: { value in
+                    device.printSnapshots = value
+                }), label: {
+                    Text("Print snapshots")
+                })
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
                     device.faxMeowSound!
                 }, set: { value in
                     device.faxMeowSound = value

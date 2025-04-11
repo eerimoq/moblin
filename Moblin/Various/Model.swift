@@ -1157,7 +1157,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
-                self.printAllCatPrinters(image: portraitImage)
+                self.printSnapshotCatPrinters(image: portraitImage)
             }
         }
     }
@@ -1236,6 +1236,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func printAllCatPrinters(image: CIImage, feedPaperDelay: Double? = nil) {
         for catPrinter in catPrinters.values {
             catPrinter.print(image: image, feedPaperDelay: feedPaperDelay)
+        }
+    }
+
+    private func printSnapshotCatPrinters(image: CIImage) {
+        for catPrinter in catPrinters.values where
+            getCatPrinterSettings(catPrinter: catPrinter)?.printSnapshots! == true
+        {
+            catPrinter.print(image: image, feedPaperDelay: nil)
         }
     }
 
