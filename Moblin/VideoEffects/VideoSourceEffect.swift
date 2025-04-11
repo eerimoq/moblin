@@ -125,7 +125,7 @@ final class VideoSourceEffect: VideoEffect {
         let height = (top - bottom) * margin
         let cropWidth = min(width, videoSourceImageSize.width)
         let cropHeight = min(height, videoSourceImageSize.height)
-        let cropSquareSize = min(cropWidth, cropHeight)
+        let cropSquareSize = min(cropWidth, cropHeight).rounded(.down)
         var cropX = max(centerX - cropSquareSize / 2, 0)
         var cropY = max(videoSourceImageSize.height - centerY - cropSquareSize / 2, 0)
         cropX = min(cropX, videoSourceImage.extent.width - cropSquareSize)
