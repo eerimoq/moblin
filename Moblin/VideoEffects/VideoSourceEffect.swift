@@ -14,18 +14,37 @@ struct VideoSourceEffectSettings {
     var rotation: Double = 0
 }
 
+class PositionInterpolator {
+    private(set) var current: Double?
+    var target: Double?
+
+    init() {}
+
+    func update(timeElapsed: Double) -> Double {
+        if let current, let target {
+            let delta = target - current
+            if abs(delta) < 5 {
+                self.current = current
+            } else {
+                self.current = current + delta * 2 * timeElapsed
+            }
+        } else if let target {
+            current = target
+        } else {
+            current = 0
+        }
+        return current!
+    }
+}
+
 final class VideoSourceEffect: VideoEffect {
     private var videoSourceId: Atomic<UUID> = .init(.init())
     private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
     private var settings: Atomic<VideoSourceEffectSettings> = .init(.init())
-    private var trackFaceLeftTarget: Double?
-    private var trackFaceRightTarget: Double?
-    private var trackFaceTopTarget: Double?
-    private var trackFaceBottomTarget: Double?
-    private var trackFaceLeftCurrent: Double?
-    private var trackFaceRightCurrent: Double?
-    private var trackFaceTopCurrent: Double?
-    private var trackFaceBottomCurrent: Double?
+    private var trackFaceLeft = PositionInterpolator()
+    private var trackFaceRight = PositionInterpolator()
+    private var trackFaceTop = PositionInterpolator()
+    private var trackFaceBottom = PositionInterpolator()
     private var trackFacePresentationTimeStamp = 0.0
 
     override func getName() -> String {
@@ -78,10 +97,10 @@ final class VideoSourceEffect: VideoEffect {
         var top = 0.0
         var bottom = videoSourceImageSize.height
         if faceDetections.isEmpty {
-            left = trackFaceLeftCurrent ?? left
-            right = trackFaceRightCurrent ?? right
-            top = trackFaceTopCurrent ?? top
-            bottom = trackFaceBottomCurrent ?? bottom
+            left = trackFaceLeft.current ?? left
+            right = trackFaceRight.current ?? right
+            top = trackFaceTop.current ?? top
+            bottom = trackFaceBottom.current ?? bottom
         } else {
             for faceDetection in faceDetections {
                 guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize) else {
@@ -92,20 +111,16 @@ final class VideoSourceEffect: VideoEffect {
                 top = max(top, boundingBox.maxY)
                 bottom = min(bottom, boundingBox.minY)
             }
-            trackFaceLeftTarget = left
-            trackFaceRightTarget = right
-            trackFaceTopTarget = top
-            trackFaceBottomTarget = bottom
+            trackFaceLeft.target = left
+            trackFaceRight.target = right
+            trackFaceTop.target = top
+            trackFaceBottom.target = bottom
         }
         trackFacePresentationTimeStamp = presentationTimeStamp
-        left = interpolatePosition(trackFaceLeftCurrent, trackFaceLeftTarget, timeElapsed)
-        trackFaceLeftCurrent = left
-        right = interpolatePosition(trackFaceRightCurrent, trackFaceRightTarget, timeElapsed)
-        trackFaceRightCurrent = right
-        top = interpolatePosition(trackFaceTopCurrent, trackFaceTopTarget, timeElapsed)
-        trackFaceTopCurrent = top
-        bottom = interpolatePosition(trackFaceBottomCurrent, trackFaceBottomTarget, timeElapsed)
-        trackFaceBottomCurrent = bottom
+        left = trackFaceLeft.update(timeElapsed: timeElapsed)
+        right = trackFaceRight.update(timeElapsed: timeElapsed)
+        top = trackFaceTop.update(timeElapsed: timeElapsed)
+        bottom = trackFaceBottom.update(timeElapsed: timeElapsed)
         let margin = 3.0
         let centerX = (right + left) / 2
         let centerY = (top + bottom) / 2
