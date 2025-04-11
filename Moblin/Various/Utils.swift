@@ -641,16 +641,6 @@ extension VNFaceObservation {
         return CGRect(x: faceMinX, y: faceMinY, width: faceWidth, height: faceHeight)
     }
 
-    private func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
-        return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
-    }
-
-    private func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
-        let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
-        let beta = atan(point.y / point.x)
-        return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
-    }
-
     private func getFacePoints(imageSize: CGSize) -> [CGPoint] {
         var points: [CGPoint] = []
         points += landmarks?.medianLine?.pointsInImage(imageSize: imageSize) ?? []
@@ -658,4 +648,14 @@ extension VNFaceObservation {
         points += landmarks?.rightEyebrow?.pointsInImage(imageSize: imageSize) ?? []
         return points
     }
+}
+
+func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
+    return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
+}
+
+func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
+    let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
+    let beta = atan(point.y / point.x)
+    return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
 }

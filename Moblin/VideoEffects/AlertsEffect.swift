@@ -629,24 +629,6 @@ final class AlertsEffect: VideoEffect {
         return -atan(deltaX / deltaY)
     }
 
-    private func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
-        return allPoints.map { rotatePoint(point: $0, alpha: rotationAngle) }
-    }
-
-    private func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
-        let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
-        let beta = atan(point.y / point.x)
-        return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
-    }
-
-    private func getFacePoints(detection: VNFaceObservation, imageSize: CGSize) -> [CGPoint] {
-        var points: [CGPoint] = []
-        points += detection.landmarks?.medianLine?.pointsInImage(imageSize: imageSize) ?? []
-        points += detection.landmarks?.leftEyebrow?.pointsInImage(imageSize: imageSize) ?? []
-        points += detection.landmarks?.rightEyebrow?.pointsInImage(imageSize: imageSize) ?? []
-        return points
-    }
-
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -661,25 +643,16 @@ final class AlertsEffect: VideoEffect {
             guard let rotationAngle = calcFaceAngle(detection: detection, imageSize: image.extent.size) else {
                 continue
             }
-            let allPoints = rotateFace(
-                allPoints: getFacePoints(detection: detection, imageSize: image.extent.size),
-                rotationAngle: -rotationAngle
-            )
-            guard let firstPoint = allPoints.first else {
+            guard let boundingBox = detection.stableBoundingBox(
+                imageSize: image.extent.size,
+                rotationAngle: rotationAngle
+            ) else {
                 continue
             }
-            var faceMinX = firstPoint.x
-            var faceMaxX = firstPoint.x
-            var faceMinY = firstPoint.y
-            var faceMaxY = firstPoint.y
-            for point in allPoints {
-                faceMinX = min(point.x, faceMinX)
-                faceMaxX = max(point.x, faceMaxX)
-                faceMinY = min(point.y, faceMinY)
-                faceMaxY = max(point.y, faceMaxY)
-            }
-            let faceWidth = faceMaxX - faceMinX
-            let faceHeight = faceMaxY - faceMinY
+            let faceMinX = boundingBox.minX
+            let faceMaxY = boundingBox.maxY
+            let faceWidth = boundingBox.width
+            let faceHeight = boundingBox.height
             let alertImageHeight = faceHeight * landmarkSettings.height
             var centerX: Double
             var centerY: Double
