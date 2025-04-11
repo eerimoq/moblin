@@ -575,7 +575,7 @@ final class AlertsEffect: VideoEffect {
         return "Alert widget"
     }
 
-    override func needsFaceDetections() -> (Bool, UUID?) {
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?) {
         return (landmarkSettings != nil, nil)
     }
 

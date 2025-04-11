@@ -133,12 +133,6 @@ struct DebugSettingsView: View {
                     model.database.debug.srtlaBatchSend = value
                     model.setSrtlaBatchSend()
                 }))
-                Toggle("Video source widget track face", isOn: Binding(get: {
-                    model.database.debug.videoSourceWidgetTrackFace!
-                }, set: { value in
-                    model.database.debug.videoSourceWidgetTrackFace = value
-                    model.setVideoSourceWidgetTrackFace()
-                }))
                 NavigationLink {
                     DjiGimbalDevicesSettingsView()
                 } label: {

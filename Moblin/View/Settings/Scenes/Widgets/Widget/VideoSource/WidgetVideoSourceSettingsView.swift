@@ -280,6 +280,15 @@ struct WidgetVideoSourceSettingsView: View {
                     widget.videoSource!.rotation = rotation
                     setEffectSettings()
                 }
+            Toggle(isOn: Binding(get: {
+                widget.videoSource!.trackFaceEnabled!
+            }, set: { value in
+                widget.videoSource!.trackFaceEnabled = value
+                setEffectSettings()
+                model.objectWillChange.send()
+            })) {
+                Text("Track face")
+            }
         }
         Section {
             Toggle(isOn: Binding(get: {
@@ -292,7 +301,7 @@ struct WidgetVideoSourceSettingsView: View {
             }
         } header: {
             Text("Crop")
-        }
+        }.disabled(widget.videoSource!.trackFaceEnabled!)
         Section {
             CropView(widgetId: widget.id, widget: widget.videoSource!)
         }

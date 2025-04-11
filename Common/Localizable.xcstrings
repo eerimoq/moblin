@@ -132731,6 +132731,9 @@
         }
       }
     },
+    "Track face" : {
+
+    },
     "Trailing" : {
       "localizations" : {
         "de" : {
@@ -141824,9 +141827,6 @@
           }
         }
       }
-    },
-    "Video source widget track face" : {
-
     },
     "Video stabilization" : {
       "localizations" : {

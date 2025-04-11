@@ -2,8 +2,6 @@ import AVFoundation
 import MetalPetal
 import Vision
 
-var videoSourceTrackFace = false
-
 struct VideoSourceEffectSettings {
     var cornerRadius: Float = 0
     var cropEnabled: Bool = false
@@ -12,6 +10,7 @@ struct VideoSourceEffectSettings {
     var cropWidth: Double = 1
     var cropHeight: Double = 1
     var rotation: Double = 0
+    var trackFaceEnabled: Bool = false
 }
 
 class PositionInterpolator {
@@ -46,13 +45,19 @@ final class VideoSourceEffect: VideoEffect {
     private var trackFaceTop = PositionInterpolator()
     private var trackFaceBottom = PositionInterpolator()
     private var trackFacePresentationTimeStamp = 0.0
+    private var trackFaceNeedsDetectionsPresentationTimeStamp = 0.0
 
     override func getName() -> String {
         return "video source"
     }
 
-    override func needsFaceDetections() -> (Bool, UUID?) {
-        return (videoSourceTrackFace, videoSourceId.value)
+    override func needsFaceDetections(_ presentationTimeStamp: Double) -> (Bool, UUID?) {
+        if presentationTimeStamp - trackFaceNeedsDetectionsPresentationTimeStamp > 0.2 {
+            trackFaceNeedsDetectionsPresentationTimeStamp = presentationTimeStamp
+            return (settings.value.trackFaceEnabled, videoSourceId.value)
+        } else {
+            return (false, nil)
+        }
     }
 
     func setVideoSourceId(videoSourceId: UUID) {
@@ -87,21 +92,12 @@ final class VideoSourceEffect: VideoEffect {
         _ faceDetections: [VNFaceObservation]?,
         _ presentationTimeStamp: Double
     ) -> CIImage {
-        guard let faceDetections else {
-            return videoSourceImage
-        }
-        let timeElapsed = presentationTimeStamp - trackFacePresentationTimeStamp
         let videoSourceImageSize = videoSourceImage.extent.size
         var left = videoSourceImageSize.width
         var right = 0.0
         var top = 0.0
         var bottom = videoSourceImageSize.height
-        if faceDetections.isEmpty {
-            left = trackFaceLeft.current ?? left
-            right = trackFaceRight.current ?? right
-            top = trackFaceTop.current ?? top
-            bottom = trackFaceBottom.current ?? bottom
-        } else {
+        if let faceDetections, !faceDetections.isEmpty {
             for faceDetection in faceDetections {
                 guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize) else {
                     continue
@@ -116,6 +112,7 @@ final class VideoSourceEffect: VideoEffect {
             trackFaceTop.target = top
             trackFaceBottom.target = bottom
         }
+        let timeElapsed = presentationTimeStamp - trackFacePresentationTimeStamp
         trackFacePresentationTimeStamp = presentationTimeStamp
         left = trackFaceLeft.update(timeElapsed: timeElapsed)
         right = trackFaceRight.update(timeElapsed: timeElapsed)
@@ -274,7 +271,7 @@ final class VideoSourceEffect: VideoEffect {
         if videoSourceImage.extent.height > videoSourceImage.extent.width {
             videoSourceImage = videoSourceImage.oriented(.left)
         }
-        if videoSourceTrackFace {
+        if settings.trackFaceEnabled {
             videoSourceImage = cropFace(
                 videoSourceImage,
                 info.faceDetections[videoSourceId],

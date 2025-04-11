@@ -1145,10 +1145,9 @@ final class VideoUnit: NSObject {
             return false
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
-        mixer?.delegate?.mixerVideo(
-            presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
-        )
-        let videoSourceIds = needsFaceDetections()
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+        mixer?.delegate?.mixerVideo(presentationTimestamp: presentationTimeStamp)
+        let videoSourceIds = needsFaceDetections(presentationTimeStamp)
         let completion = FaceDetectionsCompletion(
             sequenceNumber: nextFaceDetectionsSequenceNumber,
             sampleBuffer: sampleBuffer,
@@ -1401,10 +1400,10 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func needsFaceDetections() -> Set<UUID> {
+    private func needsFaceDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
         var ids: Set<UUID> = []
         for effect in effects {
-            let (needsFaceDetections, videoSource) = effect.needsFaceDetections()
+            let (needsFaceDetections, videoSource) = effect.needsFaceDetections(presentationTimeStamp)
             if needsFaceDetections {
                 if let videoSource {
                     ids.insert(videoSource)

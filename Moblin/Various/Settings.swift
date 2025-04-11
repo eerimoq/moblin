@@ -1272,6 +1272,7 @@ class SettingsWidgetVideoSource: Codable {
     var cropWidth: Double? = 0.5
     var cropHeight: Double? = 1.0
     var rotation: Double? = 0.0
+    var trackFaceEnabled: Bool? = false
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
@@ -1280,7 +1281,8 @@ class SettingsWidgetVideoSource: Codable {
                      cropY: cropY!,
                      cropWidth: cropWidth!,
                      cropHeight: cropHeight!,
-                     rotation: rotation!)
+                     rotation: rotation!,
+                     trackFaceEnabled: trackFaceEnabled!)
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -4955,6 +4957,10 @@ final class Settings {
         }
         if realDatabase.debug.videoSourceWidgetTrackFace == nil {
             realDatabase.debug.videoSourceWidgetTrackFace = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.trackFaceEnabled == nil {
+            widget.videoSource!.trackFaceEnabled = false
             store()
         }
     }

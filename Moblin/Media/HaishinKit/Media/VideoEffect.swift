@@ -22,7 +22,7 @@ open class VideoEffect: NSObject {
         return ""
     }
 
-    open func needsFaceDetections() -> (Bool, UUID?) {
+    open func needsFaceDetections(_: Double) -> (Bool, UUID?) {
         return (false, nil)
     }
 
