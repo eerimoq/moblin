@@ -41,7 +41,7 @@ struct WidgetsSettingsView: View {
             .onDelete(perform: { offsets in
                 database.widgets.remove(atOffsets: offsets)
                 model.removeDeadWidgetsFromScenes()
-                model.resetSelectedScene()
+                model.resetSelectedScene(changeScene: false)
             })
             CreateButtonView {
                 database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
