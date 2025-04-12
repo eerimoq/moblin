@@ -41,10 +41,10 @@ final class VideoSourceEffect: VideoEffect {
     private var videoSourceId: Atomic<UUID> = .init(.init())
     private var sceneWidget: Atomic<SettingsSceneWidget?> = .init(nil)
     private var settings: Atomic<VideoSourceEffectSettings> = .init(.init())
-    private var trackFaceLeft = PositionInterpolator()
-    private var trackFaceRight = PositionInterpolator()
-    private var trackFaceTop = PositionInterpolator()
-    private var trackFaceBottom = PositionInterpolator()
+    private let trackFaceLeft = PositionInterpolator()
+    private let trackFaceRight = PositionInterpolator()
+    private let trackFaceTop = PositionInterpolator()
+    private let trackFaceBottom = PositionInterpolator()
     private var trackFacePresentationTimeStamp = 0.0
     private var trackFaceNeedsDetectionsPresentationTimeStamp = 0.0
 
@@ -112,6 +112,11 @@ final class VideoSourceEffect: VideoEffect {
             trackFaceRight.target = right
             trackFaceTop.target = top
             trackFaceBottom.target = bottom
+        } else if trackFaceLeft.target == nil {
+            trackFaceLeft.target = videoSourceImageSize.width * 0.33
+            trackFaceRight.target = videoSourceImageSize.width * 0.67
+            trackFaceTop.target = videoSourceImageSize.height * 0.67
+            trackFaceBottom.target = videoSourceImageSize.height * 0.33
         }
         let timeElapsed = presentationTimeStamp - trackFacePresentationTimeStamp
         trackFacePresentationTimeStamp = presentationTimeStamp
