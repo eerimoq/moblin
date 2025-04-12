@@ -1273,6 +1273,7 @@ class SettingsWidgetVideoSource: Codable {
     var cropHeight: Double? = 1.0
     var rotation: Double? = 0.0
     var trackFaceEnabled: Bool? = false
+    var trackFaceZoom: Double? = 0.95
     var mirror: Bool? = false
 
     func toEffectSettings() -> VideoSourceEffectSettings {
@@ -1284,6 +1285,7 @@ class SettingsWidgetVideoSource: Codable {
                      cropHeight: cropHeight!,
                      rotation: rotation!,
                      trackFaceEnabled: trackFaceEnabled!,
+                     trackFaceZoom: 2.0 + (1 - trackFaceZoom!) * 4,
                      mirror: mirror!)
     }
 
@@ -5017,6 +5019,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.mirror == nil {
             widget.videoSource!.mirror = false
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.trackFaceZoom == nil {
+            widget.videoSource!.trackFaceZoom = 0.95
             store()
         }
     }

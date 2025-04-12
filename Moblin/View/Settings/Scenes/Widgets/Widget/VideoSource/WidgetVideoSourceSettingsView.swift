@@ -218,6 +218,7 @@ struct WidgetVideoSourceSettingsView: View {
     var widget: SettingsWidget
     @State var cornerRadius: Float
     @State var selectedRotation: Double
+    @State var zoom: Double
 
     private func onCameraChange(cameraId: String) {
         widget.videoSource!
@@ -288,6 +289,8 @@ struct WidgetVideoSourceSettingsView: View {
             })) {
                 Text("Mirror")
             }
+        }
+        Section {
             Toggle(isOn: Binding(get: {
                 widget.videoSource!.trackFaceEnabled!
             }, set: { value in
@@ -295,8 +298,22 @@ struct WidgetVideoSourceSettingsView: View {
                 setEffectSettings()
                 model.objectWillChange.send()
             })) {
-                Text("Track face")
+                Text("Enabled")
             }
+            HStack {
+                Text("Zoom")
+                Slider(
+                    value: $zoom,
+                    in: 0 ... 1,
+                    step: 0.01
+                )
+                .onChange(of: zoom) { value in
+                    widget.videoSource!.trackFaceZoom = value
+                    setEffectSettings()
+                }
+            }
+        } header: {
+            Text("Face tracking")
         }
         Section {
             Toggle(isOn: Binding(get: {

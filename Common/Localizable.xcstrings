@@ -52127,6 +52127,9 @@
         }
       }
     },
+    "Face tracking" : {
+
+    },
     "Facebook" : {
       "localizations" : {
         "de" : {
@@ -134648,6 +134651,7 @@
       }
     },
     "Track face" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

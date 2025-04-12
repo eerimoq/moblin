@@ -11,6 +11,7 @@ struct VideoSourceEffectSettings {
     var cropHeight: Double = 1
     var rotation: Double = 0
     var trackFaceEnabled: Bool = false
+    var trackFaceZoom: Double = 2.2
     var mirror: Bool = false
 }
 
@@ -91,7 +92,8 @@ final class VideoSourceEffect: VideoEffect {
     private func cropFace(
         _ videoSourceImage: CIImage,
         _ faceDetections: [VNFaceObservation]?,
-        _ presentationTimeStamp: Double
+        _ presentationTimeStamp: Double,
+        _ zoom: Double
     ) -> CIImage {
         let videoSourceImageSize = videoSourceImage.extent.size
         var left = videoSourceImageSize.width
@@ -124,13 +126,13 @@ final class VideoSourceEffect: VideoEffect {
         right = trackFaceRight.update(timeElapsed: timeElapsed)
         top = trackFaceTop.update(timeElapsed: timeElapsed)
         bottom = trackFaceBottom.update(timeElapsed: timeElapsed)
-        let margin = 3.0
+        let width = (right - left) * zoom
+        let height = (top - bottom) * zoom
         let centerX = (right + left) / 2
-        let centerY = (top + bottom) / 2
-        let width = (right - left) * margin
-        let height = (top - bottom) * margin
-        let cropWidth = min(width, videoSourceImageSize.width)
-        let cropHeight = min(height, videoSourceImageSize.height)
+        let centerY = (top + bottom) / 2 * 1.05 // - extraHeight
+        let side = max(width, height)
+        let cropWidth = min(side, videoSourceImageSize.width)
+        let cropHeight = min(side, videoSourceImageSize.height)
         let cropSquareSize = min(cropWidth, cropHeight).rounded(.down)
         var cropX = max(centerX - cropSquareSize / 2, 0)
         var cropY = max(videoSourceImageSize.height - centerY - cropSquareSize / 2, 0)
@@ -297,7 +299,8 @@ final class VideoSourceEffect: VideoEffect {
             videoSourceImage = cropFace(
                 videoSourceImage,
                 info.faceDetections[videoSourceId],
-                info.presentationTimeStamp.seconds
+                info.presentationTimeStamp.seconds,
+                settings.trackFaceZoom
             )
         } else if settings.cropEnabled {
             videoSourceImage = crop(videoSourceImage, settings)
