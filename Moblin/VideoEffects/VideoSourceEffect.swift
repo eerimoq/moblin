@@ -11,6 +11,7 @@ struct VideoSourceEffectSettings {
     var cropHeight: Double = 1
     var rotation: Double = 0
     var trackFaceEnabled: Bool = false
+    var mirror: Bool = false
 }
 
 class PositionInterpolator {
@@ -200,20 +201,36 @@ final class VideoSourceEffect: VideoEffect {
             .composited(over: clearBackgroundImage)
     }
 
-    private func makeScale(_ videoSourceImage: CIImage, _ sceneWidget: SettingsSceneWidget, _ size: CGSize) -> Double {
-        let scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
+    private func makeScale(
+        _ videoSourceImage: CIImage,
+        _ sceneWidget: SettingsSceneWidget,
+        _ size: CGSize,
+        _ mirror: Bool
+    ) -> (Double, Double) {
+        var scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
         let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
-        return min(scaleX, scaleY)
+        let scale = min(scaleX, scaleY)
+        if mirror {
+            scaleX = -1 * scale
+        } else {
+            scaleX = scale
+        }
+        return (scaleX, scale)
     }
 
     private func makeTranslation(
         _ videoSourceImage: CIImage,
         _ sceneWidget: SettingsSceneWidget,
         _ size: CGSize,
-        _ scale: Double
+        _ scaleX: Double,
+        _ scaleY: Double,
+        _ mirror: Bool
     ) -> CGAffineTransform {
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scale
+        var x = toPixels(sceneWidget.x, size.width)
+        if mirror {
+            x -= videoSourceImage.extent.width * scaleX
+        }
+        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scaleY
         return CGAffineTransform(translationX: x, y: y)
     }
 
@@ -282,11 +299,11 @@ final class VideoSourceEffect: VideoEffect {
         }
         videoSourceImage = rotate(videoSourceImage, settings)
         let size = backgroundImage.extent.size
-        let scale = makeScale(videoSourceImage, sceneWidget, size)
-        let translation = makeTranslation(videoSourceImage, sceneWidget, size, scale)
+        let (scaleX, scaleY) = makeScale(videoSourceImage, sceneWidget, size, settings.mirror)
+        let translation = makeTranslation(videoSourceImage, sceneWidget, size, scaleX, scaleY, settings.mirror)
         let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         videoSourceImage = videoSourceImage
-            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         if settings.cornerRadius == 0 {
             return makeSharpCornersImage(videoSourceImage, backgroundImage, translation, crop)
         } else {

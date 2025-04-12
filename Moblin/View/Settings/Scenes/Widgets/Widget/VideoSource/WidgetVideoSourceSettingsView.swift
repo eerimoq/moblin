@@ -281,6 +281,14 @@ struct WidgetVideoSourceSettingsView: View {
                     setEffectSettings()
                 }
             Toggle(isOn: Binding(get: {
+                widget.videoSource!.mirror!
+            }, set: { value in
+                widget.videoSource!.mirror = value
+                setEffectSettings()
+            })) {
+                Text("Mirror")
+            }
+            Toggle(isOn: Binding(get: {
                 widget.videoSource!.trackFaceEnabled!
             }, set: { value in
                 widget.videoSource!.trackFaceEnabled = value

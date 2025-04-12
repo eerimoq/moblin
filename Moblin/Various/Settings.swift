@@ -1273,6 +1273,7 @@ class SettingsWidgetVideoSource: Codable {
     var cropHeight: Double? = 1.0
     var rotation: Double? = 0.0
     var trackFaceEnabled: Bool? = false
+    var mirror: Bool? = false
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
@@ -1282,7 +1283,8 @@ class SettingsWidgetVideoSource: Codable {
                      cropWidth: cropWidth!,
                      cropHeight: cropHeight!,
                      rotation: rotation!,
-                     trackFaceEnabled: trackFaceEnabled!)
+                     trackFaceEnabled: trackFaceEnabled!,
+                     mirror: mirror!)
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -5011,6 +5013,10 @@ final class Settings {
         }
         for device in realDatabase.catPrinters!.devices where device.printSnapshots == nil {
             device.printSnapshots = true
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.mirror == nil {
+            widget.videoSource!.mirror = false
             store()
         }
     }
