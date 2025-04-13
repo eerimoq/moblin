@@ -3,6 +3,7 @@ import SwiftUI
 struct SizeEditView: View {
     var value: Double
     var onSubmit: (Double) -> Void
+    @Binding var numericInput: Bool
 
     func submit(value: String) -> String {
         if var value = Double(value) {
@@ -20,6 +21,7 @@ struct SizeEditView: View {
             minimum: 1,
             maximum: 100,
             onSubmit: submit,
+            numericInput: $numericInput,
             increment: 0.125
         )
     }

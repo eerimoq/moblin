@@ -2925,6 +2925,7 @@ class Database: Codable {
     var heartRateDevices: SettingsHeartRateDevices? = .init()
     var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
     var remoteSceneId: UUID?
+    var sceneNumericInput: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -5023,6 +5024,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.trackFaceZoom == nil {
             widget.videoSource!.trackFaceZoom = 0.95
+            store()
+        }
+        if realDatabase.sceneNumericInput == nil {
+            realDatabase.sceneNumericInput = false
             store()
         }
     }

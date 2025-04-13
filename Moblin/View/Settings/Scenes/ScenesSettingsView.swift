@@ -12,7 +12,12 @@ private struct ScenesListView: View {
             List {
                 ForEach(database.scenes) { scene in
                     NavigationLink {
-                        SceneSettingsView(scene: scene, name: scene.name, selectedRotation: scene.videoSourceRotation!)
+                        SceneSettingsView(
+                            scene: scene,
+                            name: scene.name,
+                            selectedRotation: scene.videoSourceRotation!,
+                            numericInput: model.database.sceneNumericInput!
+                        )
                     } label: {
                         HStack {
                             DraggableItemPrefixView()

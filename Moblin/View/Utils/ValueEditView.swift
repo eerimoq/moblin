@@ -80,6 +80,7 @@ struct ValueEditCompactView: View {
     var minimum: Float
     var maximum: Float
     var onSubmit: (String) -> String
+    @Binding var numericInput: Bool
     var increment: Float = 1
     var unit: String?
 
@@ -92,13 +93,27 @@ struct ValueEditCompactView: View {
 
     var body: some View {
         HStack {
-            Slider(
-                value: $number,
-                in: minimum ... maximum,
-                step: increment
-            )
-            .onChange(of: number) { number in
-                value = onSubmit("\(number)")
+            if numericInput {
+                TextField("", text: $value, onEditingChanged: { isEditing in
+                    if !isEditing {
+                        value = onSubmit(value.trim())
+                        add(offset: 0)
+                    }
+                })
+                .keyboardType(.numbersAndPunctuation)
+                .onSubmit {
+                    value = onSubmit(value.trim())
+                    add(offset: 0)
+                }
+            } else {
+                Slider(
+                    value: $number,
+                    in: minimum ... maximum,
+                    step: increment
+                )
+                .onChange(of: number) { number in
+                    value = onSubmit("\(number)")
+                }
             }
             Button(action: {
                 add(offset: -increment)

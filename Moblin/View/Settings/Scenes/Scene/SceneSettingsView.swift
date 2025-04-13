@@ -29,6 +29,7 @@ struct SceneSettingsView: View {
     var scene: SettingsScene
     @State var name: String
     @State var selectedRotation: Double
+    @State var numericInput: Bool
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -147,7 +148,8 @@ struct SceneSettingsView: View {
                             NavigationLink {
                                 SceneWidgetSettingsView(
                                     sceneWidget: sceneWidget,
-                                    widget: widget
+                                    widget: widget,
+                                    numericInput: $numericInput
                                 )
                             } label: {
                                 HStack {

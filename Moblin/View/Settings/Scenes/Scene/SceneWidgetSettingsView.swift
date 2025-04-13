@@ -4,6 +4,7 @@ struct SceneWidgetSettingsView: View {
     @EnvironmentObject private var model: Model
     var sceneWidget: SettingsSceneWidget
     var widget: SettingsWidget
+    @Binding var numericInput: Bool
 
     func submitX(value: Double) {
         sceneWidget.x = value
@@ -61,11 +62,13 @@ struct SceneWidgetSettingsView: View {
                 Section {
                     PositionEditView(
                         value: sceneWidget.x,
-                        onSubmit: submitX
+                        onSubmit: submitX,
+                        numericInput: $numericInput
                     )
                     PositionEditView(
                         value: sceneWidget.y,
-                        onSubmit: submitY
+                        onSubmit: submitY,
+                        numericInput: $numericInput
                     )
                 } header: {
                     Text("Position")
@@ -75,11 +78,13 @@ struct SceneWidgetSettingsView: View {
                 Section {
                     SizeEditView(
                         value: sceneWidget.width,
-                        onSubmit: submitWidth
+                        onSubmit: submitWidth,
+                        numericInput: $numericInput
                     )
                     SizeEditView(
                         value: sceneWidget.height,
-                        onSubmit: submitHeight
+                        onSubmit: submitHeight,
+                        numericInput: $numericInput
                     )
                 } header: {
                     Text("Size")
@@ -97,6 +102,12 @@ struct SceneWidgetSettingsView: View {
                 }
             } header: {
                 Text("Shortcut")
+            }
+            Section {
+                Toggle("Numeric input", isOn: $numericInput)
+                    .onChange(of: numericInput) { value in
+                        model.database.sceneNumericInput = value
+                    }
             }
         }
         .navigationTitle(widget.name)
