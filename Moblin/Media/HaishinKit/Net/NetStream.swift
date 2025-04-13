@@ -85,7 +85,7 @@ open class NetStream: NSObject {
     }
 
     func attachCamera(
-        _ devices: [CaptureDevice],
+        _ devices: CaptureDevices,
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,

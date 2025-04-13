@@ -781,7 +781,7 @@ final class Media: NSObject {
     }
 
     func attachCamera(
-        devices: [CaptureDevice],
+        devices: CaptureDevices,
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         showCameraPreview: Bool,
         externalDisplayPreview: Bool,
@@ -812,7 +812,7 @@ final class Media: NSObject {
     }
 
     func attachReplaceCamera(
-        devices: [CaptureDevice],
+        devices: CaptureDevices,
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,

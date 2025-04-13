@@ -6008,10 +6008,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
     }
 
-    private func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> [CaptureDevice] {
-        var devices: [CaptureDevice] = []
+    private func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
+        var devices = CaptureDevices(hasSceneDevice: false, devices: [])
         if let sceneDevice {
-            devices.append(makeCaptureDevice(device: sceneDevice))
+            devices.hasSceneDevice = true
+            devices.devices.append(makeCaptureDevice(device: sceneDevice))
         }
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
@@ -6035,8 +6036,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 cameraId = nil
             }
             if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-                if !devices.contains(where: { $0.device == device }) {
-                    devices.append(makeCaptureDevice(device: device))
+                if !devices.devices.contains(where: { $0.device == device }) {
+                    devices.devices.append(makeCaptureDevice(device: device))
                 }
             }
         }
@@ -6852,7 +6853,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func detachCamera() {
         media.attachCamera(
-            devices: [],
+            devices: CaptureDevices(hasSceneDevice: false, devices: []),
             cameraPreviewLayer: nil,
             showCameraPreview: false,
             externalDisplayPreview: false,

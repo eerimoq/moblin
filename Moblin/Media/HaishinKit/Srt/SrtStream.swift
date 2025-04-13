@@ -66,7 +66,7 @@ class SrtStream: NetStream {
     }
 
     override func attachCamera(
-        _ devices: [CaptureDevice],
+        _ devices: CaptureDevices,
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ showStreamPreview: Bool,

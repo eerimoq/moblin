@@ -16,6 +16,11 @@ struct CaptureDevice {
     let id: UUID
 }
 
+struct CaptureDevices {
+    var hasSceneDevice: Bool
+    var devices: [CaptureDevice]
+}
+
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
@@ -43,7 +48,7 @@ private class FaceDetectionsCompletion {
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
     let isSceneSwitchTransition: Bool
-    let videoSourceIds: Set<UUID>
+    let videoSourceIds: Int
     var faceDetections: [UUID: [VNFaceObservation]]
 
     init(
@@ -51,7 +56,7 @@ private class FaceDetectionsCompletion {
         sampleBuffer: CMSampleBuffer,
         isFirstAfterAttach: Bool,
         isSceneSwitchTransition: Bool,
-        videoSourceIds: Set<UUID>
+        videoSourceIds: Int
     ) {
         self.sequenceNumber = sequenceNumber
         self.sampleBuffer = sampleBuffer
@@ -383,7 +388,7 @@ final class VideoUnit: NSObject {
     }
 
     func attach(
-        _ devices: [CaptureDevice],
+        _ devices: CaptureDevices,
         _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
         _ showCameraPreview: Bool,
         _ externalDisplayPreview: Bool,
@@ -396,7 +401,7 @@ final class VideoUnit: NSObject {
         for device in captureSessionDevices {
             device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         }
-        logger.debug("Number of video devices: \(devices.count)")
+        logger.debug("Number of video devices: \(devices.devices.count)")
         mixerLockQueue.async {
             self.configuredIgnoreFramesAfterAttachSeconds = ignoreFramesAfterAttachSeconds
             self.selectedReplaceVideoCameraId = replaceVideo
@@ -406,13 +411,13 @@ final class VideoUnit: NSObject {
             self.fillFrame = fillFrame
             if let replaceVideo {
                 self.sceneVideoSourceId = replaceVideo
-            } else if let id = devices.first?.id {
+            } else if devices.hasSceneDevice, let id = devices.devices.first?.id {
                 self.sceneVideoSourceId = id
             } else {
                 self.sceneVideoSourceId = UUID()
             }
             self.replaceVideoBuiltins.removeAll()
-            for device in devices {
+            for device in devices.devices {
                 let replaceVideo = ReplaceVideo(
                     cameraId: device.id,
                     name: "",
@@ -430,7 +435,7 @@ final class VideoUnit: NSObject {
                 self.unregisterEffectInner(effect)
             }
         }
-        for device in devices {
+        for device in devices.devices {
             setDeviceFormat(
                 device: device.device,
                 frameRate: frameRate,
@@ -443,11 +448,11 @@ final class VideoUnit: NSObject {
             session.commitConfiguration()
         }
         try removeDevices(session)
-        for device in devices {
+        for device in devices.devices {
             try attachDevice(device.device, session)
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
-        device = devices.first?.device
+        device = devices.hasSceneDevice ? devices.devices.first?.device : nil
         for device in captureSessionDevices {
             for connection in device.output.connections {
                 if connection.isVideoMirroringSupported {
@@ -462,7 +467,7 @@ final class VideoUnit: NSObject {
             }
         }
         for (i, device) in captureSessionDevices.enumerated() {
-            if i == 0 {
+            if devices.hasSceneDevice, i == 0 {
                 device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
             } else {
                 device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
@@ -1147,29 +1152,24 @@ final class VideoUnit: NSObject {
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         mixer?.delegate?.mixerVideo(presentationTimestamp: presentationTimeStamp)
-        let videoSourceIds = needsFaceDetections(presentationTimeStamp)
+        let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
+        let faceDetectionJobs = prepareFaceDetectionJobs(
+            faceDetectionVideoSourceIds,
+            sampleBuffer.presentationTimeStamp,
+            imageBuffer
+        )
         let completion = FaceDetectionsCompletion(
             sequenceNumber: nextFaceDetectionsSequenceNumber,
             sampleBuffer: sampleBuffer,
             isFirstAfterAttach: isFirstAfterAttach,
             isSceneSwitchTransition: isSceneSwitchTransition,
-            videoSourceIds: videoSourceIds
+            videoSourceIds: faceDetectionJobs.count
         )
         nextFaceDetectionsSequenceNumber += 1
-        if !videoSourceIds.isEmpty {
-            for videoSourceId in videoSourceIds {
-                var videoSourceImageBuffer: CVPixelBuffer?
-                if videoSourceId == sceneVideoSourceId {
-                    videoSourceImageBuffer = imageBuffer
-                } else {
-                    videoSourceImageBuffer = replaceVideos[videoSourceId]?
-                        .getSampleBuffer(sampleBuffer.presentationTimeStamp)?.imageBuffer
-                }
-                guard let videoSourceImageBuffer else {
-                    continue
-                }
+        if !faceDetectionJobs.isEmpty {
+            for (videoSourceId, imageBuffer) in faceDetectionJobs {
                 detectionsQueue.async {
-                    let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: videoSourceImageBuffer)
+                    let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
                     let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
                         mixerLockQueue.async {
                             guard error == nil else {
@@ -1207,7 +1207,7 @@ final class VideoUnit: NSObject {
     }
 
     private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
-        guard completion.faceDetections.count == completion.videoSourceIds.count else {
+        guard completion.faceDetections.count == completion.videoSourceIds else {
             return
         }
         completedFaceDetections[completion.sequenceNumber] = completion
@@ -1413,6 +1413,29 @@ final class VideoUnit: NSObject {
             }
         }
         return ids
+    }
+
+    private func prepareFaceDetectionJobs(
+        _ faceDetectionVideoSourceIds: Set<UUID>,
+        _ presentationTimeStamp: CMTime,
+        _ imageBuffer: CVImageBuffer
+    ) -> [(UUID, CVPixelBuffer)] {
+        var faceDetectionVideoSources: [(UUID, CVPixelBuffer)] = []
+        for videoSourceId in faceDetectionVideoSourceIds {
+            var videoSourceImageBuffer: CVPixelBuffer?
+            if videoSourceId == sceneVideoSourceId {
+                videoSourceImageBuffer = imageBuffer
+            } else {
+                videoSourceImageBuffer = replaceVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp)?
+                    .imageBuffer
+            }
+            guard let videoSourceImageBuffer else {
+                faceDetectionVideoSources.removeAll()
+                break
+            }
+            faceDetectionVideoSources.append((videoSourceId, videoSourceImageBuffer))
+        }
+        return faceDetectionVideoSources
     }
 
     private func addSessionObservers() {
