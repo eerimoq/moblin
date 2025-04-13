@@ -17,16 +17,15 @@ struct VideoSourceEffectSettings {
 
 class PositionInterpolator {
     private(set) var current: Double?
+    private var delta = 0.0
     var target: Double?
 
     init() {}
 
     func update(timeElapsed: Double) -> Double {
         if let current, let target {
-            let delta = target - current
-            if abs(delta) < 5 {
-                self.current = current
-            } else {
+            delta = 0.8 * delta + 0.2 * (target - current)
+            if abs(delta) > 25 {
                 self.current = current + delta * 2 * timeElapsed
             }
         } else if let target {
