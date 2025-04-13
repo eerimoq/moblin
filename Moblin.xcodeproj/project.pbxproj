@@ -440,6 +440,8 @@
 		03CFF9CB2CA82EEF00FEC614 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
+		03D15CEE2DABD73A007DA935 /* GoPro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D15CED2DABD72C007DA935 /* GoPro.swift */; };
+		03D15CF12DABD8A9007DA935 /* GoProSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D15CF02DABD8A6007DA935 /* GoProSettingsView.swift */; };
 		03D278742D9050C900BB0502 /* TwinEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D278732D9050C600BB0502 /* TwinEffect.swift */; };
 		03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */; };
 		03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */; };
@@ -1021,6 +1023,8 @@
 		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModifier.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
+		03D15CED2DABD72C007DA935 /* GoPro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPro.swift; sourceTree = "<group>"; };
+		03D15CF02DABD8A6007DA935 /* GoProSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoProSettingsView.swift; sourceTree = "<group>"; };
 		03D278732D9050C600BB0502 /* TwinEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwinEffect.swift; sourceTree = "<group>"; };
 		03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerSettingsView.swift; sourceTree = "<group>"; };
 		03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerStreamSettingsView.swift; sourceTree = "<group>"; };
@@ -2426,6 +2430,7 @@
 				03E3E38F2C431DD800932B00 /* DjiDevices */,
 				030621E32D8608B3001EE50B /* DjiGimbalDevices */,
 				0304A5092B45ADA900310842 /* GameControllers */,
+				03D15CEF2DABD895007DA935 /* GoPro */,
 				0386053F2D80096F00B9C3CE /* HeartRateDevices */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
@@ -2743,6 +2748,7 @@
 		03CDEAA02C0AB8BB006121D0 /* Integrations */ = {
 			isa = PBXGroup;
 			children = (
+				03D15CEC2DABD71F007DA935 /* GoPro */,
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
 				030621EA2D862956001EE50B /* Dji */,
@@ -2752,6 +2758,22 @@
 				0318D3622CF4FB2300E12F3B /* Tesla */,
 			);
 			path = Integrations;
+			sourceTree = "<group>";
+		};
+		03D15CEC2DABD71F007DA935 /* GoPro */ = {
+			isa = PBXGroup;
+			children = (
+				03D15CED2DABD72C007DA935 /* GoPro.swift */,
+			);
+			path = GoPro;
+			sourceTree = "<group>";
+		};
+		03D15CEF2DABD895007DA935 /* GoPro */ = {
+			isa = PBXGroup;
+			children = (
+				03D15CF02DABD8A6007DA935 /* GoProSettingsView.swift */,
+			);
+			path = GoPro;
 			sourceTree = "<group>";
 		};
 		03D2B0DE2C11BD7D0051BFB5 /* SrtlaServer */ = {
@@ -3330,6 +3352,7 @@
 				03B2189F2C3E4E4E001FDE57 /* WidgetSceneSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
+				03D15CEE2DABD73A007DA935 /* GoPro.swift in Sources */,
 				03C357462D081CF100B8B29F /* RtmpAcknowledgementMessage.swift in Sources */,
 				034FA1B82C151DFF00695825 /* AdaptiveBitrateSrtFight.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
@@ -3451,6 +3474,7 @@
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				032F3B3C2C935385002FF97E /* QuickButtonLutsView.swift in Sources */,
 				03987B3E2C8285D900226C03 /* QuickButtonStreamView.swift in Sources */,
+				03D15CF12DABD8A9007DA935 /* GoProSettingsView.swift in Sources */,
 				031F9C2A2D5478C800424EF0 /* VideoEncoder.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				031A43872C33B7A3007CF059 /* MediaPlayerStorage.swift in Sources */,

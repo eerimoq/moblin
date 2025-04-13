@@ -61856,6 +61856,12 @@
         }
       }
     },
+    "GoPro" : {
+
+    },
+    "GoPro devices" : {
+
+    },
     "Gray scale" : {
       "localizations" : {
         "de" : {
@@ -103199,6 +103205,9 @@
           }
         }
       }
+    },
+    "RTMP URL" : {
+
     },
     "RTMP, SRT(LA), screen capture and media player video sources can instantly be switched to, but if you want consistency you can force scene switch transitions to these as well." : {
       "localizations" : {
@@ -147242,6 +147251,9 @@
           }
         }
       }
+    },
+    "WiFi credentials" : {
+
     },
     "WiFi setup failed" : {
       "localizations" : {

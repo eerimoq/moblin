@@ -659,3 +659,19 @@ func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
     let beta = atan(point.y / point.x)
     return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
 }
+
+func generateQrCode(from string: String) -> UIImage? {
+    let data = string.data(using: .utf8)
+    let filter = CIFilter.qrCodeGenerator()
+    filter.message = data!
+    filter.correctionLevel = "M"
+    guard let image = filter.outputImage else {
+        return nil
+    }
+    let output = image.transformed(by: CGAffineTransform(scaleX: 5, y: 5))
+    let context = CIContext()
+    guard let cgImage = context.createCGImage(output, from: output.extent) else {
+        return nil
+    }
+    return UIImage(cgImage: cgImage)
+}
