@@ -24,7 +24,7 @@ struct QuickButtonStreamView: View {
                                 model.startStream(delayed: true)
                             }
                     } else {
-                        model.makeErrorToast(title: "Failed to switch scene")
+                        model.makeErrorToast(title: "Failed to switch stream")
                     }
                 }
                 .pickerStyle(.inline)

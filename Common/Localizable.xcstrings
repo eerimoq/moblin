@@ -90923,6 +90923,7 @@
       }
     },
     "Platforms" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -122865,6 +122866,9 @@
           }
         }
       }
+    },
+    "Streaming platforms" : {
+
     },
     "Streams" : {
       "localizations" : {

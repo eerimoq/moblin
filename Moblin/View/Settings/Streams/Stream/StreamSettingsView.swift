@@ -1,5 +1,43 @@
 import SwiftUI
 
+struct StreamPlatformsSettingsView: View {
+    var stream: SettingsStream
+
+    var body: some View {
+        NavigationLink { StreamTwitchSettingsView(
+            stream: stream,
+            loggedIn: stream.twitchLoggedIn!
+        ) } label: {
+            Text("Twitch")
+        }
+        NavigationLink {
+            StreamKickSettingsView(stream: stream)
+        } label: {
+            Text("Kick")
+        }
+        NavigationLink {
+            StreamYouTubeSettingsView(stream: stream)
+        } label: {
+            Text("YouTube")
+        }
+        NavigationLink {
+            StreamAfreecaTvSettingsView(stream: stream)
+        } label: {
+            Text("AfreecaTV")
+        }
+        NavigationLink {
+            StreamOpenStreamingPlatformSettingsView(stream: stream)
+        } label: {
+            Text("Open Streaming Platform")
+        }
+        NavigationLink {
+            StreamEmotesSettingsView(stream: stream)
+        } label: {
+            Text("Emotes")
+        }
+    }
+}
+
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     var stream: SettingsStream
@@ -109,39 +147,9 @@ struct StreamSettingsView: View {
                 Text("Media")
             }
             Section {
-                NavigationLink { StreamTwitchSettingsView(
-                    stream: stream,
-                    loggedIn: stream.twitchLoggedIn!
-                ) } label: {
-                    Text("Twitch")
-                }
-                NavigationLink {
-                    StreamKickSettingsView(stream: stream)
-                } label: {
-                    Text("Kick")
-                }
-                NavigationLink {
-                    StreamYouTubeSettingsView(stream: stream)
-                } label: {
-                    Text("YouTube")
-                }
-                NavigationLink {
-                    StreamAfreecaTvSettingsView(stream: stream)
-                } label: {
-                    Text("AfreecaTV")
-                }
-                NavigationLink {
-                    StreamOpenStreamingPlatformSettingsView(stream: stream)
-                } label: {
-                    Text("Open Streaming Platform")
-                }
-                NavigationLink {
-                    StreamEmotesSettingsView(stream: stream)
-                } label: {
-                    Text("Emotes")
-                }
+                StreamPlatformsSettingsView(stream: stream)
             } header: {
-                Text("Platforms")
+                Text("Streaming platforms")
             }
             Section {
                 NavigationLink {

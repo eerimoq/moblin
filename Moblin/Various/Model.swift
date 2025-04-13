@@ -4447,7 +4447,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return true
     }
 
-    private func findStream(id: UUID) -> SettingsStream? {
+    func findStream(id: UUID) -> SettingsStream? {
         return database.streams.first { stream in
             stream.id == id
         }

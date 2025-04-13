@@ -33,6 +33,21 @@ struct ChatSettingsView: View {
                     model.objectWillChange.send()
                 }))
             }
+            if let stream = model.findStream(id: model.currentStreamId) {
+                Section {
+                    NavigationLink {
+                        Form {
+                            StreamPlatformsSettingsView(stream: stream)
+                        }
+                        .navigationTitle("Streaming platforms")
+                    } label: {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "Streaming platforms")
+                        )
+                    }
+                }
+            }
             Section {
                 HStack {
                     Text("Font size")
