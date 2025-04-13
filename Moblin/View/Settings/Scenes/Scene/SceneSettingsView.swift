@@ -149,7 +149,15 @@ struct SceneSettingsView: View {
                                 SceneWidgetSettingsView(
                                     sceneWidget: sceneWidget,
                                     widget: widget,
-                                    numericInput: $numericInput
+                                    numericInput: $numericInput,
+                                    x: sceneWidget.x,
+                                    y: sceneWidget.y,
+                                    width: sceneWidget.width,
+                                    height: sceneWidget.height,
+                                    xString: String(sceneWidget.x),
+                                    yString: String(sceneWidget.y),
+                                    widthString: String(sceneWidget.width),
+                                    heightString: String(sceneWidget.height)
                                 )
                             } label: {
                                 HStack {

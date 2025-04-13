@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct PositionEditView: View {
-    var value: Double
+    @Binding var number: Double
+    @Binding var value: String
     var onSubmit: (Double) -> Void
     @Binding var numericInput: Bool
 
     func submit(value: String) -> String {
-        if var value = Double(value) {
+        if var value = Float(value) {
             value = value.clamped(to: 0 ... 100)
-            onSubmit(value)
+            onSubmit(Double(value))
             return String(value)
         }
         return value
@@ -16,8 +17,8 @@ struct PositionEditView: View {
 
     var body: some View {
         ValueEditCompactView(
-            number: Float(value),
-            value: String(value),
+            number: $number,
+            value: $value,
             minimum: 0,
             maximum: 100,
             onSubmit: submit,

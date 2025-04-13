@@ -75,17 +75,17 @@ struct ValueEditView: View {
 }
 
 struct ValueEditCompactView: View {
-    @State var number: Float
-    @State var value: String
-    var minimum: Float
-    var maximum: Float
+    @Binding var number: Double
+    @Binding var value: String
+    var minimum: Double
+    var maximum: Double
     var onSubmit: (String) -> String
     @Binding var numericInput: Bool
-    var increment: Float = 1
+    var increment: Double = 1
     var unit: String?
 
-    func add(offset: Float) {
-        if let value = Float(value) {
+    func add(offset: Double) {
+        if let value = Double(value) {
             number = (value + offset).clamped(to: minimum ... maximum)
             self.value = String(number)
         }

@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct SizeEditView: View {
-    var value: Double
+    @Binding var number: Double
+    @Binding var value: String
     var onSubmit: (Double) -> Void
     @Binding var numericInput: Bool
 
@@ -16,8 +17,8 @@ struct SizeEditView: View {
 
     var body: some View {
         ValueEditCompactView(
-            number: Float(value),
-            value: String(value),
+            number: $number,
+            value: $value,
             minimum: 1,
             maximum: 100,
             onSubmit: submit,

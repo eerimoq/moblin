@@ -141,6 +141,13 @@ struct SettingsView: View {
                     } label: {
                         IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI devices"))
                     }
+                    if false {
+                        NavigationLink {
+                            GoProSettingsView()
+                        } label: {
+                            IconAndTextView(image: "appletvremote.gen1", text: String(localized: "GoPro devices"))
+                        }
+                    }
                     NavigationLink {
                         CatPrintersSettingsView()
                     } label: {
