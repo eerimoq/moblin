@@ -24,6 +24,10 @@ struct StreamOverlayRightSceneSelectorView: View {
                     width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
                     height: segmentHeight
                 )
+        } onLongPress: { index in
+            if index < model.enabledScenes.count {
+                model.showSceneSettings(scene: model.enabledScenes[index])
+            }
         }
         .onChange(of: model.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)

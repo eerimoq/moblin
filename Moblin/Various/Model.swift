@@ -51,6 +51,7 @@ enum ShowingPanel {
     case cosmetics
     case chat
     case djiDevices
+    case sceneSettings
 }
 
 class Browser: Identifiable {
@@ -728,6 +729,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var moblinkStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var moblinkScannerDiscoveredStreamers: [MoblinkScannerStreamer] = []
+
+    var sceneSettingsPanelScene = SettingsScene(name: "")
+    @Published var sceneSettingsPanelSceneId = 1
 
     @Published var snapshotCountdown = 0
     @Published var currentSnapshotJob: SnapshotJob?
@@ -6556,6 +6560,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func getSelectedScene() -> SettingsScene? {
         return findEnabledScene(id: selectedSceneId)
+    }
+
+    func showSceneSettings(scene: SettingsScene) {
+        sceneSettingsPanelScene = scene
+        sceneSettingsPanelSceneId += 1
+        toggleShowingPanel(type: nil, panel: .none)
+        toggleShowingPanel(type: nil, panel: .sceneSettings)
     }
 
     private func selectSceneByName(name: String) {

@@ -87,6 +87,14 @@ private struct MenuView: View {
                 NavigationStack {
                     QuickButtonDjiDevicesView()
                 }
+            case .sceneSettings:
+                NavigationStack {
+                    SceneSettingsView(scene: model.sceneSettingsPanelScene,
+                                      name: model.sceneSettingsPanelScene.name,
+                                      selectedRotation: model.sceneSettingsPanelScene.videoSourceRotation!,
+                                      numericInput: model.database.sceneNumericInput!)
+                }
+                .id(model.sceneSettingsPanelSceneId)
             case .none:
                 EmptyView()
             }
