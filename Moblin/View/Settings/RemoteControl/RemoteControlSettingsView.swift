@@ -275,6 +275,11 @@ struct RemoteControlSettingsView: View {
                 Text("Control and monitor Moblin from another device.")
             }
             Section {
+                StreamObsRemoteControlSettingsWrapperView(stream: model.stream)
+            } header: {
+                Text("Shortcut")
+            }
+            Section {
                 NavigationLink {
                     PasswordView(
                         value: model.database.remoteControl!.password!,
@@ -287,6 +292,8 @@ struct RemoteControlSettingsView: View {
                         sensitive: true
                     )
                 }
+            } header: {
+                Text("General")
             } footer: {
                 Text("Used by both streamer and assistant.")
             }

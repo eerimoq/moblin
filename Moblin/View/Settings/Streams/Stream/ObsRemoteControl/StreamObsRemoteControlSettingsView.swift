@@ -129,3 +129,23 @@ struct StreamObsRemoteControlSettingsView: View {
         .navigationTitle("OBS remote control")
     }
 }
+
+struct StreamObsRemoteControlSettingsWrapperView: View {
+    @EnvironmentObject private var model: Model
+    var stream: SettingsStream
+
+    var body: some View {
+        NavigationLink {
+            StreamObsRemoteControlSettingsView(stream: stream)
+        } label: {
+            Toggle("OBS remote control", isOn: Binding(get: {
+                stream.obsWebSocketEnabled!
+            }, set: { value in
+                stream.obsWebSocketEnabled = value
+                if stream.enabled {
+                    model.obsWebSocketEnabledUpdated()
+                }
+            }))
+        }
+    }
+}

@@ -55,6 +55,11 @@ struct LocationSettingsView: View {
                 Text("Resets distance, average speed and slope.")
             }
             Section {
+                StreamRealtimeIrlSettingsWrapperView(stream: model.stream)
+            } header: {
+                Text("Shortcut")
+            }
+            Section {
                 List {
                     ForEach(model.database.location!.privacyRegions) { region in
                         PrivacyRegionView(region: region, current: MKCoordinateRegion(

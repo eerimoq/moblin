@@ -210,6 +210,15 @@ private struct DjiDeviceRtmpSettingsView: View {
                 }
             }
         }
+        Section {
+            NavigationLink {
+                RtmpServerSettingsView()
+            } label: {
+                Text("RTMP server")
+            }
+        } header: {
+            Text("Shortcut")
+        }
     }
 }
 
@@ -270,6 +279,8 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
                 .disabled(model.isDjiDeviceStarted(device: device))
             }
+        } header: {
+            Text("Settings")
         } footer: {
             Text("High bitrates may be unstable.")
         }

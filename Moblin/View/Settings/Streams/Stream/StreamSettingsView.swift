@@ -38,6 +38,26 @@ struct StreamPlatformsSettingsView: View {
     }
 }
 
+struct StreamRealtimeIrlSettingsWrapperView: View {
+    @EnvironmentObject private var model: Model
+    var stream: SettingsStream
+
+    var body: some View {
+        NavigationLink {
+            StreamRealtimeIrlSettingsView(stream: stream)
+        } label: {
+            Toggle("RealtimeIRL", isOn: Binding(get: {
+                stream.realtimeIrlEnabled!
+            }, set: { value in
+                stream.realtimeIrlEnabled = value
+                if stream.enabled {
+                    model.reloadLocation()
+                }
+            }))
+        }
+    }
+}
+
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     var stream: SettingsStream
@@ -152,31 +172,9 @@ struct StreamSettingsView: View {
                 Text("Streaming platforms")
             }
             Section {
-                NavigationLink {
-                    StreamObsRemoteControlSettingsView(stream: stream)
-                } label: {
-                    Toggle("OBS remote control", isOn: Binding(get: {
-                        stream.obsWebSocketEnabled!
-                    }, set: { value in
-                        stream.obsWebSocketEnabled = value
-                        if stream.enabled {
-                            model.obsWebSocketEnabledUpdated()
-                        }
-                    }))
-                }
+                StreamObsRemoteControlSettingsWrapperView(stream: stream)
                 if model.database.showAllSettings! {
-                    NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: stream)
-                    } label: {
-                        Toggle("RealtimeIRL", isOn: Binding(get: {
-                            stream.realtimeIrlEnabled!
-                        }, set: { value in
-                            stream.realtimeIrlEnabled = value
-                            if stream.enabled {
-                                model.reloadLocation()
-                            }
-                        }))
-                    }
+                    StreamRealtimeIrlSettingsWrapperView(stream: stream)
                 }
             }
             if model.database.showAllSettings! {
