@@ -54,7 +54,7 @@ final class VideoSourceEffect: VideoEffect {
     }
 
     override func needsFaceDetections(_ presentationTimeStamp: Double) -> (Bool, UUID?) {
-        if presentationTimeStamp - trackFaceNeedsDetectionsPresentationTimeStamp > 0.2 {
+        if presentationTimeStamp - trackFaceNeedsDetectionsPresentationTimeStamp > 0.5 {
             trackFaceNeedsDetectionsPresentationTimeStamp = presentationTimeStamp
             return (settings.value.trackFaceEnabled, videoSourceId.value)
         } else {
