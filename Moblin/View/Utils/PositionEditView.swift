@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct PositionEditView: View {
-    var title: String
     var value: Double
     var onSubmit: (Double) -> Void
 
@@ -15,8 +14,7 @@ struct PositionEditView: View {
     }
 
     var body: some View {
-        ValueEditView(
-            title: title,
+        ValueEditCompactView(
             number: Float(value),
             value: String(value),
             minimum: 0,

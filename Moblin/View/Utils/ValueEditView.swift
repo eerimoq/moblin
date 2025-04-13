@@ -73,3 +73,50 @@ struct ValueEditView: View {
         }
     }
 }
+
+struct ValueEditCompactView: View {
+    @State var number: Float
+    @State var value: String
+    var minimum: Float
+    var maximum: Float
+    var onSubmit: (String) -> String
+    var increment: Float = 1
+    var unit: String?
+
+    func add(offset: Float) {
+        if let value = Float(value) {
+            number = (value + offset).clamped(to: minimum ... maximum)
+            self.value = String(number)
+        }
+    }
+
+    var body: some View {
+        HStack {
+            Slider(
+                value: $number,
+                in: minimum ... maximum,
+                step: increment
+            )
+            .onChange(of: number) { number in
+                value = onSubmit("\(number)")
+            }
+            Button(action: {
+                add(offset: -increment)
+                value = onSubmit(value.trim())
+                add(offset: 0)
+            }, label: {
+                Image(systemName: "minus.circle")
+                    .font(.title)
+            })
+            Button(action: {
+                add(offset: increment)
+                value = onSubmit(value.trim())
+                add(offset: 0)
+            }, label: {
+                Image(systemName: "plus.circle")
+                    .font(.title)
+            })
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+}

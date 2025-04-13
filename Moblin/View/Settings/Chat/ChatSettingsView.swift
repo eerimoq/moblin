@@ -46,6 +46,8 @@ struct ChatSettingsView: View {
                             text: String(localized: "Streaming platforms")
                         )
                     }
+                } header: {
+                    Text("Shortcut")
                 }
             }
             Section {

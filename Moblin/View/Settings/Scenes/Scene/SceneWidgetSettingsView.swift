@@ -2,56 +2,103 @@ import SwiftUI
 
 struct SceneWidgetSettingsView: View {
     @EnvironmentObject private var model: Model
-    let hasPosition: Bool
-    let hasSize: Bool
-    var widget: SettingsSceneWidget
+    var sceneWidget: SettingsSceneWidget
+    var widget: SettingsWidget
 
     func submitX(value: Double) {
-        widget.x = value
+        sceneWidget.x = value
         model.sceneUpdated(imageEffectChanged: true)
     }
 
     func submitY(value: Double) {
-        widget.y = value
+        sceneWidget.y = value
         model.sceneUpdated(imageEffectChanged: true)
     }
 
     func submitWidth(value: Double) {
-        widget.width = value
+        sceneWidget.width = value
         model.sceneUpdated(imageEffectChanged: true)
     }
 
     func submitHeight(value: Double) {
-        widget.height = value
+        sceneWidget.height = value
         model.sceneUpdated(imageEffectChanged: true)
     }
 
+    private let widgetsWithPosition: [SettingsWidgetType] = [
+        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource,
+    ]
+
+    private func widgetHasPosition(id: UUID) -> Bool {
+        if let widget = model.findWidget(id: id) {
+            return widgetsWithPosition.contains(widget.type)
+        } else {
+            logger.error("Unable to find widget type")
+            return false
+        }
+    }
+
+    private let widgetsWithSize: [SettingsWidgetType] = [
+        .image, .qrCode, .map, .videoSource,
+    ]
+
+    private func widgetHasSize(id: UUID) -> Bool {
+        if let widget = model.findWidget(id: id) {
+            return widgetsWithSize.contains(widget.type)
+        } else {
+            logger.error("Unable to find widget type")
+            return false
+        }
+    }
+
+    private func canWidgetExpand(widget: SettingsWidget) -> Bool {
+        return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
+    }
+
     var body: some View {
-        Section {
-            if hasPosition {
-                PositionEditView(
-                    title: String(localized: "X"),
-                    value: widget.x,
-                    onSubmit: submitX
-                )
-                PositionEditView(
-                    title: String(localized: "Y"),
-                    value: widget.y,
-                    onSubmit: submitY
-                )
+        Form {
+            if widgetHasPosition(id: widget.id) {
+                Section {
+                    PositionEditView(
+                        value: sceneWidget.x,
+                        onSubmit: submitX
+                    )
+                    PositionEditView(
+                        value: sceneWidget.y,
+                        onSubmit: submitY
+                    )
+                } header: {
+                    Text("Position")
+                }
             }
-            if hasSize {
-                SizeEditView(
-                    title: String(localized: "Width"),
-                    value: widget.width,
-                    onSubmit: submitWidth
-                )
-                SizeEditView(
-                    title: String(localized: "Height"),
-                    value: widget.height,
-                    onSubmit: submitHeight
-                )
+            if widgetHasSize(id: widget.id) {
+                Section {
+                    SizeEditView(
+                        value: sceneWidget.width,
+                        onSubmit: submitWidth
+                    )
+                    SizeEditView(
+                        value: sceneWidget.height,
+                        onSubmit: submitHeight
+                    )
+                } header: {
+                    Text("Size")
+                }
+            }
+            Section {
+                NavigationLink {
+                    WidgetSettingsView(
+                        widget: widget,
+                        type: widget.type.toString(),
+                        name: widget.name
+                    )
+                } label: {
+                    Text("Widget")
+                }
+            } header: {
+                Text("Shortcut")
             }
         }
+        .navigationTitle(widget.name)
     }
 }
