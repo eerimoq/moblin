@@ -442,6 +442,7 @@
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
 		03D15CEE2DABD73A007DA935 /* GoPro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D15CED2DABD72C007DA935 /* GoPro.swift */; };
 		03D15CF12DABD8A9007DA935 /* GoProSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D15CF02DABD8A6007DA935 /* GoProSettingsView.swift */; };
+		03D15CF42DACC878007DA935 /* AirPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D15CF32DACC875007DA935 /* AirPrinter.swift */; };
 		03D278742D9050C900BB0502 /* TwinEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D278732D9050C600BB0502 /* TwinEffect.swift */; };
 		03D2B0E02C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */; };
 		03D2B0E32C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */; };
@@ -1025,6 +1026,7 @@
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D15CED2DABD72C007DA935 /* GoPro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoPro.swift; sourceTree = "<group>"; };
 		03D15CF02DABD8A6007DA935 /* GoProSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoProSettingsView.swift; sourceTree = "<group>"; };
+		03D15CF32DACC875007DA935 /* AirPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPrinter.swift; sourceTree = "<group>"; };
 		03D278732D9050C600BB0502 /* TwinEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwinEffect.swift; sourceTree = "<group>"; };
 		03D2B0DF2C11BD9D0051BFB5 /* SrtlaServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerSettingsView.swift; sourceTree = "<group>"; };
 		03D2B0E22C11BDEA0051BFB5 /* SrtlaServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SrtlaServerStreamSettingsView.swift; sourceTree = "<group>"; };
@@ -2748,6 +2750,7 @@
 		03CDEAA02C0AB8BB006121D0 /* Integrations */ = {
 			isa = PBXGroup;
 			children = (
+				03D15CF22DACC86E007DA935 /* AirPrinter */,
 				03D15CEC2DABD71F007DA935 /* GoPro */,
 				03B507A52C88B8E6003CDEDF /* CatPrinter */,
 				0386052C2D7DF67A00B9C3CE /* CyclingPowerDevice */,
@@ -2774,6 +2777,14 @@
 				03D15CF02DABD8A6007DA935 /* GoProSettingsView.swift */,
 			);
 			path = GoPro;
+			sourceTree = "<group>";
+		};
+		03D15CF22DACC86E007DA935 /* AirPrinter */ = {
+			isa = PBXGroup;
+			children = (
+				03D15CF32DACC875007DA935 /* AirPrinter.swift */,
+			);
+			path = AirPrinter;
 			sourceTree = "<group>";
 		};
 		03D2B0DE2C11BD7D0051BFB5 /* SrtlaServer */ = {
@@ -3538,6 +3549,7 @@
 				030621E02D8605FD001EE50B /* DjiGimbalDeviceScanner.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */,
+				03D15CF42DACC878007DA935 /* AirPrinter.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				0359F8D42BD3DA61005BFDA8 /* PreviewView.swift in Sources */,
 				032B4ED42C34910A00204547 /* MediaPlayerControlsView.swift in Sources */,
