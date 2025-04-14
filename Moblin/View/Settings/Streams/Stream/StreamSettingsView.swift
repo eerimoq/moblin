@@ -127,7 +127,6 @@ struct StreamSettingsView: View {
                         if stream.enabled {
                             model.setCurrentStream(stream: stream)
                             model.reloadStream()
-                            model.sceneUpdated(attachCamera: true)
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
                         }

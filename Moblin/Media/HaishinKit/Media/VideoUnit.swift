@@ -401,7 +401,6 @@ final class VideoUnit: NSObject {
         for device in captureSessionDevices {
             device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         }
-        logger.debug("Number of video devices: \(devices.devices.count)")
         mixerLockQueue.async {
             self.configuredIgnoreFramesAfterAttachSeconds = ignoreFramesAfterAttachSeconds
             self.selectedReplaceVideoCameraId = replaceVideo
