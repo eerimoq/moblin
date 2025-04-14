@@ -3576,6 +3576,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if database.alertsMediaGallery!.customSounds.contains(where: { $0.id == mediaId }) {
                 found = true
             }
+            for widget in database.widgets where widget.type == .alerts {
+                for command in widget.alerts!.chatBot!.commands where command.imagePlaygroundImageId! == mediaId {
+                    found = true
+                    break
+                }
+            }
             if !found {
                 alertMediaStorage.remove(id: mediaId)
             }
@@ -5594,8 +5600,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let alert = command.popFirst() else {
                 return
             }
+            let prompt = command.rest()
             DispatchQueue.main.async {
-                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown"))
+                self.playAlert(alert: .chatBotCommand(alert, command.user() ?? "Unknown", prompt))
             }
         }
     }
@@ -5605,15 +5612,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             permissions: database.chat.botCommandPermissions!.fax!,
             command: command
         ) {
-            let url = URL(string: command.peekFirst() ?? "")
-            if url != nil {
-                _ = command.popFirst()
-            }
-            let prompt = command.rest()
-            if let url, prompt.isEmpty {
+            if let url = command.peekFirst(), let url = URL(string: url) {
                 self.faxReceiver.add(url: url)
-            } else {
-                self.faxReceiver.add(prompt: prompt, url: url)
             }
         }
     }

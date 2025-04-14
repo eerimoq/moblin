@@ -46,6 +46,14 @@ class AlertMediaStorage {
         }
     }
 
+    func write(id: UUID, data: Data) {
+        do {
+            try data.write(to: makePath(id: id))
+        } catch {
+            logger.error("image-storage: Write failed with error \(error)")
+        }
+    }
+
     func tryRead(id: UUID) -> Data? {
         return try? Data(contentsOf: makePath(id: id))
     }

@@ -1166,15 +1166,52 @@ class SettingsWidgetAlertsTwitch: Codable {
     }
 }
 
-class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable {
+enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable {
+    case file = "File"
+    case imagePlayground = "Image Playground"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .file
+    }
+
+    static func fromString(value: String) -> SettingsWidgetAlertsChatBotCommandImageType {
+        switch value {
+        case String(localized: "File"):
+            return .file
+        case String(localized: "Image Playground"):
+            return .imagePlayground
+        default:
+            return .file
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .file:
+            return String(localized: "File")
+        case .imagePlayground:
+            return String(localized: "Image Playground")
+        }
+    }
+}
+
+let chatBotCommandImageTypes = SettingsWidgetAlertsChatBotCommandImageType.allCases.map { $0.toString() }
+
+class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
     var name: String = "myname"
     var alert: SettingsWidgetAlertsAlert = .init()
+    var imageType: SettingsWidgetAlertsChatBotCommandImageType? = .file
+    var imagePlaygroundImageId: UUID? = .init()
 
     func clone() -> SettingsWidgetAlertsChatBotCommand {
         let new = SettingsWidgetAlertsChatBotCommand()
         new.name = name
         new.alert = alert.clone()
+        new.imageType = imageType!
+        new.imagePlaygroundImageId = imagePlaygroundImageId!
         return new
     }
 }
@@ -5029,6 +5066,16 @@ final class Settings {
         if realDatabase.sceneNumericInput == nil {
             realDatabase.sceneNumericInput = false
             store()
+        }
+        for widget in realDatabase.widgets {
+            for command in widget.alerts!.chatBot!.commands where command.imageType == nil {
+                command.imageType = .file
+                store()
+            }
+            for command in widget.alerts!.chatBot!.commands where command.imagePlaygroundImageId == nil {
+                command.imagePlaygroundImageId = .init()
+                store()
+            }
         }
     }
 }

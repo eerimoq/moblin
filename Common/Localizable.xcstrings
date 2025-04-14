@@ -958,6 +958,7 @@
       }
     },
     "!moblin alert <name>" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1086,6 +1087,9 @@
           }
         }
       }
+    },
+    "!moblin alert <name> <optional Image Playground prompt>" : {
+
     },
     "!moblin fax <url>" : {
       "localizations" : {
@@ -64960,6 +64964,9 @@
         }
       }
     },
+    "Image Playground" : {
+
+    },
     "Image stabilization" : {
       "localizations" : {
         "de" : {
@@ -106715,6 +106722,9 @@
         }
       }
     },
+    "Select photo" : {
+
+    },
     "Select sound" : {
       "localizations" : {
         "de" : {
@@ -141433,6 +141443,9 @@
           }
         }
       }
+    },
+    "Use Image Playground to create an image from a photo and/or prompt written by your viewers." : {
+
     },
     "Use phones as additional SRTLA and RIST bonding connections. Install Moblink on Android phones to use them." : {
       "localizations" : {

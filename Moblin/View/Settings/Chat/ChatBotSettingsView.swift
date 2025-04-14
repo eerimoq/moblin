@@ -89,7 +89,7 @@ struct ChatBotCommandsSettingsView: View {
                 NavigationLink {
                     PermissionsSettingsView(permissions: permissions.alert!)
                 } label: {
-                    Text("!moblin alert <name>")
+                    Text("!moblin alert <name> <optional Image Playground prompt>")
                 }
             } footer: {
                 Text("Trigger alerts. Configure alert names in alert widgets.")

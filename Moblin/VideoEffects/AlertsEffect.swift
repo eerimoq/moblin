@@ -1,5 +1,6 @@
 import AVFoundation
 import Collections
+import ImagePlayground
 import MetalPetal
 import SDWebImage
 import SwiftUI
@@ -74,7 +75,7 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
-    case chatBotCommand(String, String)
+    case chatBotCommand(String, String, String)
     case speechToTextString(UUID)
 }
 
@@ -85,6 +86,7 @@ protocol AlertsEffectDelegate: AnyObject {
 private enum MediaItem {
     case bundledName(String)
     case customUrl(URL)
+    case image(CIImage)
 }
 
 private struct GifImage {
@@ -92,7 +94,7 @@ private struct GifImage {
     let timeOffset: Double
 }
 
-private class Medias {
+private class Medias: @unchecked Sendable {
     var images: Deque<GifImage> = []
     var soundUrl: URL?
 
@@ -106,6 +108,8 @@ private class Medias {
             } else {
                 soundUrl = nil
             }
+        case .image:
+            break
         }
     }
 
@@ -119,6 +123,8 @@ private class Medias {
                 }
             case let .customUrl(url):
                 images = self.loadImages(url: url, loopCount: loopCount)
+            case let .image(image):
+                images = self.loadImages(image: image, loopCount: loopCount)
             }
             lockQueue.sync {
                 self.images = images
@@ -141,6 +147,16 @@ private class Medias {
         }
         return images
     }
+
+    private func loadImages(image: CIImage, loopCount: Int) -> Deque<GifImage> {
+        var timeOffset = 0.0
+        var images: Deque<GifImage> = []
+        for _ in 0 ..< loopCount {
+            timeOffset += 1
+            images.append(GifImage(image: image, timeOffset: timeOffset))
+        }
+        return images
+    }
 }
 
 private enum FaceLandmark {
@@ -157,7 +173,7 @@ private struct LandmarkSettings {
     let centerY: Double
 }
 
-final class AlertsEffect: VideoEffect {
+final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var images: Deque<GifImage> = []
     private var basePresentationTimeStamp: Double?
     private var messageImage: CIImage?
@@ -297,8 +313,8 @@ final class AlertsEffect: VideoEffect {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
-        case let .chatBotCommand(command, name):
-            playChatBotCommand(command: command, name: name)
+        case let .chatBotCommand(command, name, prompt):
+            playChatBotCommand(command: command, name: name, prompt: prompt)
         case let .speechToTextString(id):
             playSpeechToTextString(id: id)
         }
@@ -402,7 +418,7 @@ final class AlertsEffect: VideoEffect {
     }
 
     @MainActor
-    private func playChatBotCommand(command: String, name: String) {
+    private func playChatBotCommand(command: String, name: String, prompt: String) {
         guard let commandIndex = settings.chatBot!.commands
             .firstIndex(where: { command == $0.name && $0.alert.enabled })
         else {
@@ -411,12 +427,56 @@ final class AlertsEffect: VideoEffect {
         guard commandIndex < chatBotCommands.count else {
             return
         }
-        play(
-            medias: chatBotCommands[commandIndex],
-            username: name,
-            message: command,
-            settings: settings.chatBot!.commands[commandIndex].alert
-        )
+        let commandSettings = settings.chatBot!.commands[commandIndex]
+        switch commandSettings.imageType! {
+        case .file:
+            play(
+                medias: chatBotCommands[commandIndex],
+                username: name,
+                message: command,
+                settings: commandSettings.alert
+            )
+        case .imagePlayground:
+            createImagePlaygroundImage(settings: commandSettings, name: name, prompt: prompt)
+        }
+    }
+
+    func createImagePlaygroundImage(settings: SettingsWidgetAlertsChatBotCommand, name: String, prompt: String) {
+        guard #available(iOS 18.4, *) else {
+            return
+        }
+        let imageUrl = mediaStorage.makePath(id: settings.imagePlaygroundImageId!)
+        DispatchQueue.global().async {
+            Task {
+                do {
+                    let creator = try await ImageCreator()
+                    var concepts: [ImagePlaygroundConcept] = [.extracted(from: prompt, title: nil)]
+                    if (try? imageUrl.checkResourceIsReachable()) == true {
+                        if let image = ImagePlaygroundConcept.image(imageUrl) {
+                            concepts.append(image)
+                        }
+                    }
+                    for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
+                        let medias = Medias()
+                        let image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
+                            scaleX: 0.35,
+                            y: 0.35
+                        ))
+                        medias.updateImages(image: .image(image), loopCount: 10)
+                        DispatchQueue.main.async {
+                            self.play(
+                                medias: medias,
+                                username: name,
+                                message: prompt,
+                                settings: settings.alert
+                            )
+                        }
+                    }
+                } catch {
+                    logger.info("alert: Image playground error: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     @MainActor
