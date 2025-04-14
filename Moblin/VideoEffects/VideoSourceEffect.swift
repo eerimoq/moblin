@@ -25,7 +25,7 @@ class PositionInterpolator {
     func update(timeElapsed: Double) -> Double {
         if let current, let target {
             delta = 0.8 * delta + 0.2 * (target - current)
-            if abs(delta) > 25 {
+            if abs(delta) > 5 {
                 self.current = current + delta * 2 * timeElapsed
             }
         } else if let target {
