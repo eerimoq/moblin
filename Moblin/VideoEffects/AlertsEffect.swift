@@ -478,7 +478,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                             self.play(
                                 medias: medias,
                                 username: name,
-                                message: prompt,
+                                message: String(localized: "created \(prompt)"),
                                 settings: settings.alert
                             )
                         }

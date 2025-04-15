@@ -5,8 +5,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 private let testNames = ["Mark", "Natasha", "Pedro", "Anna"]
-private let testPromptAttributes = ["crown", "sunglasses", "tiara", "vampire", "mage"]
-private let testPromptThemes = ["winter", "starry night", "sunset"]
+private let testPrompts = ["crown", "sunglasses", "fireworks"]
 
 struct AlertPickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
@@ -721,10 +720,7 @@ private struct ChatBotCommandView: View {
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
                 Section {
                     Button(action: {
-                        let attribute = testPromptAttributes.randomElement()!
-                        let theme = testPromptThemes.randomElement()!
-                        let prompt = [attribute, "in", theme].joined(separator: " ")
-                        model.testAlert(alert: .chatBotCommand(name, testNames.randomElement()!, prompt))
+                        model.testAlert(alert: .chatBotCommand(name, testNames.randomElement()!, testPrompts.randomElement()!))
                     }, label: {
                         HCenter {
                             Text("Test")
