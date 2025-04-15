@@ -472,7 +472,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                         if settings.alert.positionType == .face {
                             image = makeCircle(image)
                         }
-                        medias.updateImages(image: .image(image), loopCount: 7)
+                        medias.updateImages(image: .image(image), loopCount: 10)
                         medias.soundUrl = soundUrl
                         DispatchQueue.main.async {
                             self.play(
