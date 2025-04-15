@@ -427,21 +427,27 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         guard commandIndex < chatBotCommands.count else {
             return
         }
+        let medias = chatBotCommands[commandIndex]
         let commandSettings = settings.chatBot!.commands[commandIndex]
         switch commandSettings.imageType! {
         case .file:
             play(
-                medias: chatBotCommands[commandIndex],
+                medias: medias,
                 username: name,
                 message: command,
                 settings: commandSettings.alert
             )
         case .imagePlayground:
-            createImagePlaygroundImage(settings: commandSettings, name: name, prompt: prompt)
+            createImagePlaygroundImage(soundUrl: medias.soundUrl, settings: commandSettings, name: name, prompt: prompt)
         }
     }
 
-    func createImagePlaygroundImage(settings: SettingsWidgetAlertsChatBotCommand, name: String, prompt: String) {
+    private func createImagePlaygroundImage(
+        soundUrl: URL?,
+        settings: SettingsWidgetAlertsChatBotCommand,
+        name: String,
+        prompt: String
+    ) {
         guard #available(iOS 18.4, *) else {
             return
         }
@@ -458,16 +464,18 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                     }
                     for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
                         let medias = Medias()
+                        let factor = 0.35
                         let image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
-                            scaleX: 0.35,
-                            y: 0.35
+                            scaleX: factor,
+                            y: factor
                         ))
-                        medias.updateImages(image: .image(image), loopCount: 10)
+                        medias.updateImages(image: .image(image), loopCount: 7)
+                        medias.soundUrl = soundUrl
                         DispatchQueue.main.async {
                             self.play(
                                 medias: medias,
                                 username: name,
-                                message: prompt,
+                                message: "created image: \(prompt)",
                                 settings: settings.alert
                             )
                         }
