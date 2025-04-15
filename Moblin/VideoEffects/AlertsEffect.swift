@@ -478,7 +478,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                             self.play(
                                 medias: medias,
                                 username: name,
-                                message: "created image: \(prompt)",
+                                message: prompt,
                                 settings: settings.alert
                             )
                         }
