@@ -465,10 +465,13 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                     for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
                         let medias = Medias()
                         let factor = 0.35
-                        let image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
+                        var image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
                             scaleX: factor,
                             y: factor
                         ))
+                        if settings.alert.positionType == .face {
+                            image = makeCircle(image)
+                        }
                         medias.updateImages(image: .image(image), loopCount: 7)
                         medias.soundUrl = soundUrl
                         DispatchQueue.main.async {
@@ -832,4 +835,28 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             }
         }
     }
+}
+
+private func makeRoundedRectangleMask(_ image: CIImage) -> CIImage? {
+    let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
+    roundedRectangleGenerator.color = .green
+    // Slightly smaller to remove ~1px black line around image.
+    var extent = image.extent
+    extent.origin.x += 1
+    extent.origin.y += 1
+    extent.size.width -= 2
+    extent.size.height -= 2
+    roundedRectangleGenerator.extent = extent
+    var radiusPixels = Float(min(image.extent.height, image.extent.width))
+    radiusPixels /= 2
+    radiusPixels *= 100
+    roundedRectangleGenerator.radius = radiusPixels
+    return roundedRectangleGenerator.outputImage
+}
+
+private func makeCircle(_ image: CIImage) -> CIImage {
+    let roundedCornersBlender = CIFilter.blendWithMask()
+    roundedCornersBlender.inputImage = image
+    roundedCornersBlender.maskImage = makeRoundedRectangleMask(image)
+    return roundedCornersBlender.outputImage ?? image
 }
