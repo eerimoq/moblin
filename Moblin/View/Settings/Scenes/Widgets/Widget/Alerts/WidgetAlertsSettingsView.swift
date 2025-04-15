@@ -623,10 +623,10 @@ private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
     var command: SettingsWidgetAlertsChatBotCommand
     @State var name: String
-    @State var imageType: String
-    @State var imageId: UUID
-    @State var soundId: UUID
-    @State var imagePlaygroundImageType: UUID
+    // @State var imageType: String
+    // @State var imageId: UUID
+    // @State var soundId: UUID
+    // @State var imagePlaygroundImageType: UUID
 
     private var alert: SettingsWidgetAlertsAlert {
         command.alert
@@ -660,51 +660,53 @@ private struct ChatBotCommandView: View {
                 } footer: {
                     Text("Trigger with chat message '!moblin alert \(name)'")
                 }
-                Section {
-                    Picker(selection: $imageType) {
-                        ForEach(chatBotCommandImageTypes, id: \.self) { type in
-                            Text(type)
-                        }
-                    } label: {
-                        Text("Type")
-                    }
-                    .onChange(of: imageType) { value in
-                        command.imageType = SettingsWidgetAlertsChatBotCommandImageType.fromString(value: value)
-                        model.updateAlertsSettings()
-                    }
-                    switch SettingsWidgetAlertsChatBotCommandImageType.fromString(value: imageType) {
-                    case .file:
-                        NavigationLink {
-                            AlertImageSelectorView(
-                                alert: alert,
-                                imageId: $imageId,
-                                loopCount: Float(alert.imageLoopCount!)
-                            )
-                        } label: {
-                            TextItemView(
-                                name: String(localized: "File"),
-                                value: getImageName(model: model, id: imageId)
-                            )
-                        }
-                    case .imagePlayground:
-                        NavigationLink {
-                            AlertImagePlaygroundSelectorView(command: command, imageId: command.imagePlaygroundImageId!)
-                        } label: {
-                            Text("Image Playground")
-                        }
-                    }
-                } header: {
-                    Text("Image")
-                }
-                Section {
-                    NavigationLink {
-                        AlertSoundSelectorView(alert: alert, soundId: $soundId)
-                    } label: {
-                        TextItemView(name: "Sound", value: getSoundName(model: model, id: soundId))
-                    }
-                } header: {
-                    Text("Sound")
-                }
+                // Section {
+                //     Picker(selection: $imageType) {
+                //         ForEach(chatBotCommandImageTypes, id: \.self) { type in
+                //             Text(type)
+                //         }
+                //     } label: {
+                //         Text("Type")
+                //     }
+                //     .onChange(of: imageType) { value in
+                //         command.imageType = SettingsWidgetAlertsChatBotCommandImageType.fromString(value: value)
+                //         model.updateAlertsSettings()
+                //     }
+                //     switch SettingsWidgetAlertsChatBotCommandImageType.fromString(value: imageType) {
+                //     case .file:
+                //         NavigationLink {
+                //             AlertImageSelectorView(
+                //                 alert: alert,
+                //                 imageId: $imageId,
+                //                 loopCount: Float(alert.imageLoopCount!)
+                //             )
+                //         } label: {
+                //             TextItemView(
+                //                 name: String(localized: "File"),
+                //                 value: getImageName(model: model, id: imageId)
+                //             )
+                //         }
+                //     case .imagePlayground:
+                //         NavigationLink {
+                //             AlertImagePlaygroundSelectorView(command: command, imageId:
+                //             command.imagePlaygroundImageId!)
+                //         } label: {
+                //             Text("Image Playground")
+                //         }
+                //     }
+                // } header: {
+                //     Text("Image")
+                // }
+                // Section {
+                //     NavigationLink {
+                //         AlertSoundSelectorView(alert: alert, soundId: $soundId)
+                //     } label: {
+                //         TextItemView(name: "Sound", value: getSoundName(model: model, id: soundId))
+                //     }
+                // } header: {
+                //     Text("Sound")
+                // }
+                AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
                 AlertPositionView(alert: alert, positionType: alert.positionType!.toString())
                 AlertColorsView(
                     alert: alert,
@@ -720,7 +722,11 @@ private struct ChatBotCommandView: View {
                 AlertTextToSpeechView(alert: alert, ttsDelay: alert.textToSpeechDelay!)
                 Section {
                     Button(action: {
-                        model.testAlert(alert: .chatBotCommand(name, testNames.randomElement()!, testPrompts.randomElement()!))
+                        model.testAlert(alert: .chatBotCommand(
+                            name,
+                            testNames.randomElement()!,
+                            testPrompts.randomElement()!
+                        ))
                     }, label: {
                         HCenter {
                             Text("Test")
@@ -746,11 +752,11 @@ private struct WidgetAlertsSettingsChatBotView: View {
                     ForEach(chatBot.commands) { command in
                         ChatBotCommandView(
                             command: command,
-                            name: command.name,
-                            imageType: command.imageType!.toString(),
-                            imageId: command.alert.imageId,
-                            soundId: command.alert.soundId,
-                            imagePlaygroundImageType: command.imagePlaygroundImageId!
+                            name: command.name /* ,
+                             imageType: command.imageType!.toString(),
+                             imageId: command.alert.imageId,
+                             soundId: command.alert.soundId,
+                             imagePlaygroundImageType: command.imagePlaygroundImageId! */
                         )
                     }
                     .onDelete(perform: { indexes in

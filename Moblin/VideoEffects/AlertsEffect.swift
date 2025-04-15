@@ -428,17 +428,17 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return
         }
         let medias = chatBotCommands[commandIndex]
-        let commandSettings = settings.chatBot!.commands[commandIndex]
-        switch commandSettings.imageType! {
+        let settings = settings.chatBot!.commands[commandIndex]
+        switch settings.imageType! {
         case .file:
             play(
                 medias: medias,
                 username: name,
                 message: command,
-                settings: commandSettings.alert
+                settings: settings.alert
             )
         case .imagePlayground:
-            createImagePlaygroundImage(soundUrl: medias.soundUrl, settings: commandSettings, name: name, prompt: prompt)
+            createImagePlaygroundImage(soundUrl: medias.soundUrl, settings: settings, name: name, prompt: prompt)
         }
     }
 

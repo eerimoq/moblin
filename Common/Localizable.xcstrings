@@ -958,7 +958,6 @@
       }
     },
     "!moblin alert <name>" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1087,9 +1086,6 @@
           }
         }
       }
-    },
-    "!moblin alert <name> <optional Image Playground prompt>" : {
-
     },
     "!moblin fax <url>" : {
       "localizations" : {
