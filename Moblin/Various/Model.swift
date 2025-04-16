@@ -5089,6 +5089,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         resetChat()
     }
 
+    func setObsRemoteControlEnabled(enabled: Bool) {
+        stream.obsWebSocketEnabled = enabled
+        if stream.enabled {
+            obsWebSocketEnabledUpdated()
+        }
+    }
+
     func obsWebSocketEnabledUpdated() {
         reloadObsWebSocket()
     }
@@ -9610,6 +9617,13 @@ extension Model {
         }
         if location != newLocation {
             location = newLocation
+        }
+    }
+
+    func setRealtimeIrlEnabled(enabled: Bool) {
+        stream.realtimeIrlEnabled = enabled
+        if stream.enabled {
+            reloadLocation()
         }
     }
 

@@ -195,6 +195,24 @@ struct CameraSettingsView: View {
     var body: some View {
         Form {
             Section {
+                NavigationLink {
+                    StreamVideoSettingsView(
+                        stream: model.stream,
+                        codec: model.stream.codec.rawValue,
+                        bitrate: model.stream.bitrate,
+                        resolution: model.stream.resolution.rawValue,
+                        fps: String(model.stream.fps)
+                    )
+                } label: {
+                    IconAndTextView(
+                        image: "dot.radiowaves.left.and.right",
+                        text: String(localized: "Video")
+                    )
+                }
+            } header: {
+                Text("Shortcut")
+            }
+            Section {
                 if model.database.showAllSettings! {
                     NavigationLink {
                         ZoomSettingsView(speed: model.database.zoom.speed!)

@@ -275,7 +275,20 @@ struct RemoteControlSettingsView: View {
                 Text("Control and monitor Moblin from another device.")
             }
             Section {
-                StreamObsRemoteControlSettingsWrapperView(stream: model.stream)
+                NavigationLink {
+                    StreamObsRemoteControlSettingsView(stream: model.stream)
+                } label: {
+                    Toggle(isOn: Binding(get: {
+                        model.stream.obsWebSocketEnabled!
+                    }, set: {
+                        model.setObsRemoteControlEnabled(enabled: $0)
+                    })) {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "OBS remote control")
+                        )
+                    }
+                }
             } header: {
                 Text("Shortcut")
             }

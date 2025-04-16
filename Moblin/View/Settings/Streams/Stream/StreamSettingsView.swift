@@ -38,26 +38,6 @@ struct StreamPlatformsSettingsView: View {
     }
 }
 
-struct StreamRealtimeIrlSettingsWrapperView: View {
-    @EnvironmentObject private var model: Model
-    var stream: SettingsStream
-
-    var body: some View {
-        NavigationLink {
-            StreamRealtimeIrlSettingsView(stream: stream)
-        } label: {
-            Toggle("RealtimeIRL", isOn: Binding(get: {
-                stream.realtimeIrlEnabled!
-            }, set: { value in
-                stream.realtimeIrlEnabled = value
-                if stream.enabled {
-                    model.reloadLocation()
-                }
-            }))
-        }
-    }
-}
-
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     var stream: SettingsStream
@@ -171,9 +151,25 @@ struct StreamSettingsView: View {
                 Text("Streaming platforms")
             }
             Section {
-                StreamObsRemoteControlSettingsWrapperView(stream: stream)
+                NavigationLink {
+                    StreamObsRemoteControlSettingsView(stream: stream)
+                } label: {
+                    Toggle("OBS remote control", isOn: Binding(get: {
+                        stream.obsWebSocketEnabled!
+                    }, set: {
+                        model.setObsRemoteControlEnabled(enabled: $0)
+                    }))
+                }
                 if model.database.showAllSettings! {
-                    StreamRealtimeIrlSettingsWrapperView(stream: stream)
+                    NavigationLink {
+                        StreamRealtimeIrlSettingsView(stream: stream)
+                    } label: {
+                        Toggle("RealtimeIRL", isOn: Binding(get: {
+                            stream.realtimeIrlEnabled!
+                        }, set: { value in
+                            model.setRealtimeIrlEnabled(enabled: value)
+                        }))
+                    }
                 }
             }
             if model.database.showAllSettings! {

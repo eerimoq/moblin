@@ -55,7 +55,20 @@ struct LocationSettingsView: View {
                 Text("Resets distance, average speed and slope.")
             }
             Section {
-                StreamRealtimeIrlSettingsWrapperView(stream: model.stream)
+                NavigationLink {
+                    StreamRealtimeIrlSettingsView(stream: model.stream)
+                } label: {
+                    Toggle(isOn: Binding(get: {
+                        model.stream.realtimeIrlEnabled!
+                    }, set: { value in
+                        model.setRealtimeIrlEnabled(enabled: value)
+                    })) {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "RealtimeIRL")
+                        )
+                    }
+                }
             } header: {
                 Text("Shortcut")
             }

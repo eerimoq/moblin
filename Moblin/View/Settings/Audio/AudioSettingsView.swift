@@ -23,6 +23,23 @@ struct AudioSettingsView: View {
 
     var body: some View {
         Form {
+            if model.database.showAllSettings! {
+                Section {
+                    NavigationLink {
+                        StreamAudioSettingsView(
+                            stream: model.stream,
+                            bitrate: Float(model.stream.audioBitrate! / 1000)
+                        )
+                    } label: {
+                        IconAndTextView(
+                            image: "dot.radiowaves.left.and.right",
+                            text: String(localized: "Audio")
+                        )
+                    }
+                } header: {
+                    Text("Shortcut")
+                }
+            }
             Section {
                 Toggle("Bluetooth output only", isOn: Binding(get: {
                     model.database.debug.bluetoothOutputOnly!
