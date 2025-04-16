@@ -40,9 +40,11 @@ struct DjiDevicesSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         model.database.djiDevices!.devices.move(fromOffsets: froms, toOffset: to)
+                        model.objectWillChange.send()
                     })
                     .onDelete(perform: { offsets in
                         model.removeDjiDevices(offsets: offsets)
+                        model.objectWillChange.send()
                     })
                 }
                 CreateButtonView {

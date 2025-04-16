@@ -1630,6 +1630,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case lockScreen = "Lock screen"
     case djiDevices = "DJI devices"
     case portrait = "Portrait"
+    case goPro = "GoPro"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -2317,6 +2318,29 @@ class SettingsDjiGimbalDevices: Codable {
     var devices: [SettingsDjiGimbalDevice] = []
 }
 
+class SettingsGoProWifiCredentials: Codable, Identifiable {
+    var id: UUID = .init()
+    var name = "My SSID"
+    var ssid = ""
+    var password = ""
+}
+
+class SettingsGoProRtmpUrl: Codable, Identifiable {
+    var id: UUID = .init()
+    var name = "My URL"
+    var type: SettingsDjiDeviceUrlType = .server
+    var serverStreamId: UUID = .init()
+    var serverUrl = ""
+    var customUrl = ""
+}
+
+class SettingsGoPro: Codable {
+    var wifiCredentials: [SettingsGoProWifiCredentials] = []
+    var selectedWifiCredentials: UUID?
+    var rtmpUrls: [SettingsGoProRtmpUrl] = []
+    var selectedRtmpUrl: UUID?
+}
+
 class SettingsCatPrinter: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
@@ -2964,6 +2988,7 @@ class Database: Codable {
     var djiGimbalDevices: SettingsDjiGimbalDevices? = .init()
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool? = false
+    var goPro: SettingsGoPro? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -3373,6 +3398,14 @@ private func addMissingGlobalButtons(database: Database) {
     button = SettingsButton(name: String(localized: "DJI devices"))
     button.id = UUID()
     button.type = .djiDevices
+    button.imageType = "System name"
+    button.systemImageNameOn = "appletvremote.gen1.fill"
+    button.systemImageNameOff = "appletvremote.gen1"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "GoPro"))
+    button.id = UUID()
+    button.type = .goPro
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
@@ -5080,6 +5113,10 @@ final class Settings {
         }
         if realDatabase.debug.srtlaBatchSendEnabled == nil {
             realDatabase.debug.srtlaBatchSendEnabled = true
+            store()
+        }
+        if realDatabase.goPro == nil {
+            realDatabase.goPro = .init()
             store()
         }
     }

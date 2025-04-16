@@ -28,6 +28,15 @@ struct QuickButtonDjiDevicesView: View {
                     }
                 }
             }
+            Section {
+                NavigationLink {
+                    DjiDevicesSettingsView()
+                } label: {
+                    IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI devices"))
+                }
+            } header: {
+                Text("Shortcut")
+            }
         }
         .navigationTitle("DJI devices")
     }

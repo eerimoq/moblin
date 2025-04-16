@@ -1,15 +1,11 @@
-class GoPro {
-    private var wifiSsid = ""
-    private var wifiPassword = ""
-    private var rtmpUrl = ""
+import SwiftUI
 
-    func generateWiFiQrCode() {
-        let message = "!MJOIN=\"\(wifiSsid):\(wifiPassword)\""
-        logger.info("xxx wifi \(message)")
+class GoPro {
+    static func generateWifiCredentialsQrCode(ssid: String, password: String) -> UIImage? {
+        return generateQrCode(from: "!MJOIN=\"\(ssid):\(password)\"")
     }
 
-    func generateRtmpQrCode() {
-        let message = "!MRTMP=\"\(rtmpUrl)\""
-        logger.info("xxx RTMP \(message)")
+    static func generateRtmpUrlQrCode(url: String) -> UIImage? {
+        return generateQrCode(from: "!MRTMP=\"\(url)\"")
     }
 }

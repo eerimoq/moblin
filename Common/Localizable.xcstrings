@@ -16847,6 +16847,9 @@
         }
       }
     },
+    "an entry" : {
+
+    },
     "an image" : {
       "localizations" : {
         "de" : {
@@ -61862,9 +61865,6 @@
     "GoPro" : {
 
     },
-    "GoPro devices" : {
-
-    },
     "Gray scale" : {
       "localizations" : {
         "de" : {
@@ -84702,6 +84702,9 @@
         }
       }
     },
+    "No RTMP URLs configured" : {
+
+    },
     "No snapshot received yet." : {
       "localizations" : {
         "de" : {
@@ -85245,6 +85248,9 @@
           }
         }
       }
+    },
+    "No WiFi credentials configured" : {
+
     },
     "Normally only available for built-in cameras." : {
       "localizations" : {
@@ -103215,6 +103221,9 @@
     "RTMP URL" : {
 
     },
+    "RTMP URLs" : {
+
+    },
     "RTMP, SRT(LA), screen capture and media player video sources can instantly be switched to, but if you want consistency you can force scene switch transitions to these as well." : {
       "localizations" : {
         "de" : {
@@ -106309,6 +106318,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇 %1$@ 將DJI鏡頭串流到Moblin的RTMP伺服器。選擇 %2$@ 將DJI鏡頭串流到其他地方。"
+          }
+        }
+      }
+    },
+    "Select %@ if you want the GoPro camera to stream to Moblin's RTMP server on this device. Select %@ to make the GoPro camera stream to any destination." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Select %1$@ if you want the GoPro camera to stream to Moblin's RTMP server on this device. Select %2$@ to make the GoPro camera stream to any destination."
           }
         }
       }

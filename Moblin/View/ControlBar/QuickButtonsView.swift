@@ -271,11 +271,14 @@ struct QuickButtonsInnerView: View {
 
     private func djiDevicesAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .djiDevices, panel: .djiDevices)
-        model.updateLutsButtonState()
     }
 
     private func portraitAction(state _: ButtonState) {
         model.setDisplayPortrait(portrait: !model.database.portrait!)
+    }
+
+    private func goProAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .goPro, panel: .goPro)
     }
 
     var body: some View {
@@ -565,6 +568,12 @@ struct QuickButtonsInnerView: View {
             case .portrait:
                 Button(action: {
                     portraitAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .goPro:
+                Button(action: {
+                    goProAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

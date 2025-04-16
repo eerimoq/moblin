@@ -52,6 +52,7 @@ enum ShowingPanel {
     case chat
     case djiDevices
     case sceneSettings
+    case goPro
 }
 
 class Browser: Identifiable {
@@ -377,6 +378,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             logger.info("stream: State \(oldValue) -> \(streamState)")
         }
     }
+
+    @Published var goProWifiCredentialsSelection: UUID?
+    @Published var goProRtmpUrlSelection: UUID?
 
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
@@ -916,6 +920,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             SettingsButtonType.stream,
             SettingsButtonType.obs,
             SettingsButtonType.djiDevices,
+            SettingsButtonType.goPro,
         ].contains(type)
     }
 
@@ -1572,6 +1577,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setCameraControlsEnabled()
         resetAverageSpeed()
         resetSlope()
+        goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
+        goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
     }
 
     func setBitrateDropFix() {
@@ -5583,10 +5590,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             guard let scene = self.getSelectedScene() else {
                 return
             }
-            for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices {
-                if device.device?.availableReactionTypes.contains(reaction) == true {
-                    device.device?.performEffect(for: reaction)
-                }
+            for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices
+                where device.device?.availableReactionTypes.contains(reaction) == true
+            {
+                device.device?.performEffect(for: reaction)
             }
         }
     }

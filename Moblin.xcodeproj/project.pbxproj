@@ -463,6 +463,8 @@
 		03DC9DB02C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */; };
 		03DC9DB12C4F846D005E2104 /* CMBlockBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */; };
 		03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DEA1F82BFA66DC00154631 /* MetalPetal.swift */; };
+		03E3637F2DB026BA007A3CBB /* QuickButtonGoProView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3637E2DB026B3007A3CBB /* QuickButtonGoProView.swift */; };
+		03E363812DB0BB61007A3CBB /* QrCodeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E363802DB0BB59007A3CBB /* QrCodeImageView.swift */; };
 		03E3E3922C431E0900932B00 /* DjiDeviceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */; };
 		03E6F7F92CE5B4B100D9198A /* BondingStatisticsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */; };
 		03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
@@ -1045,6 +1047,8 @@
 		03DC9DA82C4C3BB5005E2104 /* DjiDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceModel.swift; sourceTree = "<group>"; };
 		03DC9DAE2C4F846D005E2104 /* CMBlockBuffer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMBlockBuffer+Extension.swift"; sourceTree = "<group>"; };
 		03DEA1F82BFA66DC00154631 /* MetalPetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPetal.swift; sourceTree = "<group>"; };
+		03E3637E2DB026B3007A3CBB /* QuickButtonGoProView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonGoProView.swift; sourceTree = "<group>"; };
+		03E363802DB0BB59007A3CBB /* QrCodeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeImageView.swift; sourceTree = "<group>"; };
 		03E3E3912C431E0900932B00 /* DjiDeviceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DjiDeviceSettingsView.swift; sourceTree = "<group>"; };
 		03E6F7F82CE5B4AB00D9198A /* BondingStatisticsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BondingStatisticsFormatter.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
@@ -1314,16 +1318,16 @@
 		0315A34F2AA322ED00295443 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */,
-				03C354672CF98DD600B8B29F /* HCenter.swift */,
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
 				031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */,
 				03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */,
+				03C354672CF98DD600B8B29F /* HCenter.swift */,
 				035D37272AB0EBB500045B92 /* IconAndTextView.swift */,
 				03C088362B0AFFA8000990DA /* InlinePickerView.swift */,
 				0315A37B2AA439B500295443 /* NameEditView.swift */,
 				032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */,
+				03E363802DB0BB59007A3CBB /* QrCodeImageView.swift */,
 				032FDC012B0B11C5007BE85E /* SizeEditView.swift */,
 				03C2C2822B5F906E00E2F30B /* SliderView.swift */,
 				03CFF9CA2CA82EDF00FEC614 /* StrokeModifier.swift */,
@@ -1334,6 +1338,7 @@
 				0315A3792AA39DA800295443 /* TextItemView.swift */,
 				03D691522B36EDB600038F13 /* TextValueView.swift */,
 				032FDBFB2B0B1183007BE85E /* ValueEditView.swift */,
+				03F655EF2D147C040054D73E /* VideoSourceRotationView.swift */,
 				03980C542C5E74A9000ED476 /* VoicesView.swift */,
 			);
 			path = Utils;
@@ -2246,9 +2251,10 @@
 		03987B3A2C8284A500226C03 /* QuickButton */ = {
 			isa = PBXGroup;
 			children = (
-				0305D6B62D3449F1006EA5DE /* QuickButtonDjiDevicesView.swift */,
 				035D37362AB230E700045B92 /* QuickButtonBitrateView.swift */,
 				0318B4122C845214002B4F58 /* QuickButtonChatView.swift */,
+				0305D6B62D3449F1006EA5DE /* QuickButtonDjiDevicesView.swift */,
+				03E3637E2DB026B3007A3CBB /* QuickButtonGoProView.swift */,
 				032F3B3B2C935385002FF97E /* QuickButtonLutsView.swift */,
 				03987B3B2C82859C00226C03 /* QuickButtonMicView.swift */,
 				03987B362C8280B300226C03 /* QuickButtonObsView.swift */,
@@ -3339,6 +3345,7 @@
 				03F465E72C43DFF500630708 /* DjiDevice.swift in Sources */,
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
 				03EEC76B2CED8C9000749D4E /* DriftTracker.swift in Sources */,
+				03E363812DB0BB61007A3CBB /* QrCodeImageView.swift in Sources */,
 				032B4EDA2C3491A100204547 /* ZoomPresetSelctorView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
 				0323F3732D1DCDA800A57AC2 /* MoblinkStreamer.swift in Sources */,
@@ -3373,6 +3380,7 @@
 				0379E66D2C8980160021AB59 /* CatPrintersSettingsView.swift in Sources */,
 				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
+				03E3637F2DB026BA007A3CBB /* QuickButtonGoProView.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				030621EC2D862989001EE50B /* DjiDeviceMessage.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,

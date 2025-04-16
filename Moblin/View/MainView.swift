@@ -95,6 +95,10 @@ private struct MenuView: View {
                                       numericInput: model.database.sceneNumericInput!)
                 }
                 .id(model.sceneSettingsPanelSceneId)
+            case .goPro:
+                NavigationStack {
+                    QuickButtonGoProView()
+                }
             case .none:
                 EmptyView()
             }
