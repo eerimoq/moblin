@@ -1886,7 +1886,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setSrtlaBatchSend() {
-        srtlaBatchSend = database.debug.srtlaBatchSend!
+        srtlaBatchSend = database.debug.srtlaBatchSendEnabled!
     }
 
     func setExternalDisplayContent() {

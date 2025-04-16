@@ -2030,6 +2030,7 @@ class SettingsDebug: Codable {
     var relaxedBitrate: Bool? = false
     var externalDisplayChat: Bool? = false
     var videoSourceWidgetTrackFace: Bool? = false
+    var srtlaBatchSendEnabled: Bool? = true
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -5076,6 +5077,10 @@ final class Settings {
                 command.imagePlaygroundImageId = .init()
                 store()
             }
+        }
+        if realDatabase.debug.srtlaBatchSendEnabled == nil {
+            realDatabase.debug.srtlaBatchSendEnabled = true
+            store()
         }
     }
 }

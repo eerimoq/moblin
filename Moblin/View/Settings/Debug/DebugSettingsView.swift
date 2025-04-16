@@ -128,9 +128,9 @@ struct DebugSettingsView: View {
                     model.reloadSrtlaServer()
                 }))
                 Toggle("SRT(LA) batch send", isOn: Binding(get: {
-                    model.database.debug.srtlaBatchSend!
+                    model.database.debug.srtlaBatchSendEnabled!
                 }, set: { value in
-                    model.database.debug.srtlaBatchSend = value
+                    model.database.debug.srtlaBatchSendEnabled = value
                     model.setSrtlaBatchSend()
                 }))
                 NavigationLink {
