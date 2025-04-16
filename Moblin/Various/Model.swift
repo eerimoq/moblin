@@ -5580,10 +5580,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             default:
                 return
             }
-            guard self.cameraDevice?.availableReactionTypes.contains(reaction) == true else {
+            guard let scene = self.getSelectedScene() else {
                 return
             }
-            self.cameraDevice?.performEffect(for: reaction)
+            for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices {
+                if device.device?.availableReactionTypes.contains(reaction) == true {
+                    device.device?.performEffect(for: reaction)
+                }
+            }
         }
     }
 
