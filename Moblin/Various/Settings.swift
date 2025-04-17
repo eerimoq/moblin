@@ -1310,7 +1310,7 @@ class SettingsWidgetVideoSource: Codable {
     var cropHeight: Double? = 1.0
     var rotation: Double? = 0.0
     var trackFaceEnabled: Bool? = false
-    var trackFaceZoom: Double? = 0.95
+    var trackFaceZoom: Double? = 0.85
     var mirror: Bool? = false
 
     func toEffectSettings() -> VideoSourceEffectSettings {
