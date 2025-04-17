@@ -1,9 +1,62 @@
 import SwiftUI
 
+private struct PickerEntry: Identifiable {
+    var id: UUID
+    var name: String
+}
+
+private struct QuickButtonGoProLaunchLiveStreamView: View {
+    @EnvironmentObject var model: Model
+    var height: Double
+    @State var qrCode: UIImage?
+    @State var entries: [PickerEntry] = []
+
+    private var goPro: SettingsGoPro {
+        return model.database.goPro!
+    }
+
+    private func generate() {
+        if goPro.launchLiveStream.first(where: { $0.id == model.goProLaunchLiveStreamSelection }) != nil {
+            qrCode = GoPro.generateLaunchLiveStream()
+        } else {
+            qrCode = nil
+        }
+    }
+
+    var body: some View {
+        Section {
+            if model.goProLaunchLiveStreamSelection != nil {
+                Picker(selection: $model.goProLaunchLiveStreamSelection) {
+                    ForEach(entries) { entry in
+                        Text(entry.name)
+                            .tag(entry.id as UUID?)
+                    }
+                } label: {
+                    Text("Launch live stream")
+                }
+                .onChange(of: model.goProLaunchLiveStreamSelection) { value in
+                    goPro.selectedLaunchLiveStream = value
+                    generate()
+                }
+                if let qrCode {
+                    QrCodeImageView(image: qrCode, height: height)
+                }
+            } else {
+                Text("No launch live stream configured")
+            }
+        }
+        .onAppear {
+            entries = goPro.launchLiveStream.map { .init(id: $0.id, name: $0.name) }
+            generate()
+        }
+    }
+}
+
 private struct QuickButtonGoProWifiCredentialsView: View {
     @EnvironmentObject var model: Model
     var height: Double
     @State var qrCode: UIImage?
+    @State var entries: [PickerEntry] = []
 
     private var goPro: SettingsGoPro {
         return model.database.goPro!
@@ -24,9 +77,9 @@ private struct QuickButtonGoProWifiCredentialsView: View {
         Section {
             if model.goProWifiCredentialsSelection != nil {
                 Picker(selection: $model.goProWifiCredentialsSelection) {
-                    ForEach(goPro.wifiCredentials) { wifiCredentials in
-                        Text(wifiCredentials.name)
-                            .tag(wifiCredentials.id as UUID?)
+                    ForEach(entries) { entry in
+                        Text(entry.name)
+                            .tag(entry.id as UUID?)
                     }
                 } label: {
                     Text("WiFi credentials")
@@ -43,6 +96,7 @@ private struct QuickButtonGoProWifiCredentialsView: View {
             }
         }
         .onAppear {
+            entries = goPro.wifiCredentials.map { .init(id: $0.id, name: $0.name) }
             generate()
         }
     }
@@ -52,6 +106,7 @@ private struct QuickButtonGoProRtmpUrlView: View {
     @EnvironmentObject var model: Model
     var height: Double
     @State var qrCode: UIImage?
+    @State var entries: [PickerEntry] = []
 
     private var goPro: SettingsGoPro {
         return model.database.goPro!
@@ -74,9 +129,9 @@ private struct QuickButtonGoProRtmpUrlView: View {
         Section {
             if model.goProRtmpUrlSelection != nil {
                 Picker(selection: $model.goProRtmpUrlSelection) {
-                    ForEach(goPro.rtmpUrls) { rtmpUrl in
-                        Text(rtmpUrl.name)
-                            .tag(rtmpUrl.id as UUID?)
+                    ForEach(entries) { entry in
+                        Text(entry.name)
+                            .tag(entry.id as UUID?)
                     }
                 } label: {
                     Text("RTMP URL")
@@ -93,6 +148,7 @@ private struct QuickButtonGoProRtmpUrlView: View {
             }
         }
         .onAppear {
+            entries = goPro.rtmpUrls.map { .init(id: $0.id, name: $0.name) }
             generate()
         }
     }
@@ -108,6 +164,7 @@ struct QuickButtonGoProView: View {
     var body: some View {
         GeometryReader { metrics in
             Form {
+                QuickButtonGoProLaunchLiveStreamView(height: metrics.size.height)
                 QuickButtonGoProWifiCredentialsView(height: metrics.size.height)
                 QuickButtonGoProRtmpUrlView(height: metrics.size.height)
                 Section {

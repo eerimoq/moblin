@@ -2334,7 +2334,14 @@ class SettingsGoProRtmpUrl: Codable, Identifiable {
     var customUrl = ""
 }
 
+class SettingsGoProLaunchLiveStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name = "My stream"
+}
+
 class SettingsGoPro: Codable {
+    var launchLiveStream: [SettingsGoProLaunchLiveStream] = []
+    var selectedLaunchLiveStream: UUID?
     var wifiCredentials: [SettingsGoProWifiCredentials] = []
     var selectedWifiCredentials: UUID?
     var rtmpUrls: [SettingsGoProRtmpUrl] = []

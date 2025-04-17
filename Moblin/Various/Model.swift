@@ -379,6 +379,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    @Published var goProLaunchLiveStreamSelection: UUID?
     @Published var goProWifiCredentialsSelection: UUID?
     @Published var goProRtmpUrlSelection: UUID?
 
@@ -1577,6 +1578,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setCameraControlsEnabled()
         resetAverageSpeed()
         resetSlope()
+        goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
         goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
         goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
     }
