@@ -24,21 +24,24 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
     }
 
     var body: some View {
-        Section {
+        VStack {
             if model.goProLaunchLiveStreamSelection != nil {
-                Picker(selection: $model.goProLaunchLiveStreamSelection) {
-                    ForEach(entries) { entry in
-                        Text(entry.name)
-                            .tag(entry.id as UUID?)
-                    }
-                } label: {
+                HStack {
                     Text("Launch live stream")
-                }
-                .onChange(of: model.goProLaunchLiveStreamSelection) { value in
-                    goPro.selectedLaunchLiveStream = value
-                    generate()
+                    Spacer()
+                    Picker("", selection: $model.goProLaunchLiveStreamSelection) {
+                        ForEach(entries) { entry in
+                            Text(entry.name)
+                                .tag(entry.id as UUID?)
+                        }
+                    }
+                    .onChange(of: model.goProLaunchLiveStreamSelection) { value in
+                        goPro.selectedLaunchLiveStream = value
+                        generate()
+                    }
                 }
                 if let qrCode {
+                    Divider()
                     QrCodeImageView(image: qrCode, height: height)
                 }
             } else {
@@ -74,21 +77,24 @@ private struct QuickButtonGoProWifiCredentialsView: View {
     }
 
     var body: some View {
-        Section {
+        VStack {
             if model.goProWifiCredentialsSelection != nil {
-                Picker(selection: $model.goProWifiCredentialsSelection) {
-                    ForEach(entries) { entry in
-                        Text(entry.name)
-                            .tag(entry.id as UUID?)
-                    }
-                } label: {
+                HStack {
                     Text("WiFi credentials")
-                }
-                .onChange(of: model.goProWifiCredentialsSelection) { value in
-                    goPro.selectedWifiCredentials = value
-                    generate()
+                    Spacer()
+                    Picker("", selection: $model.goProWifiCredentialsSelection) {
+                        ForEach(entries) { entry in
+                            Text(entry.name)
+                                .tag(entry.id as UUID?)
+                        }
+                    }
+                    .onChange(of: model.goProWifiCredentialsSelection) { value in
+                        goPro.selectedWifiCredentials = value
+                        generate()
+                    }
                 }
                 if let qrCode {
+                    Divider()
                     QrCodeImageView(image: qrCode, height: height)
                 }
             } else {
@@ -126,21 +132,24 @@ private struct QuickButtonGoProRtmpUrlView: View {
     }
 
     var body: some View {
-        Section {
+        VStack {
             if model.goProRtmpUrlSelection != nil {
-                Picker(selection: $model.goProRtmpUrlSelection) {
-                    ForEach(entries) { entry in
-                        Text(entry.name)
-                            .tag(entry.id as UUID?)
-                    }
-                } label: {
+                HStack {
                     Text("RTMP URL")
-                }
-                .onChange(of: model.goProRtmpUrlSelection) { value in
-                    goPro.selectedRtmpUrl = value
-                    generate()
+                    Spacer()
+                    Picker("", selection: $model.goProRtmpUrlSelection) {
+                        ForEach(entries) { entry in
+                            Text(entry.name)
+                                .tag(entry.id as UUID?)
+                        }
+                    }
+                    .onChange(of: model.goProRtmpUrlSelection) { value in
+                        goPro.selectedRtmpUrl = value
+                        generate()
+                    }
                 }
                 if let qrCode {
+                    Divider()
                     QrCodeImageView(image: qrCode, height: height)
                 }
             } else {
@@ -156,6 +165,7 @@ private struct QuickButtonGoProRtmpUrlView: View {
 
 struct QuickButtonGoProView: View {
     @EnvironmentObject var model: Model
+    @State private var activeIndex: Int? = 0
 
     private var goPro: SettingsGoPro {
         return model.database.goPro!
@@ -164,9 +174,40 @@ struct QuickButtonGoProView: View {
     var body: some View {
         GeometryReader { metrics in
             Form {
-                QuickButtonGoProLaunchLiveStreamView(height: metrics.size.height)
-                QuickButtonGoProWifiCredentialsView(height: metrics.size.height)
-                QuickButtonGoProRtmpUrlView(height: metrics.size.height)
+                if #available(iOS 17, *) {
+                    VStack {
+                        ScrollView(.horizontal) {
+                            HStack {
+                                Group {
+                                    QuickButtonGoProLaunchLiveStreamView(height: metrics.size.height)
+                                        .id(0)
+                                    QuickButtonGoProWifiCredentialsView(height: metrics.size.height)
+                                        .id(1)
+                                    QuickButtonGoProRtmpUrlView(height: metrics.size.height)
+                                        .id(2)
+                                }
+                                .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
+                            }
+                            .scrollTargetLayout()
+                        }
+                        .scrollTargetBehavior(.viewAligned)
+                        .scrollPosition(id: $activeIndex)
+                        .scrollIndicators(.never)
+                        HStack {
+                            ForEach(0 ..< 3) { index in
+                                Button {
+                                    withAnimation {
+                                        activeIndex = index
+                                    }
+                                } label: {
+                                    Image(systemName: activeIndex == index ? "circle.fill" : "circle")
+                                         .font(.system(size: 10))
+                                        .padding([.bottom], 10)
+                                }
+                            }
+                        }
+                    }
+                }
                 Section {
                     NavigationLink {
                         GoProSettingsView()
