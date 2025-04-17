@@ -2337,6 +2337,7 @@ class SettingsGoProRtmpUrl: Codable, Identifiable {
 class SettingsGoProLaunchLiveStream: Codable, Identifiable {
     var id: UUID = .init()
     var name = "1080p"
+    var isHero12Or13: Bool? = true
 }
 
 class SettingsGoPro: Codable {
@@ -5136,6 +5137,10 @@ final class Settings {
         }
         if realDatabase.goPro == nil {
             realDatabase.goPro = .init()
+            store()
+        }
+        for launchLiveStream in realDatabase.goPro!.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
+            launchLiveStream.isHero12Or13 = true
             store()
         }
     }
