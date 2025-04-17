@@ -68357,6 +68357,9 @@
     "Launch live stream" : {
 
     },
+    "Launch live streams" : {
+
+    },
     "Leading" : {
       "localizations" : {
         "de" : {
@@ -84297,9 +84300,6 @@
         }
       }
     },
-    "No launch live stream configured" : {
-
-    },
     "No preview received yet." : {
       "localizations" : {
         "de" : {
@@ -84707,9 +84707,6 @@
           }
         }
       }
-    },
-    "No RTMP URLs configured" : {
-
     },
     "No snapshot received yet." : {
       "localizations" : {
@@ -85254,9 +85251,6 @@
           }
         }
       }
-    },
-    "No WiFi credentials configured" : {
-
     },
     "Normally only available for built-in cameras." : {
       "localizations" : {
@@ -93249,6 +93243,15 @@
           }
         }
       }
+    },
+    "Press the shortcut below to create launch live streams." : {
+
+    },
+    "Press the shortcut below to create RTMP URLs." : {
+
+    },
+    "Press the shortcut below to create WiFi credentials." : {
+
     },
     "Preview" : {
       "localizations" : {

@@ -2336,7 +2336,7 @@ class SettingsGoProRtmpUrl: Codable, Identifiable {
 
 class SettingsGoProLaunchLiveStream: Codable, Identifiable {
     var id: UUID = .init()
-    var name = "My stream"
+    var name = "1080p"
 }
 
 class SettingsGoPro: Codable {
@@ -3017,6 +3017,7 @@ class Database: Codable {
         }
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
+        addMissingGoPro(database: database)
         return database
     }
 
@@ -3484,6 +3485,17 @@ private func addMissingBundledLuts(database: Database) {
         }
     }
     database.color!.bundledLuts = bundledLuts
+}
+
+private func addMissingGoPro(database: Database) {
+    if database.goPro == nil {
+        database.goPro = .init()
+    }
+    let goPro = database.goPro!
+    if goPro.launchLiveStream.isEmpty {
+        goPro.launchLiveStream = [.init()]
+        goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
+    }
 }
 
 private func updateBundledAlertsMediaGallery(database: Database) {

@@ -409,7 +409,7 @@ private struct GoProLaunchLiveStream: View {
                 model.objectWillChange.send()
             }
         } header: {
-            Text("Launch live stream")
+            Text("Launch live streams")
         } footer: {
             SwipeLeftToDeleteHelpView(kind: String(localized: "an entry"))
         }

@@ -45,7 +45,7 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
                     QrCodeImageView(image: qrCode, height: height)
                 }
             } else {
-                Text("No launch live stream configured")
+                Text("Press the shortcut below to create launch live streams.")
             }
         }
         .onAppear {
@@ -98,7 +98,7 @@ private struct QuickButtonGoProWifiCredentialsView: View {
                     QrCodeImageView(image: qrCode, height: height)
                 }
             } else {
-                Text("No WiFi credentials configured")
+                Text("Press the shortcut below to create WiFi credentials.")
             }
         }
         .onAppear {
@@ -153,7 +153,7 @@ private struct QuickButtonGoProRtmpUrlView: View {
                     QrCodeImageView(image: qrCode, height: height)
                 }
             } else {
-                Text("No RTMP URLs configured")
+                Text("Press the shortcut below to create RTMP URLs.")
             }
         }
         .onAppear {
@@ -201,7 +201,7 @@ struct QuickButtonGoProView: View {
                                     }
                                 } label: {
                                     Image(systemName: activeIndex == index ? "circle.fill" : "circle")
-                                         .font(.system(size: 10))
+                                        .font(.system(size: 10))
                                         .padding([.bottom], 10)
                                 }
                             }
