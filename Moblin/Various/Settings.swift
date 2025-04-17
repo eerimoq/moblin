@@ -1312,6 +1312,8 @@ class SettingsWidgetVideoSource: Codable {
     var trackFaceEnabled: Bool? = false
     var trackFaceZoom: Double? = 0.85
     var mirror: Bool? = false
+    var borderWidth: Double? = 0
+    var borderColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
 
     func toEffectSettings() -> VideoSourceEffectSettings {
         return .init(cornerRadius: cornerRadius,
@@ -1323,7 +1325,13 @@ class SettingsWidgetVideoSource: Codable {
                      rotation: rotation!,
                      trackFaceEnabled: trackFaceEnabled!,
                      trackFaceZoom: 2.0 + (1 - trackFaceZoom!) * 4,
-                     mirror: mirror!)
+                     mirror: mirror!,
+                     borderWidth: borderWidth!,
+                     borderColor: CIColor(
+                         red: Double(borderColor!.red) / 255,
+                         green: Double(borderColor!.green) / 255,
+                         blue: Double(borderColor!.blue) / 255
+                     ))
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -5141,6 +5149,14 @@ final class Settings {
         }
         for launchLiveStream in realDatabase.goPro!.launchLiveStream where launchLiveStream.isHero12Or13 == nil {
             launchLiveStream.isHero12Or13 = true
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.borderWidth == nil {
+            widget.videoSource!.borderWidth = 0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.videoSource!.borderColor == nil {
+            widget.videoSource!.borderColor = .init(red: 0, green: 0, blue: 0)
             store()
         }
     }

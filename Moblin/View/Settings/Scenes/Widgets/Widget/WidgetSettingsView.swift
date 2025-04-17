@@ -66,7 +66,9 @@ struct WidgetSettingsView: View {
                 WidgetVideoSourceSettingsView(widget: widget,
                                               cornerRadius: widget.videoSource!.cornerRadius,
                                               selectedRotation: widget.videoSource!.rotation!,
-                                              zoom: widget.videoSource!.trackFaceZoom!)
+                                              zoom: widget.videoSource!.trackFaceZoom!,
+                                              borderWidth: widget.videoSource!.borderWidth!,
+                                              background: widget.videoSource!.borderColor!.color())
             case .scoreboard:
                 WidgetScoreboardSettingsView(widget: widget, type: widget.scoreboard!.type.rawValue)
             }

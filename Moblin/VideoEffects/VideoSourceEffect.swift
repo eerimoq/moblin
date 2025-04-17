@@ -13,6 +13,14 @@ struct VideoSourceEffectSettings {
     var trackFaceEnabled: Bool = false
     var trackFaceZoom: Double = 2.2
     var mirror: Bool = false
+    var borderWidth: Double = 1.0
+    var borderColor: CIColor = .black
+
+    func borderWidthAndScale() -> (Double, Double) {
+        let width = 0.025 * borderWidth
+        let scale = 1 + 2 * width
+        return (width, scale)
+    }
 }
 
 class PositionInterpolator {
@@ -183,10 +191,7 @@ final class VideoSourceEffect: VideoEffect {
 
     private func makeRoundedRectangleMask(
         _ videoSourceImage: CIImage,
-        _ cornerRadius: Float,
-        _ translation: CGAffineTransform,
-        _ crop: CGRect,
-        _ clearBackgroundImage: CIImage
+        _ cornerRadius: Float
     ) -> CIImage? {
         let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
         roundedRectangleGenerator.color = .green
@@ -201,10 +206,7 @@ final class VideoSourceEffect: VideoEffect {
         radiusPixels /= 2
         radiusPixels *= cornerRadius
         roundedRectangleGenerator.radius = radiusPixels
-        return roundedRectangleGenerator.outputImage?
-            .transformed(by: translation)
-            .cropped(to: crop)
-            .composited(over: clearBackgroundImage)
+        return roundedRectangleGenerator.outputImage
     }
 
     private func makeScale(
@@ -240,42 +242,48 @@ final class VideoSourceEffect: VideoEffect {
         return CGAffineTransform(translationX: x, y: y)
     }
 
-    private func makeSharpCornersImage(
-        _ videoSourceImage: CIImage,
-        _ backgroundImage: CIImage,
-        _ translation: CGAffineTransform,
-        _ crop: CGRect
-    ) -> CIImage {
-        return videoSourceImage
-            .transformed(by: translation)
-            .cropped(to: crop)
-            .composited(over: backgroundImage)
+    private func makeSharpCornersImage(_ widgetImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
+        if settings.borderWidth == 0 {
+            return widgetImage
+        } else {
+            let (width, scale) = settings.borderWidthAndScale()
+            let borderImage = CIImage(color: settings.borderColor).cropped(to: widgetImage.extent)
+                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+                .transformed(by: CGAffineTransform(
+                    translationX: (settings.mirror ? 1 : -1) * widgetImage.extent.width * width,
+                    y: -widgetImage.extent.height * width
+                ))
+            return widgetImage.composited(over: borderImage)
+        }
     }
 
-    private func makeRoundedCornersImage(
-        _ videoSourceImage: CIImage,
-        _ backgroundImage: CIImage,
-        _ translation: CGAffineTransform,
-        _ crop: CGRect,
-        _ settings: VideoSourceEffectSettings
-    ) -> CIImage {
-        let clearBackgroundImage = CIImage.clear.cropped(to: backgroundImage.extent)
-        let roundedRectangleMask = makeRoundedRectangleMask(
-            videoSourceImage,
-            settings.cornerRadius,
-            translation,
-            crop,
-            clearBackgroundImage
-        )
-        let videoSourceImage = videoSourceImage
-            .transformed(by: translation)
-            .cropped(to: crop)
-            .composited(over: clearBackgroundImage)
-        let roundedCornersBlender = CIFilter.blendWithMask()
-        roundedCornersBlender.inputImage = videoSourceImage
-        roundedCornersBlender.backgroundImage = backgroundImage
-        roundedCornersBlender.maskImage = roundedRectangleMask
-        return roundedCornersBlender.outputImage ?? backgroundImage
+    private func makeRoundedCornersImage(_ widgetImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
+        if settings.borderWidth == 0 {
+            let roundedCornersBlender = CIFilter.blendWithMask()
+            roundedCornersBlender.inputImage = widgetImage
+            roundedCornersBlender.maskImage = makeRoundedRectangleMask(widgetImage, settings.cornerRadius)
+            return roundedCornersBlender.outputImage ?? widgetImage
+        } else {
+            let (width, scale) = settings.borderWidthAndScale()
+            let borderImage = CIImage(color: settings.borderColor).cropped(to: widgetImage.extent)
+                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+                .transformed(by: CGAffineTransform(
+                    translationX: (settings.mirror ? 1 : -1) * widgetImage.extent.width * width,
+                    y: -widgetImage.extent.height * width
+                ))
+            let roundedCornersBlender = CIFilter.blendWithMask()
+            roundedCornersBlender.inputImage = borderImage
+            roundedCornersBlender.maskImage = makeRoundedRectangleMask(borderImage, settings.cornerRadius)
+            guard let roundedBorderImage = roundedCornersBlender.outputImage else {
+                return widgetImage
+            }
+            roundedCornersBlender.inputImage = widgetImage
+            roundedCornersBlender.maskImage = makeRoundedRectangleMask(widgetImage, settings.cornerRadius)
+            guard let widgetImage = roundedCornersBlender.outputImage else {
+                return widgetImage
+            }
+            return widgetImage.composited(over: roundedBorderImage)
+        }
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
@@ -284,38 +292,42 @@ final class VideoSourceEffect: VideoEffect {
         }
         let settings = self.settings.value
         let videoSourceId = videoSourceId.value
-        guard var videoSourceImage = info.videoUnit.getCIImage(
+        guard var widgetImage = info.videoUnit.getCIImage(
             videoSourceId,
             info.presentationTimeStamp
         )
         else {
             return backgroundImage
         }
-        if videoSourceImage.extent.height > videoSourceImage.extent.width {
-            videoSourceImage = videoSourceImage.oriented(.left)
+        if widgetImage.extent.height > widgetImage.extent.width {
+            widgetImage = widgetImage.oriented(.left)
         }
         if settings.trackFaceEnabled {
-            videoSourceImage = cropFace(
-                videoSourceImage,
+            widgetImage = cropFace(
+                widgetImage,
                 info.faceDetections[videoSourceId],
                 info.presentationTimeStamp.seconds,
                 settings.trackFaceZoom
             )
         } else if settings.cropEnabled {
-            videoSourceImage = crop(videoSourceImage, settings)
+            widgetImage = crop(widgetImage, settings)
         }
-        videoSourceImage = rotate(videoSourceImage, settings)
+        widgetImage = rotate(widgetImage, settings)
         let size = backgroundImage.extent.size
-        let (scaleX, scaleY) = makeScale(videoSourceImage, sceneWidget, size, settings.mirror)
-        let translation = makeTranslation(videoSourceImage, sceneWidget, size, scaleX, scaleY, settings.mirror)
+        let (scaleX, scaleY) = makeScale(widgetImage, sceneWidget, size, settings.mirror)
+        let translation = makeTranslation(widgetImage, sceneWidget, size, scaleX, scaleY, settings.mirror)
         let crop = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        videoSourceImage = videoSourceImage
+        widgetImage = widgetImage
             .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         if settings.cornerRadius == 0 {
-            return makeSharpCornersImage(videoSourceImage, backgroundImage, translation, crop)
+            widgetImage = makeSharpCornersImage(widgetImage, settings)
         } else {
-            return makeRoundedCornersImage(videoSourceImage, backgroundImage, translation, crop, settings)
+            widgetImage = makeRoundedCornersImage(widgetImage, settings)
         }
+        return widgetImage
+            .transformed(by: translation)
+            .cropped(to: crop)
+            .composited(over: backgroundImage)
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {

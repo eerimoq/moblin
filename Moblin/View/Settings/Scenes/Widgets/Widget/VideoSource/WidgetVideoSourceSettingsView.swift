@@ -219,6 +219,8 @@ struct WidgetVideoSourceSettingsView: View {
     @State var cornerRadius: Float
     @State var selectedRotation: Double
     @State var zoom: Double
+    @State var borderWidth: Double
+    @State var background: Color
 
     private func onCameraChange(cameraId: String) {
         widget.videoSource!
@@ -289,6 +291,27 @@ struct WidgetVideoSourceSettingsView: View {
             })) {
                 Text("Mirror")
             }
+        }
+        Section {
+            HStack {
+                Text("Width")
+                Slider(
+                    value: $borderWidth,
+                    in: 0 ... 1.0,
+                    step: 0.01
+                )
+                .onChange(of: borderWidth) { value in
+                    widget.videoSource!.borderWidth = value
+                    setEffectSettings()
+                }
+            }
+            ColorPicker("Background", selection: $background, supportsOpacity: false)
+                .onChange(of: background) { _ in
+                    widget.videoSource!.borderColor = background.toRgb()
+                    setEffectSettings()
+                }
+        } header: {
+            Text("Border")
         }
         Section {
             Toggle(isOn: Binding(get: {
