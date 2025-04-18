@@ -16,10 +16,11 @@ struct VideoSourceEffectSettings {
     var borderWidth: Double = 1.0
     var borderColor: CIColor = .black
 
-    func borderWidthAndScale() -> (Double, Double) {
-        let width = 0.025 * borderWidth
-        let scale = 1 + 2 * width
-        return (width, scale)
+    func borderWidthAndScale(_ image: CGRect) -> (Double, Double, Double) {
+        let borderWidth = 0.025 * borderWidth * min(image.height, image.width)
+        let scaleX = (image.width + 2 * borderWidth) / image.width
+        let scaleY = (image.height + 2 * borderWidth) / image.height
+        return (borderWidth, scaleX, scaleY)
     }
 }
 
@@ -246,13 +247,10 @@ final class VideoSourceEffect: VideoEffect {
         if settings.borderWidth == 0 {
             return widgetImage
         } else {
-            let (width, scale) = settings.borderWidthAndScale()
+            let (width, scaleX, scaleY) = settings.borderWidthAndScale(widgetImage.extent)
             let borderImage = CIImage(color: settings.borderColor).cropped(to: widgetImage.extent)
-                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-                .transformed(by: CGAffineTransform(
-                    translationX: (settings.mirror ? 1 : -1) * widgetImage.extent.width * width,
-                    y: -widgetImage.extent.height * width
-                ))
+                .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+                .transformed(by: CGAffineTransform(translationX: (settings.mirror ? 1 : -1) * width, y: -width))
             return widgetImage.composited(over: borderImage)
         }
     }
@@ -264,13 +262,10 @@ final class VideoSourceEffect: VideoEffect {
             roundedCornersBlender.maskImage = makeRoundedRectangleMask(widgetImage, settings.cornerRadius)
             return roundedCornersBlender.outputImage ?? widgetImage
         } else {
-            let (width, scale) = settings.borderWidthAndScale()
+            let (width, scaleX, scaleY) = settings.borderWidthAndScale(widgetImage.extent)
             let borderImage = CIImage(color: settings.borderColor).cropped(to: widgetImage.extent)
-                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-                .transformed(by: CGAffineTransform(
-                    translationX: (settings.mirror ? 1 : -1) * widgetImage.extent.width * width,
-                    y: -widgetImage.extent.height * width
-                ))
+                .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+                .transformed(by: CGAffineTransform(translationX: (settings.mirror ? 1 : -1) * width, y: -width))
             let roundedCornersBlender = CIFilter.blendWithMask()
             roundedCornersBlender.inputImage = borderImage
             roundedCornersBlender.maskImage = makeRoundedRectangleMask(borderImage, settings.cornerRadius)
