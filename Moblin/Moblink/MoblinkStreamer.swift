@@ -68,7 +68,7 @@ private class Relay {
                 try handleResponse(id: id, result: result, data: data)
             }
         } catch {
-            logger.info("moblink-streamer: Failed to process message with error \(error)")
+            logger.info("moblink-streamer: \(name): Failed to process message with error \(error)")
             webSocket.connection.cancel()
         }
     }
@@ -90,7 +90,7 @@ private class Relay {
             }
             self.batteryPercentage = batteryPercentage
         } onError: { error in
-            logger.info("moblink-streamer: Status failed with \(error)")
+            logger.info("moblink-streamer: \(self.name): Status failed with \(error)")
         }
     }
 
@@ -104,7 +104,7 @@ private class Relay {
                 self.pongReceived = false
                 self.webSocket.connection.sendWebSocket(data: nil, opcode: .ping)
             } else {
-                logger.info("moblink-streamer: Ping timeout")
+                logger.info("moblink-streamer: \(name): Ping timeout")
                 self.webSocket.connection.cancel()
             }
         }
@@ -129,7 +129,7 @@ private class Relay {
                 self.tunnelEndpoint = endpoint
                 self.streamer?.delegate?.moblinkStreamerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
             default:
-                logger.info("moblink-streamer: Missing relay host")
+                logger.info("moblink-streamer: \(name): Missing relay host")
             }
         }
     }
@@ -141,17 +141,18 @@ private class Relay {
         tunnelEndpoint = nil
     }
 
-    private func executeStartTunnel(address: String, port: UInt16,
+    private func executeStartTunnel(address: String,
+                                    port: UInt16,
                                     onSuccess: @escaping (UUID, String, UInt16) -> Void)
     {
-        logger.info("moblink-streamer: Starting tunnel to destination \(address):\(port)")
+        logger.info("moblink-streamer: \(name): Starting tunnel to destination \(address):\(port)")
         performRequest(data: .startTunnel(address: address, port: port)) { response in
             guard case let .startTunnel(port: port) = response else {
                 return
             }
             onSuccess(self.relayId, self.name, port)
         } onError: { error in
-            logger.info("moblink-streamer: Start tunnel failed with \(error)")
+            logger.info("moblink-streamer: \(self.name): Start tunnel failed with \(error)")
         }
     }
 
@@ -179,7 +180,7 @@ private class Relay {
             throw "Streamer not identified"
         }
         guard let request = requests[id] else {
-            logger.info("moblink-streamer: Unexpected id in response")
+            logger.info("moblink-streamer: \(name): Unexpected id in response")
             return
         }
         switch result {
@@ -188,11 +189,11 @@ private class Relay {
         case .wrongPassword:
             request.onError("Wrong password")
         case .notIdentified:
-            logger.info("moblink-streamer: Not identified")
+            logger.info("moblink-streamer: \(name): Not identified")
         case .alreadyIdentified:
-            logger.info("moblink-streamer: Already identified")
+            logger.info("moblink-streamer: \(name): Already identified")
         case .unknownRequest:
-            logger.info("moblink-streamer: Unknown request")
+            logger.info("moblink-streamer: \(name): Unknown request")
         }
     }
 
