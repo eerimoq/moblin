@@ -160,12 +160,22 @@ struct SceneSettingsView: View {
                                     heightString: String(sceneWidget.height)
                                 )
                             } label: {
-                                HStack {
-                                    DraggableItemPrefixView()
+                                Toggle(isOn: Binding(get: {
+                                    widget.enabled!
+                                }, set: { value in
+                                    widget.enabled = value
+                                    model
+                                        .sceneUpdated(attachCamera: model
+                                            .isCaptureDeviceVideoSoureWidget(widget: widget))
+                                })) {
                                     HStack {
-                                        Text("")
-                                        Image(systemName: widgetImage(widget: widget))
-                                        Text(widget.name)
+                                        DraggableItemPrefixView()
+                                        HStack {
+                                            Text("")
+                                            Image(systemName: widgetImage(widget: widget))
+                                            Text(widget.name)
+                                        }
+                                        Spacer()
                                     }
                                 }
                             }
