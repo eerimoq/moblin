@@ -29,8 +29,6 @@ class PositionInterpolator {
     private var delta = 0.0
     var target: Double?
 
-    init() {}
-
     func update(timeElapsed: Double) -> Double {
         if let current, let target {
             delta = 0.8 * delta + 0.2 * (target - current)
