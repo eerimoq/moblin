@@ -91,6 +91,8 @@ class SrtlaServerClientConnection {
         switch type {
         case .keepalive:
             handleSrtlaKeepalive(packet: packet)
+        case .reg2:
+            handleSrtlaReg2()
         default:
             logger.info("srtla-server-client: Unexpected packet \(type)")
         }
@@ -104,6 +106,13 @@ class SrtlaServerClientConnection {
         sendPacket(packet: packet)
     }
 
+    private func handleSrtlaReg2() {
+        // Should probably check that group id matches.
+        logger.debug("srtla-server-client: Sending reg 3 (connection registered)")
+        let packet = createSrtlaPacket(type: .reg3, length: srtControlTypeSize)
+        sendPacket(packet: packet)
+    }
+
     private func handleDataPacket(packet: Data) {
         if ackPacket.appendSequenceNumber(sn: getSrtSequenceNumber(packet: packet)) {
             sendPacket(packet: ackPacket.data)
@@ -112,6 +121,6 @@ class SrtlaServerClientConnection {
     }
 
     func sendPacket(packet: Data) {
-        connection.send(content: packet, completion: .contentProcessed { _ in })
+        connection.send(content: packet, completion: .idempotent)
     }
 }
