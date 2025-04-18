@@ -81,8 +81,9 @@ struct ValueEditCompactView: View {
     var maximum: Double
     var onSubmit: (String) -> String
     @Binding var numericInput: Bool
+    var incrementImageName: String
+    var decrementImageName: String
     var increment: Double = 1
-    var unit: String?
 
     func add(offset: Double) {
         if let value = Double(value) {
@@ -120,7 +121,7 @@ struct ValueEditCompactView: View {
                 value = onSubmit(value.trim())
                 add(offset: 0)
             }, label: {
-                Image(systemName: "minus.circle")
+                Image(systemName: decrementImageName)
                     .font(.title)
             })
             Button(action: {
@@ -128,7 +129,7 @@ struct ValueEditCompactView: View {
                 value = onSubmit(value.trim())
                 add(offset: 0)
             }, label: {
-                Image(systemName: "plus.circle")
+                Image(systemName: incrementImageName)
                     .font(.title)
             })
         }

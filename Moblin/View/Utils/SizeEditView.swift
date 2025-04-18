@@ -23,6 +23,8 @@ struct SizeEditView: View {
             maximum: 100,
             onSubmit: submit,
             numericInput: $numericInput,
+            incrementImageName: "plus.circle",
+            decrementImageName: "minus.circle",
             increment: 0.125
         )
     }

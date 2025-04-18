@@ -117,13 +117,17 @@ struct SceneWidgetSettingsView: View {
                         number: $x,
                         value: $xString,
                         onSubmit: submitX,
-                        numericInput: $numericInput
+                        numericInput: $numericInput,
+                        incrementImageName: "arrow.forward.circle",
+                        decrementImageName: "arrow.backward.circle"
                     )
                     PositionEditView(
                         number: $y,
                         value: $yString,
                         onSubmit: submitY,
-                        numericInput: $numericInput
+                        numericInput: $numericInput,
+                        incrementImageName: "arrow.down.circle",
+                        decrementImageName: "arrow.up.circle"
                     )
                 } header: {
                     Text("Position")
