@@ -168,7 +168,8 @@ class SrtlaClient: NSObject {
             guard self.state != .idle else {
                 return
             }
-            guard let remoteConnection = self.remoteConnections.first(where: { $0.host == host && $0.port == port })
+            guard let remoteConnection = self.remoteConnections
+                .first(where: { $0.destinationHost == host && $0.destinationPort == port })
             else {
                 return
             }

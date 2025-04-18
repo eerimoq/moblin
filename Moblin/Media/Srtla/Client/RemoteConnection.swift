@@ -73,8 +73,8 @@ class RemoteConnection {
         return packet
     }()
 
-    private(set) var host: NWEndpoint.Host?
-    private(set) var port: NWEndpoint.Port?
+    private(set) var destinationHost: NWEndpoint.Host?
+    private(set) var destinationPort: NWEndpoint.Port?
     private let mpegtsPacketsPerPacket: Int
     var typeString: String {
         switch type {
@@ -122,20 +122,20 @@ class RemoteConnection {
     }
 
     func start(host: NWEndpoint.Host, port: NWEndpoint.Port) {
-        self.host = host
-        self.port = port
+        destinationHost = host
+        destinationPort = port
         startInternal()
     }
 
     private func startInternal() {
-        guard state == .idle, let host, let port else {
+        guard state == .idle, let destinationHost, let destinationPort else {
             return
         }
-        logger.info("srtla: \(typeString): Start with destination \(host):\(port)")
+        logger.info("srtla: \(typeString): Start with destination \(destinationHost):\(destinationPort)")
         let params = NWParameters(dtls: .none)
         params.prohibitExpensivePaths = false
         params.requiredInterface = interface
-        connection = NWConnection(host: host, port: port, using: params)
+        connection = NWConnection(host: destinationHost, port: destinationPort, using: params)
         connection!.stateUpdateHandler = handleStateUpdate(to:)
         connection!.start(queue: srtlaClientQueue)
         receivePacket()
