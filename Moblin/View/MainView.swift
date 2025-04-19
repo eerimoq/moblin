@@ -226,6 +226,13 @@ struct MainView: View {
         model.setFocusPointOfInterest(focusPoint: CGPoint(x: x, y: y))
     }
 
+    private func handleLeaveTapToFocus() {
+        guard model.database.tapToFocus else {
+            return
+        }
+        model.setAutoFocus()
+    }
+
     var body: some View {
         let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
@@ -242,10 +249,7 @@ struct MainView: View {
                                                 handleTapToFocus(metrics: metrics, location: $0)
                                             }
                                             .onLongPressGesture(perform: {
-                                                guard model.database.tapToFocus else {
-                                                    return
-                                                }
-                                                model.setAutoFocus()
+                                                handleLeaveTapToFocus()
                                             })
                                         if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                             Canvas { context, _ in
@@ -337,10 +341,7 @@ struct MainView: View {
                                                 handleTapToFocus(metrics: metrics, location: $0)
                                             }
                                             .onLongPressGesture(perform: {
-                                                guard model.database.tapToFocus else {
-                                                    return
-                                                }
-                                                model.setAutoFocus()
+                                                handleLeaveTapToFocus()
                                             })
                                         if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                             Canvas { context, _ in
