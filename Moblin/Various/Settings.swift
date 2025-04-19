@@ -1993,6 +1993,7 @@ class SettingsHttpProxy: Codable {
 class SettingsTesla: Codable {
     var vin: String = ""
     var privateKey: String = ""
+    var enabled: Bool? = true
 }
 
 enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
@@ -5157,6 +5158,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.videoSource!.borderColor == nil {
             widget.videoSource!.borderColor = .init(red: 0, green: 0, blue: 0)
+            store()
+        }
+        if realDatabase.tesla!.enabled == nil {
+            realDatabase.tesla!.enabled = true
             store()
         }
     }

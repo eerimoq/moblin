@@ -1770,7 +1770,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadTeslaVehicle() {
         stopTeslaVehicle()
         let tesla = database.tesla!
-        if tesla.vin != "", tesla.privateKey != "" {
+        if tesla.enabled!, tesla.vin != "", tesla.privateKey != "" {
             teslaVehicle = TeslaVehicle(vin: tesla.vin, privateKeyPem: tesla.privateKey)
             teslaVehicle?.delegate = self
             teslaVehicle?.start()
