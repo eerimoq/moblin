@@ -95,6 +95,19 @@ final class VideoSourceEffect: VideoEffect {
         }
     }
 
+    private func shouldUseFace(_ boundingBox: CGRect,
+                               _ biggestBoundingBox: CGRect,
+                               _ videoSourceImageSize: CGSize) -> Bool
+    {
+        if boundingBox.height < videoSourceImageSize.height / 10 {
+            return false
+        } else if boundingBox.height < biggestBoundingBox.height / 2 {
+            return false
+        } else {
+            return true
+        }
+    }
+
     private func cropFace(
         _ videoSourceImage: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -106,21 +119,31 @@ final class VideoSourceEffect: VideoEffect {
         var right = 0.0
         var top = 0.0
         var bottom = videoSourceImageSize.height
-        if let faceDetections, !faceDetections.isEmpty {
+        if let faceDetections,
+           let biggestBoundingBox = faceDetections.first?.stableBoundingBox(imageSize: videoSourceImageSize)
+        {
+            var anyFaceUsed = false
             for faceDetection in faceDetections {
                 guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize) else {
+                    continue
+                }
+                guard shouldUseFace(boundingBox, biggestBoundingBox, videoSourceImageSize) else {
                     continue
                 }
                 left = min(left, boundingBox.minX)
                 right = max(right, boundingBox.maxX)
                 top = max(top, boundingBox.maxY)
                 bottom = min(bottom, boundingBox.minY)
+                anyFaceUsed = true
             }
-            trackFaceLeft.target = left
-            trackFaceRight.target = right
-            trackFaceTop.target = top
-            trackFaceBottom.target = bottom
-        } else if trackFaceLeft.target == nil {
+            if anyFaceUsed {
+                trackFaceLeft.target = left
+                trackFaceRight.target = right
+                trackFaceTop.target = top
+                trackFaceBottom.target = bottom
+            }
+        }
+        if trackFaceLeft.target == nil {
             trackFaceLeft.target = videoSourceImageSize.width * 0.33
             trackFaceRight.target = videoSourceImageSize.width * 0.67
             trackFaceTop.target = videoSourceImageSize.height * 0.67
