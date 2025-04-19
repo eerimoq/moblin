@@ -135,25 +135,25 @@ final class VideoSourceEffect: VideoEffect {
         let width = (right - left) * zoom
         let height = (top - bottom) * zoom
         let centerX = (right + left) / 2
-        let centerY = (top + bottom) / 2 * 1.05 // - extraHeight
+        let centerY = (top + bottom) / 2 * 1.05
         let side = max(width, height)
         let cropWidth = min(side, videoSourceImageSize.width)
         let cropHeight = min(side, videoSourceImageSize.height)
         let cropSquareSize = min(cropWidth, cropHeight).rounded(.down)
         var cropX = max(centerX - cropSquareSize / 2, 0)
         var cropY = max(videoSourceImageSize.height - centerY - cropSquareSize / 2, 0)
-        cropX = min(cropX, videoSourceImage.extent.width - cropSquareSize)
-        cropY = min(cropY, videoSourceImage.extent.height - cropSquareSize)
+        cropX = min(cropX, videoSourceImageSize.width - cropSquareSize)
+        cropY = min(cropY, videoSourceImageSize.height - cropSquareSize)
         return videoSourceImage
             .cropped(to: .init(
                 x: cropX,
-                y: videoSourceImage.extent.height - cropY - cropSquareSize,
+                y: videoSourceImageSize.height - cropY - cropSquareSize,
                 width: cropSquareSize,
                 height: cropSquareSize
             ))
             .transformed(by: CGAffineTransform(
                 translationX: -cropX,
-                y: -(videoSourceImage.extent.height - cropY - cropSquareSize)
+                y: -(videoSourceImageSize.height - cropY - cropSquareSize)
             ))
     }
 
