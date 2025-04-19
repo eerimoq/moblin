@@ -112,7 +112,7 @@ private struct GoProWifiCredentialsSettingsView: View {
                             }
                         )
                     } label: {
-                        TextItemView(name: String(localized: "Password"), value: password)
+                        TextItemView(name: String(localized: "Password"), value: password, sensitive: true)
                     }
                 }
                 if let qrCode {

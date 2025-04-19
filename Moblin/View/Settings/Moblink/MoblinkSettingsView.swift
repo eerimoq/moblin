@@ -290,7 +290,8 @@ struct MoblinkSettingsView: View {
                 } label: {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.moblink!.password
+                        value: model.database.moblink!.password,
+                        sensitive: true
                     )
                 }
             } footer: {
