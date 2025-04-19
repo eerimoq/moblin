@@ -265,147 +265,155 @@ struct MainView: View {
         )
     }
 
+    private func portrait() -> some View {
+        VStack(spacing: 0) {
+            ZStack {
+                HStack {
+                    Spacer(minLength: 0)
+                    VStack {
+                        Spacer(minLength: 0)
+                        GeometryReader { metrics in
+                            ZStack {
+                                streamView
+                                    .onTapGesture(count: 1) {
+                                        handleTapToFocus(metrics: metrics, location: $0)
+                                    }
+                                    .onLongPressGesture(perform: {
+                                        handleLeaveTapToFocus()
+                                    })
+                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                    tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
+                                }
+                                if model.showingGrid {
+                                    StreamGridView()
+                                }
+                            }
+                        }
+                        .aspectRatio(portraitAspectRatio(), contentMode: .fit)
+                        Spacer(minLength: 0)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .background(.black)
+                .ignoresSafeArea()
+                .edgesIgnoringSafeArea(.all)
+                GeometryReader { metrics in
+                    StreamOverlayView(width: metrics.size.width, height: metrics.size.height)
+                        .opacity(model.showLocalOverlays ? 1 : 0)
+                }
+                if model.showFace && !model.showDrawOnStream {
+                    face()
+                }
+                if model.showBrowser {
+                    webBrowserView
+                }
+                if model.showingRemoteControl {
+                    ZStack {
+                        NavigationStack {
+                            ControlBarRemoteControlAssistantView()
+                        }
+                        CloseButtonRemoteView()
+                    }
+                }
+                if model.showingPanel != .none {
+                    MenuView()
+                }
+            }
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { amount in
+                        model.changeZoomX(amount: Float(amount))
+                    }
+                    .onEnded { amount in
+                        model.commitZoomX(amount: Float(amount))
+                    }
+            )
+            ControlBarPortraitView()
+        }
+        .overlay(alignment: .topLeading) {
+            browserWidgets()
+        }
+    }
+
+    private func landscape() -> some View {
+        HStack(spacing: 0) {
+            ZStack {
+                HStack {
+                    Spacer(minLength: 0)
+                    VStack {
+                        Spacer(minLength: 0)
+                        GeometryReader { metrics in
+                            ZStack {
+                                streamView
+                                    .onTapGesture(count: 1) {
+                                        handleTapToFocus(metrics: metrics, location: $0)
+                                    }
+                                    .onLongPressGesture(perform: {
+                                        handleLeaveTapToFocus()
+                                    })
+                                if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                    tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
+                                }
+                                if model.showingGrid {
+                                    StreamGridView()
+                                }
+                            }
+                        }
+                        .aspectRatio(16 / 9, contentMode: .fit)
+                        Spacer(minLength: 0)
+                    }
+                }
+                .background(.black)
+                .ignoresSafeArea()
+                .edgesIgnoringSafeArea(.all)
+                GeometryReader { metrics in
+                    StreamOverlayView(width: metrics.size.width, height: metrics.size.height)
+                        .opacity(model.showLocalOverlays ? 1 : 0)
+                }
+                if model.showDrawOnStream {
+                    DrawOnStreamView()
+                }
+                if model.showFace && !model.showDrawOnStream {
+                    face()
+                }
+                if model.showBrowser {
+                    webBrowserView
+                }
+                if model.showingRemoteControl {
+                    ZStack {
+                        NavigationStack {
+                            ControlBarRemoteControlAssistantView()
+                        }
+                        CloseButtonRemoteView()
+                    }
+                }
+            }
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { amount in
+                        model.changeZoomX(amount: Float(amount))
+                    }
+                    .onEnded { amount in
+                        model.commitZoomX(amount: Float(amount))
+                    }
+            )
+            if model.showingPanel != .none {
+                MenuView()
+                    .frame(width: settingsHalfWidth)
+            }
+            ControlBarLandscapeView()
+        }
+        .overlay(alignment: .topLeading) {
+            browserWidgets()
+        }
+    }
+
     var body: some View {
         let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
-                VStack(spacing: 0) {
-                    ZStack {
-                        HStack {
-                            Spacer(minLength: 0)
-                            VStack {
-                                Spacer(minLength: 0)
-                                GeometryReader { metrics in
-                                    ZStack {
-                                        streamView
-                                            .onTapGesture(count: 1) {
-                                                handleTapToFocus(metrics: metrics, location: $0)
-                                            }
-                                            .onLongPressGesture(perform: {
-                                                handleLeaveTapToFocus()
-                                            })
-                                        if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                            tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
-                                        }
-                                        if model.showingGrid {
-                                            StreamGridView()
-                                        }
-                                    }
-                                }
-                                .aspectRatio(portraitAspectRatio(), contentMode: .fit)
-                                Spacer(minLength: 0)
-                            }
-                            Spacer(minLength: 0)
-                        }
-                        .background(.black)
-                        .ignoresSafeArea()
-                        .edgesIgnoringSafeArea(.all)
-                        GeometryReader { metrics in
-                            StreamOverlayView(width: metrics.size.width, height: metrics.size.height)
-                                .opacity(model.showLocalOverlays ? 1 : 0)
-                        }
-                        if model.showFace && !model.showDrawOnStream {
-                            face()
-                        }
-                        if model.showBrowser {
-                            webBrowserView
-                        }
-                        if model.showingRemoteControl {
-                            ZStack {
-                                NavigationStack {
-                                    ControlBarRemoteControlAssistantView()
-                                }
-                                CloseButtonRemoteView()
-                            }
-                        }
-                        if model.showingPanel != .none {
-                            MenuView()
-                        }
-                    }
-                    .gesture(
-                        MagnificationGesture()
-                            .onChanged { amount in
-                                model.changeZoomX(amount: Float(amount))
-                            }
-                            .onEnded { amount in
-                                model.commitZoomX(amount: Float(amount))
-                            }
-                    )
-                    ControlBarPortraitView()
-                }
-                .overlay(alignment: .topLeading) {
-                    browserWidgets()
-                }
+                portrait()
             } else {
-                HStack(spacing: 0) {
-                    ZStack {
-                        HStack {
-                            Spacer(minLength: 0)
-                            VStack {
-                                Spacer(minLength: 0)
-                                GeometryReader { metrics in
-                                    ZStack {
-                                        streamView
-                                            .onTapGesture(count: 1) {
-                                                handleTapToFocus(metrics: metrics, location: $0)
-                                            }
-                                            .onLongPressGesture(perform: {
-                                                handleLeaveTapToFocus()
-                                            })
-                                        if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                            tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
-                                        }
-                                        if model.showingGrid {
-                                            StreamGridView()
-                                        }
-                                    }
-                                }
-                                .aspectRatio(16 / 9, contentMode: .fit)
-                                Spacer(minLength: 0)
-                            }
-                        }
-                        .background(.black)
-                        .ignoresSafeArea()
-                        .edgesIgnoringSafeArea(.all)
-                        GeometryReader { metrics in
-                            StreamOverlayView(width: metrics.size.width, height: metrics.size.height)
-                                .opacity(model.showLocalOverlays ? 1 : 0)
-                        }
-                        if model.showDrawOnStream {
-                            DrawOnStreamView()
-                        }
-                        if model.showFace && !model.showDrawOnStream {
-                            face()
-                        }
-                        if model.showBrowser {
-                            webBrowserView
-                        }
-                        if model.showingRemoteControl {
-                            ZStack {
-                                NavigationStack {
-                                    ControlBarRemoteControlAssistantView()
-                                }
-                                CloseButtonRemoteView()
-                            }
-                        }
-                    }
-                    .gesture(
-                        MagnificationGesture()
-                            .onChanged { amount in
-                                model.changeZoomX(amount: Float(amount))
-                            }
-                            .onEnded { amount in
-                                model.commitZoomX(amount: Float(amount))
-                            }
-                    )
-                    if model.showingPanel != .none {
-                        MenuView()
-                            .frame(width: settingsHalfWidth)
-                    }
-                    ControlBarLandscapeView()
-                }
-                .overlay(alignment: .topLeading) {
-                    browserWidgets()
-                }
+                landscape()
             }
             WebBrowserAlertsView()
                 .opacity(webBrowserController.showAlert ? 1 : 0)
