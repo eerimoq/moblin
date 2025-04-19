@@ -233,6 +233,13 @@ struct MainView: View {
         model.setAutoFocus()
     }
 
+    private func tapToFocusIndicator(metrics: GeometryProxy, focusPoint: CGPoint) -> some View {
+        Canvas { context, _ in
+            drawFocus(context: context, metrics: metrics, focusPoint: focusPoint)
+        }
+        .allowsHitTesting(false)
+    }
+
     var body: some View {
         let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
@@ -252,14 +259,7 @@ struct MainView: View {
                                                 handleLeaveTapToFocus()
                                             })
                                         if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                            Canvas { context, _ in
-                                                drawFocus(
-                                                    context: context,
-                                                    metrics: metrics,
-                                                    focusPoint: focusPoint
-                                                )
-                                            }
-                                            .allowsHitTesting(false)
+                                            tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                         }
                                         if model.showingGrid {
                                             StreamGridView()
@@ -344,14 +344,7 @@ struct MainView: View {
                                                 handleLeaveTapToFocus()
                                             })
                                         if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                            Canvas { context, _ in
-                                                drawFocus(
-                                                    context: context,
-                                                    metrics: metrics,
-                                                    focusPoint: focusPoint
-                                                )
-                                            }
-                                            .allowsHitTesting(false)
+                                            tapToFocusIndicator(metrics: metrics, focusPoint: focusPoint)
                                         }
                                         if model.showingGrid {
                                             StreamGridView()
