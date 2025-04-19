@@ -205,14 +205,6 @@ struct MainView: View {
         )
     }
 
-    private func portraitAspectRatio() -> CGFloat {
-        if model.stream.portrait! {
-            return 9 / 16
-        } else {
-            return 16 / 9
-        }
-    }
-
     private var debug: SettingsDebug {
         model.database.debug
     }
@@ -265,13 +257,23 @@ struct MainView: View {
         )
     }
 
+    private func portraitAspectRatio() -> CGFloat {
+        if model.stream.portrait! {
+            return 9 / 16
+        } else {
+            return 16 / 9
+        }
+    }
+
     private func portrait() -> some View {
         VStack(spacing: 0) {
             ZStack {
                 HStack {
                     Spacer(minLength: 0)
                     VStack {
-                        Spacer(minLength: 0)
+                        if model.stream.portrait! {
+                            Spacer(minLength: 0)
+                        }
                         GeometryReader { metrics in
                             ZStack {
                                 streamView
