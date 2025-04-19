@@ -217,6 +217,15 @@ struct MainView: View {
         model.database.debug
     }
 
+    private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
+        guard model.database.tapToFocus else {
+            return
+        }
+        let x = (location.x / metrics.size.width).clamped(to: 0 ... 1)
+        let y = (location.y / metrics.size.height).clamped(to: 0 ... 1)
+        model.setFocusPointOfInterest(focusPoint: CGPoint(x: x, y: y))
+    }
+
     var body: some View {
         let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
@@ -229,18 +238,8 @@ struct MainView: View {
                                 GeometryReader { metrics in
                                     ZStack {
                                         streamView
-                                            .onTapGesture(count: 1) { location in
-                                                guard model.database.tapToFocus else {
-                                                    return
-                                                }
-                                                let x = (location.x / metrics.size.width)
-                                                    .clamped(to: 0 ... 1)
-                                                let y = (location.y / metrics.size.height)
-                                                    .clamped(to: 0 ... 1)
-                                                model.setFocusPointOfInterest(focusPoint: CGPoint(
-                                                    x: x,
-                                                    y: y
-                                                ))
+                                            .onTapGesture(count: 1) {
+                                                handleTapToFocus(metrics: metrics, location: $0)
                                             }
                                             .onLongPressGesture(perform: {
                                                 guard model.database.tapToFocus else {
@@ -248,9 +247,7 @@ struct MainView: View {
                                                 }
                                                 model.setAutoFocus()
                                             })
-                                        if model.database.tapToFocus,
-                                           let focusPoint = model.manualFocusPoint
-                                        {
+                                        if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                             Canvas { context, _ in
                                                 drawFocus(
                                                     context: context,
@@ -336,18 +333,8 @@ struct MainView: View {
                                 GeometryReader { metrics in
                                     ZStack {
                                         streamView
-                                            .onTapGesture(count: 1) { location in
-                                                guard model.database.tapToFocus else {
-                                                    return
-                                                }
-                                                let x = (location.x / metrics.size.width)
-                                                    .clamped(to: 0 ... 1)
-                                                let y = (location.y / metrics.size.height)
-                                                    .clamped(to: 0 ... 1)
-                                                model.setFocusPointOfInterest(focusPoint: CGPoint(
-                                                    x: x,
-                                                    y: y
-                                                ))
+                                            .onTapGesture(count: 1) {
+                                                handleTapToFocus(metrics: metrics, location: $0)
                                             }
                                             .onLongPressGesture(perform: {
                                                 guard model.database.tapToFocus else {
@@ -355,9 +342,7 @@ struct MainView: View {
                                                 }
                                                 model.setAutoFocus()
                                             })
-                                        if model.database.tapToFocus,
-                                           let focusPoint = model.manualFocusPoint
-                                        {
+                                        if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                                             Canvas { context, _ in
                                                 drawFocus(
                                                     context: context,
