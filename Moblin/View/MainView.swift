@@ -240,6 +240,31 @@ struct MainView: View {
         .allowsHitTesting(false)
     }
 
+    private func browserWidgets() -> some View {
+        ForEach(model.browsers) { browser in
+            ScrollView([.vertical, .horizontal]) {
+                BrowserWidgetView(browser: browser)
+                    .frame(
+                        width: browser.browserEffect.width,
+                        height: browser.browserEffect.height
+                    )
+                    .opacity(0)
+            }
+            .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
+            .allowsHitTesting(false)
+        }
+    }
+
+    private func face() -> some View {
+        FaceView(
+            crop: debug.beautyFilter!,
+            beauty: debug.beautyFilterSettings!.showBeauty!,
+            blur: debug.beautyFilterSettings!.showBlur,
+            blurBackground: debug.beautyFilterSettings!.showBlurBackground!,
+            mouth: debug.beautyFilterSettings!.showMoblin
+        )
+    }
+
     var body: some View {
         let all = ZStack {
             if model.stream.portrait! || model.database.portrait! {
@@ -279,13 +304,7 @@ struct MainView: View {
                                 .opacity(model.showLocalOverlays ? 1 : 0)
                         }
                         if model.showFace && !model.showDrawOnStream {
-                            FaceView(
-                                crop: debug.beautyFilter!,
-                                beauty: debug.beautyFilterSettings!.showBeauty!,
-                                blur: debug.beautyFilterSettings!.showBlur,
-                                blurBackground: debug.beautyFilterSettings!.showBlurBackground!,
-                                mouth: debug.beautyFilterSettings!.showMoblin
-                            )
+                            face()
                         }
                         if model.showBrowser {
                             webBrowserView
@@ -314,18 +333,7 @@ struct MainView: View {
                     ControlBarPortraitView()
                 }
                 .overlay(alignment: .topLeading) {
-                    ForEach(model.browsers) { browser in
-                        ScrollView([.vertical, .horizontal]) {
-                            BrowserWidgetView(browser: browser)
-                                .frame(
-                                    width: browser.browserEffect.width,
-                                    height: browser.browserEffect.height
-                                )
-                                .opacity(0)
-                        }
-                        .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
-                        .allowsHitTesting(false)
-                    }
+                    browserWidgets()
                 }
             } else {
                 HStack(spacing: 0) {
@@ -366,13 +374,7 @@ struct MainView: View {
                             DrawOnStreamView()
                         }
                         if model.showFace && !model.showDrawOnStream {
-                            FaceView(
-                                crop: debug.beautyFilter!,
-                                beauty: debug.beautyFilterSettings!.showBeauty!,
-                                blur: debug.beautyFilterSettings!.showBlur,
-                                blurBackground: debug.beautyFilterSettings!.showBlurBackground!,
-                                mouth: debug.beautyFilterSettings!.showMoblin
-                            )
+                            face()
                         }
                         if model.showBrowser {
                             webBrowserView
@@ -402,18 +404,7 @@ struct MainView: View {
                     ControlBarLandscapeView()
                 }
                 .overlay(alignment: .topLeading) {
-                    ForEach(model.browsers) { browser in
-                        ScrollView([.vertical, .horizontal]) {
-                            BrowserWidgetView(browser: browser)
-                                .frame(
-                                    width: browser.browserEffect.width,
-                                    height: browser.browserEffect.height
-                                )
-                                .opacity(0)
-                        }
-                        .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
-                        .allowsHitTesting(false)
-                    }
+                    browserWidgets()
                 }
             }
             WebBrowserAlertsView()
