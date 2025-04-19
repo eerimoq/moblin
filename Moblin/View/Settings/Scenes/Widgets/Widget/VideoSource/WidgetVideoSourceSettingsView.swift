@@ -330,8 +330,8 @@ struct WidgetVideoSourceSettingsView: View {
                     in: 0 ... 1,
                     step: 0.01
                 )
-                .onChange(of: zoom) { value in
-                    widget.videoSource!.trackFaceZoom = value
+                .onChange(of: zoom) {
+                    widget.videoSource!.trackFaceZoom = $0
                     setEffectSettings()
                 }
             }

@@ -1310,7 +1310,7 @@ class SettingsWidgetVideoSource: Codable {
     var cropHeight: Double? = 1.0
     var rotation: Double? = 0.0
     var trackFaceEnabled: Bool? = false
-    var trackFaceZoom: Double? = 0.85
+    var trackFaceZoom: Double? = 0.75
     var mirror: Bool? = false
     var borderWidth: Double? = 0
     var borderColor: RgbColor? = .init(red: 0, green: 0, blue: 0)
@@ -1324,7 +1324,7 @@ class SettingsWidgetVideoSource: Codable {
                      cropHeight: cropHeight!,
                      rotation: rotation!,
                      trackFaceEnabled: trackFaceEnabled!,
-                     trackFaceZoom: 2.0 + (1 - trackFaceZoom!) * 4,
+                     trackFaceZoom: 1.5 + (1 - trackFaceZoom!) * 4,
                      mirror: mirror!,
                      borderWidth: borderWidth!,
                      borderColor: CIColor(
@@ -5122,7 +5122,7 @@ final class Settings {
             store()
         }
         for widget in realDatabase.widgets where widget.videoSource!.trackFaceZoom == nil {
-            widget.videoSource!.trackFaceZoom = 0.95
+            widget.videoSource!.trackFaceZoom = 0.75
             store()
         }
         if realDatabase.sceneNumericInput == nil {
