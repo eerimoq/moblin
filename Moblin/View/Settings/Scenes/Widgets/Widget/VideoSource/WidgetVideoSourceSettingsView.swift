@@ -338,20 +338,22 @@ struct WidgetVideoSourceSettingsView: View {
         } header: {
             Text("Face tracking")
         }
-        Section {
-            Toggle(isOn: Binding(get: {
-                widget.videoSource!.cropEnabled!
-            }, set: { value in
-                widget.videoSource!.cropEnabled = value
-                setEffectSettings()
-            })) {
-                Text("Enabled")
+        if !widget.videoSource!.trackFaceEnabled! {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    widget.videoSource!.cropEnabled!
+                }, set: { value in
+                    widget.videoSource!.cropEnabled = value
+                    setEffectSettings()
+                })) {
+                    Text("Enabled")
+                }
+            } header: {
+                Text("Crop")
             }
-        } header: {
-            Text("Crop")
-        }.disabled(widget.videoSource!.trackFaceEnabled!)
-        Section {
-            CropView(widgetId: widget.id, widget: widget.videoSource!)
+            Section {
+                CropView(widgetId: widget.id, widget: widget.videoSource!)
+            }
         }
     }
 }
