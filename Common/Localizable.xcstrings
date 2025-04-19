@@ -305,8 +305,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@, Sie dürfen keine Schnappschüsse machen, sorry. 😢"
+            "state" : "translated",
+            "value" : "%@, du darfst keine Schnappschüsse machen, sorry. 😢"
           }
         },
         "el" : {
@@ -1871,7 +1871,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin reaction <Reaktion>"
           }
         },
@@ -2131,7 +2131,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "!moblin scene <Name>"
           }
         },
@@ -5837,8 +5837,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ Sorry, Sie dürfen diesen Befehl Chat Bot nicht verwenden 😢"
+            "state" : "translated",
+            "value" : "%@, du darfst diesen Chat Bot Befehl nicht verwenden, sorry. 😢"
           }
         },
         "el" : {
@@ -6239,7 +6239,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@, danke, dass du unser Fotoalbum zum Leben erweckt hast. 🎉"
           }
         },
@@ -7557,7 +7557,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "<Reaktion> sind Herzen, Feuerwerk, Luftballons, Konfetti oder Laser."
           }
         },
@@ -16851,8 +16851,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ein Eintrag"
+            "state" : "translated",
+            "value" : "ein Eintrag"
           }
         },
         "el" : {
@@ -28327,7 +28327,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Einstellungsfehler der Kameraaufnahme"
           }
         },
@@ -38609,7 +38609,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ erstellt"
           }
         },
@@ -52391,7 +52391,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gesichtsverfolgung"
           }
         },
@@ -56429,7 +56429,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rahmen füllen"
           }
         },
@@ -62247,7 +62247,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "GoPro"
           }
         },
@@ -63453,8 +63453,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Held 12/13"
+            "state" : "translated",
+            "value" : "HERO 12/13"
           }
         },
         "el" : {
@@ -65605,8 +65605,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bildspielplatz"
+            "state" : "translated",
+            "value" : "Image Playground"
           }
         },
         "el" : {
@@ -69123,8 +69123,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Live -Stream starten"
+            "state" : "translated",
+            "value" : "Livestream starten"
           }
         },
         "el" : {
@@ -69253,8 +69253,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Live -Streams starten"
+            "state" : "translated",
+            "value" : "Livestreams starten"
           }
         },
         "el" : {
@@ -71269,7 +71269,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Standortdaten"
           }
         },
@@ -87493,7 +87493,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Numerische Eingabe"
           }
         },
@@ -91283,8 +91283,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Apfelreaktion durchführen."
+            "state" : "translated",
+            "value" : "Apple Reaktion durchführen."
           }
         },
         "el" : {
@@ -94257,8 +94257,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Drücken Sie die Abkürzung unten, um Live -Streams zu erstellen."
+            "state" : "translated",
+            "value" : "Drücke den Shortcut unten, um Livestreams zu erstellen."
           }
         },
         "el" : {
@@ -94387,8 +94387,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Drücken Sie die Abkürzung unten, um RTMP -URLs zu erstellen."
+            "state" : "translated",
+            "value" : "Drücke den Shortcut unten, um RTMP URLs zu erstellen."
           }
         },
         "el" : {
@@ -94517,8 +94517,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Drücken Sie die Abkürzung unten, um WLAN -Anmeldeinformationen zu erstellen."
+            "state" : "translated",
+            "value" : "Drücke den Shortcut unten, um WLAN Anmeldeinformationen zu erstellen."
           }
         },
         "el" : {
@@ -95327,7 +95327,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schnappschüsse drucken"
           }
         },
@@ -101801,8 +101801,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Beim Live zurücksetzen"
+            "state" : "translated",
+            "value" : "Zurücksetzen beim Livestream Start"
           }
         },
         "el" : {
@@ -101931,8 +101931,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wehrt die Entfernung, die Durchschnittsgeschwindigkeit und die Steigung zurück."
+            "state" : "translated",
+            "value" : "Setzt die Entfernung, die Durchschnittsgeschwindigkeit und die Steigung zurück."
           }
         },
         "el" : {
@@ -104621,7 +104621,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP URL"
           }
         },
@@ -104751,8 +104751,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP -URLs"
+            "state" : "translated",
+            "value" : "RTMP URLs"
           }
         },
         "el" : {
@@ -107979,8 +107979,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wählen Sie %@ Wenn Sie möchten, dass die Gopro -Kamera auf diesem Gerät auf den RTMP -Server von Moblin streamen. Wählen Sie %@ aus, um den Gopro -Kamera -Stream zu einem beliebigen Ziel zu machen."
+            "state" : "translated",
+            "value" : "Wähle %1$@, wenn du möchtest, dass die GoPro Kamera an den RTMP Server von Moblin auf diesem Gerät streamt. Wähle %2$@, damit die GoPro Kamera an ein beliebiges Ziel streamt."
           }
         },
         "el" : {
@@ -108523,8 +108523,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wählen Sie Foto"
+            "state" : "translated",
+            "value" : "Foto auswählen"
           }
         },
         "el" : {
@@ -108925,8 +108925,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Senden Sie Chat -Antworten"
+            "state" : "translated",
+            "value" : "Chat Antworten senden"
           }
         },
         "el" : {
@@ -110959,8 +110959,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abkürzung"
+            "state" : "translated",
+            "value" : "Shortcut"
           }
         },
         "el" : {
@@ -112301,7 +112301,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Browsertitel zeigen"
           }
         },
@@ -124947,8 +124947,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Streaming -Plattformen"
+            "state" : "translated",
+            "value" : "Streaming Plattformen"
           }
         },
         "el" : {
@@ -127117,8 +127117,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wechseln Sie in die gegebene Szene."
+            "state" : "translated",
+            "value" : "Wechsel in die gegebene Szene."
           }
         },
         "el" : {
@@ -138215,8 +138215,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Versuchen Sie, FPS und Auflösung zu senken."
+            "state" : "translated",
+            "value" : "Versuche FPS und Auflösung zu senken."
           }
         },
         "el" : {
@@ -138345,8 +138345,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Versuchen Sie, einzelne oder energiereiche Kameras zu verwenden."
+            "state" : "translated",
+            "value" : "Versuche einzelne oder Kameras mit niedrigen Energieverbrauch zu verwenden."
           }
         },
         "el" : {
@@ -139965,8 +139965,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sendet in der Regel eine Chat -Nachricht, wenn der Benutzer den Befehl nicht ausführen darf. Einige Befehle reagieren auch auf den Erfolg."
+            "state" : "translated",
+            "value" : "Sendet in der Regel eine Chatnachricht, wenn der Benutzer den Befehl nicht ausführen darf. Einige Befehle reagieren auch auf die erfolgreiche Ausführung."
           }
         },
         "el" : {
@@ -143495,8 +143495,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie einen Bildspielplatz, um ein Bild aus einem Foto und/oder Eingabeaufforderung zu erstellen, das von Ihren Zuschauern geschrieben wurde."
+            "state" : "translated",
+            "value" : "Verwende Image Playground, um ein Bild aus einem Foto und/oder Eingabe zu erstellen, die von deinen Zuschauern geschrieben wurde."
           }
         },
         "el" : {
@@ -149443,8 +149443,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "WiFi -Anmeldeinformationen"
+            "state" : "translated",
+            "value" : "WLAN Anmeldeinformationen"
           }
         },
         "el" : {
