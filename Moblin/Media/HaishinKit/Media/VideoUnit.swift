@@ -195,7 +195,7 @@ private class ReplaceVideo {
     }
 }
 
-struct CaptureSessionDevice {
+private struct CaptureSessionDevice {
     var device: AVCaptureDevice
     var input: AVCaptureInput
     var output: AVCaptureVideoDataOutput
