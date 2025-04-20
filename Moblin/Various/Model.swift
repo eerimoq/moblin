@@ -6968,16 +6968,47 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return false
     }
 
-    private func lowEnergyCameraUpdateBackZoomX(force: Bool) {
-        if force, database.zoom.switchToBack.enabled {
+    private func lowEnergyCameraUpdateBackZoom(force: Bool) {
+        if force {
+            updateBackZoomSwitchTo()
+        }
+    }
+
+    private func updateBackZoomPresetId() {
+        for preset in database.zoom.back {
+            if preset.x == backZoomX {
+                backZoomPresetId = preset.id
+            }
+        }
+    }
+
+    private func updateFrontZoomPresetId() {
+        for preset in database.zoom.front {
+            if preset.x == frontZoomX {
+                frontZoomPresetId = preset.id
+            }
+        }
+    }
+
+    private func updateBackZoomSwitchTo() {
+        if database.zoom.switchToBack.enabled {
             clearZoomId()
             backZoomX = database.zoom.switchToBack.x!
+            updateBackZoomPresetId()
+        }
+    }
+
+    private func updateFrontZoomSwitchTo() {
+        if database.zoom.switchToFront.enabled {
+            clearZoomId()
+            frontZoomX = database.zoom.switchToFront.x!
+            updateFrontZoomPresetId()
         }
     }
 
     private func attachBackTripleLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
-        lowEnergyCameraUpdateBackZoomX(force: force)
+        lowEnergyCameraUpdateBackZoom(force: force)
         zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
@@ -7009,7 +7040,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func attachBackDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
-        lowEnergyCameraUpdateBackZoomX(force: force)
+        lowEnergyCameraUpdateBackZoom(force: force)
         zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
@@ -7039,7 +7070,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func attachBackWideDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
-        lowEnergyCameraUpdateBackZoomX(force: force)
+        lowEnergyCameraUpdateBackZoom(force: force)
         zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
@@ -7076,16 +7107,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPosition = position
         switch position {
         case .back:
-            if database.zoom.switchToBack.enabled {
-                clearZoomId()
-                backZoomX = database.zoom.switchToBack.x!
-            }
+            updateBackZoomSwitchTo()
             zoomX = backZoomX
         case .front:
-            if database.zoom.switchToFront.enabled {
-                clearZoomId()
-                frontZoomX = database.zoom.switchToFront.x!
-            }
+            updateFrontZoomSwitchTo()
             zoomX = frontZoomX
         default:
             break
@@ -7305,8 +7330,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch cameraPosition {
         case .back:
             backZoomX = x
+            updateBackZoomPresetId()
         case .front:
             frontZoomX = x
+            updateFrontZoomPresetId()
         default:
             break
         }
