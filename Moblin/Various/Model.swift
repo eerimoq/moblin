@@ -9496,12 +9496,8 @@ extension Model {
                 }
                 if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
                     for dataSource in dataSources where dataSource.orientation == wantedOrientation {
-                        do {
-                            try self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
-                            try inputPort.setPreferredDataSource(dataSource)
-                        } catch {
-                            logger.error("Failed to set mic as preferred with error \(error)")
-                        }
+                        try? self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+                        try? inputPort.setPreferredDataSource(dataSource)
                     }
                 }
             }
