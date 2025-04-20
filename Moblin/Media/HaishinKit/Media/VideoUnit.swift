@@ -227,47 +227,31 @@ final class VideoUnit: NSObject {
 
     var frameRate = VideoUnit.defaultFrameRate {
         didSet {
-            session.beginConfiguration()
-            for device in captureSessionDevices {
-                setDeviceFormat(
-                    device: device.device,
-                    frameRate: frameRate,
-                    preferAutoFrameRate: preferAutoFrameRate,
-                    colorSpace: colorSpace
-                )
-            }
-            session.commitConfiguration()
+            updateDevicesFormat()
             startFrameTimer()
         }
     }
 
     var preferAutoFrameRate = false {
         didSet {
-            session.beginConfiguration()
-            for device in captureSessionDevices {
-                setDeviceFormat(
-                    device: device.device,
-                    frameRate: frameRate,
-                    preferAutoFrameRate: preferAutoFrameRate,
-                    colorSpace: colorSpace
-                )
-            }
-            session.commitConfiguration()
+            updateDevicesFormat()
         }
     }
 
     var colorSpace: AVCaptureColorSpace = .sRGB {
         didSet {
-            session.beginConfiguration()
-            for device in captureSessionDevices {
-                setDeviceFormat(
-                    device: device.device,
-                    frameRate: frameRate,
-                    preferAutoFrameRate: preferAutoFrameRate,
-                    colorSpace: colorSpace
-                )
-            }
-            session.commitConfiguration()
+            updateDevicesFormat()
+        }
+    }
+
+    private func updateDevicesFormat() {
+        for device in captureSessionDevices {
+            setDeviceFormat(
+                device: device.device,
+                frameRate: frameRate,
+                preferAutoFrameRate: preferAutoFrameRate,
+                colorSpace: colorSpace
+            )
         }
     }
 
