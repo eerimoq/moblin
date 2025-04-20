@@ -1451,6 +1451,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBatteryLevel()
         setPixelFormat()
         setMetalPetalFilters()
+        setMic()
         setupAudioSession()
         reloadSpeechToText()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -1471,7 +1472,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         twitchChat = TwitchChatMoblin(delegate: self)
         reloadStream()
         resetSelectedScene()
-        setMic()
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
