@@ -397,6 +397,14 @@ class RtmpServerChunkStream {
             return
         }
         let length = messageBody.count - codec.headerSize
+        guard length > 0, length < 100_000 else {
+            logger.info("""
+            rtmp-server: Discarding audio packet of length \(length) \
+            (message body is \(messageBody.count) and codec is \(codec.headerSize) bytes) \
+            Codec \(codec)
+            """)
+            return
+        }
         messageBody.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
             guard let baseAddress = buffer.baseAddress else {
                 return
