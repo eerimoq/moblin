@@ -30,7 +30,7 @@ private let versions = [
         "• Various shortcuts in settings. 💡 Spillmaker",
         "• Enable SRT(LA) batch send by default.",
         "• Show chat bot alert reactions in all cameras that supports them.",
-        "• GoPro Launch live stream, WiFi credentials and RTMP URL QR codes. 💡 Let me know",
+        "• GoPro Launch live stream, WiFi credentials and RTMP URL QR codes. 💡 IChrisIRL",
         "• Fix Moblink sometimes connected but not sending data. 🐛 AUTdany 🧑‍🏭 3l3ktr0l4mpe and Naginreed",
         "• German translation updated. ✍️ MaurisonX",
         "• Video at top when streaming landscape with UI in portrait.",

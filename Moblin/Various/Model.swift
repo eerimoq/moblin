@@ -6975,18 +6975,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateBackZoomPresetId() {
-        for preset in database.zoom.back {
-            if preset.x == backZoomX {
-                backZoomPresetId = preset.id
-            }
+        for preset in database.zoom.back where preset.x == backZoomX {
+            backZoomPresetId = preset.id
         }
     }
 
     private func updateFrontZoomPresetId() {
-        for preset in database.zoom.front {
-            if preset.x == frontZoomX {
-                frontZoomPresetId = preset.id
-            }
+        for preset in database.zoom.front where preset.x == frontZoomX {
+            frontZoomPresetId = preset.id
         }
     }
 
