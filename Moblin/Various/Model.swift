@@ -6968,12 +6968,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return false
     }
 
-    private func attachBackTripleLowEnergyCamera(force: Bool = true) {
-        cameraPosition = .back
+    private func lowEnergyCameraUpdateBackZoomX(force: Bool) {
         if force, database.zoom.switchToBack.enabled {
             clearZoomId()
             backZoomX = database.zoom.switchToBack.x!
         }
+    }
+
+    private func attachBackTripleLowEnergyCamera(force: Bool = true) {
+        cameraPosition = .back
+        lowEnergyCameraUpdateBackZoomX(force: force)
         zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
@@ -7005,10 +7009,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func attachBackDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
-        if force, database.zoom.switchToBack.enabled {
-            clearZoomId()
-            backZoomX = database.zoom.switchToBack.x!
-        }
+        lowEnergyCameraUpdateBackZoomX(force: force)
         zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
@@ -7038,10 +7039,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func attachBackWideDualLowEnergyCamera(force: Bool = true) {
         cameraPosition = .back
-        if force, database.zoom.switchToBack.enabled {
-            clearZoomId()
-            backZoomX = database.zoom.switchToBack.x!
-        }
+        lowEnergyCameraUpdateBackZoomX(force: force)
         zoomX = backZoomX
         guard let bestDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
