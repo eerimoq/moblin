@@ -9390,7 +9390,6 @@ extension Model {
             makeToast(title: newMic.name)
         }
         if newMic != currentMic {
-            logger.info("Switching to external mic from RTMP/SRT(LA)/... mic")
             selectMicDefault(mic: newMic)
         }
         logger.info("Mic: \(newMic.name)")
