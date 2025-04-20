@@ -6776,7 +6776,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if speed < stream.bitrate / 5 {
                 bitrateStatusIconColor = .red
             } else if speed < stream.bitrate / 2 {
-                bitrateStatusIconColor = .yellow
+                bitrateStatusIconColor = .orange
             } else {
                 bitrateStatusIconColor = backgroundColor
             }
