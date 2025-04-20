@@ -202,6 +202,14 @@ struct CaptureSessionDevice {
     var connection: AVCaptureConnection
 }
 
+private func makeCaptureSession() -> AVCaptureSession {
+    let session = AVCaptureMultiCamSession()
+    if session.isMultitaskingCameraAccessSupported {
+        session.isMultitaskingCameraAccessEnabled = true
+    }
+    return session
+}
+
 final class VideoUnit: NSObject {
     static let defaultFrameRate: Float64 = 30
     private(set) var device: AVCaptureDevice?
@@ -216,7 +224,7 @@ final class VideoUnit: NSObject {
     private var captureSize = CGSize(width: 1920, height: 1080)
     private var outputSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
-    let session = makeVideoCaptureSession()
+    let session = makeCaptureSession()
     private var encoders = [VideoEncoder(lockQueue: mixerLockQueue)]
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []

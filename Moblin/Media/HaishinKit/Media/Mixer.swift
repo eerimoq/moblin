@@ -1,26 +1,7 @@
 import AVFoundation
 import SwiftUI
 
-let mixerLockQueue = DispatchQueue(
-    label: "com.haishinkit.HaishinKit.Mixer",
-    qos: .userInteractive
-)
-
-func makeAudioCaptureSession() -> AVCaptureSession {
-    let session = AVCaptureSession()
-    if session.isMultitaskingCameraAccessSupported {
-        session.isMultitaskingCameraAccessEnabled = true
-    }
-    return session
-}
-
-func makeVideoCaptureSession() -> AVCaptureSession {
-    let session = AVCaptureMultiCamSession()
-    if session.isMultitaskingCameraAccessSupported {
-        session.isMultitaskingCameraAccessEnabled = true
-    }
-    return session
-}
+let mixerLockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Mixer", qos: .userInteractive)
 
 protocol MixerDelegate: AnyObject {
     func mixer(audioLevel: Float, numberOfAudioChannels: Int)

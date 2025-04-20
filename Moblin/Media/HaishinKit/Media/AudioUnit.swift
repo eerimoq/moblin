@@ -209,6 +209,14 @@ private class ReplaceAudio {
     }
 }
 
+private func makeCaptureSession() -> AVCaptureSession {
+    let session = AVCaptureSession()
+    if session.isMultitaskingCameraAccessSupported {
+        session.isMultitaskingCameraAccessEnabled = true
+    }
+    return session
+}
+
 final class AudioUnit: NSObject {
     private var encoders = [AudioCodec(lockQueue: mixerLockQueue)]
     private var input: AVCaptureDeviceInput?
@@ -217,7 +225,7 @@ final class AudioUnit: NSObject {
     weak var mixer: Mixer?
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
-    let session = makeAudioCaptureSession()
+    let session = makeCaptureSession()
     private var speechToTextEnabled = false
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
