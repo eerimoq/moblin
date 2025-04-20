@@ -7,7 +7,7 @@ import Vision
 
 struct VideoUnitAttachParams {
     var devices: CaptureDevices
-    var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
+    var cameraPreviewLayer: AVCaptureVideoPreviewLayer
     var showCameraPreview: Bool
     var externalDisplayPreview: Bool
     var replaceVideo: UUID?
@@ -475,9 +475,9 @@ final class VideoUnit: NSObject {
             }
         }
         updateCameraControls()
-        params.cameraPreviewLayer?.session = nil
+        params.cameraPreviewLayer.session = nil
         if params.showCameraPreview {
-            params.cameraPreviewLayer?.session = session
+            params.cameraPreviewLayer.session = session
         }
     }
 

@@ -6884,7 +6884,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func detachCamera() {
         let params = VideoUnitAttachParams(devices: CaptureDevices(hasSceneDevice: false, devices: []),
-                                           cameraPreviewLayer: nil,
+                                           cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: false,
                                            externalDisplayPreview: false,
                                            replaceVideo: nil,
@@ -7091,7 +7091,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
         let params = VideoUnitAttachParams(devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
-                                           cameraPreviewLayer: cameraPreviewLayer,
+                                           cameraPreviewLayer: cameraPreviewLayer!,
                                            showCameraPreview: updateShowCameraPreview(),
                                            externalDisplayPreview: externalDisplayPreview,
                                            replaceVideo: nil,
@@ -7146,7 +7146,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         hasZoom = false
         media.attachReplaceCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
-            cameraPreviewLayer: cameraPreviewLayer,
+            cameraPreviewLayer: cameraPreviewLayer!,
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
