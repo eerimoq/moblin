@@ -6969,7 +6969,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func attachBackTripleLowEnergyCamera(force: Bool = true) {
-        if database.zoom.switchToBack.enabled {
+        cameraPosition = .back
+        if force, database.zoom.switchToBack.enabled {
             clearZoomId()
             backZoomX = database.zoom.switchToBack.x!
         }
@@ -6999,12 +7000,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
-        cameraPosition = .back
         attachCameraFinalize(scene: scene)
     }
 
     private func attachBackDualLowEnergyCamera(force: Bool = true) {
-        if database.zoom.switchToBack.enabled {
+        cameraPosition = .back
+        if force, database.zoom.switchToBack.enabled {
             clearZoomId()
             backZoomX = database.zoom.switchToBack.x!
         }
@@ -7032,12 +7033,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
-        cameraPosition = .back
         attachCameraFinalize(scene: scene)
     }
 
     private func attachBackWideDualLowEnergyCamera(force: Bool = true) {
-        if database.zoom.switchToBack.enabled {
+        cameraPosition = .back
+        if force, database.zoom.switchToBack.enabled {
             clearZoomId()
             backZoomX = database.zoom.switchToBack.x!
         }
@@ -7065,7 +7066,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera())
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
-        cameraPosition = .back
         attachCameraFinalize(scene: scene)
     }
 
