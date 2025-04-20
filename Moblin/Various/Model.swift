@@ -1471,7 +1471,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         twitchChat = TwitchChatMoblin(delegate: self)
         reloadStream()
         resetSelectedScene()
-        setMicFromSettings()
+        setMic()
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
@@ -9390,6 +9390,7 @@ extension Model {
             makeToast(title: newMic.name)
         }
         if newMic != currentMic {
+            logger.info("Switching to external mic from RTMP/SRT(LA)/... mic")
             selectMicDefault(mic: newMic)
         }
         logger.info("Mic: \(newMic.name)")
@@ -9474,9 +9475,43 @@ extension Model {
         return mics
     }
 
+    func setMic() {
+        var wantedOrientation: AVAudioSession.Orientation
+        switch database.mic {
+        case .bottom:
+            wantedOrientation = .bottom
+        case .front:
+            wantedOrientation = .front
+        case .back:
+            wantedOrientation = .back
+        case .top:
+            wantedOrientation = .top
+        }
+        let preferStereoMic = database.debug.preferStereoMic!
+        netStreamLockQueue.async {
+            let session = AVAudioSession.sharedInstance()
+            for inputPort in session.availableInputs ?? [] {
+                if inputPort.portType != .builtInMic {
+                    continue
+                }
+                if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+                    for dataSource in dataSources where dataSource.orientation == wantedOrientation {
+                        do {
+                            try self.setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
+                            try inputPort.setPreferredDataSource(dataSource)
+                        } catch {
+                            logger.error("Failed to set mic as preferred with error \(error)")
+                        }
+                    }
+                }
+            }
+        }
+        media.attachDefaultAudioDevice()
+    }
+
     func setMicFromSettings() {
         let mics = listMics()
-        if let mic = mics.first(where: { $0.builtInOrientation == database.mic }) {
+        if let mic = mics.first(where: { mic in mic.builtInOrientation == database.mic }) {
             selectMic(mic: mic)
         } else if let mic = mics.first {
             selectMic(mic: mic)
