@@ -1451,7 +1451,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBatteryLevel()
         setPixelFormat()
         setMetalPetalFilters()
-        setMic()
         setupAudioSession()
         reloadSpeechToText()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -1470,6 +1469,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(delegate: self)
+        setMic()
         reloadStream()
         resetSelectedScene()
         setupPeriodicTimers()
@@ -9476,7 +9476,7 @@ extension Model {
     }
 
     func setMic() {
-        var wantedOrientation: AVAudioSession.Orientation
+        let wantedOrientation: AVAudioSession.Orientation
         switch database.mic {
         case .bottom:
             wantedOrientation = .bottom
