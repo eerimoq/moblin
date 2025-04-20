@@ -12,6 +12,7 @@ struct StreamOverlayIconAndTextView: View {
     var text: String
     var textPlacement: StreamOverlayIconAndTextPlacement
     var color: Color = .white
+    var iconBackgroundColor: Color = backgroundColor
 
     var body: some View {
         if show {
@@ -25,7 +26,7 @@ struct StreamOverlayIconAndTextView: View {
                     .font(smallFont)
                     .padding([.leading, .trailing], 2)
                     .foregroundColor(color)
-                    .background(backgroundColor)
+                    .background(iconBackgroundColor)
                     .cornerRadius(5)
                 if textPlacement == .afterIcon {
                     StreamOverlayTextView(text: text)

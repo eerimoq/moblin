@@ -99,7 +99,6 @@ private struct CollapsedAdsRemainingTimerView: View {
 private struct CollapsedBitrateView: View {
     @EnvironmentObject var model: Model
     var show: Bool
-    var color: Color
 
     var body: some View {
         if show {
@@ -107,7 +106,8 @@ private struct CollapsedBitrateView: View {
                 Image(systemName: "speedometer")
                     .frame(width: 17, height: 17)
                     .padding([.leading], 2)
-                    .foregroundColor(color)
+                    .foregroundColor(model.bitrateStatusColor)
+                    .background(model.bitrateStatusIconColor)
                 if !model.speedMbpsOneDecimal.isEmpty {
                     Text(model.speedMbpsOneDecimal)
                         .foregroundColor(.white)
@@ -273,14 +273,15 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         if textPlacement == .hide {
-            CollapsedBitrateView(show: model.isShowingStatusBitrate(), color: model.bitrateStatusColor)
+            CollapsedBitrateView(show: model.isShowingStatusBitrate())
         } else {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusBitrate(),
                 icon: "speedometer",
                 text: model.speedAndTotal,
                 textPlacement: textPlacement,
-                color: model.bitrateStatusColor
+                color: model.bitrateStatusColor,
+                iconBackgroundColor: model.bitrateStatusIconColor
             )
         }
         if textPlacement == .hide {

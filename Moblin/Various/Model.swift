@@ -476,6 +476,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var speedAndTotal = noValue
     @Published var speedMbpsOneDecimal = noValue
     @Published var bitrateStatusColor: Color = .white
+    @Published var bitrateStatusIconColor: Color = backgroundColor
     private var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
     private var previousBitrateStatusNumberOfFailedEncodings = 0
     @Published var thermalState = ProcessInfo.processInfo.thermalState
@@ -6772,6 +6773,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speedString) (\(total))")
+            if speed < stream.bitrate / 5 {
+                bitrateStatusIconColor = .red
+            } else if speed < stream.bitrate / 2 {
+                bitrateStatusIconColor = .yellow
+            } else {
+                bitrateStatusIconColor = backgroundColor
+            }
             if isWatchLocal() {
                 sendSpeedAndTotalToWatch(speedAndTotal: speedAndTotal)
             }
