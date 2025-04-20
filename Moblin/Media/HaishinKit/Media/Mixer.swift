@@ -51,28 +51,8 @@ class Mixer {
         recorder.delegate = self
     }
 
-    func attachCamera(
-        _ devices: CaptureDevices,
-        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        _ showCameraPreview: Bool,
-        _ externalDisplayPreview: Bool,
-        _ replaceVideo: UUID?,
-        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double,
-        _ fillFrame: Bool
-    ) throws {
-        try video.attach(
-            devices,
-            cameraPreviewLayer,
-            showCameraPreview,
-            externalDisplayPreview,
-            replaceVideo,
-            preferredVideoStabilizationMode,
-            isVideoMirrored,
-            ignoreFramesAfterAttachSeconds,
-            fillFrame
-        )
+    func attachCamera(params: VideoUnitAttachParams) throws {
+        try video.attach(params: params)
     }
 
     func attachAudio(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {

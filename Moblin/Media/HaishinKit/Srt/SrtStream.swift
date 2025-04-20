@@ -66,32 +66,12 @@ class SrtStream: NetStream {
     }
 
     override func attachCamera(
-        _ devices: CaptureDevices,
-        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        _ showCameraPreview: Bool,
-        _ showStreamPreview: Bool,
-        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double,
-        _ fillFrame: Bool,
+        params: VideoUnitAttachParams,
         onError: ((Error) -> Void)? = nil,
-        onSuccess: (() -> Void)? = nil,
-        replaceVideoCameraId: UUID? = nil
+        onSuccess: (() -> Void)? = nil
     ) {
         writer.expectedMedias.insert(.video)
-        super.attachCamera(
-            devices,
-            cameraPreviewLayer,
-            showCameraPreview,
-            showStreamPreview,
-            preferredVideoStabilizationMode,
-            isVideoMirrored,
-            ignoreFramesAfterAttachSeconds,
-            fillFrame,
-            onError: onError,
-            onSuccess: onSuccess,
-            replaceVideoCameraId: replaceVideoCameraId
-        )
+        super.attachCamera(params: params, onError: onError, onSuccess: onSuccess)
     }
 
     override func attachAudio(

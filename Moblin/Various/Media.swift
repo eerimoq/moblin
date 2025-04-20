@@ -780,28 +780,11 @@ final class Media: NSObject {
         return Float(device.videoZoomFactor)
     }
 
-    func attachCamera(
-        devices: CaptureDevices,
-        cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        showCameraPreview: Bool,
-        externalDisplayPreview: Bool,
-        videoStabilizationMode: AVCaptureVideoStabilizationMode,
-        videoMirrored: Bool,
-        ignoreFramesAfterAttachSeconds: Double,
-        fillFrame: Bool,
-        onSuccess: (() -> Void)? = nil
-    ) {
+    func attachCamera(params: VideoUnitAttachParams, onSuccess: (() -> Void)? = nil) {
         netStream?.attachCamera(
-            devices,
-            cameraPreviewLayer,
-            showCameraPreview,
-            externalDisplayPreview,
-            videoStabilizationMode,
-            videoMirrored,
-            ignoreFramesAfterAttachSeconds,
-            fillFrame,
-            onError: { error in
-                logger.error("stream: Attach camera error: \(error)")
+            params: params,
+            onError: {
+                logger.error("stream: Attach camera error: \($0)")
             },
             onSuccess: {
                 DispatchQueue.main.async {
@@ -814,21 +797,21 @@ final class Media: NSObject {
     func attachReplaceCamera(
         devices: CaptureDevices,
         cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
+        externalDisplayPreview: Bool,
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,
         fillFrame: Bool
     ) {
-        netStream?.attachCamera(
-            devices,
-            cameraPreviewLayer,
-            false,
-            true,
-            .off,
-            false,
-            ignoreFramesAfterAttachSeconds,
-            fillFrame,
-            replaceVideoCameraId: cameraId
-        )
+        let params = VideoUnitAttachParams(devices: devices,
+                                           cameraPreviewLayer: cameraPreviewLayer,
+                                           showCameraPreview: false,
+                                           externalDisplayPreview: externalDisplayPreview,
+                                           replaceVideo: cameraId,
+                                           preferredVideoStabilizationMode: .off,
+                                           isVideoMirrored: false,
+                                           ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
+                                           fillFrame: fillFrame)
+        netStream?.attachCamera(params: params)
     }
 
     func attachReplaceAudio(cameraId: UUID?) {

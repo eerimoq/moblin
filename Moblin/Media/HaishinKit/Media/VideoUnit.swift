@@ -5,6 +5,18 @@ import MetalPetal
 import UIKit
 import Vision
 
+struct VideoUnitAttachParams {
+    var devices: CaptureDevices
+    var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
+    var showCameraPreview: Bool
+    var externalDisplayPreview: Bool
+    var replaceVideo: UUID?
+    var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode
+    var isVideoMirrored: Bool
+    var ignoreFramesAfterAttachSeconds: Double
+    var fillFrame: Bool
+}
+
 enum SceneSwitchTransition {
     case blur
     case freeze
@@ -387,36 +399,26 @@ final class VideoUnit: NSObject {
         return CIImage(cvPixelBuffer: imageBuffer)
     }
 
-    func attach(
-        _ devices: CaptureDevices,
-        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        _ showCameraPreview: Bool,
-        _ externalDisplayPreview: Bool,
-        _ replaceVideo: UUID?,
-        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double,
-        _ fillFrame: Bool
-    ) throws {
+    func attach(params: VideoUnitAttachParams) throws {
         for device in captureSessionDevices {
             device.output.setSampleBufferDelegate(nil, queue: mixerLockQueue)
         }
         mixerLockQueue.async {
-            self.configuredIgnoreFramesAfterAttachSeconds = ignoreFramesAfterAttachSeconds
-            self.selectedReplaceVideoCameraId = replaceVideo
+            self.configuredIgnoreFramesAfterAttachSeconds = params.ignoreFramesAfterAttachSeconds
+            self.selectedReplaceVideoCameraId = params.replaceVideo
             self.prepareFirstFrame()
-            self.showCameraPreview = showCameraPreview
-            self.externalDisplayPreview = externalDisplayPreview
-            self.fillFrame = fillFrame
-            if let replaceVideo {
+            self.showCameraPreview = params.showCameraPreview
+            self.externalDisplayPreview = params.externalDisplayPreview
+            self.fillFrame = params.fillFrame
+            if let replaceVideo = params.replaceVideo {
                 self.sceneVideoSourceId = replaceVideo
-            } else if devices.hasSceneDevice, let id = devices.devices.first?.id {
+            } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
                 self.sceneVideoSourceId = id
             } else {
                 self.sceneVideoSourceId = UUID()
             }
             self.replaceVideoBuiltins.removeAll()
-            for device in devices.devices {
+            for device in params.devices.devices {
                 let replaceVideo = ReplaceVideo(
                     cameraId: device.id,
                     name: "",
@@ -434,7 +436,7 @@ final class VideoUnit: NSObject {
                 self.unregisterEffectInner(effect)
             }
         }
-        for device in devices.devices {
+        for device in params.devices.devices {
             setDeviceFormat(
                 device: device.device,
                 frameRate: frameRate,
@@ -447,35 +449,35 @@ final class VideoUnit: NSObject {
             session.commitConfiguration()
         }
         try removeDevices(session)
-        for device in devices.devices {
+        for device in params.devices.devices {
             try attachDevice(device.device, session)
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
-        device = devices.hasSceneDevice ? devices.devices.first?.device : nil
+        device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
         for device in captureSessionDevices {
             for connection in device.output.connections {
                 if connection.isVideoMirroringSupported {
-                    connection.isVideoMirrored = isVideoMirrored
+                    connection.isVideoMirrored = params.isVideoMirrored
                 }
                 if connection.isVideoOrientationSupported {
                     setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
                 }
                 if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+                    connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
                 }
             }
         }
         for (i, device) in captureSessionDevices.enumerated() {
-            if devices.hasSceneDevice, i == 0 {
+            if params.devices.hasSceneDevice, i == 0 {
                 device.output.setSampleBufferDelegate(self, queue: mixerLockQueue)
             } else {
                 device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: mixerLockQueue)
             }
         }
         updateCameraControls()
-        cameraPreviewLayer?.session = nil
-        if showCameraPreview {
-            cameraPreviewLayer?.session = session
+        params.cameraPreviewLayer?.session = nil
+        if params.showCameraPreview {
+            params.cameraPreviewLayer?.session = session
         }
     }
 

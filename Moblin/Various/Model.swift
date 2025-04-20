@@ -6883,16 +6883,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func detachCamera() {
-        media.attachCamera(
-            devices: CaptureDevices(hasSceneDevice: false, devices: []),
-            cameraPreviewLayer: nil,
-            showCameraPreview: false,
-            externalDisplayPreview: false,
-            videoStabilizationMode: .off,
-            videoMirrored: false,
-            ignoreFramesAfterAttachSeconds: 0.0,
-            fillFrame: false
-        )
+        let params = VideoUnitAttachParams(devices: CaptureDevices(hasSceneDevice: false, devices: []),
+                                           cameraPreviewLayer: nil,
+                                           showCameraPreview: false,
+                                           externalDisplayPreview: false,
+                                           replaceVideo: nil,
+                                           preferredVideoStabilizationMode: .off,
+                                           isVideoMirrored: false,
+                                           ignoreFramesAfterAttachSeconds: 0.0,
+                                           fillFrame: false)
+        media.attachCamera(params: params)
     }
 
     func attachCamera() {
@@ -7090,15 +7090,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func attachCameraFinalize(scene: SettingsScene) {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
+        let params = VideoUnitAttachParams(devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
+                                           cameraPreviewLayer: cameraPreviewLayer,
+                                           showCameraPreview: updateShowCameraPreview(),
+                                           externalDisplayPreview: externalDisplayPreview,
+                                           replaceVideo: nil,
+                                           preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
+                                           isVideoMirrored: getVideoMirroredOnStream(),
+                                           ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+                                           fillFrame: getFillFrame(scene: scene))
         media.attachCamera(
-            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
-            cameraPreviewLayer: cameraPreviewLayer,
-            showCameraPreview: updateShowCameraPreview(),
-            externalDisplayPreview: externalDisplayPreview,
-            videoStabilizationMode: getVideoStabilizationMode(scene: scene),
-            videoMirrored: getVideoMirroredOnStream(),
-            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
-            fillFrame: getFillFrame(scene: scene),
+            params: params,
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
@@ -7145,6 +7147,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.attachReplaceCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             cameraPreviewLayer: cameraPreviewLayer,
+            externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
             fillFrame: getFillFrame(scene: scene)

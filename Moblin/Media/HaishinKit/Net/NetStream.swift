@@ -85,31 +85,13 @@ open class NetStream: NSObject {
     }
 
     func attachCamera(
-        _ devices: CaptureDevices,
-        _ cameraPreviewLayer: AVCaptureVideoPreviewLayer?,
-        _ showCameraPreview: Bool,
-        _ externalDisplayPreview: Bool,
-        _ preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode,
-        _ isVideoMirrored: Bool,
-        _ ignoreFramesAfterAttachSeconds: Double,
-        _ fillFrame: Bool,
+        params: VideoUnitAttachParams,
         onError: ((_ error: Error) -> Void)? = nil,
-        onSuccess: (() -> Void)? = nil,
-        replaceVideoCameraId: UUID? = nil
+        onSuccess: (() -> Void)? = nil
     ) {
         netStreamLockQueue.async {
             do {
-                try self.mixer.attachCamera(
-                    devices,
-                    cameraPreviewLayer,
-                    showCameraPreview,
-                    externalDisplayPreview,
-                    replaceVideoCameraId,
-                    preferredVideoStabilizationMode,
-                    isVideoMirrored,
-                    ignoreFramesAfterAttachSeconds,
-                    fillFrame
-                )
+                try self.mixer.attachCamera(params: params)
                 onSuccess?()
             } catch {
                 onError?(error)
