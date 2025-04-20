@@ -212,7 +212,7 @@ private func makeCaptureSession() -> AVCaptureSession {
 
 final class VideoUnit: NSObject {
     static let defaultFrameRate: Float64 = 30
-    private(set) var device: AVCaptureDevice?
+    private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
     private let context = CIContext()
     private let metalPetalContext: MTIContext?

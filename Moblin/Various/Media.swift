@@ -745,8 +745,8 @@ final class Media: NSObject {
         netStream?.setVideoOrientation(value: value)
     }
 
-    func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
-        guard let device = netStream?.videoCapture()?.device else {
+    func setCameraZoomLevel(device: AVCaptureDevice?, level: Float, rate: Float?) -> Float? {
+        guard let device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
@@ -765,8 +765,8 @@ final class Media: NSObject {
         return level
     }
 
-    func stopCameraZoomLevel() -> Float? {
-        guard let device = netStream?.videoCapture()?.device else {
+    func stopCameraZoomLevel(device: AVCaptureDevice?) -> Float? {
+        guard let device else {
             logger.warning("Device not ready to zoom")
             return nil
         }

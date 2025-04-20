@@ -151,10 +151,6 @@ open class NetStream: NSObject {
         mixer.audio.setReplaceAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
-    func videoCapture() -> VideoUnit? {
-        return mixer.video
-    }
-
     func registerVideoEffect(_ effect: VideoEffect) {
         mixer.video.registerEffect(effect)
     }

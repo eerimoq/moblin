@@ -7168,11 +7168,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        return cameraZoomLevelToX(media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate))
+        return cameraZoomLevelToX(media.setCameraZoomLevel(
+            device: cameraDevice,
+            level: x / cameraZoomLevelToXScale,
+            rate: rate
+        ))
     }
 
     private func stopCameraZoom() -> Float? {
-        return cameraZoomLevelToX(media.stopCameraZoomLevel())
+        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
     }
 
     private func cameraZoomLevelToX(_ level: Float?) -> Float? {
