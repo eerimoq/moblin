@@ -11,15 +11,16 @@ enum ReplaySpeed {
 }
 
 protocol ReplayDelegate: AnyObject {
-    func replayOutputFrame(image: UIImage)
+    func replayOutputFrame(image: UIImage, video: URL, offset: Double)
 }
 
 private protocol ReaderDelegate: AnyObject {
-    func readerOutputFrame(image: UIImage)
+    func readerOutputFrame(image: UIImage, video: URL, offset: Double)
 }
 
 private class Reader {
     private let video: URL
+    private let offset: Double
     weak var delegate: ReaderDelegate?
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
@@ -27,6 +28,7 @@ private class Reader {
 
     init(video: URL, offset: Double, delegate: ReaderDelegate) throws {
         self.video = video
+        self.offset = offset
         self.delegate = delegate
         try createReader(offset: offset)
     }
@@ -69,7 +71,7 @@ private class Reader {
         }
         let ciImage = CIImage(cvPixelBuffer: sampleBuffer.imageBuffer!)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
-        delegate?.readerOutputFrame(image: UIImage(cgImage: cgImage))
+        delegate?.readerOutputFrame(image: UIImage(cgImage: cgImage), video: video, offset: offset)
     }
 }
 
@@ -99,7 +101,7 @@ class Replay {
 }
 
 extension Replay: ReaderDelegate {
-    func readerOutputFrame(image: UIImage) {
-        delegate?.replayOutputFrame(image: image)
+    func readerOutputFrame(image: UIImage, video: URL, offset: Double) {
+        delegate?.replayOutputFrame(image: image, video: video, offset: offset)
     }
 }

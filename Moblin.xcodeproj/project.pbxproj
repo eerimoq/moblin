@@ -51,6 +51,7 @@
 		03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */; };
 		031764692DB60558000080A5 /* ReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031764682DB60554000080A5 /* ReplayView.swift */; };
 		0317646B2DB6239A000080A5 /* Replay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317646A2DB62398000080A5 /* Replay.swift */; };
+		0317646D2DB66CD5000080A5 /* ReplayEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317646C2DB66CD1000080A5 /* ReplayEffect.swift */; };
 		031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */; };
 		0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */; };
 		0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */; };
@@ -611,6 +612,7 @@
 		03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRistSettingsView.swift; sourceTree = "<group>"; };
 		031764682DB60554000080A5 /* ReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayView.swift; sourceTree = "<group>"; };
 		0317646A2DB62398000080A5 /* Replay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replay.swift; sourceTree = "<group>"; };
+		0317646C2DB66CD1000080A5 /* ReplayEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayEffect.swift; sourceTree = "<group>"; };
 		031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAudioSettingsView.swift; sourceTree = "<group>"; };
 		0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtAdaptiveBitrateSettingsView.swift; sourceTree = "<group>"; };
 		0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtConnectionPriorityView.swift; sourceTree = "<group>"; };
@@ -2514,6 +2516,7 @@
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
 				038C0F682C312C3900A258C6 /* PollEffect.swift */,
 				030499642C4039EF003488F4 /* QrCodeEffect.swift */,
+				0317646C2DB66CD1000080A5 /* ReplayEffect.swift */,
 				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
@@ -3284,6 +3287,7 @@
 				03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */,
 				0359F8ED2BD3DA61005BFDA8 /* RtmpHandshake.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
+				0317646D2DB66CD5000080A5 /* ReplayEffect.swift in Sources */,
 				03A9D1332C0E65A400F0B917 /* SrtlaServer.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
 				03D37EE02CE0892B006D14C2 /* UrlSession.swift in Sources */,

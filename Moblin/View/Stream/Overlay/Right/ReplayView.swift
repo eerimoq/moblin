@@ -34,6 +34,11 @@ struct StreamOverlayRightReplayView: View {
                        }
                 Button {
                     playing.toggle()
+                    if playing {
+                        model.replayPlay()
+                    } else {
+                        model.replayStop()
+                    }
                 } label: {
                     Image(systemName: playStopImage())
                         .frame(width: 30)

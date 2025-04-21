@@ -762,6 +762,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private var replay: Replay?
     @Published var replayImage: UIImage?
+    private var replayVideo: URL?
+    private var replayOffset: Double?
 
     @Published var remoteControlStatus = noValue
 
@@ -852,6 +854,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var twinEffect = TwinEffect()
     private var pixellateEffect = PixellateEffect(strength: 0.0)
     private var pollEffect = PollEffect()
+    private var replayEffect: ReplayEffect?
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
@@ -1179,6 +1182,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setReplayPosition(offset: Double) {
         replay?.seek(offset: offset)
+    }
+
+    func replayPlay() {
+        guard let replayVideo, let replayOffset else {
+            return
+        }
+        replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 5)
+        media.registerEffect(replayEffect!)
+    }
+
+    func replayStop() {
+        guard let replayEffect else {
+            return
+        }
+        media.unregisterEffect(replayEffect)
+        self.replayEffect = nil
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
@@ -11565,9 +11584,11 @@ private func videoCaptureError() -> String {
 }
 
 extension Model: ReplayDelegate {
-    func replayOutputFrame(image: UIImage) {
+    func replayOutputFrame(image: UIImage, video: URL, offset: Double) {
         DispatchQueue.main.async {
             self.replayImage = image
+            self.replayVideo = video
+            self.replayOffset = offset
         }
     }
 }
