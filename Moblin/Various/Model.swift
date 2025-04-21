@@ -1169,7 +1169,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replay = nil
         replayImage = nil
         guard let currentRecording else {
-            logger.info("replay: Not recording")
+            makeErrorToast(title: "Replay only works when recording")
             return
         }
         replay = Replay(recording: currentRecording, offset: 20, delegate: self)
