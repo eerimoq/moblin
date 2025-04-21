@@ -5,6 +5,7 @@ struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var cameraSwitchRemoveBlackish: Float
     @State var dataRateLimitFactor: Float
+    @State var recordSegmentLength: Double
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
@@ -137,6 +138,23 @@ struct DebugSettingsView: View {
                     DjiGimbalDevicesSettingsView()
                 } label: {
                     IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI gimbals"))
+                }
+                HStack {
+                    Text("Record segment length")
+                    Slider(
+                        value: $recordSegmentLength,
+                        in: 1 ... 5,
+                        step: 0.5,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.debug.recordSegmentLength = recordSegmentLength
+                            model.setRecordSegmentLength()
+                        }
+                    )
+                    Text(formatOneDecimal(Float(recordSegmentLength)))
+                        .frame(width: 40)
                 }
             } header: {
                 Text("Experimental")

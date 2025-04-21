@@ -2041,6 +2041,7 @@ class SettingsDebug: Codable {
     var externalDisplayChat: Bool? = false
     var videoSourceWidgetTrackFace: Bool? = false
     var srtlaBatchSendEnabled: Bool? = true
+    var recordSegmentLength: Double? = 5.0
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -5162,6 +5163,10 @@ final class Settings {
         }
         if realDatabase.tesla!.enabled == nil {
             realDatabase.tesla!.enabled = true
+            store()
+        }
+        if realDatabase.debug.recordSegmentLength == nil {
+            realDatabase.debug.recordSegmentLength = 5.0
             store()
         }
     }

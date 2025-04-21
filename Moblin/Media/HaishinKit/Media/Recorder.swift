@@ -1,5 +1,7 @@
 import AVFoundation
 
+var recordSegmentLength = 5.0
+
 protocol IORecorderDelegate: AnyObject {
     func recorderFinished()
 }
@@ -265,7 +267,7 @@ class Recorder: NSObject {
         writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
         writer?.shouldOptimizeForNetworkUse = true
         writer?.outputFileTypeProfile = .mpeg4AppleHLS
-        writer?.preferredOutputSegmentInterval = CMTime(seconds: 5, preferredTimescale: 1)
+        writer?.preferredOutputSegmentInterval = CMTime(seconds: recordSegmentLength, preferredTimescale: 1)
         writer?.delegate = self
         writer?.initialSegmentStartTime = .zero
         try? Data().write(to: url)
