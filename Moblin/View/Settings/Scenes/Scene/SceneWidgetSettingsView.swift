@@ -161,6 +161,20 @@ struct SceneWidgetSettingsView: View {
                 } label: {
                     Text("Widget")
                 }
+                if widget.type == .scene,
+                   let scene = model.database.scenes.first(where: { $0.id == widget.scene!.sceneId })
+                {
+                    NavigationLink {
+                        SceneSettingsView(
+                            scene: scene,
+                            name: scene.name,
+                            selectedRotation: scene.videoSourceRotation!,
+                            numericInput: model.database.sceneNumericInput!
+                        )
+                    } label: {
+                        Text("Scene")
+                    }
+                }
             } header: {
                 Text("Shortcut")
             }
