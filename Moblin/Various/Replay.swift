@@ -14,19 +14,19 @@ protocol ReplayDelegate: AnyObject {
     func replayOutputFrame(image: UIImage, video: URL, offset: Double)
 }
 
-private protocol ReaderDelegate: AnyObject {
-    func readerOutputFrame(image: UIImage, video: URL, offset: Double)
+private protocol JobDelegate: AnyObject {
+    func jobCompleted(image: UIImage?, video: URL, offset: Double)
 }
 
-private class Reader {
+private class Job {
     private let video: URL
     private let offset: Double
-    weak var delegate: ReaderDelegate?
+    weak var delegate: JobDelegate?
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
     private let context = CIContext()
 
-    init(video: URL, offset: Double, delegate: ReaderDelegate) throws {
+    init(video: URL, offset: Double, delegate: JobDelegate) throws {
         self.video = video
         self.offset = offset
         self.delegate = delegate
@@ -49,10 +49,12 @@ private class Reader {
     private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
         if let error {
             logger.info("replay: Failed to get video track with error: \(error)")
+            delegate?.jobCompleted(image: nil, video: video, offset: offset)
             return
         }
         guard let track = tracks?.first else {
             logger.info("replay: No video track in file")
+            delegate?.jobCompleted(image: nil, video: video, offset: offset)
             return
         }
         let outputSettings: [String: Any] = [
@@ -62,16 +64,18 @@ private class Reader {
         ] as [String: Any]
         trackOutput = AVAssetReaderTrackOutput(track: track, outputSettings: outputSettings)
         guard let trackOutput else {
+            delegate?.jobCompleted(image: nil, video: video, offset: offset)
             return
         }
         reader?.add(trackOutput)
         reader?.startReading()
         guard let sampleBuffer = trackOutput.copyNextSampleBuffer() else {
+            delegate?.jobCompleted(image: nil, video: video, offset: offset)
             return
         }
         let ciImage = CIImage(cvPixelBuffer: sampleBuffer.imageBuffer!)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
-        delegate?.readerOutputFrame(image: UIImage(cgImage: cgImage), video: video, offset: offset)
+        delegate?.jobCompleted(image: UIImage(cgImage: cgImage), video: video, offset: offset)
     }
 }
 
@@ -79,29 +83,41 @@ class Replay {
     private let recording: Recording
     private let startTime: Double
     private weak var delegate: ReplayDelegate?
-    private var reader: Reader?
+    private var job: Job?
+    private var pendingOffset: Double?
 
     init(recording: Recording, offset: Double, delegate: ReplayDelegate) {
         self.recording = recording
         startTime = recording.currentLength() - 30
         self.delegate = delegate
-        seekInternal(offset: offset)
+        seek(offset: offset)
     }
 
     func seek(offset: Double) {
         replayQueue.async { [weak self] in
-            self?.seekInternal(offset: offset)
+            guard let self else {
+                return
+            }
+            self.pendingOffset = offset
+            self.tryNextJob()
         }
     }
 
-    private func seekInternal(offset: Double) {
-        reader?.delegate = nil
-        reader = try? Reader(video: recording.url(), offset: startTime + offset, delegate: self)
+    private func tryNextJob() {
+        guard job == nil, let pendingOffset else {
+            return
+        }
+        job = try? Job(video: recording.url(), offset: startTime + pendingOffset, delegate: self)
+        self.pendingOffset = nil
     }
 }
 
-extension Replay: ReaderDelegate {
-    func readerOutputFrame(image: UIImage, video: URL, offset: Double) {
-        delegate?.replayOutputFrame(image: image, video: video, offset: offset)
+extension Replay: JobDelegate {
+    func jobCompleted(image: UIImage?, video: URL, offset: Double) {
+        if let image {
+            delegate?.replayOutputFrame(image: image, video: video, offset: offset)
+        }
+        job = nil
+        tryNextJob()
     }
 }
