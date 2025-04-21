@@ -1165,9 +1165,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return showCameraPreview
     }
 
-    func startReplay() {
+    func startReplay(resetImage: Bool = true) {
         replay = nil
-        replayImage = nil
+        if resetImage {
+            replayImage = nil
+        }
         guard let currentRecording else {
             makeErrorToast(title: "Replay only works when recording")
             return

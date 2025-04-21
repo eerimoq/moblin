@@ -33,6 +33,13 @@ struct StreamOverlayRightReplayView: View {
                            model.setReplayPosition(offset: $0)
                        }
                 Button {
+                    model.startReplay(resetImage: false)
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .frame(width: 30)
+                        .font(.title)
+                }
+                Button {
                     playing.toggle()
                     if playing {
                         model.replayPlay()
