@@ -20,7 +20,7 @@ class MediaPlayer {
     private var mediaStorage: MediaPlayerStorage
     private var playing = false
     private var currentFileIndex = 0
-    private var fileDuration = 0.0
+    private var assetDuration = 0.0
     private var seeking = false
     private var startVideoTime: CMTime = .zero
     private var latestVideoTime: CMTime = .zero
@@ -119,7 +119,7 @@ class MediaPlayer {
             playerId: settings.id,
             name: filename,
             playing: playing,
-            position: 100 * time / fileDuration,
+            position: 100 * time / assetDuration,
             time: formatTime(time)
         )
     }
@@ -148,7 +148,7 @@ class MediaPlayer {
                                          name: currentFile.name,
                                          playing: playing,
                                          position: position,
-                                         time: formatTime(Double(position) / 100 * fileDuration))
+                                         time: formatTime(Double(position) / 100 * assetDuration))
     }
 
     private func loadCurrentFile() {
@@ -177,7 +177,7 @@ class MediaPlayer {
         } catch {
             logger.info("media-player: Failed to create reader with error: \(error)")
         }
-        fileDuration = max(asset.duration.seconds, 1)
+        assetDuration = max(asset.duration.seconds, 1)
         asset.loadTracks(withMediaType: .video) { tracks, error in
             mediaPlayerQueue.async {
                 self.loadVideoTrackCompletion(tracks: tracks, error: error)
