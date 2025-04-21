@@ -84,6 +84,11 @@ class Recording: Identifiable, Codable {
         )
     }
 
+    func currentLength() -> Double {
+        // Not perfect as segments are not written that often.
+        return Date().timeIntervalSince(startTime)
+    }
+
     func url() -> URL {
         return getRecordingsDirectory().appending(component: name())
     }

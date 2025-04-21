@@ -397,6 +397,9 @@ struct RightOverlayBottomView: View {
                     if model.showingCamera {
                         StreamOverlayRightCameraSettingsControlView()
                     }
+                    if model.showingReplay {
+                        StreamOverlayRightReplayView()
+                    }
                     if database.show.zoomPresets && model.hasZoom {
                         StreamOverlayRightZoomPresetSelctorView(width: width)
                     }

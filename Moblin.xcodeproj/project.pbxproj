@@ -49,6 +49,8 @@
 		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
 		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
 		03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */; };
+		031764692DB60558000080A5 /* ReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031764682DB60554000080A5 /* ReplayView.swift */; };
+		0317646B2DB6239A000080A5 /* Replay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317646A2DB62398000080A5 /* Replay.swift */; };
 		031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */; };
 		0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */; };
 		0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */; };
@@ -607,6 +609,8 @@
 		0315A37B2AA439B500295443 /* NameEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditView.swift; sourceTree = "<group>"; };
 		0315A37D2AA43DCC00295443 /* TextEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditView.swift; sourceTree = "<group>"; };
 		03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRistSettingsView.swift; sourceTree = "<group>"; };
+		031764682DB60554000080A5 /* ReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayView.swift; sourceTree = "<group>"; };
+		0317646A2DB62398000080A5 /* Replay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replay.swift; sourceTree = "<group>"; };
 		031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAudioSettingsView.swift; sourceTree = "<group>"; };
 		0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtAdaptiveBitrateSettingsView.swift; sourceTree = "<group>"; };
 		0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtConnectionPriorityView.swift; sourceTree = "<group>"; };
@@ -1506,11 +1510,12 @@
 		032B4ED22C3490DF00204547 /* Right */ = {
 			isa = PBXGroup;
 			children = (
-				03A3B0A82D376F7D00BD4787 /* StreamOverlayRightPixellateView.swift */,
 				032B4EDB2C3491F200204547 /* CameraSettingsControlView.swift */,
 				032B4ED32C34910A00204547 /* MediaPlayerControlsView.swift */,
+				031764682DB60554000080A5 /* ReplayView.swift */,
 				032B4ED62C34918E00204547 /* SceneSelectorView.swift */,
 				032B4EDD2C34927C00204547 /* SegmentedPicker.swift */,
+				03A3B0A82D376F7D00BD4787 /* StreamOverlayRightPixellateView.swift */,
 				032B4ED92C3491A100204547 /* ZoomPresetSelctorView.swift */,
 			);
 			path = Right;
@@ -2652,6 +2657,7 @@
 				03C357302D048FCD00B8B29F /* MusicIdentifier.swift */,
 				033BEAC92C101B52005F4E06 /* NetworkInterfaceTypeSelector.swift */,
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
+				0317646A2DB62398000080A5 /* Replay.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03ADC6FC2CDDE00200E625BF /* SimpleTimer.swift */,
 				03510DDB2C7661A400FD3A27 /* SpeechToText.swift */,
@@ -3554,6 +3560,7 @@
 				0359F8AE2BD3DA61005BFDA8 /* VideoDecoder.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
+				031764692DB60558000080A5 /* ReplayView.swift in Sources */,
 				030621E02D8605FD001EE50B /* DjiGimbalDeviceScanner.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				0342F1A12C627A70004DD3EA /* MirlClient.swift in Sources */,
@@ -3612,6 +3619,7 @@
 				03BDE2262B24656400DF193A /* StreamObsRemoteControlSettingsView.swift in Sources */,
 				032B4ED72C34918E00204547 /* SceneSelectorView.swift in Sources */,
 				03A930112C14460600BB9679 /* AudioSpecificConfig.swift in Sources */,
+				0317646B2DB6239A000080A5 /* Replay.swift in Sources */,
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				038605352D7DF94F00B9C3CE /* CyclingPowerDeviceScannerSettingsView.swift in Sources */,
 				031E9FC12C5B1D87009FF4D8 /* TwitchApi.swift in Sources */,

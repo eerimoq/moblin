@@ -547,6 +547,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var mediaPlayerSeeking = false
 
     @Published var showingCamera = false
+    @Published var showingReplay = false
     @Published var showingCameraBias = false
     @Published var showingCameraWhiteBalance = false
     @Published var showingCameraIso = false
@@ -758,6 +759,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var averageSpeed = 0.0
     private var averageSpeedStartTime: ContinuousClock.Instant = .now
     private var averageSpeedStartDistance = 0.0
+
+    private var replay: Replay?
+    @Published var replayImage: UIImage?
 
     @Published var remoteControlStatus = noValue
 
@@ -1156,6 +1160,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func updateShowCameraPreview() -> Bool {
         showCameraPreview = shouldShowCameraPreview()
         return showCameraPreview
+    }
+
+    func startReplay() {
+        replay = nil
+        replayImage = nil
+        guard let currentRecording else {
+            logger.info("replay: Not recording")
+            return
+        }
+        replay = Replay(recording: currentRecording, offset: 20, delegate: self)
+    }
+
+    func stopReplay() {
+        replay = nil
+        replayImage = nil
+    }
+
+    func setReplayPosition(offset: Double) {
+        replay?.seek(offset: offset)
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
@@ -11539,4 +11562,12 @@ private func videoCaptureError() -> String {
         String(localized: "Try to use single or low-energy cameras."),
         String(localized: "Try to lower stream FPS and resolution."),
     ].joined(separator: "\n")
+}
+
+extension Model: ReplayDelegate {
+    func replayOutputFrame(image: UIImage) {
+        DispatchQueue.main.async {
+            self.replayImage = image
+        }
+    }
 }

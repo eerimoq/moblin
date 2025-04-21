@@ -139,6 +139,11 @@ struct DebugSettingsView: View {
                 } label: {
                     IconAndTextView(image: "appletvremote.gen1", text: String(localized: "DJI gimbals"))
                 }
+                Toggle("Replay", isOn: Binding(get: {
+                    model.database.debug.replay!
+                }, set: { value in
+                    model.database.debug.replay = value
+                }))
                 HStack {
                     Text("Record segment length")
                     Slider(
