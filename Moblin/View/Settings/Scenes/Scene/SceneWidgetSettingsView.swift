@@ -164,28 +164,30 @@ struct SceneWidgetSettingsView: View {
             } header: {
                 Text("Shortcut")
             }
-            Section {
-                Toggle("Numeric input", isOn: $numericInput)
-                    .onChange(of: numericInput) { value in
-                        model.database.sceneNumericInput = value
-                    }
-            }
-            Section {
-                HStack {
-                    Spacer()
-                    Button("Export to clipboard") {
-                        exportToClipboard()
-                    }
-                    Spacer()
+            if canWidgetExpand(widget: widget) {
+                Section {
+                    Toggle("Numeric input", isOn: $numericInput)
+                        .onChange(of: numericInput) { value in
+                            model.database.sceneNumericInput = value
+                        }
                 }
-            }
-            Section {
-                HStack {
-                    Spacer()
-                    Button("Import from clipboard") {
-                        importFromClipboard()
+                Section {
+                    HStack {
+                        Spacer()
+                        Button("Export to clipboard") {
+                            exportToClipboard()
+                        }
+                        Spacer()
                     }
-                    Spacer()
+                }
+                Section {
+                    HStack {
+                        Spacer()
+                        Button("Import from clipboard") {
+                            importFromClipboard()
+                        }
+                        Spacer()
+                    }
                 }
             }
         }
