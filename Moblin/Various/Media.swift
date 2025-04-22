@@ -601,6 +601,10 @@ final class Media: NSObject {
         netStream?.registerVideoEffect(effect)
     }
 
+    func registerEffectBack(_ effect: VideoEffect) {
+        netStream?.registerVideoEffectBack(effect)
+    }
+
     func unregisterEffect(_ effect: VideoEffect) {
         netStream?.unregisterVideoEffect(effect)
     }

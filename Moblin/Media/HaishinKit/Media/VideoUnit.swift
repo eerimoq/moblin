@@ -491,6 +491,12 @@ final class VideoUnit: NSObject {
         }
     }
 
+    func registerEffectBack(_ effect: VideoEffect) {
+        mixerLockQueue.async {
+            self.registerEffectBackInner(effect)
+        }
+    }
+
     func unregisterEffect(_ effect: VideoEffect) {
         mixerLockQueue.async {
             self.unregisterEffectInner(effect)
@@ -1030,6 +1036,12 @@ final class VideoUnit: NSObject {
     private func registerEffectInner(_ effect: VideoEffect) {
         if !effects.contains(effect) {
             effects.append(effect)
+        }
+    }
+
+    private func registerEffectBackInner(_ effect: VideoEffect) {
+        if !effects.contains(effect) {
+            effects.insert(effect, at: 0)
         }
     }
 

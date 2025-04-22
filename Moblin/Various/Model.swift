@@ -1190,8 +1190,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let replayVideo, let replayOffset else {
             return
         }
-        replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 5)
-        media.registerEffect(replayEffect!)
+        replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 8)
+        media.registerEffectBack(replayEffect!)
     }
 
     func replayStop() {

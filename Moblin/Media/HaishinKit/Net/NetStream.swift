@@ -155,6 +155,10 @@ open class NetStream: NSObject {
         mixer.video.registerEffect(effect)
     }
 
+    func registerVideoEffectBack(_ effect: VideoEffect) {
+        mixer.video.registerEffectBack(effect)
+    }
+
     func unregisterVideoEffect(_ effect: VideoEffect) {
         mixer.video.unregisterEffect(effect)
     }
