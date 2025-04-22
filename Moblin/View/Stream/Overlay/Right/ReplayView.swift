@@ -3,10 +3,9 @@ import SwiftUI
 struct StreamOverlayRightReplayView: View {
     @EnvironmentObject var model: Model
     @State var position = 20.0
-    @State var playing = false
 
     private func playStopImage() -> String {
-        if playing {
+        if model.replayPlaying {
             return "stop"
         } else {
             return "play"
@@ -19,7 +18,7 @@ struct StreamOverlayRightReplayView: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 200)
+                    .frame(width: 300)
                     .cornerRadius(7)
             }
             HStack {
@@ -40,8 +39,8 @@ struct StreamOverlayRightReplayView: View {
                         .font(.title)
                 }
                 Button {
-                    playing.toggle()
-                    if playing {
+                    model.replayPlaying.toggle()
+                    if model.replayPlaying {
                         model.replayPlay()
                     } else {
                         model.replayStop()

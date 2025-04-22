@@ -2,7 +2,7 @@ import AVFoundation
 import CoreImage
 import UIKit
 
-private let replayQueue = DispatchQueue(label: "com.eerimoq.replay")
+private let replayQueue = DispatchQueue(label: "com.eerimoq.replay", qos: .background)
 
 enum ReplaySpeed {
     case one

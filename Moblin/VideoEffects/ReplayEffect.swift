@@ -7,6 +7,10 @@ import Vision
 private let replayImagesQueue = DispatchQueue(label: "com.eerimoq.replay-effect-images")
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay-effect")
 
+protocol ReplayEffectDelegate: AnyObject {
+    func replayEffectCompleted()
+}
+
 private struct Image {
     let image: CIImage?
     let offset: Double?
@@ -118,8 +122,10 @@ final class ReplayEffect: VideoEffect {
     private var playbackCompleted = false
     private let reader: Reader
     private var startPresentationTimeStamp: Double?
+    private weak var delegate: ReplayEffectDelegate?
 
-    init(video: URL, start: Double, stop: Double) {
+    init(video: URL, start: Double, stop: Double, delegate: ReplayEffectDelegate) {
+        self.delegate = delegate
         reader = Reader(video: video, start: start, stop: stop)
     }
 
@@ -134,7 +140,10 @@ final class ReplayEffect: VideoEffect {
         }
         let offset = info.presentationTimeStamp.seconds - startPresentationTimeStamp!
         let replayImage = reader.getImage(offset: offset)
-        playbackCompleted = replayImage.isLast
+        if replayImage.isLast {
+            playbackCompleted = true
+            delegate?.replayEffectCompleted()
+        }
         return replayImage.image ?? image
     }
 

@@ -764,6 +764,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var replayImage: UIImage?
     private var replayVideo: URL?
     private var replayOffset: Double?
+    @Published var replayPlaying = false
 
     @Published var remoteControlStatus = noValue
 
@@ -1190,7 +1191,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let replayVideo, let replayOffset else {
             return
         }
-        replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 8)
+        replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 8, delegate: self)
         media.registerEffectBack(replayEffect!)
     }
 
@@ -11591,6 +11592,14 @@ extension Model: ReplayDelegate {
             self.replayImage = image
             self.replayVideo = video
             self.replayOffset = offset
+        }
+    }
+}
+
+extension Model: ReplayEffectDelegate {
+    func replayEffectCompleted() {
+        DispatchQueue.main.async {
+            self.replayPlaying = false
         }
     }
 }
