@@ -282,9 +282,6 @@ struct QuickButtonsInnerView: View {
     }
 
     private func replayAction(state: ButtonState) {
-        guard model.database.debug.replay! else {
-            return
-        }
         model.showingReplay.toggle()
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
