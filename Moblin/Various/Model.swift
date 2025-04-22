@@ -10815,6 +10815,9 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         DispatchQueue.main.async {
+            guard self.stream.twitchShowFollows! else {
+                return
+            }
             let text = String(localized: "just followed!")
             self.makeToast(title: "\(event.user_name) \(text)")
             self.playAlert(alert: .twitchFollow(event))

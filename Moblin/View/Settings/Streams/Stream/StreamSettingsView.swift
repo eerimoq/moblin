@@ -4,10 +4,12 @@ struct StreamPlatformsSettingsView: View {
     var stream: SettingsStream
 
     var body: some View {
-        NavigationLink { StreamTwitchSettingsView(
-            stream: stream,
-            loggedIn: stream.twitchLoggedIn!
-        ) } label: {
+        NavigationLink {
+            StreamTwitchSettingsView(
+                stream: stream,
+                loggedIn: stream.twitchLoggedIn!
+            )
+        } label: {
             Text("Twitch")
         }
         NavigationLink {

@@ -113627,6 +113627,12 @@
         }
       }
     },
+    "Show follows" : {
+
+    },
+    "Show follows in chat, as toast and in alert widgets." : {
+
+    },
     "Show full date" : {
       "localizations" : {
         "de" : {

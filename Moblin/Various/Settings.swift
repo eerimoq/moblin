@@ -401,6 +401,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
+    var twitchShowFollows: Bool? = true
     var twitchAccessToken: String? = ""
     var twitchLoggedIn: Bool? = false
     var twitchRewards: [SettingsStreamTwitchReward]? = []
@@ -5181,6 +5182,10 @@ final class Settings {
         }
         if realDatabase.debug.recordSegmentLength == nil {
             realDatabase.debug.recordSegmentLength = 5.0
+            store()
+        }
+        for stream in realDatabase.streams where stream.twitchShowFollows == nil {
+            stream.twitchShowFollows = true
             store()
         }
     }
