@@ -2,7 +2,15 @@ import AVFoundation
 
 var recordSegmentLength = 5.0
 
-protocol IORecorderDelegate: AnyObject {
+struct RecorderDataSegment {
+    let data: Data
+    let startTime: Double
+    let duration: Double
+}
+
+protocol RecorderDelegate: AnyObject {
+    func recorderInitSegment(data: Data)
+    func recorderDataSegment(segment: RecorderDataSegment)
     func recorderFinished()
 }
 
@@ -17,7 +25,7 @@ class Recorder: NSObject {
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
-    weak var delegate: (any IORecorderDelegate)?
+    weak var delegate: RecorderDelegate?
 
     func setAudioChannelsMap(map: [Int: Int]) {
         mixerLockQueue.async {
@@ -312,9 +320,23 @@ class Recorder: NSObject {
 extension Recorder: AVAssetWriterDelegate {
     func assetWriter(_: AVAssetWriter,
                      didOutputSegmentData segmentData: Data,
-                     segmentType _: AVAssetSegmentType,
-                     segmentReport _: AVAssetSegmentReport?)
+                     segmentType: AVAssetSegmentType,
+                     segmentReport: AVAssetSegmentReport?)
     {
         fileHandle.value?.write(segmentData)
+        switch segmentType {
+        case .initialization:
+            delegate?.recorderInitSegment(data: segmentData)
+        case .separable:
+            if let report = segmentReport?.trackReports.first {
+                delegate?.recorderDataSegment(segment: RecorderDataSegment(
+                    data: segmentData,
+                    startTime: report.earliestPresentationTimeStamp.seconds,
+                    duration: report.duration.seconds
+                ))
+            }
+        default:
+            break
+        }
     }
 }

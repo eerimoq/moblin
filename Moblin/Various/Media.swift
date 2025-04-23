@@ -27,6 +27,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
     func mediaOnAttachCameraError()
     func mediaOnCaptureSessionError(_ message: String)
+    func mediaOnRecorderInitSegment(data: Data)
+    func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
@@ -972,6 +974,14 @@ extension Media: NetStreamDelegate {
 
     func streamAudio(_: NetStream, sampleBuffer: CMSampleBuffer) {
         delegate?.mediaOnAudioBuffer(sampleBuffer)
+    }
+
+    func streamRecorderInitSegment(data: Data) {
+        delegate?.mediaOnRecorderInitSegment(data: data)
+    }
+
+    func streamRecorderDataSegment(segment: RecorderDataSegment) {
+        delegate?.mediaOnRecorderDataSegment(segment: segment)
     }
 
     func streamRecorderFinished() {

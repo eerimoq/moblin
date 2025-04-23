@@ -760,11 +760,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var averageSpeedStartTime: ContinuousClock.Instant = .now
     private var averageSpeedStartDistance = 0.0
 
+    private var replayStarted = false
     private var replay: Replay?
     @Published var replayImage: UIImage?
+    private var replayHiddenImage: UIImage?
     private var replayVideo: URL?
     private var replayOffset: Double?
     @Published var replayPlaying = false
+    private var replayBuffer = ReplayBuffer()
 
     @Published var remoteControlStatus = noValue
 
@@ -1166,21 +1169,33 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return showCameraPreview
     }
 
-    func startReplay(resetImage: Bool = true) {
+    func startReplay(offset: Double, resetImage: Bool = true) {
         replay = nil
         if resetImage {
             replayImage = nil
         }
-        guard let currentRecording else {
+        guard currentRecording != nil else {
             makeErrorToast(title: "Replay only works when recording")
             return
         }
-        replay = Replay(recording: currentRecording, offset: 20, delegate: self)
+        replayStarted = true
+        replayBuffer.createFile { url, duration in
+            guard let url else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard self.replayStarted else {
+                    return
+                }
+                self.replay = Replay(url: url, duration: duration, offset: offset, delegate: self)
+            }
+        }
     }
 
     func stopReplay() {
         replay = nil
         replayImage = nil
+        replayStarted = false
     }
 
     func setReplayPosition(offset: Double) {
@@ -1191,16 +1206,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let replayVideo, let replayOffset else {
             return
         }
+        replayImageHide()
         replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 8, delegate: self)
         media.registerEffectBack(replayEffect!)
     }
 
     func replayStop() {
+        replayImageShow()
         guard let replayEffect else {
             return
         }
         media.unregisterEffect(replayEffect)
         self.replayEffect = nil
+    }
+
+    private func replayImageHide() {
+        replayHiddenImage = replayImage
+        replayImage = nil
+    }
+
+    private func replayImageShow() {
+        if replayHiddenImage != nil {
+            replayImage = replayHiddenImage
+            replayHiddenImage = nil
+        }
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
@@ -7491,6 +7520,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         makeErrorToastMain(title: message, subTitle: videoCaptureError())
     }
 
+    private func handleRecorderInitSegment(data: Data) {
+        replayBuffer.setInitSegment(data: data)
+    }
+
+    private func handleRecorderDataSegment(segment: RecorderDataSegment) {
+        replayBuffer.appendDataSegment(segment: segment)
+    }
+
     private func handleRecorderFinished() {}
 
     private func handleNoTorch() {
@@ -11451,6 +11488,14 @@ extension Model: MediaDelegate {
         handleCaptureSessionError(message: message)
     }
 
+    func mediaOnRecorderInitSegment(data: Data) {
+        handleRecorderInitSegment(data: data)
+    }
+
+    func mediaOnRecorderDataSegment(segment: RecorderDataSegment) {
+        handleRecorderDataSegment(segment: segment)
+    }
+
     func mediaOnRecorderFinished() {
         handleRecorderFinished()
     }
@@ -11595,6 +11640,7 @@ extension Model: ReplayDelegate {
             self.replayImage = image
             self.replayVideo = video
             self.replayOffset = offset
+            self.replayHiddenImage = nil
         }
     }
 }
@@ -11603,6 +11649,7 @@ extension Model: ReplayEffectDelegate {
     func replayEffectCompleted() {
         DispatchQueue.main.async {
             self.replayPlaying = false
+            self.replayImageShow()
         }
     }
 }

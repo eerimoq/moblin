@@ -1,4 +1,5 @@
 import AVFoundation
+import Collections
 import CoreImage
 import UIKit
 
@@ -80,15 +81,15 @@ private class Job {
 }
 
 class Replay {
-    private let recording: Recording
-    private let startTime: Double
+    private let url: URL
+    private let duration: Double
     private weak var delegate: ReplayDelegate?
     private var job: Job?
     private var pendingOffset: Double?
 
-    init(recording: Recording, offset: Double, delegate: ReplayDelegate) {
-        self.recording = recording
-        startTime = recording.currentLength() - 30
+    init(url: URL, duration: Double, offset: Double, delegate: ReplayDelegate) {
+        self.url = url
+        self.duration = duration
         self.delegate = delegate
         seek(offset: offset)
     }
@@ -107,7 +108,8 @@ class Replay {
         guard job == nil, let pendingOffset else {
             return
         }
-        job = try? Job(video: recording.url(), offset: startTime + pendingOffset, delegate: self)
+        let offsetFromEnd = 30 - pendingOffset
+        job = try? Job(video: url, offset: duration - offsetFromEnd, delegate: self)
         self.pendingOffset = nil
     }
 }
@@ -119,5 +121,75 @@ extension Replay: JobDelegate {
         }
         job = nil
         tryNextJob()
+    }
+}
+
+class ReplayBuffer {
+    private var initSegment: Data?
+    private var dataSegments: Deque<RecorderDataSegment> = []
+
+    func setInitSegment(data: Data) {
+        replayQueue.async {
+            self.setInitSegmentInternal(data: data)
+        }
+    }
+
+    func appendDataSegment(segment: RecorderDataSegment) {
+        replayQueue.async {
+            self.appendDataSegmentInternal(segment: segment)
+        }
+    }
+
+    func createFile(completion: @escaping (URL?, Double) -> Void) {
+        replayQueue.async {
+            self.createFileInternal(completion: completion)
+        }
+    }
+
+    private func setInitSegmentInternal(data: Data) {
+        initSegment = data
+        dataSegments.removeAll()
+    }
+
+    private func appendDataSegmentInternal(segment: RecorderDataSegment) {
+        dataSegments.append(segment)
+        while stopTime() - startTime() > 30 {
+            dataSegments.removeFirst()
+        }
+    }
+
+    private func createFileInternal(completion: @escaping (URL?, Double) -> Void) {
+        guard let initSegment, !dataSegments.isEmpty else {
+            return completion(nil, 0)
+        }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("replay.mp4")
+        do {
+            try Data().write(to: url)
+            let handle = try FileHandle(forWritingTo: url)
+            handle.write(initSegment)
+            var duration = 0.0
+            for segment in dataSegments {
+                handle.write(segment.data)
+                duration += segment.duration
+            }
+            return completion(url, duration)
+        } catch {
+            logger.info("replay: Error: \(error)")
+            return completion(nil, 0)
+        }
+    }
+
+    private func startTime() -> Double {
+        guard let segment = dataSegments.first else {
+            return 0
+        }
+        return segment.startTime
+    }
+
+    private func stopTime() -> Double {
+        guard let segment = dataSegments.last else {
+            return 0
+        }
+        return segment.startTime + segment.duration
     }
 }

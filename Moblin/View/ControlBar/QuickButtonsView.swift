@@ -287,7 +287,7 @@ struct QuickButtonsInnerView: View {
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
         model.updateButtonStates()
         if model.showingReplay {
-            model.startReplay()
+            model.startReplay(offset: 20)
         } else {
             model.stopReplay()
         }

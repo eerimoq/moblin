@@ -9,6 +9,8 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
     func streamVideoAttachCameraError(_ stream: NetStream)
     func streamVideoCaptureSessionError(_ stream: NetStream, _ message: String)
+    func streamRecorderInitSegment(data: Data)
+    func streamRecorderDataSegment(segment: RecorderDataSegment)
     func streamRecorderFinished()
     func streamAudio(_ stream: NetStream, sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
@@ -245,6 +247,14 @@ extension NetStream: MixerDelegate {
 
     func mixerCaptureSessionError(message: String) {
         delegate?.streamVideoCaptureSessionError(self, message)
+    }
+
+    func mixerRecorderInitSegment(data: Data) {
+        delegate?.streamRecorderInitSegment(data: data)
+    }
+
+    func mixerRecorderDataSegment(segment: RecorderDataSegment) {
+        delegate?.streamRecorderDataSegment(segment: segment)
     }
 
     func mixerRecorderFinished() {

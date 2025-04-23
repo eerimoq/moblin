@@ -8,6 +8,8 @@ protocol MixerDelegate: AnyObject {
     func mixerVideo(presentationTimestamp: Double)
     func mixerVideo(failedEffect: String?)
     func mixerVideo(lowFpsImage: Data?, frameNumber: UInt64)
+    func mixerRecorderInitSegment(data: Data)
+    func mixerRecorderDataSegment(segment: RecorderDataSegment)
     func mixerRecorderFinished()
     func mixer(findVideoFormatError: String, activeFormat: String)
     func mixerAttachCameraError()
@@ -69,7 +71,15 @@ class Mixer {
     }
 }
 
-extension Mixer: IORecorderDelegate {
+extension Mixer: RecorderDelegate {
+    func recorderInitSegment(data: Data) {
+        delegate?.mixerRecorderInitSegment(data: data)
+    }
+
+    func recorderDataSegment(segment: RecorderDataSegment) {
+        delegate?.mixerRecorderDataSegment(segment: segment)
+    }
+
     func recorderFinished() {
         delegate?.mixerRecorderFinished()
     }
