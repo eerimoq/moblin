@@ -1506,7 +1506,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         fixAlertMedias()
         setAllowVideoRangePixelFormat()
         setSrtlaBatchSend()
-        setRecordSegmentLength()
         setExternalDisplayContent()
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
@@ -1972,10 +1971,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setSrtlaBatchSend() {
         srtlaBatchSend = database.debug.srtlaBatchSendEnabled!
-    }
-
-    func setRecordSegmentLength() {
-        recordSegmentLength = database.debug.recordSegmentLength!
     }
 
     func setExternalDisplayContent() {
