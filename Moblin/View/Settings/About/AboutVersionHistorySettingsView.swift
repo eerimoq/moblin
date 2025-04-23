@@ -8,7 +8,7 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.397.0", date: "2025-04-19", changes: [
+    Version(version: "0.397.0", date: "2025-04-23", changes: [
         "• New SRT(LA) batch send.",
         "• New (Apple's) websocket server in Moblink streamer and Remote control assistant.",
         "• Chat bot command to trigger Apple reaction when using front camera.",
@@ -36,6 +36,10 @@ private let versions = [
         "• Video at top when streaming landscape with UI in portrait.",
         "• Tesla enable toggle.",
         "• Korean translation updated. ✍️ 위인터",
+        "• Bitrate status icon background color based on bitrate. 💡 AUTdany",
+        "• Fix zoom switch to for low energy cameras.",
+        "• Fix RTMP server crash with GoPro Bluetooth mic. 🐛 PabloGz",
+        "• Initial replay support.",
     ]),
     Version(version: "0.396.0", date: "2025-03-23", changes: [
         "• German translation updated. ✍️ pjeweb and MaurisonX",
