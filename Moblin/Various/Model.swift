@@ -764,10 +764,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var replay: Replay?
     @Published var replayImage: UIImage?
     private var replayHiddenImage: UIImage?
-    private var replayVideo: URL?
+    private var replayVideo: ReplayBufferFile?
     private var replayOffset: Double?
     @Published var replayPlaying = false
     private var replayBuffer = ReplayBuffer()
+    @Published var replayPosition = 10.0
+    @Published var replaySpeed: SettingsReplaySpeed? = .one
 
     @Published var remoteControlStatus = noValue
 
@@ -1169,7 +1171,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return showCameraPreview
     }
 
-    func startReplay(offset: Double, resetImage: Bool = true) {
+    func startReplay(resetImage: Bool = true) {
         replay = nil
         if resetImage {
             replayImage = nil
@@ -1179,15 +1181,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         replayStarted = true
-        replayBuffer.createFile { url, duration in
-            guard let url else {
+        let offset = 30 - replayPosition
+        replayBuffer.createFile { file, duration in
+            guard let file else {
                 return
             }
             DispatchQueue.main.async {
                 guard self.replayStarted else {
                     return
                 }
-                self.replay = Replay(url: url, duration: duration, offset: offset, delegate: self)
+                self.replay = Replay(video: file, duration: duration, offset: offset, delegate: self)
             }
         }
     }
@@ -1198,20 +1201,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replayStarted = false
     }
 
+    func replaySpeedChanged() {
+        database.replay!.speed = replaySpeed ?? .one
+    }
+
     func setReplayPosition(offset: Double) {
+        database.replay!.position = 30 - offset
         replay?.seek(offset: offset)
     }
 
-    func replayPlay() {
+    func replayPlay() -> Bool {
         guard let replayVideo, let replayOffset else {
-            return
+            return false
         }
         replayImageHide()
-        replayEffect = ReplayEffect(video: replayVideo, start: replayOffset, stop: replayOffset + 8, delegate: self)
+        replayEffect = ReplayEffect(
+            video: replayVideo,
+            start: replayOffset,
+            stop: replayOffset + 30,
+            speed: database.replay!.speed.toNumber(),
+            delegate: self
+        )
         media.registerEffectBack(replayEffect!)
+        return true
     }
 
-    func replayStop() {
+    func replayCancel() {
         replayImageShow()
         guard let replayEffect else {
             return
@@ -1656,6 +1671,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
         goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
         goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
+        replayPosition = database.replay!.position
+        replaySpeed = database.replay!.speed
     }
 
     func setBitrateDropFix() {
@@ -11630,7 +11647,7 @@ private func videoCaptureError() -> String {
 }
 
 extension Model: ReplayDelegate {
-    func replayOutputFrame(image: UIImage, video: URL, offset: Double) {
+    func replayOutputFrame(image: UIImage, video: ReplayBufferFile, offset: Double) {
         DispatchQueue.main.async {
             self.replayImage = image
             self.replayVideo = video

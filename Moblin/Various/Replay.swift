@@ -5,29 +5,35 @@ import UIKit
 
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay", qos: .background)
 
-enum ReplaySpeed {
-    case one
-    case oneHalf
-    case oneFourth
+class ReplayBufferFile {
+    let url: URL
+
+    init(url: URL) {
+        self.url = url
+    }
+
+    deinit {
+        try? FileManager.default.removeItem(at: url)
+    }
 }
 
 protocol ReplayDelegate: AnyObject {
-    func replayOutputFrame(image: UIImage, video: URL, offset: Double)
+    func replayOutputFrame(image: UIImage, video: ReplayBufferFile, offset: Double)
 }
 
 private protocol JobDelegate: AnyObject {
-    func jobCompleted(image: UIImage?, video: URL, offset: Double)
+    func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double)
 }
 
 private class Job {
-    private let video: URL
+    private let video: ReplayBufferFile
     private let offset: Double
     weak var delegate: JobDelegate?
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
     private let context = CIContext()
 
-    init(video: URL, offset: Double, delegate: JobDelegate) throws {
+    init(video: ReplayBufferFile, offset: Double, delegate: JobDelegate) throws {
         self.video = video
         self.offset = offset
         self.delegate = delegate
@@ -35,7 +41,7 @@ private class Job {
     }
 
     private func createReader(offset: Double) throws {
-        let asset = AVAsset(url: video)
+        let asset = AVAsset(url: video.url)
         reader = try AVAssetReader(asset: asset)
         let startTime = CMTime(seconds: offset, preferredTimescale: 1)
         let duration = CMTime(seconds: 3, preferredTimescale: 1)
@@ -81,14 +87,14 @@ private class Job {
 }
 
 class Replay {
-    private let url: URL
+    private let video: ReplayBufferFile
     private let duration: Double
     private weak var delegate: ReplayDelegate?
     private var job: Job?
     private var pendingOffset: Double?
 
-    init(url: URL, duration: Double, offset: Double, delegate: ReplayDelegate) {
-        self.url = url
+    init(video: ReplayBufferFile, duration: Double, offset: Double, delegate: ReplayDelegate) {
+        self.video = video
         self.duration = duration
         self.delegate = delegate
         seek(offset: offset)
@@ -109,13 +115,13 @@ class Replay {
             return
         }
         let offsetFromEnd = 30 - pendingOffset
-        job = try? Job(video: url, offset: duration - offsetFromEnd, delegate: self)
+        job = try? Job(video: video, offset: duration - offsetFromEnd, delegate: self)
         self.pendingOffset = nil
     }
 }
 
 extension Replay: JobDelegate {
-    func jobCompleted(image: UIImage?, video: URL, offset: Double) {
+    func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double) {
         if let image {
             delegate?.replayOutputFrame(image: image, video: video, offset: offset)
         }
@@ -140,7 +146,7 @@ class ReplayBuffer {
         }
     }
 
-    func createFile(completion: @escaping (URL?, Double) -> Void) {
+    func createFile(completion: @escaping (ReplayBufferFile?, Double) -> Void) {
         replayQueue.async {
             self.createFileInternal(completion: completion)
         }
@@ -158,11 +164,11 @@ class ReplayBuffer {
         }
     }
 
-    private func createFileInternal(completion: @escaping (URL?, Double) -> Void) {
+    private func createFileInternal(completion: @escaping (ReplayBufferFile?, Double) -> Void) {
         guard let initSegment, !dataSegments.isEmpty else {
             return completion(nil, 0)
         }
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("replay.mp4")
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID()).mp4")
         do {
             try Data().write(to: url)
             let handle = try FileHandle(forWritingTo: url)
@@ -172,7 +178,7 @@ class ReplayBuffer {
                 handle.write(segment.data)
                 duration += segment.duration
             }
-            return completion(url, duration)
+            return completion(ReplayBufferFile(url: url), duration)
         } catch {
             logger.info("replay: Error: \(error)")
             return completion(nil, 0)

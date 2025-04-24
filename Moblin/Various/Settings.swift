@@ -2362,6 +2362,30 @@ class SettingsGoPro: Codable {
     var selectedRtmpUrl: UUID?
 }
 
+enum SettingsReplaySpeed: String, Codable, CaseIterable {
+    case oneHalf = "0.5x"
+    case one = "1x"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsReplaySpeed(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .one
+    }
+
+    func toNumber() -> Double {
+        switch self {
+        case .oneHalf:
+            return 0.5
+        case .one:
+            return 1.0
+        }
+    }
+}
+
+class SettingsReplay: Codable {
+    var position: Double = 10.0
+    var speed: SettingsReplaySpeed = .one
+}
+
 class SettingsCatPrinter: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
@@ -3010,6 +3034,7 @@ class Database: Codable {
     var remoteSceneId: UUID?
     var sceneNumericInput: Bool? = false
     var goPro: SettingsGoPro? = .init()
+    var replay: SettingsReplay? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -5186,6 +5211,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.twitchShowFollows == nil {
             stream.twitchShowFollows = true
+            store()
+        }
+        if realDatabase.replay == nil {
+            realDatabase.replay = .init()
             store()
         }
     }

@@ -18,6 +18,7 @@ private struct Image {
 }
 
 private class Reader {
+    private let video: ReplayBufferFile
     private let startTime: Double
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
@@ -25,16 +26,19 @@ private class Reader {
     private var images: Deque<Image> = []
     private var completed = false
 
-    init(video: URL, start: Double, stop: Double) {
+    init(video: ReplayBufferFile, start: Double, stop: Double) {
+        self.video = video
         startTime = start
-        let asset = AVAsset(url: video)
-        reader = try? AVAssetReader(asset: asset)
-        let startTime = CMTime(seconds: start, preferredTimescale: 1)
-        let duration = CMTime(seconds: stop - start, preferredTimescale: 1)
-        reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
-        asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
-            replayQueue.async {
-                self?.loadVideoTrackCompletion(tracks: tracks, error: error)
+        replayQueue.async {
+            let asset = AVAsset(url: video.url)
+            self.reader = try? AVAssetReader(asset: asset)
+            let startTime = CMTime(seconds: start, preferredTimescale: 1)
+            let duration = CMTime(seconds: stop - start, preferredTimescale: 1)
+            self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
+            asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                replayQueue.async {
+                    self?.loadVideoTrackCompletion(tracks: tracks, error: error)
+                }
             }
         }
     }
@@ -120,11 +124,13 @@ private class Reader {
 
 final class ReplayEffect: VideoEffect {
     private var playbackCompleted = false
+    private let speed: Double
     private let reader: Reader
     private var startPresentationTimeStamp: Double?
     private weak var delegate: ReplayEffectDelegate?
 
-    init(video: URL, start: Double, stop: Double, delegate: ReplayEffectDelegate) {
+    init(video: ReplayBufferFile, start: Double, stop: Double, speed: Double, delegate: ReplayEffectDelegate) {
+        self.speed = speed
         self.delegate = delegate
         reader = Reader(video: video, start: start, stop: stop)
     }
@@ -139,10 +145,12 @@ final class ReplayEffect: VideoEffect {
             startPresentationTimeStamp = presentationTimeStamp
         }
         let offset = info.presentationTimeStamp.seconds - startPresentationTimeStamp!
-        let replayImage = reader.getImage(offset: offset)
+        let replayImage = reader.getImage(offset: offset * speed)
         if replayImage.isLast {
             playbackCompleted = true
             delegate?.replayEffectCompleted()
+        } else if replayImage.image == nil {
+            startPresentationTimeStamp = nil
         }
         return replayImage.image ?? image
     }
