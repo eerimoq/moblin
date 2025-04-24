@@ -13,12 +13,15 @@ struct StreamOverlayRightReplayView: View {
 
     var body: some View {
         VStack(alignment: .trailing) {
-            if let image = model.replayImage {
+            if !model.replayPlaying, let image = model.replayImage {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 300)
                     .cornerRadius(7)
+                    .onTapGesture {
+                        model.replayImage = nil
+                    }
             }
             HStack {
                 Slider(value: $model.replayPosition,
@@ -49,7 +52,7 @@ struct StreamOverlayRightReplayView: View {
                     model.replaySpeedChanged()
                 }
                 Button {
-                    model.startReplay(resetImage: false)
+                    model.startReplay()
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
                         .frame(width: 30)

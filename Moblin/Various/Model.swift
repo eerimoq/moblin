@@ -763,7 +763,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var replayStarted = false
     private var replay: Replay?
     @Published var replayImage: UIImage?
-    private var replayHiddenImage: UIImage?
     private var replayVideo: ReplayBufferFile?
     private var replayOffset: Double?
     @Published var replayPlaying = false
@@ -1171,11 +1170,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return showCameraPreview
     }
 
-    func startReplay(resetImage: Bool = true) {
+    func startReplay() {
         replay = nil
-        if resetImage {
-            replayImage = nil
-        }
         guard currentRecording != nil else {
             makeErrorToast(title: "Replay only works when recording")
             return
@@ -1197,7 +1193,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func stopReplay() {
         replay = nil
-        replayImage = nil
         replayStarted = false
     }
 
@@ -1214,7 +1209,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard let replayVideo, let replayOffset else {
             return false
         }
-        replayImageHide()
         replayEffect = ReplayEffect(
             video: replayVideo,
             start: replayOffset,
@@ -1227,24 +1221,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func replayCancel() {
-        replayImageShow()
         guard let replayEffect else {
             return
         }
         media.unregisterEffect(replayEffect)
         self.replayEffect = nil
-    }
-
-    private func replayImageHide() {
-        replayHiddenImage = replayImage
-        replayImage = nil
-    }
-
-    private func replayImageShow() {
-        if replayHiddenImage != nil {
-            replayImage = replayHiddenImage
-            replayHiddenImage = nil
-        }
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
@@ -11652,7 +11633,6 @@ extension Model: ReplayDelegate {
             self.replayImage = image
             self.replayVideo = video
             self.replayOffset = offset
-            self.replayHiddenImage = nil
         }
     }
 }
@@ -11661,7 +11641,6 @@ extension Model: ReplayEffectDelegate {
     func replayEffectCompleted() {
         DispatchQueue.main.async {
             self.replayPlaying = false
-            self.replayImageShow()
         }
     }
 }
