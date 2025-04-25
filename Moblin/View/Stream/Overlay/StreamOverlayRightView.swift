@@ -388,23 +388,24 @@ struct RightOverlayBottomView: View {
         VStack(alignment: .trailing, spacing: 1) {
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
-                if model.showMediaPlayerControls {
-                    StreamOverlayRightMediaPlayerControlsView()
+                if model.showingReplay {
+                    StreamOverlayRightReplayView()
                 } else {
-                    if model.showingPixellate {
-                        StreamOverlayRightPixellateView(strength: model.database.pixellateStrength!)
+                    if model.showMediaPlayerControls {
+                        StreamOverlayRightMediaPlayerControlsView()
+                    } else {
+                        if model.showingPixellate {
+                            StreamOverlayRightPixellateView(strength: model.database.pixellateStrength!)
+                        }
+                        if model.showingCamera {
+                            StreamOverlayRightCameraSettingsControlView()
+                        }
+                        if database.show.zoomPresets && model.hasZoom {
+                            StreamOverlayRightZoomPresetSelctorView(width: width)
+                        }
                     }
-                    if model.showingCamera {
-                        StreamOverlayRightCameraSettingsControlView()
-                    }
-                    if model.showingReplay {
-                        StreamOverlayRightReplayView()
-                    }
-                    if database.show.zoomPresets && model.hasZoom {
-                        StreamOverlayRightZoomPresetSelctorView(width: width)
-                    }
+                    StreamOverlayRightSceneSelectorView(width: width)
                 }
-                StreamOverlayRightSceneSelectorView(width: width)
             }
         }
     }

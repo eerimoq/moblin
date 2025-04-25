@@ -728,6 +728,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     var recordingsStorage = RecordingsStorage()
     private var latestLowBitrateTime = ContinuousClock.now
+    var replaysStorage = ReplaysStorage()
+    var replaySettings: ReplaySettings?
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
@@ -761,13 +763,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var averageSpeedStartDistance = 0.0
 
     private var replayStarted = false
-    private var replay: Replay?
+    private var replayFrameExtractor: ReplayFrameExtractor?
     @Published var replayImage: UIImage?
     private var replayVideo: ReplayBufferFile?
-    private var replayOffset: Double?
     @Published var replayPlaying = false
     private var replayBuffer = ReplayBuffer()
-    @Published var replayPosition = 10.0
+    @Published var replayStartFromEnd = 10.0
     @Published var replaySpeed: SettingsReplaySpeed? = .one
 
     @Published var remoteControlStatus = noValue
@@ -796,6 +797,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         showLoadSettingsFailed = !settings.load()
         streamingHistory.load()
         recordingsStorage.load()
+        replaysStorage.load()
     }
 
     var stream: SettingsStream {
@@ -1171,28 +1173,41 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startReplay() {
-        replay = nil
-        guard currentRecording != nil else {
-            makeErrorToast(title: "Replay only works when recording")
-            return
-        }
+        replayFrameExtractor = nil
+        replaySettings = replaysStorage.createReplay()
+        replaySettings?.start = database.replay!.start
+        replaySettings?.stop = database.replay!.stop
+        replayStartFromEnd = 30 - database.replay!.start
         replayStarted = true
-        let offset = 30 - replayPosition
-        replayBuffer.createFile { file, duration in
+        replayBuffer.createFile { file in
             guard let file else {
                 return
             }
             DispatchQueue.main.async {
-                guard self.replayStarted else {
+                guard self.replayStarted, let replaySettings = self.replaySettings else {
                     return
                 }
-                self.replay = Replay(video: file, duration: duration, offset: offset, delegate: self)
+                replaySettings.duration = file.duration
+                self.replayFrameExtractor = ReplayFrameExtractor(
+                    video: file,
+                    offset: replaySettings.thumbnailOffset(),
+                    delegate: self
+                )
             }
         }
     }
 
+    func startReplay(video: ReplaySettings) {
+        replayStarted = true
+        replayFrameExtractor = ReplayFrameExtractor(
+            video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
+            offset: video.thumbnailOffset(),
+            delegate: self
+        )
+    }
+
     func stopReplay() {
-        replay = nil
+        replayFrameExtractor = nil
         replayStarted = false
     }
 
@@ -1200,23 +1215,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.replay!.speed = replaySpeed ?? .one
     }
 
-    func setReplayPosition(offset: Double) {
-        database.replay!.position = 30 - offset
-        replay?.seek(offset: offset)
+    func setReplayPosition(start: Double) {
+        guard let replaySettings else {
+            return
+        }
+        replaySettings.start = start
+        replaySettings.stop = 30
+        database.replay!.start = start
+        replayFrameExtractor?.seek(offset: replaySettings.thumbnailOffset())
     }
 
     func replayPlay() -> Bool {
-        guard let replayVideo, let replayOffset else {
+        guard let replayVideo, let replaySettings else {
             return false
         }
         replayEffect = ReplayEffect(
             video: replayVideo,
-            start: replayOffset,
-            stop: replayOffset + 30,
+            start: replaySettings.startFromVideoStart(),
+            stop: replaySettings.stopFromVideoStart(),
             speed: database.replay!.speed.toNumber(),
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
+        if !replaysStorage.database.replays.contains(where: { $0.id == replaySettings.id }) {
+            try? FileManager.default.copyItem(at: replayVideo.url, to: replaySettings.url())
+            replaysStorage.append(replay: replaySettings)
+        }
         return true
     }
 
@@ -1652,7 +1676,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         goProLaunchLiveStreamSelection = database.goPro!.selectedLaunchLiveStream
         goProWifiCredentialsSelection = database.goPro!.selectedWifiCredentials
         goProRtmpUrlSelection = database.goPro!.selectedRtmpUrl
-        replayPosition = database.replay!.position
         replaySpeed = database.replay!.speed
     }
 
@@ -2285,6 +2308,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     @objc func handleDidEnterBackgroundNotification() {
         store()
+        replaysStorage.store()
         guard !ProcessInfo().isiOSAppOnMac else {
             return
         }
@@ -2352,6 +2376,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if !showLoadSettingsFailed {
             store()
+            replaysStorage.store()
         }
     }
 
@@ -11628,11 +11653,10 @@ private func videoCaptureError() -> String {
 }
 
 extension Model: ReplayDelegate {
-    func replayOutputFrame(image: UIImage, video: ReplayBufferFile, offset: Double) {
+    func replayOutputFrame(image: UIImage, offset _: Double, video: ReplayBufferFile) {
         DispatchQueue.main.async {
             self.replayImage = image
             self.replayVideo = video
-            self.replayOffset = offset
         }
     }
 }

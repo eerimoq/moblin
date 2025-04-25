@@ -7,25 +7,31 @@ private let replayQueue = DispatchQueue(label: "com.eerimoq.replay", qos: .backg
 
 class ReplayBufferFile {
     let url: URL
+    let duration: Double
+    private let remove: Bool
 
-    init(url: URL) {
+    init(url: URL, duration: Double, remove: Bool) {
         self.url = url
+        self.duration = duration
+        self.remove = remove
     }
 
     deinit {
-        try? FileManager.default.removeItem(at: url)
+        if remove {
+            try? FileManager.default.removeItem(at: url)
+        }
     }
 }
 
 protocol ReplayDelegate: AnyObject {
-    func replayOutputFrame(image: UIImage, video: ReplayBufferFile, offset: Double)
+    func replayOutputFrame(image: UIImage, offset: Double, video: ReplayBufferFile)
 }
 
 private protocol JobDelegate: AnyObject {
     func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double)
 }
 
-private class Job {
+private class FrameExtractorJob {
     private let video: ReplayBufferFile
     private let offset: Double
     weak var delegate: JobDelegate?
@@ -86,16 +92,14 @@ private class Job {
     }
 }
 
-class Replay {
+class ReplayFrameExtractor {
     private let video: ReplayBufferFile
-    private let duration: Double
     private weak var delegate: ReplayDelegate?
-    private var job: Job?
+    private var job: FrameExtractorJob?
     private var pendingOffset: Double?
 
-    init(video: ReplayBufferFile, duration: Double, offset: Double, delegate: ReplayDelegate) {
+    init(video: ReplayBufferFile, offset: Double, delegate: ReplayDelegate) {
         self.video = video
-        self.duration = duration
         self.delegate = delegate
         seek(offset: offset)
     }
@@ -114,16 +118,15 @@ class Replay {
         guard job == nil, let pendingOffset else {
             return
         }
-        let offsetFromEnd = 30 - pendingOffset
-        job = try? Job(video: video, offset: duration - offsetFromEnd, delegate: self)
+        job = try? FrameExtractorJob(video: video, offset: pendingOffset, delegate: self)
         self.pendingOffset = nil
     }
 }
 
-extension Replay: JobDelegate {
+extension ReplayFrameExtractor: JobDelegate {
     func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double) {
         if let image {
-            delegate?.replayOutputFrame(image: image, video: video, offset: offset)
+            delegate?.replayOutputFrame(image: image, offset: offset, video: video)
         }
         job = nil
         tryNextJob()
@@ -146,7 +149,7 @@ class ReplayBuffer {
         }
     }
 
-    func createFile(completion: @escaping (ReplayBufferFile?, Double) -> Void) {
+    func createFile(completion: @escaping (ReplayBufferFile?) -> Void) {
         replayQueue.async {
             self.createFileInternal(completion: completion)
         }
@@ -164,9 +167,9 @@ class ReplayBuffer {
         }
     }
 
-    private func createFileInternal(completion: @escaping (ReplayBufferFile?, Double) -> Void) {
+    private func createFileInternal(completion: @escaping (ReplayBufferFile?) -> Void) {
         guard let initSegment, !dataSegments.isEmpty else {
-            return completion(nil, 0)
+            return completion(nil)
         }
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID()).mp4")
         do {
@@ -178,10 +181,10 @@ class ReplayBuffer {
                 handle.write(segment.data)
                 duration += segment.duration
             }
-            return completion(ReplayBufferFile(url: url), duration)
+            return completion(ReplayBufferFile(url: url, duration: duration, remove: true))
         } catch {
             logger.info("replay: Error: \(error)")
-            return completion(nil, 0)
+            return completion(nil)
         }
     }
 

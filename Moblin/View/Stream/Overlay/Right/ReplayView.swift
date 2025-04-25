@@ -1,6 +1,105 @@
 import SwiftUI
 
-struct StreamOverlayRightReplayView: View {
+private struct ReplayHistoryItem: View {
+    @EnvironmentObject var model: Model
+    var replay: ReplaySettings
+
+    var body: some View {
+        if let image = createThumbnail(path: replay.url(), offset: replay.thumbnailOffset()) {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .cornerRadius(5)
+                .frame(width: 130)
+                .onTapGesture {
+                    model.replaySettings = replay
+                    model.replayStartFromEnd = replay.startFromEnd()
+                    model.startReplay(video: replay)
+                }
+        }
+    }
+}
+
+private struct ReplayPreview: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        if !model.replayPlaying, let image = model.replayImage {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 300)
+                .cornerRadius(7)
+                .onTapGesture {
+                    model.replayImage = nil
+                }
+        }
+    }
+}
+
+private struct ReplayControlsInterval: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Slider(value: $model.replayStartFromEnd,
+               in: 0 ... 30,
+               step: 0.1,
+               onEditingChanged: { _ in
+               })
+               .frame(width: 250)
+               .onChange(of: model.replayStartFromEnd) {
+                   model.setReplayPosition(start: 30 - $0)
+               }
+               .rotationEffect(.degrees(180))
+        Text("\(Int(model.replayStartFromEnd))s")
+            .frame(width: 30)
+            .font(.body)
+            .foregroundColor(.white)
+    }
+}
+
+private struct ReplayControlsSpeedPicker: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        SegmentedPicker(SettingsReplaySpeed.allCases, selectedItem: $model.replaySpeed) {
+            Text($0.rawValue)
+                .font(.subheadline)
+                .frame(width: 30, height: 35)
+        }
+        .cornerRadius(7)
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(pickerBorderColor)
+        )
+        .frame(width: 90)
+        .onChange(of: model.replaySpeed) { _ in
+            model.replaySpeedChanged()
+        }
+        .foregroundColor(.white)
+    }
+}
+
+private struct ReplayControlsReloadButton: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Button {
+            model.startReplay()
+        } label: {
+            let image: some View = Image(systemName: "arrow.clockwise")
+                .frame(width: 30)
+            if model.isRecording {
+                image.foregroundColor(.white)
+            } else {
+                image
+            }
+        }
+        .disabled(!model.isRecording)
+    }
+}
+
+private struct ReplayControlsPlayPauseButton: View {
     @EnvironmentObject var model: Model
 
     private func playStopImage() -> String {
@@ -12,72 +111,75 @@ struct StreamOverlayRightReplayView: View {
     }
 
     var body: some View {
-        VStack(alignment: .trailing) {
-            if !model.replayPlaying, let image = model.replayImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 300)
-                    .cornerRadius(7)
-                    .onTapGesture {
-                        model.replayImage = nil
-                    }
+        Button {
+            model.replayPlaying.toggle()
+            if model.replayPlaying {
+                if !model.replayPlay() {
+                    model.replayPlaying = false
+                }
+            } else {
+                model.replayCancel()
             }
-            HStack {
-                Slider(value: $model.replayPosition,
-                       in: 0 ... 30,
-                       step: 0.1,
-                       onEditingChanged: { _ in
-                       })
-                       .frame(width: 250)
-                       .onChange(of: model.replayPosition) {
-                           model.setReplayPosition(offset: 30 - $0)
-                       }
-                       .rotationEffect(.degrees(180))
-                Text("\(Int(model.replayPosition))s")
-                    .frame(width: 30)
-                    .font(.body)
-                SegmentedPicker(SettingsReplaySpeed.allCases, selectedItem: $model.replaySpeed) {
-                    Text($0.rawValue)
-                        .font(.subheadline)
-                        .frame(width: 30, height: 35)
-                }
-                .cornerRadius(7)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7)
-                        .stroke(pickerBorderColor)
-                )
-                .frame(width: 90)
-                .onChange(of: model.replaySpeed) { _ in
-                    model.replaySpeedChanged()
-                }
-                Button {
-                    model.startReplay()
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .frame(width: 30)
-                }
-                Button {
-                    model.replayPlaying.toggle()
-                    if model.replayPlaying {
-                        if !model.replayPlay() {
-                            model.replayPlaying = false
-                        }
-                    } else {
-                        model.replayCancel()
-                    }
-                } label: {
-                    Image(systemName: playStopImage())
-                        .frame(width: 30)
-                }
-            }
-            .font(.title)
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
-            .background(backgroundColor)
-            .foregroundColor(.white)
-            .cornerRadius(7)
+        } label: {
+            Image(systemName: playStopImage())
+                .frame(width: 30)
+                .foregroundColor(.white)
         }
-        .padding([.bottom], 4)
+    }
+}
+
+private struct ReplayControls: View {
+    @EnvironmentObject var model: Model
+
+    private func playStopImage() -> String {
+        if model.replayPlaying {
+            return "stop"
+        } else {
+            return "play"
+        }
+    }
+
+    var body: some View {
+        HStack {
+            ReplayControlsInterval()
+            ReplayControlsSpeedPicker()
+            ReplayControlsReloadButton()
+            ReplayControlsPlayPauseButton()
+        }
+        .padding(4)
+        .font(.title)
+        .background(backgroundColor)
+        .cornerRadius(5)
+    }
+}
+
+private struct ReplayHistory: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: 3) {
+                ForEach(model.replaysStorage.database.replays) { replay in
+                    ReplayHistoryItem(replay: replay)
+                }
+            }
+            .frame(height: 70)
+        }
+        .scrollIndicators(.hidden)
+        .padding(4)
+        .background(backgroundColor)
+        .cornerRadius(5)
+    }
+}
+
+struct StreamOverlayRightReplayView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        VStack(alignment: .trailing) {
+            ReplayPreview()
+            ReplayControls()
+            ReplayHistory()
+        }
     }
 }

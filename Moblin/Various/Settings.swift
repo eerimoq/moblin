@@ -2382,7 +2382,10 @@ enum SettingsReplaySpeed: String, Codable, CaseIterable {
 }
 
 class SettingsReplay: Codable {
-    var position: Double = 10.0
+    // periphery:ignore
+    var position: Double? = 10.0
+    var start: Double = 20.0
+    var stop: Double = 30.0
     var speed: SettingsReplaySpeed = .one
 }
 

@@ -289,7 +289,7 @@ extension URL {
 
 private var thumbnails: [URL: UIImage] = [:]
 
-func createThumbnail(path: URL) -> UIImage? {
+func createThumbnail(path: URL, offset: Double = 0) -> UIImage? {
     if let thumbnail = thumbnails[path] {
         return thumbnail
     }
@@ -297,7 +297,7 @@ func createThumbnail(path: URL) -> UIImage? {
         let asset = AVURLAsset(url: path, options: nil)
         let imgGenerator = AVAssetImageGenerator(asset: asset)
         imgGenerator.appliesPreferredTrackTransform = true
-        let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+        let cgImage = try imgGenerator.copyCGImage(at: CMTime(seconds: offset, preferredTimescale: 1), actualTime: nil)
         let thumbnail = UIImage(cgImage: cgImage)
         thumbnails[path] = thumbnail
         return thumbnail

@@ -126,8 +126,6 @@ final class RecordingsStorage {
 
     @AppStorage("recordings") var storage = ""
 
-    init() {}
-
     func load() {
         do {
             try tryLoadAndMigrate(settings: storage)
