@@ -28864,6 +28864,9 @@
         }
       }
     },
+    "Can only load live replay video when recording" : {
+
+    },
     "Cancel" : {
       "localizations" : {
         "de" : {
@@ -70458,9 +70461,6 @@
         }
       }
     },
-    "Live replay only works when recording" : {
-
-    },
     "Live stream and record when the app is in background mode." : {
       "localizations" : {
         "de" : {
@@ -85461,6 +85461,9 @@
         }
       }
     },
+    "No replay video loaded" : {
+
+    },
     "No rewards found" : {
       "localizations" : {
         "de" : {
@@ -94258,6 +94261,9 @@
           }
         }
       }
+    },
+    "Press the reload button to the left or a video in the list below to load one" : {
+
     },
     "Press the shortcut below to create launch live streams." : {
       "localizations" : {

@@ -94,18 +94,13 @@ private struct ReplayControlsReloadButton: View {
             if model.isRecording {
                 model.startReplay()
             } else {
-                model.makeToast(title: String(localized: "Live replay only works when recording"))
+                model.makeToast(title: String(localized: "Can only load live replay video when recording"))
             }
         } label: {
-            let image: some View = Image(systemName: "arrow.clockwise")
+            Image(systemName: "arrow.clockwise")
                 .frame(width: 30)
-            if model.isRecording {
-                image.foregroundColor(.white)
-            } else {
-                image
-            }
+                .foregroundColor(.white)
         }
-        .disabled(!model.isRecording)
     }
 }
 
@@ -122,13 +117,22 @@ private struct ReplayControlsPlayPauseButton: View {
 
     var body: some View {
         Button {
-            model.replayPlaying.toggle()
-            if model.replayPlaying {
-                if !model.replayPlay() {
-                    model.replayPlaying = false
-                }
+            if model.replaySettings == nil {
+                model.makeToast(
+                    title: String(localized: "No replay video loaded"),
+                    subTitle: String(
+                        localized: "Press the reload button to the left or a video in the list below to load one"
+                    )
+                )
             } else {
-                model.replayCancel()
+                model.replayPlaying.toggle()
+                if model.replayPlaying {
+                    if !model.replayPlay() {
+                        model.replayPlaying = false
+                    }
+                } else {
+                    model.replayCancel()
+                }
             }
         } label: {
             Image(systemName: playStopImage())
@@ -169,6 +173,13 @@ private struct ReplayHistory: View {
     var body: some View {
         ScrollView(.horizontal) {
             LazyHStack {
+                if model.replaysStorage.database.replays.isEmpty {
+                    Image(systemName: "photo.artframe")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(5)
+                        .frame(height: 68)
+                }
                 ForEach(model.replaysStorage.database.replays) { replay in
                     ReplayHistoryItem(replay: replay)
                 }
