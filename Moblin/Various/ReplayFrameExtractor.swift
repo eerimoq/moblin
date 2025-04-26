@@ -49,8 +49,8 @@ private class FrameExtractorJob {
     private func createReader(offset: Double) throws {
         let asset = AVAsset(url: video.url)
         reader = try AVAssetReader(asset: asset)
-        let startTime = CMTime(seconds: offset, preferredTimescale: 1)
-        let duration = CMTime(seconds: 3, preferredTimescale: 1)
+        let startTime = CMTime(seconds: offset, preferredTimescale: 1000)
+        let duration = CMTime(seconds: 3, preferredTimescale: 1000)
         reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
         asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
             replayQueue.async {

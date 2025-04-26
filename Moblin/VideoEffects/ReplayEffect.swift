@@ -32,8 +32,8 @@ private class Reader {
         replayQueue.async {
             let asset = AVAsset(url: video.url)
             self.reader = try? AVAssetReader(asset: asset)
-            let startTime = CMTime(seconds: start, preferredTimescale: 1)
-            let duration = CMTime(seconds: stop - start, preferredTimescale: 1)
+            let startTime = CMTime(seconds: start, preferredTimescale: 1000)
+            let duration = CMTime(seconds: stop - start, preferredTimescale: 1000)
             self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
             asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
                 replayQueue.async {
