@@ -152,8 +152,8 @@ private struct ReplayControls: View {
     var body: some View {
         HStack {
             ReplayControlsInterval()
-            ReplayControlsSpeedPicker()
             ReplayControlsReloadButton()
+            ReplayControlsSpeedPicker()
             ReplayControlsPlayPauseButton()
         }
         .padding(4)
