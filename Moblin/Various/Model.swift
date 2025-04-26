@@ -763,7 +763,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var averageSpeedStartTime: ContinuousClock.Instant = .now
     private var averageSpeedStartDistance = 0.0
 
-    private var replayStarted = false
     private var replayFrameExtractor: ReplayFrameExtractor?
     @Published var replayImage: UIImage?
     private var replayVideo: ReplayBufferFile?
@@ -1176,15 +1175,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func startReplay() {
         replayFrameExtractor = nil
         selectedReplayId = nil
-        replayStarted = true
         replayBuffer.createFile { file in
             guard let file else {
                 return
             }
             DispatchQueue.main.async {
-                guard self.replayStarted else {
-                    return
-                }
                 self.replaySettings = self.replaysStorage.createReplay()
                 guard let replaySettings = self.replaySettings else {
                     return
@@ -1204,21 +1199,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func startReplay(video: ReplaySettings) {
         selectedReplayId = video.id
-        replayStarted = true
         replayFrameExtractor = ReplayFrameExtractor(
             video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
             offset: video.thumbnailOffset(),
             delegate: self
         )
-    }
-
-    func stopReplay() {
-        replayStarted = false
-        replayImage = nil
-        replayVideo = nil
-        replaySettings = nil
-        replayFrameExtractor = nil
-        selectedReplayId = nil
     }
 
     func replaySpeedChanged() {

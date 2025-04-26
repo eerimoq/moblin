@@ -286,15 +286,6 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
         model.updateButtonStates()
-        if model.showingReplay {
-            if model.isRecording || !model.replaysStorage.database.replays.isEmpty {
-                model.startReplay()
-            } else {
-                model.makeToast(title: String(localized: "Live replay only works when recording"))
-            }
-        } else {
-            model.stopReplay()
-        }
     }
 
     var body: some View {
