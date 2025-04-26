@@ -132,16 +132,17 @@ private class Reader {
 
     @MainActor
     private func createOverlay(size: CMVideoDimensions) -> CIImage? {
+        let scale = Double(size.width) / 1920
         let text = HStack {
             ZStack {
                 Circle()
                     .foregroundColor(.red)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 40 * scale, height: 40 * scale)
                 Image(systemName: "play.fill")
-                    .font(.system(size: 25))
+                    .font(.system(size: 25 * scale))
             }
             Text("REPLAY")
-                .font(.system(size: 50))
+                .font(.system(size: 50 * scale))
                 .fontDesign(.monospaced)
         }
         .bold()
@@ -150,8 +151,8 @@ private class Reader {
         guard let image = renderer.uiImage else {
             return nil
         }
-        let x = Double(size.width) - image.size.width - 25
-        let y = Double(size.height) - image.size.height - 20
+        let x = Double(size.width) - image.size.width - 25 * scale
+        let y = Double(size.height) - image.size.height - 20 * scale
         return CIImage(image: image)?.transformed(by: CGAffineTransform(translationX: x, y: y))
     }
 }
