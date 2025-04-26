@@ -19,7 +19,7 @@ private struct ReplayHistoryItem: View {
                 .overlay {
                     if replay.id == model.selectedReplayId {
                         RoundedRectangle(cornerRadius: 5)
-                            .stroke(.white, lineWidth: 1)
+                            .stroke(.white, lineWidth: 2)
                     }
                 }
         }
