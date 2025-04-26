@@ -1244,6 +1244,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             start: replaySettings.startFromVideoStart(),
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay!.speed.toNumber(),
+            size: stream.resolution.dimensions(),
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
