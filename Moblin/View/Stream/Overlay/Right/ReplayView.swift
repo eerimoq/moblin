@@ -10,11 +10,17 @@ private struct ReplayHistoryItem: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .cornerRadius(5)
-                .frame(width: 130)
+                .frame(height: 68)
                 .onTapGesture {
                     model.replaySettings = replay
                     model.replayStartFromEnd = replay.startFromEnd()
                     model.startReplay(video: replay)
+                }
+                .overlay {
+                    if replay.id == model.selectedReplayId {
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(.white, lineWidth: 1)
+                    }
                 }
         }
     }
@@ -162,7 +168,7 @@ private struct ReplayHistory: View {
 
     var body: some View {
         ScrollView(.horizontal) {
-            LazyHStack(spacing: 3) {
+            LazyHStack {
                 ForEach(model.replaysStorage.database.replays) { replay in
                     ReplayHistoryItem(replay: replay)
                 }

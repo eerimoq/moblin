@@ -730,6 +730,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var latestLowBitrateTime = ContinuousClock.now
     var replaysStorage = ReplaysStorage()
     var replaySettings: ReplaySettings?
+    @Published var selectedReplayId: UUID?
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
@@ -1174,20 +1175,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func startReplay() {
         replayFrameExtractor = nil
-        replaySettings = replaysStorage.createReplay()
-        replaySettings?.start = database.replay!.start!
-        replaySettings?.stop = database.replay!.stop!
-        replayStartFromEnd = 30 - database.replay!.start!
+        selectedReplayId = nil
         replayStarted = true
         replayBuffer.createFile { file in
             guard let file else {
                 return
             }
             DispatchQueue.main.async {
-                guard self.replayStarted, let replaySettings = self.replaySettings else {
+                guard self.replayStarted else {
                     return
                 }
+                self.replaySettings = self.replaysStorage.createReplay()
+                guard let replaySettings = self.replaySettings else {
+                    return
+                }
+                replaySettings.start = self.database.replay!.start!
+                replaySettings.stop = self.database.replay!.stop!
                 replaySettings.duration = file.duration
+                self.replayStartFromEnd = 30 - self.database.replay!.start!
                 self.replayFrameExtractor = ReplayFrameExtractor(
                     video: file,
                     offset: replaySettings.thumbnailOffset(),
@@ -1198,6 +1203,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startReplay(video: ReplaySettings) {
+        selectedReplayId = video.id
         replayStarted = true
         replayFrameExtractor = ReplayFrameExtractor(
             video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
@@ -1207,8 +1213,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func stopReplay() {
-        replayFrameExtractor = nil
         replayStarted = false
+        replayImage = nil
+        replayVideo = nil
+        replaySettings = nil
+        replayFrameExtractor = nil
+        selectedReplayId = nil
     }
 
     func replaySpeedChanged() {
@@ -1241,6 +1251,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             try? FileManager.default.copyItem(at: replayVideo.url, to: replaySettings.url())
             replaysStorage.append(replay: replaySettings)
         }
+        selectedReplayId = replaySettings.id
         return true
     }
 
@@ -4179,6 +4190,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard isRecording else {
             return
         }
+        replayBuffer = ReplayBuffer()
         setIsRecording(value: false)
         if showToast {
             makeToast(title: String(localized: "Recording stopped"))
