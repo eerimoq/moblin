@@ -1175,9 +1175,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func startReplay() {
         replayFrameExtractor = nil
         replaySettings = replaysStorage.createReplay()
-        replaySettings?.start = database.replay!.start
-        replaySettings?.stop = database.replay!.stop
-        replayStartFromEnd = 30 - database.replay!.start
+        replaySettings?.start = database.replay!.start!
+        replaySettings?.stop = database.replay!.stop!
+        replayStartFromEnd = 30 - database.replay!.start!
         replayStarted = true
         replayBuffer.createFile { file in
             guard let file else {

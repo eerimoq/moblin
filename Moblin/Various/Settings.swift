@@ -2384,8 +2384,8 @@ enum SettingsReplaySpeed: String, Codable, CaseIterable {
 class SettingsReplay: Codable {
     // periphery:ignore
     var position: Double? = 10.0
-    var start: Double = 20.0
-    var stop: Double = 30.0
+    var start: Double? = 20.0
+    var stop: Double? = 30.0
     var speed: SettingsReplaySpeed = .one
 }
 
@@ -5218,6 +5218,18 @@ final class Settings {
         }
         if realDatabase.replay == nil {
             realDatabase.replay = .init()
+            store()
+        }
+        if realDatabase.replay!.position == nil {
+            realDatabase.replay!.position = 10.0
+            store()
+        }
+        if realDatabase.replay!.start == nil {
+            realDatabase.replay!.start = 20.0
+            store()
+        }
+        if realDatabase.replay!.stop == nil {
+            realDatabase.replay!.stop = 30.0
             store()
         }
     }
