@@ -85,7 +85,11 @@ private struct ReplayControlsReloadButton: View {
 
     var body: some View {
         Button {
-            model.startReplay()
+            if model.isRecording {
+                model.startReplay()
+            } else {
+                model.makeToast(title: String(localized: "Live replay only works when recording"))
+            }
         } label: {
             let image: some View = Image(systemName: "arrow.clockwise")
                 .frame(width: 30)

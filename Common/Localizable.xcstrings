@@ -70458,6 +70458,9 @@
         }
       }
     },
+    "Live replay only works when recording" : {
+
+    },
     "Live stream and record when the app is in background mode." : {
       "localizations" : {
         "de" : {
