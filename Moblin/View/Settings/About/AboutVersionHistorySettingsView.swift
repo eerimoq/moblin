@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.398.0", date: "2025-04-26", changes: [
+        "• Replay speed picker.",
+        "  • 0.5x or 1x.",
+        "• Replay history.",
+    ]),
     Version(version: "0.397.0", date: "2025-04-23", changes: [
         "• New SRT(LA) batch send.",
         "• New (Apple's) websocket server in Moblink streamer and Remote control assistant.",
