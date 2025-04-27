@@ -55,7 +55,7 @@ private struct MenuView: View {
                 NavigationStack {
                     QuickButtonMicView(selectedMic: model.currentMic)
                 }
-            case .streamSwitcher:
+            case .stream:
                 NavigationStack {
                     QuickButtonStreamView()
                 }

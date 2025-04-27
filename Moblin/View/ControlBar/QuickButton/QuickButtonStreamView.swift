@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct QuickButtonStreamView: View {
+private struct StreamSwitcherView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -31,6 +31,43 @@ struct QuickButtonStreamView: View {
                 .labelsHidden()
             } footer: {
                 Text("Automatically goes live when switching stream.")
+            }
+        }
+        .navigationTitle("Stream switcher")
+    }
+}
+
+private struct StreamConnectionPrioritiesView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        StreamSrtConnectionPriorityView(stream: model.stream)
+    }
+}
+
+struct QuickButtonStreamView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            Section {
+                NavigationLink {
+                    QuickButtonBitrateView(selection: model.stream.bitrate)
+                } label: {
+                    Text("Bitrate")
+                }
+                if model.stream.getProtocol() == .srt {
+                    NavigationLink {
+                        StreamConnectionPrioritiesView()
+                    } label: {
+                        Text("Connection priorities")
+                    }
+                }
+                NavigationLink {
+                    StreamSwitcherView()
+                } label: {
+                    Text("Stream switcher")
+                }
             }
         }
         .navigationTitle("Stream")
