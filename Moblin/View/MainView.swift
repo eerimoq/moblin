@@ -99,6 +99,10 @@ private struct MenuView: View {
                 NavigationStack {
                     QuickButtonGoProView()
                 }
+            case .connectionPriorities:
+                NavigationStack {
+                    QuickButtonConnectionPrioritiesView()
+                }
             case .none:
                 EmptyView()
             }

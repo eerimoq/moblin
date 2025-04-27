@@ -288,6 +288,10 @@ struct QuickButtonsInnerView: View {
         model.updateButtonStates()
     }
 
+    private func connectionPrioritiesAction(state _: ButtonState) {
+        model.toggleShowingPanel(type: .connectionPriorities, panel: .connectionPriorities)
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -587,6 +591,12 @@ struct QuickButtonsInnerView: View {
             case .replay:
                 Button(action: {
                     replayAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .connectionPriorities:
+                Button(action: {
+                    connectionPrioritiesAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

@@ -1641,6 +1641,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case portrait = "Portrait"
     case goPro = "GoPro"
     case replay = "Replay"
+    case connectionPriorities = "Connection priorities"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -3483,6 +3484,14 @@ private func addMissingQuickButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "rectangle.portrait.rotate"
     button.systemImageNameOff = "rectangle.portrait.rotate"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Connection priorities"))
+    button.id = UUID()
+    button.type = .connectionPriorities
+    button.imageType = "System name"
+    button.systemImageNameOn = "phone.connection.fill"
+    button.systemImageNameOff = "phone.connection"
     updateQuickButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in

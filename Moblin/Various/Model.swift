@@ -53,6 +53,7 @@ enum ShowingPanel {
     case djiDevices
     case sceneSettings
     case goPro
+    case connectionPriorities
 }
 
 class Browser: Identifiable {
@@ -937,6 +938,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             SettingsButtonType.obs,
             SettingsButtonType.djiDevices,
             SettingsButtonType.goPro,
+            SettingsButtonType.connectionPriorities,
         ].contains(type)
     }
 
