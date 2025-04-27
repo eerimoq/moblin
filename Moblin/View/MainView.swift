@@ -275,9 +275,6 @@ struct MainView: View {
                 HStack {
                     Spacer(minLength: 0)
                     VStack {
-                        if model.stream.portrait! {
-                            Spacer(minLength: 0)
-                        }
                         GeometryReader { metrics in
                             ZStack {
                                 streamView
@@ -294,6 +291,10 @@ struct MainView: View {
                                     StreamGridView()
                                 }
                             }
+                            .offset(CGSize(
+                                width: 0,
+                                height: model.portraitVideoOffsetFromTop * metrics.size.height * 2
+                            ))
                         }
                         .aspectRatio(portraitAspectRatio(), contentMode: .fit)
                         Spacer(minLength: 0)

@@ -3039,6 +3039,7 @@ class Database: Codable {
     var sceneNumericInput: Bool? = false
     var goPro: SettingsGoPro? = .init()
     var replay: SettingsReplay? = .init()
+    var portraitVideoOffsetFromTop: Double? = 0.0
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -5239,6 +5240,10 @@ final class Settings {
         }
         if realDatabase.replay!.stop == nil {
             realDatabase.replay!.stop = 30.0
+            store()
+        }
+        if realDatabase.portraitVideoOffsetFromTop == nil {
+            realDatabase.portraitVideoOffsetFromTop = 0.0
             store()
         }
     }

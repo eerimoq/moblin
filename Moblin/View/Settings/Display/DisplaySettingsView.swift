@@ -99,6 +99,15 @@ struct DisplaySettingsView: View {
                         })) {
                             Text("Portrait")
                         }
+                        HStack {
+                            Text("Video position")
+                            Slider(value: $model.portraitVideoOffsetFromTop, in: 0 ... 1) {
+                                Text("")
+                            }
+                        }
+                        .onChange(of: model.portraitVideoOffsetFromTop) {
+                            model.database.portraitVideoOffsetFromTop! = $0
+                        }
                     } footer: {
                         VStack(alignment: .leading) {
                             Text("Useful when using an external camera and a portrait phone holder.")

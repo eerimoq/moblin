@@ -560,6 +560,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var obsSceneInputs: [ObsSceneInput] = []
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
+    @Published var portraitVideoOffsetFromTop = 0.0
     private var obsAudioVolumeLatest: String = ""
     @Published var obsCurrentScenePicker: String = ""
     @Published var obsCurrentScene: String = ""
@@ -1533,6 +1534,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setAllowVideoRangePixelFormat()
         setSrtlaBatchSend()
         setExternalDisplayContent()
+        portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop!
         audioUnitRemoveWindNoise = database.debug.removeWindNoise!
         showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage!
         showNewFollowerMessage = database.chat.showNewFollowerMessage!
