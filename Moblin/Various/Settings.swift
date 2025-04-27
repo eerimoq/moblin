@@ -3053,7 +3053,7 @@ class Database: Codable {
         if database.bitratePresets.isEmpty {
             addDefaultBitratePresets(database: database)
         }
-        addMissingGlobalButtons(database: database)
+        addMissingQuickButtons(database: database)
         for button in database.globalButtons! where button.type != .interactiveChat && button.type != .cameraPreview {
             button.isOn = false
         }
@@ -3148,7 +3148,7 @@ private func addDefaultBitratePresets(database: Database) {
     ]
 }
 
-private func updateGlobalButton(database: Database, button: SettingsButton) {
+private func updateQuickButton(database: Database, button: SettingsButton) {
     let existingButton = database.globalButtons!.first(where: { globalButton in
         globalButton.type == button.type
     })
@@ -3161,7 +3161,7 @@ private func updateGlobalButton(database: Database, button: SettingsButton) {
     }
 }
 
-private func addMissingGlobalButtons(database: Database) {
+private func addMissingQuickButtons(database: Database) {
     if database.globalButtons == nil {
         database.globalButtons = []
     }
@@ -3171,7 +3171,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "flashlight.on.fill"
     button.systemImageNameOff = "flashlight.off.fill"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Mute"))
     button.id = UUID()
@@ -3179,7 +3179,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Bitrate"))
     button.id = UUID()
@@ -3187,7 +3187,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "speedometer"
     button.systemImageNameOff = "speedometer"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Mic"))
     button.id = UUID()
@@ -3195,7 +3195,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "music.mic"
     button.systemImageNameOff = "music.mic"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Chat"))
     button.id = UUID()
@@ -3203,7 +3203,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Interactive chat"))
     button.id = UUID()
@@ -3211,7 +3211,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "arrow.up.message.fill"
     button.systemImageNameOff = "arrow.up.message"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Black screen"))
     button.id = UUID()
@@ -3219,7 +3219,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "sunset.fill"
     button.systemImageNameOff = "sunset"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Lock screen"))
     button.id = UUID()
@@ -3227,7 +3227,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "lock.fill"
     button.systemImageNameOff = "lock"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Record"))
     button.id = UUID()
@@ -3235,7 +3235,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "record.circle.fill"
     button.systemImageNameOff = "record.circle"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Stream"))
     button.id = UUID()
@@ -3243,7 +3243,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "dot.radiowaves.left.and.right"
     button.systemImageNameOff = "dot.radiowaves.left.and.right"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Recordings"))
     button.id = UUID()
@@ -3251,7 +3251,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo.on.rectangle.angled.fill"
     button.systemImageNameOff = "photo.on.rectangle.angled"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Snapshot"))
     button.id = UUID()
@@ -3259,7 +3259,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.aperture"
     button.systemImageNameOff = "camera.aperture"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Replay"))
     button.id = UUID()
@@ -3267,7 +3267,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "play.fill"
     button.systemImageNameOff = "play"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "OBS"))
     button.id = UUID()
@@ -3275,7 +3275,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "xserve"
     button.systemImageNameOff = "xserve"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Remote"))
     button.id = UUID()
@@ -3283,7 +3283,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Widgets"))
     button.id = UUID()
@@ -3291,7 +3291,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo.on.rectangle.fill"
     button.systemImageNameOff = "photo.on.rectangle"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Draw"))
     button.id = UUID()
@@ -3299,7 +3299,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "pencil.line"
     button.systemImageNameOff = "pencil.line"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Camera"))
     button.id = UUID()
@@ -3307,7 +3307,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.fill"
     button.systemImageNameOff = "camera"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Browser"))
     button.id = UUID()
@@ -3315,7 +3315,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "globe"
     button.systemImageNameOff = "globe"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Grid"))
     button.id = UUID()
@@ -3323,7 +3323,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "grid"
     button.systemImageNameOff = "grid"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Face"))
     button.id = UUID()
@@ -3331,7 +3331,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "theatermask.and.paintbrush.fill"
     button.systemImageNameOff = "theatermask.and.paintbrush"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
@@ -3339,7 +3339,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "4:3"))
     button.id = UUID()
@@ -3347,7 +3347,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "square.fill"
     button.systemImageNameOff = "square"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
@@ -3355,7 +3355,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Sepia"))
     button.id = UUID()
@@ -3363,7 +3363,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "moonphase.waxing.crescent.inverse"
     button.systemImageNameOff = "moonphase.waning.crescent"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Triple"))
     button.id = UUID()
@@ -3371,7 +3371,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "person.3.fill"
     button.systemImageNameOff = "person.3"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Twin"))
     button.id = UUID()
@@ -3379,7 +3379,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "person.2.fill"
     button.systemImageNameOff = "person.2"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Pixellate"))
     button.id = UUID()
@@ -3387,7 +3387,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "squareshape.split.2x2"
     button.systemImageNameOff = "squareshape.split.2x2"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Local overlays"))
     button.id = UUID()
@@ -3395,7 +3395,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "square.stack.3d.up.slash.fill"
     button.systemImageNameOff = "square.stack.3d.up.slash"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Poll"))
     button.id = UUID()
@@ -3403,7 +3403,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "chart.bar.xaxis"
     button.systemImageNameOff = "chart.bar.xaxis"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "LUTs"))
     button.id = UUID()
@@ -3411,7 +3411,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.filters"
     button.systemImageNameOff = "camera.filters"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Workout"))
     button.id = UUID()
@@ -3419,7 +3419,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "figure.run"
     button.systemImageNameOff = "figure.run"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Skip current TTS"))
     button.id = UUID()
@@ -3427,7 +3427,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "waveform.slash"
     button.systemImageNameOff = "waveform.slash"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Ads"))
     button.id = UUID()
@@ -3435,7 +3435,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "cup.and.saucer.fill"
     button.systemImageNameOff = "cup.and.saucer"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Stream marker"))
     button.id = UUID()
@@ -3443,7 +3443,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "bookmark.fill"
     button.systemImageNameOff = "bookmark"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Reload browser widgets"))
     button.id = UUID()
@@ -3451,7 +3451,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "arrow.clockwise"
     button.systemImageNameOff = "arrow.clockwise"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "DJI devices"))
     button.id = UUID()
@@ -3459,7 +3459,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "GoPro"))
     button.id = UUID()
@@ -3467,7 +3467,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "appletvremote.gen1.fill"
     button.systemImageNameOff = "appletvremote.gen1"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Camera preview"))
     button.id = UUID()
@@ -3475,7 +3475,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera.rotate.fill"
     button.systemImageNameOff = "camera.rotate"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Portrait"))
     button.id = UUID()
@@ -3483,7 +3483,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "rectangle.portrait.rotate"
     button.systemImageNameOff = "rectangle.portrait.rotate"
-    updateGlobalButton(database: database, button: button)
+    updateQuickButton(database: database, button: button)
 
     database.globalButtons = database.globalButtons!.filter { button in
         if button.type == .unknown {
@@ -3507,13 +3507,13 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         database.deepLinkCreator!.quickButtons = .init()
     }
     let quickButtons = database.deepLinkCreator!.quickButtons!
-    for globalButton in database.globalButtons! where globalButton.type != .lut {
+    for quickButton in database.globalButtons! where quickButton.type != .lut {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { button in
-            globalButton.type == button.type
+            quickButton.type == button.type
         })
         if !buttonExists {
-            button.type = globalButton.type
+            button.type = quickButton.type
             quickButtons.buttons.append(button)
         }
     }
@@ -3609,7 +3609,7 @@ private func createDefault() -> Database {
     addDefaultScenes(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
-    addMissingGlobalButtons(database: database)
+    addMissingQuickButtons(database: database)
     addMissingDeepLinkQuickButtons(database: database)
     addScenesToGameController(database: database)
     addMissingBundledLuts(database: database)
