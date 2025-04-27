@@ -104,6 +104,20 @@ private struct ReplayControlsReloadButton: View {
     }
 }
 
+private struct ReplayControlsSaveButton: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Button {
+            model.replaySave()
+        } label: {
+            Image(systemName: "square.and.arrow.down")
+                .frame(width: 30)
+                .foregroundColor(.white)
+        }
+    }
+}
+
 private struct ReplayControlsPlayPauseButton: View {
     @EnvironmentObject var model: Model
 
@@ -157,6 +171,7 @@ private struct ReplayControls: View {
         HStack {
             ReplayControlsInterval()
             ReplayControlsReloadButton()
+            ReplayControlsSaveButton()
             ReplayControlsSpeedPicker()
             ReplayControlsPlayPauseButton()
         }

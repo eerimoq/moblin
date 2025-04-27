@@ -1247,7 +1247,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         self.replayEffect = nil
     }
 
-    private func replaySave() {
+    func replaySave() {
         guard let replayVideo, let replaySettings else {
             return
         }
