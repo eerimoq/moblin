@@ -1235,11 +1235,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
-        if !replaysStorage.database.replays.contains(where: { $0.id == replaySettings.id }) {
-            try? FileManager.default.copyItem(at: replayVideo.url, to: replaySettings.url())
-            replaysStorage.append(replay: replaySettings)
-        }
-        selectedReplayId = replaySettings.id
+        replaySave()
         return true
     }
 
@@ -1249,6 +1245,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         media.unregisterEffect(replayEffect)
         self.replayEffect = nil
+    }
+
+    private func replaySave() {
+        guard let replayVideo, let replaySettings else {
+            return
+        }
+        if !replaysStorage.database.replays.contains(where: { $0.id == replaySettings.id }) {
+            try? FileManager.default.copyItem(at: replayVideo.url, to: replaySettings.url())
+            replaysStorage.append(replay: replaySettings)
+        }
+        selectedReplayId = replaySettings.id
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
