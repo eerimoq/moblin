@@ -184,7 +184,6 @@ class RistStream: NetStream {
             self.writer.expectedMedias.insert(.video)
             self.writer.expectedMedias.insert(.audio)
             self.mixer.startEncoding(self.writer)
-            self.mixer.startRunning()
             self.writer.startRunning()
         }
         guard let url = URL(string: url), let host = url.host(), let port = url.port else {

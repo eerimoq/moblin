@@ -273,7 +273,6 @@ class RtmpStream: NetStream {
         baseTimeStamp = -1.0
         prevRebasedAudioTimeStamp = -1.0
         prevRebasedVideoTimeStamp = -1.0
-        mixer.startRunning()
         videoChunkType = .zero
         audioChunkType = .zero
         dataTimeStamps.removeAll()

@@ -45,7 +45,6 @@ class SrtStream: NetStream {
             case .publishing:
                 logger.info("srt: Start publishing")
                 mixer.startEncoding(writer)
-                mixer.startRunning()
                 writer.startRunning()
             default:
                 break
