@@ -51,6 +51,91 @@ private struct ButtonsLandscapeView: View {
     }
 }
 
+private struct ControlBarLandscapeStatusView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        HStack(spacing: 0) {
+            if isPhone() {
+                BatteryView()
+            }
+            Spacer(minLength: 0)
+            ThermalStateView(thermalState: model.thermalState)
+            Spacer(minLength: 0)
+            if isPhone() {
+                Text(model.digitalClock)
+                    .foregroundColor(.white)
+                    .font(smallFont)
+            }
+        }
+        .padding([.bottom], 5)
+        .padding([.leading], 0)
+        .padding([.trailing], 5)
+    }
+}
+
+private struct ControlBarLandscapeIconAndSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Button {
+                model.toggleShowingPanel(type: nil, panel: .cosmetics)
+            } label: {
+                Image("\(model.iconImage)NoBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding([.bottom], 4)
+                    .offset(x: 2)
+                    .frame(width: buttonSize, height: buttonSize)
+            }
+            Button {
+                model.toggleShowingPanel(type: nil, panel: .settings)
+            } label: {
+                Image(systemName: "gearshape")
+                    .frame(width: buttonSize, height: buttonSize)
+                    .overlay(
+                        Circle()
+                            .stroke(.secondary)
+                    )
+                    .foregroundColor(.white)
+            }
+            .padding([.leading], 10)
+        }
+        .padding([.leading, .trailing], 10)
+    }
+}
+
+private struct ControlBarLandscapeQuickButtonsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        GeometryReader { metrics in
+            ScrollView(showsIndicators: false) {
+                ScrollViewReader { reader in
+                    VStack {
+                        Spacer(minLength: 0)
+                        ButtonsLandscapeView(width: metrics.size.width)
+                            .frame(width: metrics.size.width)
+                            .onChange(of: model.scrollQuickButtons) { _ in
+                                let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs
+                                    .last?.second?.button.id ?? UUID()
+                                reader.scrollTo(id, anchor: .bottom)
+                            }
+                    }
+                    .frame(minHeight: metrics.size.height)
+                    .onChange(of: metrics.size) { _ in
+                        model.scrollQuickButtonsToBottom()
+                    }
+                }
+            }
+            .scrollDisabled(!model.database.quickButtons!.enableScroll)
+            .padding([.top], 5)
+        }
+        .padding([.leading, .trailing], 0)
+    }
+}
+
 struct ControlBarLandscapeView: View {
     @EnvironmentObject var model: Model
     @Environment(\.accessibilityShowButtonShapes)
@@ -66,70 +151,9 @@ struct ControlBarLandscapeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                if isPhone() {
-                    BatteryView()
-                }
-                Spacer(minLength: 0)
-                ThermalStateView(thermalState: model.thermalState)
-                Spacer(minLength: 0)
-                if isPhone() {
-                    Text(model.digitalClock)
-                        .foregroundColor(.white)
-                        .font(smallFont)
-                }
-            }
-            .padding([.bottom], 5)
-            .padding([.leading], 0)
-            .padding([.trailing], 5)
-            HStack(spacing: 0) {
-                Button {
-                    model.toggleShowingPanel(type: nil, panel: .cosmetics)
-                } label: {
-                    Image("\(model.iconImage)NoBackground")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding([.bottom], 4)
-                        .offset(x: 2)
-                        .frame(width: buttonSize, height: buttonSize)
-                }
-                Button {
-                    model.toggleShowingPanel(type: nil, panel: .settings)
-                } label: {
-                    Image(systemName: "gearshape")
-                        .frame(width: buttonSize, height: buttonSize)
-                        .overlay(
-                            Circle()
-                                .stroke(.secondary)
-                        )
-                        .foregroundColor(.white)
-                }
-                .padding([.leading], 10)
-            }
-            .padding([.leading, .trailing], 10)
-            GeometryReader { metrics in
-                ScrollView(showsIndicators: false) {
-                    ScrollViewReader { reader in
-                        VStack {
-                            Spacer(minLength: 0)
-                            ButtonsLandscapeView(width: metrics.size.width)
-                                .frame(width: metrics.size.width)
-                                .onChange(of: model.scrollQuickButtons) { _ in
-                                    let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs
-                                        .last?.second?.button.id ?? UUID()
-                                    reader.scrollTo(id, anchor: .bottom)
-                                }
-                        }
-                        .frame(minHeight: metrics.size.height)
-                        .onChange(of: metrics.size) { _ in
-                            model.scrollQuickButtonsToBottom()
-                        }
-                    }
-                }
-                .scrollDisabled(!model.database.quickButtons!.enableScroll)
-                .padding([.top], 5)
-            }
-            .padding([.leading, .trailing], 0)
+            ControlBarLandscapeStatusView()
+            ControlBarLandscapeIconAndSettingsView()
+            ControlBarLandscapeQuickButtonsView()
             StreamButton()
                 .padding([.top], 10)
                 .padding([.leading, .trailing], 5)
