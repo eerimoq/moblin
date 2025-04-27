@@ -43,7 +43,7 @@ enum ShowingPanel {
     case settings
     case bitrate
     case mic
-    case stream
+    case streamSwitcher
     case luts
     case obs
     case widgets

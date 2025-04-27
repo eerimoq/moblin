@@ -145,7 +145,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func streamAction(state _: ButtonState) {
-        model.toggleShowingPanel(type: .stream, panel: .stream)
+        model.toggleShowingPanel(type: .stream, panel: .streamSwitcher)
     }
 
     private func gridAction(state: ButtonState) {
