@@ -102,6 +102,7 @@ private struct ReplayControlsSaveButton: View {
         if model.replayIsSaving {
             ProgressView()
                 .frame(width: 30)
+                .tint(.white)
         } else {
             Button {
                 if model.isRecording {
