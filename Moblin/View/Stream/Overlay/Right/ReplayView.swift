@@ -1,31 +1,5 @@
 import SwiftUI
 
-private struct ReplayHistoryItem: View {
-    @EnvironmentObject var model: Model
-    var replay: ReplaySettings
-
-    var body: some View {
-        if let image = createThumbnail(path: replay.url(), offset: replay.thumbnailOffset()) {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .cornerRadius(5)
-                .frame(height: 68)
-                .onTapGesture {
-                    model.replaySettings = replay
-                    model.replayStartFromEnd = replay.startFromEnd()
-                    model.startReplay(video: replay)
-                }
-                .overlay {
-                    if replay.id == model.selectedReplayId {
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(.white, lineWidth: 2)
-                    }
-                }
-        }
-    }
-}
-
 private struct ReplayPreview: View {
     @EnvironmentObject var model: Model
 
@@ -57,6 +31,7 @@ private struct ReplayControlsInterval: View {
                    model.setReplayPosition(start: 30 - $0)
                }
                .rotationEffect(.degrees(180))
+               .disabled(model.selectedReplayId == nil)
         Text("\(Int(model.replayStartFromEnd))s")
             .frame(width: 30)
             .font(.body)
@@ -86,38 +61,6 @@ private struct ReplayControlsSpeedPicker: View {
     }
 }
 
-private struct ReplayControlsReloadButton: View {
-    @EnvironmentObject var model: Model
-
-    var body: some View {
-        Button {
-            if model.isRecording {
-                model.startReplay()
-            } else {
-                model.makeToast(title: String(localized: "Can only load live replay video when recording"))
-            }
-        } label: {
-            Image(systemName: "arrow.clockwise")
-                .frame(width: 30)
-                .foregroundColor(.white)
-        }
-    }
-}
-
-private struct ReplayControlsSaveButton: View {
-    @EnvironmentObject var model: Model
-
-    var body: some View {
-        Button {
-            model.replaySave()
-        } label: {
-            Image(systemName: "square.and.arrow.down")
-                .frame(width: 30)
-                .foregroundColor(.white)
-        }
-    }
-}
-
 private struct ReplayControlsPlayPauseButton: View {
     @EnvironmentObject var model: Model
 
@@ -131,27 +74,46 @@ private struct ReplayControlsPlayPauseButton: View {
 
     var body: some View {
         Button {
-            if model.replaySettings == nil {
-                model.makeToast(
-                    title: String(localized: "No replay video loaded"),
-                    subTitle: String(
-                        localized: "Press the reload button to the left or a video in the list below to load one"
-                    )
-                )
-            } else {
-                model.replayPlaying.toggle()
-                if model.replayPlaying {
-                    if !model.replayPlay() {
-                        model.replayPlaying = false
-                    }
-                } else {
-                    model.replayCancel()
+            model.replayPlaying.toggle()
+            if model.replayPlaying {
+                if !model.replayPlay() {
+                    model.replayPlaying = false
                 }
+            } else {
+                model.replayCancel()
             }
         } label: {
-            Image(systemName: playStopImage())
+            let image = Image(systemName: playStopImage())
                 .frame(width: 30)
-                .foregroundColor(.white)
+            if model.selectedReplayId != nil {
+                image.foregroundColor(.white)
+            } else {
+                image
+            }
+        }
+        .disabled(model.selectedReplayId == nil)
+    }
+}
+
+private struct ReplayControlsSaveButton: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        if model.replayIsSaving {
+            ProgressView()
+                .frame(width: 30)
+        } else {
+            Button {
+                if model.isRecording {
+                    model.saveReplay()
+                } else {
+                    model.makeToast(title: String(localized: "Can only save replay when recording"))
+                }
+            } label: {
+                Image(systemName: "square.and.arrow.down")
+                    .frame(width: 30)
+                    .foregroundColor(.white)
+            }
         }
     }
 }
@@ -170,15 +132,40 @@ private struct ReplayControls: View {
     var body: some View {
         HStack {
             ReplayControlsInterval()
-            ReplayControlsReloadButton()
-            ReplayControlsSaveButton()
             ReplayControlsSpeedPicker()
             ReplayControlsPlayPauseButton()
+            Divider()
+            ReplayControlsSaveButton()
         }
         .padding(4)
         .font(.title)
+        .frame(height: 45)
         .background(backgroundColor)
         .cornerRadius(5)
+    }
+}
+
+private struct ReplayHistoryItem: View {
+    @EnvironmentObject var model: Model
+    var replay: ReplaySettings
+
+    var body: some View {
+        if let image = createThumbnail(path: replay.url(), offset: replay.thumbnailOffset()) {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .cornerRadius(5)
+                .frame(height: 68)
+                .onTapGesture {
+                    model.loadReplay(video: replay)
+                }
+                .overlay {
+                    if replay.id == model.selectedReplayId {
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(.white, lineWidth: 2)
+                    }
+                }
+        }
     }
 }
 

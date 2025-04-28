@@ -733,6 +733,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var replaysStorage = ReplaysStorage()
     var replaySettings: ReplaySettings?
     @Published var selectedReplayId: UUID?
+    @Published var replayIsSaving = false
 
     private var rtmpServer: RtmpServer?
     @Published var serversSpeedAndTotal = noValue
@@ -1175,32 +1176,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return showCameraPreview
     }
 
-    func startReplay() {
-        replayFrameExtractor = nil
-        selectedReplayId = nil
-        replayBuffer.createFile { file in
-            guard let file else {
-                return
-            }
-            DispatchQueue.main.async {
-                self.replaySettings = self.replaysStorage.createReplay()
-                guard let replaySettings = self.replaySettings else {
-                    return
+    func saveReplay() {
+        replayIsSaving = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+            self.replayBuffer.createFile { file in
+                DispatchQueue.main.async {
+                    self.replayIsSaving = false
+                    guard let file else {
+                        return
+                    }
+                    let replaySettings = self.replaysStorage.createReplay()
+                    replaySettings.start = self.database.replay!.start!
+                    replaySettings.stop = self.database.replay!.stop!
+                    replaySettings.duration = file.duration
+                    try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
+                    self.replaysStorage.append(replay: replaySettings)
                 }
-                replaySettings.start = self.database.replay!.start!
-                replaySettings.stop = self.database.replay!.stop!
-                replaySettings.duration = file.duration
-                self.replayStartFromEnd = 30 - self.database.replay!.start!
-                self.replayFrameExtractor = ReplayFrameExtractor(
-                    video: file,
-                    offset: replaySettings.thumbnailOffset(),
-                    delegate: self
-                )
             }
         }
     }
 
-    func startReplay(video: ReplaySettings) {
+    func loadReplay(video: ReplaySettings) {
+        replaySettings = video
+        replayStartFromEnd = video.startFromEnd()
         selectedReplayId = video.id
         replayFrameExtractor = ReplayFrameExtractor(
             video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
@@ -1236,7 +1234,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
-        replaySave()
         return true
     }
 
@@ -1246,17 +1243,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         media.unregisterEffect(replayEffect)
         self.replayEffect = nil
-    }
-
-    func replaySave() {
-        guard let replayVideo, let replaySettings else {
-            return
-        }
-        if !replaysStorage.database.replays.contains(where: { $0.id == replaySettings.id }) {
-            try? FileManager.default.copyItem(at: replayVideo.url, to: replaySettings.url())
-            replaysStorage.append(replay: replaySettings)
-        }
-        selectedReplayId = replaySettings.id
     }
 
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
