@@ -1642,6 +1642,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case goPro = "GoPro"
     case replay = "Replay"
     case connectionPriorities = "Connection priorities"
+    case instantReplay = "Instant replay"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -3269,6 +3270,14 @@ private func addMissingQuickButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "play.fill"
     button.systemImageNameOff = "play"
+    updateQuickButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Instant replay"))
+    button.id = UUID()
+    button.type = .instantReplay
+    button.imageType = "System name"
+    button.systemImageNameOn = "memories"
+    button.systemImageNameOff = "memories"
     updateQuickButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "OBS"))

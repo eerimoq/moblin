@@ -288,6 +288,14 @@ struct QuickButtonsInnerView: View {
         model.updateButtonStates()
     }
 
+    private func instantReplayAction(state _: ButtonState) {
+        if model.isRecording {
+            model.instantReplay()
+        } else {
+            model.makeToast(title: String(localized: "Can only replay when recording"))
+        }
+    }
+
     private func connectionPrioritiesAction(state _: ButtonState) {
         model.toggleShowingPanel(type: .connectionPriorities, panel: .connectionPriorities)
     }
@@ -591,6 +599,12 @@ struct QuickButtonsInnerView: View {
             case .replay:
                 Button(action: {
                     replayAction(state: state)
+                }, label: {
+                    QuickButtonImage(state: state, buttonSize: size)
+                })
+            case .instantReplay:
+                Button(action: {
+                    instantReplayAction(state: state)
                 }, label: {
                     QuickButtonImage(state: state, buttonSize: size)
                 })

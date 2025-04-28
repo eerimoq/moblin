@@ -178,6 +178,24 @@ private struct SnapshotCountdownView: View {
     }
 }
 
+private struct InstantReplayCountdownView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        VStack {
+            Text("Playing instant replay in")
+            Text(String(model.instantReplayCountdown))
+                .font(.title)
+        }
+        .foregroundColor(.white)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: 200, alignment: .center)
+        .padding(10)
+        .background(.black.opacity(0.75))
+        .cornerRadius(10)
+    }
+}
+
 private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
@@ -453,6 +471,9 @@ struct MainView: View {
             }
             if let snapshotJob = model.currentSnapshotJob, model.snapshotCountdown > 0 {
                 SnapshotCountdownView(message: snapshotJob.message)
+            }
+            if model.instantReplayCountdown != 0 {
+                InstantReplayCountdownView()
             }
         }
         .onAppear {

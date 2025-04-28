@@ -24,7 +24,7 @@ class ReplayBufferFile {
 }
 
 protocol ReplayDelegate: AnyObject {
-    func replayOutputFrame(image: UIImage, offset: Double, video: ReplayBufferFile)
+    func replayOutputFrame(image: UIImage, offset: Double, video: ReplayBufferFile, completion: (() -> Void)?)
 }
 
 private protocol JobDelegate: AnyObject {
@@ -95,12 +95,14 @@ private class FrameExtractorJob {
 class ReplayFrameExtractor {
     private let video: ReplayBufferFile
     private weak var delegate: ReplayDelegate?
+    private let completion: (() -> Void)?
     private var job: FrameExtractorJob?
     private var pendingOffset: Double?
 
-    init(video: ReplayBufferFile, offset: Double, delegate: ReplayDelegate) {
+    init(video: ReplayBufferFile, offset: Double, delegate: ReplayDelegate, completion: (() -> Void)?) {
         self.video = video
         self.delegate = delegate
+        self.completion = completion
         seek(offset: offset)
     }
 
@@ -126,7 +128,7 @@ class ReplayFrameExtractor {
 extension ReplayFrameExtractor: JobDelegate {
     func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double) {
         if let image {
-            delegate?.replayOutputFrame(image: image, offset: offset, video: video)
+            delegate?.replayOutputFrame(image: image, offset: offset, video: video, completion: completion)
         }
         job = nil
         tryNextJob()
