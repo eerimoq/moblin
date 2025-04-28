@@ -269,6 +269,14 @@ struct MainView: View {
         }
     }
 
+    private func portraitVideoOffset() -> Double {
+        if model.stream.portrait! {
+            return 0
+        } else {
+            return model.portraitVideoOffsetFromTop
+        }
+    }
+
     private func portrait() -> some View {
         VStack(spacing: 0) {
             ZStack {
@@ -293,7 +301,7 @@ struct MainView: View {
                             }
                             .offset(CGSize(
                                 width: 0,
-                                height: model.portraitVideoOffsetFromTop * metrics.size.height * 2
+                                height: portraitVideoOffset() * metrics.size.height * 2
                             ))
                         }
                         .aspectRatio(portraitAspectRatio(), contentMode: .fit)
