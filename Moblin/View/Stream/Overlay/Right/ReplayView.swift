@@ -135,10 +135,11 @@ private struct ReplayControls: View {
             ReplayControlsInterval()
             ReplayControlsSpeedPicker()
             ReplayControlsPlayPauseButton()
-            Divider()
+            Divider().overlay(.white)
             ReplayControlsSaveButton()
         }
         .padding(4)
+        .padding([.trailing], 4)
         .font(.title)
         .frame(height: 45)
         .background(backgroundColor)
