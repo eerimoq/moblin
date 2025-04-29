@@ -2149,13 +2149,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
         if pressed {
-            clearZoomPresetId()
-            if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
-                setZoomX(x: x)
-            }
+            setZoomX(x: x, rate: database.zoom.speed!)
         } else {
             if let x = stopCameraZoom() {
-                setZoomX(x: x)
+                setZoomXWhenInRange(x: x)
             }
         }
     }
@@ -4779,7 +4776,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setColorSpace(colorSpace: colorSpace, onComplete: {
             DispatchQueue.main.async {
                 if let x = self.setCameraZoomX(x: self.zoomX) {
-                    self.setZoomX(x: x)
+                    self.setZoomXWhenInRange(x: x)
                 }
                 self.lutEnabledUpdated()
             }
@@ -7261,7 +7258,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
-                    self.setZoomX(x: x)
+                    self.setZoomXWhenInRange(x: x)
                 }
                 if let device = self.cameraDevice {
                     self.setIsoAfterCameraAttach(device: device)
@@ -7419,7 +7416,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func updateCameraControls() {
         media.setCameraControls(enabled: database.cameraControlsEnabled!)
     }
-    
+
     func setZoomPreset(id: UUID) {
         switch cameraPosition {
         case .back:
@@ -7431,7 +7428,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if let preset = findZoomPreset(id: id) {
             if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
-                setZoomX(x: preset.x!)
+                setZoomXWhenInRange(x: preset.x!)
                 switch getSelectedScene()?.cameraPosition {
                 case .backTripleLowEnergy:
                     attachBackTripleLowEnergyCamera(force: false)
@@ -7451,7 +7448,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func setZoomX(x: Float, setPinch: Bool = true) {
+    func setZoomX(x: Float, rate: Float? = nil, setPinch: Bool = true) {
+        clearZoomPresetId()
+        if let x = setCameraZoomX(x: x, rate: rate) {
+            setZoomXWhenInRange(x: x, setPinch: setPinch)
+        }
+    }
+
+    private func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
             backZoomX = x
@@ -7476,20 +7480,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard hasZoom else {
             return
         }
-        clearZoomPresetId()
-        if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
-            setZoomX(x: x, setPinch: false)
-        }
+        setZoomX(x: zoomXPinch * amount, rate: rate, setPinch: false)
     }
 
     func commitZoomX(amount: Float, rate: Float? = nil) {
         guard hasZoom else {
             return
         }
-        clearZoomPresetId()
-        if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
-            setZoomX(x: x)
-        }
+        setZoomX(x: zoomXPinch * amount, rate: rate)
     }
 
     private func clearZoomPresetId() {
@@ -8187,10 +8185,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetZoom(x: Float, onComplete: @escaping () -> Void) {
-        clearZoomPresetId()
-        if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
-            setZoomX(x: x)
-        }
+        setZoomX(x: x, rate: database.zoom.speed!)
         onComplete()
     }
 
@@ -9152,10 +9147,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                self.clearZoomPresetId()
-                if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
-                    self.setZoomX(x: x)
-                }
+                self.setZoomX(x: x, rate: self.database.zoom.speed!)
             } else {
                 self.remoteControlAssistantSetZoom(x: x)
             }
@@ -11560,10 +11552,7 @@ extension Model: MediaDelegate {
     }
 
     func mediaSetZoomX(x: Float) {
-        clearZoomPresetId()
-        if let x = setCameraZoomX(x: x) {
-            setZoomX(x: x)
-        }
+        setZoomX(x: x)
     }
 
     func mediaSetExposureBias(bias: Float) {
